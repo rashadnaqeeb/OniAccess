@@ -36,12 +36,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Speech output contains no raw rich text tags or sprite codes -- all output is clean readable text
   4. A speech capture test can verify that specific game actions produce expected speech output
   5. All speech strings that have a game-data equivalent use STRINGS/LocText, not hardcoded English
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Project scaffolding, mod entry point, and Tolk initialization
-- [ ] 01-02: Speech pipeline with filtering, formatting, and announcement infrastructure
-- [ ] 01-03: Vanilla mode toggle, testing framework, and hotkey documentation system
+- [ ] 01-01-PLAN.md -- Project scaffolding, mod entry point, and Tolk initialization
+- [ ] 01-02-PLAN.md -- Speech pipeline with text filtering, announcement infrastructure, and alert history buffer
+- [ ] 01-03-PLAN.md -- Vanilla mode toggle, hotkey system, input interception, and speech capture testing
 
 ### Phase 2: Menu Navigation
 **Goal**: A blind player can start a new colony from scratch -- navigating main menu, configuring game settings, selecting an asteroid, customizing the world, picking starting duplicants, and managing saves -- entirely through keyboard and speech
@@ -229,7 +229,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/3 | Not started | - |
+| 1. Foundation | 0/3 | Planned | - |
 | 2. Menu Navigation | 0/5 | Not started | - |
 | 3. World Navigation | 0/3 | Not started | - |
 | 4. Entity Inspection | 0/5 | Not started | - |
