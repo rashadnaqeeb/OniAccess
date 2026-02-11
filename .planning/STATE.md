@@ -9,29 +9,30 @@ See: .planning/PROJECT.md (updated 2026-02-11)
 
 ## Current Position
 
-Phase: 2 of 12 (Input Architecture) -- NOT STARTED
-Plan: 0 of 3 in current phase
-Status: Ready for Phase 2 planning
-Last activity: 2026-02-11 -- Phase 1 UAT passed (5/5), build fixes committed, Phase 2 (Input Architecture) inserted before Menu Navigation
+Phase: 2 of 12 (Input Architecture) -- IN PROGRESS
+Plan: 1 of 2 in current phase
+Status: Plan 02-01 complete, ready for Plan 02-02
+Last activity: 2026-02-11 -- Plan 02-01 (input architecture core) executed: 7 files created, builds against game DLLs
 
-Progress: [##........] 8%
+Progress: [##........] 12%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 3min
-- Total execution time: 0.15 hours
+- Total plans completed: 4
+- Average duration: 4min
+- Total execution time: 0.27 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 3 | 9min | 3min |
+| 02-input-architecture | 1 | 7min | 7min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2min), 01-02 (4min), 01-03 (3min)
-- Trend: stable ~3min/plan
+- Last 5 plans: 01-01 (2min), 01-02 (4min), 01-03 (3min), 02-01 (7min)
+- Trend: slight increase for architecture work
 
 *Updated after each plan completion*
 
@@ -67,6 +68,10 @@ Recent decisions affecting current work:
 - [verify-01]: Every plan must compile against game DLLs (ONI_MANAGED) before being marked complete -- no unverified code
 - [verify-01]: Stripped AlertHistory, Announcement, SpeechPriority, SpeakQueued -- premature infrastructure for Phase 7 built without understanding ONI's notification system. Design alert speech when we get there.
 - [verify-01]: No speculative infrastructure -- only build what the current phase needs
+- [02-01]: AccessTools.TypeByName for internal InputInit class -- TargetMethod pattern resolves internal types at runtime for Harmony patching
+- [02-01]: ContextDetector.DetectAndActivate is a no-op in Phase 2 -- concrete handlers are Phase 3, no speculative infrastructure
+- [02-01]: KeyPoller handles Ctrl+Shift+F12 toggle directly -- must work when mod is off, outside the handler system
+- [02-01]: Mouse and zoom actions always pass through in full-capture mode -- 6 Action types checked to prevent blocking clicks
 
 ### Pending Todos
 
@@ -81,5 +86,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Phase 1 UAT complete, Phase 2 (Input Architecture) inserted, ready for /gsd:plan-phase 2
+Stopped at: Completed 02-01-PLAN.md (input architecture core). Ready for 02-02-PLAN.md (migration and cleanup).
 Resume file: None
