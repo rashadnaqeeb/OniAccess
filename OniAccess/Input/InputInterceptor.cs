@@ -31,7 +31,7 @@ namespace OniAccess.Input
         private void Update()
         {
             // Check F12 key (used for both toggle with Ctrl+Shift and help without modifiers)
-            if (Input.GetKeyDown(KeyCode.F12))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.F12))
             {
                 HotkeyModifier modifiers = GetActiveModifiers();
                 AccessContext context = DetermineContext();
@@ -54,13 +54,13 @@ namespace OniAccess.Input
         {
             HotkeyModifier modifiers = HotkeyModifier.None;
 
-            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+            if (UnityEngine.Input.GetKey(KeyCode.LeftControl) || UnityEngine.Input.GetKey(KeyCode.RightControl))
                 modifiers |= HotkeyModifier.Ctrl;
 
-            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            if (UnityEngine.Input.GetKey(KeyCode.LeftShift) || UnityEngine.Input.GetKey(KeyCode.RightShift))
                 modifiers |= HotkeyModifier.Shift;
 
-            if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+            if (UnityEngine.Input.GetKey(KeyCode.LeftAlt) || UnityEngine.Input.GetKey(KeyCode.RightAlt))
                 modifiers |= HotkeyModifier.Alt;
 
             return modifiers;

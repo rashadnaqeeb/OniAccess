@@ -61,6 +61,10 @@ Recent decisions affecting current work:
 - [01-03]: HotkeyModifier as Flags enum independent from ONI's Modifier enum
 - [01-03]: Frame dedup via Time.frameCount dictionary prevents multiple fires per frame per binding
 - [01-03]: Toggle off temporarily re-enables SpeechPipeline to speak confirmation before disabling
+- [verify-01]: Always use System.Action (not Action) -- ONI's Assembly-CSharp defines its own Action type that shadows System.Action
+- [verify-01]: Always fully qualify UnityEngine.Input when in OniAccess.Input namespace -- bare Input resolves to the namespace
+- [verify-01]: UnityEngine.InputLegacyModule.dll must be referenced in csproj -- UnityEngine.Input is forwarded there
+- [verify-01]: Every plan must compile against game DLLs (ONI_MANAGED) before being marked complete -- no unverified code
 
 ### Pending Todos
 

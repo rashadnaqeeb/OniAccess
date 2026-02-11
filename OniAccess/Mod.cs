@@ -67,7 +67,7 @@ namespace OniAccess
                 HotkeyModifier.CtrlShift,
                 AccessContext.Always,
                 STRINGS.ONIACCESS.HOTKEYS.TOGGLE_MOD,
-                VanillaMode.Toggle,
+                new System.Action(VanillaMode.Toggle),
                 originalFunction: null
             ));
 
@@ -78,7 +78,7 @@ namespace OniAccess
                 HotkeyModifier.None,
                 AccessContext.Global,
                 STRINGS.ONIACCESS.HOTKEYS.CONTEXT_HELP,
-                SpeakContextHelp,
+                new System.Action(SpeakContextHelp),
                 originalFunction: null
             ));
 

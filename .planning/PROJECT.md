@@ -77,6 +77,34 @@ Users are experienced screen reader users. Announce name, state, value — nothi
 ### 4. Conscious hotkey management
 ONI has extensive hotkeys. Many are useless to blind players and can be overwritten. But every overwrite is a deliberate decision — document what the original hotkey did and why it's being replaced.
 
+## Build & Deploy
+
+**Build requirement**: Every phase MUST compile against the game's DLLs before completion. Never ship uncompiled code.
+
+**ONI game path**: `C:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\`
+**Managed DLLs**: `OxygenNotIncluded_Data\Managed\` (set `ONI_MANAGED` env var to this path)
+**Deploy target**: `%USERPROFILE%\Documents\Klei\OxygenNotIncluded\mods\local\OniAccess\`
+
+**Build command**:
+```bash
+export ONI_MANAGED="C:/Program Files (x86)/Steam/steamapps/common/OxygenNotIncluded/OxygenNotIncluded_Data/Managed"
+dotnet build OniAccess/OniAccess.csproj -c Release
+```
+
+**Deploy command**:
+```bash
+DEST="$USERPROFILE/Documents/Klei/OxygenNotIncluded/mods/local/OniAccess"
+mkdir -p "$DEST/tolk/dist"
+cp OniAccess/bin/Release/net472/OniAccess.dll "$DEST/"
+cp OniAccess/mod_info.yaml "$DEST/"
+cp tolk/dist/* "$DEST/tolk/dist/"
+```
+
+**Known type conflicts with ONI assemblies** (pitfalls for all phases):
+- `Action` — ONI defines its own `Action` type that shadows `System.Action`. Always use `System.Action` explicitly.
+- `Input` — If your code is in namespace `OniAccess.Input`, bare `Input.GetKeyDown` resolves to the namespace, not `UnityEngine.Input`. Always fully qualify `UnityEngine.Input`.
+- `UnityEngine.InputLegacyModule` — Must be referenced in csproj; `UnityEngine.Input` is forwarded to this assembly.
+
 ## Constraints
 
 - **Engine**: Unity (C#), modded via Harmony patches on KMod.UserMod2 entry point
@@ -85,6 +113,7 @@ ONI has extensive hotkeys. Many are useless to blind players and can be overwrit
 - **Platform**: Windows only (Tolk is Windows-only)
 - **Distribution**: Steam Workshop if feasible, otherwise manual install. Decide later.
 - **No game source modification**: All changes via Harmony patches, reflection, and new components
+- **Build gate**: Every plan must compile successfully against game DLLs before being marked complete
 
 ## Key Decisions
 

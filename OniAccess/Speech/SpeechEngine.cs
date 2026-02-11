@@ -56,7 +56,7 @@ namespace OniAccess.Speech
         /// so SpeechCapture (Plan 03) can intercept speech output.
         /// The text passed is the final text that will be sent to Tolk.
         /// </summary>
-        internal static Action<string> OnSpeechOutput;
+        internal static System.Action<string> OnSpeechOutput;
 
         /// <summary>
         /// Initialize Tolk. Must be called after SetDllDirectory points

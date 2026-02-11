@@ -40,7 +40,7 @@ namespace OniAccess.Input
         public string Description { get; }
 
         /// <summary>Action to execute when the hotkey is triggered.</summary>
-        public Action Handler { get; }
+        public System.Action Handler { get; }
 
         /// <summary>
         /// Per META-05: document what this key originally did in the game, or null if unbound.
@@ -48,7 +48,7 @@ namespace OniAccess.Input
         public string OriginalFunction { get; }
 
         public HotkeyBinding(UnityEngine.KeyCode key, HotkeyModifier modifiers,
-            AccessContext context, string description, Action handler,
+            AccessContext context, string description, System.Action handler,
             string originalFunction = null)
         {
             Key = key;
@@ -178,7 +178,7 @@ namespace OniAccess.Input
             }
 
             _lastFireFrame[bestIndex] = currentFrame;
-            bestMatch.Handler?.Invoke();
+            if (bestMatch.Handler != null) bestMatch.Handler();
             return true;
         }
 
