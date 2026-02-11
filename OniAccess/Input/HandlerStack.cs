@@ -132,6 +132,29 @@ namespace OniAccess.Input
         }
 
         /// <summary>
+        /// Dispatch an unbound key (F12, arrows) through the stack top-to-bottom.
+        /// Each handler gets a chance to handle it. If a handler returns true,
+        /// the key is consumed and the walk stops. If a handler has CapturesAllInput=true
+        /// and doesn't consume, the walk still stops (key is blocked from lower
+        /// handlers and the game).
+        ///
+        /// Returns true if the key was consumed or blocked.
+        /// Returns false if no handler claimed it (key passes through to the game).
+        ///
+        /// Called by KeyPoller.Update() for keys with no ONI Action binding.
+        /// </summary>
+        public static bool DispatchUnboundKey(UnityEngine.KeyCode keyCode)
+        {
+            for (int i = _stack.Count - 1; i >= 0; i--)
+            {
+                var handler = _stack[i];
+                if (handler.HandleUnboundKey(keyCode)) return true;
+                if (handler.CapturesAllInput) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Clear the stack without calling any callbacks.
         /// Used for emergency cleanup only.
         /// </summary>
