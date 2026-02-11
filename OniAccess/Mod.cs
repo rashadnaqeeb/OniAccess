@@ -32,9 +32,11 @@ namespace OniAccess
             base.OnLoad(harmony);
 
             SpeechEngine.Initialize();
-            SpeechEngine.Say(
-                string.Format(STRINGS.ONIACCESS.SPEECH.MOD_LOADED, Version),
-                interrupt: true);
+            TextFilter.InitializeDefaults();
+
+            // All speech goes through the pipeline -- never call SpeechEngine.Say directly
+            SpeechPipeline.SpeakInterrupt(
+                string.Format(STRINGS.ONIACCESS.SPEECH.MOD_LOADED, Version));
 
             Localization.RegisterForTranslation(typeof(STRINGS.ONIACCESS));
 
