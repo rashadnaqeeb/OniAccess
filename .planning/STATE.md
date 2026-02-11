@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** A blind player can play a full colony with an experience designed for audio, not a translation of the visual interface.
-**Current focus:** Phase 2 - Input Architecture
+**Current focus:** Phase 3 - Menu Navigation
 
 ## Current Position
 
-Phase: 2 of 12 (Input Architecture) -- COMPLETE
-Plan: 2 of 2 in current phase (all plans complete)
-Status: Phase 02 complete, ready for Phase 03
-Last activity: 2026-02-11 -- Plan 02-02 (handlers, migration, cleanup) executed: 2 created, 4 modified, 3 deleted, builds clean
+Phase: 3 of 12 (Menu Navigation)
+Plan: 1 of 4 in current phase
+Status: Plan 03-01 complete (screen handler infrastructure), continuing to Plan 03-02
+Last activity: 2026-02-11 -- Plan 03-01 (screen handler infrastructure) executed: 5 created, 5 modified, builds clean
 
-Progress: [##........] 15%
+Progress: [##........] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 4min
-- Total execution time: 0.35 hours
+- Total plans completed: 6
+- Average duration: 5min
+- Total execution time: 0.52 hours
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [##........] 15%
 |-------|-------|-------|----------|
 | 01-foundation | 3 | 9min | 3min |
 | 02-input-architecture | 2 | 12min | 6min |
+| 03-menu-navigation | 1 | 10min | 10min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (4min), 01-03 (3min), 02-01 (7min), 02-02 (5min)
-- Trend: architecture work averaging 6min vs foundation 3min
+- Last 5 plans: 01-03 (3min), 02-01 (7min), 02-02 (5min), 03-01 (10min)
+- Trend: infrastructure plans growing as complexity increases
 
 *Updated after each plan completion*
 
@@ -76,6 +77,11 @@ Recent decisions affecting current work:
 - [02-02]: VanillaMode OFF speaks confirmation before deactivating handlers and disabling speech -- order prevents silent shutdown
 - [02-02]: VanillaMode ON sets flag first, enables speech, speaks, then detects state -- order ensures all systems ready before detection
 - [02-02]: Phase 1 input files (HotkeyRegistry, InputInterceptor, AccessContext) fully deleted with zero remaining references
+- [03-01]: Two-layer hierarchy: ScreenHandler (infrastructure) + BaseMenuHandler (1D nav) -- Phase 8 grid handlers extend ScreenHandler directly
+- [03-01]: ContextDetector uses ScreenHandler.Screen for deactivation matching -- works for any handler type, not just BaseMenuHandler
+- [03-01]: TypeAheadSearch HandleKey uses bool ctrlHeld/altHeld instead of KeyboardManager.KeyModifiers -- no dependency on unavailable type
+- [03-01]: Added UnityEngine.UI.dll and FMODUnity.dll to csproj -- required for KSlider/KToggle base types and KFMOD sounds
+- [03-01]: DetectAndActivate uses Harmony Traverse to access private KScreenManager.screenStack
 
 ### Pending Todos
 
@@ -90,5 +96,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 02-02-PLAN.md (handlers, migration, cleanup). Phase 02 complete. Ready for Phase 03.
+Stopped at: Completed 03-01-PLAN.md (screen handler infrastructure). Ready for 03-02 (main menu, pause, confirm dialog handlers).
 Resume file: None
