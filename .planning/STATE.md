@@ -9,29 +9,29 @@ See: .planning/PROJECT.md (updated 2026-02-11)
 
 ## Current Position
 
-Phase: 1 of 11 (Foundation)
-Plan: 2 of 3 in current phase
-Status: Executing phase
-Last activity: 2026-02-11 -- Completed 01-02-PLAN.md (speech pipeline, text filtering, alert history)
+Phase: 1 of 11 (Foundation) -- COMPLETE
+Plan: 3 of 3 in current phase (all complete)
+Status: Phase complete, ready for Phase 2
+Last activity: 2026-02-11 -- Completed 01-03-PLAN.md (vanilla mode toggle, hotkey system, input interception, speech capture)
 
-Progress: [##........] 6%
+Progress: [###.......] 9%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
+- Total plans completed: 3
 - Average duration: 3min
-- Total execution time: 0.10 hours
+- Total execution time: 0.15 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 2 | 6min | 3min |
+| 01-foundation | 3 | 9min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2min), 01-02 (4min)
-- Trend: --
+- Last 5 plans: 01-01 (2min), 01-02 (4min), 01-03 (3min)
+- Trend: stable ~3min/plan
 
 *Updated after each plan completion*
 
@@ -57,6 +57,10 @@ Recent decisions affecting current work:
 - [01-02]: Queue drained immediately on SpeakQueued -- Tolk handles pacing internally
 - [01-02]: AlertHistory uses injectable GetTime delegate for testability without Unity runtime
 - [01-02]: Interrupt speech does NOT go to alert history -- navigation is ephemeral
+- [01-03]: MonoBehaviour Update() approach for input interception instead of Harmony KInputHandler patches -- simpler for Phase 1
+- [01-03]: HotkeyModifier as Flags enum independent from ONI's Modifier enum
+- [01-03]: Frame dedup via Time.frameCount dictionary prevents multiple fires per frame per binding
+- [01-03]: Toggle off temporarily re-enables SpeechPipeline to speak confirmation before disabling
 
 ### Pending Todos
 
@@ -71,5 +75,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 01-02-PLAN.md
+Stopped at: Completed 01-03-PLAN.md (Phase 1 Foundation complete -- all 3 plans delivered)
 Resume file: None
