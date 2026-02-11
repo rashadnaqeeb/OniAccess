@@ -57,6 +57,11 @@ namespace OniAccess.Input
 
             if (HandlerStack.Count == 0) return;
 
+            // Tick handlers that need per-frame updates (e.g., WorldGenHandler progress)
+            var active = HandlerStack.ActiveHandler;
+            if (active is ITickable tickable)
+                tickable.Tick();
+
             // Poll each unbound key
             foreach (var key in PollKeys)
             {

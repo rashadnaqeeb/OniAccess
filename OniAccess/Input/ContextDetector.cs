@@ -81,15 +81,24 @@ namespace OniAccess.Input
             if (screen == null) return;
 
             var active = HandlerStack.ActiveHandler;
+
+            // Match ScreenHandler subclasses (BaseMenuHandler, etc.) by Screen property
             if (active is ScreenHandler screenHandler && screenHandler.Screen == screen)
             {
                 HandlerStack.Pop();
                 Util.Log.Debug($"Screen deactivating: {screen.GetType().Name} -> popped handler");
+                return;
             }
-            else
+
+            // Match non-ScreenHandler handlers that track their screen (e.g., WorldGenHandler)
+            if (active is Handlers.WorldGenHandler worldGenHandler && worldGenHandler.Screen == screen)
             {
-                Util.Log.Debug($"Screen deactivating (no matching handler): {screen.GetType().Name}");
+                HandlerStack.Pop();
+                Util.Log.Debug($"Screen deactivating: {screen.GetType().Name} -> popped WorldGenHandler");
+                return;
             }
+
+            Util.Log.Debug($"Screen deactivating (no matching handler): {screen.GetType().Name}");
         }
 
         /// <summary>
@@ -132,6 +141,10 @@ namespace OniAccess.Input
 
             // ColonyDestinationSelectScreen (asteroid selection, settings, seed)
             Register<ColonyDestinationSelectScreen>(screen => new Handlers.ColonySetupHandler(screen));
+
+            // WorldGenScreen (world generation progress -- no widgets, just progress polling)
+            var worldGenType = HarmonyLib.AccessTools.TypeByName("WorldGenScreen");
+            Register(worldGenType, screen => new Handlers.WorldGenHandler(screen));
 
             // MinionSelectScreen (CharacterSelectionController -> NewGameFlowScreen)
             // Handles both initial colony start and Printing Pod duplicant selection
