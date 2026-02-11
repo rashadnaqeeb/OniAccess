@@ -93,6 +93,39 @@ namespace OniAccess.Input
         }
 
         /// <summary>
+        /// Register all menu screen handlers for Phase 3 basic screens.
+        /// Called during mod initialization (Mod.OnLoad).
+        /// Future plans (03-03, 03-04) will add more registrations.
+        /// </summary>
+        public static void RegisterMenuHandlers()
+        {
+            // MainMenu (direct KScreen subclass, NOT KButtonMenu)
+            Register<MainMenu>(screen => new Handlers.MainMenuHandler(screen));
+
+            // PauseScreen (KModalButtonMenu)
+            Register<PauseScreen>(screen => new Handlers.PauseMenuHandler(screen));
+
+            // ConfirmDialogScreen (KModalScreen)
+            Register<ConfirmDialogScreen>(screen => new Handlers.ConfirmDialogHandler(screen));
+
+            // OptionsMenuScreen (KModalButtonMenu -- top-level options menu)
+            Register<OptionsMenuScreen>(screen => new Handlers.OptionsMenuHandler(screen));
+
+            // Options sub-screens may not have compile-time types available.
+            // Use AccessTools.TypeByName for runtime resolution and the non-generic Register overload.
+            var audioType = HarmonyLib.AccessTools.TypeByName("AudioOptionsScreen");
+            Register(audioType, screen => new Handlers.OptionsMenuHandler(screen));
+
+            var graphicsType = HarmonyLib.AccessTools.TypeByName("GraphicsOptionsScreen");
+            Register(graphicsType, screen => new Handlers.OptionsMenuHandler(screen));
+
+            var gameOptionsType = HarmonyLib.AccessTools.TypeByName("GameOptionsScreen");
+            Register(gameOptionsType, screen => new Handlers.OptionsMenuHandler(screen));
+
+            Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 basic handlers registered");
+        }
+
+        /// <summary>
         /// Detect current game state and activate the appropriate handler.
         /// Called when mod is toggled ON to determine what handler should be active.
         ///

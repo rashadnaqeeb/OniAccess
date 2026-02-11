@@ -42,6 +42,9 @@ namespace OniAccess
             UnityEngine.Object.DontDestroyOnLoad(go);
             go.AddComponent<KeyPoller>();
 
+            // Register screen-to-handler mappings for ContextDetector
+            ContextDetector.RegisterMenuHandlers();
+
             // Push initial WorldHandler -- the default "nothing special happening" handler
             // ModInputRouter will be registered later via Harmony patch on InputInit.Awake
             HandlerStack.Push(new WorldHandler());

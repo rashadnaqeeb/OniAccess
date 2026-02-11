@@ -25,6 +25,13 @@ namespace STRINGS
             public static LocString MAIN_MENU = "Main menu";
             public static LocString PAUSE_MENU = "Pause menu";
             public static LocString CONFIRM_DIALOG = "Confirm";
+            public static LocString OPTIONS = "Options";
+            public static LocString AUDIO_OPTIONS = "Audio options";
+            public static LocString GRAPHICS_OPTIONS = "Graphics options";
+            public static LocString GAME_OPTIONS = "Game options";
+            public static LocString GAME_MODE = "Game mode";
+            public static LocString COLONY_DESTINATION = "Colony destination";
+            public static LocString WORLD_GEN = "Generating world";
         }
 
         public class HELP
@@ -38,6 +45,14 @@ namespace STRINGS
             public static LocString ADJUST_VALUE_LARGE = "Adjust value, large step";
             public static LocString TYPE_SEARCH = "Type-ahead search";
             public static LocString READ_TOOLTIP = "Read tooltip";
+            public static LocString SWITCH_PANEL = "Switch panel";
+        }
+
+        public class PANELS
+        {
+            public static LocString CLUSTERS = "Clusters";
+            public static LocString SETTINGS = "Settings";
+            public static LocString SEED = "World seed";
         }
     }
 }
