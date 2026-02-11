@@ -4,11 +4,19 @@ namespace OniAccess.Input
 {
     /// <summary>
     /// Manages a stack of IAccessHandler instances.
-    /// The last element is the active handler that receives input events.
     ///
-    /// Push/Pop/Replace manage the handler lifecycle with proper OnActivate/OnDeactivate
-    /// callbacks. The handler stack represents the current input context hierarchy:
-    /// e.g., [WorldHandler] or [WorldHandler, MenuHandler] or [WorldHandler, MenuHandler, HelpHandler].
+    /// Input dispatch walks the stack top-to-bottom: the top handler gets first
+    /// refusal on every key event. If it doesn't consume the event and its
+    /// CapturesAllInput is false, the event falls through to the next handler down,
+    /// and so on. A handler with CapturesAllInput=true stops the walk -- unconsumed
+    /// keys are blocked from reaching handlers below or the game.
+    ///
+    /// Push/Pop/Replace manage the handler lifecycle with OnActivate/OnDeactivate
+    /// callbacks. Obscured handlers are NOT deactivated because they still participate
+    /// in fallthrough dispatch. OnDeactivate only fires when a handler is popped off.
+    ///
+    /// The stack represents the current input context hierarchy:
+    /// e.g., [WorldHandler] or [WorldHandler, BuildHandler] or [WorldHandler, BuildHandler, HelpHandler].
     ///
     /// All methods are safe for null/empty stack (no exceptions thrown).
     /// </summary>
@@ -28,10 +36,17 @@ namespace OniAccess.Input
         public static int Count => _stack.Count;
 
         /// <summary>
-        /// Push a handler onto the stack, making it the active handler.
+        /// Read-only view of the stack for dispatch iteration.
+        /// Index 0 is bottom (first pushed), index Count-1 is top (active).
+        /// ModInputRouter and KeyPoller walk this top-to-bottom.
+        /// </summary>
+        internal static IReadOnlyList<IAccessHandler> Handlers => _stack;
+
+        /// <summary>
+        /// Push a handler onto the stack, making it the top handler.
         /// Calls handler.OnActivate(). Does NOT call OnDeactivate on the previous
-        /// active handler -- it is just obscured, not removed. It will become active
-        /// again when the top handler is popped.
+        /// handler -- it still participates in fallthrough dispatch (unless the new
+        /// handler has CapturesAllInput=true). OnDeactivate only fires on Pop.
         /// </summary>
         public static void Push(IAccessHandler handler)
         {

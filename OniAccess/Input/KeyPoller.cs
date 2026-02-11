@@ -51,8 +51,8 @@ namespace OniAccess.Input
             // When mod is off, don't process anything else
             if (!VanillaMode.IsEnabled) return;
 
-            var handler = HandlerStack.ActiveHandler;
-            if (handler == null) return;
+            var handlers = HandlerStack.Handlers;
+            if (handlers.Count == 0) return;
 
             // Poll each unbound key
             foreach (var key in PollKeys)
@@ -63,7 +63,13 @@ namespace OniAccess.Input
                     // and will come through as KButtonEvents via ModInputRouter)
                     if (key == UnityEngine.KeyCode.F12 && AnyModifierHeld()) continue;
 
-                    handler.HandleUnboundKey(key);
+                    // Walk top-to-bottom, same as ModInputRouter
+                    for (int i = handlers.Count - 1; i >= 0; i--)
+                    {
+                        var handler = handlers[i];
+                        if (handler.HandleUnboundKey(key)) break;
+                        if (handler.CapturesAllInput) break;
+                    }
                 }
             }
         }

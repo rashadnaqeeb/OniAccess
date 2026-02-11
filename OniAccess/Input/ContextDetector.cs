@@ -50,7 +50,10 @@ namespace OniAccess.Input
             // Phase 3 will add:
             // 1. Check if Game.Instance exists (might be in main menu)
             // 2. Check KScreenManager screen stack for open screens
-            // 3. Push appropriate handler (WorldHandler as default, or menu handler if screen is open)
+            // 3. Push appropriate handler based on open screens instead of always WorldHandler
+
+            // Baseline: always have a WorldHandler so input handling works after toggle cycle
+            HandlerStack.Push(new WorldHandler());
         }
     }
 }

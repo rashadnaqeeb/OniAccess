@@ -7,9 +7,11 @@ namespace OniAccess.Input
     /// Receives every KButtonEvent before PlayerController (20), KScreenManager (10),
     /// CameraController (1), and DebugHandler (-1).
     ///
-    /// Delegates events to the active handler on HandlerStack. Supports two modes:
-    /// - Selective claim: handler decides what to consume via e.TryConsume
-    /// - Full capture: handler processes first, then all non-mouse keyboard events are consumed
+    /// Walks the handler stack top-to-bottom for each event. Each handler gets a
+    /// chance to consume the key. If it doesn't and CapturesAllInput is false, the
+    /// event falls through to the next handler. A CapturesAllInput handler stops
+    /// the walk -- unconsumed non-mouse keys are blocked from reaching handlers
+    /// below or the game.
     ///
     /// When VanillaMode is off, all events pass through untouched.
     /// </summary>
@@ -27,31 +29,25 @@ namespace OniAccess.Input
 
         public void OnKeyDown(KButtonEvent e)
         {
-            if (e.Consumed) return;
+            if (e.Consumed || !VanillaMode.IsEnabled) return;
 
-            // When mod is off, pass everything through
-            if (!VanillaMode.IsEnabled) return;
+            var handlers = HandlerStack.Handlers;
 
-            var handler = HandlerStack.ActiveHandler;
-            if (handler == null) return;
-
-            if (handler.CapturesAllInput)
+            // Walk top-to-bottom: top handler gets first refusal
+            for (int i = handlers.Count - 1; i >= 0; i--)
             {
-                // Full capture: handler processes first, then consume all non-mouse events
+                var handler = handlers[i];
                 handler.HandleKeyDown(e);
-                if (!e.Consumed)
+
+                if (e.Consumed) return;
+
+                // CapturesAllInput stops the walk -- block non-mouse keys
+                if (handler.CapturesAllInput)
                 {
-                    // Let mouse and zoom actions through -- per pitfall #6
                     if (!IsMouseOrZoomAction(e))
-                    {
                         e.Consumed = true;
-                    }
+                    return;
                 }
-            }
-            else
-            {
-                // Selective: handler decides what to consume via e.TryConsume
-                handler.HandleKeyDown(e);
             }
         }
 
@@ -59,20 +55,21 @@ namespace OniAccess.Input
         {
             if (e.Consumed || !VanillaMode.IsEnabled) return;
 
-            var handler = HandlerStack.ActiveHandler;
-            if (handler == null) return;
+            var handlers = HandlerStack.Handlers;
 
-            if (handler.CapturesAllInput)
+            for (int i = handlers.Count - 1; i >= 0; i--)
             {
+                var handler = handlers[i];
                 handler.HandleKeyUp(e);
-                if (!e.Consumed && !IsMouseOrZoomAction(e))
+
+                if (e.Consumed) return;
+
+                if (handler.CapturesAllInput)
                 {
-                    e.Consumed = true;
+                    if (!IsMouseOrZoomAction(e))
+                        e.Consumed = true;
+                    return;
                 }
-            }
-            else
-            {
-                handler.HandleKeyUp(e);
             }
         }
 

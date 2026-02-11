@@ -67,12 +67,12 @@ namespace OniAccess.Input
 
         public void OnActivate()
         {
-            // Speak "Help" then the first entry
+            // Speak "Help" then queue the first entry so both are heard
             Speech.SpeechPipeline.SpeakInterrupt(DisplayName);
             if (_entries.Count > 0)
             {
                 _currentIndex = 0;
-                SpeakCurrentEntry();
+                Speech.SpeechPipeline.SpeakQueued(_entries[_currentIndex].ToString());
             }
             else
             {

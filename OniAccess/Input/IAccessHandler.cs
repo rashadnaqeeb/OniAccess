@@ -4,12 +4,13 @@ namespace OniAccess.Input
     /// Interface for mod input handlers in the handler stack.
     ///
     /// Each game context (world view, menus, build mode, help list) has a handler
-    /// that implements this interface. The active handler receives key events from
-    /// ModInputRouter and unbound key events from KeyPoller.
+    /// that implements this interface. Input dispatch walks the stack top-to-bottom:
+    /// each handler gets a chance to consume the event. Unconsumed events fall
+    /// through to the next handler unless CapturesAllInput=true blocks fallthrough.
     ///
     /// Per locked decisions:
     /// - Selective claim by default: handler uses e.TryConsume to claim specific keys
-    /// - Full capture for menus: CapturesAllInput=true blocks all keyboard input
+    /// - Full capture for modals: CapturesAllInput=true blocks all keyboard fallthrough
     /// - Mode announcements interrupt current speech (OnActivate speaks DisplayName)
     /// - Name first, vary early: "Build menu" not "Menu, build"
     /// </summary>
@@ -22,11 +23,11 @@ namespace OniAccess.Input
         string DisplayName { get; }
 
         /// <summary>
-        /// Whether this handler captures ALL keyboard input (true for menus).
-        /// When true, ModInputRouter consumes all keyboard KButtonEvents after the handler
-        /// processes them, EXCEPT mouse actions (MouseLeft, MouseRight, MouseMiddle,
-        /// ShiftMouseLeft, ZoomIn, ZoomOut).
-        /// When false, only keys the handler explicitly consumes via e.TryConsume are blocked.
+        /// Whether this handler blocks fallthrough to handlers below it.
+        /// When true, unconsumed keyboard events stop here (not passed to lower handlers
+        /// or the game), EXCEPT mouse actions (MouseLeft, MouseRight, MouseMiddle,
+        /// ShiftMouseLeft, ZoomIn, ZoomOut). Use for modal contexts like help lists.
+        /// When false, unconsumed events fall through to the next handler down the stack.
         /// </summary>
         bool CapturesAllInput { get; }
 

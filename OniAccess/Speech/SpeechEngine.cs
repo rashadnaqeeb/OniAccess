@@ -129,7 +129,7 @@ namespace OniAccess.Speech
         /// </summary>
         /// <param name="text">Text to speak</param>
         /// <param name="interrupt">If true, interrupts any current speech</param>
-        public static void Say(string text, bool interrupt = true)
+        internal static void Say(string text, bool interrupt = true)
         {
             if (!_available || string.IsNullOrEmpty(text)) return;
 
