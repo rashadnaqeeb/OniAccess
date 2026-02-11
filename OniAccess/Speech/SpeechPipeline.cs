@@ -43,7 +43,7 @@ namespace OniAccess.Speech
             string filtered = TextFilter.FilterForSpeech(text);
             if (string.IsNullOrEmpty(filtered)) return;
 
-            SpeechEngine.Say(filtered, interrupt: true);
+            SpeechEngine.Say(filtered);
         }
 
         /// <summary>
