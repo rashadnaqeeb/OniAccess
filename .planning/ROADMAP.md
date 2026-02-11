@@ -148,11 +148,13 @@ Plans:
   5. User can cycle through active notifications with severity announced, and repeated alerts for the same issue are deduplicated
 **Plans**: TBD
 
+**Note**: Alert/notification speech infrastructure (queuing, dedup, priority, history buffer) must be designed in this phase based on how ONI's actual NotificationManager/Notification system works. No premature infrastructure exists -- SpeechPipeline currently only has SpeakInterrupt. Queue semantics, alert history, and dedup should be designed here when we understand the real data.
+
 Plans:
 - [ ] 07-01: Vitals and Consumables management screens
 - [ ] 07-02: Reports screen and colony statistics
 - [ ] 07-03: Research tree navigation and queue management
-- [ ] 07-04: Notification system -- alert cycling, severity, and deduplication
+- [ ] 07-04: Notification system -- hook ONI's NotificationManager, design alert speech queue, dedup, history, and cycling
 
 ### Phase 8: Duplicant Management
 **Goal**: A blind player can manage their duplicants as individuals -- querying status, adjusting the priority grid, editing schedules, assigning skills, and selecting new duplicants from the Printing Pod -- with enough information to make strategic workforce decisions

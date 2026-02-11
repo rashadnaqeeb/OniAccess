@@ -65,6 +65,8 @@ Recent decisions affecting current work:
 - [verify-01]: Always fully qualify UnityEngine.Input when in OniAccess.Input namespace -- bare Input resolves to the namespace
 - [verify-01]: UnityEngine.InputLegacyModule.dll must be referenced in csproj -- UnityEngine.Input is forwarded there
 - [verify-01]: Every plan must compile against game DLLs (ONI_MANAGED) before being marked complete -- no unverified code
+- [verify-01]: Stripped AlertHistory, Announcement, SpeechPriority, SpeakQueued -- premature infrastructure for Phase 7 built without understanding ONI's notification system. Design alert speech when we get there.
+- [verify-01]: No speculative infrastructure -- only build what the current phase needs
 
 ### Pending Todos
 
