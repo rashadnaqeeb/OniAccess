@@ -122,7 +122,25 @@ namespace OniAccess.Input
             var gameOptionsType = HarmonyLib.AccessTools.TypeByName("GameOptionsScreen");
             Register(gameOptionsType, screen => new Handlers.OptionsMenuHandler(screen));
 
-            Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 basic handlers registered");
+            // RetiredColonyInfoScreen (KModalScreen -- colony summary, MENU-09)
+            var retiredColonyType = HarmonyLib.AccessTools.TypeByName("RetiredColonyInfoScreen");
+            Register(retiredColonyType, screen => new Handlers.ColonySummaryHandler(screen));
+
+            // ClusterCategorySelectionScreen (game mode select -- Survival/No Sweat/Custom)
+            var clusterCategoryType = HarmonyLib.AccessTools.TypeByName("ClusterCategorySelectionScreen");
+            Register(clusterCategoryType, screen => new Handlers.ColonySetupHandler(screen));
+
+            // ColonyDestinationSelectScreen (asteroid selection, settings, seed)
+            Register<ColonyDestinationSelectScreen>(screen => new Handlers.ColonySetupHandler(screen));
+
+            // MinionSelectScreen (CharacterSelectionController -> NewGameFlowScreen)
+            // Handles both initial colony start and Printing Pod duplicant selection
+            Register<MinionSelectScreen>(screen => new Handlers.DuplicantSelectHandler(screen));
+
+            // LoadScreen (KModalScreen -- save/load with two-level colony/save navigation)
+            Register<LoadScreen>(screen => new Handlers.SaveLoadHandler(screen));
+
+            Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
         }
 
         /// <summary>
