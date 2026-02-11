@@ -55,10 +55,11 @@ Plans:
   4. The same physical key can do different things in different states (e.g., arrows navigate a menu list vs. move the world cursor) without any central enum or registry knowing about all states
   5. VanillaMode toggle (Ctrl+Shift+F12) disables the ENTIRE mod -- all input handlers deactivate, all keys pass through to the game, speech stops. Only the toggle hotkey itself remains active. It must not just mute speech while still intercepting keys.
   6. F12 help queries the currently active handler for its key list -- it does NOT dump a global registry. Each handler owns its own help text. If no handler is active, F12 reports only the global keys (toggle).
+  7. Game context detection mechanism is explicitly designed -- how the system detects state transitions (menu open/close, build mode enter/exit, tool change) and activates/deactivates handlers accordingly. This is the spine every later phase plugs into.
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Research ONI's KInputHandler system and decide approach (state machine vs IHandler stack vs hooking KInputHandler directly)
+- [ ] 02-01: Research ONI's KInputHandler system and decide approach (state machine vs IHandler stack vs hooking KInputHandler directly). MUST ALSO research game context detection -- how to detect screen lifecycle (KScreen OnActivate/OnDeactivate), tool changes, and mode transitions. Define the mechanism handlers use to self-activate.
 - [ ] 02-02: Implement input handler architecture, migrate toggle and help, remove old HotkeyRegistry/InputInterceptor
 - [ ] 02-03: Redesign VanillaMode to disable all mod input handling (not just speech), verify full passthrough
 - [ ] 02-04: Verify game key interception works (bind a game key, confirm game doesn't see it)
@@ -94,16 +95,19 @@ Plans:
   3. User can save named bookmarks at cursor position and teleport back to them later
   4. User can follow a duplicant so the cursor tracks their movement automatically
   5. Cursor announces world boundaries when reaching edges and reports coordinates on demand
+  6. Tile readout is a composable hub -- base readout (element, temperature, building) is built-in, but the system accepts pluggable data providers that later phases (Phase 6 overlays, etc.) register into. Moving the cursor queries all active providers and assembles the speech output.
 **Plans**: TBD
 
+**System note**: Plan 04-01 designs the tile readout as a pluggable composition system, not a hardcoded string builder. Phase 6 overlay extractors register as readout providers -- they don't retrofit the cursor. The readout hub is the central point all world-state speech flows through.
+
 Plans:
-- [ ] 04-01: Grid cursor movement, tile readout, and coordinate queries
+- [ ] 04-01: Grid cursor movement, composable tile readout hub (pluggable data providers), and coordinate queries
 - [ ] 04-02: Entity scanner -- category browsing, search, and jump-to
 - [ ] 04-03: Bookmarks, duplicant follow mode, and boundary handling
 
 ### Phase 5: Entity Inspection
 **Goal**: A blind player can inspect any entity in the world -- buildings with their status and settings side screens, critters with tame/wild status, plants with growth conditions, geysers with eruption cycles, and raw tile details -- to understand what is happening and why
-**Depends on**: Phase 4
+**Depends on**: Phases 3, 4
 **Requirements**: INSP-01, INSP-02, INSP-03, INSP-04, INSP-05, INSP-06, INSP-07
 **Success Criteria** (what must be TRUE):
   1. User can inspect any building and hear its status, contents, and active errands
@@ -113,7 +117,7 @@ Plans:
   5. User can inspect geysers/vents (output type, eruption cycle, dormancy) and raw tile cells (element, mass, temperature, germs)
 **Plans**: TBD
 
-**System note**: Plan 05-01 builds a generic DetailsScreen/TargetPanel reader that can read any entity's detail panel -- status items, tabs, properties. All entity types (buildings, duplicants, critters, plants, geysers, tiles) flow through the same DetailsScreen system. Per-entity plans configure what data to extract, not how to read it. Plan 05-02 builds a pluggable side screen adapter framework for the 100+ building side screen variants. Reused by Phases 11 and 12.
+**System note**: DetailsScreen is a KScreen subclass. Plan 05-01 builds on Phase 3's KScreen/widget reader for navigating tabs, status items, and side screen controls -- it does NOT rebuild screen-reading infrastructure. It adds entity-specific data extraction on top. Plan 05-02 builds a pluggable side screen adapter framework for the 100+ building side screen variants. Reused by Phases 11 and 12.
 
 Plans:
 - [ ] 05-01: DetailsScreen reader -- generic framework for reading entity detail panels, status items, and tab navigation
@@ -192,10 +196,10 @@ Plans:
   5. User can use the prioritize tool to change priority of existing errands in an area
 **Plans**: TBD
 
-**System note**: All area tools share DragTool/InterfaceTool base classes. Plan 09-01 builds the generic tool framework (activation, drag-select, area summary, confirmation, priority). Individual tools plug into this framework -- each tool defines what it does to selected tiles, not how drag-select works.
+**System note**: All area tools inherit DragTool, which inherits InterfaceTool. Plan 09-01 builds the framework at the InterfaceTool level (tool activation, deactivation, feedback patterns) and adds DragTool-specific features (area selection, tile summary, confirmation, priority) on top. Phase 10's BuildTool also inherits InterfaceTool -- it reuses the InterfaceTool-level patterns from this framework and only adds placement-specific behavior. Designing at InterfaceTool level prevents Phase 10 from rebuilding tool lifecycle management.
 
 Plans:
-- [ ] 09-01: DragTool accessibility framework -- tool activation, cursor-based area selection, tile summary, confirmation, and priority
+- [ ] 09-01: InterfaceTool/DragTool accessibility framework -- tool lifecycle at InterfaceTool level, cursor-based area selection and tile summary at DragTool level, confirmation, and priority
 - [ ] 09-02: Per-tool configurations -- dig, mop, sweep, harvest, capture, attack, disinfect, empty pipe, toggle, relocate, cancel, and prioritize
 
 ### Phase 10: Building & Construction

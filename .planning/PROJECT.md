@@ -75,7 +75,7 @@ Users are experienced screen reader users. Announce name, state, value — nothi
 - No type suffixes when obvious ("Lumber button")
 
 ### 4. Conscious hotkey management
-ONI has extensive hotkeys. Many are useless to blind players and can be overwritten. But every overwrite is a deliberate decision — document what the original hotkey did and why it's being replaced.
+ONI has extensive hotkeys. Many are useless to blind players and can be overwritten. But every overwrite is a deliberate decision — document what the original hotkey did and why it's being replaced. See `docs/hotkey-reference.md` for the complete ONI key binding map, safe keys, and screen reader keys to avoid.
 
 ## Build & Deploy
 
@@ -118,6 +118,7 @@ cp tolk/dist/* "$DEST/tolk/dist/"
 - **No speculative infrastructure**: Only build what the current phase needs. Infrastructure for future phases gets designed and built in those phases, when the actual requirements and game APIs are understood.
 - **User architecture decisions are final**: If the user specifies an architecture (state machine, handler pattern, etc.), that is the architecture. Raise concerns before building, not after.
 - **Design for scale**: This is a complex mod with 12 phases, 50+ plans, and hundreds of game systems to integrate. Every architectural decision must consider how it scales across the full project -- not just whether it works for the immediate task. Flat registries, central enums, and hardcoded state lists do not scale. Prefer patterns where each feature/phase owns its own behaviour and plugs into shared infrastructure without modifying it.
+- **Consult design docs before planning**: Read everything in `docs/` at the start of the discuss phase for any new phase. These contain prior analysis on accessibility patterns, ONI systems, and architectural decisions that should be the starting point for discussion, not rediscovered later.
 
 ## Key Decisions
 
