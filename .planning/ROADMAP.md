@@ -72,16 +72,15 @@ Plans:
   3. User can select starting duplicants by hearing each candidate's attributes, traits, and interests, then reroll or confirm
   4. User can save the game, browse existing saves and auto-saves, and load any save
   5. User can access context-sensitive help from any menu to hear available controls
-**Plans**: TBD
+**Plans**: 4 plans
 
 **System note**: Plan 03-01 builds a generic KScreen/widget accessibility layer that reads buttons, lists, toggles, sliders, labels from ANY KScreen and provides keyboard navigation within screens. This system is reused by Phases 7, 8, and 12 for their management screens -- they configure it, not rebuild it.
 
 Plans:
-- [ ] 03-01: KScreen accessibility layer -- generic widget reader and keyboard navigation for any KScreen subclass
-- [ ] 03-02: Apply to main menu, pause menu, and options screens
-- [ ] 03-03: New game flow -- game mode, asteroid selection, world customization
-- [ ] 03-04: Duplicant selection at colony start and Printing Pod
-- [ ] 03-05: Save/load system and colony summary screen
+- [ ] 03-01-PLAN.md -- Infrastructure: BaseMenuHandler, WidgetInfo, TypeAheadSearch port, ISearchable, KeyPoller extensions, ContextDetector registry
+- [ ] 03-02-PLAN.md -- Main menu, pause menu, options screens, and confirmation dialogs
+- [ ] 03-03-PLAN.md -- Colony setup flow: game mode, asteroid selection, world settings, world generation
+- [ ] 03-04-PLAN.md -- Duplicant selection and save/load system
 
 ### Phase 4: World Navigation
 **Goal**: A blind player can explore their colony world -- moving a cursor tile-by-tile, hearing what occupies each tile, finding specific entities by searching, bookmarking locations, and tracking duplicants -- all without needing to see the screen
@@ -260,7 +259,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | ✓ Complete | 2026-02-11 |
 | 2. Input Architecture | 2/2 | ✓ Complete | 2026-02-11 |
-| 3. Menu Navigation | 0/5 | Not started | - |
+| 3. Menu Navigation | 0/4 | Not started | - |
 | 4. World Navigation | 0/3 | Not started | - |
 | 5. Entity Inspection | 0/4 | Not started | - |
 | 6. Overlays & Environment | 0/5 | Not started | - |
