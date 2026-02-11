@@ -36,6 +36,7 @@ Progress: [###.......] 30%
 - Trend: handler plans stable at 6-7min, infrastructure plans at 10min
 
 *Updated after each plan completion*
+| Phase 03 P03 | 8min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,10 @@ Recent decisions affecting current work:
 - [03-04]: After reroll, speak name + interests + traits but stop at attributes (LooksLikeAttribute heuristic with +/- digit prefix)
 - [03-04]: SaveLoadHandler uses _inColonySaveView boolean and _pendingViewTransition flag for async two-level drill-down
 - [03-04]: Escape consumed in save view to go back to colony list instead of closing screen
+- [Phase 03]: [03-03]: ColonySetupHandler serves both ClusterCategorySelectionScreen and ColonyDestinationSelectScreen -- behavioral differences flow from which widgets are present
+- [Phase 03]: [03-03]: WorldGenHandler implements IAccessHandler + ITickable directly (not BaseMenuHandler) -- no widgets, just progress polling
+- [Phase 03]: [03-03]: ITickable interface for per-frame handler updates, KeyPoller calls Tick() before key polling
+- [Phase 03]: [03-03]: WidgetInfo.Tag property for handler-specific data (cluster keys for selection)
 
 ### Pending Todos
 
