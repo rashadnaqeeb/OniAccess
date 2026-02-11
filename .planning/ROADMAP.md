@@ -12,7 +12,7 @@ Oni-Access makes Oxygen Not Included playable by blind users through screen read
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Mod loads, speaks, and establishes architectural patterns for all subsequent work
+- [x] **Phase 1: Foundation** - Mod loads, speaks, and establishes architectural patterns for all subsequent work *(completed 2026-02-11)*
 - [ ] **Phase 2: Menu Navigation** - Player can navigate all menus to start and manage games
 - [ ] **Phase 3: World Navigation** - Player can explore the colony world tile-by-tile and find entities
 - [ ] **Phase 4: Entity Inspection** - Player can inspect any entity in the world for detailed status and settings
@@ -39,9 +39,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- Project scaffolding, mod entry point, and Tolk initialization
-- [ ] 01-02-PLAN.md -- Speech pipeline with text filtering, announcement infrastructure, and alert history buffer
-- [ ] 01-03-PLAN.md -- Vanilla mode toggle, hotkey system, input interception, and speech capture testing
+- [x] 01-01-PLAN.md -- Project scaffolding, mod entry point, and Tolk initialization
+- [x] 01-02-PLAN.md -- Speech pipeline with text filtering, announcement infrastructure, and alert history buffer
+- [x] 01-03-PLAN.md -- Vanilla mode toggle, hotkey system, input interception, and speech capture testing
 
 ### Phase 2: Menu Navigation
 **Goal**: A blind player can start a new colony from scratch -- navigating main menu, configuring game settings, selecting an asteroid, customizing the world, picking starting duplicants, and managing saves -- entirely through keyboard and speech
@@ -229,7 +229,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/3 | Planned | - |
+| 1. Foundation | 3/3 | ✓ Complete | 2026-02-11 |
 | 2. Menu Navigation | 0/5 | Not started | - |
 | 3. World Navigation | 0/3 | Not started | - |
 | 4. Entity Inspection | 0/5 | Not started | - |
