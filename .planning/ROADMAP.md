@@ -75,12 +75,14 @@ Plans:
   5. User can access context-sensitive help from any menu to hear available controls
 **Plans**: TBD
 
+**System note**: Plan 03-01 builds a generic KScreen/widget accessibility layer that reads buttons, lists, toggles, sliders, labels from ANY KScreen and provides keyboard navigation within screens. This system is reused by Phases 7, 8, and 12 for their management screens -- they configure it, not rebuild it.
+
 Plans:
-- [ ] 03-01: Main menu, pause menu, and options screen navigation
-- [ ] 03-02: New game flow -- game mode, asteroid selection, world customization
-- [ ] 03-03: Duplicant selection at colony start and Printing Pod
-- [ ] 03-04: Save/load system and colony summary screen
-- [ ] 03-05: Context-sensitive help system
+- [ ] 03-01: KScreen accessibility layer -- generic widget reader and keyboard navigation for any KScreen subclass
+- [ ] 03-02: Apply to main menu, pause menu, and options screens
+- [ ] 03-03: New game flow -- game mode, asteroid selection, world customization
+- [ ] 03-04: Duplicant selection at colony start and Printing Pod
+- [ ] 03-05: Save/load system and colony summary screen
 
 ### Phase 4: World Navigation
 **Goal**: A blind player can explore their colony world -- moving a cursor tile-by-tile, hearing what occupies each tile, finding specific entities by searching, bookmarking locations, and tracking duplicants -- all without needing to see the screen
@@ -111,12 +113,13 @@ Plans:
   5. User can inspect geysers/vents (output type, eruption cycle, dormancy) and raw tile cells (element, mass, temperature, germs)
 **Plans**: TBD
 
+**System note**: Plan 05-01 builds a generic DetailsScreen/TargetPanel reader that can read any entity's detail panel -- status items, tabs, properties. All entity types (buildings, duplicants, critters, plants, geysers, tiles) flow through the same DetailsScreen system. Per-entity plans configure what data to extract, not how to read it. Plan 05-02 builds a pluggable side screen adapter framework for the 100+ building side screen variants. Reused by Phases 11 and 12.
+
 Plans:
-- [ ] 05-01: Building inspection -- status, contents, errands readout
-- [ ] 05-02: Building side screen navigation and settings modification
-- [ ] 05-03: Duplicant detail panel inspection
-- [ ] 05-04: Critter, plant, and geyser inspection
-- [ ] 05-05: Tile cell detail inspection
+- [ ] 05-01: DetailsScreen reader -- generic framework for reading entity detail panels, status items, and tab navigation
+- [ ] 05-02: Side screen adapter system -- pluggable adapters for building side screen variants (filters, thresholds, assignments, etc.)
+- [ ] 05-03: Core entity readouts -- buildings (status, contents, errands), duplicants (bio, needs, health, equipment)
+- [ ] 05-04: Secondary entity readouts -- critters, plants, geysers, and raw tile cells
 
 ### Phase 6: Overlays & Environment
 **Goal**: A blind player can query the environmental data layers that are critical to colony survival -- oxygen levels, power networks, temperatures, pipe contents, room status -- by toggling speech overlays that enrich the cursor tile readout
@@ -130,16 +133,18 @@ Plans:
   5. When cursor enters a recognized room, user hears room type and status, and can query room requirements and missing items on demand
 **Plans**: TBD
 
+**System note**: Plan 06-01 builds a generic overlay data reader framework that hooks into OverlayModes.Mode, extracts data at cursor position for any active overlay, and integrates with the cursor readout from Phase 4. Per-overlay plans register data extractors into this framework -- each overlay is a pluggable extractor, not a hardcoded branch.
+
 Plans:
-- [ ] 06-01: Overlay toggle system and integration with cursor readout
-- [ ] 06-02: Core overlays -- oxygen, temperature, power
-- [ ] 06-03: Plumbing overlays -- liquid pipes, gas pipes, conduit networks
-- [ ] 06-04: Secondary overlays -- materials, light, decor, germs, farming, exosuit, conveyor, radiation
-- [ ] 06-05: Room recognition -- type announcement, requirements, and missing items
+- [ ] 06-01: Overlay data reader framework -- hooks into OverlayModes, pluggable per-overlay extractors, cursor readout integration
+- [ ] 06-02: Core overlay extractors -- oxygen, temperature, power
+- [ ] 06-03: Plumbing overlay extractors -- liquid pipes, gas pipes, conduit networks
+- [ ] 06-04: Secondary overlay extractors -- materials, light, decor, germs, farming, exosuit, conveyor, radiation
+- [ ] 06-05: Room recognition -- type, requirements, and missing items
 
 ### Phase 7: Colony Management & Notifications
 **Goal**: A blind player can monitor colony health through management screens (vitals, consumables, reports) and the research system, and stays informed of problems through a speech-based notification system that surfaces alerts without overwhelming
-**Depends on**: Phase 4
+**Depends on**: Phases 3, 4
 **Requirements**: COL-01, COL-02, COL-03, COL-04, COL-05, COL-06, COL-07
 **Success Criteria** (what must be TRUE):
   1. User can open the Vitals screen and hear each duplicant's health, stress, and key status indicators
@@ -149,17 +154,16 @@ Plans:
   5. User can cycle through active notifications with severity announced, and repeated alerts for the same issue are deduplicated
 **Plans**: TBD
 
-**Note**: Alert/notification speech infrastructure (queuing, dedup, priority, history buffer) must be designed in this phase based on how ONI's actual NotificationManager/Notification system works. No premature infrastructure exists -- SpeechPipeline currently only has SpeakInterrupt. Queue semantics, alert history, and dedup should be designed here when we understand the real data.
+**System note**: Vitals, Consumables, and Reports are KScreens -- they use the generic KScreen reader from Phase 3, not new screen-reading infrastructure. Research tree may need custom navigation since it's a tree, not a list. Notification system hooks ONI's NotificationManager and designs alert-specific speech (queuing, dedup, history) based on the actual game API -- no premature infrastructure exists.
 
 Plans:
-- [ ] 07-01: Vitals and Consumables management screens
-- [ ] 07-02: Reports screen and colony statistics
-- [ ] 07-03: Research tree navigation and queue management
-- [ ] 07-04: Notification system -- hook ONI's NotificationManager, design alert speech queue, dedup, history, and cycling
+- [ ] 07-01: Management screen configurations -- Vitals, Consumables, Reports using Phase 3 KScreen reader
+- [ ] 07-02: Research tree navigation and queue management
+- [ ] 07-03: Notification system -- hook ONI's NotificationManager, design alert speech with dedup and history
 
 ### Phase 8: Duplicant Management
 **Goal**: A blind player can manage their duplicants as individuals -- querying status, adjusting the priority grid, editing schedules, assigning skills, and selecting new duplicants from the Printing Pod -- with enough information to make strategic workforce decisions
-**Depends on**: Phases 4, 7
+**Depends on**: Phases 3, 4, 7
 **Requirements**: DUPE-01, DUPE-02, DUPE-03, DUPE-04, DUPE-05, DUPE-06
 **Success Criteria** (what must be TRUE):
   1. User can query any duplicant's current activity, location, stress, and health status
@@ -169,11 +173,12 @@ Plans:
   5. User can compare and select duplicant candidates at the Printing Pod every 3 cycles, hearing attributes, traits, and interests
 **Plans**: TBD
 
+**System note**: Priority grid and schedule editor are specialized 2D grid KScreens -- they use the Phase 3 KScreen reader for basic widget access but need custom grid navigation on top. Skill tree needs tree-walking navigation. Duplicant status queries use the Phase 5 DetailsScreen reader.
+
 Plans:
-- [ ] 08-01: Duplicant status queries and attribute/trait/interest readout
-- [ ] 08-02: Priority grid navigation and editing
-- [ ] 08-03: Schedule editor and skill assignment
-- [ ] 08-04: Printing Pod candidate comparison and selection
+- [ ] 08-01: 2D grid navigation system for priority and schedule screens (built on Phase 3 KScreen reader)
+- [ ] 08-02: Priority grid and schedule editor configurations
+- [ ] 08-03: Skill tree navigation and Printing Pod candidate comparison
 
 ### Phase 9: Area Tools
 **Goal**: A blind player can use all area-selection tools to interact with and modify the existing world -- digging, mopping, sweeping, harvesting, capturing critters, attacking, disinfecting, emptying pipes, and other drag-over-area commands -- with clear feedback about what is being targeted and ordered
@@ -187,11 +192,11 @@ Plans:
   5. User can use the prioritize tool to change priority of existing errands in an area
 **Plans**: TBD
 
+**System note**: All area tools share DragTool/InterfaceTool base classes. Plan 09-01 builds the generic tool framework (activation, drag-select, area summary, confirmation, priority). Individual tools plug into this framework -- each tool defines what it does to selected tiles, not how drag-select works.
+
 Plans:
-- [ ] 09-01: Area tool selection, activation feedback, and shared drag-select infrastructure
-- [ ] 09-02: Core area tools -- dig, mop, sweep, and cancel
-- [ ] 09-03: Biological area tools -- harvest, capture, attack, and wrangle
-- [ ] 09-04: Utility area tools -- disinfect, empty pipe, toggle, relocate, and prioritize
+- [ ] 09-01: DragTool accessibility framework -- tool activation, cursor-based area selection, tile summary, confirmation, and priority
+- [ ] 09-02: Per-tool configurations -- dig, mop, sweep, harvest, capture, attack, disinfect, empty pipe, toggle, relocate, cancel, and prioritize
 
 ### Phase 10: Building & Construction
 **Goal**: A blind player can construct their colony -- navigating build categories, placing buildings with rotation, routing pipes and wires, and deconstructing -- with clear feedback about placement validity and material costs
@@ -229,7 +234,7 @@ Plans:
 
 ### Phase 12: DLC Content
 **Goal**: A blind player can access all Spaced Out and Bionic Booster Pack content -- building rockets, navigating the starmap, managing multiple asteroid colonies, and using bionic systems -- extending full accessibility to every DLC feature
-**Depends on**: Phases 5, 10, 8
+**Depends on**: Phases 3, 5, 8, 10
 **Requirements**: DLC-01, DLC-02, DLC-03, DLC-04
 **Success Criteria** (what must be TRUE):
   1. User can build and configure rockets using the rocket construction interface with all components announced
@@ -255,11 +260,11 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 2. Input Architecture | 0/4 | Not started | - |
 | 3. Menu Navigation | 0/5 | Not started | - |
 | 4. World Navigation | 0/3 | Not started | - |
-| 5. Entity Inspection | 0/5 | Not started | - |
+| 5. Entity Inspection | 0/4 | Not started | - |
 | 6. Overlays & Environment | 0/5 | Not started | - |
-| 7. Colony Management & Notifications | 0/4 | Not started | - |
-| 8. Duplicant Management | 0/4 | Not started | - |
-| 9. Area Tools | 0/4 | Not started | - |
+| 7. Colony Management & Notifications | 0/3 | Not started | - |
+| 8. Duplicant Management | 0/3 | Not started | - |
+| 9. Area Tools | 0/2 | Not started | - |
 | 10. Building & Construction | 0/4 | Not started | - |
 | 11. Ranching & Automation | 0/4 | Not started | - |
 | 12. DLC Content | 0/4 | Not started | - |
