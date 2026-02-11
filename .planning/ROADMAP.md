@@ -47,20 +47,21 @@ Plans:
 ### Phase 2: Input Architecture
 **Goal**: Replace the flat HotkeyRegistry and InputInterceptor MonoBehaviour with a proper input handler system -- either a state machine or an IInputHandler stack -- that intercepts keys before ONI processes them, routes input based on game state (world map vs menu vs build mode), and lets each game context own its own key handling
 **Depends on**: Phase 1
-**Requirements**: INPUT-01 (input handler architecture), INPUT-02 (game key interception), INPUT-03 (state-aware routing)
+**Requirements**: INPUT-01 (input handler architecture), INPUT-02 (game key interception), INPUT-03 (state-aware routing), INPUT-04 (VanillaMode disables everything), INPUT-05 (context-aware help)
 **Success Criteria** (what must be TRUE):
   1. Input handlers can register/deregister themselves based on game state (e.g., a menu handler activates when a menu opens, deactivates when it closes)
   2. Keys claimed by a handler do NOT reach ONI's own input system -- the game never sees them
   3. Unclaimed keys pass through to the game normally
   4. The same physical key can do different things in different states (e.g., arrows navigate a menu list vs. move the world cursor) without any central enum or registry knowing about all states
-  5. VanillaMode toggle (Ctrl+Shift+F12) still works and bypasses all other handlers
-  6. F12 context help still works and dynamically reports keys available in the current state
+  5. VanillaMode toggle (Ctrl+Shift+F12) disables the ENTIRE mod -- all input handlers deactivate, all keys pass through to the game, speech stops. Only the toggle hotkey itself remains active. It must not just mute speech while still intercepting keys.
+  6. F12 help queries the currently active handler for its key list -- it does NOT dump a global registry. Each handler owns its own help text. If no handler is active, F12 reports only the global keys (toggle).
 **Plans**: TBD
 
 Plans:
 - [ ] 02-01: Research ONI's KInputHandler system and decide approach (state machine vs IHandler stack vs hooking KInputHandler directly)
 - [ ] 02-02: Implement input handler architecture, migrate toggle and help, remove old HotkeyRegistry/InputInterceptor
-- [ ] 02-03: Verify game key interception works (bind a game key, confirm game doesn't see it)
+- [ ] 02-03: Redesign VanillaMode to disable all mod input handling (not just speech), verify full passthrough
+- [ ] 02-04: Verify game key interception works (bind a game key, confirm game doesn't see it)
 
 ### Phase 3: Menu Navigation
 **Goal**: A blind player can start a new colony from scratch -- navigating main menu, configuring game settings, selecting an asteroid, customizing the world, picking starting duplicants, and managing saves -- entirely through keyboard and speech
@@ -251,7 +252,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | ✓ Complete | 2026-02-11 |
-| 2. Input Architecture | 0/3 | Not started | - |
+| 2. Input Architecture | 0/4 | Not started | - |
 | 3. Menu Navigation | 0/5 | Not started | - |
 | 4. World Navigation | 0/3 | Not started | - |
 | 5. Entity Inspection | 0/5 | Not started | - |
