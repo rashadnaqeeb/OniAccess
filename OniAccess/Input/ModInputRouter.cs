@@ -44,7 +44,7 @@ namespace OniAccess.Input
                 // CapturesAllInput stops the walk -- block non-mouse keys
                 if (handler.CapturesAllInput)
                 {
-                    if (!IsMouseOrZoomAction(e))
+                    if (!IsPassThroughAction(e))
                         e.Consumed = true;
                     return;
                 }
@@ -66,7 +66,7 @@ namespace OniAccess.Input
 
                 if (handler.CapturesAllInput)
                 {
-                    if (!IsMouseOrZoomAction(e))
+                    if (!IsPassThroughAction(e))
                         e.Consumed = true;
                     return;
                 }
@@ -74,14 +74,18 @@ namespace OniAccess.Input
         }
 
         /// <summary>
-        /// Check if the event is a mouse or zoom action that should pass through
-        /// even in full-capture mode. Per pitfall #6: full capture must not block mouse.
+        /// Check if the event is an action that should pass through even in
+        /// full-capture mode. Includes mouse/zoom (pitfall #6) and Escape.
+        /// Escape must reach game screens so KScreen.OnKeyDown can call Deactivate(),
+        /// which fires our Harmony patch, which pops the handler. Handlers that need
+        /// to intercept Escape consume it in HandleKeyDown before this check runs.
         /// </summary>
-        private static bool IsMouseOrZoomAction(KButtonEvent e)
+        private static bool IsPassThroughAction(KButtonEvent e)
         {
             return e.IsAction(Action.MouseLeft) || e.IsAction(Action.MouseRight)
                 || e.IsAction(Action.MouseMiddle) || e.IsAction(Action.ShiftMouseLeft)
-                || e.IsAction(Action.ZoomIn) || e.IsAction(Action.ZoomOut);
+                || e.IsAction(Action.ZoomIn) || e.IsAction(Action.ZoomOut)
+                || e.IsAction(Action.Escape);
         }
     }
 }

@@ -4,55 +4,144 @@ namespace OniAccess.Input
     /// Static class that receives screen lifecycle events from Harmony patches and
     /// determines which handler to activate on the HandlerStack.
     ///
-    /// Phase 2 implements a minimal skeleton -- logging screen activations/deactivations
-    /// for debugging. Phase 3 will add specific screen-to-handler mappings.
+    /// Uses a type-safe registry mapping KScreen types to handler factories.
+    /// When a registered screen activates, creates and pushes a handler.
+    /// When a screen deactivates, pops the handler if it matches the top of stack.
+    /// Unregistered screens are silently ignored (structural UI, not interactive menus).
     ///
     /// Called from InputArchPatches (KScreen.Activate postfix, KScreen.Deactivate prefix).
     /// </summary>
     public static class ContextDetector
     {
         /// <summary>
+        /// Registry mapping KScreen types to handler factory functions.
+        /// Populated during mod initialization by concrete handler registration.
+        /// </summary>
+        private static readonly System.Collections.Generic.Dictionary<System.Type, System.Func<KScreen, IAccessHandler>> _registry
+            = new System.Collections.Generic.Dictionary<System.Type, System.Func<KScreen, IAccessHandler>>();
+
+        /// <summary>
+        /// Register a screen type to handler factory mapping.
+        /// Generic overload for compile-time type safety.
+        /// </summary>
+        /// <typeparam name="TScreen">The KScreen subclass to register.</typeparam>
+        /// <param name="factory">Factory function that creates a handler for the screen.</param>
+        public static void Register<TScreen>(System.Func<KScreen, IAccessHandler> factory) where TScreen : KScreen
+        {
+            _registry[typeof(TScreen)] = factory;
+            Util.Log.Debug($"ContextDetector.Register: {typeof(TScreen).Name}");
+        }
+
+        /// <summary>
+        /// Register a screen type to handler factory mapping.
+        /// Non-generic overload for runtime-resolved types (e.g., AccessTools.TypeByName).
+        /// </summary>
+        /// <param name="screenType">The screen type to register.</param>
+        /// <param name="factory">Factory function that creates a handler for the screen.</param>
+        public static void Register(System.Type screenType, System.Func<KScreen, IAccessHandler> factory)
+        {
+            if (screenType == null)
+            {
+                Util.Log.Warn("ContextDetector.Register called with null screenType");
+                return;
+            }
+            _registry[screenType] = factory;
+            Util.Log.Debug($"ContextDetector.Register: {screenType.Name}");
+        }
+
+        /// <summary>
         /// Called from Harmony postfix on KScreen.Activate.
-        /// Phase 2: log the activation for debugging.
-        /// Phase 3 will map specific screens to handlers and push/replace on HandlerStack.
+        /// Looks up the screen type in the registry. If found, creates and pushes a handler.
+        /// Unregistered screens are silently ignored (structural UI like FrontEndBackground).
         /// </summary>
         public static void OnScreenActivated(KScreen screen)
         {
             if (screen == null) return;
-            Util.Log.Debug($"Screen activated: {screen.GetType().Name}");
-            // Phase 3 will add: determine handler from screen type, push/replace on HandlerStack
+
+            var screenType = screen.GetType();
+            if (!_registry.TryGetValue(screenType, out var factory))
+            {
+                Util.Log.Debug($"Screen activated (no handler): {screenType.Name}");
+                return;
+            }
+
+            var handler = factory(screen);
+            HandlerStack.Push(handler);
+            Util.Log.Debug($"Screen activated: {screenType.Name} -> pushed handler");
         }
 
         /// <summary>
         /// Called from Harmony prefix on KScreen.Deactivate.
-        /// Phase 2: log the deactivation.
-        /// Phase 3 will pop/switch handlers based on which screen is closing.
+        /// Pops the handler only if the active handler is a ScreenHandler whose Screen
+        /// property matches the deactivating screen. This prevents popping the wrong handler
+        /// when structural screens deactivate.
         /// </summary>
         public static void OnScreenDeactivating(KScreen screen)
         {
             if (screen == null) return;
-            Util.Log.Debug($"Screen deactivating: {screen.GetType().Name}");
-            // Phase 3 will add: pop handler if this screen's handler is on top of stack
+
+            var active = HandlerStack.ActiveHandler;
+            if (active is ScreenHandler screenHandler && screenHandler.Screen == screen)
+            {
+                HandlerStack.Pop();
+                Util.Log.Debug($"Screen deactivating: {screen.GetType().Name} -> popped handler");
+            }
+            else
+            {
+                Util.Log.Debug($"Screen deactivating (no matching handler): {screen.GetType().Name}");
+            }
         }
 
         /// <summary>
         /// Detect current game state and activate the appropriate handler.
         /// Called when mod is toggled ON to determine what handler should be active.
         ///
-        /// Phase 2: logs the call for debugging. No handlers are pushed because
-        /// concrete handler implementations (WorldHandler, etc.) are Phase 3.
-        /// Phase 3 will examine KScreenManager.Instance.screenStack for open screens
-        /// and push the appropriate handler.
+        /// Checks KScreenManager screen stack for any open registered screens.
+        /// If found, creates and pushes the handler. Otherwise, pushes WorldHandler as baseline.
+        /// screenStack is private, so we use Harmony Traverse to access it.
         /// </summary>
         public static void DetectAndActivate()
         {
             Util.Log.Debug("ContextDetector.DetectAndActivate called");
-            // Phase 3 will add:
-            // 1. Check if Game.Instance exists (might be in main menu)
-            // 2. Check KScreenManager screen stack for open screens
-            // 3. Push appropriate handler based on open screens instead of always WorldHandler
 
-            // Baseline: always have a WorldHandler so input handling works after toggle cycle
+            // Check KScreenManager for open registered screens
+            // screenStack is a private field -- access via Harmony Traverse
+            if (KScreenManager.Instance != null)
+            {
+                try
+                {
+                    var screenStack = HarmonyLib.Traverse.Create(KScreenManager.Instance)
+                        .Field<System.Collections.Generic.List<KScreen>>("screenStack").Value;
+
+                    if (screenStack != null)
+                    {
+                        // Walk from top of screen stack looking for registered screens
+                        for (int i = screenStack.Count - 1; i >= 0; i--)
+                        {
+                            var entry = screenStack[i];
+                            if (entry == null) continue;
+
+                            var screenType = entry.GetType();
+                            if (_registry.TryGetValue(screenType, out var factory))
+                            {
+                                // Found a registered screen -- push WorldHandler first as baseline,
+                                // then push the screen handler on top
+                                HandlerStack.Push(new WorldHandler());
+                                var handler = factory(entry);
+                                HandlerStack.Push(handler);
+                                Util.Log.Debug($"DetectAndActivate: found {screenType.Name}, pushed handler");
+                                return;
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Util.Log.Warn($"DetectAndActivate: failed to read screenStack: {ex.Message}");
+                }
+            }
+
+            // Baseline: WorldHandler so input handling works after toggle cycle
             HandlerStack.Push(new WorldHandler());
         }
     }

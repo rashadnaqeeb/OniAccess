@@ -30,6 +30,10 @@ namespace OniAccess.Input
             UnityEngine.KeyCode.DownArrow,
             UnityEngine.KeyCode.LeftArrow,
             UnityEngine.KeyCode.RightArrow,
+            UnityEngine.KeyCode.Home,
+            UnityEngine.KeyCode.End,
+            UnityEngine.KeyCode.Tab,
+            UnityEngine.KeyCode.Return,
         };
 
         private void Awake()
