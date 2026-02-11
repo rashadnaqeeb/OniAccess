@@ -56,13 +56,11 @@ Plans:
   5. VanillaMode toggle (Ctrl+Shift+F12) disables the ENTIRE mod -- all input handlers deactivate, all keys pass through to the game, speech stops. Only the toggle hotkey itself remains active. It must not just mute speech while still intercepting keys.
   6. F12 help queries the currently active handler for its key list -- it does NOT dump a global registry. Each handler owns its own help text. If no handler is active, F12 reports only the global keys (toggle).
   7. Game context detection mechanism is explicitly designed -- how the system detects state transitions (menu open/close, build mode enter/exit, tool change) and activates/deactivates handlers accordingly. This is the spine every later phase plugs into.
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Research ONI's KInputHandler system and decide approach (state machine vs IHandler stack vs hooking KInputHandler directly). MUST ALSO research game context detection -- how to detect screen lifecycle (KScreen OnActivate/OnDeactivate), tool changes, and mode transitions. Define the mechanism handlers use to self-activate.
-- [ ] 02-02: Implement input handler architecture, migrate toggle and help, remove old HotkeyRegistry/InputInterceptor
-- [ ] 02-03: Redesign VanillaMode to disable all mod input handling (not just speech), verify full passthrough
-- [ ] 02-04: Verify game key interception works (bind a game key, confirm game doesn't see it)
+- [ ] 02-01-PLAN.md -- Core input infrastructure: IAccessHandler interface, ModInputRouter (IInputHandler at priority 50), HandlerStack, KeyPoller for unbound keys, ContextDetector, Harmony patches for InputInit.Awake and KScreen lifecycle
+- [ ] 02-02-PLAN.md -- Handlers and migration: WorldHandler, HelpHandler (navigable F12 list), VanillaMode redesign (full handler stack disable/enable), Mod.cs migration, delete old Phase 1 input files
 
 ### Phase 3: Menu Navigation
 **Goal**: A blind player can start a new colony from scratch -- navigating main menu, configuring game settings, selecting an asteroid, customizing the world, picking starting duplicants, and managing saves -- entirely through keyboard and speech
@@ -261,7 +259,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | ✓ Complete | 2026-02-11 |
-| 2. Input Architecture | 0/4 | Not started | - |
+| 2. Input Architecture | 0/2 | Not started | - |
 | 3. Menu Navigation | 0/5 | Not started | - |
 | 4. World Navigation | 0/3 | Not started | - |
 | 5. Entity Inspection | 0/4 | Not started | - |
