@@ -29,6 +29,7 @@ namespace STRINGS
             public static LocString AUDIO_OPTIONS = "Audio options";
             public static LocString GRAPHICS_OPTIONS = "Graphics options";
             public static LocString GAME_OPTIONS = "Game options";
+            public static LocString COLONY_SUMMARY = "Colony summary";
             public static LocString GAME_MODE = "Game mode";
             public static LocString COLONY_DESTINATION = "Colony destination";
             public static LocString WORLD_GEN = "Generating world";

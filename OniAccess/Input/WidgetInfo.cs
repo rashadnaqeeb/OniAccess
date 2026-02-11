@@ -39,5 +39,11 @@ namespace OniAccess.Input
         /// The widget's GameObject, for tooltip access and hierarchy queries.
         /// </summary>
         public UnityEngine.GameObject GameObject { get; set; }
+
+        /// <summary>
+        /// Optional handler-specific data attached to this widget.
+        /// Used by ColonySetupHandler to store cluster keys for activation.
+        /// </summary>
+        public object Tag { get; set; }
     }
 }
