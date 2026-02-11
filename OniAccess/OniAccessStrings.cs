@@ -32,6 +32,8 @@ namespace STRINGS
             public static LocString GAME_MODE = "Game mode";
             public static LocString COLONY_DESTINATION = "Colony destination";
             public static LocString WORLD_GEN = "Generating world";
+            public static LocString DUPLICANT_SELECT = "Select duplicants";
+            public static LocString SAVE_LOAD = "Save and load";
         }
 
         public class HELP
@@ -46,6 +48,7 @@ namespace STRINGS
             public static LocString TYPE_SEARCH = "Type-ahead search";
             public static LocString READ_TOOLTIP = "Read tooltip";
             public static LocString SWITCH_PANEL = "Switch panel";
+            public static LocString SWITCH_DUPE_SLOT = "Switch duplicant slot";
         }
 
         public class PANELS
