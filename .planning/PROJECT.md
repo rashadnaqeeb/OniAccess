@@ -114,6 +114,10 @@ cp tolk/dist/* "$DEST/tolk/dist/"
 - **Distribution**: Steam Workshop if feasible, otherwise manual install. Decide later.
 - **No game source modification**: All changes via Harmony patches, reflection, and new components
 - **Build gate**: Every plan must compile successfully against game DLLs before being marked complete
+- **Deploy gate**: Every phase must deploy to the mods directory and load in-game before being marked complete
+- **No speculative infrastructure**: Only build what the current phase needs. Infrastructure for future phases gets designed and built in those phases, when the actual requirements and game APIs are understood.
+- **User architecture decisions are final**: If the user specifies an architecture (state machine, handler pattern, etc.), that is the architecture. Raise concerns before building, not after.
+- **Design for scale**: This is a complex mod with 12 phases, 50+ plans, and hundreds of game systems to integrate. Every architectural decision must consider how it scales across the full project -- not just whether it works for the immediate task. Flat registries, central enums, and hardcoded state lists do not scale. Prefer patterns where each feature/phase owns its own behaviour and plugs into shared infrastructure without modifying it.
 
 ## Key Decisions
 
