@@ -34,6 +34,19 @@
 - [ ] **NAV-06**: User can follow a duplicant (cursor tracks their movement)
 - [ ] **NAV-07**: Cursor respects world boundaries and announces edges
 
+### Area Tools
+
+- [ ] **AREA-01**: User can select any area tool from the tools toolbar and hear which tool is active
+- [ ] **AREA-02**: User can drag-select a rectangular area and hear a summary of affected tiles/entities
+- [ ] **AREA-03**: User can use the disinfect tool on an area to order germ removal
+- [ ] **AREA-04**: User can use the capture/wrangle tool on an area to order critter capture
+- [ ] **AREA-05**: User can use the harvest tool on an area to order plant harvesting
+- [ ] **AREA-06**: User can use the attack tool on an area to order critter attacks
+- [ ] **AREA-07**: User can use the empty pipe tool on an area to order pipe emptying
+- [ ] **AREA-08**: User can use the toggle and relocate tools on area targets
+- [ ] **BUILD-08**: User can cancel pending build/dig orders
+- [ ] **BUILD-10**: User can use dig, mop, sweep, and other tool commands
+
 ### Building & Construction
 
 - [ ] **BUILD-01**: User can navigate 15 build categories and browse buildings within each
@@ -43,9 +56,7 @@
 - [ ] **BUILD-05**: User can route pipes and wires tile-by-tile with connection feedback
 - [ ] **BUILD-06**: User can drag-to-build for tiles, pipes, and wires
 - [ ] **BUILD-07**: User can deconstruct buildings
-- [ ] **BUILD-08**: User can cancel pending build/dig orders
 - [ ] **BUILD-09**: User can set build priority on placement
-- [ ] **BUILD-10**: User can use dig, mop, sweep, and other tool commands
 
 ### Entity Inspection
 
@@ -151,88 +162,96 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | — | Pending |
-| FOUND-02 | — | Pending |
-| FOUND-03 | — | Pending |
-| FOUND-04 | — | Pending |
-| MENU-01 | — | Pending |
-| MENU-02 | — | Pending |
-| MENU-03 | — | Pending |
-| MENU-04 | — | Pending |
-| MENU-05 | — | Pending |
-| MENU-06 | — | Pending |
-| MENU-07 | — | Pending |
-| MENU-08 | — | Pending |
-| MENU-09 | — | Pending |
-| NAV-01 | — | Pending |
-| NAV-02 | — | Pending |
-| NAV-03 | — | Pending |
-| NAV-04 | — | Pending |
-| NAV-05 | — | Pending |
-| NAV-06 | — | Pending |
-| NAV-07 | — | Pending |
-| BUILD-01 | — | Pending |
-| BUILD-02 | — | Pending |
-| BUILD-03 | — | Pending |
-| BUILD-04 | — | Pending |
-| BUILD-05 | — | Pending |
-| BUILD-06 | — | Pending |
-| BUILD-07 | — | Pending |
-| BUILD-08 | — | Pending |
-| BUILD-09 | — | Pending |
-| BUILD-10 | — | Pending |
-| INSP-01 | — | Pending |
-| INSP-02 | — | Pending |
-| INSP-03 | — | Pending |
-| INSP-04 | — | Pending |
-| INSP-05 | — | Pending |
-| INSP-06 | — | Pending |
-| INSP-07 | — | Pending |
-| DUPE-01 | — | Pending |
-| DUPE-02 | — | Pending |
-| DUPE-03 | — | Pending |
-| DUPE-04 | — | Pending |
-| DUPE-05 | — | Pending |
-| DUPE-06 | — | Pending |
-| COL-01 | — | Pending |
-| COL-02 | — | Pending |
-| COL-03 | — | Pending |
-| COL-04 | — | Pending |
-| COL-05 | — | Pending |
-| COL-06 | — | Pending |
-| COL-07 | — | Pending |
-| ENV-01 | — | Pending |
-| ENV-02 | — | Pending |
-| ENV-03 | — | Pending |
-| ENV-04 | — | Pending |
-| ENV-05 | — | Pending |
-| ENV-06 | — | Pending |
-| ENV-07 | — | Pending |
-| ENV-08 | — | Pending |
-| ENV-09 | — | Pending |
-| ENV-10 | — | Pending |
-| AUTO-01 | — | Pending |
-| AUTO-02 | — | Pending |
-| AUTO-03 | — | Pending |
-| AUTO-04 | — | Pending |
-| RANCH-01 | — | Pending |
-| RANCH-02 | — | Pending |
-| RANCH-03 | — | Pending |
-| DLC-01 | — | Pending |
-| DLC-02 | — | Pending |
-| DLC-03 | — | Pending |
-| DLC-04 | — | Pending |
-| META-01 | — | Pending |
-| META-02 | — | Pending |
-| META-03 | — | Pending |
-| META-04 | — | Pending |
-| META-05 | — | Pending |
+| FOUND-01 | Phase 1 | Pending |
+| FOUND-02 | Phase 1 | Pending |
+| FOUND-03 | Phase 1 | Pending |
+| FOUND-04 | Phase 1 | Pending |
+| MENU-01 | Phase 2 | Pending |
+| MENU-02 | Phase 2 | Pending |
+| MENU-03 | Phase 2 | Pending |
+| MENU-04 | Phase 2 | Pending |
+| MENU-05 | Phase 2 | Pending |
+| MENU-06 | Phase 2 | Pending |
+| MENU-07 | Phase 2 | Pending |
+| MENU-08 | Phase 2 | Pending |
+| MENU-09 | Phase 2 | Pending |
+| NAV-01 | Phase 3 | Pending |
+| NAV-02 | Phase 3 | Pending |
+| NAV-03 | Phase 3 | Pending |
+| NAV-04 | Phase 3 | Pending |
+| NAV-05 | Phase 3 | Pending |
+| NAV-06 | Phase 3 | Pending |
+| NAV-07 | Phase 3 | Pending |
+| INSP-01 | Phase 4 | Pending |
+| INSP-02 | Phase 4 | Pending |
+| INSP-03 | Phase 4 | Pending |
+| INSP-04 | Phase 4 | Pending |
+| INSP-05 | Phase 4 | Pending |
+| INSP-06 | Phase 4 | Pending |
+| INSP-07 | Phase 4 | Pending |
+| ENV-01 | Phase 5 | Pending |
+| ENV-02 | Phase 5 | Pending |
+| ENV-03 | Phase 5 | Pending |
+| ENV-04 | Phase 5 | Pending |
+| ENV-05 | Phase 5 | Pending |
+| ENV-06 | Phase 5 | Pending |
+| ENV-07 | Phase 5 | Pending |
+| ENV-08 | Phase 5 | Pending |
+| ENV-09 | Phase 5 | Pending |
+| ENV-10 | Phase 5 | Pending |
+| COL-01 | Phase 6 | Pending |
+| COL-02 | Phase 6 | Pending |
+| COL-03 | Phase 6 | Pending |
+| COL-04 | Phase 6 | Pending |
+| COL-05 | Phase 6 | Pending |
+| COL-06 | Phase 6 | Pending |
+| COL-07 | Phase 6 | Pending |
+| DUPE-01 | Phase 7 | Pending |
+| DUPE-02 | Phase 7 | Pending |
+| DUPE-03 | Phase 7 | Pending |
+| DUPE-04 | Phase 7 | Pending |
+| DUPE-05 | Phase 7 | Pending |
+| DUPE-06 | Phase 7 | Pending |
+| AREA-01 | Phase 8 | Pending |
+| AREA-02 | Phase 8 | Pending |
+| AREA-03 | Phase 8 | Pending |
+| AREA-04 | Phase 8 | Pending |
+| AREA-05 | Phase 8 | Pending |
+| AREA-06 | Phase 8 | Pending |
+| AREA-07 | Phase 8 | Pending |
+| AREA-08 | Phase 8 | Pending |
+| BUILD-08 | Phase 8 | Pending |
+| BUILD-10 | Phase 8 | Pending |
+| BUILD-01 | Phase 9 | Pending |
+| BUILD-02 | Phase 9 | Pending |
+| BUILD-03 | Phase 9 | Pending |
+| BUILD-04 | Phase 9 | Pending |
+| BUILD-05 | Phase 9 | Pending |
+| BUILD-06 | Phase 9 | Pending |
+| BUILD-07 | Phase 9 | Pending |
+| BUILD-09 | Phase 9 | Pending |
+| AUTO-01 | Phase 10 | Pending |
+| AUTO-02 | Phase 10 | Pending |
+| AUTO-03 | Phase 10 | Pending |
+| AUTO-04 | Phase 10 | Pending |
+| RANCH-01 | Phase 10 | Pending |
+| RANCH-02 | Phase 10 | Pending |
+| RANCH-03 | Phase 10 | Pending |
+| DLC-01 | Phase 11 | Pending |
+| DLC-02 | Phase 11 | Pending |
+| DLC-03 | Phase 11 | Pending |
+| DLC-04 | Phase 11 | Pending |
+| META-01 | Phase 2 | Pending |
+| META-02 | Phase 1 | Pending |
+| META-03 | Phase 1 | Pending |
+| META-04 | Phase 1 | Pending |
+| META-05 | Phase 1 | Pending |
 
 **Coverage:**
-- v1 requirements: 72 total
-- Mapped to phases: 0
-- Unmapped: 72 (pending roadmap creation)
+- v1 requirements: 84 total
+- Mapped to phases: 84
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-11*
-*Last updated: 2026-02-11 after initial definition*
+*Last updated: 2026-02-11 after roadmap revision (Duplicant Management to Phase 7, new Area Tools Phase 8, Building to Phase 9)*
