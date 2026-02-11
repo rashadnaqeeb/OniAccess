@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-02-11)
 ## Current Position
 
 Phase: 1 of 11 (Foundation)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: Executing phase
-Last activity: 2026-02-11 -- Completed 01-01-PLAN.md (project scaffolding, speech engine)
+Last activity: 2026-02-11 -- Completed 01-02-PLAN.md (speech pipeline, text filtering, alert history)
 
-Progress: [#.........] 3%
+Progress: [##........] 6%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 2min
-- Total execution time: 0.03 hours
+- Total plans completed: 2
+- Average duration: 3min
+- Total execution time: 0.10 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 1 | 2min | 2min |
+| 01-foundation | 2 | 6min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2min)
+- Last 5 plans: 01-01 (2min), 01-02 (4min)
 - Trend: --
 
 *Updated after each plan completion*
@@ -53,6 +53,10 @@ Recent decisions affecting current work:
 - [01-01]: Tolk_Silence for Stop() instead of empty string Tolk_Output -- cleaner API usage
 - [01-01]: OnSpeechOutput callback as internal Action<string> for test capture hook point
 - [01-01]: RegisterForTranslation called in OnLoad to enable community translations
+- [01-02]: Sprite replacement appends trailing space for clean word separation, normalized by whitespace step
+- [01-02]: Queue drained immediately on SpeakQueued -- Tolk handles pacing internally
+- [01-02]: AlertHistory uses injectable GetTime delegate for testability without Unity runtime
+- [01-02]: Interrupt speech does NOT go to alert history -- navigation is ephemeral
 
 ### Pending Todos
 
@@ -67,5 +71,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 01-01-PLAN.md
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
