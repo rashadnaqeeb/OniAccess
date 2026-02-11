@@ -1,51 +1,56 @@
+using OniAccess.Input;
 using OniAccess.Speech;
 
 namespace OniAccess.Toggle
 {
     /// <summary>
-    /// Mod on/off toggle with clean state management.
+    /// Mod on/off toggle with full handler-stack integration.
     ///
     /// Per locked decisions:
-    /// - Toggle off: "Oni-Access off" -- speech stops, only toggle hotkey remains active
-    /// - Toggle on: "Oni-Access on" -- brief confirmation, no state readout
-    /// - Only the toggle hotkey remains active when mod is off (AccessContext.Always)
-    /// - No separate mute function
-    ///
-    /// When the mod is toggled off:
-    /// 1. A confirmation message ("Oni-Access off") is spoken
-    /// 2. SpeechPipeline is disabled (all subsequent speech calls return immediately)
-    /// 3. Only AccessContext.Always bindings fire (the toggle hotkey itself)
-    /// 4. Game returns to normal behavior with no errors
+    /// - Toggle OFF: speak "Oni-Access off" THEN full disable (deactivate all handlers,
+    ///   stop speech, set flag). Speech must happen BEFORE disable.
+    /// - Toggle ON: set flag first, enable speech, speak "Oni-Access on", detect current
+    ///   state and activate handler. NO state dump.
+    /// - No background work when off -- full stop.
+    /// - Only Ctrl+Shift+F12 remains active when mod is off (handled by KeyPoller directly).
     /// </summary>
     public static class VanillaMode
     {
         /// <summary>
         /// Whether the mod is currently enabled. Starts ON.
-        /// When false, SpeechPipeline rejects all speech and HotkeyRegistry
-        /// only fires Always-context bindings.
+        /// When false, ModInputRouter passes all keys through and KeyPoller
+        /// only checks Ctrl+Shift+F12.
         /// </summary>
         public static bool IsEnabled { get; private set; } = true;
 
         /// <summary>
-        /// Toggle the mod on or off.
-        /// Speaks confirmation via SpeechPipeline before changing state.
+        /// Toggle the mod on or off. Called by KeyPoller on Ctrl+Shift+F12.
         /// </summary>
         public static void Toggle()
         {
-            IsEnabled = !IsEnabled;
-            SpeechPipeline.SetEnabled(IsEnabled);
-
             if (IsEnabled)
             {
-                SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SPEECH.MOD_ON);
+                // Turning OFF
+                // 1. Speak confirmation WHILE pipeline is still active
+                SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SPEECH.MOD_OFF);
+                // 2. Deactivate all handlers (calls OnDeactivate on active, clears stack)
+                HandlerStack.DeactivateAll();
+                // 3. Disable speech pipeline (all subsequent calls are no-ops)
+                SpeechPipeline.SetEnabled(false);
+                // 4. Set flag last -- ModInputRouter checks this to pass all keys through
+                IsEnabled = false;
             }
             else
             {
-                // Must temporarily re-enable pipeline to speak the "off" message,
-                // then disable again after the message is dispatched to Tolk
+                // Turning ON
+                // 1. Set flag first -- enables ModInputRouter and KeyPoller processing
+                IsEnabled = true;
+                // 2. Enable speech pipeline
                 SpeechPipeline.SetEnabled(true);
-                SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SPEECH.MOD_OFF);
-                SpeechPipeline.SetEnabled(false);
+                // 3. Speak confirmation only -- no state dump per locked decision
+                SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SPEECH.MOD_ON);
+                // 4. Detect current game state and activate appropriate handler
+                ContextDetector.DetectAndActivate();
             }
         }
     }

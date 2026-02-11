@@ -7,12 +7,10 @@ namespace OniAccess.Patches
     /// <summary>
     /// Harmony patches for input and lifecycle events.
     ///
-    /// Phase 1: With the MonoBehaviour approach for input (InputInterceptor),
-    /// we don't need input Harmony patches. This file contains the lifecycle
-    /// patch to ensure Tolk is properly unloaded when the game shuts down.
-    ///
-    /// Future phases may add input-related patches here if the MonoBehaviour
-    /// approach proves insufficient for complex input routing.
+    /// Harmony patches for lifecycle events.
+    /// Input-related patches (ModInputRouter registration, KScreen context detection)
+    /// are in InputArchPatches.cs. This file contains the lifecycle patch to ensure
+    /// Tolk is properly unloaded when the game shuts down.
     /// </summary>
 
     /// <summary>
