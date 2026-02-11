@@ -9,6 +9,8 @@ namespace STRINGS
             public static LocString MOD_LOADED = "Oni-Access version {0} loaded";
             public static LocString MOD_ON = "Oni-Access on";
             public static LocString MOD_OFF = "Oni-Access off";
+            public static LocString HELP_HEADER = "Available commands:";
+            public static LocString NO_COMMANDS = "No commands available in this context";
         }
 
         public class HOTKEYS
