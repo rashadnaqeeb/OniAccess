@@ -9,30 +9,30 @@ See: .planning/PROJECT.md (updated 2026-02-11)
 
 ## Current Position
 
-Phase: 2 of 12 (Input Architecture) -- IN PROGRESS
-Plan: 1 of 2 in current phase
-Status: Plan 02-01 complete, ready for Plan 02-02
-Last activity: 2026-02-11 -- Plan 02-01 (input architecture core) executed: 7 files created, builds against game DLLs
+Phase: 2 of 12 (Input Architecture) -- COMPLETE
+Plan: 2 of 2 in current phase (all plans complete)
+Status: Phase 02 complete, ready for Phase 03
+Last activity: 2026-02-11 -- Plan 02-02 (handlers, migration, cleanup) executed: 2 created, 4 modified, 3 deleted, builds clean
 
-Progress: [##........] 12%
+Progress: [##........] 15%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 4min
-- Total execution time: 0.27 hours
+- Total execution time: 0.35 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 3 | 9min | 3min |
-| 02-input-architecture | 1 | 7min | 7min |
+| 02-input-architecture | 2 | 12min | 6min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2min), 01-02 (4min), 01-03 (3min), 02-01 (7min)
-- Trend: slight increase for architecture work
+- Last 5 plans: 01-02 (4min), 01-03 (3min), 02-01 (7min), 02-02 (5min)
+- Trend: architecture work averaging 6min vs foundation 3min
 
 *Updated after each plan completion*
 
@@ -72,6 +72,10 @@ Recent decisions affecting current work:
 - [02-01]: ContextDetector.DetectAndActivate is a no-op in Phase 2 -- concrete handlers are Phase 3, no speculative infrastructure
 - [02-01]: KeyPoller handles Ctrl+Shift+F12 toggle directly -- must work when mod is off, outside the handler system
 - [02-01]: Mouse and zoom actions always pass through in full-capture mode -- 6 Action types checked to prevent blocking clicks
+- [02-02]: WorldHandler pushes HelpHandler directly with own HelpEntries -- handler-to-handler composition via HandlerStack
+- [02-02]: VanillaMode OFF speaks confirmation before deactivating handlers and disabling speech -- order prevents silent shutdown
+- [02-02]: VanillaMode ON sets flag first, enables speech, speaks, then detects state -- order ensures all systems ready before detection
+- [02-02]: Phase 1 input files (HotkeyRegistry, InputInterceptor, AccessContext) fully deleted with zero remaining references
 
 ### Pending Todos
 
@@ -86,5 +90,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 02-01-PLAN.md (input architecture core). Ready for 02-02-PLAN.md (migration and cleanup).
+Stopped at: Completed 02-02-PLAN.md (handlers, migration, cleanup). Phase 02 complete. Ready for Phase 03.
 Resume file: None
