@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Mod loads, speaks, and establishes architectural patterns for all subsequent work *(completed 2026-02-11)*
 - [x] **Phase 2: Input Architecture** - Replace flat hotkey registry with proper input handler system that intercepts keys before the game sees them *(completed 2026-02-11)*
-- [ ] **Phase 3: Menu Navigation** - Player can navigate all menus to start and manage games
+- [x] **Phase 3: Menu Navigation** - Player can navigate all menus to start and manage games *(completed 2026-02-11)*
 - [ ] **Phase 4: World Navigation** - Player can explore the colony world tile-by-tile and find entities
 - [ ] **Phase 5: Entity Inspection** - Player can inspect any entity in the world for detailed status and settings
 - [ ] **Phase 6: Overlays & Environment** - Player can query environmental data layers and room information at cursor
@@ -259,7 +259,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | ✓ Complete | 2026-02-11 |
 | 2. Input Architecture | 2/2 | ✓ Complete | 2026-02-11 |
-| 3. Menu Navigation | 0/4 | Not started | - |
+| 3. Menu Navigation | 4/4 | ✓ Complete | 2026-02-11 |
 | 4. World Navigation | 0/3 | Not started | - |
 | 5. Entity Inspection | 0/4 | Not started | - |
 | 6. Overlays & Environment | 0/5 | Not started | - |
