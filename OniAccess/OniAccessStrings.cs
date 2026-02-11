@@ -18,5 +18,17 @@ namespace STRINGS
             public static LocString TOGGLE_MOD = "Toggle Oni-Access on/off";
             public static LocString CONTEXT_HELP = "Show available commands";
         }
+
+        public class HANDLERS
+        {
+            public static LocString WORLD_VIEW = "World view";
+            public static LocString HELP = "Help";
+        }
+
+        public class HELP
+        {
+            public static LocString NAVIGATE = "Step through help entries";
+            public static LocString CLOSE = "Close help";
+        }
     }
 }
