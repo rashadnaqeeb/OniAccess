@@ -47,6 +47,22 @@ namespace OniAccess.Speech
         }
 
         /// <summary>
+        /// Queue mode: speak after any current speech finishes, without interrupting.
+        /// Used when multiple pieces of info should be spoken in sequence
+        /// (e.g., menu name followed by first item, tile element + temperature + building).
+        /// </summary>
+        /// <param name="text">Raw text (will be filtered through TextFilter).</param>
+        public static void SpeakQueued(string text)
+        {
+            if (!_enabled) return;
+
+            string filtered = TextFilter.FilterForSpeech(text);
+            if (string.IsNullOrEmpty(filtered)) return;
+
+            SpeechEngine.Say(filtered, interrupt: false);
+        }
+
+        /// <summary>
         /// Stop all speech.
         /// </summary>
         public static void Silence()
