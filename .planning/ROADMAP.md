@@ -2,7 +2,7 @@
 
 ## Overview
 
-Oni-Access makes Oxygen Not Included playable by blind users through screen reader speech output. The roadmap follows an "observe before act" principle: first establish speech and mod loading, then enable reading game state (menus, world, entity details, overlays, colony data), then manage duplicants (workforce control before construction), then interact with the existing world via area tools, and only then build new structures. DLC content comes last after the base game is fully accessible.
+Oni-Access makes Oxygen Not Included playable by blind users through screen reader speech output. The roadmap follows an "observe before act" principle: first establish speech and mod loading, then fix the input architecture to properly intercept and route keys, then enable reading game state (menus, world, entity details, overlays, colony data), then manage duplicants (workforce control before construction), then interact with the existing world via area tools, and only then build new structures. DLC content comes last after the base game is fully accessible.
 
 ## Phases
 
@@ -13,16 +13,17 @@ Oni-Access makes Oxygen Not Included playable by blind users through screen read
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Mod loads, speaks, and establishes architectural patterns for all subsequent work *(completed 2026-02-11)*
-- [ ] **Phase 2: Menu Navigation** - Player can navigate all menus to start and manage games
-- [ ] **Phase 3: World Navigation** - Player can explore the colony world tile-by-tile and find entities
-- [ ] **Phase 4: Entity Inspection** - Player can inspect any entity in the world for detailed status and settings
-- [ ] **Phase 5: Overlays & Environment** - Player can query environmental data layers and room information at cursor
-- [ ] **Phase 6: Colony Management & Notifications** - Player can read colony-wide screens and stay aware of alerts
-- [ ] **Phase 7: Duplicant Management** - Player can manage duplicant priorities, schedules, skills, and assignments
-- [ ] **Phase 8: Area Tools** - Player can use area-selection tools to modify the existing world
-- [ ] **Phase 9: Building & Construction** - Player can place, configure, and remove buildings and infrastructure
-- [ ] **Phase 10: Ranching & Automation** - Player can manage critters and configure automation networks
-- [ ] **Phase 11: DLC Content** - Player can access Spaced Out rocketry, starmap, multi-asteroid, and Bionic Booster Pack
+- [ ] **Phase 2: Input Architecture** - Replace flat hotkey registry with proper input handler system that intercepts keys before the game sees them
+- [ ] **Phase 3: Menu Navigation** - Player can navigate all menus to start and manage games
+- [ ] **Phase 4: World Navigation** - Player can explore the colony world tile-by-tile and find entities
+- [ ] **Phase 5: Entity Inspection** - Player can inspect any entity in the world for detailed status and settings
+- [ ] **Phase 6: Overlays & Environment** - Player can query environmental data layers and room information at cursor
+- [ ] **Phase 7: Colony Management & Notifications** - Player can read colony-wide screens and stay aware of alerts
+- [ ] **Phase 8: Duplicant Management** - Player can manage duplicant priorities, schedules, skills, and assignments
+- [ ] **Phase 9: Area Tools** - Player can use area-selection tools to modify the existing world
+- [ ] **Phase 10: Building & Construction** - Player can place, configure, and remove buildings and infrastructure
+- [ ] **Phase 11: Ranching & Automation** - Player can manage critters and configure automation networks
+- [ ] **Phase 12: DLC Content** - Player can access Spaced Out rocketry, starmap, multi-asteroid, and Bionic Booster Pack
 
 ## Phase Details
 
@@ -43,9 +44,27 @@ Plans:
 - [x] 01-02-PLAN.md -- Speech pipeline with text filtering, announcement infrastructure, and alert history buffer
 - [x] 01-03-PLAN.md -- Vanilla mode toggle, hotkey system, input interception, and speech capture testing
 
-### Phase 2: Menu Navigation
-**Goal**: A blind player can start a new colony from scratch -- navigating main menu, configuring game settings, selecting an asteroid, customizing the world, picking starting duplicants, and managing saves -- entirely through keyboard and speech
+### Phase 2: Input Architecture
+**Goal**: Replace the flat HotkeyRegistry and InputInterceptor MonoBehaviour with a proper input handler system -- either a state machine or an IInputHandler stack -- that intercepts keys before ONI processes them, routes input based on game state (world map vs menu vs build mode), and lets each game context own its own key handling
 **Depends on**: Phase 1
+**Requirements**: INPUT-01 (input handler architecture), INPUT-02 (game key interception), INPUT-03 (state-aware routing)
+**Success Criteria** (what must be TRUE):
+  1. Input handlers can register/deregister themselves based on game state (e.g., a menu handler activates when a menu opens, deactivates when it closes)
+  2. Keys claimed by a handler do NOT reach ONI's own input system -- the game never sees them
+  3. Unclaimed keys pass through to the game normally
+  4. The same physical key can do different things in different states (e.g., arrows navigate a menu list vs. move the world cursor) without any central enum or registry knowing about all states
+  5. VanillaMode toggle (Ctrl+Shift+F12) still works and bypasses all other handlers
+  6. F12 context help still works and dynamically reports keys available in the current state
+**Plans**: TBD
+
+Plans:
+- [ ] 02-01: Research ONI's KInputHandler system and decide approach (state machine vs IHandler stack vs hooking KInputHandler directly)
+- [ ] 02-02: Implement input handler architecture, migrate toggle and help, remove old HotkeyRegistry/InputInterceptor
+- [ ] 02-03: Verify game key interception works (bind a game key, confirm game doesn't see it)
+
+### Phase 3: Menu Navigation
+**Goal**: A blind player can start a new colony from scratch -- navigating main menu, configuring game settings, selecting an asteroid, customizing the world, picking starting duplicants, and managing saves -- entirely through keyboard and speech
+**Depends on**: Phase 2
 **Requirements**: MENU-01, MENU-02, MENU-03, MENU-04, MENU-05, MENU-06, MENU-07, MENU-08, MENU-09, META-01
 **Success Criteria** (what must be TRUE):
   1. User can launch game, hear main menu options, and select any menu item with keyboard
@@ -56,15 +75,15 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Main menu, pause menu, and options screen navigation
-- [ ] 02-02: New game flow -- game mode, asteroid selection, world customization
-- [ ] 02-03: Duplicant selection at colony start and Printing Pod
-- [ ] 02-04: Save/load system and colony summary screen
-- [ ] 02-05: Context-sensitive help system
+- [ ] 03-01: Main menu, pause menu, and options screen navigation
+- [ ] 03-02: New game flow -- game mode, asteroid selection, world customization
+- [ ] 03-03: Duplicant selection at colony start and Printing Pod
+- [ ] 03-04: Save/load system and colony summary screen
+- [ ] 03-05: Context-sensitive help system
 
-### Phase 3: World Navigation
+### Phase 4: World Navigation
 **Goal**: A blind player can explore their colony world -- moving a cursor tile-by-tile, hearing what occupies each tile, finding specific entities by searching, bookmarking locations, and tracking duplicants -- all without needing to see the screen
-**Depends on**: Phase 2
+**Depends on**: Phase 3
 **Requirements**: NAV-01, NAV-02, NAV-03, NAV-04, NAV-05, NAV-06, NAV-07
 **Success Criteria** (what must be TRUE):
   1. User can move cursor with arrow keys and hear tile contents (element, temperature, building, key state) on every step
@@ -75,13 +94,13 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 03-01: Grid cursor movement, tile readout, and coordinate queries
-- [ ] 03-02: Entity scanner -- category browsing, search, and jump-to
-- [ ] 03-03: Bookmarks, duplicant follow mode, and boundary handling
+- [ ] 04-01: Grid cursor movement, tile readout, and coordinate queries
+- [ ] 04-02: Entity scanner -- category browsing, search, and jump-to
+- [ ] 04-03: Bookmarks, duplicant follow mode, and boundary handling
 
-### Phase 4: Entity Inspection
+### Phase 5: Entity Inspection
 **Goal**: A blind player can inspect any entity in the world -- buildings with their status and settings side screens, critters with tame/wild status, plants with growth conditions, geysers with eruption cycles, and raw tile details -- to understand what is happening and why
-**Depends on**: Phase 3
+**Depends on**: Phase 4
 **Requirements**: INSP-01, INSP-02, INSP-03, INSP-04, INSP-05, INSP-06, INSP-07
 **Success Criteria** (what must be TRUE):
   1. User can inspect any building and hear its status, contents, and active errands
@@ -92,15 +111,15 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 04-01: Building inspection -- status, contents, errands readout
-- [ ] 04-02: Building side screen navigation and settings modification
-- [ ] 04-03: Duplicant detail panel inspection
-- [ ] 04-04: Critter, plant, and geyser inspection
-- [ ] 04-05: Tile cell detail inspection
+- [ ] 05-01: Building inspection -- status, contents, errands readout
+- [ ] 05-02: Building side screen navigation and settings modification
+- [ ] 05-03: Duplicant detail panel inspection
+- [ ] 05-04: Critter, plant, and geyser inspection
+- [ ] 05-05: Tile cell detail inspection
 
-### Phase 5: Overlays & Environment
+### Phase 6: Overlays & Environment
 **Goal**: A blind player can query the environmental data layers that are critical to colony survival -- oxygen levels, power networks, temperatures, pipe contents, room status -- by toggling speech overlays that enrich the cursor tile readout
-**Depends on**: Phase 3
+**Depends on**: Phase 4
 **Requirements**: ENV-01, ENV-02, ENV-03, ENV-04, ENV-05, ENV-06, ENV-07, ENV-08, ENV-09, ENV-10
 **Success Criteria** (what must be TRUE):
   1. User can toggle speech overlays on/off and the cursor readout includes active overlay data alongside base tile info
@@ -111,15 +130,15 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 05-01: Overlay toggle system and integration with cursor readout
-- [ ] 05-02: Core overlays -- oxygen, temperature, power
-- [ ] 05-03: Plumbing overlays -- liquid pipes, gas pipes, conduit networks
-- [ ] 05-04: Secondary overlays -- materials, light, decor, germs, farming, exosuit, conveyor, radiation
-- [ ] 05-05: Room recognition -- type announcement, requirements, and missing items
+- [ ] 06-01: Overlay toggle system and integration with cursor readout
+- [ ] 06-02: Core overlays -- oxygen, temperature, power
+- [ ] 06-03: Plumbing overlays -- liquid pipes, gas pipes, conduit networks
+- [ ] 06-04: Secondary overlays -- materials, light, decor, germs, farming, exosuit, conveyor, radiation
+- [ ] 06-05: Room recognition -- type announcement, requirements, and missing items
 
-### Phase 6: Colony Management & Notifications
+### Phase 7: Colony Management & Notifications
 **Goal**: A blind player can monitor colony health through management screens (vitals, consumables, reports) and the research system, and stays informed of problems through a speech-based notification system that surfaces alerts without overwhelming
-**Depends on**: Phase 3
+**Depends on**: Phase 4
 **Requirements**: COL-01, COL-02, COL-03, COL-04, COL-05, COL-06, COL-07
 **Success Criteria** (what must be TRUE):
   1. User can open the Vitals screen and hear each duplicant's health, stress, and key status indicators
@@ -130,14 +149,14 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 06-01: Vitals and Consumables management screens
-- [ ] 06-02: Reports screen and colony statistics
-- [ ] 06-03: Research tree navigation and queue management
-- [ ] 06-04: Notification system -- alert cycling, severity, and deduplication
+- [ ] 07-01: Vitals and Consumables management screens
+- [ ] 07-02: Reports screen and colony statistics
+- [ ] 07-03: Research tree navigation and queue management
+- [ ] 07-04: Notification system -- alert cycling, severity, and deduplication
 
-### Phase 7: Duplicant Management
+### Phase 8: Duplicant Management
 **Goal**: A blind player can manage their duplicants as individuals -- querying status, adjusting the priority grid, editing schedules, assigning skills, and selecting new duplicants from the Printing Pod -- with enough information to make strategic workforce decisions
-**Depends on**: Phases 3, 6
+**Depends on**: Phases 4, 7
 **Requirements**: DUPE-01, DUPE-02, DUPE-03, DUPE-04, DUPE-05, DUPE-06
 **Success Criteria** (what must be TRUE):
   1. User can query any duplicant's current activity, location, stress, and health status
@@ -148,14 +167,14 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 07-01: Duplicant status queries and attribute/trait/interest readout
-- [ ] 07-02: Priority grid navigation and editing
-- [ ] 07-03: Schedule editor and skill assignment
-- [ ] 07-04: Printing Pod candidate comparison and selection
+- [ ] 08-01: Duplicant status queries and attribute/trait/interest readout
+- [ ] 08-02: Priority grid navigation and editing
+- [ ] 08-03: Schedule editor and skill assignment
+- [ ] 08-04: Printing Pod candidate comparison and selection
 
-### Phase 8: Area Tools
+### Phase 9: Area Tools
 **Goal**: A blind player can use all area-selection tools to interact with and modify the existing world -- digging, mopping, sweeping, harvesting, capturing critters, attacking, disinfecting, emptying pipes, and other drag-over-area commands -- with clear feedback about what is being targeted and ordered
-**Depends on**: Phases 3, 7
+**Depends on**: Phases 4, 8
 **Requirements**: AREA-01, AREA-02, AREA-03, AREA-04, AREA-05, AREA-06, AREA-07, AREA-08, BUILD-08, BUILD-10
 **Success Criteria** (what must be TRUE):
   1. User can select any area tool (dig, mop, sweep, harvest, capture, attack, disinfect, empty pipe, toggle, relocate) and hear which tool is active
@@ -166,14 +185,14 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 08-01: Area tool selection, activation feedback, and shared drag-select infrastructure
-- [ ] 08-02: Core area tools -- dig, mop, sweep, and cancel
-- [ ] 08-03: Biological area tools -- harvest, capture, attack, and wrangle
-- [ ] 08-04: Utility area tools -- disinfect, empty pipe, toggle, relocate, and prioritize
+- [ ] 09-01: Area tool selection, activation feedback, and shared drag-select infrastructure
+- [ ] 09-02: Core area tools -- dig, mop, sweep, and cancel
+- [ ] 09-03: Biological area tools -- harvest, capture, attack, and wrangle
+- [ ] 09-04: Utility area tools -- disinfect, empty pipe, toggle, relocate, and prioritize
 
-### Phase 9: Building & Construction
+### Phase 10: Building & Construction
 **Goal**: A blind player can construct their colony -- navigating build categories, placing buildings with rotation, routing pipes and wires, and deconstructing -- with clear feedback about placement validity and material costs
-**Depends on**: Phases 3, 5, 6, 8
+**Depends on**: Phases 4, 6, 7, 9
 **Requirements**: BUILD-01, BUILD-02, BUILD-03, BUILD-04, BUILD-05, BUILD-06, BUILD-07, BUILD-09
 **Success Criteria** (what must be TRUE):
   1. User can browse 15 build categories and hear building details (name, description, material cost, power usage) for each option
@@ -183,14 +202,14 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 09-01: Build menu navigation and building detail announcements
-- [ ] 09-02: Building placement with rotation, validity feedback, and priority
-- [ ] 09-03: Pipe and wire routing with connection feedback and drag-to-build
-- [ ] 09-04: Deconstruction and build order management
+- [ ] 10-01: Build menu navigation and building detail announcements
+- [ ] 10-02: Building placement with rotation, validity feedback, and priority
+- [ ] 10-03: Pipe and wire routing with connection feedback and drag-to-build
+- [ ] 10-04: Deconstruction and build order management
 
-### Phase 10: Ranching & Automation
+### Phase 11: Ranching & Automation
 **Goal**: A blind player can manage ranching operations (critter tracking, egg production, stable assignments) and configure automation networks (wires, sensors, logic gates, signal state) for advanced colony optimization
-**Depends on**: Phases 4, 9
+**Depends on**: Phases 5, 10
 **Requirements**: RANCH-01, RANCH-02, RANCH-03, AUTO-01, AUTO-02, AUTO-03, AUTO-04
 **Success Criteria** (what must be TRUE):
   1. User can find and inspect critters with full status details including species, tame/wild, happiness, and egg progress
@@ -200,14 +219,14 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 10-01: Critter management -- finding, status tracking, and egg/population monitoring
-- [ ] 10-02: Stable assignments and ranching workflow
-- [ ] 10-03: Automation wiring and signal state readout
-- [ ] 10-04: Sensor and logic gate configuration
+- [ ] 11-01: Critter management -- finding, status tracking, and egg/population monitoring
+- [ ] 11-02: Stable assignments and ranching workflow
+- [ ] 11-03: Automation wiring and signal state readout
+- [ ] 11-04: Sensor and logic gate configuration
 
-### Phase 11: DLC Content
+### Phase 12: DLC Content
 **Goal**: A blind player can access all Spaced Out and Bionic Booster Pack content -- building rockets, navigating the starmap, managing multiple asteroid colonies, and using bionic systems -- extending full accessibility to every DLC feature
-**Depends on**: Phases 4, 9, 7
+**Depends on**: Phases 5, 10, 8
 **Requirements**: DLC-01, DLC-02, DLC-03, DLC-04
 **Success Criteria** (what must be TRUE):
   1. User can build and configure rockets using the rocket construction interface with all components announced
@@ -217,26 +236,27 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 11-01: Rocket construction and configuration
-- [ ] 11-02: Starmap navigation and mission management
-- [ ] 11-03: Multi-asteroid colony management and switching
-- [ ] 11-04: Bionic Booster Pack content integration
+- [ ] 12-01: Rocket construction and configuration
+- [ ] 12-02: Starmap navigation and mission management
+- [ ] 12-03: Multi-asteroid colony management and switching
+- [ ] 12-04: Bionic Booster Pack content integration
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | ✓ Complete | 2026-02-11 |
-| 2. Menu Navigation | 0/5 | Not started | - |
-| 3. World Navigation | 0/3 | Not started | - |
-| 4. Entity Inspection | 0/5 | Not started | - |
-| 5. Overlays & Environment | 0/5 | Not started | - |
-| 6. Colony Management & Notifications | 0/4 | Not started | - |
-| 7. Duplicant Management | 0/4 | Not started | - |
-| 8. Area Tools | 0/4 | Not started | - |
-| 9. Building & Construction | 0/4 | Not started | - |
-| 10. Ranching & Automation | 0/4 | Not started | - |
-| 11. DLC Content | 0/4 | Not started | - |
+| 2. Input Architecture | 0/3 | Not started | - |
+| 3. Menu Navigation | 0/5 | Not started | - |
+| 4. World Navigation | 0/3 | Not started | - |
+| 5. Entity Inspection | 0/5 | Not started | - |
+| 6. Overlays & Environment | 0/5 | Not started | - |
+| 7. Colony Management & Notifications | 0/4 | Not started | - |
+| 8. Duplicant Management | 0/4 | Not started | - |
+| 9. Area Tools | 0/4 | Not started | - |
+| 10. Building & Construction | 0/4 | Not started | - |
+| 11. Ranching & Automation | 0/4 | Not started | - |
+| 12. DLC Content | 0/4 | Not started | - |
