@@ -22,6 +22,9 @@ namespace STRINGS
         {
             public static LocString WORLD_VIEW = "World view";
             public static LocString HELP = "Help";
+            public static LocString MAIN_MENU = "Main menu";
+            public static LocString PAUSE_MENU = "Pause menu";
+            public static LocString CONFIRM_DIALOG = "Confirm";
         }
 
         public class HELP
