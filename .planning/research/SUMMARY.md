@@ -232,7 +232,6 @@ Based on research findings, architecture dependencies, and complexity assessment
 - **Phase 8 (DLC)** — Starmap variants, multi-asteroid systems. Needs DLC-specific API research.
 
 **Phases with standard patterns (skip research-phase):**
-- **Phase 0 (Foundation)** — Mod entry point, Tolk integration. Already prototyped in `Speech.cs`.
 - **Phase 1 (State Reading)** — Component queries, ONI API access. Standard C# patterns.
 - **Phase 2 (Navigation)** — Keyboard cursor, announce-on-move. FactorioAccess provides direct precedent.
 - **Phase 3 (UI)** — Menu navigation, screen patching. ONI modding community has established patterns.
