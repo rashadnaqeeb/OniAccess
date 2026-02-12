@@ -24,6 +24,9 @@ namespace OniAccess
             ModDir = Path.GetDirectoryName(typeof(Mod).Assembly.Location);
             Version = typeof(Mod).Assembly.GetName().Version.ToString();
 
+            // Switch logging from Console (test default) to Unity's Debug.Log
+            LogUnityBackend.Install();
+
             // Set DLL search path for Tolk native libraries before any Tolk calls
             string tolkDir = Path.Combine(ModDir, "tolk", "dist");
             if (!SetDllDirectory(tolkDir))

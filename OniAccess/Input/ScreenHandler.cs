@@ -7,7 +7,7 @@ namespace OniAccess.Input
     /// that every screen type shares:
     /// - Screen reference for ContextDetector matching
     /// - Display name spoken on activation
-    /// - F12 help system
+    /// - F12 help system (detected in Tick)
     /// - CapturesAllInput (all screens block input fallthrough)
     ///
     /// BaseMenuHandler extends this with widget lists, 1D navigation, type-ahead
@@ -90,33 +90,25 @@ namespace OniAccess.Input
         }
 
         /// <summary>
-        /// Handle key down events from ONI's KButtonEvent system.
-        /// Default: no action.
+        /// Per-frame key detection. F12 (without modifiers) pushes help.
+        /// Subclasses override and call base.Tick() to keep F12 behavior.
+        /// </summary>
+        public virtual void Tick()
+        {
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
+                && !InputUtil.AnyModifierHeld())
+            {
+                HandlerStack.Push(new HelpHandler(HelpEntries));
+            }
+        }
+
+        /// <summary>
+        /// Handle Escape interception from ONI's KButtonEvent system.
+        /// Default: pass through (let the game close the screen, which pops
+        /// the handler via Harmony patch).
         /// </summary>
         public virtual bool HandleKeyDown(KButtonEvent e)
         {
-            return false;
-        }
-
-        /// <summary>
-        /// Handle key up events. Default: no action.
-        /// </summary>
-        public virtual bool HandleKeyUp(KButtonEvent e)
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Handle unbound keys (polled by KeyPoller). F12 pushes help.
-        /// Subclasses override for additional unbound keys.
-        /// </summary>
-        public virtual bool HandleUnboundKey(UnityEngine.KeyCode keyCode)
-        {
-            if (keyCode == UnityEngine.KeyCode.F12)
-            {
-                HandlerStack.Push(new HelpHandler(HelpEntries));
-                return true;
-            }
             return false;
         }
     }

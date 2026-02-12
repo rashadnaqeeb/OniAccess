@@ -452,8 +452,28 @@ namespace OniAccess.Input.Handlers
         }
 
         // ========================================
-        // KEY HANDLING (text input mode)
+        // TICK: TEXT EDIT MODE
         // ========================================
+
+        /// <summary>
+        /// When in text edit mode, only check Return (to confirm edit).
+        /// Otherwise, delegate to base for normal menu navigation.
+        /// </summary>
+        public override void Tick()
+        {
+            if (_isEditingText)
+            {
+                // Return/Enter confirms text edit
+                if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return))
+                {
+                    ConfirmTextEdit();
+                }
+                // Block all other key handling during text edit
+                return;
+            }
+
+            base.Tick();
+        }
 
         /// <summary>
         /// When in text edit mode, intercept Escape to cancel editing
@@ -473,28 +493,7 @@ namespace OniAccess.Input.Handlers
                 return false;
             }
 
-            return base.HandleKeyDown(e);
-        }
-
-        /// <summary>
-        /// When in text edit mode, block unbound key handling
-        /// (don't navigate with arrows while typing).
-        /// </summary>
-        public override bool HandleUnboundKey(UnityEngine.KeyCode keyCode)
-        {
-            if (_isEditingText)
-            {
-                // Return/Enter confirms text edit
-                if (keyCode == UnityEngine.KeyCode.Return)
-                {
-                    ConfirmTextEdit();
-                    return true;
-                }
-                // Block all other unbound keys during text edit
-                return true;
-            }
-
-            return base.HandleUnboundKey(keyCode);
+            return false;
         }
 
         private void CancelTextEdit()

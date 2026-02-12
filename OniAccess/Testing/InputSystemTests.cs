@@ -5,15 +5,15 @@ using OniAccess.Speech;
 namespace OniAccess.Testing
 {
     /// <summary>
-    /// Tests for the input dispatch system: handler lifecycle, key routing,
-    /// and game passthrough. Calls HandlerStack.DispatchUnboundKey -- the same
-    /// method KeyPoller.Update() calls -- so these test real production code.
+    /// Tests for the input system: handler lifecycle, stack contracts,
+    /// and gate behavior. Tests stack operations and handler properties
+    /// using real production code.
     /// </summary>
     public static class InputSystemTests
     {
         /// <summary>
-        /// Configurable test handler. Tracks which keys it received
-        /// and whether to consume them.
+        /// Configurable test handler. Tracks activation count and
+        /// implements the new unified interface.
         /// </summary>
         private class TestHandler : IAccessHandler
         {
@@ -22,9 +22,6 @@ namespace OniAccess.Testing
             public IReadOnlyList<HelpEntry> HelpEntries { get; }
                 = new List<HelpEntry>().AsReadOnly();
 
-            public List<UnityEngine.KeyCode> ReceivedKeys { get; }
-                = new List<UnityEngine.KeyCode>();
-            public bool ConsumeUnboundKeys { get; set; }
             public int ActivateCount { get; private set; }
 
             public TestHandler(string name, bool capturesAll = false)
@@ -33,15 +30,8 @@ namespace OniAccess.Testing
                 CapturesAllInput = capturesAll;
             }
 
+            public void Tick() { }
             public bool HandleKeyDown(KButtonEvent e) => false;
-            public bool HandleKeyUp(KButtonEvent e) => false;
-
-            public bool HandleUnboundKey(UnityEngine.KeyCode keyCode)
-            {
-                ReceivedKeys.Add(keyCode);
-                return ConsumeUnboundKeys;
-            }
-
             public void OnActivate() => ActivateCount++;
             public void OnDeactivate() { }
         }
@@ -58,19 +48,10 @@ namespace OniAccess.Testing
             results.Add(PushSpeaksDisplayName());
             results.Add(PopReannouncesExposedHandler());
 
-            // Key dispatch ordering
-            results.Add(TopHandlerGetsKeyFirst());
-            results.Add(ConsumedKeyStopsWalk());
-            results.Add(KeyFallsThroughWhenNotCaptured());
-            results.Add(CapturesAllInputBlocksFallthrough());
-
-            // Passthrough to game
-            results.Add(UnconsumedKeyReachesGame());
-            results.Add(EmptyStackPassesThrough());
-
-            // Real handler integration
-            results.Add(WorldHandlerF12PushesHelp());
-            results.Add(HelpHandlerBlocksKeysFromWorld());
+            // Stack contract tests
+            results.Add(ActiveHandlerIsTop());
+            results.Add(CapturesAllInputReadable());
+            results.Add(PopExposesLowerHandler());
 
             // Restore state: clear test handlers
             HandlerStack.Clear();
@@ -131,142 +112,49 @@ namespace OniAccess.Testing
                    : $"expected \"{STRINGS.ONIACCESS.HANDLERS.WORLD_VIEW}\", got {(captured.Count > 0 ? $"\"{captured[0]}\"" : "nothing")}");
         }
 
-        // --- Key dispatch ordering ---
+        // --- Stack contract tests ---
 
-        private static (string, bool, string) TopHandlerGetsKeyFirst()
+        private static (string, bool, string) ActiveHandlerIsTop()
         {
             Reset();
-            var bottom = new TestHandler("Bottom");
-            var top = new TestHandler("Top") { ConsumeUnboundKeys = true };
-            HandlerStack.Push(bottom);
-            HandlerStack.Push(top);
+            var first = new TestHandler("First");
+            var second = new TestHandler("Second");
+            HandlerStack.Push(first);
+            HandlerStack.Push(second);
 
-            HandlerStack.DispatchUnboundKey(UnityEngine.KeyCode.LeftArrow);
-
-            bool ok = top.ReceivedKeys.Count == 1 && bottom.ReceivedKeys.Count == 0;
-            return AssertTrue("TopHandlerGetsKeyFirst", ok,
-                ok ? "top consumed, bottom never saw key"
-                   : $"top={top.ReceivedKeys.Count}, bottom={bottom.ReceivedKeys.Count}");
+            bool ok = HandlerStack.ActiveHandler == second;
+            return AssertTrue("ActiveHandlerIsTop", ok,
+                ok ? "ActiveHandler is the second (top) handler"
+                   : $"ActiveHandler is {HandlerStack.ActiveHandler?.DisplayName ?? "null"}");
         }
 
-        private static (string, bool, string) ConsumedKeyStopsWalk()
+        private static (string, bool, string) CapturesAllInputReadable()
         {
             Reset();
-            var bottom = new TestHandler("Bottom");
-            var middle = new TestHandler("Middle") { ConsumeUnboundKeys = true };
-            var top = new TestHandler("Top");
-            HandlerStack.Push(bottom);
-            HandlerStack.Push(middle);
-            HandlerStack.Push(top);
-
-            HandlerStack.DispatchUnboundKey(UnityEngine.KeyCode.DownArrow);
-
-            // top doesn't consume -> falls to middle -> middle consumes -> bottom never sees it
-            bool ok = top.ReceivedKeys.Count == 1
-                   && middle.ReceivedKeys.Count == 1
-                   && bottom.ReceivedKeys.Count == 0;
-            return AssertTrue("ConsumedKeyStopsWalk", ok,
-                ok ? "walk stopped at consuming handler"
-                   : $"top={top.ReceivedKeys.Count}, mid={middle.ReceivedKeys.Count}, bot={bottom.ReceivedKeys.Count}");
-        }
-
-        private static (string, bool, string) KeyFallsThroughWhenNotCaptured()
-        {
-            Reset();
-            var bottom = new TestHandler("Bottom");
-            var top = new TestHandler("Top"); // CapturesAllInput=false, doesn't consume
-            HandlerStack.Push(bottom);
-            HandlerStack.Push(top);
-
-            HandlerStack.DispatchUnboundKey(UnityEngine.KeyCode.LeftArrow);
-
-            bool ok = top.ReceivedKeys.Count == 1 && bottom.ReceivedKeys.Count == 1;
-            return AssertTrue("KeyFallsThroughWhenNotCaptured", ok,
-                ok ? "both handlers saw the key"
-                   : $"top={top.ReceivedKeys.Count}, bottom={bottom.ReceivedKeys.Count}");
-        }
-
-        private static (string, bool, string) CapturesAllInputBlocksFallthrough()
-        {
-            Reset();
-            var bottom = new TestHandler("Bottom");
-            // CapturesAllInput=true, but doesn't consume -- should still block
-            var top = new TestHandler("Top", capturesAll: true);
-            HandlerStack.Push(bottom);
-            HandlerStack.Push(top);
-
-            HandlerStack.DispatchUnboundKey(UnityEngine.KeyCode.LeftArrow);
-
-            bool ok = top.ReceivedKeys.Count == 1 && bottom.ReceivedKeys.Count == 0;
-            return AssertTrue("CapturesAllInputBlocksFallthrough", ok,
-                ok ? "CapturesAllInput blocked fallthrough to bottom"
-                   : $"top={top.ReceivedKeys.Count}, bottom={bottom.ReceivedKeys.Count}");
-        }
-
-        // --- Passthrough to game ---
-
-        private static (string, bool, string) UnconsumedKeyReachesGame()
-        {
-            Reset();
-            // CapturesAllInput=false, doesn't consume -- key should pass through
-            var handler = new TestHandler("World");
+            var handler = new TestHandler("Modal", capturesAll: true);
             HandlerStack.Push(handler);
 
-            bool consumed = HandlerStack.DispatchUnboundKey(UnityEngine.KeyCode.LeftArrow);
-
-            bool ok = !consumed && handler.ReceivedKeys.Count == 1;
-            return AssertTrue("UnconsumedKeyReachesGame", ok,
-                ok ? "key passed through to game"
-                   : $"consumed={consumed}, handler saw {handler.ReceivedKeys.Count} keys");
+            bool ok = HandlerStack.ActiveHandler.CapturesAllInput;
+            return AssertTrue("CapturesAllInputReadable", ok,
+                ok ? "CapturesAllInput=true is readable from ActiveHandler"
+                   : "CapturesAllInput was false");
         }
 
-        private static (string, bool, string) EmptyStackPassesThrough()
-        {
-            Reset();
-            bool consumed = HandlerStack.DispatchUnboundKey(UnityEngine.KeyCode.F12);
-
-            bool ok = !consumed;
-            return AssertTrue("EmptyStackPassesThrough", ok,
-                ok ? "empty stack passes through to game"
-                   : "key was consumed with no handlers");
-        }
-
-        // --- Real handler integration ---
-
-        private static (string, bool, string) WorldHandlerF12PushesHelp()
-        {
-            Reset();
-            HandlerStack.Push(new WorldHandler());
-            int before = HandlerStack.Count;
-
-            HandlerStack.DispatchUnboundKey(UnityEngine.KeyCode.F12);
-
-            bool ok = HandlerStack.Count == before + 1
-                   && HandlerStack.ActiveHandler is HelpHandler;
-            return AssertTrue("WorldHandlerF12PushesHelp", ok,
-                ok ? "HelpHandler pushed onto stack"
-                   : $"count {before}->{HandlerStack.Count}, active={HandlerStack.ActiveHandler?.GetType().Name ?? "null"}");
-        }
-
-        private static (string, bool, string) HelpHandlerBlocksKeysFromWorld()
+        private static (string, bool, string) PopExposesLowerHandler()
         {
             Reset();
             var bottom = new TestHandler("Bottom");
+            var top = new TestHandler("Top");
             HandlerStack.Push(bottom);
+            HandlerStack.Push(top);
 
-            // HelpHandler has CapturesAllInput=true
-            var help = new HelpHandler(new List<HelpEntry>
-            {
-                new HelpEntry("Test", "test entry")
-            }.AsReadOnly());
-            HandlerStack.Push(help);
+            HandlerStack.Pop();
 
-            HandlerStack.DispatchUnboundKey(UnityEngine.KeyCode.LeftArrow);
-
-            bool ok = bottom.ReceivedKeys.Count == 0;
-            return AssertTrue("HelpHandlerBlocksKeysFromWorld", ok,
-                ok ? "HelpHandler blocked key from reaching bottom"
-                   : $"bottom saw {bottom.ReceivedKeys.Count} keys");
+            bool ok = HandlerStack.ActiveHandler == bottom
+                   && HandlerStack.Count == 1;
+            return AssertTrue("PopExposesLowerHandler", ok,
+                ok ? "Pop exposed bottom handler"
+                   : $"ActiveHandler={HandlerStack.ActiveHandler?.DisplayName ?? "null"}, count={HandlerStack.Count}");
         }
     }
 }

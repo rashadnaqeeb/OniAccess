@@ -20,19 +20,16 @@ namespace OniAccess.Input
                 new HelpEntry("Ctrl+Shift+F12", STRINGS.ONIACCESS.HOTKEYS.TOGGLE_MOD),
             }.AsReadOnly();
 
-        public bool HandleKeyDown(KButtonEvent e) => false;
-        public bool HandleKeyUp(KButtonEvent e) => false;
-
-        public bool HandleUnboundKey(UnityEngine.KeyCode keyCode)
+        public void Tick()
         {
-            if (keyCode == UnityEngine.KeyCode.F12)
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
+                && !InputUtil.AnyModifierHeld())
             {
-                // Push HelpHandler with THIS handler's help entries
                 HandlerStack.Push(new HelpHandler(HelpEntries));
-                return true;
             }
-            return false;
         }
+
+        public bool HandleKeyDown(KButtonEvent e) => false;
 
         public void OnActivate()
         {

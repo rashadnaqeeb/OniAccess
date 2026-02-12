@@ -10,15 +10,15 @@ namespace OniAccess.Input.Handlers
     /// interactive widgets. It's a progress display where the game blocks Escape
     /// and has no buttons during generation.
     ///
-    /// Implements IAccessHandler directly for the handler stack, and ITickable
-    /// so KeyPoller calls Tick() each frame for progress polling.
+    /// Implements IAccessHandler directly for the handler stack.
+    /// Tick() polls progress each frame.
     ///
     /// Per locked decisions:
     /// - Periodic progress updates: "25 percent... 50 percent... 75 percent... Done"
     /// - No user interaction during world generation
     /// - CapturesAllInput = true to block all keys
     /// </summary>
-    public class WorldGenHandler : IAccessHandler, ITickable
+    public class WorldGenHandler : IAccessHandler
     {
         private readonly KScreen _screen;
         private float _lastSpokenPercent = -1f;
@@ -66,7 +66,7 @@ namespace OniAccess.Input.Handlers
         }
 
         /// <summary>
-        /// Called each frame by KeyPoller via ITickable.
+        /// Called each frame by KeyPoller.
         /// Polls world generation progress and speaks at 25% intervals.
         /// </summary>
         public void Tick()
@@ -144,18 +144,8 @@ namespace OniAccess.Input.Handlers
         }
 
         /// <summary>
-        /// No key handling during world generation.
+        /// No Escape interception during world generation.
         /// </summary>
         public bool HandleKeyDown(KButtonEvent e) => false;
-
-        /// <summary>
-        /// No key handling during world generation.
-        /// </summary>
-        public bool HandleKeyUp(KButtonEvent e) => false;
-
-        /// <summary>
-        /// No unbound key handling during world generation.
-        /// </summary>
-        public bool HandleUnboundKey(UnityEngine.KeyCode keyCode) => false;
     }
 }

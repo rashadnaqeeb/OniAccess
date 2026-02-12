@@ -235,9 +235,8 @@ namespace OniAccess.Input.Handlers
         }
 
         /// <summary>
-        /// Override HandleKeyDown to intercept Escape in colony detail view.
-        /// Escape in detail view goes back to explorer instead of closing the screen.
-        /// Escape in explorer view passes through to close the screen normally.
+        /// Intercept Escape in colony detail view to go back to explorer
+        /// instead of closing the screen.
         /// </summary>
         public override bool HandleKeyDown(KButtonEvent e)
         {
@@ -247,7 +246,7 @@ namespace OniAccess.Input.Handlers
                 return true;
             }
 
-            return base.HandleKeyDown(e);
+            return false;
         }
 
         /// <summary>

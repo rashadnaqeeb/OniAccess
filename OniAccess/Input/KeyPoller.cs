@@ -3,12 +3,7 @@ using OniAccess.Toggle;
 namespace OniAccess.Input
 {
     /// <summary>
-    /// MonoBehaviour that polls UnityEngine.Input.GetKeyDown for keys that ONI
-    /// doesn't generate KButtonEvents for. Per research: plain F12 (no modifiers)
-    /// and arrow keys have NO Action binding, so no KButtonEvent is ever created.
-    ///
-    /// This bridges those unbound keys into the handler system by calling
-    /// IAccessHandler.HandleUnboundKey on the active handler.
+    /// MonoBehaviour that drives the per-frame Tick() on the active handler.
     ///
     /// Also handles the Ctrl+Shift+F12 toggle key, which must work even when
     /// the mod is off (the only key active in VanillaMode OFF state).
@@ -21,22 +16,6 @@ namespace OniAccess.Input
         public static KeyPoller Instance { get; private set; }
 
         private bool _startupDone;
-
-        /// <summary>
-        /// Keys to poll -- these have no ONI Action binding and generate no KButtonEvent.
-        /// </summary>
-        private static readonly UnityEngine.KeyCode[] PollKeys = new[]
-        {
-            UnityEngine.KeyCode.F12,
-            UnityEngine.KeyCode.UpArrow,
-            UnityEngine.KeyCode.DownArrow,
-            UnityEngine.KeyCode.LeftArrow,
-            UnityEngine.KeyCode.RightArrow,
-            UnityEngine.KeyCode.Home,
-            UnityEngine.KeyCode.End,
-            UnityEngine.KeyCode.Tab,
-            UnityEngine.KeyCode.Return,
-        };
 
         private void Awake()
         {
@@ -74,34 +53,8 @@ namespace OniAccess.Input
                 }
             }
 
-            if (HandlerStack.Count == 0) return;
-
-            // Tick handlers that need per-frame updates (e.g., WorldGenHandler progress)
-            var active = HandlerStack.ActiveHandler;
-            if (active is ITickable tickable)
-                tickable.Tick();
-
-            // Poll each unbound key
-            foreach (var key in PollKeys)
-            {
-                if (UnityEngine.Input.GetKeyDown(key))
-                {
-                    // Skip F12 if modifiers are held (those ARE bound to game debug actions
-                    // and will come through as KButtonEvents via ModInputRouter)
-                    if (key == UnityEngine.KeyCode.F12 && AnyModifierHeld()) continue;
-
-                    HandlerStack.DispatchUnboundKey(key);
-                }
-            }
-
-            // Shift+I: tooltip reading. I may be bound to a game Action, but Shift+I
-            // likely isn't, so poll it explicitly to ensure it always works.
-            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)
-                && (UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
-                    || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift)))
-            {
-                HandlerStack.DispatchUnboundKey(UnityEngine.KeyCode.I);
-            }
+            // Call Tick() on the active handler
+            HandlerStack.ActiveHandler?.Tick();
         }
 
         private static bool IsCtrlShiftHeld()
@@ -110,16 +63,6 @@ namespace OniAccess.Input
                     || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightControl))
                 && (UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
                     || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift));
-        }
-
-        private static bool AnyModifierHeld()
-        {
-            return UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftControl)
-                || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightControl)
-                || UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
-                || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift)
-                || UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftAlt)
-                || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightAlt);
         }
 
         private void OnDestroy()

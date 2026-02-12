@@ -5,15 +5,13 @@ namespace OniAccess.Input
     /// <summary>
     /// Manages a stack of IAccessHandler instances.
     ///
-    /// Input dispatch walks the stack top-to-bottom: the top handler gets first
-    /// refusal on every key event. If it doesn't consume the event and its
-    /// CapturesAllInput is false, the event falls through to the next handler down,
-    /// and so on. A handler with CapturesAllInput=true stops the walk -- unconsumed
-    /// keys are blocked from reaching handlers below or the game.
+    /// The active handler (top of stack) receives Tick() calls from KeyPoller each
+    /// frame and HandleKeyDown events from ModInputRouter. ModInputRouter acts as a
+    /// gate: it blocks non-passthrough keys for CapturesAllInput handlers. No stack
+    /// walking or dispatch -- only the active handler is consulted.
     ///
     /// Push/Pop/Replace manage the handler lifecycle with OnActivate/OnDeactivate
-    /// callbacks. Obscured handlers are NOT deactivated because they still participate
-    /// in fallthrough dispatch. OnDeactivate only fires when a handler is popped off.
+    /// callbacks. OnDeactivate only fires when a handler is popped off.
     ///
     /// The stack represents the current input context hierarchy:
     /// e.g., [WorldHandler] or [WorldHandler, BuildHandler] or [WorldHandler, BuildHandler, HelpHandler].
@@ -36,17 +34,9 @@ namespace OniAccess.Input
         public static int Count => _stack.Count;
 
         /// <summary>
-        /// Read-only view of the stack for dispatch iteration.
-        /// Index 0 is bottom (first pushed), index Count-1 is top (active).
-        /// ModInputRouter and KeyPoller walk this top-to-bottom.
-        /// </summary>
-        internal static IReadOnlyList<IAccessHandler> Handlers => _stack;
-
-        /// <summary>
         /// Push a handler onto the stack, making it the top handler.
         /// Calls handler.OnActivate(). Does NOT call OnDeactivate on the previous
-        /// handler -- it still participates in fallthrough dispatch (unless the new
-        /// handler has CapturesAllInput=true). OnDeactivate only fires on Pop.
+        /// handler. OnDeactivate only fires on Pop.
         /// </summary>
         public static void Push(IAccessHandler handler)
         {
@@ -129,29 +119,6 @@ namespace OniAccess.Input
                 Util.Log.Debug($"HandlerStack.DeactivateAll: deactivated {active.DisplayName}");
             }
             _stack.Clear();
-        }
-
-        /// <summary>
-        /// Dispatch an unbound key (F12, arrows) through the stack top-to-bottom.
-        /// Each handler gets a chance to handle it. If a handler returns true,
-        /// the key is consumed and the walk stops. If a handler has CapturesAllInput=true
-        /// and doesn't consume, the walk still stops (key is blocked from lower
-        /// handlers and the game).
-        ///
-        /// Returns true if the key was consumed or blocked.
-        /// Returns false if no handler claimed it (key passes through to the game).
-        ///
-        /// Called by KeyPoller.Update() for keys with no ONI Action binding.
-        /// </summary>
-        public static bool DispatchUnboundKey(UnityEngine.KeyCode keyCode)
-        {
-            for (int i = _stack.Count - 1; i >= 0; i--)
-            {
-                var handler = _stack[i];
-                if (handler.HandleUnboundKey(keyCode)) return true;
-                if (handler.CapturesAllInput) return true;
-            }
-            return false;
         }
 
         /// <summary>

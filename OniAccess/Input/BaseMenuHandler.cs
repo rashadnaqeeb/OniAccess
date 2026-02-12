@@ -13,14 +13,16 @@ namespace OniAccess.Input
     /// - A-Z type-ahead search
     /// - Widget validity checking
     ///
+    /// All key detection happens in Tick() via UnityEngine.Input.GetKeyDown().
+    /// HandleKeyDown is inherited from ScreenHandler (returns false -- Escape
+    /// passes through to the game, which closes the screen, which pops the
+    /// handler via Harmony patch).
+    ///
     /// Concrete list-based handlers extend this and implement only:
     /// - DiscoverWidgets (populate _widgets)
     /// - DisplayName (screen title for speech)
     /// - HelpEntries (composing from CommonHelpEntries + MenuHelpEntries
     ///   + ListNavHelpEntries + screen-specific)
-    ///
-    /// Future 2D grid handlers extend ScreenHandler directly with their own
-    /// state (cursor position, tile data) without inheriting any of this.
     ///
     /// Per locked decisions:
     /// - Arrow keys navigate Up/Down between items with wrap-around
@@ -111,91 +113,83 @@ namespace OniAccess.Input
         }
 
         // ========================================
-        // KEY DOWN HANDLING (Shift+I tooltip, A-Z search)
+        // TICK: ALL KEY DETECTION
         // ========================================
 
         /// <summary>
-        /// Handle key down events for menu-specific features:
-        /// Shift+I tooltip reading and A-Z type-ahead search.
+        /// Per-frame key detection for menu navigation, type-ahead search,
+        /// tooltip reading, and widget interaction.
         /// </summary>
-        public override bool HandleKeyDown(KButtonEvent e)
+        public override void Tick()
         {
-            // A-Z search: iterate KKeyCode.A through KKeyCode.Z
-            bool ctrlHeld = UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftControl)
-                         || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightControl);
-            bool altHeld = UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftAlt)
-                        || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightAlt);
+            bool ctrlHeld = InputUtil.CtrlHeld();
+            bool altHeld = InputUtil.AltHeld();
 
-            for (KKeyCode kk = KKeyCode.A; kk <= KKeyCode.Z; kk++)
+            // A-Z type-ahead (only when no Ctrl/Alt modifiers)
+            if (!ctrlHeld && !altHeld)
             {
-                if (e.Controller.GetKeyDown(kk))
+                for (UnityEngine.KeyCode k = UnityEngine.KeyCode.A;
+                     k <= UnityEngine.KeyCode.Z; k++)
                 {
-                    UnityEngine.KeyCode unityKey = UnityEngine.KeyCode.A + (kk - KKeyCode.A);
-                    if (_search.HandleKey(unityKey, ctrlHeld, altHeld, this))
+                    if (UnityEngine.Input.GetKeyDown(k))
                     {
-                        e.Consumed = true;
-                        return true;
+                        _search.HandleKey(k, ctrlHeld, altHeld, this);
+                        return;
                     }
                 }
             }
 
-            return false;
-        }
-
-        // ========================================
-        // UNBOUND KEY HANDLING (arrows, Home/End, Enter, Tab)
-        // ========================================
-
-        /// <summary>
-        /// Handle unbound keys for 1D list navigation.
-        /// Falls through to ScreenHandler for F12 help.
-        /// </summary>
-        public override bool HandleUnboundKey(UnityEngine.KeyCode keyCode)
-        {
-            switch (keyCode)
+            // Navigation
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow))
             {
-                case UnityEngine.KeyCode.DownArrow:
-                    NavigateNext();
-                    return true;
-                case UnityEngine.KeyCode.UpArrow:
-                    NavigatePrev();
-                    return true;
-                case UnityEngine.KeyCode.Home:
-                    NavigateFirst();
-                    return true;
-                case UnityEngine.KeyCode.End:
-                    NavigateLast();
-                    return true;
-                case UnityEngine.KeyCode.Return:
-                    ActivateCurrentWidget();
-                    return true;
-                case UnityEngine.KeyCode.Tab:
-                    if (UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
-                        || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift))
-                    {
-                        NavigateTabBackward();
-                    }
-                    else
-                    {
-                        NavigateTabForward();
-                    }
-                    return true;
-                case UnityEngine.KeyCode.I:
-                    // Shift+I: read tooltip (only dispatched when Shift is held)
-                    SpeakTooltip();
-                    return true;
-                case UnityEngine.KeyCode.LeftArrow:
-                case UnityEngine.KeyCode.RightArrow:
-                {
-                    int direction = keyCode == UnityEngine.KeyCode.RightArrow ? 1 : -1;
-                    bool isLargeStep = UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
-                                    || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift);
-                    AdjustCurrentWidget(direction, isLargeStep);
-                    return true;
-                }
-                default:
-                    return base.HandleUnboundKey(keyCode);
+                NavigateNext();
+                return;
             }
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow))
+            {
+                NavigatePrev();
+                return;
+            }
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home))
+            {
+                NavigateFirst();
+                return;
+            }
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End))
+            {
+                NavigateLast();
+                return;
+            }
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return))
+            {
+                ActivateCurrentWidget();
+                return;
+            }
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab))
+            {
+                if (InputUtil.ShiftHeld())
+                    NavigateTabBackward();
+                else
+                    NavigateTabForward();
+                return;
+            }
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I) && InputUtil.ShiftHeld())
+            {
+                SpeakTooltip();
+                return;
+            }
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow))
+            {
+                AdjustCurrentWidget(-1, InputUtil.ShiftHeld());
+                return;
+            }
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow))
+            {
+                AdjustCurrentWidget(1, InputUtil.ShiftHeld());
+                return;
+            }
+
+            base.Tick(); // F12 from ScreenHandler
         }
 
         // ========================================

@@ -604,7 +604,7 @@ namespace OniAccess.Input.Handlers
 
                 // Set flag for pending re-announcement
                 // The CharacterContainer updates synchronously on click in most cases,
-                // but if async, we check on next HandleUnboundKey
+                // but if async, we check on next Tick
                 _pendingRerollAnnounce = true;
                 AnnounceAfterReroll();
             }
@@ -638,12 +638,6 @@ namespace OniAccess.Input.Handlers
                 }
 
                 // Speak name, interests, traits but stop before attributes
-                // Name and interests are first, then traits -- detect the transition
-                // by checking if we've hit the attributes section.
-                // Since attributes come after traits in widget order, we simply
-                // speak until we see something that looks like an attribute value
-                // (starts with + or - and a digit). Or more simply: speak all Label
-                // items until we encounter the first attribute-style text.
                 if (w.Type == WidgetType.Label && LooksLikeAttribute(w.Label))
                 {
                     break;
@@ -680,19 +674,19 @@ namespace OniAccess.Input.Handlers
         }
 
         // ========================================
-        // UNBOUND KEY HANDLING
+        // TICK: PENDING REROLL CHECK
         // ========================================
 
         /// <summary>
-        /// Check for pending reroll announcement on next key press.
+        /// Check for pending reroll announcement each frame.
         /// </summary>
-        public override bool HandleUnboundKey(UnityEngine.KeyCode keyCode)
+        public override void Tick()
         {
             if (_pendingRerollAnnounce)
             {
                 AnnounceAfterReroll();
             }
-            return base.HandleUnboundKey(keyCode);
+            base.Tick();
         }
     }
 }

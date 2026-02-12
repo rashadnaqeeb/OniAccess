@@ -33,6 +33,25 @@ namespace OniAccess.Input
             _currentIndex = 0;
         }
 
+        public void Tick()
+        {
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12))
+            {
+                Close();
+                return;
+            }
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow))
+            {
+                NavigateNext();
+                return;
+            }
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow))
+            {
+                NavigatePrev();
+                return;
+            }
+        }
+
         public bool HandleKeyDown(KButtonEvent e)
         {
             // Escape closes help -- Escape IS a game Action, so use TryConsume
@@ -43,26 +62,6 @@ namespace OniAccess.Input
             }
             // All other KButtonEvents are consumed by CapturesAllInput in ModInputRouter
             return false;
-        }
-
-        public bool HandleKeyUp(KButtonEvent e) => false;
-
-        public bool HandleUnboundKey(UnityEngine.KeyCode keyCode)
-        {
-            switch (keyCode)
-            {
-                case UnityEngine.KeyCode.F12:
-                    Close();
-                    return true;
-                case UnityEngine.KeyCode.DownArrow:
-                    NavigateNext();
-                    return true;
-                case UnityEngine.KeyCode.UpArrow:
-                    NavigatePrev();
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         public void OnActivate()

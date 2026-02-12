@@ -373,40 +373,32 @@ namespace OniAccess.Input.Handlers
         }
 
         /// <summary>
-        /// Override Escape handling: in colony save view, go back to colony list
-        /// instead of closing the screen.
+        /// Check for pending view transition each frame.
         /// </summary>
-        public override bool HandleKeyDown(KButtonEvent e)
+        public override void Tick()
         {
-            // Check for pending view transition
             if (_pendingViewTransition && IsColonyViewRootActive())
             {
                 TransitionToSaveView();
                 _pendingViewTransition = false;
             }
 
-            // Check for Escape in save view (go back to colony list)
+            base.Tick();
+        }
+
+        /// <summary>
+        /// Escape in save view goes back to colony list instead of closing the screen.
+        /// Escape in colony list passes through to close the screen normally.
+        /// </summary>
+        public override bool HandleKeyDown(KButtonEvent e)
+        {
             if (_inColonySaveView && e.TryConsume(Action.Escape))
             {
                 TransitionToColonyList();
                 return true;
             }
 
-            return base.HandleKeyDown(e);
-        }
-
-        /// <summary>
-        /// Also check for pending transition on unbound key events.
-        /// </summary>
-        public override bool HandleUnboundKey(UnityEngine.KeyCode keyCode)
-        {
-            if (_pendingViewTransition && IsColonyViewRootActive())
-            {
-                TransitionToSaveView();
-                _pendingViewTransition = false;
-            }
-
-            return base.HandleUnboundKey(keyCode);
+            return false;
         }
 
         /// <summary>
