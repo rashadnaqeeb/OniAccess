@@ -84,11 +84,11 @@ namespace OniAccess.Input
         /// </summary>
         public string AddChar(char c)
         {
-            if (UnityEngine.Time.time - _lastTime > Timeout)
+            if (UnityEngine.Time.realtimeSinceStartup - _lastTime > Timeout)
                 _buffer.Clear();
 
             _buffer.Append(c);
-            _lastTime = UnityEngine.Time.time;
+            _lastTime = UnityEngine.Time.realtimeSinceStartup;
             return _buffer.ToString();
         }
 
@@ -101,7 +101,7 @@ namespace OniAccess.Input
                 return false;
 
             _buffer.Length--;
-            _lastTime = UnityEngine.Time.time;
+            _lastTime = UnityEngine.Time.realtimeSinceStartup;
             return true;
         }
 
