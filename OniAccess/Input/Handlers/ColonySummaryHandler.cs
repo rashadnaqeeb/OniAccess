@@ -64,8 +64,10 @@ namespace OniAccess.Input.Handlers
         private void DiscoverExplorerViewWidgets(KScreen screen)
         {
             // Walk the explorerGrid to find colony entry buttons
-            var explorerGrid = Traverse.Create(screen).Field("explorerGrid")
-                .GetValue<UnityEngine.Transform>();
+            // explorerGrid is a GameObject in RetiredColonyInfoScreen
+            var explorerGridGO = Traverse.Create(screen).Field("explorerGrid")
+                .GetValue<UnityEngine.GameObject>();
+            var explorerGrid = explorerGridGO != null ? explorerGridGO.transform : null;
 
             if (explorerGrid != null)
             {
