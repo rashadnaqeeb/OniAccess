@@ -2,6 +2,7 @@ using HarmonyLib;
 using OniAccess.Input;
 using OniAccess.Toggle;
 using OniAccess.Util;
+using UnityEngine;
 
 namespace OniAccess.Patches
 {
@@ -78,6 +79,26 @@ namespace OniAccess.Patches
         {
             if (!VanillaMode.IsEnabled) return;
             ContextDetector.OnScreenDeactivating(__instance);
+        }
+    }
+
+    /// <summary>
+    /// Guard against NullReferenceException in KModalButtonMenu.Unhide (BUG-03).
+    /// When a child screen's Close event fires after the parent is already destroyed,
+    /// panelRoot is null and the original Unhide crashes. Skip the call if panelRoot is null.
+    /// </summary>
+    [HarmonyPatch(typeof(KModalButtonMenu), "Unhide")]
+    internal static class KModalButtonMenu_Unhide_Patch
+    {
+        private static bool Prefix(KModalButtonMenu __instance)
+        {
+            var panelRoot = Traverse.Create(__instance).Field<GameObject>("panelRoot").Value;
+            if (panelRoot == null)
+            {
+                Log.Debug("KModalButtonMenu.Unhide skipped: panelRoot is null (screen already destroyed)");
+                return false;
+            }
+            return true;
         }
     }
 }

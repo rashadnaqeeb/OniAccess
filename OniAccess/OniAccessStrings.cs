@@ -35,6 +35,9 @@ namespace STRINGS
             public static LocString WORLD_GEN = "Generating world";
             public static LocString DUPLICANT_SELECT = "Select duplicants";
             public static LocString SAVE_LOAD = "Save and load";
+            public static LocString DATA_OPTIONS = "Data options";
+            public static LocString FEEDBACK = "Feedback";
+            public static LocString CREDITS = "Credits";
         }
 
         public class HELP

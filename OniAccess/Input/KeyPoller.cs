@@ -20,6 +20,8 @@ namespace OniAccess.Input
     {
         public static KeyPoller Instance { get; private set; }
 
+        private bool _startupDone;
+
         /// <summary>
         /// Keys to poll -- these have no ONI Action binding and generate no KButtonEvent.
         /// </summary>
@@ -55,6 +57,23 @@ namespace OniAccess.Input
             // When mod is off, don't process anything else
             if (!VanillaMode.IsEnabled) return;
 
+            // One-time: MainMenu.Activate fires before Harmony patches, so our
+            // KScreen.Activate postfix misses it. Find it on first frame.
+            if (!_startupDone)
+            {
+                _startupDone = true;
+                try
+                {
+                    var mainMenu = UnityEngine.Object.FindObjectOfType<MainMenu>();
+                    if (mainMenu != null)
+                        ContextDetector.OnScreenActivated(mainMenu);
+                }
+                catch (System.Exception ex)
+                {
+                    Util.Log.Warn($"Startup screen detect: {ex.Message}");
+                }
+            }
+
             if (HandlerStack.Count == 0) return;
 
             // Tick handlers that need per-frame updates (e.g., WorldGenHandler progress)
@@ -73,6 +92,15 @@ namespace OniAccess.Input
 
                     HandlerStack.DispatchUnboundKey(key);
                 }
+            }
+
+            // Shift+I: tooltip reading. I may be bound to a game Action, but Shift+I
+            // likely isn't, so poll it explicitly to ensure it always works.
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)
+                && (UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
+                    || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift)))
+            {
+                HandlerStack.DispatchUnboundKey(UnityEngine.KeyCode.I);
             }
         }
 

@@ -85,19 +85,10 @@ ONI has extensive hotkeys. Many are useless to blind players and can be overwrit
 **Managed DLLs**: `OxygenNotIncluded_Data\Managed\` (set `ONI_MANAGED` env var to this path)
 **Deploy target**: `%USERPROFILE%\Documents\Klei\OxygenNotIncluded\mods\local\OniAccess\`
 
-**Build command**:
-```bash
-export ONI_MANAGED="C:/Program Files (x86)/Steam/steamapps/common/OxygenNotIncluded/OxygenNotIncluded_Data/Managed"
-dotnet build OniAccess/OniAccess.csproj -c Release
-```
-
-**Deploy command**:
-```bash
-DEST="$USERPROFILE/Documents/Klei/OxygenNotIncluded/mods/local/OniAccess"
-mkdir -p "$DEST/tolk/dist"
-cp OniAccess/bin/Release/net472/OniAccess.dll "$DEST/"
-cp OniAccess/mod_info.yaml "$DEST/"
-cp tolk/dist/* "$DEST/tolk/dist/"
+**Build & deploy**:
+```powershell
+.\build.ps1            # build + deploy DLL + patch mods.json
+.\build.ps1 -NoBuild   # redeploy last built DLL only
 ```
 
 **Known type conflicts with ONI assemblies** (pitfalls for all phases):

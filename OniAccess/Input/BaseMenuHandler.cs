@@ -120,16 +120,6 @@ namespace OniAccess.Input
         /// </summary>
         public override bool HandleKeyDown(KButtonEvent e)
         {
-            // Shift+I: read tooltip for current widget
-            if (e.Controller.GetKeyDown(KKeyCode.I)
-                && (UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
-                    || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift)))
-            {
-                SpeakTooltip();
-                e.Consumed = true;
-                return true;
-            }
-
             // A-Z search: iterate KKeyCode.A through KKeyCode.Z
             bool ctrlHeld = UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftControl)
                          || UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightControl);
@@ -189,6 +179,10 @@ namespace OniAccess.Input
                     {
                         NavigateTabForward();
                     }
+                    return true;
+                case UnityEngine.KeyCode.I:
+                    // Shift+I: read tooltip (only dispatched when Shift is held)
+                    SpeakTooltip();
                     return true;
                 case UnityEngine.KeyCode.LeftArrow:
                 case UnityEngine.KeyCode.RightArrow:
@@ -470,18 +464,35 @@ namespace OniAccess.Input
         /// Read the tooltip text for the currently focused widget and speak it.
         /// Triggered by Shift+I.
         /// </summary>
-        protected void SpeakTooltip()
+        protected virtual void SpeakTooltip()
         {
             if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
             var widget = _widgets[_currentIndex];
             if (widget.GameObject == null) return;
 
+            Util.Log.Debug($"SpeakTooltip: widget='{widget.Label}', go='{widget.GameObject.name}'");
             var tooltip = widget.GameObject.GetComponent<ToolTip>();
-            if (tooltip == null) return;
+            if (tooltip == null)
+                tooltip = widget.GameObject.GetComponentInChildren<ToolTip>();
+            if (tooltip == null)
+            {
+                Util.Log.Debug("SpeakTooltip: no ToolTip component found");
+                return;
+            }
 
-            string text = tooltip.GetMultiString(0);
-            if (string.IsNullOrEmpty(text)) return;
+            Util.Log.Debug($"SpeakTooltip: found ToolTip, multiStringCount={tooltip.multiStringCount}");
+            string text = null;
+            if (tooltip.multiStringCount > 0)
+                text = tooltip.GetMultiString(0);
+            if (string.IsNullOrEmpty(text) && tooltip.OnToolTip != null)
+                text = tooltip.OnToolTip();
+            if (string.IsNullOrEmpty(text))
+            {
+                Util.Log.Debug("SpeakTooltip: tooltip text is empty");
+                return;
+            }
 
+            Util.Log.Debug($"SpeakTooltip: speaking '{text}'");
             Speech.SpeechPipeline.SpeakInterrupt(text);
         }
 
@@ -508,7 +519,7 @@ namespace OniAccess.Input
         /// Format a slider value for speech. Uses integer format for wholeNumbers sliders,
         /// percent format for 0-100 range, and one-decimal format otherwise.
         /// </summary>
-        protected string FormatSliderValue(KSlider slider)
+        protected virtual string FormatSliderValue(KSlider slider)
         {
             if (slider.wholeNumbers)
             {

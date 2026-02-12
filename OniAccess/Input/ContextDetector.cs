@@ -65,6 +65,14 @@ namespace OniAccess.Input
                 return;
             }
 
+            // Guard: don't push a duplicate handler for the same screen instance
+            var active = HandlerStack.ActiveHandler;
+            if (active is ScreenHandler sh && sh.Screen == screen)
+            {
+                Util.Log.Debug($"Screen activated (already handled): {screenType.Name}");
+                return;
+            }
+
             var handler = factory(screen);
             HandlerStack.Push(handler);
             Util.Log.Debug($"Screen activated: {screenType.Name} -> pushed handler");
@@ -130,6 +138,15 @@ namespace OniAccess.Input
 
             var gameOptionsType = HarmonyLib.AccessTools.TypeByName("GameOptionsScreen");
             Register(gameOptionsType, screen => new Handlers.OptionsMenuHandler(screen));
+
+            var metricsType = HarmonyLib.AccessTools.TypeByName("MetricsOptionsScreen");
+            Register(metricsType, screen => new Handlers.OptionsMenuHandler(screen));
+
+            var feedbackType = HarmonyLib.AccessTools.TypeByName("FeedbackScreen");
+            Register(feedbackType, screen => new Handlers.OptionsMenuHandler(screen));
+
+            var creditsType = HarmonyLib.AccessTools.TypeByName("CreditsScreen");
+            Register(creditsType, screen => new Handlers.OptionsMenuHandler(screen));
 
             // RetiredColonyInfoScreen (KModalScreen -- colony summary, MENU-09)
             var retiredColonyType = HarmonyLib.AccessTools.TypeByName("RetiredColonyInfoScreen");
