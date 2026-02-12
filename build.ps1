@@ -51,6 +51,9 @@ Write-Host "Deployed DLL to $ModDir" -ForegroundColor Green
 # --- Patch mods.json ---
 # Ensures the mod entry has enabledForDlc covering both base game ("") and
 # Spaced Out ("EXPANSION1_ID"), crash_count reset to 0, enabled = true.
+# IMPORTANT: Must write UTF-8 WITHOUT BOM. PowerShell's -Encoding UTF8 adds
+# a BOM which corrupts the file for Unity's Mono JSON parser, causing the
+# game to silently discard all mod state and re-discover mods as disabled.
 if (Test-Path $ModsJson) {
     $json = Get-Content $ModsJson -Raw | ConvertFrom-Json
 
@@ -70,7 +73,8 @@ if (Test-Path $ModsJson) {
         Write-Host "Mod entry not found in mods.json - game will discover it on next launch." -ForegroundColor Yellow
         Write-Host "Enable it in the Mods screen, then future deploys will keep it enabled."
     } else {
-        $json | ConvertTo-Json -Depth 10 | Set-Content $ModsJson -Encoding UTF8
+        $jsonText = $json | ConvertTo-Json -Depth 10
+        [System.IO.File]::WriteAllText($ModsJson, $jsonText, [System.Text.UTF8Encoding]::new($false))
         Write-Host "Patched mods.json - mod is enabled." -ForegroundColor Green
     }
 } else {
