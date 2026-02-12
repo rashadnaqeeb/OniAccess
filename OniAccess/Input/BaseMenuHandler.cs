@@ -125,19 +125,12 @@ namespace OniAccess.Input
             bool ctrlHeld = InputUtil.CtrlHeld();
             bool altHeld = InputUtil.AltHeld();
 
-            // A-Z type-ahead (only when no Ctrl/Alt modifiers)
-            if (!ctrlHeld && !altHeld)
-            {
-                for (UnityEngine.KeyCode k = UnityEngine.KeyCode.A;
-                     k <= UnityEngine.KeyCode.Z; k++)
-                {
-                    if (UnityEngine.Input.GetKeyDown(k))
-                    {
-                        _search.HandleKey(k, ctrlHeld, altHeld, this);
-                        return;
-                    }
-                }
-            }
+            // Type-ahead search: route keys through _search.HandleKey first.
+            // When active, captures Up/Down/Home/End/Backspace for result navigation.
+            // When inactive, captures A-Z (no modifiers) to start a new search.
+            // Escape is handled in HandleKeyDown via TryConsume.
+            if (TryRouteToSearch(ctrlHeld, altHeld))
+                return;
 
             // Navigation
             if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow))
@@ -190,6 +183,55 @@ namespace OniAccess.Input
             }
 
             base.Tick(); // F12 from ScreenHandler
+        }
+
+        private static readonly UnityEngine.KeyCode[] _searchNavKeys = {
+            UnityEngine.KeyCode.UpArrow, UnityEngine.KeyCode.DownArrow,
+            UnityEngine.KeyCode.Home, UnityEngine.KeyCode.End,
+            UnityEngine.KeyCode.Backspace,
+        };
+
+        /// <summary>
+        /// Route keys through _search.HandleKey before standard navigation.
+        /// Returns true if the search consumed the key.
+        /// </summary>
+        private bool TryRouteToSearch(bool ctrlHeld, bool altHeld)
+        {
+            // A-Z (no modifiers) — start or continue search
+            if (!ctrlHeld && !altHeld)
+            {
+                for (var k = UnityEngine.KeyCode.A; k <= UnityEngine.KeyCode.Z; k++)
+                {
+                    if (UnityEngine.Input.GetKeyDown(k))
+                        return _search.HandleKey(k, ctrlHeld, altHeld, this);
+                }
+            }
+
+            // Navigation keys captured by search when active
+            for (int i = 0; i < _searchNavKeys.Length; i++)
+            {
+                if (UnityEngine.Input.GetKeyDown(_searchNavKeys[i]))
+                    return _search.HandleKey(_searchNavKeys[i], ctrlHeld, altHeld, this);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Intercept Escape via KButtonEvent when search is active.
+        /// Clears search instead of letting the game close the screen.
+        /// Subclasses that override must call base.HandleKeyDown first.
+        /// </summary>
+        public override bool HandleKeyDown(KButtonEvent e)
+        {
+            if (_search.IsSearchActive && e.TryConsume(Action.Escape))
+            {
+                _search.Clear();
+                Speech.SpeechPipeline.SpeakInterrupt("Search cleared");
+                return true;
+            }
+
+            return false;
         }
 
         // ========================================

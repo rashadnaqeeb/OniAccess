@@ -481,6 +481,8 @@ namespace OniAccess.Input.Handlers
         /// </summary>
         public override bool HandleKeyDown(KButtonEvent e)
         {
+            if (base.HandleKeyDown(e)) return true;
+
             if (_isEditingText)
             {
                 // Escape cancels text edit
