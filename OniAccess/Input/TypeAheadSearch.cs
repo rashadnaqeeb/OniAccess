@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
+
+[assembly: InternalsVisibleTo("OniAccess.Tests")]
 
 namespace OniAccess.Input
 {
@@ -38,11 +41,19 @@ namespace OniAccess.Input
         // Stored reference to the current searchable context, set each HandleKey call
         private ISearchable _searchable;
 
-        public TypeAheadSearch()
+        // Injectable time source for testability (avoids Unity dependency in offline tests)
+        private readonly System.Func<float> _getTime;
+
+        public TypeAheadSearch() : this(null) { }
+
+        internal TypeAheadSearch(System.Func<float> timeSource)
         {
+            _getTime = timeSource ?? DefaultGetTime;
             _getLabelCached = i => _searchable.GetSearchLabel(i);
             _moveToIndexCached = i => _searchable.SearchMoveTo(i);
         }
+
+        private static float DefaultGetTime() => Time.realtimeSinceStartup;
 
         /// <summary>
         /// Time in seconds before the search buffer resets on new input.
@@ -84,11 +95,11 @@ namespace OniAccess.Input
         /// </summary>
         public string AddChar(char c)
         {
-            if (UnityEngine.Time.realtimeSinceStartup - _lastTime > Timeout)
+            if (_getTime() - _lastTime > Timeout)
                 _buffer.Clear();
 
             _buffer.Append(c);
-            _lastTime = UnityEngine.Time.realtimeSinceStartup;
+            _lastTime = _getTime();
             return _buffer.ToString();
         }
 
@@ -101,7 +112,7 @@ namespace OniAccess.Input
                 return false;
 
             _buffer.Length--;
-            _lastTime = UnityEngine.Time.realtimeSinceStartup;
+            _lastTime = _getTime();
             return true;
         }
 

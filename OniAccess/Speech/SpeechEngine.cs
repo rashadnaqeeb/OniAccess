@@ -52,13 +52,6 @@ namespace OniAccess.Speech
         public static bool IsAvailable => _available;
 
         /// <summary>
-        /// Callback hook for test capture. Called in Say() before Tolk_Output
-        /// so SpeechCapture (Plan 03) can intercept speech output.
-        /// The text passed is the final text that will be sent to Tolk.
-        /// </summary>
-        internal static System.Action<string> OnSpeechOutput;
-
-        /// <summary>
         /// Initialize Tolk. Must be called after SetDllDirectory points
         /// to the Tolk DLL location.
         /// </summary>
@@ -135,9 +128,6 @@ namespace OniAccess.Speech
 
             try
             {
-                // Notify test capture callback before output
-                OnSpeechOutput?.Invoke(text);
-
                 Tolk_Output(text, interrupt);
             }
             catch (Exception ex)
