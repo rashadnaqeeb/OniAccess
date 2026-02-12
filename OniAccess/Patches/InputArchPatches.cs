@@ -83,7 +83,7 @@ namespace OniAccess.Patches
     }
 
     /// <summary>
-    /// Guard against NullReferenceException in KModalButtonMenu.Unhide (BUG-03).
+    /// Guard against NullReferenceException in KModalButtonMenu.Unhide.
     /// When a child screen's Close event fires after the parent is already destroyed,
     /// panelRoot is null and the original Unhide crashes. Skip the call if panelRoot is null.
     /// </summary>
