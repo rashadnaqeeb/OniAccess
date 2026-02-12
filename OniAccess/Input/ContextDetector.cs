@@ -170,6 +170,9 @@ namespace OniAccess.Input
             // LoadScreen (KModalScreen -- save/load with two-level colony/save navigation)
             Register<LoadScreen>(screen => new Handlers.SaveLoadHandler(screen));
 
+            // ModsScreen (KModalScreen -- mod management from main menu)
+            Register<ModsScreen>(screen => new Handlers.ModsHandler(screen));
+
             Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
         }
 
