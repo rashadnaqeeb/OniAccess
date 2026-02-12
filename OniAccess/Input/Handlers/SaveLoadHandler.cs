@@ -32,6 +32,7 @@ namespace OniAccess.Input.Handlers
             _inColonySaveView = false;
             var entries = new List<HelpEntry>();
             entries.AddRange(CommonHelpEntries);
+            entries.AddRange(MenuHelpEntries);
             entries.AddRange(ListNavHelpEntries);
             HelpEntries = entries;
         }

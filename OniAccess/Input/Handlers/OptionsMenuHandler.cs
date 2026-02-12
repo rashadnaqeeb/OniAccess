@@ -27,6 +27,7 @@ namespace OniAccess.Input.Handlers
         {
             var entries = new List<HelpEntry>();
             entries.AddRange(CommonHelpEntries);
+            entries.AddRange(MenuHelpEntries);
             entries.AddRange(ListNavHelpEntries);
             HelpEntries = entries;
         }
@@ -77,7 +78,7 @@ namespace OniAccess.Input.Handlers
                 var kbutton = buttonObjects[i].GetComponent<KButton>();
                 if (kbutton == null || !kbutton.isInteractable) continue;
 
-                string label = Traverse.Create(buttons[i]).Property("text")
+                string label = Traverse.Create(buttons[i]).Field("text")
                     .GetValue<string>();
                 if (string.IsNullOrEmpty(label)) continue;
 

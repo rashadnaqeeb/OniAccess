@@ -22,6 +22,7 @@ namespace OniAccess.Input.Handlers
         {
             var entries = new List<HelpEntry>();
             entries.AddRange(CommonHelpEntries);
+            entries.AddRange(MenuHelpEntries);
             entries.AddRange(ListNavHelpEntries);
             HelpEntries = entries;
         }
@@ -48,10 +49,11 @@ namespace OniAccess.Input.Handlers
             }
 
             // Walk buttonParent children for MakeButton-created buttons
-            var buttonParent = Traverse.Create(screen).Field("buttonParent")
-                .GetValue<UnityEngine.Transform>();
-            UnityEngine.Transform parent = buttonParent != null
-                ? buttonParent
+            // buttonParent is a GameObject (not Transform) per decompiled source
+            var buttonParentGO = Traverse.Create(screen).Field("buttonParent")
+                .GetValue<UnityEngine.GameObject>();
+            UnityEngine.Transform parent = buttonParentGO != null
+                ? buttonParentGO.transform
                 : screen.transform;
 
             for (int i = 0; i < parent.childCount; i++)

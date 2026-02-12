@@ -72,6 +72,7 @@ namespace OniAccess.Input.Handlers
         {
             var entries = new List<HelpEntry>();
             entries.AddRange(CommonHelpEntries);
+            entries.AddRange(MenuHelpEntries);
             entries.AddRange(ListNavHelpEntries);
             entries.Add(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
             HelpEntries = entries;
