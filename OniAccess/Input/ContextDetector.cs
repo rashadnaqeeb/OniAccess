@@ -127,6 +127,9 @@ namespace OniAccess.Input {
 			var gameOptionsType = HarmonyLib.AccessTools.TypeByName("GameOptionsScreen");
 			Register(gameOptionsType, screen => new Handlers.OptionsMenuHandler(screen));
 
+			var inputBindingsType = HarmonyLib.AccessTools.TypeByName("InputBindingsScreen");
+			Register(inputBindingsType, screen => new Handlers.KeyBindingsHandler(screen));
+
 			var metricsType = HarmonyLib.AccessTools.TypeByName("MetricsOptionsScreen");
 			Register(metricsType, screen => new Handlers.OptionsMenuHandler(screen));
 

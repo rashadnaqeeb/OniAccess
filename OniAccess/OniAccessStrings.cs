@@ -34,6 +34,7 @@ namespace STRINGS {
 			public static LocString DATA_OPTIONS = "Data options";
 			public static LocString FEEDBACK = "Feedback";
 			public static LocString CREDITS = "Credits";
+			public static LocString KEY_BINDINGS = "Key bindings";
 		}
 
 		public class HELP {
@@ -77,6 +78,13 @@ namespace STRINGS {
 			public static LocString CONVERT_ALL_TO_CLOUD = "Convert all to cloud";
 			public static LocString CONVERT_ALL_TO_LOCAL = "Convert all to local";
 			public static LocString DELETE = "Delete";
+		}
+
+		public class KEY_BINDINGS {
+			public static LocString UNBOUND = "Unbound";
+			public static LocString PRESS_KEY_FOR = "Press a key for {0}";
+			public static LocString RESET_ALL = "Reset all to defaults";
+			public static LocString BINDINGS_RESET = "All bindings reset to defaults";
 		}
 	}
 }
