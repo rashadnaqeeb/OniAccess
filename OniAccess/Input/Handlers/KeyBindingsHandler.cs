@@ -50,7 +50,6 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		private string _rebindActionName;
 
-		private UnityEngine.Coroutine _rediscoverCoroutine;
 		private UnityEngine.Coroutine _rebindCoroutine;
 
 		public KeyBindingsHandler(KScreen screen) : base(screen) {
@@ -80,38 +79,14 @@ namespace OniAccess.Input.Handlers {
 			_rebindActionName = null;
 
 			base.OnActivate();
-
-			// OnSpawn wires button click handlers one frame after Activate.
-			// Defer widget discovery so the entry pool is populated.
-			_rediscoverCoroutine = _screen.StartCoroutine(RediscoverAfterFrame());
 		}
 
 		public override void OnDeactivate() {
-			if (_rediscoverCoroutine != null) {
-				_screen.StopCoroutine(_rediscoverCoroutine);
-				_rediscoverCoroutine = null;
-			}
 			if (_rebindCoroutine != null) {
 				_screen.StopCoroutine(_rebindCoroutine);
 				_rebindCoroutine = null;
 			}
 			base.OnDeactivate();
-		}
-
-		private IEnumerator RediscoverAfterFrame() {
-			yield return null;
-			_rediscoverCoroutine = null;
-
-			int before = _widgets.Count;
-			DiscoverWidgets(_screen);
-			Log.Debug($"KeyBindingsHandler rediscovery: {before} -> {_widgets.Count} widgets");
-
-			_currentIndex = 0;
-			if (_widgets.Count > 0) {
-				string category = GetCurrentCategoryName();
-				string widgetText = GetWidgetSpeechText(_widgets[0]);
-				Speech.SpeechPipeline.SpeakInterrupt($"{DisplayName}, {category}, {widgetText}");
-			}
 		}
 
 		// ========================================

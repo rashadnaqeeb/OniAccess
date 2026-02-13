@@ -143,6 +143,10 @@ namespace OniAccess.Input {
 			var retiredColonyType = HarmonyLib.AccessTools.TypeByName("RetiredColonyInfoScreen");
 			Register(retiredColonyType, screen => new Handlers.ColonySummaryHandler(screen));
 
+			// ModeSelectScreen (Survival vs No Sweat -- first screen after New Game)
+			var modeSelectType = HarmonyLib.AccessTools.TypeByName("ModeSelectScreen");
+			Register(modeSelectType, screen => new Handlers.ColonySetupHandler(screen));
+
 			// ClusterCategorySelectionScreen (game mode select -- Survival/No Sweat/Custom)
 			var clusterCategoryType = HarmonyLib.AccessTools.TypeByName("ClusterCategorySelectionScreen");
 			Register(clusterCategoryType, screen => new Handlers.ColonySetupHandler(screen));

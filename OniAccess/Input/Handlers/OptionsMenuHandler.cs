@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using HarmonyLib;
 using OniAccess.Util;
@@ -32,8 +31,6 @@ namespace OniAccess.Input.Handlers {
 			entries.AddRange(ListNavHelpEntries);
 			HelpEntries = entries;
 		}
-
-		private UnityEngine.Coroutine _rediscoverCoroutine;
 
 		/// <summary>
 		/// Labels that are generic button text, not meaningful toggle descriptions.
@@ -68,40 +65,6 @@ namespace OniAccess.Input.Handlers {
 		public override void OnActivate() {
 			_displayName = GetDisplayNameForScreen(_screen);
 			base.OnActivate();
-
-			// Sub-screens need deferred re-discovery: OnSpawn (Unity Start) hasn't
-			// run yet during Activate, so labels aren't set and UIPool controls
-			// don't exist. Wait one frame for OnSpawn to complete, then re-discover.
-			string screenTypeName = _screen.GetType().Name;
-			if (screenTypeName != "OptionsMenuScreen") {
-				_rediscoverCoroutine = _screen.StartCoroutine(RediscoverAfterFrame());
-			}
-		}
-
-		public override void OnDeactivate() {
-			if (_rediscoverCoroutine != null) {
-				_screen.StopCoroutine(_rediscoverCoroutine);
-				_rediscoverCoroutine = null;
-			}
-			base.OnDeactivate();
-		}
-
-		private IEnumerator RediscoverAfterFrame() {
-			yield return null; // wait one frame for OnSpawn to complete
-			_rediscoverCoroutine = null;
-
-			int before = _widgets.Count;
-			DiscoverWidgets(_screen);
-			Log.Debug($"Rediscovery: {before} -> {_widgets.Count} widgets");
-
-			_currentIndex = 0;
-			if (_widgets.Count > 0) {
-				var w = _widgets[0];
-				string text = $"{DisplayName}, {GetWidgetSpeechText(w)}";
-				string tip = GetTooltipText(w);
-				if (tip != null) text = $"{text}, {tip}";
-				Speech.SpeechPipeline.SpeakInterrupt(text);
-			}
 		}
 
 		public override void DiscoverWidgets(KScreen screen) {

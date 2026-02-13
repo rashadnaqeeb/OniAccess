@@ -36,6 +36,14 @@ namespace OniAccess.Input {
 		protected int _currentIndex;
 		protected readonly TypeAheadSearch _search = new TypeAheadSearch();
 
+		/// <summary>
+		/// When true, Tick() will retry DiscoverWidgets once.
+		/// Set when OnActivate finds zero widgets — this happens when our Harmony
+		/// postfix fires inside base.OnSpawn() before the screen subclass finishes
+		/// setting up its UI in its own OnSpawn override.
+		/// </summary>
+		private bool _pendingRediscovery;
+
 		protected BaseMenuHandler(KScreen screen) : base(screen) { }
 
 		/// <summary>
@@ -92,11 +100,17 @@ namespace OniAccess.Input {
 			_search.Clear();
 
 			if (_widgets.Count > 0) {
+				_pendingRediscovery = false;
 				var w = _widgets[0];
 				string text = GetWidgetSpeechText(w);
 				string tip = GetTooltipText(w);
 				if (tip != null) text = $"{text}, {tip}";
 				Speech.SpeechPipeline.SpeakQueued(text);
+			} else {
+				// Screen may not be fully initialized yet (Harmony postfix fires
+				// inside base.OnSpawn before subclass finishes setup). Retry once
+				// on the next Tick when the UI is ready.
+				_pendingRediscovery = true;
 			}
 		}
 
@@ -118,6 +132,22 @@ namespace OniAccess.Input {
 		/// tooltip reading, and widget interaction.
 		/// </summary>
 		public override void Tick() {
+			// Deferred rediscovery: screen UI wasn't ready during OnActivate
+			// (Harmony postfix fired inside base.OnSpawn before subclass setup).
+			// Retry once now that the frame has advanced.
+			if (_pendingRediscovery) {
+				_pendingRediscovery = false;
+				DiscoverWidgets(_screen);
+				_currentIndex = 0;
+				if (_widgets.Count > 0) {
+					var w = _widgets[0];
+					string text = GetWidgetSpeechText(w);
+					string tip = GetTooltipText(w);
+					if (tip != null) text = $"{text}, {tip}";
+					Speech.SpeechPipeline.SpeakQueued(text);
+				}
+			}
+
 			bool ctrlHeld = InputUtil.CtrlHeld();
 			bool altHeld = InputUtil.AltHeld();
 
@@ -220,25 +250,34 @@ namespace OniAccess.Input {
 		/// game UI changes after DiscoverWidgets.
 		/// </summary>
 		protected virtual bool IsWidgetValid(WidgetInfo widget) {
-			if (widget == null || widget.GameObject == null) return false;
-			if (!widget.GameObject.activeInHierarchy) return false;
+			if (widget == null) return false;
+			// Some widgets (e.g., cluster entries) have null GameObject — valid by existence
+			if (widget.GameObject != null && !widget.GameObject.activeInHierarchy) return false;
 
+			// Check interactability for known component types.
+			// When the component isn't the expected type for the WidgetType
+			// (e.g., MultiToggle used as Button), fall through to the alive check
+			// rather than returning false.
 			switch (widget.Type) {
 				case WidgetType.Button: {
 						var btn = widget.Component as KButton;
-						return btn != null && btn.isInteractable;
+						if (btn != null) return btn.isInteractable;
+						break;
 					}
 				case WidgetType.Toggle: {
 						var toggle = widget.Component as KToggle;
-						return toggle != null && toggle.IsInteractable();
+						if (toggle != null) return toggle.IsInteractable();
+						break;
 					}
 				case WidgetType.Slider: {
 						var slider = widget.Component as KSlider;
-						return slider != null && slider.interactable;
+						if (slider != null) return slider.interactable;
+						break;
 					}
-				default:
-					return widget.Component != null;
 			}
+
+			// Fallback: component is alive, or widget has no component (label-only)
+			return widget.Component != null || widget.GameObject != null;
 		}
 
 		// ========================================

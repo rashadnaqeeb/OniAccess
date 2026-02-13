@@ -13,17 +13,14 @@ namespace OniAccess.Input.Handlers {
 	/// the containers). Action buttons (Workshop, Uninstall, Dismiss, Close) are separate
 	/// serialized fields.
 	///
-	/// Widget discovery is deferred to the first Tick because the language buttons are
-	/// dynamically created in OnSpawn (Unity Start), which runs after our Harmony postfix
-	/// on Activate.
+	/// Language buttons are dynamically created in OnSpawn, which runs after our Harmony
+	/// postfix on Activate — BaseMenuHandler's deferred rediscovery handles this automatically.
 	///
 	/// All widgets are KButtons, so base IsWidgetValid and ActivateCurrentWidget handle
 	/// them correctly. GetWidgetSpeechText is overridden to prefix "selected" on the
 	/// active language.
 	/// </summary>
 	public class TranslationHandler: BaseMenuHandler {
-		private bool _pendingDiscovery = true;
-
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.TRANSLATIONS;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
@@ -33,34 +30,6 @@ namespace OniAccess.Input.Handlers {
 			entries.AddRange(MenuHelpEntries);
 			entries.AddRange(ListNavHelpEntries);
 			HelpEntries = entries;
-		}
-
-		/// <summary>
-		/// Speak the screen name but skip widget discovery.
-		/// Language buttons don't exist yet — OnSpawn hasn't fired.
-		/// </summary>
-		public override void OnActivate() {
-			Speech.SpeechPipeline.SpeakInterrupt(DisplayName);
-			_currentIndex = 0;
-			_search.Clear();
-			_pendingDiscovery = true;
-		}
-
-		/// <summary>
-		/// On the first Tick after activation, discover widgets and speak the first one.
-		/// By this point OnSpawn has run and RebuildScreen has created the real buttons.
-		/// </summary>
-		public override void Tick() {
-			if (_pendingDiscovery) {
-				_pendingDiscovery = false;
-				DiscoverWidgets(_screen);
-				_currentIndex = 0;
-				if (_widgets.Count > 0) {
-					Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
-				}
-			}
-
-			base.Tick();
 		}
 
 		protected override string GetWidgetSpeechText(WidgetInfo widget) {

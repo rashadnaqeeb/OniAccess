@@ -3,13 +3,15 @@ using HarmonyLib;
 
 namespace OniAccess.Input.Handlers {
 	/// <summary>
-	/// Handler for ClusterCategorySelectionScreen (game mode select) and
+	/// Handler for ModeSelectScreen (Survival vs No Sweat),
+	/// ClusterCategorySelectionScreen (game mode select), and
 	/// ColonyDestinationSelectScreen (asteroid selection + settings).
 	///
-	/// Both screens are part of the new game setup flow. This handler serves both
-	/// because they share semantics -- behavioral differences flow from which widgets
-	/// are present, not from fundamentally different navigation.
+	/// All three screens are part of the new game setup flow. This handler serves
+	/// them all because they share semantics -- behavioral differences flow from
+	/// which widgets are present, not from fundamentally different navigation.
 	///
+	/// ModeSelectScreen: two MultiToggle buttons (Survival / No Sweat).
 	/// ClusterCategorySelectionScreen: simple list of MultiToggle buttons for game modes.
 	/// ColonyDestinationSelectScreen: tabbed panels (clusters, settings, seed) with
 	/// Tab/Shift+Tab switching between panels.
@@ -50,7 +52,7 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		public override string DisplayName {
 			get {
-				if (IsClusterCategoryScreen)
+				if (IsClusterCategoryScreen || IsModeSelectScreen)
 					return STRINGS.ONIACCESS.HANDLERS.GAME_MODE;
 				return STRINGS.ONIACCESS.HANDLERS.COLONY_DESTINATION;
 			}
@@ -63,6 +65,12 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		private bool IsClusterCategoryScreen =>
 			_screen != null && _screen.GetType().Name == "ClusterCategorySelectionScreen";
+
+		/// <summary>
+		/// Whether the active screen is ModeSelectScreen (Survival vs No Sweat).
+		/// </summary>
+		private bool IsModeSelectScreen =>
+			_screen != null && _screen.GetType().Name == "ModeSelectScreen";
 
 		public ColonySetupHandler(KScreen screen) : base(screen) {
 			var entries = new List<HelpEntry>();
@@ -77,7 +85,7 @@ namespace OniAccess.Input.Handlers {
 		// ========================================
 
 		protected override void NavigateTabForward() {
-			if (IsClusterCategoryScreen) return;
+			if (IsClusterCategoryScreen || IsModeSelectScreen) return;
 
 			int prev = _currentPanel;
 			_currentPanel = (_currentPanel + 1) % PanelCount;
@@ -86,7 +94,7 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		protected override void NavigateTabBackward() {
-			if (IsClusterCategoryScreen) return;
+			if (IsClusterCategoryScreen || IsModeSelectScreen) return;
 
 			int prev = _currentPanel;
 			_currentPanel = (_currentPanel - 1 + PanelCount) % PanelCount;
@@ -123,7 +131,9 @@ namespace OniAccess.Input.Handlers {
 		public override void DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
-			if (IsClusterCategoryScreen) {
+			if (IsModeSelectScreen) {
+				DiscoverModeSelectWidgets(screen);
+			} else if (IsClusterCategoryScreen) {
 				DiscoverGameModeWidgets(screen);
 			} else {
 				switch (_currentPanel) {
@@ -173,6 +183,41 @@ namespace OniAccess.Input.Handlers {
 					Component = multiToggle,
 					Type = WidgetType.Button,
 					GameObject = multiToggle.gameObject
+				});
+			}
+		}
+
+		/// <summary>
+		/// Discover Survival / No Sweat buttons on ModeSelectScreen.
+		/// Each button is a MultiToggle field. We use the game's localized title
+		/// strings and pair with description strings for a composite label.
+		/// </summary>
+		private void DiscoverModeSelectWidgets(KScreen screen) {
+			var screenTraverse = Traverse.Create(screen);
+
+			var survivalToggle = screenTraverse.Field("survivalButton").GetValue<MultiToggle>();
+			if (survivalToggle != null && survivalToggle.gameObject.activeInHierarchy) {
+				string name = STRINGS.UI.FRONTEND.MODESELECTSCREEN.SURVIVAL_TITLE;
+				string desc = STRINGS.UI.FRONTEND.MODESELECTSCREEN.SURVIVAL_DESC;
+				string label = $"{name}, {Speech.TextFilter.FilterForSpeech(desc)}";
+				_widgets.Add(new WidgetInfo {
+					Label = label,
+					Component = survivalToggle,
+					Type = WidgetType.Button,
+					GameObject = survivalToggle.gameObject
+				});
+			}
+
+			var nosweatToggle = screenTraverse.Field("nosweatButton").GetValue<MultiToggle>();
+			if (nosweatToggle != null && nosweatToggle.gameObject.activeInHierarchy) {
+				string name = STRINGS.UI.FRONTEND.MODESELECTSCREEN.NOSWEAT_TITLE;
+				string desc = STRINGS.UI.FRONTEND.MODESELECTSCREEN.NOSWEAT_DESC;
+				string label = $"{name}, {Speech.TextFilter.FilterForSpeech(desc)}";
+				_widgets.Add(new WidgetInfo {
+					Label = label,
+					Component = nosweatToggle,
+					Type = WidgetType.Button,
+					GameObject = nosweatToggle.gameObject
 				});
 			}
 		}
@@ -331,7 +376,7 @@ namespace OniAccess.Input.Handlers {
 			var widget = _widgets[_currentIndex];
 
 			// Game mode: MultiToggle click
-			if (IsClusterCategoryScreen && widget.Component is MultiToggle toggle) {
+			if ((IsClusterCategoryScreen || IsModeSelectScreen) && widget.Component is MultiToggle toggle) {
 				toggle.onClick?.Invoke();
 				return;
 			}
