@@ -8,11 +8,12 @@ using UnityEngine.UI;
 namespace OniAccess.Input.Handlers {
 	/// <summary>
 	/// Handler for options screens: OptionsMenuScreen (top-level menu),
-	/// AudioOptionsScreen, GraphicsOptionsScreen, and GameOptionsScreen.
+	/// AudioOptionsScreen, GraphicsOptionsScreen, GameOptionsScreen,
+	/// FeedbackScreen, MetricsOptionsScreen, and CreditsScreen.
 	///
 	/// OptionsMenuScreen inherits KModalButtonMenu and uses the buttons array pattern.
-	/// Sub-screens (Audio, Graphics, Game) inherit KModalScreen and contain sliders,
-	/// toggles, and buttons discovered via GetComponentsInChildren.
+	/// Sub-screens inherit KModalScreen and contain sliders, toggles, buttons,
+	/// and descriptive text discovered via GetComponentsInChildren.
 	///
 	/// Display name is computed from the screen type on activation.
 	/// BaseMenuHandler already handles slider speech ("label, value"),
@@ -153,10 +154,9 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
-		/// Discover widgets for options sub-screens (Audio, Graphics, Game).
-		/// Finds sliders, toggles (KToggle, MultiToggle, HierarchyReferences pattern),
-		/// dropdowns, and buttons with associated labels.
-		/// Filters out mouse-only controls (drag handles, resize handles, scrollbars).
+		/// Discover widgets for options sub-screens.
+		/// Routes Credits to DiscoverCreditsWidgets, prepends description Labels
+		/// for Feedback/Data, then finds sliders, toggles, dropdowns, and buttons.
 		/// </summary>
 		private void DiscoverOptionWidgets(KScreen screen) {
 			string screenName = screen.GetType().Name;
@@ -824,32 +824,6 @@ namespace OniAccess.Input.Handlers {
 				if (lt != null) {
 					string cleaned = CleanLabel(lt.text);
 					if (cleaned != null) return cleaned;
-				}
-			}
-
-			return null;
-		}
-
-		/// <summary>
-		/// Search grandparent-level siblings for a label. Useful when a slider's label LocText
-		/// is in a sibling container one level above (e.g., GameOptionsScreen camera speed).
-		/// </summary>
-		private string FindGrandparentLabel(UnityEngine.GameObject widgetObj) {
-			var grandparent = widgetObj.transform.parent?.parent;
-			if (grandparent == null) return null;
-
-			// Search direct children of grandparent that are NOT the widget's parent
-			var widgetParent = widgetObj.transform.parent;
-			for (int i = 0; i < grandparent.childCount; i++) {
-				var sibling = grandparent.GetChild(i);
-				if (sibling == widgetParent) continue;
-
-				var lt = sibling.GetComponent<LocText>();
-				if (lt == null) lt = sibling.GetComponentInChildren<LocText>();
-				if (lt != null) {
-					string cleaned = CleanLabel(lt.text);
-					if (cleaned != null && !_ambiguousLabels.Contains(cleaned))
-						return cleaned;
 				}
 			}
 
