@@ -16,7 +16,12 @@ namespace OniAccess.Input.Handlers {
 	/// - "View other colonies" button in detail view also returns to explorer
 	/// </summary>
 	public class ColonySummaryHandler: BaseMenuHandler {
+		private const int SectionMain = 0;
+		private const int SectionAchievements = 1;
+		private const int SectionCount = 2;
+
 		private bool _inColonyDetail;
+		private int _currentSection;
 
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.COLONY_SUMMARY;
 
@@ -26,24 +31,30 @@ namespace OniAccess.Input.Handlers {
 			var entries = new List<HelpEntry>();
 			entries.AddRange(MenuHelpEntries);
 			entries.AddRange(ListNavHelpEntries);
+			entries.Add(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
 			HelpEntries = entries;
 		}
 
 		public override void OnActivate() {
 			_inColonyDetail = false;
+			_currentSection = SectionMain;
 			base.OnActivate();
 		}
 
 		public override void DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
-			if (_inColonyDetail) {
-				DiscoverDetailViewWidgets(screen);
+			if (!_inColonyDetail) {
+				if (_currentSection == SectionAchievements)
+					DiscoverAchievementWidgets(screen);
+				else
+					DiscoverExplorerViewWidgets(screen);
 			} else {
-				DiscoverExplorerViewWidgets(screen);
+				if (_currentSection == SectionAchievements)
+					DiscoverAchievementWidgets(screen);
+				else
+					DiscoverDetailViewWidgets(screen);
 			}
-
-			Util.Log.Debug($"ColonySummaryHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
 
 		// ========================================
@@ -87,12 +98,12 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		// ========================================
-		// DETAIL VIEW (colony stats and achievements)
+		// DETAIL VIEW (colony stats)
 		// ========================================
 
 		/// <summary>
 		/// Discover widgets in the colony detail view: colony header,
-		/// stat blocks, achievement entries, and navigation buttons.
+		/// stat blocks, and navigation buttons.
 		/// </summary>
 		private void DiscoverDetailViewWidgets(KScreen screen) {
 			// Colony name header
@@ -122,8 +133,9 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Find stat entries in statsContainer
-			var statsContainer = Traverse.Create(screen).Field("statsContainer")
-				.GetValue<UnityEngine.Transform>();
+			var statsContainerGO = Traverse.Create(screen).Field("statsContainer")
+				.GetValue<UnityEngine.GameObject>();
+			var statsContainer = statsContainerGO != null ? statsContainerGO.transform : null;
 			if (statsContainer != null) {
 				for (int i = 0; i < statsContainer.childCount; i++) {
 					var child = statsContainer.GetChild(i);
@@ -141,29 +153,62 @@ namespace OniAccess.Input.Handlers {
 				}
 			}
 
-			// Find achievement entries in achievementsContainer
-			var achievementsContainer = Traverse.Create(screen).Field("achievementsContainer")
-				.GetValue<UnityEngine.Transform>();
-			if (achievementsContainer != null) {
-				for (int i = 0; i < achievementsContainer.childCount; i++) {
-					var child = achievementsContainer.GetChild(i);
-					if (child == null || !child.gameObject.activeInHierarchy) continue;
-
-					string achievementLabel = BuildAchievementLabel(child);
-					if (string.IsNullOrEmpty(achievementLabel)) continue;
-
-					_widgets.Add(new WidgetInfo {
-						Label = achievementLabel,
-						Component = null,
-						Type = WidgetType.Label,
-						GameObject = child.gameObject
-					});
-				}
-			}
-
 			// Navigation buttons: "View other colonies" and "Close"
 			AddScreenButton(screen, "viewOtherColoniesButton", "View other colonies");
 			AddScreenButton(screen, "closeScreenButton", "Close");
+		}
+
+		// ========================================
+		// ACHIEVEMENTS VIEW
+		// ========================================
+
+		/// <summary>
+		/// Discover achievement entries from the achievementsContainer.
+		/// Inserts "Victory conditions" and "Achievements" headers to separate
+		/// the two groups (victory conditions are placed first by the game).
+		/// Texts are read live at speech time via GetWidgetSpeechText.
+		/// </summary>
+		private void DiscoverAchievementWidgets(KScreen screen) {
+			var achievementsContainerGO = Traverse.Create(screen).Field("achievementsContainer")
+				.GetValue<UnityEngine.GameObject>();
+			var achievementsContainer = achievementsContainerGO != null
+				? achievementsContainerGO.transform : null;
+			if (achievementsContainer == null) return;
+
+			// Build set of victory condition GameObjects via achievementEntries dict
+			var victoryGOs = new HashSet<UnityEngine.GameObject>();
+			var achievementEntries = Traverse.Create(screen).Field("achievementEntries")
+				.GetValue<System.Collections.Generic.Dictionary<string, UnityEngine.GameObject>>();
+			if (achievementEntries != null) {
+				foreach (var kvp in achievementEntries) {
+					var achievement = Db.Get().ColonyAchievements.TryGet(kvp.Key);
+					if (achievement != null && achievement.isVictoryCondition)
+						victoryGOs.Add(kvp.Value);
+				}
+			}
+
+			bool addedVictoryHeader = false;
+			for (int i = 0; i < achievementsContainer.childCount; i++) {
+				var child = achievementsContainer.GetChild(i);
+				if (child == null || !child.gameObject.activeInHierarchy) continue;
+
+				if (!addedVictoryHeader && victoryGOs.Contains(child.gameObject)) {
+					addedVictoryHeader = true;
+					_widgets.Add(new WidgetInfo {
+						Label = STRINGS.ONIACCESS.PANELS.VICTORY_CONDITIONS,
+						Component = null,
+						Type = WidgetType.Label,
+						GameObject = screen.gameObject
+					});
+				}
+
+				_widgets.Add(new WidgetInfo {
+					Label = "achievement",
+					Component = null,
+					Type = WidgetType.Label,
+					GameObject = child.gameObject
+				});
+			}
 		}
 
 		// ========================================
@@ -186,6 +231,7 @@ namespace OniAccess.Input.Handlers {
 					// Click the colony entry to open detail view
 					kbutton.SignalClick(KKeyCode.Mouse0);
 					_inColonyDetail = true;
+					_currentSection = SectionMain;
 
 					// Rediscover widgets for the detail view
 					DiscoverWidgets(_screen);
@@ -239,6 +285,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			_inColonyDetail = false;
+			_currentSection = SectionMain;
 			DiscoverWidgets(_screen);
 			_currentIndex = 0;
 
@@ -246,6 +293,101 @@ namespace OniAccess.Input.Handlers {
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
 			}
+		}
+
+		// ========================================
+		// TAB NAVIGATION (section switching)
+		// ========================================
+
+		protected override void NavigateTabForward() {
+			_currentSection = (_currentSection + 1) % SectionCount;
+			if (_currentSection == 0) PlayWrapSound();
+			RediscoverForCurrentSection();
+		}
+
+		protected override void NavigateTabBackward() {
+			int prev = _currentSection;
+			_currentSection = (_currentSection - 1 + SectionCount) % SectionCount;
+			if (_currentSection == SectionCount - 1 && prev == 0) PlayWrapSound();
+			RediscoverForCurrentSection();
+		}
+
+		private void RediscoverForCurrentSection() {
+			DiscoverWidgets(_screen);
+			string sectionName = GetSectionName(_currentSection);
+			Speech.SpeechPipeline.SpeakInterrupt(sectionName);
+			if (_widgets.Count > 0) {
+				_currentIndex = 0;
+				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
+			}
+		}
+
+		private static string GetSectionName(int section) {
+			switch (section) {
+				case SectionAchievements: return STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS;
+				default: return STRINGS.ONIACCESS.PANELS.STATS;
+			}
+		}
+
+		// ========================================
+		// WIDGET VALIDATION
+		// ========================================
+
+		/// <summary>
+		/// Override to accept Label widgets which have null Component but
+		/// are valid navigation targets (stat/achievement entries).
+		/// </summary>
+		protected override bool IsWidgetValid(WidgetInfo widget) {
+			if (widget == null || widget.GameObject == null) return false;
+			if (!widget.GameObject.activeInHierarchy) return false;
+			if (widget.Type == WidgetType.Label) return true;
+			return base.IsWidgetValid(widget);
+		}
+
+		// ========================================
+		// WIDGET SPEECH
+		// ========================================
+
+		/// <summary>
+		/// For achievement widgets, read LocTexts live because the game
+		/// populates them after our DiscoverWidgets runs.
+		/// </summary>
+		protected override string GetWidgetSpeechText(WidgetInfo widget) {
+			if (_currentSection == SectionAchievements
+				&& widget.GameObject != null
+				&& widget.Label == "achievement") {
+				return ReadAchievementText(widget.GameObject.transform);
+			}
+			return base.GetWidgetSpeechText(widget);
+		}
+
+		/// <summary>
+		/// Read achievement name and description live from HierarchyReferences.
+		/// Uses GetParsedText() instead of .text because the game sets text via
+		/// LocText.SetText() which updates TMP's internal char buffer but not m_text.
+		/// </summary>
+		private string ReadAchievementText(UnityEngine.Transform entry) {
+			string name = null;
+			string desc = null;
+
+			var hierRef = entry.GetComponent<HierarchyReferences>();
+			if (hierRef != null) {
+				if (hierRef.HasReference("nameLabel")) {
+					var nameLabel = hierRef.GetReference<LocText>("nameLabel");
+					if (nameLabel != null)
+						name = nameLabel.GetParsedText();
+				}
+				if (hierRef.HasReference("descriptionLabel")) {
+					var descLabel = hierRef.GetReference<LocText>("descriptionLabel");
+					if (descLabel != null)
+						desc = descLabel.GetParsedText();
+				}
+			}
+
+			if (string.IsNullOrEmpty(name)) return "achievement";
+			if (!string.IsNullOrEmpty(desc) && desc != name)
+				return $"{name}, {desc}";
+			return name;
 		}
 
 		// ========================================
@@ -266,32 +408,6 @@ namespace OniAccess.Input.Handlers {
 				}
 			}
 			return null;
-		}
-
-		/// <summary>
-		/// Build an achievement label from an achievement entry's LocText children.
-		/// Combines name and status (locked/unlocked) into a single label.
-		/// </summary>
-		private string BuildAchievementLabel(UnityEngine.Transform entry) {
-			var locTexts = entry.GetComponentsInChildren<LocText>();
-			if (locTexts == null || locTexts.Length == 0) return null;
-
-			string name = null;
-			string status = null;
-
-			foreach (var lt in locTexts) {
-				if (lt == null || string.IsNullOrEmpty(lt.text)) continue;
-				if (name == null) {
-					name = lt.text;
-				} else if (status == null) {
-					status = lt.text;
-				}
-			}
-
-			if (string.IsNullOrEmpty(name)) return null;
-			if (!string.IsNullOrEmpty(status))
-				return $"{name}, {status}";
-			return name;
 		}
 
 		/// <summary>

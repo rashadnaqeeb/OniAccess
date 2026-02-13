@@ -53,6 +53,9 @@ namespace STRINGS {
 			public static LocString CLUSTERS = "Clusters";
 			public static LocString SETTINGS = "Settings";
 			public static LocString SEED = "World seed";
+			public static LocString ACHIEVEMENTS = "Achievements";
+			public static LocString VICTORY_CONDITIONS = "Victory conditions";
+			public static LocString STATS = "Stats";
 		}
 	}
 }
