@@ -239,8 +239,11 @@ namespace OniAccess.Input.Handlers {
 				string key = clusterKeys[i];
 				if (!asteroidData.TryGetValue(key, out var belt)) continue;
 
-				// Build composite label: name, difficulty, traits
-				string name = belt.properName;
+				// Cluster name: properName is a string table key, resolve via Strings.Get
+				string name = "";
+				string rawName = belt.properName;
+				if (!string.IsNullOrEmpty(rawName))
+					name = Strings.Get(rawName);
 				if (string.IsNullOrEmpty(name))
 					name = belt.startWorldName;
 
@@ -250,7 +253,7 @@ namespace OniAccess.Input.Handlers {
 					ColonyDestinationAsteroidBeltData.survivalOptions.Count - 1);
 				string difficulty = ColonyDestinationAsteroidBeltData.survivalOptions[diffIdx].first;
 
-				// Get trait descriptors
+				// World traits (filtered: skip empty separators from the visual list)
 				var traits = belt.GetTraitDescriptors();
 				var traitNames = new List<string>();
 				foreach (var trait in traits) {
@@ -259,13 +262,9 @@ namespace OniAccess.Input.Handlers {
 						traitNames.Add(traitText);
 				}
 
-				string traitStr = traitNames.Count > 0
-					? string.Join(", ", traitNames)
-					: "";
-
-				string label = !string.IsNullOrEmpty(traitStr)
-					? $"{Speech.TextFilter.FilterForSpeech(name)}, {Speech.TextFilter.FilterForSpeech(difficulty)}, {traitStr}"
-					: $"{Speech.TextFilter.FilterForSpeech(name)}, {Speech.TextFilter.FilterForSpeech(difficulty)}";
+				string label = $"{Speech.TextFilter.FilterForSpeech(name)}, {Speech.TextFilter.FilterForSpeech(difficulty)}";
+				if (traitNames.Count > 0)
+					label += ", " + string.Join(", ", traitNames);
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
@@ -420,7 +419,10 @@ namespace OniAccess.Input.Handlers {
 				var onClicked = pt.Field("OnAsteroidClicked")
 					.GetValue<System.Action<ColonyDestinationAsteroidBeltData>>();
 				onClicked?.Invoke(belt);
-				Speech.SpeechPipeline.SpeakInterrupt($"Selected, {Speech.TextFilter.FilterForSpeech(belt.properName)}");
+				string selectedName = Strings.Get(belt.properName);
+				if (string.IsNullOrEmpty(selectedName))
+					selectedName = belt.startWorldName;
+				Speech.SpeechPipeline.SpeakInterrupt($"Selected, {Speech.TextFilter.FilterForSpeech(selectedName)}");
 			}
 		}
 

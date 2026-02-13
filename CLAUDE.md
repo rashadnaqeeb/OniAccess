@@ -45,11 +45,12 @@ Use the game's localized text (`STRINGS` namespace, `LocText` components), UI st
 All text the mod speaks or displays must be a `LocString` field in `OniAccessStrings.cs` under the `STRINGS.ONIACCESS` hierarchy (e.g., `STRINGS.ONIACCESS.HANDLERS.MAIN_MENU`). Never inline string literals for user-facing text.
 
 ### Concise announcements
-Users are experienced screen reader users. Announce name, state, value — nothing more.
+Users are experienced screen reader users. Strip fluff, never strip information. Announce all game-relevant data (name, state, value, traits, stats) — just without filler words or UX hand-holding.
 - No item counts ("3 of 10")
 - No navigation hints ("press Enter to select") unless unusual controls, and on a delay
 - No redundant context ("You are now in...")
 - No type suffixes when obvious ("Lumber button")
+- DO include all gameplay-relevant details (traits, difficulty, descriptions) — concise means no fluff, not less information
 
 ### Conscious hotkey management
 ONI has extensive hotkeys. Many are useless to blind players and can be overwritten. But every overwrite is a deliberate decision — document what the original hotkey did and why it's being replaced. See `docs/hotkey-reference.md` for the complete ONI key binding map, safe keys, and screen reader keys to avoid.
