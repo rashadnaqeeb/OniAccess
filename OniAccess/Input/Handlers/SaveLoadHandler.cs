@@ -52,72 +52,121 @@ namespace OniAccess.Input.Handlers {
 		/// <summary>
 		/// Discover colony entries in the colony list view.
 		/// Each colony shows: name, cycle, duplicant count, date.
+		/// Management buttons (Save Info, Convert All, Load More) bookend the list.
 		/// </summary>
 		private void DiscoverColonyList(KScreen screen) {
 			var traverse = Traverse.Create(screen);
 
-			// Access colonyListRoot Transform
-			UnityEngine.GameObject colonyListRoot = null;
+			// Access saveButtonRoot: the actual container for colony entry buttons.
+			// colonyListRoot contains unrelated HierarchyReferences we don't want.
+			UnityEngine.GameObject saveButtonRoot = null;
 			try {
-				colonyListRoot = traverse.Field("colonyListRoot")
+				saveButtonRoot = traverse.Field("saveButtonRoot")
 					.GetValue<UnityEngine.GameObject>();
 			} catch (System.Exception) { }
 
-			if (colonyListRoot == null || !colonyListRoot.activeInHierarchy) {
-				// Fallback: try finding colony entries from screen children directly
+			if (saveButtonRoot == null || !saveButtonRoot.activeInHierarchy) {
 				DiscoverColonyListFallback(screen);
 				return;
 			}
 
-			// Find colony entries: each is a HierarchyReferences entry
-			var entries = colonyListRoot.GetComponentsInChildren<HierarchyReferences>(true);
-			if (entries == null) return;
+			// Management buttons at top of list
+			AddTraverseButton(traverse, "colonyInfoButton",
+				STRINGS.ONIACCESS.SAVE_LOAD.SAVE_INFO);
+			AddTraverseButton(traverse, "colonyCloudButton",
+				STRINGS.ONIACCESS.SAVE_LOAD.CONVERT_ALL_TO_CLOUD);
+			AddTraverseButton(traverse, "colonyLocalButton",
+				STRINGS.ONIACCESS.SAVE_LOAD.CONVERT_ALL_TO_LOCAL);
 
-			foreach (var entry in entries) {
-				if (entry == null || !entry.gameObject.activeInHierarchy) continue;
+			// Walk direct children of saveButtonRoot for colony entries
+			var root = saveButtonRoot.transform;
+			for (int i = 0; i < root.childCount; i++) {
+				var child = root.GetChild(i);
+				if (child == null || !child.gameObject.activeInHierarchy) continue;
 
-				// Build composite label from colony info
+				var entry = child.GetComponent<HierarchyReferences>();
+				if (entry == null) continue;
+
 				string label = BuildColonyEntryLabel(entry);
 				if (string.IsNullOrEmpty(label)) continue;
 
-				// Find the clickable button on this colony entry
-				var kbutton = entry.GetComponent<KButton>();
-				if (kbutton == null) {
-					kbutton = entry.GetComponentInChildren<KButton>();
+				// Find clickable button via named "Button" reference first
+				KButton kbutton = null;
+				if (entry.HasReference("Button")) {
+					var btnRef = entry.GetReference("Button");
+					if (btnRef != null)
+						kbutton = btnRef.gameObject.GetComponent<KButton>();
 				}
+				if (kbutton == null)
+					kbutton = entry.GetComponent<KButton>();
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
 					Component = kbutton,
 					Type = kbutton != null ? WidgetType.Button : WidgetType.Label,
-					GameObject = entry.gameObject
+					GameObject = entry.gameObject,
+					Tag = "colony_entry"
 				});
 			}
+
+			// Load More button at bottom of list
+			AddTraverseButton(traverse, "loadMoreButton", null);
+		}
+
+		/// <summary>
+		/// Add a management button widget from a Traverse field.
+		/// Only adds if the field resolves to an active, interactable KButton.
+		/// Reads child LocText for the label, falling back to the provided string.
+		/// </summary>
+		private void AddTraverseButton(Traverse traverse, string fieldName, string fallbackLabel) {
+			try {
+				var button = traverse.Field(fieldName).GetValue<KButton>();
+				if (button == null || !button.gameObject.activeInHierarchy
+					|| !button.isInteractable) return;
+
+				string label = null;
+				var locText = button.GetComponentInChildren<LocText>();
+				if (locText != null && !string.IsNullOrEmpty(locText.text))
+					label = locText.text.Trim();
+				if (string.IsNullOrEmpty(label))
+					label = fallbackLabel;
+				if (string.IsNullOrEmpty(label)) return;
+
+				_widgets.Add(new WidgetInfo {
+					Label = label,
+					Component = button,
+					Type = WidgetType.Button,
+					GameObject = button.gameObject
+				});
+			} catch (System.Exception) { }
 		}
 
 		/// <summary>
 		/// Build a composite label for a colony list entry.
-		/// Format: "colony name, cycle N, X duplicants, date"
+		/// Format: "colony name, cycle N, X duplicants, date, cloud/local status"
 		/// </summary>
 		private string BuildColonyEntryLabel(HierarchyReferences entry) {
 			var parts = new List<string>();
 
-			// Colony name from HeaderTitle
 			string headerTitle = GetReferenceText(entry, "HeaderTitle");
 			if (!string.IsNullOrEmpty(headerTitle)) {
 				parts.Add(headerTitle);
 			}
 
-			// Save info from SaveTitle (contains cycle count and other info)
 			string saveTitle = GetReferenceText(entry, "SaveTitle");
 			if (!string.IsNullOrEmpty(saveTitle)) {
 				parts.Add(saveTitle);
 			}
 
-			// Date from HeaderDate
 			string headerDate = GetReferenceText(entry, "HeaderDate");
 			if (!string.IsNullOrEmpty(headerDate)) {
 				parts.Add(headerDate);
+			}
+
+			// Cloud/local status (shown when cloud saves are visible)
+			string locationText = GetReferenceText(entry, "LocationText");
+			if (!string.IsNullOrEmpty(locationText)) {
+				parts.Add(locationText);
 			}
 
 			return parts.Count > 0 ? string.Join(", ", parts) : null;
@@ -125,22 +174,24 @@ namespace OniAccess.Input.Handlers {
 
 		/// <summary>
 		/// Get text from a named reference within a HierarchyReferences component.
+		/// Uses non-generic GetReference to avoid type-check failures (LoadScreen
+		/// stores references as RectTransform, not LocText).
 		/// </summary>
 		private string GetReferenceText(HierarchyReferences refs, string refName) {
+			if (!refs.HasReference(refName)) return null;
 			try {
-				var obj = refs.GetReference<LocText>(refName);
-				if (obj != null && !string.IsNullOrEmpty(obj.text)) {
-					return obj.text.Trim();
-				}
-			} catch (System.Exception) {
-				// Reference may not exist in this entry
-			}
-
+				var component = refs.GetReference(refName);
+				if (component == null) return null;
+				var locText = component as LocText
+					?? component.gameObject.GetComponent<LocText>();
+				if (locText != null && !string.IsNullOrEmpty(locText.text))
+					return locText.text.Trim();
+			} catch (System.Exception) { }
 			return null;
 		}
 
 		/// <summary>
-		/// Fallback colony list discovery when colonyListRoot field is not accessible.
+		/// Fallback colony list discovery when saveButtonRoot field is not accessible.
 		/// Walks the screen's children for KButton instances with LocText labels.
 		/// </summary>
 		private void DiscoverColonyListFallback(KScreen screen) {
@@ -170,6 +221,7 @@ namespace OniAccess.Input.Handlers {
 		/// <summary>
 		/// Discover individual save entries for the selected colony.
 		/// Each save shows: save name, date, with auto-save/newest prefix if applicable.
+		/// Scoped to the Content container within colonyViewRoot, filtering for cloned entries.
 		/// </summary>
 		private void DiscoverColonySaves(KScreen screen) {
 			var traverse = Traverse.Create(screen);
@@ -181,35 +233,46 @@ namespace OniAccess.Input.Handlers {
 			} catch (System.Exception) { }
 
 			if (colonyViewRoot == null || !colonyViewRoot.activeInHierarchy) {
-				// If view root not active, fall back to colony list
 				_inColonySaveView = false;
 				DiscoverColonyList(screen);
 				return;
 			}
 
-			// Find save entries within the colony view
-			var entries = colonyViewRoot.GetComponentsInChildren<HierarchyReferences>(true);
-			if (entries == null || entries.Length == 0) {
-				// Try finding save entries via KButton children
+			// Access the Content container from colonyViewRoot's HierarchyReferences
+			UnityEngine.Transform contentContainer = null;
+			var viewRefs = colonyViewRoot.GetComponent<HierarchyReferences>();
+			if (viewRefs != null && viewRefs.HasReference("Content")) {
+				var contentRef = viewRefs.GetReference("Content");
+				if (contentRef != null)
+					contentContainer = contentRef.transform;
+			}
+
+			if (contentContainer == null) {
 				DiscoverColonySavesFallback(colonyViewRoot);
 				return;
 			}
 
-			foreach (var entry in entries) {
-				if (entry == null || !entry.gameObject.activeInHierarchy) continue;
+			// Walk active children that are clones (instantiated save entries)
+			for (int i = 0; i < contentContainer.childCount; i++) {
+				var child = contentContainer.GetChild(i);
+				if (child == null || !child.gameObject.activeInHierarchy) continue;
+				if (!child.gameObject.name.Contains("Clone")) continue;
+
+				var entry = child.GetComponent<HierarchyReferences>();
+				if (entry == null) continue;
 
 				string label = BuildSaveEntryLabel(entry);
 				if (string.IsNullOrEmpty(label)) continue;
 
-				// Find the LoadButton
+				// Find the LoadButton via non-generic reference
 				KButton loadButton = null;
-				try {
-					loadButton = entry.GetReference<KButton>("LoadButton");
-				} catch (System.Exception) { }
-
-				if (loadButton == null) {
-					loadButton = entry.GetComponentInChildren<KButton>();
+				if (entry.HasReference("LoadButton")) {
+					var lbRef = entry.GetReference("LoadButton");
+					if (lbRef != null)
+						loadButton = lbRef.gameObject.GetComponent<KButton>();
 				}
+				if (loadButton == null)
+					loadButton = entry.GetComponentInChildren<KButton>();
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
@@ -217,6 +280,25 @@ namespace OniAccess.Input.Handlers {
 					Type = loadButton != null ? WidgetType.Button : WidgetType.Label,
 					GameObject = entry.gameObject
 				});
+			}
+
+			// Add Delete button from the detail panel
+			if (viewRefs != null && viewRefs.HasReference("DeleteButton")) {
+				try {
+					var delRef = viewRefs.GetReference("DeleteButton");
+					if (delRef != null) {
+						var delButton = delRef.gameObject.GetComponent<KButton>();
+						if (delButton != null && delRef.gameObject.activeInHierarchy
+							&& delButton.isInteractable) {
+							_widgets.Add(new WidgetInfo {
+								Label = STRINGS.ONIACCESS.SAVE_LOAD.DELETE,
+								Component = delButton,
+								Type = WidgetType.Button,
+								GameObject = delRef.gameObject
+							});
+						}
+					}
+				} catch (System.Exception) { }
 			}
 		}
 
@@ -228,20 +310,17 @@ namespace OniAccess.Input.Handlers {
 		private string BuildSaveEntryLabel(HierarchyReferences entry) {
 			var parts = new List<string>();
 
-			// Check for auto-save and newest labels
 			bool isAutoSave = IsLabelActive(entry, "AutoLabel");
 			bool isNewest = IsLabelActive(entry, "NewestLabel");
 
 			if (isNewest) parts.Add("newest");
 			if (isAutoSave) parts.Add("auto-save");
 
-			// Save name from SaveText
 			string saveText = GetReferenceText(entry, "SaveText");
 			if (!string.IsNullOrEmpty(saveText)) {
 				parts.Add(saveText);
 			}
 
-			// Date from DateText
 			string dateText = GetReferenceText(entry, "DateText");
 			if (!string.IsNullOrEmpty(dateText)) {
 				parts.Add(dateText);
@@ -252,10 +331,12 @@ namespace OniAccess.Input.Handlers {
 
 		/// <summary>
 		/// Check if a named label reference is active (visible) in the entry.
+		/// Uses non-generic GetReference to handle RectTransform storage.
 		/// </summary>
 		private bool IsLabelActive(HierarchyReferences refs, string refName) {
+			if (!refs.HasReference(refName)) return false;
 			try {
-				var obj = refs.GetReference<UnityEngine.Component>(refName);
+				var obj = refs.GetReference(refName);
 				return obj != null && obj.gameObject.activeInHierarchy;
 			} catch (System.Exception) {
 				return false;
@@ -263,8 +344,8 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
-		/// Fallback save entry discovery from a view root when HierarchyReferences
-		/// are not available.
+		/// Fallback save entry discovery from a view root when Content container
+		/// is not available.
 		/// </summary>
 		private void DiscoverColonySavesFallback(UnityEngine.GameObject viewRoot) {
 			var kbuttons = viewRoot.GetComponentsInChildren<KButton>(false);
@@ -292,7 +373,7 @@ namespace OniAccess.Input.Handlers {
 
 		/// <summary>
 		/// Override to handle two-level navigation:
-		/// - In colony list: Enter drills into colony saves
+		/// - In colony list: Enter on colony_entry drills into saves; other buttons click normally
 		/// - In save view: Enter loads the selected save
 		/// </summary>
 		protected override void ActivateCurrentWidget() {
@@ -300,18 +381,20 @@ namespace OniAccess.Input.Handlers {
 			var widget = _widgets[_currentIndex];
 
 			if (!_inColonySaveView) {
-				// Colony list view: Enter clicks colony entry to drill into saves
-				if (widget.Type == WidgetType.Button) {
+				// Only colony_entry tagged widgets trigger the drill-into-saves transition
+				if (widget.Type == WidgetType.Button
+					&& widget.Tag is string tag && tag == "colony_entry") {
 					var kbutton = widget.Component as KButton;
 					kbutton?.SignalClick(KKeyCode.Mouse0);
 
-					// Check if the view transitioned
 					if (IsColonyViewRootActive()) {
 						TransitionToSaveView();
 					} else {
-						// Async transition: set pending flag
 						_pendingViewTransition = true;
 					}
+				} else {
+					// Management buttons: normal click without view transition
+					base.ActivateCurrentWidget();
 				}
 			} else {
 				// Save view: Enter loads the selected save
@@ -320,12 +403,28 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
-		/// Check for pending view transition each frame.
+		/// Check for pending view transition and stale widgets each frame.
 		/// </summary>
 		public override void Tick() {
 			if (_pendingViewTransition && IsColonyViewRootActive()) {
 				TransitionToSaveView();
 				_pendingViewTransition = false;
+			}
+
+			// Stale widget detection: after delete or dialog rebuild, the current
+			// widget's GameObject may be destroyed. Rediscover and clamp cursor.
+			if (_widgets.Count > 0 && _currentIndex >= 0
+				&& _currentIndex < _widgets.Count) {
+				var go = _widgets[_currentIndex].GameObject;
+				if (go == null) {
+					DiscoverWidgets(_screen);
+					if (_currentIndex >= _widgets.Count)
+						_currentIndex = _widgets.Count > 0 ? _widgets.Count - 1 : 0;
+					if (_widgets.Count > 0 && _currentIndex < _widgets.Count) {
+						Speech.SpeechPipeline.SpeakInterrupt(
+							GetWidgetSpeechText(_widgets[_currentIndex]));
+					}
+				}
 			}
 
 			base.Tick();
@@ -354,7 +453,6 @@ namespace OniAccess.Input.Handlers {
 			DiscoverWidgets(_screen);
 			_currentIndex = 0;
 
-			// Speak colony name then first save entry
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
 			}
@@ -362,16 +460,20 @@ namespace OniAccess.Input.Handlers {
 
 		/// <summary>
 		/// Transition from save view back to colony list.
-		/// Clicks the back button if available, then rediscovers colony list widgets.
+		/// Clicks the back button via colonyViewRoot's HierarchyReferences "Back" ref.
 		/// </summary>
 		private void TransitionToColonyList() {
-			// Try clicking the back button
 			try {
 				var traverse = Traverse.Create(_screen);
-				var backButton = traverse.Field("backButton")
-					.GetValue<KButton>();
-				if (backButton != null) {
-					backButton.SignalClick(KKeyCode.Mouse0);
+				var colonyViewRoot = traverse.Field("colonyViewRoot")
+					.GetValue<UnityEngine.GameObject>();
+				if (colonyViewRoot != null) {
+					var viewRefs = colonyViewRoot.GetComponent<HierarchyReferences>();
+					if (viewRefs != null && viewRefs.HasReference("Back")) {
+						var backRef = viewRefs.GetReference("Back");
+						var backButton = backRef?.gameObject.GetComponent<KButton>();
+						backButton?.SignalClick(KKeyCode.Mouse0);
+					}
 				}
 			} catch (System.Exception) { }
 
@@ -379,7 +481,6 @@ namespace OniAccess.Input.Handlers {
 			DiscoverWidgets(_screen);
 			_currentIndex = 0;
 
-			// Speak screen name then first colony
 			Speech.SpeechPipeline.SpeakInterrupt(DisplayName);
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));

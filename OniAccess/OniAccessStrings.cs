@@ -57,5 +57,12 @@ namespace STRINGS {
 			public static LocString VICTORY_CONDITIONS = "Victory conditions";
 			public static LocString STATS = "Stats";
 		}
+
+		public class SAVE_LOAD {
+			public static LocString SAVE_INFO = "Save info";
+			public static LocString CONVERT_ALL_TO_CLOUD = "Convert all to cloud";
+			public static LocString CONVERT_ALL_TO_LOCAL = "Convert all to local";
+			public static LocString DELETE = "Delete";
+		}
 	}
 }

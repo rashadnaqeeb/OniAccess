@@ -23,7 +23,6 @@ LSP diagnostics about missing types (KScreen, KButton, KToggle, etc.) are expect
 ## Code Style
 - **Tabs for indentation** — never spaces
 - **K&R braces** — opening brace on the same line, not Allman style. `} else {` not `}\nelse\n{`
-- **LF line endings** — not CRLF
 - **Edit discipline** — always Read the exact lines immediately before editing. Never compose old_string from memory or earlier reads — tab depth is easy to miscount
 - Harmony patch classes: `GameType_MethodName_Patch` (e.g., `KScreen_Activate_Patch`)
 - All speech goes through `SpeechPipeline` — never call `SpeechEngine.Say()` directly
