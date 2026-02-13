@@ -4,10 +4,9 @@ namespace OniAccess.Input {
 	/// <summary>
 	/// Manages a stack of IAccessHandler instances.
 	///
-	/// The active handler (top of stack) receives Tick() calls from KeyPoller each
-	/// frame and HandleKeyDown events from ModInputRouter. ModInputRouter acts as a
-	/// gate: it blocks non-passthrough keys for CapturesAllInput handlers. No stack
-	/// walking or dispatch -- only the active handler is consulted.
+	/// KeyPoller and ModInputRouter walk the stack top-to-bottom using GetAt() + Count.
+	/// Each handler receives Tick() / HandleKeyDown() until one consumes the event or
+	/// a CapturesAllInput barrier is reached. Barriers stop the walk (inclusive).
 	///
 	/// Push/Pop/Replace manage the handler lifecycle with OnActivate/OnDeactivate
 	/// callbacks. OnDeactivate only fires when a handler is popped off.
@@ -27,9 +26,18 @@ namespace OniAccess.Input {
 			_stack.Count > 0 ? _stack[_stack.Count - 1] : null;
 
 		/// <summary>
-		/// Number of handlers on the stack. Useful for debugging.
+		/// Number of handlers on the stack. Used with GetAt() for top-to-bottom iteration.
 		/// </summary>
 		public static int Count => _stack.Count;
+
+		/// <summary>
+		/// Return the handler at the given index (0 = bottom, Count-1 = top).
+		/// Returns null for out-of-range indices, safe if stack mutates mid-loop.
+		/// </summary>
+		public static IAccessHandler GetAt(int index) {
+			if (index < 0 || index >= _stack.Count) return null;
+			return _stack[index];
+		}
 
 		/// <summary>
 		/// Push a handler onto the stack, making it the top handler.

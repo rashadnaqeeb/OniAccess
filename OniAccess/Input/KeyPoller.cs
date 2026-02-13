@@ -53,8 +53,15 @@ namespace OniAccess.Input {
 				HandlerStack.Pop();
 			}
 
-			// Call Tick() on the active handler
-			HandlerStack.ActiveHandler?.Tick();
+			// Walk the stack top-to-bottom, ticking each handler.
+			// Stop after any CapturesAllInput barrier (inclusive).
+			int count = HandlerStack.Count;
+			for (int i = count - 1; i >= 0; i--) {
+				var handler = HandlerStack.GetAt(i);
+				if (handler == null) break;
+				handler.Tick();
+				if (handler.CapturesAllInput) break;
+			}
 		}
 
 		private static bool IsCtrlShiftHeld() {

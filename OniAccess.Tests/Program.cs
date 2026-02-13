@@ -42,6 +42,16 @@ namespace OniAccess.Tests {
 			results.Add(ExceptionInOnActivateDoesNotCorruptStack());
 			results.Add(ExceptionInOnDeactivateDoesNotCorruptStack());
 
+			// --- Chain-of-responsibility dispatch (8 new) ---
+			results.Add(GetAtReturnsNullForOutOfRange());
+			results.Add(GetAtReturnsCorrectHandler());
+			results.Add(TickWalksStackToBarrier());
+			results.Add(TickStopsAtCapturesAllHandler());
+			results.Add(TickReachesBottomWhenNoBarrier());
+			results.Add(TickSkipsBelowBarrier());
+			results.Add(HandleKeyDownStopsOnConsume());
+			results.Add(HandleKeyDownBarrierBlocks());
+
 			HandlerStack.Clear();
 
 			// --- TypeAheadSearch (12 + 1 new) ---
@@ -109,14 +119,17 @@ namespace OniAccess.Tests {
 
 			public int ActivateCount { get; private set; }
 			public int DeactivateCount { get; private set; }
+			public int TickCount { get; private set; }
+			public bool ConsumeKeyDown { get; set; }
+			public int HandleKeyDownCount { get; private set; }
 
 			public TestHandler(string name, bool capturesAll = false) {
 				DisplayName = name;
 				CapturesAllInput = capturesAll;
 			}
 
-			public void Tick() { }
-			public bool HandleKeyDown(KButtonEvent e) => false;
+			public void Tick() => TickCount++;
+			public bool HandleKeyDown(KButtonEvent e) { HandleKeyDownCount++; return ConsumeKeyDown; }
 			public void OnActivate() => ActivateCount++;
 			public void OnDeactivate() => DeactivateCount++;
 		}
@@ -406,6 +419,149 @@ namespace OniAccess.Tests {
 			return Assert("ExceptionInOnDeactivateDoesNotCorruptStack", ok,
 				$"threw={threw}, count={HandlerStack.Count}, " +
 				$"active={HandlerStack.ActiveHandler?.DisplayName ?? "null"}");
+		}
+
+		// ========================================
+		// Chain-of-responsibility dispatch tests (new)
+		// ========================================
+
+		/// <summary>
+		/// Simulate Tick dispatch: walk stack top-to-bottom, tick each handler,
+		/// stop after any CapturesAllInput barrier (inclusive).
+		/// </summary>
+		private static void SimulateTick(List<TestHandler> handlers) {
+			int count = handlers.Count;
+			for (int i = count - 1; i >= 0; i--) {
+				handlers[i].Tick();
+				if (handlers[i].CapturesAllInput) break;
+			}
+		}
+
+		/// <summary>
+		/// Simulate HandleKeyDown dispatch: walk stack top-to-bottom, call
+		/// HandleKeyDown on each handler, stop when one consumes or at barrier.
+		/// </summary>
+		private static void SimulateHandleKeyDown(List<TestHandler> handlers) {
+			int count = handlers.Count;
+			for (int i = count - 1; i >= 0; i--) {
+				if (handlers[i].HandleKeyDown(null)) return;
+				if (handlers[i].CapturesAllInput) return;
+			}
+		}
+
+		private static (string, bool, string) GetAtReturnsNullForOutOfRange() {
+			Reset();
+			var a = new TestHandler("A");
+			var b = new TestHandler("B");
+			HandlerStack.Push(a);
+			HandlerStack.Push(b);
+
+			bool ok = HandlerStack.GetAt(-1) == null && HandlerStack.GetAt(2) == null;
+			return Assert("GetAtReturnsNullForOutOfRange", ok,
+				$"GetAt(-1)={HandlerStack.GetAt(-1)?.DisplayName ?? "null"}, " +
+				$"GetAt(2)={HandlerStack.GetAt(2)?.DisplayName ?? "null"}");
+		}
+
+		private static (string, bool, string) GetAtReturnsCorrectHandler() {
+			Reset();
+			var a = new TestHandler("A");
+			var b = new TestHandler("B");
+			HandlerStack.Push(a);
+			HandlerStack.Push(b);
+
+			bool ok = HandlerStack.GetAt(0) == a && HandlerStack.GetAt(1) == b;
+			return Assert("GetAtReturnsCorrectHandler", ok,
+				$"GetAt(0)={HandlerStack.GetAt(0)?.DisplayName ?? "null"}, " +
+				$"GetAt(1)={HandlerStack.GetAt(1)?.DisplayName ?? "null"}");
+		}
+
+		private static (string, bool, string) TickWalksStackToBarrier() {
+			// [A(false), B(true), C(true)] — only C ticked (top barrier)
+			var handlers = new List<TestHandler> {
+				new TestHandler("A", capturesAll: false),
+				new TestHandler("B", capturesAll: true),
+				new TestHandler("C", capturesAll: true),
+			};
+			SimulateTick(handlers);
+
+			bool ok = handlers[0].TickCount == 0
+				   && handlers[1].TickCount == 0
+				   && handlers[2].TickCount == 1;
+			return Assert("TickWalksStackToBarrier", ok,
+				$"A={handlers[0].TickCount}, B={handlers[1].TickCount}, C={handlers[2].TickCount}");
+		}
+
+		private static (string, bool, string) TickStopsAtCapturesAllHandler() {
+			// [A(false), B(true)] — B ticked, A not
+			var handlers = new List<TestHandler> {
+				new TestHandler("A", capturesAll: false),
+				new TestHandler("B", capturesAll: true),
+			};
+			SimulateTick(handlers);
+
+			bool ok = handlers[0].TickCount == 0 && handlers[1].TickCount == 1;
+			return Assert("TickStopsAtCapturesAllHandler", ok,
+				$"A={handlers[0].TickCount}, B={handlers[1].TickCount}");
+		}
+
+		private static (string, bool, string) TickReachesBottomWhenNoBarrier() {
+			// [A(false), B(false)] — both ticked
+			var handlers = new List<TestHandler> {
+				new TestHandler("A", capturesAll: false),
+				new TestHandler("B", capturesAll: false),
+			};
+			SimulateTick(handlers);
+
+			bool ok = handlers[0].TickCount == 1 && handlers[1].TickCount == 1;
+			return Assert("TickReachesBottomWhenNoBarrier", ok,
+				$"A={handlers[0].TickCount}, B={handlers[1].TickCount}");
+		}
+
+		private static (string, bool, string) TickSkipsBelowBarrier() {
+			// [A(false), B(true), C(false)] — C and B ticked, A not
+			var handlers = new List<TestHandler> {
+				new TestHandler("A", capturesAll: false),
+				new TestHandler("B", capturesAll: true),
+				new TestHandler("C", capturesAll: false),
+			};
+			SimulateTick(handlers);
+
+			bool ok = handlers[0].TickCount == 0
+				   && handlers[1].TickCount == 1
+				   && handlers[2].TickCount == 1;
+			return Assert("TickSkipsBelowBarrier", ok,
+				$"A={handlers[0].TickCount}, B={handlers[1].TickCount}, C={handlers[2].TickCount}");
+		}
+
+		private static (string, bool, string) HandleKeyDownStopsOnConsume() {
+			// [A(false), B(false,consumes), C(false)] — C and B called, A not
+			var handlers = new List<TestHandler> {
+				new TestHandler("A", capturesAll: false),
+				new TestHandler("B", capturesAll: false) { ConsumeKeyDown = true },
+				new TestHandler("C", capturesAll: false),
+			};
+			SimulateHandleKeyDown(handlers);
+
+			bool ok = handlers[0].HandleKeyDownCount == 0
+				   && handlers[1].HandleKeyDownCount == 1
+				   && handlers[2].HandleKeyDownCount == 1;
+			return Assert("HandleKeyDownStopsOnConsume", ok,
+				$"A={handlers[0].HandleKeyDownCount}, B={handlers[1].HandleKeyDownCount}, " +
+				$"C={handlers[2].HandleKeyDownCount}");
+		}
+
+		private static (string, bool, string) HandleKeyDownBarrierBlocks() {
+			// [A(false), B(true,no-consume)] — B called, A not
+			var handlers = new List<TestHandler> {
+				new TestHandler("A", capturesAll: false),
+				new TestHandler("B", capturesAll: true),
+			};
+			SimulateHandleKeyDown(handlers);
+
+			bool ok = handlers[0].HandleKeyDownCount == 0
+				   && handlers[1].HandleKeyDownCount == 1;
+			return Assert("HandleKeyDownBarrierBlocks", ok,
+				$"A={handlers[0].HandleKeyDownCount}, B={handlers[1].HandleKeyDownCount}");
 		}
 
 		// ========================================

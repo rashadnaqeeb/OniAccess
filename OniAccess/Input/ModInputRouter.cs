@@ -6,9 +6,10 @@ namespace OniAccess.Input {
 	/// Receives every KButtonEvent before PlayerController (20), KScreenManager (10),
 	/// CameraController (1), and DebugHandler (-1).
 	///
-	/// Acts as a gate: asks the active handler to handle Escape (the only key that
-	/// needs atomic TryConsume), then blocks all non-passthrough keys for handlers
-	/// with CapturesAllInput=true. No stack walking, no dispatch.
+	/// Walks the handler stack top-to-bottom for each KButtonEvent. A handler that
+	/// returns true from HandleKeyDown consumes the event. A CapturesAllInput barrier
+	/// blocks unconsumed non-passthrough keys from reaching the game. If no handler
+	/// consumes and no barrier exists, the key reaches the game.
 	///
 	/// When VanillaMode is off, all events pass through untouched.
 	/// </summary>
@@ -25,26 +26,30 @@ namespace OniAccess.Input {
 		public void OnKeyDown(KButtonEvent e) {
 			if (e.Consumed || !VanillaMode.IsEnabled) return;
 
-			var handler = HandlerStack.ActiveHandler;
-			if (handler == null) return;
-
-			// Escape interception: handler consumes atomically
-			if (handler.HandleKeyDown(e)) return;
-
-			// Gate: block non-passthrough keys for capturing handlers
-			if (handler.CapturesAllInput && !IsPassThroughAction(e))
-				e.Consumed = true;
+			int count = HandlerStack.Count;
+			for (int i = count - 1; i >= 0; i--) {
+				var handler = HandlerStack.GetAt(i);
+				if (handler == null) break;
+				if (handler.HandleKeyDown(e)) return;
+				if (handler.CapturesAllInput) {
+					if (!IsPassThroughAction(e)) e.Consumed = true;
+					return;
+				}
+			}
 		}
 
 		public void OnKeyUp(KButtonEvent e) {
 			if (e.Consumed || !VanillaMode.IsEnabled) return;
 
-			var handler = HandlerStack.ActiveHandler;
-			if (handler == null) return;
-
-			// Gate: block non-passthrough key-ups for capturing handlers
-			if (handler.CapturesAllInput && !IsPassThroughAction(e))
-				e.Consumed = true;
+			int count = HandlerStack.Count;
+			for (int i = count - 1; i >= 0; i--) {
+				var handler = HandlerStack.GetAt(i);
+				if (handler == null) break;
+				if (handler.CapturesAllInput) {
+					if (!IsPassThroughAction(e)) e.Consumed = true;
+					return;
+				}
+			}
 		}
 
 		/// <summary>

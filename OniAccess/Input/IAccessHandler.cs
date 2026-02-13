@@ -3,13 +3,14 @@ namespace OniAccess.Input {
 	/// Interface for mod input handlers in the handler stack.
 	///
 	/// Each handler detects its own keys via UnityEngine.Input.GetKeyDown() in Tick(),
-	/// called once per frame by KeyPoller. HandleKeyDown exists only for Escape
-	/// interception -- Escape is a game Action that must be consumed atomically via
-	/// e.TryConsume to prevent the game from also processing it.
+	/// called once per frame by KeyPoller. HandleKeyDown processes KButtonEvents from
+	/// ModInputRouter (primarily Escape interception via e.TryConsume).
 	///
-	/// ModInputRouter acts as a gate: it asks the active handler to handle Escape,
-	/// then blocks all other non-passthrough keys for CapturesAllInput handlers.
-	/// No stack walking, no dispatch.
+	/// KeyPoller and ModInputRouter walk the stack top-to-bottom. Each handler gets
+	/// Tick() / HandleKeyDown() until one consumes the event or a CapturesAllInput
+	/// barrier is reached. Barriers stop the walk (inclusive): handlers below a barrier
+	/// receive nothing. Handlers with CapturesAllInput=false let unhandled keys fall
+	/// through to handlers below, and ultimately to the game.
 	///
 	/// Per locked decisions:
 	/// - Mode announcements interrupt current speech (OnActivate speaks DisplayName)
@@ -35,16 +36,16 @@ namespace OniAccess.Input {
 		System.Collections.Generic.IReadOnlyList<HelpEntry> HelpEntries { get; }
 
 		/// <summary>
-		/// Called once per frame by KeyPoller. All key detection and mod logic
-		/// happens here via UnityEngine.Input.GetKeyDown().
+		/// Called once per frame by KeyPoller during top-to-bottom stack walk.
+		/// All key detection and mod logic happens here via UnityEngine.Input.GetKeyDown().
+		/// The walk stops after any CapturesAllInput barrier (inclusive).
 		/// </summary>
 		void Tick();
 
 		/// <summary>
-		/// Process a key down event from ONI's KButtonEvent system.
-		/// Used only for Escape interception: call e.TryConsume(Action.Escape)
-		/// to atomically claim Escape before ModInputRouter's gate lets it through.
-		/// Return true if the event was consumed.
+		/// Process a key down event from ONI's KButtonEvent system during
+		/// top-to-bottom stack walk. Return true to consume the event (stops walk).
+		/// Primarily used for Escape interception via e.TryConsume(Action.Escape).
 		/// </summary>
 		bool HandleKeyDown(KButtonEvent e);
 
