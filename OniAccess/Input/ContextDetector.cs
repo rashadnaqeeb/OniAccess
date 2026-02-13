@@ -173,6 +173,10 @@ namespace OniAccess.Input
             // ModsScreen (KModalScreen -- mod management from main menu)
             Register<ModsScreen>(screen => new Handlers.ModsHandler(screen));
 
+            // LanguageOptionsScreen (KModalScreen -- language/translation selection from options)
+            var langOptionsType = HarmonyLib.AccessTools.TypeByName("LanguageOptionsScreen");
+            Register(langOptionsType, screen => new Handlers.TranslationHandler(screen));
+
             Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
         }
 
