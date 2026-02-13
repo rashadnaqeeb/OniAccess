@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
+using KMod;
 using OniAccess.Util;
 
 namespace OniAccess.Input.Handlers {
@@ -15,8 +17,9 @@ namespace OniAccess.Input.Handlers {
 	/// dynamically created in OnSpawn (Unity Start), which runs after our Harmony postfix
 	/// on Activate.
 	///
-	/// All widgets are KButtons, so base IsWidgetValid, GetWidgetSpeechText, and
-	/// ActivateCurrentWidget handle everything correctly.
+	/// All widgets are KButtons, so base IsWidgetValid and ActivateCurrentWidget handle
+	/// them correctly. GetWidgetSpeechText is overridden to prefix "selected" on the
+	/// active language.
 	/// </summary>
 	public class TranslationHandler: BaseMenuHandler {
 		private bool _pendingDiscovery = true;
@@ -60,8 +63,17 @@ namespace OniAccess.Input.Handlers {
 			base.Tick();
 		}
 
+		protected override string GetWidgetSpeechText(WidgetInfo widget) {
+			if (widget.Tag is bool isSelected && isSelected)
+				return $"{STRINGS.ONIACCESS.STATES.SELECTED}, {widget.Label}";
+			return base.GetWidgetSpeechText(widget);
+		}
+
 		public override void DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
+
+			// Determine which button name corresponds to the active language.
+			string selectedButtonName = GetSelectedButtonName();
 
 			// Use the screen's private buttons list — contains only the real
 			// dynamically-created language buttons, not stale prefab templates.
@@ -91,7 +103,8 @@ namespace OniAccess.Input.Handlers {
 						Label = label,
 						Component = kbutton,
 						Type = WidgetType.Button,
-						GameObject = go
+						GameObject = go,
+						Tag = selectedButtonName != null && go.name == selectedButtonName
 					});
 				}
 			}
@@ -102,6 +115,31 @@ namespace OniAccess.Input.Handlers {
 			AddButton(screen, "dismissButton");
 
 			Log.Debug($"TranslationHandler.DiscoverWidgets: {_widgets.Count} widgets");
+		}
+
+		/// <summary>
+		/// Returns the go.name of the button representing the currently active language,
+		/// or null if it cannot be determined.
+		/// Preinstalled buttons are named "{code}_button", UGC buttons "{mod.title}_button".
+		/// </summary>
+		private string GetSelectedButtonName() {
+			var langType = Localization.GetSelectedLanguageType();
+			switch (langType) {
+				case Localization.SelectedLanguageType.None:
+				case Localization.SelectedLanguageType.Preinstalled: {
+					var code = Localization.GetCurrentLanguageCode();
+					return !string.IsNullOrEmpty(code) ? code + "_button" : null;
+				}
+				case Localization.SelectedLanguageType.UGC: {
+					var modId = LanguageOptionsScreen.GetSavedLanguageMod();
+					if (modId == null) return null;
+					var mod = Global.Instance.modManager.mods
+						.FirstOrDefault(m => m.label.id == modId);
+					return mod != null ? mod.title + "_button" : null;
+				}
+				default:
+					return null;
+			}
 		}
 
 		private void AddButton(KScreen screen, string fieldName) {

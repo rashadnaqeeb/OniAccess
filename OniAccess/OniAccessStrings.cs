@@ -58,6 +58,10 @@ namespace STRINGS {
 			public static LocString STATS = "Stats";
 		}
 
+		public class STATES {
+			public static LocString SELECTED = "selected";
+		}
+
 		public class SAVE_LOAD {
 			public static LocString SAVE_INFO = "Save info";
 			public static LocString CONVERT_ALL_TO_CLOUD = "Convert all to cloud";
