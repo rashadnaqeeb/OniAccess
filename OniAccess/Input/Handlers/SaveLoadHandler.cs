@@ -27,10 +27,7 @@ namespace OniAccess.Input.Handlers {
 
 		public SaveLoadHandler(KScreen screen) : base(screen) {
 			_inColonySaveView = false;
-			var entries = new List<HelpEntry>();
-			entries.AddRange(MenuHelpEntries);
-			entries.AddRange(ListNavHelpEntries);
-			HelpEntries = entries;
+			HelpEntries = BuildHelpEntries();
 		}
 
 		// ========================================

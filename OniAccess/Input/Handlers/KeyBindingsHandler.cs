@@ -53,11 +53,7 @@ namespace OniAccess.Input.Handlers {
 		private UnityEngine.Coroutine _rebindCoroutine;
 
 		public KeyBindingsHandler(KScreen screen) : base(screen) {
-			var entries = new List<HelpEntry>();
-			entries.AddRange(MenuHelpEntries);
-			entries.AddRange(ListNavHelpEntries);
-			entries.Add(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
-			HelpEntries = entries;
+			HelpEntries = BuildHelpEntries(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
 		}
 
 		public override void OnActivate() {

@@ -33,11 +33,7 @@ namespace OniAccess.Input.Handlers {
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
 		public MainMenuHandler(KScreen screen) : base(screen) {
-			var entries = new List<HelpEntry>();
-			entries.AddRange(MenuHelpEntries);
-			entries.AddRange(ListNavHelpEntries);
-			entries.Add(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
-			HelpEntries = entries;
+			HelpEntries = BuildHelpEntries(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
 		}
 
 		// ========================================
@@ -276,14 +272,5 @@ namespace OniAccess.Input.Handlers {
 		// WIDGET VALIDITY
 		// ========================================
 
-		/// <summary>
-		/// Accept Label widgets (DLC and News sections) which may have null Component.
-		/// </summary>
-		protected override bool IsWidgetValid(WidgetInfo widget) {
-			if (widget == null || widget.GameObject == null) return false;
-			if (!widget.GameObject.activeInHierarchy) return false;
-			if (widget.Type == WidgetType.Label) return true;
-			return base.IsWidgetValid(widget);
-		}
 	}
 }

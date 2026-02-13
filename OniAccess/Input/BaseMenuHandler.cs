@@ -75,6 +75,17 @@ namespace OniAccess.Input {
 			new HelpEntry("Shift+Left/Right", STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGE),
 		};
 
+		/// <summary>
+		/// Build a help entry list combining menu + list-nav entries with optional extras.
+		/// </summary>
+		protected IReadOnlyList<HelpEntry> BuildHelpEntries(params HelpEntry[] extra) {
+			var list = new List<HelpEntry>();
+			list.AddRange(MenuHelpEntries);
+			list.AddRange(ListNavHelpEntries);
+			list.AddRange(extra);
+			return list;
+		}
+
 		// ========================================
 		// ABSTRACT: WIDGET DISCOVERY
 		// ========================================
@@ -259,6 +270,8 @@ namespace OniAccess.Input {
 			// (e.g., MultiToggle used as Button), fall through to the alive check
 			// rather than returning false.
 			switch (widget.Type) {
+				case WidgetType.Label:
+					return true;
 				case WidgetType.Button: {
 						var btn = widget.Component as KButton;
 						if (btn != null) return btn.isInteractable;
@@ -278,6 +291,16 @@ namespace OniAccess.Input {
 
 			// Fallback: component is alive, or widget has no component (label-only)
 			return widget.Component != null || widget.GameObject != null;
+		}
+
+		/// <summary>
+		/// Extract a button's label from its child LocText, or return a fallback.
+		/// </summary>
+		protected string GetButtonLabel(KButton button, string fallback = null) {
+			var locText = button.GetComponentInChildren<LocText>();
+			if (locText != null && !string.IsNullOrEmpty(locText.text))
+				return locText.text;
+			return fallback;
 		}
 
 		// ========================================

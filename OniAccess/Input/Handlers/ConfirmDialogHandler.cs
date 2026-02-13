@@ -19,10 +19,7 @@ namespace OniAccess.Input.Handlers {
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
 		public ConfirmDialogHandler(KScreen screen) : base(screen) {
-			var entries = new List<HelpEntry>();
-			entries.AddRange(MenuHelpEntries);
-			entries.AddRange(ListNavHelpEntries);
-			HelpEntries = entries;
+			HelpEntries = BuildHelpEntries();
 		}
 
 		public override void OnActivate() {
@@ -131,15 +128,6 @@ namespace OniAccess.Input.Handlers {
 			}
 		}
 
-		/// <summary>
-		/// Extract button label from its child LocText, or use a fallback.
-		/// </summary>
-		private string GetButtonLabel(KButton button, string fallback) {
-			var locText = button.GetComponentInChildren<LocText>();
-			if (locText != null && !string.IsNullOrEmpty(locText.text))
-				return locText.text;
-			return fallback;
-		}
 
 		/// <summary>
 		/// Try to extract a title from the dialog's titleText or header field.

@@ -28,11 +28,7 @@ namespace OniAccess.Input.Handlers {
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
 		public ColonySummaryHandler(KScreen screen) : base(screen) {
-			var entries = new List<HelpEntry>();
-			entries.AddRange(MenuHelpEntries);
-			entries.AddRange(ListNavHelpEntries);
-			entries.Add(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
-			HelpEntries = entries;
+			HelpEntries = BuildHelpEntries(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
 		}
 
 		public override void OnActivate() {
@@ -332,17 +328,6 @@ namespace OniAccess.Input.Handlers {
 		// ========================================
 		// WIDGET VALIDATION
 		// ========================================
-
-		/// <summary>
-		/// Override to accept Label widgets which have null Component but
-		/// are valid navigation targets (stat/achievement entries).
-		/// </summary>
-		protected override bool IsWidgetValid(WidgetInfo widget) {
-			if (widget == null || widget.GameObject == null) return false;
-			if (!widget.GameObject.activeInHierarchy) return false;
-			if (widget.Type == WidgetType.Label) return true;
-			return base.IsWidgetValid(widget);
-		}
 
 		// ========================================
 		// WIDGET SPEECH

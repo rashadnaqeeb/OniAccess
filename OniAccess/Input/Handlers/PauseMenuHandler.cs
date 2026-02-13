@@ -17,10 +17,7 @@ namespace OniAccess.Input.Handlers {
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
 		public PauseMenuHandler(KScreen screen) : base(screen) {
-			var entries = new List<HelpEntry>();
-			entries.AddRange(MenuHelpEntries);
-			entries.AddRange(ListNavHelpEntries);
-			HelpEntries = entries;
+			HelpEntries = BuildHelpEntries();
 		}
 
 		public override void DiscoverWidgets(KScreen screen) {

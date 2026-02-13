@@ -26,10 +26,7 @@ namespace OniAccess.Input.Handlers {
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
 		public OptionsMenuHandler(KScreen screen) : base(screen) {
-			var entries = new List<HelpEntry>();
-			entries.AddRange(MenuHelpEntries);
-			entries.AddRange(ListNavHelpEntries);
-			HelpEntries = entries;
+			HelpEntries = BuildHelpEntries();
 		}
 
 		/// <summary>
@@ -366,7 +363,7 @@ namespace OniAccess.Input.Handlers {
 				if (kb.GetComponentInParent<MultiToggle>() != null) { Log.Debug($"    skip child-of-multitoggle: {kb.gameObject.name}"); continue; }
 				if (kb.GetComponentInParent<Dropdown>() != null) { Log.Debug($"    skip child-of-dropdown: {kb.gameObject.name}"); continue; }
 
-				string label = GetButtonLabel(kb);
+				string label = CleanLabel(GetButtonLabel(kb));
 				if (string.IsNullOrEmpty(label)) { Log.Debug($"    skip no label: {kb.gameObject.name}"); continue; }
 
 				_widgets.Add(new WidgetInfo {
@@ -451,7 +448,7 @@ namespace OniAccess.Input.Handlers {
 			// Add CloseButton
 			var closeButton = traverse.Field("CloseButton").GetValue<KButton>();
 			if (closeButton != null) {
-				string label = GetButtonLabel(closeButton) ?? "Close";
+				string label = CleanLabel(GetButtonLabel(closeButton)) ?? "Close";
 				_widgets.Add(new WidgetInfo {
 					Label = label,
 					Component = closeButton,
@@ -474,8 +471,6 @@ namespace OniAccess.Input.Handlers {
 			if (!widget.GameObject.activeInHierarchy) return false;
 
 			switch (widget.Type) {
-				case WidgetType.Label:
-					return true;
 				case WidgetType.Toggle: {
 						// KToggle
 						var toggle = widget.Component as KToggle;
@@ -945,16 +940,6 @@ namespace OniAccess.Input.Handlers {
 				sb.Append(i == 0 ? char.ToUpper(c) : c);
 			}
 			return sb.ToString();
-		}
-
-		/// <summary>
-		/// Get label text from a KButton's child LocText, using CleanLabel for MISSING.STRINGS.
-		/// </summary>
-		private string GetButtonLabel(KButton button) {
-			var locText = button.GetComponentInChildren<LocText>();
-			if (locText != null)
-				return CleanLabel(locText.text);
-			return null;
 		}
 
 		/// <summary>
