@@ -162,6 +162,17 @@ namespace OniAccess.Input.Handlers {
 			string screenName = screen.GetType().Name;
 			Log.Debug($"DiscoverOptionWidgets: {screenName}");
 
+			// Credits screen: only team names/members + close button
+			if (screenName == "CreditsScreen") {
+				DiscoverCreditsWidgets(screen);
+				return;
+			}
+
+			// Feedback / Data screens: prepend descriptive text as labels
+			if (screenName == "FeedbackScreen" || screenName == "MetricsOptionsScreen") {
+				DiscoverScreenDescription(screen);
+			}
+
 			// Track KButtons already captured as part of HierarchyReferences toggles
 			// so the KButton loop below doesn't duplicate them as plain buttons.
 			var hierToggleButtons = new HashSet<KButton>();
@@ -408,6 +419,89 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
+		/// Find descriptive LocText components on Feedback/Data screens and add them
+		/// as Label widgets before interactive widget discovery.
+		/// </summary>
+		private void DiscoverScreenDescription(KScreen screen) {
+			// Get the title field to exclude it (already announced via DisplayName)
+			var title = Traverse.Create(screen).Field("title").GetValue<LocText>();
+
+			var locTexts = screen.GetComponentsInChildren<LocText>(false);
+			foreach (var lt in locTexts) {
+				if (lt == null) continue;
+				if (lt == title) continue;
+				string text = lt.text;
+				if (string.IsNullOrEmpty(text) || text.Length < 25) continue;
+				if (lt.GetComponentInParent<KButton>() != null) continue;
+
+				_widgets.Add(new WidgetInfo {
+					Label = text,
+					Component = null,
+					Type = WidgetType.Label,
+					GameObject = lt.gameObject
+				});
+				Log.Debug($"    + Description label: '{text.Substring(0, System.Math.Min(50, text.Length))}...'");
+			}
+		}
+
+		/// <summary>
+		/// Discover widgets for the CreditsScreen. Groups team members into
+		/// single Label widgets per team for navigable credits.
+		/// </summary>
+		private void DiscoverCreditsWidgets(KScreen screen) {
+			var traverse = Traverse.Create(screen);
+			var entryContainer = traverse.Field("entryContainer").GetValue<UnityEngine.Transform>();
+			if (entryContainer == null) {
+				Log.Debug("  CreditsScreen: entryContainer not found");
+				return;
+			}
+
+			// Each direct child of entryContainer is a team header
+			for (int i = 0; i < entryContainer.childCount; i++) {
+				var teamHeader = entryContainer.GetChild(i);
+				var headerLt = teamHeader.GetComponent<LocText>();
+				string teamName = headerLt != null ? headerLt.text : null;
+				if (string.IsNullOrEmpty(teamName)) continue;
+
+				// Collect member names from children
+				var members = new System.Text.StringBuilder();
+				for (int j = 0; j < teamHeader.childCount; j++) {
+					var memberLt = teamHeader.GetChild(j).GetComponent<LocText>();
+					if (memberLt == null || string.IsNullOrEmpty(memberLt.text)) continue;
+					if (members.Length > 0) members.Append(", ");
+					members.Append(memberLt.text);
+				}
+
+				string label = members.Length > 0
+					? $"{teamName}: {members}"
+					: teamName;
+
+				_widgets.Add(new WidgetInfo {
+					Label = label,
+					Component = null,
+					Type = WidgetType.Label,
+					GameObject = teamHeader.gameObject
+				});
+				Log.Debug($"    + Credits team: '{teamName}' ({teamHeader.childCount} members)");
+			}
+
+			// Add CloseButton
+			var closeButton = traverse.Field("CloseButton").GetValue<KButton>();
+			if (closeButton != null) {
+				string label = GetButtonLabel(closeButton) ?? "Close";
+				_widgets.Add(new WidgetInfo {
+					Label = label,
+					Component = closeButton,
+					Type = WidgetType.Button,
+					GameObject = closeButton.gameObject
+				});
+				Log.Debug($"    + Credits close button");
+			}
+
+			Log.Debug($"  CreditsScreen: {_widgets.Count} widgets");
+		}
+
+		/// <summary>
 		/// Validate widget for navigation. Extends base with MultiToggle,
 		/// HierarchyReferences toggle (KButton), and Dropdown support.
 		/// Base rejects Toggle widgets whose Component isn't KToggle.
@@ -417,6 +511,8 @@ namespace OniAccess.Input.Handlers {
 			if (!widget.GameObject.activeInHierarchy) return false;
 
 			switch (widget.Type) {
+				case WidgetType.Label:
+					return true;
 				case WidgetType.Toggle: {
 						// KToggle
 						var toggle = widget.Component as KToggle;
