@@ -6,7 +6,6 @@ namespace OniAccess.Input {
 	/// that every screen type shares:
 	/// - Screen reference for ContextDetector matching
 	/// - Display name spoken on activation
-	/// - F12 help system (detected in Tick)
 	/// - CapturesAllInput (all screens block input fallthrough)
 	///
 	/// BaseMenuHandler extends this with widget lists, 1D navigation, type-ahead
@@ -72,14 +71,10 @@ namespace OniAccess.Input {
 		}
 
 		/// <summary>
-		/// Per-frame key detection. F12 (without modifiers) pushes help.
-		/// Subclasses override and call base.Tick() to keep F12 behavior.
+		/// Per-frame key detection. F12 help is handled centrally by KeyPoller.
+		/// Subclasses override for screen-specific key handling.
 		/// </summary>
 		public virtual void Tick() {
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
-				&& !InputUtil.AnyModifierHeld()) {
-				HandlerStack.Push(new HelpHandler(HelpEntries));
-			}
 		}
 
 		/// <summary>

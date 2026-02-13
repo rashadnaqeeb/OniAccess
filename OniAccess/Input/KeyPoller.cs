@@ -53,6 +53,17 @@ namespace OniAccess.Input {
 				HandlerStack.Pop();
 			}
 
+			// F12 (no modifiers): open help with entries from all reachable handlers.
+			// Centralized here to prevent double-push when layered non-capturing
+			// handlers both detect F12 in the same frame.
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
+				&& !InputUtil.AnyModifierHeld()
+				&& !(HandlerStack.ActiveHandler is HelpHandler)) {
+				var entries = HandlerStack.CollectHelpEntries();
+				HandlerStack.Push(new HelpHandler(entries));
+				return;
+			}
+
 			// Walk the stack top-to-bottom, ticking each handler.
 			// Stop after any CapturesAllInput barrier (inclusive).
 			int count = HandlerStack.Count;

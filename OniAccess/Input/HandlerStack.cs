@@ -125,5 +125,27 @@ namespace OniAccess.Input {
 			_stack.Clear();
 			Util.Log.Debug("HandlerStack.Clear: stack cleared without callbacks");
 		}
+
+		/// <summary>
+		/// Walk the stack top-to-bottom (mirroring KeyPoller's tick walk),
+		/// collecting HelpEntries from each reachable handler. Stops after
+		/// a CapturesAllInput barrier (inclusive). Deduplicates by KeyName —
+		/// topmost handler wins.
+		/// </summary>
+		public static System.Collections.Generic.IReadOnlyList<HelpEntry> CollectHelpEntries() {
+			var entries = new System.Collections.Generic.List<HelpEntry>();
+			var seenKeys = new System.Collections.Generic.HashSet<string>();
+			for (int i = _stack.Count - 1; i >= 0; i--) {
+				var handler = _stack[i];
+				if (handler.HelpEntries != null) {
+					foreach (var entry in handler.HelpEntries) {
+						if (seenKeys.Add(entry.KeyName))
+							entries.Add(entry);
+					}
+				}
+				if (handler.CapturesAllInput) break;
+			}
+			return entries.AsReadOnly();
+		}
 	}
 }

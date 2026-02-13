@@ -165,7 +165,6 @@ namespace OniAccess.Input {
 				return;
 			}
 
-			base.Tick(); // F12 from ScreenHandler
 		}
 
 		private static readonly UnityEngine.KeyCode[] _searchNavKeys = {

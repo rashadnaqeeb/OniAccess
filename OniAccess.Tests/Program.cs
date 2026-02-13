@@ -42,6 +42,14 @@ namespace OniAccess.Tests {
 			results.Add(ExceptionInOnActivateDoesNotCorruptStack());
 			results.Add(ExceptionInOnDeactivateDoesNotCorruptStack());
 
+			// --- CollectHelpEntries (6 new) ---
+			results.Add(CollectHelpEntriesEmptyStack());
+			results.Add(CollectHelpEntriesSingleHandler());
+			results.Add(CollectHelpEntriesTwoNonCapturing());
+			results.Add(CollectHelpEntriesBarrierStopsWalk());
+			results.Add(CollectHelpEntriesKeyDedup());
+			results.Add(CollectHelpEntriesBarrierInclusive());
+
 			// --- Chain-of-responsibility dispatch (8 new) ---
 			results.Add(GetAtReturnsNullForOutOfRange());
 			results.Add(GetAtReturnsCorrectHandler());
@@ -115,7 +123,6 @@ namespace OniAccess.Tests {
 			public string DisplayName { get; }
 			public bool CapturesAllInput { get; }
 			public IReadOnlyList<HelpEntry> HelpEntries { get; }
-				= new List<HelpEntry>().AsReadOnly();
 
 			public int ActivateCount { get; private set; }
 			public int DeactivateCount { get; private set; }
@@ -123,9 +130,11 @@ namespace OniAccess.Tests {
 			public bool ConsumeKeyDown { get; set; }
 			public int HandleKeyDownCount { get; private set; }
 
-			public TestHandler(string name, bool capturesAll = false) {
+			public TestHandler(string name, bool capturesAll = false,
+				IReadOnlyList<HelpEntry> helpEntries = null) {
 				DisplayName = name;
 				CapturesAllInput = capturesAll;
+				HelpEntries = helpEntries ?? new List<HelpEntry>().AsReadOnly();
 			}
 
 			public void Tick() => TickCount++;
@@ -419,6 +428,98 @@ namespace OniAccess.Tests {
 			return Assert("ExceptionInOnDeactivateDoesNotCorruptStack", ok,
 				$"threw={threw}, count={HandlerStack.Count}, " +
 				$"active={HandlerStack.ActiveHandler?.DisplayName ?? "null"}");
+		}
+
+		// ========================================
+		// CollectHelpEntries tests (new)
+		// ========================================
+
+		private static IReadOnlyList<HelpEntry> MakeEntries(params string[] keys) {
+			var list = new List<HelpEntry>();
+			foreach (var k in keys)
+				list.Add(new HelpEntry(k, $"desc-{k}"));
+			return list.AsReadOnly();
+		}
+
+		private static (string, bool, string) CollectHelpEntriesEmptyStack() {
+			Reset();
+			var entries = HandlerStack.CollectHelpEntries();
+			bool ok = entries.Count == 0;
+			return Assert("CollectHelpEntriesEmptyStack", ok,
+				$"count={entries.Count}");
+		}
+
+		private static (string, bool, string) CollectHelpEntriesSingleHandler() {
+			Reset();
+			HandlerStack.Push(new TestHandler("A", helpEntries: MakeEntries("F1", "F2")));
+			var entries = HandlerStack.CollectHelpEntries();
+			bool ok = entries.Count == 2
+				   && entries[0].KeyName == "F1"
+				   && entries[1].KeyName == "F2";
+			return Assert("CollectHelpEntriesSingleHandler", ok,
+				$"count={entries.Count}");
+		}
+
+		private static (string, bool, string) CollectHelpEntriesTwoNonCapturing() {
+			Reset();
+			HandlerStack.Push(new TestHandler("Bottom", capturesAll: false,
+				helpEntries: MakeEntries("F1")));
+			HandlerStack.Push(new TestHandler("Top", capturesAll: false,
+				helpEntries: MakeEntries("F2")));
+			var entries = HandlerStack.CollectHelpEntries();
+			bool ok = entries.Count == 2
+				   && entries[0].KeyName == "F2"
+				   && entries[1].KeyName == "F1";
+			return Assert("CollectHelpEntriesTwoNonCapturing", ok,
+				$"count={entries.Count}, [0]={entries[0]?.KeyName}, [1]={entries[1]?.KeyName}");
+		}
+
+		private static (string, bool, string) CollectHelpEntriesBarrierStopsWalk() {
+			Reset();
+			HandlerStack.Push(new TestHandler("Bottom", capturesAll: false,
+				helpEntries: MakeEntries("F1")));
+			HandlerStack.Push(new TestHandler("Barrier", capturesAll: true,
+				helpEntries: MakeEntries("F2")));
+			var entries = HandlerStack.CollectHelpEntries();
+			// Barrier is inclusive — its entries included, but bottom excluded
+			bool ok = entries.Count == 1 && entries[0].KeyName == "F2";
+			return Assert("CollectHelpEntriesBarrierStopsWalk", ok,
+				$"count={entries.Count}");
+		}
+
+		private static (string, bool, string) CollectHelpEntriesKeyDedup() {
+			Reset();
+			HandlerStack.Push(new TestHandler("Bottom", capturesAll: false,
+				helpEntries: MakeEntries("F1", "F2")));
+			HandlerStack.Push(new TestHandler("Top", capturesAll: false,
+				helpEntries: MakeEntries("F1", "F3")));
+			var entries = HandlerStack.CollectHelpEntries();
+			// F1 from Top wins, Bottom's F1 suppressed. F3 from Top + F2 from Bottom.
+			bool ok = entries.Count == 3
+				   && entries[0].KeyName == "F1"
+				   && entries[0].Description == "desc-F1"
+				   && entries[1].KeyName == "F3"
+				   && entries[2].KeyName == "F2";
+			return Assert("CollectHelpEntriesKeyDedup", ok,
+				$"count={entries.Count}");
+		}
+
+		private static (string, bool, string) CollectHelpEntriesBarrierInclusive() {
+			Reset();
+			HandlerStack.Push(new TestHandler("Bottom", capturesAll: false,
+				helpEntries: MakeEntries("F1")));
+			HandlerStack.Push(new TestHandler("Barrier", capturesAll: true,
+				helpEntries: MakeEntries("F2", "F3")));
+			HandlerStack.Push(new TestHandler("Top", capturesAll: false,
+				helpEntries: MakeEntries("F4")));
+			var entries = HandlerStack.CollectHelpEntries();
+			// Top(F4) + Barrier(F2,F3) — barrier is inclusive, Bottom excluded
+			bool ok = entries.Count == 3
+				   && entries[0].KeyName == "F4"
+				   && entries[1].KeyName == "F2"
+				   && entries[2].KeyName == "F3";
+			return Assert("CollectHelpEntriesBarrierInclusive", ok,
+				$"count={entries.Count}");
 		}
 
 		// ========================================
