@@ -97,7 +97,7 @@ namespace OniAccess.Input.Handlers {
 			_currentIndex = 0;
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakInterrupt(
-					$"{DisplayName}, {_widgets.Count} items. {GetWidgetSpeechText(_widgets[0])}");
+					$"{DisplayName}, {GetWidgetSpeechText(_widgets[0])}");
 			}
 		}
 
