@@ -19,7 +19,7 @@ namespace OniAccess.Input {
 	/// Concrete list-based handlers extend this and implement only:
 	/// - DiscoverWidgets (populate _widgets)
 	/// - DisplayName (screen title for speech)
-	/// - HelpEntries (composing from CommonHelpEntries + MenuHelpEntries
+	/// - HelpEntries (composing from MenuHelpEntries
 	///   + ListNavHelpEntries + screen-specific)
 	///
 	/// Per locked decisions:

@@ -35,7 +35,7 @@ namespace OniAccess.Input {
 
 		/// <summary>
 		/// Help entries for F12 navigable help list. Subclasses compose from
-		/// CommonHelpEntries + screen-type-specific entries.
+		/// screen-type-specific entry lists (MenuHelpEntries, ListNavHelpEntries, etc.).
 		/// </summary>
 		public abstract IReadOnlyList<HelpEntry> HelpEntries { get; }
 
@@ -44,19 +44,6 @@ namespace OniAccess.Input {
 		/// Menus return true (modal); grid/world handlers return false (non-modal).
 		/// </summary>
 		public abstract bool CapturesAllInput { get; }
-
-		// ========================================
-		// COMPOSABLE HELP ENTRY LISTS
-		// ========================================
-
-		/// <summary>
-		/// Help entries common to ALL screen handlers (F12, toggle).
-		/// </summary>
-		protected static readonly List<HelpEntry> CommonHelpEntries = new List<HelpEntry>
-		{
-			new HelpEntry("F12", STRINGS.ONIACCESS.HOTKEYS.CONTEXT_HELP),
-			new HelpEntry("Ctrl+Shift+F12", STRINGS.ONIACCESS.HOTKEYS.TOGGLE_MOD),
-		};
 
 		// ========================================
 		// CONSTRUCTOR

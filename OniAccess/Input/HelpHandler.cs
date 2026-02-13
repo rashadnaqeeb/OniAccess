@@ -25,8 +25,21 @@ namespace OniAccess.Input {
 				new HelpEntry("F12", STRINGS.ONIACCESS.HELP.CLOSE),
 			}.AsReadOnly();
 
+		/// <summary>
+		/// Entries appended to the bottom of every help list, regardless of handler.
+		/// </summary>
+		private static readonly System.Collections.Generic.List<HelpEntry> _commonEntries
+			= new System.Collections.Generic.List<HelpEntry>
+		{
+			new HelpEntry("Ctrl+Shift+F12", STRINGS.ONIACCESS.HOTKEYS.TOGGLE_MOD),
+		};
+
 		public HelpHandler(System.Collections.Generic.IReadOnlyList<HelpEntry> entries) {
-			_entries = entries ?? new System.Collections.Generic.List<HelpEntry>().AsReadOnly();
+			var combined = new System.Collections.Generic.List<HelpEntry>();
+			if (entries != null)
+				combined.AddRange(entries);
+			combined.AddRange(_commonEntries);
+			_entries = combined.AsReadOnly();
 			_currentIndex = 0;
 		}
 

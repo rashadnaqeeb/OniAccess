@@ -27,7 +27,6 @@ namespace OniAccess.Input.Handlers {
 
 		public TranslationHandler(KScreen screen) : base(screen) {
 			var entries = new List<HelpEntry>();
-			entries.AddRange(CommonHelpEntries);
 			entries.AddRange(MenuHelpEntries);
 			entries.AddRange(ListNavHelpEntries);
 			HelpEntries = entries;

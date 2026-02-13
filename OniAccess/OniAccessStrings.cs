@@ -11,7 +11,6 @@ namespace STRINGS {
 
 		public class HOTKEYS {
 			public static LocString TOGGLE_MOD = "Toggle Oni-Access on/off";
-			public static LocString CONTEXT_HELP = "Show available commands";
 		}
 
 		public class HANDLERS {

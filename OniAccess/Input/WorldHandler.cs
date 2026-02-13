@@ -12,11 +12,7 @@ namespace OniAccess.Input {
 		public bool CapturesAllInput => false;
 
 		public System.Collections.Generic.IReadOnlyList<HelpEntry> HelpEntries { get; }
-			= new System.Collections.Generic.List<HelpEntry>
-			{
-				new HelpEntry("F12", STRINGS.ONIACCESS.HOTKEYS.CONTEXT_HELP),
-				new HelpEntry("Ctrl+Shift+F12", STRINGS.ONIACCESS.HOTKEYS.TOGGLE_MOD),
-			}.AsReadOnly();
+			= new System.Collections.Generic.List<HelpEntry>().AsReadOnly();
 
 		public void Tick() {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
