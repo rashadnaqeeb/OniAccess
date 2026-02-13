@@ -60,6 +60,21 @@ namespace OniAccess.Input.Handlers {
 						Type = WidgetType.Toggle,
 						GameObject = child.gameObject
 					});
+
+					// ManageButton — "Browse" for local mods, "Subscription" for Workshop
+					if (hierRef.HasReference("ManageButton")) {
+						var manageBtn = hierRef.GetReference<KButton>("ManageButton");
+						if (manageBtn != null && manageBtn.isInteractable) {
+							var manageText = manageBtn.GetComponentInChildren<LocText>();
+							string manageLabel = manageText != null ? manageText.text : "Manage";
+							_widgets.Add(new WidgetInfo {
+								Label = manageLabel,
+								Component = manageBtn,
+								Type = WidgetType.Button,
+								GameObject = manageBtn.gameObject
+							});
+						}
+					}
 				}
 			}
 
