@@ -46,7 +46,6 @@ namespace STRINGS {
 			public static LocString ADJUST_VALUE = "Adjust value";
 			public static LocString ADJUST_VALUE_LARGE = "Adjust value, large step";
 			public static LocString TYPE_SEARCH = "Type-ahead search";
-			public static LocString READ_TOOLTIP = "Read tooltip";
 			public static LocString SWITCH_PANEL = "Switch panel";
 			public static LocString SWITCH_DUPE_SLOT = "Switch duplicant slot";
 		}

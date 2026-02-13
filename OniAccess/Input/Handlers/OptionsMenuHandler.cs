@@ -96,8 +96,11 @@ namespace OniAccess.Input.Handlers {
 
 			_currentIndex = 0;
 			if (_widgets.Count > 0) {
-				Speech.SpeechPipeline.SpeakInterrupt(
-					$"{DisplayName}, {GetWidgetSpeechText(_widgets[0])}");
+				var w = _widgets[0];
+				string text = $"{DisplayName}, {GetWidgetSpeechText(w)}";
+				string tip = GetTooltipText(w);
+				if (tip != null) text = $"{text}, {tip}";
+				Speech.SpeechPipeline.SpeakInterrupt(text);
 			}
 		}
 
@@ -548,33 +551,28 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
-		/// Read tooltip for the current widget. For radio groups, reads the tooltip
-		/// of the currently selected member rather than the parent container.
+		/// For radio groups, read the tooltip from the currently selected member
+		/// rather than the parent container.
 		/// </summary>
-		protected override void SpeakTooltip() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
-
+		protected override string GetTooltipText(WidgetInfo widget) {
 			if (widget.Tag is RadioGroupInfo radio) {
 				var member = radio.Members[radio.CurrentIndex];
 				var go = member.HierRef.gameObject;
 				var tooltip = go.GetComponent<ToolTip>();
 				if (tooltip == null)
 					tooltip = go.GetComponentInChildren<ToolTip>();
-				if (tooltip == null) return;
+				if (tooltip == null) return null;
 
 				string text = null;
 				if (tooltip.multiStringCount > 0)
 					text = tooltip.GetMultiString(0);
 				if (string.IsNullOrEmpty(text) && tooltip.OnToolTip != null)
 					text = tooltip.OnToolTip();
-				if (string.IsNullOrEmpty(text)) return;
 
-				Speech.SpeechPipeline.SpeakInterrupt(text);
-				return;
+				return string.IsNullOrEmpty(text) ? null : text;
 			}
 
-			base.SpeakTooltip();
+			return base.GetTooltipText(widget);
 		}
 
 		/// <summary>

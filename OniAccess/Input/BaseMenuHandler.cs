@@ -8,7 +8,6 @@ namespace OniAccess.Input {
 	/// - Arrow navigation with wrap-around
 	/// - Home/End, Enter activation, Left/Right adjustment
 	/// - Tab stubs for tabbed screens
-	/// - Shift+I tooltip reading
 	/// - A-Z type-ahead search
 	/// - Widget validity checking
 	///
@@ -49,11 +48,10 @@ namespace OniAccess.Input {
 		// ========================================
 
 		/// <summary>
-		/// Help entries for menu-specific features (tooltip, search).
+		/// Help entries for menu-specific features (search).
 		/// </summary>
 		protected static readonly List<HelpEntry> MenuHelpEntries = new List<HelpEntry>
 		{
-			new HelpEntry("Shift+I", STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
 			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
 		};
 
@@ -94,7 +92,11 @@ namespace OniAccess.Input {
 			_search.Clear();
 
 			if (_widgets.Count > 0) {
-				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
+				var w = _widgets[0];
+				string text = GetWidgetSpeechText(w);
+				string tip = GetTooltipText(w);
+				if (tip != null) text = $"{text}, {tip}";
+				Speech.SpeechPipeline.SpeakQueued(text);
 			}
 		}
 
@@ -152,10 +154,6 @@ namespace OniAccess.Input {
 					NavigateTabBackward();
 				else
 					NavigateTabForward();
-				return;
-			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I) && InputUtil.ShiftHeld()) {
-				SpeakTooltip();
 				return;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
@@ -352,10 +350,15 @@ namespace OniAccess.Input {
 
 		/// <summary>
 		/// Speak the currently focused widget via SpeakInterrupt.
+		/// Appends tooltip text if available.
 		/// </summary>
 		protected void SpeakCurrentWidget() {
 			if (_currentIndex >= 0 && _currentIndex < _widgets.Count) {
-				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[_currentIndex]));
+				var w = _widgets[_currentIndex];
+				string text = GetWidgetSpeechText(w);
+				string tip = GetTooltipText(w);
+				if (tip != null) text = $"{text}, {tip}";
+				Speech.SpeechPipeline.SpeakInterrupt(text);
 			}
 		}
 
@@ -440,40 +443,30 @@ namespace OniAccess.Input {
 		protected virtual void CycleDropdown(WidgetInfo widget, int direction) { }
 
 		// ========================================
-		// TOOLTIP READING
+		// TOOLTIP TEXT
 		// ========================================
 
 		/// <summary>
-		/// Read the tooltip text for the currently focused widget and speak it.
-		/// Triggered by Shift+I.
+		/// Extract tooltip text from a widget's GameObject.
+		/// Returns null if no tooltip is present or its text is empty.
+		/// Subclasses override for widgets with non-standard tooltip locations
+		/// (e.g., radio groups where tooltip lives on the active member).
 		/// </summary>
-		protected virtual void SpeakTooltip() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
-			if (widget.GameObject == null) return;
+		protected virtual string GetTooltipText(WidgetInfo widget) {
+			if (widget.GameObject == null) return null;
 
-			Util.Log.Debug($"SpeakTooltip: widget='{widget.Label}', go='{widget.GameObject.name}'");
 			var tooltip = widget.GameObject.GetComponent<ToolTip>();
 			if (tooltip == null)
 				tooltip = widget.GameObject.GetComponentInChildren<ToolTip>();
-			if (tooltip == null) {
-				Util.Log.Debug("SpeakTooltip: no ToolTip component found");
-				return;
-			}
+			if (tooltip == null) return null;
 
-			Util.Log.Debug($"SpeakTooltip: found ToolTip, multiStringCount={tooltip.multiStringCount}");
 			string text = null;
 			if (tooltip.multiStringCount > 0)
 				text = tooltip.GetMultiString(0);
 			if (string.IsNullOrEmpty(text) && tooltip.OnToolTip != null)
 				text = tooltip.OnToolTip();
-			if (string.IsNullOrEmpty(text)) {
-				Util.Log.Debug("SpeakTooltip: tooltip text is empty");
-				return;
-			}
 
-			Util.Log.Debug($"SpeakTooltip: speaking '{text}'");
-			Speech.SpeechPipeline.SpeakInterrupt(text);
+			return string.IsNullOrEmpty(text) ? null : text;
 		}
 
 		// ========================================
