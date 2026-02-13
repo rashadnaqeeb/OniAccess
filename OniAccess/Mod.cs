@@ -7,58 +7,54 @@ using OniAccess.Speech;
 using OniAccess.Util;
 using UnityEngine;
 
-namespace OniAccess
-{
-    public sealed class Mod : KMod.UserMod2
-    {
-        public static Mod Instance { get; private set; }
-        public static string ModDir { get; private set; }
-        public static string Version { get; private set; }
+namespace OniAccess {
+	public sealed class Mod: KMod.UserMod2 {
+		public static Mod Instance { get; private set; }
+		public static string ModDir { get; private set; }
+		public static string Version { get; private set; }
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool SetDllDirectory(string lpPathName);
+		[DllImport("kernel32.dll", SetLastError = true)]
+		private static extern bool SetDllDirectory(string lpPathName);
 
-        public override void OnLoad(Harmony harmony)
-        {
-            Instance = this;
-            ModDir = Path.GetDirectoryName(typeof(Mod).Assembly.Location);
-            Version = typeof(Mod).Assembly.GetName().Version.ToString();
+		public override void OnLoad(Harmony harmony) {
+			Instance = this;
+			ModDir = Path.GetDirectoryName(typeof(Mod).Assembly.Location);
+			Version = typeof(Mod).Assembly.GetName().Version.ToString();
 
-            // Switch logging from Console (test default) to Unity's Debug.Log
-            LogUnityBackend.Install();
+			// Switch logging from Console (test default) to Unity's Debug.Log
+			LogUnityBackend.Install();
 
-            // Set DLL search path for Tolk native libraries before any Tolk calls
-            string tolkDir = Path.Combine(ModDir, "tolk", "dist");
-            if (!SetDllDirectory(tolkDir))
-            {
-                Log.Error($"Failed to set DLL directory to: {tolkDir}");
-            }
+			// Set DLL search path for Tolk native libraries before any Tolk calls
+			string tolkDir = Path.Combine(ModDir, "tolk", "dist");
+			if (!SetDllDirectory(tolkDir)) {
+				Log.Error($"Failed to set DLL directory to: {tolkDir}");
+			}
 
-            base.OnLoad(harmony);
+			base.OnLoad(harmony);
 
-            SpeechEngine.Initialize();
-            TextFilter.InitializeDefaults();
+			SpeechEngine.Initialize();
+			TextFilter.InitializeDefaults();
 
-            // Create persistent KeyPoller MonoBehaviour for unbound key detection
-            // (F12, arrows -- keys ONI doesn't generate KButtonEvents for)
-            var go = new GameObject("OniAccess_Input");
-            UnityEngine.Object.DontDestroyOnLoad(go);
-            go.AddComponent<KeyPoller>();
+			// Create persistent KeyPoller MonoBehaviour for unbound key detection
+			// (F12, arrows -- keys ONI doesn't generate KButtonEvents for)
+			var go = new GameObject("OniAccess_Input");
+			UnityEngine.Object.DontDestroyOnLoad(go);
+			go.AddComponent<KeyPoller>();
 
-            // Register screen-to-handler mappings for ContextDetector
-            ContextDetector.RegisterMenuHandlers();
+			// Register screen-to-handler mappings for ContextDetector
+			ContextDetector.RegisterMenuHandlers();
 
-            // Push initial WorldHandler -- the default "nothing special happening" handler
-            // ModInputRouter will be registered later via Harmony patch on InputInit.Awake
-            HandlerStack.Push(new WorldHandler());
+			// Push initial WorldHandler -- the default "nothing special happening" handler
+			// ModInputRouter will be registered later via Harmony patch on InputInit.Awake
+			HandlerStack.Push(new WorldHandler());
 
-            // Startup announcement
-            SpeechPipeline.SpeakInterrupt(
-                string.Format(STRINGS.ONIACCESS.SPEECH.MOD_LOADED, Version));
+			// Startup announcement
+			SpeechPipeline.SpeakInterrupt(
+				string.Format(STRINGS.ONIACCESS.SPEECH.MOD_LOADED, Version));
 
-            Localization.RegisterForTranslation(typeof(STRINGS.ONIACCESS));
+			Localization.RegisterForTranslation(typeof(STRINGS.ONIACCESS));
 
-            Log.Info($"Oni-Access version {Version} loaded");
-        }
-    }
+			Log.Info($"Oni-Access version {Version} loaded");
+		}
+	}
 }
