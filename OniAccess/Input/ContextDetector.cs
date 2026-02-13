@@ -165,6 +165,10 @@ namespace OniAccess.Input {
 			var langOptionsType = HarmonyLib.AccessTools.TypeByName("LanguageOptionsScreen");
 			Register(langOptionsType, screen => new Handlers.TranslationHandler(screen));
 
+			// InfoDialogScreen (KModalScreen -- used by DLC toggle, mod warnings, etc.)
+			var infoDialogType = HarmonyLib.AccessTools.TypeByName("InfoDialogScreen");
+			Register(infoDialogType, screen => new Handlers.ConfirmDialogHandler(screen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 

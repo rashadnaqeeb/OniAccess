@@ -67,34 +67,20 @@ namespace OniAccess.Input.Handlers {
 				});
 			}
 
-			// Find confirm button
-			var confirmButton = Traverse.Create(screen).Field("confirmButton")
-				.GetValue<KButton>();
-			if (confirmButton != null && confirmButton.gameObject.activeInHierarchy) {
-				string confirmLabel = GetButtonLabel(confirmButton, "OK");
-				_widgets.Add(new WidgetInfo {
-					Label = confirmLabel,
-					Component = confirmButton,
-					Type = WidgetType.Button,
-					GameObject = confirmButton.gameObject
-				});
-			}
+			// Find confirm/cancel buttons. ConfirmDialogScreen stores these as
+			// GameObject fields (not KButton), so get as GameObject first, then
+			// GetComponent<KButton>. InfoDialogScreen uses button panels instead.
+			var screenTraverse = Traverse.Create(screen);
+			bool foundNamedButtons = false;
 
-			// Find cancel button
-			var cancelButton = Traverse.Create(screen).Field("cancelButton")
-				.GetValue<KButton>();
-			if (cancelButton != null && cancelButton.gameObject.activeInHierarchy) {
-				string cancelLabel = GetButtonLabel(cancelButton, "Cancel");
-				_widgets.Add(new WidgetInfo {
-					Label = cancelLabel,
-					Component = cancelButton,
-					Type = WidgetType.Button,
-					GameObject = cancelButton.gameObject
-				});
-			}
+			foundNamedButtons |= TryAddButtonField(screenTraverse, "confirmButton", "OK");
+			foundNamedButtons |= TryAddButtonField(screenTraverse, "cancelButton", "Cancel");
+			foundNamedButtons |= TryAddButtonField(screenTraverse, "configurableButton", null);
 
-			// If no named buttons found, walk children for any KButton instances
-			if (confirmButton == null && cancelButton == null) {
+			// If no named buttons found, walk children for any KButton instances.
+			// Covers InfoDialogScreen and other dialog types that add buttons
+			// dynamically to leftButtonPanel/rightButtonPanel.
+			if (!foundNamedButtons) {
 				var kbuttons = screen.GetComponentsInChildren<KButton>(false);
 				foreach (var kb in kbuttons) {
 					if (kb == null || !kb.gameObject.activeInHierarchy
@@ -116,6 +102,36 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
+		/// Try to add a button from a named GameObject field on the screen.
+		/// ConfirmDialogScreen stores confirmButton/cancelButton as GameObject,
+		/// not KButton, so we get the GameObject first then GetComponent.
+		/// Returns true if a button was successfully added.
+		/// </summary>
+		private bool TryAddButtonField(Traverse screenTraverse, string fieldName, string fallback) {
+			try {
+				var go = screenTraverse.Field(fieldName)
+					.GetValue<UnityEngine.GameObject>();
+				if (go == null || !go.activeInHierarchy) return false;
+
+				var kb = go.GetComponent<KButton>();
+				if (kb == null || !kb.isInteractable) return false;
+
+				string label = GetButtonLabel(kb, fallback);
+				if (string.IsNullOrEmpty(label)) return false;
+
+				_widgets.Add(new WidgetInfo {
+					Label = label,
+					Component = kb,
+					Type = WidgetType.Button,
+					GameObject = go
+				});
+				return true;
+			} catch (System.Exception) {
+				return false;
+			}
+		}
+
+		/// <summary>
 		/// Extract button label from its child LocText, or use a fallback.
 		/// </summary>
 		private string GetButtonLabel(KButton button, string fallback) {
@@ -126,8 +142,9 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
-		/// Try to extract a title from the dialog's titleText field.
+		/// Try to extract a title from the dialog's titleText or header field.
 		/// If found, use it as the DisplayName instead of the generic "Confirm".
+		/// Tries titleText first (ConfirmDialogScreen), then header (InfoDialogScreen).
 		/// </summary>
 		private void TryExtractTitle(KScreen screen) {
 			try {
@@ -135,10 +152,16 @@ namespace OniAccess.Input.Handlers {
 					.GetValue<LocText>();
 				if (titleText != null && !string.IsNullOrEmpty(titleText.text)) {
 					_dialogTitle = titleText.text;
+					return;
 				}
-			} catch (System.Exception) {
-				// titleText field may not exist on all dialog types
-			}
+			} catch (System.Exception) { }
+			try {
+				var header = Traverse.Create(screen).Field("header")
+					.GetValue<LocText>();
+				if (header != null && !string.IsNullOrEmpty(header.text)) {
+					_dialogTitle = header.text;
+				}
+			} catch (System.Exception) { }
 		}
 	}
 }

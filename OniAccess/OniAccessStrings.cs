@@ -56,6 +56,16 @@ namespace STRINGS {
 			public static LocString ACHIEVEMENTS = "Achievements";
 			public static LocString VICTORY_CONDITIONS = "Victory conditions";
 			public static LocString STATS = "Stats";
+			public static LocString BUTTONS = "Buttons";
+			public static LocString DLC = "DLC";
+			public static LocString NEWS = "News";
+			public static LocString NO_NEWS = "No news available";
+		}
+
+		public class DLC {
+			public static LocString ACTIVE = "Active";
+			public static LocString OWNED_NOT_ACTIVE = "Owned, not active";
+			public static LocString NOT_OWNED = "Not owned";
 		}
 
 		public class STATES {
