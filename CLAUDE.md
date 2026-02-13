@@ -21,6 +21,9 @@ LSP diagnostics about missing types (KScreen, KButton, KToggle, etc.) are expect
 - `.planning/` — project planning files
 
 ## Code Style
+- **Tabs for indentation** — never spaces
+- **K&R braces** — opening brace on the same line, not Allman style. `} else {` not `}\nelse\n{`
+- **LF line endings** — not CRLF
 - Harmony patch classes: `GameType_MethodName_Patch` (e.g., `KScreen_Activate_Patch`)
 - All speech goes through `SpeechPipeline` — never call `SpeechEngine.Say()` directly
 - All logging goes through `Log.Info/Debug/Warn/Error` — never use `Debug.Log` directly
