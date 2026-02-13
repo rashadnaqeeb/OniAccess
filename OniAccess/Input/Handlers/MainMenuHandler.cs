@@ -70,6 +70,8 @@ namespace OniAccess.Input.Handlers {
 					GameObject = kbutton.gameObject
 				});
 			}
+
+			Util.Log.Debug($"MainMenuHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
 	}
 }

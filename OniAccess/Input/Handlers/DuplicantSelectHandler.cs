@@ -86,17 +86,27 @@ namespace OniAccess.Input.Handlers {
 			// Find CharacterContainer instances
 			// CharacterContainer inherits KScreen but is used as a child component
 			_containers = screen.GetComponentsInChildren<CharacterContainer>(true);
-			if (_containers == null || _containers.Length == 0) return;
+			if (_containers == null || _containers.Length == 0) {
+				Util.Log.Debug("DuplicantSelectHandler.DiscoverWidgets: 0 widgets");
+				return;
+			}
 
 			// Clamp slot index
 			if (_currentSlot >= _containers.Length) _currentSlot = 0;
 			var container = _containers[_currentSlot] as CharacterContainer;
-			if (container == null) return;
+			if (container == null) {
+				Util.Log.Debug("DuplicantSelectHandler.DiscoverWidgets: 0 widgets");
+				return;
+			}
 
 			// Only process active containers
-			if (!container.gameObject.activeInHierarchy) return;
+			if (!container.gameObject.activeInHierarchy) {
+				Util.Log.Debug("DuplicantSelectHandler.DiscoverWidgets: 0 widgets");
+				return;
+			}
 
 			DiscoverSlotWidgets(container);
+			Util.Log.Debug($"DuplicantSelectHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
 
 		/// <summary>

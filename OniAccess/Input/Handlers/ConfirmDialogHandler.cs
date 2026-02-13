@@ -112,6 +112,8 @@ namespace OniAccess.Input.Handlers {
 					});
 				}
 			}
+
+			Util.Log.Debug($"ConfirmDialogHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
 
 		/// <summary>

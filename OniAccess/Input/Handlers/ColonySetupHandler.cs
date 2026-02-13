@@ -139,6 +139,8 @@ namespace OniAccess.Input.Handlers {
 						break;
 				}
 			}
+
+			Util.Log.Debug($"ColonySetupHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
 
 		/// <summary>

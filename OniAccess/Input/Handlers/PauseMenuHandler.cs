@@ -55,6 +55,8 @@ namespace OniAccess.Input.Handlers {
 					GameObject = buttonObjects[i]
 				});
 			}
+
+			Util.Log.Debug($"PauseMenuHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
 	}
 }

@@ -46,6 +46,8 @@ namespace OniAccess.Input.Handlers {
 			} else {
 				DiscoverColonySaves(screen);
 			}
+
+			Util.Log.Debug($"SaveLoadHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
 
 		/// <summary>

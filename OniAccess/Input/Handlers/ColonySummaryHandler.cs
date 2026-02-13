@@ -43,6 +43,8 @@ namespace OniAccess.Input.Handlers {
 			} else {
 				DiscoverExplorerViewWidgets(screen);
 			}
+
+			Util.Log.Debug($"ColonySummaryHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
 
 		// ========================================

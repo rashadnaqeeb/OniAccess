@@ -114,6 +114,8 @@ namespace OniAccess.Input.Handlers {
 				// Audio, Graphics, Game options sub-screens: discover sliders, toggles, buttons
 				DiscoverOptionWidgets(screen);
 			}
+
+			Log.Debug($"OptionsMenuHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
 
 		/// <summary>
