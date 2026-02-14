@@ -244,7 +244,7 @@ namespace OniAccess.Input {
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (_search.IsSearchActive && e.TryConsume(Action.Escape)) {
 				_search.Clear();
-				Speech.SpeechPipeline.SpeakInterrupt("Search cleared");
+				Speech.SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SEARCH.CLEARED);
 				return true;
 			}
 
@@ -416,6 +416,7 @@ namespace OniAccess.Input {
 		protected void SpeakCurrentWidget() {
 			if (_currentIndex >= 0 && _currentIndex < _widgets.Count) {
 				var w = _widgets[_currentIndex];
+				if (!IsWidgetValid(w)) return;
 				string text = GetWidgetSpeechText(w);
 				string tip = GetTooltipText(w);
 				if (tip != null) text = $"{text}, {tip}";

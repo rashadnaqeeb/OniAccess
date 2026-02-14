@@ -120,7 +120,6 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		private void DiscoverOptionWidgets(KScreen screen) {
 			string screenName = screen.GetType().Name;
-			Log.Debug($"DiscoverOptionWidgets: {screenName}");
 
 			// Credits screen: only team names/members + close button
 			if (screenName == "CreditsScreen") {
@@ -144,17 +143,13 @@ namespace OniAccess.Input.Handlers {
 			//    Must run before KButton discovery so these get toggle semantics.
 			// ------------------------------------------------------------------
 			var hierRefs = screen.GetComponentsInChildren<HierarchyReferences>(true);
-			Log.Debug($"  HierarchyReferences found: {hierRefs.Length}");
 			foreach (var hr in hierRefs) {
-				if (hr == null) { Log.Debug($"    skip: null"); continue; }
-				if (!hr.gameObject.activeInHierarchy) { Log.Debug($"    skip inactive: {hr.gameObject.name}"); continue; }
+				if (hr == null) continue;
+				if (!hr.gameObject.activeInHierarchy) continue;
 
 				// Must have a CheckMark/Checkmark reference to qualify as a toggle
 				bool hasCheck = hr.HasReference("CheckMark") || hr.HasReference("Checkmark");
-				if (!hasCheck) {
-					Log.Debug($"    skip {hr.gameObject.name}: no CheckMark/Checkmark ref");
-					continue;
-				}
+				if (!hasCheck) continue;
 
 				// Find the KButton: prefer named "Button" reference, fall back to child search
 				// (GameOptionsScreen's toggles use GetComponentInChildren instead of a named ref)
@@ -165,7 +160,7 @@ namespace OniAccess.Input.Handlers {
 				}
 				if (kbutton == null)
 					kbutton = hr.GetComponentInChildren<KButton>(true);
-				if (kbutton == null) { Log.Debug($"    skip {hr.gameObject.name}: no KButton found"); continue; }
+				if (kbutton == null) continue;
 
 				// Resolve label: Label ref → FindWidgetLabel → GameObject name
 				string label = null;
@@ -174,30 +169,20 @@ namespace OniAccess.Input.Handlers {
 					var locText = labelRef as LocText;
 					if (locText == null && labelRef != null)
 						locText = labelRef.gameObject.GetComponent<LocText>();
-					if (locText != null) {
+					if (locText != null)
 						label = CleanLabel(locText.text);
-						Log.Debug($"    Label ref text='{locText.text}' cleaned='{label}' for {hr.gameObject.name}");
-					}
 				}
 				// Reject ambiguous labels (e.g. "Done" bleeding from close button)
-				if (label != null && _ambiguousLabels.Contains(label)) {
-					Log.Debug($"    Label '{label}' is ambiguous for {hr.gameObject.name}, trying alternatives");
+				if (label != null && _ambiguousLabels.Contains(label))
 					label = null;
-				}
 				if (label == null) {
 					label = FindWidgetLabel(hr.gameObject);
-					// Same ambiguous check on the fallback result
-					if (label != null && _ambiguousLabels.Contains(label)) {
-						Log.Debug($"    FindWidgetLabel also returned ambiguous '{label}', trying name");
+					if (label != null && _ambiguousLabels.Contains(label))
 						label = null;
-					}
 				}
 				if (label == null)
 					label = LabelFromGameObjectName(hr.gameObject.name);
-				if (label == null) {
-					Log.Debug($"    skip {hr.gameObject.name}: no label");
-					continue;
-				}
+				if (label == null) continue;
 
 				hierToggleButtons.Add(kbutton);
 				_widgets.Add(new WidgetInfo {
@@ -207,7 +192,6 @@ namespace OniAccess.Input.Handlers {
 					GameObject = hr.gameObject,
 					Tag = hr  // Store HierarchyReferences for reading CheckMark state
 				});
-				Log.Debug($"    + HierToggle: '{label}' ({hr.gameObject.name})");
 			}
 
 			// Post-process: collapse HierRef toggles sharing the same parent into
@@ -218,21 +202,15 @@ namespace OniAccess.Input.Handlers {
 			// 2. Sliders (volume controls, camera speed, UI scale, etc.)
 			// ------------------------------------------------------------------
 			var sliders = screen.GetComponentsInChildren<KSlider>(true);
-			Log.Debug($"  KSlider found: {sliders.Length}");
 			foreach (var slider in sliders) {
-				if (slider == null || !slider.gameObject.activeInHierarchy) {
-					Log.Debug($"    skip slider: null or inactive ({slider?.gameObject.name})");
-					continue;
-				}
-				if (IsMouseOnlyControl(slider.gameObject)) { Log.Debug($"    skip mouse-only: {slider.gameObject.name}"); continue; }
+				if (slider == null || !slider.gameObject.activeInHierarchy) continue;
+				if (IsMouseOnlyControl(slider.gameObject)) continue;
 
 				// Prefer SliderContainer's nameLabel (audio volume sliders)
 				string label = null;
 				var container = slider.GetComponentInParent<SliderContainer>();
-				if (container != null && container.nameLabel != null) {
+				if (container != null && container.nameLabel != null)
 					label = CleanLabel(container.nameLabel.text);
-					Log.Debug($"    SliderContainer nameLabel='{container.nameLabel.text}' cleaned='{label}'");
-				}
 				if (label == null)
 					label = FindWidgetLabel(slider.gameObject);
 				// Broader search: grandparent's children (label may be in a sibling container)
@@ -251,7 +229,7 @@ namespace OniAccess.Input.Handlers {
 						}
 					}
 				}
-				if (label == null) { Log.Debug($"    skip no label: {slider.gameObject.name}"); continue; }
+				if (label == null) continue;
 
 				if (sliderValueLt != null)
 					_sliderValueLabels[slider] = sliderValueLt;
@@ -262,20 +240,18 @@ namespace OniAccess.Input.Handlers {
 					Type = WidgetType.Slider,
 					GameObject = slider.gameObject
 				});
-				Log.Debug($"    + Slider: '{label}' ({slider.gameObject.name})");
 			}
 
 			// ------------------------------------------------------------------
 			// 3. KToggle controls (standard checkboxes)
 			// ------------------------------------------------------------------
 			var toggles = screen.GetComponentsInChildren<KToggle>(true);
-			Log.Debug($"  KToggle found: {toggles.Length}");
 			foreach (var toggle in toggles) {
 				if (toggle == null || !toggle.gameObject.activeInHierarchy) continue;
 				if (IsMouseOnlyControl(toggle.gameObject)) continue;
 
 				string label = FindWidgetLabel(toggle.gameObject);
-				if (string.IsNullOrEmpty(label)) { Log.Debug($"    skip no label: {toggle.gameObject.name}"); continue; }
+				if (string.IsNullOrEmpty(label)) continue;
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
@@ -283,7 +259,6 @@ namespace OniAccess.Input.Handlers {
 					Type = WidgetType.Toggle,
 					GameObject = toggle.gameObject
 				});
-				Log.Debug($"    + KToggle: '{label}' ({toggle.gameObject.name})");
 			}
 
 			// ------------------------------------------------------------------
@@ -291,18 +266,14 @@ namespace OniAccess.Input.Handlers {
 			//    Different component from KToggle — has onClick delegate + CurrentState.
 			// ------------------------------------------------------------------
 			var multiToggles = screen.GetComponentsInChildren<MultiToggle>(true);
-			Log.Debug($"  MultiToggle found: {multiToggles.Length}");
 			foreach (var mt in multiToggles) {
-				if (mt == null || !mt.gameObject.activeInHierarchy) {
-					Log.Debug($"    skip inactive: {mt?.gameObject.name}");
-					continue;
-				}
-				if (IsMouseOnlyControl(mt.gameObject)) { Log.Debug($"    skip mouse-only: {mt.gameObject.name}"); continue; }
+				if (mt == null || !mt.gameObject.activeInHierarchy) continue;
+				if (IsMouseOnlyControl(mt.gameObject)) continue;
 
 				string label = FindWidgetLabel(mt.gameObject);
 				if (label == null)
 					label = LabelFromGameObjectName(mt.gameObject.name);
-				if (label == null) { Log.Debug($"    skip no label: {mt.gameObject.name}"); continue; }
+				if (label == null) continue;
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
@@ -310,26 +281,21 @@ namespace OniAccess.Input.Handlers {
 					Type = WidgetType.Toggle,
 					GameObject = mt.gameObject
 				});
-				Log.Debug($"    + MultiToggle: '{label}' ({mt.gameObject.name})");
 			}
 
 			// ------------------------------------------------------------------
 			// 5. Unity Dropdowns (resolution, color mode, audio device)
 			// ------------------------------------------------------------------
 			var dropdowns = screen.GetComponentsInChildren<Dropdown>(true);
-			Log.Debug($"  Dropdown found: {dropdowns.Length}");
 			foreach (var dd in dropdowns) {
-				if (dd == null || !dd.gameObject.activeInHierarchy) {
-					Log.Debug($"    skip inactive: {dd?.gameObject.name}");
-					continue;
-				}
-				if (IsMouseOnlyControl(dd.gameObject)) { Log.Debug($"    skip mouse-only: {dd.gameObject.name}"); continue; }
+				if (dd == null || !dd.gameObject.activeInHierarchy) continue;
+				if (IsMouseOnlyControl(dd.gameObject)) continue;
 
 				// For dropdowns, search SIBLINGS for label (avoid captionText inside dropdown)
 				string label = FindSiblingLabel(dd.gameObject);
 				if (label == null)
 					label = LabelFromGameObjectName(dd.gameObject.name);
-				if (label == null) { Log.Debug($"    skip no label: {dd.gameObject.name}"); continue; }
+				if (label == null) continue;
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
@@ -337,7 +303,6 @@ namespace OniAccess.Input.Handlers {
 					Type = WidgetType.Dropdown,
 					GameObject = dd.gameObject
 				});
-				Log.Debug($"    + Dropdown: '{label}' ({dd.gameObject.name})");
 			}
 
 			// ------------------------------------------------------------------
@@ -345,26 +310,22 @@ namespace OniAccess.Input.Handlers {
 			//    Skip buttons already captured as part of other widget types.
 			// ------------------------------------------------------------------
 			var kbuttons = screen.GetComponentsInChildren<KButton>(true);
-			Log.Debug($"  KButton found: {kbuttons.Length}");
 			foreach (var kb in kbuttons) {
-				if (kb == null || !kb.gameObject.activeInHierarchy) {
-					Log.Debug($"    skip inactive: {kb?.gameObject.name}");
-					continue;
-				}
-				if (!kb.isInteractable) { Log.Debug($"    skip not interactable: {kb.gameObject.name}"); continue; }
-				if (IsMouseOnlyControl(kb.gameObject)) { Log.Debug($"    skip mouse-only: {kb.gameObject.name}"); continue; }
+				if (kb == null || !kb.gameObject.activeInHierarchy) continue;
+				if (!kb.isInteractable) continue;
+				if (IsMouseOnlyControl(kb.gameObject)) continue;
 
 				// Skip buttons already captured as HierarchyReferences toggles
-				if (hierToggleButtons.Contains(kb)) { Log.Debug($"    skip hierToggle: {kb.gameObject.name}"); continue; }
+				if (hierToggleButtons.Contains(kb)) continue;
 
 				// Skip buttons that are children of sliders, toggles, or dropdowns (already captured)
-				if (kb.GetComponentInParent<KSlider>() != null) { Log.Debug($"    skip child-of-slider: {kb.gameObject.name}"); continue; }
-				if (kb.GetComponentInParent<KToggle>() != null) { Log.Debug($"    skip child-of-toggle: {kb.gameObject.name}"); continue; }
-				if (kb.GetComponentInParent<MultiToggle>() != null) { Log.Debug($"    skip child-of-multitoggle: {kb.gameObject.name}"); continue; }
-				if (kb.GetComponentInParent<Dropdown>() != null) { Log.Debug($"    skip child-of-dropdown: {kb.gameObject.name}"); continue; }
+				if (kb.GetComponentInParent<KSlider>() != null) continue;
+				if (kb.GetComponentInParent<KToggle>() != null) continue;
+				if (kb.GetComponentInParent<MultiToggle>() != null) continue;
+				if (kb.GetComponentInParent<Dropdown>() != null) continue;
 
 				string label = CleanLabel(GetButtonLabel(kb));
-				if (string.IsNullOrEmpty(label)) { Log.Debug($"    skip no label: {kb.gameObject.name}"); continue; }
+				if (string.IsNullOrEmpty(label)) continue;
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
@@ -372,10 +333,7 @@ namespace OniAccess.Input.Handlers {
 					Type = WidgetType.Button,
 					GameObject = kb.gameObject
 				});
-				Log.Debug($"    + Button: '{label}' ({kb.gameObject.name})");
 			}
-
-			Log.Debug($"  Total widgets discovered: {_widgets.Count}");
 		}
 
 		/// <summary>
@@ -584,7 +542,7 @@ namespace OniAccess.Input.Handlers {
 			if (widget.Tag is RadioGroupInfo radio) {
 				int count = radio.Members.Count;
 				int newIndex = (radio.CurrentIndex + direction + count) % count;
-				radio.Members[newIndex].Button.SignalClick(KKeyCode.Mouse0);
+				radio.Members[newIndex].Button?.SignalClick(KKeyCode.Mouse0);
 				radio.CurrentIndex = newIndex;
 				Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {radio.Members[newIndex].Label}");
 				return;

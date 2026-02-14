@@ -155,14 +155,14 @@ namespace OniAccess.Input {
 						return true;
 					case KeyCode.Escape:
 						Clear();
-						Speech.SpeechPipeline.SpeakInterrupt("Search cleared");
+						Speech.SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SEARCH.CLEARED);
 						return true;
 					case KeyCode.Backspace:
 						if (!RemoveChar())
 							return true;
 						if (!HasBuffer) {
 							Clear();
-							Speech.SpeechPipeline.SpeakInterrupt("Search cleared");
+							Speech.SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SEARCH.CLEARED);
 							return true;
 						}
 						RunSearch();
@@ -200,7 +200,7 @@ namespace OniAccess.Input {
 				if (!RemoveChar()) return true;
 				if (!HasBuffer) {
 					Clear();
-					Speech.SpeechPipeline.SpeakInterrupt("Search cleared");
+					Speech.SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SEARCH.CLEARED);
 					return true;
 				}
 				RunSearch();
@@ -242,7 +242,7 @@ namespace OniAccess.Input {
 				_resultNames.Clear();
 				_resultCursor = 0;
 				_isSearchActive = true;
-				Speech.SpeechPipeline.SpeakInterrupt($"No match for {bufferStr}");
+				Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.SEARCH.NO_MATCH, bufferStr));
 				return;
 			}
 
@@ -265,7 +265,7 @@ namespace OniAccess.Input {
 				_resultNames.Clear();
 				_resultCursor = 0;
 				_isSearchActive = true;
-				Speech.SpeechPipeline.SpeakInterrupt($"No match for {bufferStr}");
+				Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.SEARCH.NO_MATCH, bufferStr));
 			} else {
 				// Swap working lists into result lists (no allocation)
 				var tempIndices = _resultIndices;

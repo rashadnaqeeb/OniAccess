@@ -1,5 +1,3 @@
-using STRINGS;
-
 namespace STRINGS {
 	public class ONIACCESS {
 		public class SPEECH {
@@ -7,6 +5,11 @@ namespace STRINGS {
 			public static LocString MOD_ON = "Oni-Access on";
 			public static LocString MOD_OFF = "Oni-Access off";
 			public static LocString NO_COMMANDS = "No commands available in this context";
+		}
+
+		public class SEARCH {
+			public static LocString CLEARED = "Search cleared";
+			public static LocString NO_MATCH = "No match for {0}";
 		}
 
 		public class HOTKEYS {

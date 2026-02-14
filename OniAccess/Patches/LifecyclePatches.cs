@@ -4,8 +4,6 @@ using OniAccess.Util;
 
 namespace OniAccess.Patches {
 	/// <summary>
-	/// Harmony patches for input and lifecycle events.
-	///
 	/// Harmony patches for lifecycle events.
 	/// Input-related patches (ModInputRouter registration, KScreen context detection)
 	/// are in InputArchPatches.cs. This file contains the lifecycle patch to ensure

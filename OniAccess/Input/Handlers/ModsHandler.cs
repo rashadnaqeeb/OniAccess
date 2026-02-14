@@ -76,26 +76,11 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Append action buttons
-			AddButton(screen, "toggleAllButton");
-			AddButton(screen, "workshopButton");
-			AddButton(screen, "closeButton");
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "toggleAllButton", null, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "workshopButton", null, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", null, _widgets);
 
 			Log.Debug($"ModsHandler.DiscoverWidgets: {_widgets.Count} widgets");
-		}
-
-		private void AddButton(KScreen screen, string fieldName) {
-			var button = Traverse.Create(screen).Field<KButton>(fieldName).Value;
-			if (button == null || !button.gameObject.activeInHierarchy) return;
-
-			var locText = button.GetComponentInChildren<LocText>();
-			string label = locText != null ? locText.text : fieldName;
-
-			_widgets.Add(new WidgetInfo {
-				Label = label,
-				Component = button,
-				Type = WidgetType.Button,
-				GameObject = button.gameObject
-			});
 		}
 
 		/// <summary>

@@ -494,24 +494,22 @@ namespace OniAccess.Input.Handlers {
 
 		private void CancelTextEdit() {
 			_isEditingText = false;
-			if (_currentIndex >= 0 && _currentIndex < _widgets.Count) {
-				var widget = _widgets[_currentIndex];
-				if (widget.Component is KInputTextField textField) {
-					textField.text = _cachedTextValue;
-					textField.DeactivateInputField();
-				}
+			if (_currentIndex >= 0 && _currentIndex < _widgets.Count
+				&& _widgets[_currentIndex].Component is KInputTextField textField) {
+				textField.text = _cachedTextValue;
+				textField.DeactivateInputField();
 			}
 			Speech.SpeechPipeline.SpeakInterrupt($"Cancelled, {_cachedTextValue}");
 		}
 
 		private void ConfirmTextEdit() {
 			_isEditingText = false;
-			if (_currentIndex >= 0 && _currentIndex < _widgets.Count) {
-				var widget = _widgets[_currentIndex];
-				if (widget.Component is KInputTextField textField) {
-					textField.DeactivateInputField();
-					Speech.SpeechPipeline.SpeakInterrupt($"Confirmed, {textField.text}");
-				}
+			if (_currentIndex >= 0 && _currentIndex < _widgets.Count
+				&& _widgets[_currentIndex].Component is KInputTextField textField) {
+				textField.DeactivateInputField();
+				Speech.SpeechPipeline.SpeakInterrupt($"Confirmed, {textField.text}");
+			} else {
+				Speech.SpeechPipeline.SpeakInterrupt($"Cancelled, {_cachedTextValue}");
 			}
 		}
 	}

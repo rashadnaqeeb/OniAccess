@@ -90,7 +90,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Add close/navigation buttons at the end
-			AddScreenButton(screen, "closeScreenButton", "Close");
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", "Close", _widgets);
 		}
 
 		// ========================================
@@ -150,8 +150,8 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Navigation buttons: "View other colonies" and "Close"
-			AddScreenButton(screen, "viewOtherColoniesButton", "View other colonies");
-			AddScreenButton(screen, "closeScreenButton", "Close");
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "viewOtherColoniesButton", "View other colonies", _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", "Close", _widgets);
 		}
 
 		// ========================================
@@ -395,29 +395,5 @@ namespace OniAccess.Input.Handlers {
 			return null;
 		}
 
-		/// <summary>
-		/// Try to add a KButton from a named field on the screen as a widget.
-		/// </summary>
-		private void AddScreenButton(KScreen screen, string fieldName, string fallbackLabel) {
-			try {
-				var button = Traverse.Create(screen).Field(fieldName)
-					.GetValue<KButton>();
-				if (button != null && button.gameObject.activeInHierarchy) {
-					string label = fallbackLabel;
-					var locText = button.GetComponentInChildren<LocText>();
-					if (locText != null && !string.IsNullOrEmpty(locText.text))
-						label = locText.text;
-
-					_widgets.Add(new WidgetInfo {
-						Label = label,
-						Component = button,
-						Type = WidgetType.Button,
-						GameObject = button.gameObject
-					});
-				}
-			} catch (System.Exception) {
-				// Field may not exist -- skip silently
-			}
-		}
 	}
 }

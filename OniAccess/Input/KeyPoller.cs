@@ -23,7 +23,7 @@ namespace OniAccess.Input {
 			// Toggle key: Ctrl+Shift+F12 -- ALWAYS check, even when mod is off.
 			// This is the only key that works when mod is disabled.
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
-				&& IsCtrlShiftHeld()) {
+				&& InputUtil.CtrlHeld() && InputUtil.ShiftHeld()) {
 				VanillaMode.Toggle();
 				return; // Don't process F12 further this frame
 			}
@@ -73,13 +73,6 @@ namespace OniAccess.Input {
 				handler.Tick();
 				if (handler.CapturesAllInput) break;
 			}
-		}
-
-		private static bool IsCtrlShiftHeld() {
-			return (UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftControl)
-					|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightControl))
-				&& (UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
-					|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift));
 		}
 
 		private void OnDestroy() {

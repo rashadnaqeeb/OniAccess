@@ -76,9 +76,9 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Append action buttons
-			AddButton(screen, "workshopButton");
-			AddButton(screen, "uninstallButton");
-			AddButton(screen, "dismissButton");
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "workshopButton", null, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "uninstallButton", null, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "dismissButton", null, _widgets);
 
 			Log.Debug($"TranslationHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
@@ -108,19 +108,5 @@ namespace OniAccess.Input.Handlers {
 			}
 		}
 
-		private void AddButton(KScreen screen, string fieldName) {
-			var button = Traverse.Create(screen).Field<KButton>(fieldName).Value;
-			if (button == null || !button.gameObject.activeInHierarchy) return;
-
-			var locText = button.GetComponentInChildren<LocText>();
-			string label = locText != null ? locText.text : fieldName;
-
-			_widgets.Add(new WidgetInfo {
-				Label = label,
-				Component = button,
-				Type = WidgetType.Button,
-				GameObject = button.gameObject
-			});
-		}
 	}
 }

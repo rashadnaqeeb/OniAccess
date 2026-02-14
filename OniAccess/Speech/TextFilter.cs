@@ -40,6 +40,9 @@ namespace OniAccess.Speech {
 		private static readonly Dictionary<string, string> _spriteTextMap =
 			new Dictionary<string, string>();
 
+		// Sprites already warned about (suppress repeated log spam)
+		private static readonly HashSet<string> _warnedSprites = new HashSet<string>();
+
 		/// <summary>
 		/// Register a sprite name to spoken text mapping.
 		/// Meaningful sprites (e.g., "warning") are converted to words;
@@ -79,6 +82,10 @@ namespace OniAccess.Speech {
 		public static string FilterForSpeech(string text) {
 			if (string.IsNullOrEmpty(text)) return "";
 
+			// Fast path: skip regex pipeline for plain text (no markup)
+			if (text.IndexOf('<') < 0 && text.IndexOf('[') < 0 && text.IndexOf('{') < 0)
+				return WhitespaceRegex.Replace(text, " ").Trim();
+
 			// 1. Convert known sprite tags to spoken text, log unrecognized ones
 			text = SpriteTagRegex.Replace(text, match => {
 				string spriteName = match.Groups[1].Value.Trim().ToLowerInvariant();
@@ -87,7 +94,8 @@ namespace OniAccess.Speech {
 					// whitespace normalization in step 7 will collapse any extra spaces
 					return string.IsNullOrEmpty(spoken) ? "" : spoken + " ";
 				}
-				Log.Warn($"Unrecognized sprite tag: {spriteName}");
+				if (_warnedSprites.Add(spriteName))
+					Log.Debug($"Unrecognized sprite tag: {spriteName}");
 				return "";
 			});
 

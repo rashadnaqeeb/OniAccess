@@ -188,6 +188,7 @@ namespace OniAccess.Input {
 		/// screenStack is private, so we use Harmony Traverse to access it.
 		/// </summary>
 		public static void DetectAndActivate() {
+			if (HandlerStack.Count > 0) return;
 			Util.Log.Debug("ContextDetector.DetectAndActivate called");
 
 			// Check KScreenManager for open registered screens
