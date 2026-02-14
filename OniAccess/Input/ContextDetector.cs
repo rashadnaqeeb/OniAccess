@@ -8,7 +8,7 @@ namespace OniAccess.Input {
 	/// When a screen deactivates, pops the handler if it matches the top of stack.
 	/// Unregistered screens are silently ignored (structural UI, not interactive menus).
 	///
-	/// Called from InputArchPatches (KScreen.Activate postfix, KScreen.Deactivate prefix).
+	/// Called from ScreenLifecyclePatches (KScreen.Activate postfix, KScreen.Deactivate prefix).
 	/// </summary>
 	public static class ContextDetector {
 		/// <summary>
