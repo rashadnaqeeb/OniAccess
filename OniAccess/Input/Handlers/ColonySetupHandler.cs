@@ -718,9 +718,11 @@ namespace OniAccess.Input.Handlers {
 					if (titleLocText != null) {
 						sectionName = "";
 						// SetText() populates TMPro's internal buffer but not m_text;
-						// GetParsedText() reads from that buffer
-						try { sectionName = titleLocText.GetParsedText() ?? ""; }
-						catch { /* can throw if mesh not generated yet */ }
+						// ForceMeshUpdate() processes that buffer so GetParsedText() works
+						try {
+							titleLocText.ForceMeshUpdate();
+							sectionName = titleLocText.GetParsedText() ?? "";
+						} catch { /* can throw if mesh not generated yet */ }
 						// Fallback to .text, but reject prefab placeholders (start with _)
 						if (string.IsNullOrEmpty(sectionName)) {
 							string raw = titleLocText.text ?? "";
@@ -1037,13 +1039,17 @@ namespace OniAccess.Input.Handlers {
 				return;
 			}
 
-			// Mixing DLC toggle: invoke MultiToggle onClick, then speak new state
+			// Mixing DLC toggle: invoke MultiToggle onClick, then announce new state
+			// ChangeState() runs async (next Update), so compute new state from old
 			if (_currentPanel == PanelMixing && widget.Type == WidgetType.Toggle
 				&& widget.Component is MultiToggle mixingToggle) {
+				string newState = mixingToggle.CurrentState == 1 ? "disabled" : "enabled";
 				mixingToggle.onClick?.Invoke();
-				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
+				string name = widget.Label.Contains(",") ? widget.Label.Substring(0, widget.Label.IndexOf(',')) : widget.Label;
+				Speech.SpeechPipeline.SpeakInterrupt($"{name}, {newState}");
 				return;
 			}
+
 
 			// Settings toggle: call ToggleSetting(), then speak new state
 			if (_currentPanel == PanelSettings && widget.Component is CustomGameSettingToggleWidget settingsToggle) {
@@ -1152,6 +1158,9 @@ namespace OniAccess.Input.Handlers {
 			var wt = Traverse.Create(settingWidget);
 			bool cycled = false;
 
+			// Snapshot current value to detect boundary no-ops
+			string oldText = GetWidgetSpeechText(widget);
+
 			// Try standard CycleLeft/CycleRight fields (game settings)
 			if (direction > 0) {
 				var cycleRight = wt.Field("CycleRight").GetValue<KButton>();
@@ -1175,14 +1184,24 @@ namespace OniAccess.Input.Handlers {
 					var arrowTransform = cyclerTransform.Find(arrowName);
 					if (arrowTransform != null) {
 						var arrowButton = arrowTransform.GetComponent<KButton>();
-						if (arrowButton != null && arrowButton.isInteractable)
+						if (arrowButton != null && arrowButton.isInteractable) {
 							arrowButton.SignalClick(KKeyCode.Mouse0);
+							cycled = true;
+						}
 					}
 				}
 			}
 
-			// Read the new value after cycling
-			Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
+			if (!cycled) return;
+
+			// Force synchronous UI refresh — the game defers Refresh() to the
+			// next Update() via isDirty, so value labels are stale without this
+			settingWidget.Refresh();
+
+			// Only announce if the value actually changed (boundary clamp = no-op)
+			string newText = GetWidgetSpeechText(widget);
+			if (newText != oldText)
+				Speech.SpeechPipeline.SpeakInterrupt(newText);
 		}
 
 		// ========================================
