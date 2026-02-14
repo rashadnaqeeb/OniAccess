@@ -499,28 +499,50 @@ namespace OniAccess.Input.Handlers {
 			if (widgets == null) return;
 
 			foreach (var widget in widgets) {
-				if (widget == null || !widget.gameObject.activeInHierarchy) continue;
+				if (widget == null || !widget.gameObject.activeSelf) continue;
 
-				// CustomGameSettingListWidget has Label and ValueLabel fields
-				var wt = Traverse.Create(widget);
-				var labelText = wt.Field("Label").GetValue<LocText>();
-				var valueText = wt.Field("ValueLabel").GetValue<LocText>();
-
-				string name = labelText != null ? labelText.text : "";
-				string value = valueText != null ? valueText.text : "";
-
-				if (string.IsNullOrEmpty(name)) continue;
-
-				string label = !string.IsNullOrEmpty(value)
-					? $"{name}, {value}"
-					: name;
-
-				_widgets.Add(new WidgetInfo {
-					Label = label,
-					Component = widget,
-					Type = WidgetType.Dropdown,
-					GameObject = widget.gameObject
-				});
+				if (widget is CustomGameSettingListWidget listWidget) {
+					var wt = Traverse.Create(listWidget);
+					var labelText = wt.Field("Label").GetValue<LocText>();
+					var valueText = wt.Field("ValueLabel").GetValue<LocText>();
+					string name = labelText != null ? labelText.text : "";
+					string value = valueText != null ? valueText.text : "";
+					if (string.IsNullOrEmpty(name)) continue;
+					string label = !string.IsNullOrEmpty(value)
+						? $"{name}, {value}"
+						: name;
+					_widgets.Add(new WidgetInfo {
+						Label = label,
+						Component = widget,
+						Type = WidgetType.Dropdown,
+						GameObject = widget.gameObject
+					});
+				} else if (widget is CustomGameSettingToggleWidget toggleWidget) {
+					var wt = Traverse.Create(toggleWidget);
+					var labelText = wt.Field("Label").GetValue<LocText>();
+					var toggle = wt.Field("Toggle").GetValue<MultiToggle>();
+					string name = labelText != null ? labelText.text : "";
+					if (string.IsNullOrEmpty(name)) continue;
+					string state = (toggle != null && toggle.CurrentState == 1) ? "enabled" : "disabled";
+					_widgets.Add(new WidgetInfo {
+						Label = $"{name}, {state}",
+						Component = widget,
+						Type = WidgetType.Toggle,
+						GameObject = widget.gameObject
+					});
+				} else if (widget is CustomGameSettingSeed seedWidget) {
+					var wt = Traverse.Create(seedWidget);
+					var labelText = wt.Field("Label").GetValue<LocText>();
+					var inputField = wt.Field("Input").GetValue<KInputTextField>();
+					string name = labelText != null ? labelText.text : (string)STRINGS.ONIACCESS.PANELS.SEED;
+					string value = inputField != null ? inputField.text : "";
+					_widgets.Add(new WidgetInfo {
+						Label = $"{name}, {value}",
+						Component = widget,
+						Type = WidgetType.Button, // Enter randomizes seed
+						GameObject = widget.gameObject
+					});
+				}
 			}
 		}
 
@@ -543,26 +565,15 @@ namespace OniAccess.Input.Handlers {
 
 			if (storyRows == null || storyStates == null) return;
 
-			// Walk storyRowContainer children for visual order
-			var containerGO = spt.Field("storyRowContainer").GetValue<UnityEngine.GameObject>();
-			if (containerGO == null) return;
-			var container = containerGO.transform;
+			// Iterate storyRows dictionary directly — each entry gives storyId + row GameObject.
+			// Dictionary iteration order matches visual order since entries are added in
+			// Db.Get().Stories.resources order during SpawnRows() and no entries are removed.
+			foreach (var kvp in storyRows) {
+				string storyId = kvp.Key;
+				var rowGO = kvp.Value;
+				if (rowGO == null || !rowGO.activeSelf) continue;
 
-			for (int i = 0; i < container.childCount; i++) {
-				var child = container.GetChild(i);
-				if (child == null || !child.gameObject.activeInHierarchy) continue;
-
-				// Find which storyId this row belongs to
-				string storyId = null;
-				foreach (var kvp in storyRows) {
-					if (kvp.Value != null && kvp.Value == child.gameObject) {
-						storyId = kvp.Key;
-						break;
-					}
-				}
-				if (storyId == null) continue;
-
-				var hierRef = child.GetComponent<HierarchyReferences>();
+				var hierRef = rowGO.GetComponent<HierarchyReferences>();
 				if (hierRef == null) continue;
 
 				string name = "";
@@ -595,87 +606,157 @@ namespace OniAccess.Input.Handlers {
 					Tag = storyId
 				});
 			}
+
+			// Summary label: "Story Traits: 5" (same header the visual UI shows)
+			try {
+				var traitsString = Traverse.Create(storyPanel).Method("GetTraitsString", new System.Type[] { typeof(bool) })
+					.GetValue<string>(false);
+				if (!string.IsNullOrEmpty(traitsString)) {
+					_widgets.Add(new WidgetInfo {
+						Label = Speech.TextFilter.FilterForSpeech(traitsString),
+						Type = WidgetType.Label
+					});
+				}
+			} catch (System.Exception) { }
 		}
 
 		/// <summary>
 		/// Discover mixing widgets from MixingContentPanel.
-		/// DLC toggles have a "Checkbox" MultiToggle; cycler widgets have "Cycler" arrows.
+		/// Walks contentPanel children (sections) instead of the flat widget list
+		/// so that section headers (DLC Content, Asteroid Mixing, Biome Mixing)
+		/// are announced before each group of widgets.
 		/// </summary>
 		private void DiscoverMixingWidgets(KScreen screen) {
 			var mixingPanel = Traverse.Create(screen).Field("mixingPanel").GetValue<object>();
 			if (mixingPanel == null) return;
 
-			var widgets = Traverse.Create(mixingPanel).Field("widgets")
-				.GetValue<System.Collections.Generic.List<CustomGameSettingWidget>>();
-			if (widgets == null) return;
+			var contentPanelGO = Traverse.Create(mixingPanel).Field("contentPanel")
+				.GetValue<UnityEngine.GameObject>();
+			if (contentPanelGO == null) return;
 
-			foreach (var widget in widgets) {
-				if (widget == null || !widget.gameObject.activeInHierarchy) continue;
+			var contentPanel = contentPanelGO.transform;
+			for (int s = 0; s < contentPanel.childCount; s++) {
+				var section = contentPanel.GetChild(s);
+				if (section == null || !section.gameObject.activeSelf) continue;
 
-				// DLC toggle: has "Checkbox" child
-				var checkboxTransform = widget.transform.Find("Checkbox");
-				if (checkboxTransform != null) {
-					// Skip disabled widgets
-					var overlayDisabled = checkboxTransform.Find("OverlayDisabled");
-					if (overlayDisabled != null && overlayDisabled.gameObject.activeSelf) continue;
-
-					var toggle = checkboxTransform.GetComponent<MultiToggle>();
-					if (toggle == null) continue;
-
-					var labelLocText = widget.transform.Find("Label");
-					string name = "";
-					if (labelLocText != null) {
-						var lt = labelLocText.GetComponent<LocText>();
-						if (lt != null) name = lt.text;
+				// Read section title from "Title/Title Text"
+				var titleTransform = section.Find("Title");
+				if (titleTransform == null) continue;
+				var titleTextTransform = titleTransform.Find("Title Text");
+				string sectionName = "";
+				if (titleTextTransform != null) {
+					var titleLocText = titleTextTransform.GetComponent<LocText>();
+					if (titleLocText != null) {
+						sectionName = titleLocText.text ?? "";
+						if (string.IsNullOrEmpty(sectionName)) {
+							// Fallback: LocText.key stores the string table key
+							string key = Traverse.Create(titleLocText).Field("key").GetValue<string>();
+							if (!string.IsNullOrEmpty(key))
+								sectionName = Strings.Get(new StringKey(key));
+						}
+						if (string.IsNullOrEmpty(sectionName))
+							Util.Log.Debug($"Mixing section {s}: text='{titleLocText.text}' key='{Traverse.Create(titleLocText).Field("key").GetValue<string>()}'");
 					}
-					if (string.IsNullOrEmpty(name)) continue;
-
-					string state = toggle.CurrentState == 1 ? "enabled" : "disabled";
-					_widgets.Add(new WidgetInfo {
-						Label = $"{name}, {state}",
-						Component = toggle,
-						Type = WidgetType.Toggle,
-						GameObject = widget.gameObject
-					});
-					continue;
 				}
 
-				// Cycler widget: has "Cycler" child
-				var cyclerTransform = widget.transform.Find("Cycler");
-				if (cyclerTransform != null) {
-					// Skip disabled widgets
-					var overlayDisabled = cyclerTransform.Find("OverlayDisabled");
-					if (overlayDisabled != null && overlayDisabled.gameObject.activeSelf) continue;
+				// Check if section content is visible (collapsible toggle)
+				var contentTransform = section.Find("Content");
+				if (contentTransform == null || !contentTransform.gameObject.activeSelf) continue;
 
-					var labelLocText = widget.transform.Find("Label");
-					string name = "";
-					if (labelLocText != null) {
-						var lt = labelLocText.GetComponent<LocText>();
-						if (lt != null) name = lt.text;
-					}
-					if (string.IsNullOrEmpty(name)) continue;
+				var gridTransform = contentTransform.Find("Grid");
+				if (gridTransform == null) continue;
 
-					// Read current value from "Cycler/Box/Value Label"
-					string value = "";
-					var boxTransform = cyclerTransform.Find("Box");
-					if (boxTransform != null) {
-						var valueLabelTransform = boxTransform.Find("Value Label");
-						if (valueLabelTransform != null) {
-							var vlt = valueLabelTransform.GetComponent<LocText>();
-							if (vlt != null) value = vlt.text;
-						}
-					}
+				// Count visible children in the grid
+				int visibleCount = 0;
+				for (int c = 0; c < gridTransform.childCount; c++) {
+					if (gridTransform.GetChild(c).gameObject.activeSelf) visibleCount++;
+				}
 
-					string label = !string.IsNullOrEmpty(value)
-						? $"{name}, {value}"
-						: name;
+				// If no visible widgets, check for "no options" label
+				if (visibleCount == 0) {
+					var noOptionsTransform = contentTransform.Find("LabelNoOptions");
+					if (noOptionsTransform != null && noOptionsTransform.gameObject.activeSelf)
+						continue; // Skip empty section entirely
+				}
 
+				// Emit section header
+				if (!string.IsNullOrEmpty(sectionName)) {
 					_widgets.Add(new WidgetInfo {
-						Label = label,
-						Component = widget,
-						Type = WidgetType.Dropdown,
-						GameObject = widget.gameObject
+						Label = sectionName,
+						Type = WidgetType.Label
 					});
+				}
+
+				// Walk grid children for actual setting widgets
+				for (int c = 0; c < gridTransform.childCount; c++) {
+					var widgetGO = gridTransform.GetChild(c);
+					if (widgetGO == null || !widgetGO.gameObject.activeSelf) continue;
+
+					var widget = widgetGO.GetComponent<CustomGameSettingWidget>();
+					if (widget == null) continue;
+
+					// DLC toggle: has "Checkbox" child
+					var checkboxTransform = widgetGO.Find("Checkbox");
+					if (checkboxTransform != null) {
+						var overlayDisabled = checkboxTransform.Find("OverlayDisabled");
+						if (overlayDisabled != null && overlayDisabled.gameObject.activeSelf) continue;
+
+						var toggle = checkboxTransform.GetComponent<MultiToggle>();
+						if (toggle == null) continue;
+
+						var labelLocText = widgetGO.Find("Label");
+						string name = "";
+						if (labelLocText != null) {
+							var lt = labelLocText.GetComponent<LocText>();
+							if (lt != null) name = lt.text;
+						}
+						if (string.IsNullOrEmpty(name)) continue;
+
+						string state = toggle.CurrentState == 0 ? "enabled" : "disabled";
+						_widgets.Add(new WidgetInfo {
+							Label = $"{name}, {state}",
+							Component = toggle,
+							Type = WidgetType.Toggle,
+							GameObject = widget.gameObject
+						});
+						continue;
+					}
+
+					// Cycler widget: has "Cycler" child
+					var cyclerTransform = widgetGO.Find("Cycler");
+					if (cyclerTransform != null) {
+						var overlayDisabled = cyclerTransform.Find("OverlayDisabled");
+						if (overlayDisabled != null && overlayDisabled.gameObject.activeSelf) continue;
+
+						var labelLocText = widgetGO.Find("Label");
+						string name = "";
+						if (labelLocText != null) {
+							var lt = labelLocText.GetComponent<LocText>();
+							if (lt != null) name = lt.text;
+						}
+						if (string.IsNullOrEmpty(name)) continue;
+
+						string value = "";
+						var boxTransform = cyclerTransform.Find("Box");
+						if (boxTransform != null) {
+							var valueLabelTransform = boxTransform.Find("Value Label");
+							if (valueLabelTransform != null) {
+								var vlt = valueLabelTransform.GetComponent<LocText>();
+								if (vlt != null) value = vlt.text;
+							}
+						}
+
+						string label = !string.IsNullOrEmpty(value)
+							? $"{name}, {value}"
+							: name;
+
+						_widgets.Add(new WidgetInfo {
+							Label = label,
+							Component = widget,
+							Type = WidgetType.Dropdown,
+							GameObject = widget.gameObject
+						});
+					}
 				}
 			}
 		}
@@ -766,7 +847,7 @@ namespace OniAccess.Input.Handlers {
 			if (_currentPanel == PanelMixing && widget.Type == WidgetType.Toggle) {
 				var mt = widget.Component as MultiToggle;
 				if (mt != null) {
-					string state = mt.CurrentState == 1 ? "enabled" : "disabled";
+					string state = mt.CurrentState == 0 ? "enabled" : "disabled";
 					// Read label from widget's "Label" child LocText
 					string name = "";
 					if (widget.GameObject != null) {
@@ -806,6 +887,26 @@ namespace OniAccess.Input.Handlers {
 				}
 
 				return !string.IsNullOrEmpty(value) ? $"{name}, {value}" : name;
+			}
+
+			// Settings toggle widgets: read Toggle.CurrentState live
+			if (_currentPanel == PanelSettings && widget.Component is CustomGameSettingToggleWidget toggleWidget) {
+				var twt = Traverse.Create(toggleWidget);
+				var labelText = twt.Field("Label").GetValue<LocText>();
+				var toggle = twt.Field("Toggle").GetValue<MultiToggle>();
+				string name = labelText != null ? labelText.text : widget.Label;
+				string state = (toggle != null && toggle.CurrentState == 1) ? "enabled" : "disabled";
+				return $"{name}, {state}";
+			}
+
+			// Settings seed widget: read Input.text live
+			if (_currentPanel == PanelSettings && widget.Component is CustomGameSettingSeed seedWidget) {
+				var swt = Traverse.Create(seedWidget);
+				var labelText = swt.Field("Label").GetValue<LocText>();
+				var inputField = swt.Field("Input").GetValue<KInputTextField>();
+				string name = labelText != null ? labelText.text : (string)STRINGS.ONIACCESS.PANELS.SEED;
+				string value = inputField != null ? inputField.text : "";
+				return $"{name}, {value}";
 			}
 
 			// Coordinate text field
@@ -855,6 +956,23 @@ namespace OniAccess.Input.Handlers {
 			if (_currentPanel == PanelMixing && widget.Type == WidgetType.Toggle
 				&& widget.Component is MultiToggle mixingToggle) {
 				mixingToggle.onClick?.Invoke();
+				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
+				return;
+			}
+
+			// Settings toggle: call ToggleSetting(), then speak new state
+			if (_currentPanel == PanelSettings && widget.Component is CustomGameSettingToggleWidget settingsToggle) {
+				settingsToggle.ToggleSetting();
+				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
+				return;
+			}
+
+			// Settings seed: randomize, then speak new value
+			if (_currentPanel == PanelSettings && widget.Component is CustomGameSettingSeed settingsSeed) {
+				var randomizeBtn = Traverse.Create(settingsSeed).Field("RandomizeButton")
+					.GetValue<KButton>();
+				if (randomizeBtn != null)
+					randomizeBtn.SignalClick(KKeyCode.Mouse0);
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
 				return;
 			}
