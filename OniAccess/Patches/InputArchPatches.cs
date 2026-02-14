@@ -54,6 +54,9 @@ namespace OniAccess.Patches {
 	internal static class KScreen_Activate_Patch {
 		private static void Postfix(KScreen __instance) {
 			if (!VanillaMode.IsEnabled) return;
+			// Skip screens managed via Show patches -- their OnActivate calls Show(false)
+			// during prefab init, so this postfix would push a zombie handler.
+			if (ContextDetector.IsShowPatched(__instance.GetType())) return;
 			ContextDetector.OnScreenActivated(__instance);
 		}
 	}
@@ -67,6 +70,8 @@ namespace OniAccess.Patches {
 	internal static class KScreen_Deactivate_Patch {
 		private static void Prefix(KScreen __instance) {
 			if (!VanillaMode.IsEnabled) return;
+			// Skip screens managed via Show patches -- lifecycle handled there.
+			if (ContextDetector.IsShowPatched(__instance.GetType())) return;
 			ContextDetector.OnScreenDeactivating(__instance);
 		}
 	}

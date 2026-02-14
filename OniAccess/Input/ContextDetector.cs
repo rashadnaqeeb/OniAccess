@@ -19,6 +19,23 @@ namespace OniAccess.Input {
 			= new System.Collections.Generic.Dictionary<System.Type, System.Func<KScreen, IAccessHandler>>();
 
 		/// <summary>
+		/// Screen types whose lifecycle is managed via Show patches instead of
+		/// KScreen.Activate/Deactivate. These screens call Show(false) inside OnActivate
+		/// during prefab init, so the generic Activate/Deactivate patches must skip them
+		/// to avoid pushing zombie handlers on startup.
+		/// </summary>
+		private static readonly System.Collections.Generic.HashSet<System.Type> _showPatchedTypes
+			= new System.Collections.Generic.HashSet<System.Type>();
+
+		/// <summary>
+		/// Returns true if the given type uses Show-patch lifecycle and should be
+		/// skipped by generic KScreen.Activate/Deactivate patches.
+		/// </summary>
+		public static bool IsShowPatched(System.Type screenType) {
+			return _showPatchedTypes.Contains(screenType);
+		}
+
+		/// <summary>
 		/// Register a screen type to handler factory mapping.
 		/// Generic overload for compile-time type safety.
 		/// </summary>
@@ -179,10 +196,12 @@ namespace OniAccess.Input {
 			// LockerMenuScreen (KModalScreen -- Supply Closet hub from main menu)
 			// Show patch pushes/pops via ContextDetector since OnActivate calls Show(false)
 			Register<LockerMenuScreen>(screen => new Handlers.LockerMenuHandler(screen));
+			_showPatchedTypes.Add(typeof(LockerMenuScreen));
 
 			// KleiItemDropScreen (KModalScreen -- cosmetic item claim/reveal)
 			// Show patch pushes/pops via ContextDetector since OnActivate calls Show(false)
 			Register<KleiItemDropScreen>(screen => new Handlers.KleiItemDropHandler(screen));
+			_showPatchedTypes.Add(typeof(KleiItemDropScreen));
 
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
