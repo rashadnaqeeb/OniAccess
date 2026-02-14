@@ -556,68 +556,84 @@ namespace OniAccess.Input.Handlers {
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "storyTraitShuffleButton", null, _widgets);
 
 			var storyPanel = Traverse.Create(screen).Field("storyContentPanel").GetValue<object>();
-			if (storyPanel == null) return;
-
-			var spt = Traverse.Create(storyPanel);
-			var storyRows = spt.Field("storyRows")
-				.GetValue<System.Collections.Generic.Dictionary<string, UnityEngine.GameObject>>();
-			var storyStates = spt.Field("storyStates").GetValue<System.Collections.IDictionary>();
-
-			if (storyRows == null || storyStates == null) return;
-
-			// Iterate storyRows dictionary directly — each entry gives storyId + row GameObject.
-			// Dictionary iteration order matches visual order since entries are added in
-			// Db.Get().Stories.resources order during SpawnRows() and no entries are removed.
-			foreach (var kvp in storyRows) {
-				string storyId = kvp.Key;
-				var rowGO = kvp.Value;
-				if (rowGO == null || !rowGO.activeSelf) continue;
-
-				var hierRef = rowGO.GetComponent<HierarchyReferences>();
-				if (hierRef == null) continue;
-
-				string name = "";
-				if (hierRef.HasReference("Label")) {
-					var labelText = hierRef.GetReference<LocText>("Label");
-					if (labelText != null)
-						name = labelText.text;
-				}
-				if (string.IsNullOrEmpty(name)) continue;
-
-				MultiToggle checkbox = null;
-				if (hierRef.HasReference("checkbox"))
-					checkbox = hierRef.GetReference<MultiToggle>("checkbox");
-				if (checkbox == null) continue;
-
-				// Read state: 0=Forbidden, 1=Guaranteed
-				string state = STRINGS.ONIACCESS.STATES.FORBIDDEN;
-				if (storyStates.Contains(storyId)) {
-					int stateVal = (int)storyStates[storyId];
-					state = stateVal == 1
-						? STRINGS.ONIACCESS.STATES.GUARANTEED
-						: STRINGS.ONIACCESS.STATES.FORBIDDEN;
-				}
-
-				_widgets.Add(new WidgetInfo {
-					Label = $"{name}, {state}",
-					Component = checkbox,
-					Type = WidgetType.Toggle,
-					GameObject = checkbox.gameObject,
-					Tag = storyId
-				});
+			if (storyPanel == null) {
+				Util.Log.Debug("StoryTraits: storyContentPanel is null");
+				return;
 			}
 
-			// Summary label: "Story Traits: 5" (same header the visual UI shows)
-			try {
-				var traitsString = Traverse.Create(storyPanel).Method("GetTraitsString", new System.Type[] { typeof(bool) })
-					.GetValue<string>(false);
-				if (!string.IsNullOrEmpty(traitsString)) {
+			var spt = Traverse.Create(storyPanel);
+
+			// Walk storyRowContainer children instead of the storyRows dictionary.
+			// The private storyStates dict uses a private enum value type which
+			// Traverse can't extract as IDictionary. Active children are spawned
+			// in Db.Get().Stories.resources order; child 0 is the inactive prefab
+			// template, so we track a separate story index for active rows only.
+			var containerGO = spt.Field("storyRowContainer").GetValue<UnityEngine.GameObject>();
+			if (containerGO == null) {
+				Util.Log.Debug("StoryTraits: storyRowContainer is null");
+				return;
+			}
+
+			var stories = Db.Get().Stories.resources;
+			var container = containerGO.transform;
+			bool isPureVanilla = DlcManager.IsPureVanilla();
+			int storyIdx = 0;
+
+			for (int i = 0; i < container.childCount; i++) {
+				try {
+					var rowGO = container.GetChild(i).gameObject;
+					if (rowGO == null || !rowGO.activeSelf) continue;
+					if (storyIdx >= stories.Count) break;
+
+					var hierRef = rowGO.GetComponent<HierarchyReferences>();
+					if (hierRef == null) { storyIdx++; continue; }
+
+					// Get name from the database — LocText.text is empty at discovery time
+					string name = "";
+					var storyTrait = stories[storyIdx].StoryTrait;
+					if (storyTrait != null)
+						name = Strings.Get(storyTrait.name);
+					if (string.IsNullOrEmpty(name)) { storyIdx++; continue; }
+
+					MultiToggle checkbox = null;
+					if (hierRef.HasReference("checkbox"))
+						checkbox = hierRef.GetReference<MultiToggle>("checkbox");
+					if (checkbox == null) { storyIdx++; continue; }
+
+					string storyId = stories[storyIdx].Id;
+
+					// Read state from public CustomGameSettings API, not the private dict
+					string state = STRINGS.ONIACCESS.STATES.FORBIDDEN;
+					try {
+						var level = CustomGameSettings.Instance.GetCurrentStoryTraitSetting(storyId);
+						if (level != null && level.id == "Guaranteed")
+							state = STRINGS.ONIACCESS.STATES.GUARANTEED;
+					} catch (System.Exception) { }
+
+					// Build label with description
+					string label = $"{name}, {state}";
+					try {
+						if (storyTrait != null) {
+							string desc = isPureVanilla
+								? Strings.Get(storyTrait.description + "_SHORT")
+								: Strings.Get(storyTrait.description);
+							if (!string.IsNullOrEmpty(desc))
+								label = $"{name}, {state} — {Speech.TextFilter.FilterForSpeech(desc)}";
+						}
+					} catch (System.Exception) { }
+
 					_widgets.Add(new WidgetInfo {
-						Label = Speech.TextFilter.FilterForSpeech(traitsString),
-						Type = WidgetType.Label
+						Label = label,
+						Component = checkbox,
+						Type = WidgetType.Toggle,
+						GameObject = checkbox.gameObject,
+						Tag = storyId
 					});
+					storyIdx++;
+				} catch (System.Exception) {
+					storyIdx++;
 				}
-			} catch (System.Exception) { }
+			}
 		}
 
 		/// <summary>
@@ -814,33 +830,39 @@ namespace OniAccess.Input.Handlers {
 		/// Read widget state live for each panel type.
 		/// </summary>
 		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			// Story trait toggles: re-read state live from storyStates dict
+			// Story trait toggles: re-read state live via CustomGameSettings
 			if (_currentPanel == PanelStoryTraits && widget.Type == WidgetType.Toggle
 				&& widget.Tag is string storyId) {
-				var storyPanel = Traverse.Create(_screen).Field("storyContentPanel").GetValue<object>();
-				if (storyPanel != null) {
-					var storyStates = Traverse.Create(storyPanel).Field("storyStates")
-						.GetValue<System.Collections.IDictionary>();
-					if (storyStates != null && storyStates.Contains(storyId)) {
-						int stateVal = (int)storyStates[storyId];
-						string state = stateVal == 1
-							? STRINGS.ONIACCESS.STATES.GUARANTEED
-							: STRINGS.ONIACCESS.STATES.FORBIDDEN;
+				string state = STRINGS.ONIACCESS.STATES.FORBIDDEN;
+				try {
+					var level = CustomGameSettings.Instance.GetCurrentStoryTraitSetting(storyId);
+					if (level != null && level.id == "Guaranteed")
+						state = STRINGS.ONIACCESS.STATES.GUARANTEED;
+				} catch (System.Exception) { }
 
-						// Re-read the name from the checkbox's parent HierarchyReferences
-						string name = "";
-						var mt = widget.Component as MultiToggle;
-						if (mt != null) {
-							var hierRef = mt.transform.parent.GetComponent<HierarchyReferences>();
-							if (hierRef != null && hierRef.HasReference("Label")) {
-								var lt = hierRef.GetReference<LocText>("Label");
-								if (lt != null) name = lt.text;
-							}
-						}
-						if (string.IsNullOrEmpty(name)) name = widget.Label;
-						return $"{name}, {state}";
+				// Re-read the name from the database (LocText.text may be empty)
+				string name = "";
+				try {
+					var story = Db.Get().Stories.Get(storyId);
+					if (story?.StoryTrait != null)
+						name = Strings.Get(story.StoryTrait.name);
+				} catch (System.Exception) { }
+				if (string.IsNullOrEmpty(name)) name = widget.Label;
+
+				// Include trait description
+				string label = $"{name}, {state}";
+				try {
+					bool isPureVanilla = DlcManager.IsPureVanilla();
+					var story = Db.Get().Stories.Get(storyId);
+					if (story?.StoryTrait != null) {
+						string desc = isPureVanilla
+							? Strings.Get(story.StoryTrait.description + "_SHORT")
+							: Strings.Get(story.StoryTrait.description);
+						if (!string.IsNullOrEmpty(desc))
+							label = $"{name}, {state} — {Speech.TextFilter.FilterForSpeech(desc)}";
 					}
-				}
+				} catch (System.Exception) { }
+				return label;
 			}
 
 			// Mixing DLC toggles: read CurrentState live
