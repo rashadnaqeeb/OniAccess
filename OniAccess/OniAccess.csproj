@@ -43,6 +43,10 @@
       <HintPath>$(ONI_MANAGED)\UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="FMODUnity">
       <HintPath>$(ONI_MANAGED)\FMODUnity.dll</HintPath>
       <Private>false</Private>

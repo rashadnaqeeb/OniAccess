@@ -39,6 +39,7 @@ namespace STRINGS {
 			public static LocString CREDITS = "Credits";
 			public static LocString KEY_BINDINGS = "Key bindings";
 			public static LocString SUPPLY_CLOSET = "Supply closet";
+			public static LocString ITEM_DROP = "Claim blueprints";
 		}
 
 		public class SUPPLY_CLOSET {

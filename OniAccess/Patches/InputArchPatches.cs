@@ -104,4 +104,20 @@ namespace OniAccess.Patches {
 			}
 		}
 	}
+
+	/// <summary>
+	/// KleiItemDropScreen.OnActivate() calls Show(false) during prefab init (same as LockerMenuScreen).
+	/// Patch Show(bool) to push/pop the handler via ContextDetector instead.
+	/// </summary>
+	[HarmonyPatch(typeof(KleiItemDropScreen), nameof(KleiItemDropScreen.Show))]
+	internal static class KleiItemDropScreen_Show_Patch {
+		private static void Postfix(KleiItemDropScreen __instance, bool show) {
+			if (!VanillaMode.IsEnabled) return;
+			if (show) {
+				ContextDetector.OnScreenActivated(__instance);
+			} else {
+				ContextDetector.OnScreenDeactivating(__instance);
+			}
+		}
+	}
 }
