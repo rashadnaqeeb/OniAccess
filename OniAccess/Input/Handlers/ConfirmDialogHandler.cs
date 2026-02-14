@@ -41,12 +41,15 @@ namespace OniAccess.Input.Handlers {
 				messageText = popupMessage.text;
 			}
 
-			// If no popupMessage, search for a child LocText with content
+			// If no popupMessage, search for a child LocText with content.
+			// Skip any LocText that matches the already-extracted dialog title
+			// (spoken as DisplayName) to avoid a redundant, confusing Label.
 			if (string.IsNullOrEmpty(messageText)) {
 				var locTexts = screen.GetComponentsInChildren<LocText>(false);
 				foreach (var lt in locTexts) {
 					if (lt != null && !string.IsNullOrEmpty(lt.text)
-						&& lt.text.Length > 10) // Skip short labels like button text
+						&& lt.text.Length > 10 // Skip short labels like button text
+						&& lt.text != _dialogTitle) // Skip title (already spoken)
 					{
 						messageText = lt.text;
 						break;
