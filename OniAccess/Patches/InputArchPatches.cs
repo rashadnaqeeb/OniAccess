@@ -32,17 +32,21 @@ namespace OniAccess.Patches {
 			// Idempotent: don't register twice
 			if (ModInputRouter.Instance != null) return;
 
-			var router = new ModInputRouter();
+			try {
+				var router = new ModInputRouter();
 
-			// Follow the same pattern as InputInit.Awake uses for KScreenManager/DebugHandler
-			if (KInputManager.currentController != null) {
-				KInputHandler.Add(KInputManager.currentController, router, 50);
-			} else {
-				var inputManager = Global.GetInputManager();
-				KInputHandler.Add(inputManager.GetDefaultController(), router, 50);
+				// Follow the same pattern as InputInit.Awake uses for KScreenManager/DebugHandler
+				if (KInputManager.currentController != null) {
+					KInputHandler.Add(KInputManager.currentController, router, 50);
+				} else {
+					var inputManager = Global.GetInputManager();
+					KInputHandler.Add(inputManager.GetDefaultController(), router, 50);
+				}
+
+				Log.Info("ModInputRouter registered at priority 50");
+			} catch (System.Exception ex) {
+				Log.Error($"Failed to register ModInputRouter: {ex}");
 			}
-
-			Log.Info("ModInputRouter registered at priority 50");
 		}
 	}
 

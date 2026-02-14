@@ -17,8 +17,12 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(Game), "OnDestroy")]
 	internal static class Game_OnDestroy_Patch {
 		private static void Postfix() {
-			Log.Info("Game shutting down, cleaning up speech engine");
-			SpeechEngine.Shutdown();
+			try {
+				Log.Info("Game shutting down, cleaning up speech engine");
+				SpeechEngine.Shutdown();
+			} catch (System.Exception ex) {
+				Log.Error($"Failed to shutdown speech engine: {ex}");
+			}
 		}
 	}
 }
