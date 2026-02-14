@@ -13,23 +13,29 @@ namespace OniAccess.Input.Handlers {
 	///
 	/// ModeSelectScreen: two MultiToggle buttons (Survival / No Sweat).
 	/// ClusterCategorySelectionScreen: simple list of MultiToggle buttons for game modes.
-	/// ColonyDestinationSelectScreen: tabbed panels (clusters, settings, seed) with
-	/// Tab/Shift+Tab switching between panels.
+	/// ColonyDestinationSelectScreen: five tabbed panels with Tab/Shift+Tab switching:
+	///   Clusters → Story Traits → Mixing → Settings → Actions
 	///
 	/// Per locked decisions:
 	/// - Game mode entries speak name + description together
-	/// - Cluster entries speak name, difficulty, and world traits
+	/// - Cluster entries speak name, description, difficulty, moons, traits, selected
+	/// - Story traits speak name + guaranteed/forbidden state; Enter toggles
+	/// - Mixing DLC toggles speak name + enabled/disabled; Enter toggles
+	/// - Mixing cyclers speak name + value; Left/Right cycles
 	/// - Settings speak "label, value" with Left/Right cycling
+	/// - Actions panel: Back, Shuffle, Coordinate field, Launch
 	/// - Tab/Shift+Tab switches panels on destination screen only
 	/// </summary>
 	public class ColonySetupHandler: BaseMenuHandler {
 		/// <summary>
-		/// The three logical panels on ColonyDestinationSelectScreen.
+		/// The five logical panels on ColonyDestinationSelectScreen.
 		/// </summary>
 		private const int PanelClusters = 0;
-		private const int PanelSettings = 1;
-		private const int PanelSeed = 2;
-		private const int PanelCount = 3;
+		private const int PanelStoryTraits = 1;
+		private const int PanelMixing = 2;
+		private const int PanelSettings = 3;
+		private const int PanelActions = 4;
+		private const int PanelCount = 5;
 
 		/// <summary>
 		/// Current panel index for ColonyDestinationSelectScreen.
@@ -83,7 +89,6 @@ namespace OniAccess.Input.Handlers {
 		protected override void NavigateTabForward() {
 			if (IsClusterCategoryScreen || IsModeSelectScreen) return;
 
-			int prev = _currentPanel;
 			_currentPanel = (_currentPanel + 1) % PanelCount;
 			if (_currentPanel == 0) PlayWrapSound();
 			RediscoverForCurrentPanel();
@@ -102,6 +107,7 @@ namespace OniAccess.Input.Handlers {
 		/// Re-discover widgets for the current panel and announce it.
 		/// </summary>
 		private void RediscoverForCurrentPanel() {
+			_search.Clear();
 			DiscoverWidgets(_screen);
 			string panelName = GetPanelName(_currentPanel);
 			Speech.SpeechPipeline.SpeakInterrupt(panelName);
@@ -114,8 +120,10 @@ namespace OniAccess.Input.Handlers {
 		private static string GetPanelName(int panel) {
 			switch (panel) {
 				case PanelClusters: return STRINGS.ONIACCESS.PANELS.CLUSTERS;
+				case PanelStoryTraits: return STRINGS.ONIACCESS.PANELS.STORY_TRAITS;
+				case PanelMixing: return STRINGS.ONIACCESS.PANELS.MIXING;
 				case PanelSettings: return STRINGS.ONIACCESS.PANELS.SETTINGS;
-				case PanelSeed: return STRINGS.ONIACCESS.PANELS.SEED;
+				case PanelActions: return STRINGS.ONIACCESS.PANELS.ACTIONS;
 				default: return "";
 			}
 		}
@@ -136,11 +144,17 @@ namespace OniAccess.Input.Handlers {
 					case PanelClusters:
 						DiscoverClusterWidgets(screen);
 						break;
+					case PanelStoryTraits:
+						DiscoverStoryTraitWidgets(screen);
+						break;
+					case PanelMixing:
+						DiscoverMixingWidgets(screen);
+						break;
 					case PanelSettings:
 						DiscoverSettingsWidgets(screen);
 						break;
-					case PanelSeed:
-						DiscoverSeedWidgets(screen);
+					case PanelActions:
+						DiscoverActionWidgets(screen);
 						break;
 				}
 			}
@@ -232,6 +246,7 @@ namespace OniAccess.Input.Handlers {
 			var clusterKeys = pt.Field("clusterKeys").GetValue<System.Collections.Generic.List<string>>();
 			var asteroidData = pt.Field("asteroidData")
 				.GetValue<System.Collections.Generic.Dictionary<string, ColonyDestinationAsteroidBeltData>>();
+			int selectedIndex = pt.Field("selectedIndex").GetValue<int>();
 
 			if (clusterKeys == null || asteroidData == null) return;
 
@@ -247,11 +262,25 @@ namespace OniAccess.Input.Handlers {
 				if (string.IsNullOrEmpty(name))
 					name = belt.startWorldName;
 
+				// Starting world description
+				var startWorld = belt.GetStartWorld;
+				string desc = startWorld != null ? Strings.Get(startWorld.description) : "";
+
 				// Difficulty from survivalOptions
 				int diffIdx = UnityEngine.Mathf.Clamp(
 					belt.difficulty, 0,
 					ColonyDestinationAsteroidBeltData.survivalOptions.Count - 1);
 				string difficulty = ColonyDestinationAsteroidBeltData.survivalOptions[diffIdx].first;
+
+				// Moon names (Spaced Out only)
+				var moonNames = new List<string>();
+				if (belt.worlds != null) {
+					foreach (var world in belt.worlds) {
+						string moonName = Strings.Get(world.name);
+						if (!string.IsNullOrEmpty(moonName))
+							moonNames.Add(Speech.TextFilter.FilterForSpeech(moonName));
+					}
+				}
 
 				// World traits (filtered: skip empty separators from the visual list)
 				var traits = belt.GetTraitDescriptors();
@@ -262,9 +291,17 @@ namespace OniAccess.Input.Handlers {
 						traitNames.Add(traitText);
 				}
 
-				string label = $"{Speech.TextFilter.FilterForSpeech(name)}, {Speech.TextFilter.FilterForSpeech(difficulty)}";
+				// Build label: name, description, difficulty, moons, traits, selected
+				string label = Speech.TextFilter.FilterForSpeech(name);
+				if (!string.IsNullOrEmpty(desc))
+					label += $", {Speech.TextFilter.FilterForSpeech(desc)}";
+				label += $", {Speech.TextFilter.FilterForSpeech(difficulty)}";
+				if (moonNames.Count > 0)
+					label += ", " + string.Join(", ", moonNames);
 				if (traitNames.Count > 0)
 					label += ", " + string.Join(", ", traitNames);
+				if (i == selectedIndex)
+					label += $", {STRINGS.ONIACCESS.STATES.SELECTED}";
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
@@ -315,20 +352,204 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
-		/// Discover the seed input field on ColonyDestinationSelectScreen.
+		/// Discover story trait entries from StoryContentPanel.
+		/// Each row has a label and a checkbox MultiToggle for toggling
+		/// Forbidden/Guaranteed state.
 		/// </summary>
-		private void DiscoverSeedWidgets(KScreen screen) {
-			var coordinate = Traverse.Create(screen).Field("coordinate")
-				.GetValue<KInputTextField>();
-			if (coordinate == null) return;
+		private void DiscoverStoryTraitWidgets(KScreen screen) {
+			// storyTraitShuffleButton lives on ColonyDestinationSelectScreen
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "storyTraitShuffleButton", null, _widgets);
 
-			string currentValue = coordinate.text ?? "";
-			_widgets.Add(new WidgetInfo {
-				Label = $"{STRINGS.ONIACCESS.PANELS.SEED}, {currentValue}",
-				Component = coordinate,
-				Type = WidgetType.TextInput,
-				GameObject = coordinate.gameObject
-			});
+			var storyPanel = Traverse.Create(screen).Field("storyContentPanel").GetValue<object>();
+			if (storyPanel == null) return;
+
+			var spt = Traverse.Create(storyPanel);
+			var storyRows = spt.Field("storyRows")
+				.GetValue<System.Collections.Generic.Dictionary<string, UnityEngine.GameObject>>();
+			var storyStates = spt.Field("storyStates").GetValue<System.Collections.IDictionary>();
+
+			if (storyRows == null || storyStates == null) return;
+
+			// Walk storyRowContainer children for visual order
+			var containerGO = spt.Field("storyRowContainer").GetValue<UnityEngine.GameObject>();
+			if (containerGO == null) return;
+			var container = containerGO.transform;
+
+			for (int i = 0; i < container.childCount; i++) {
+				var child = container.GetChild(i);
+				if (child == null || !child.gameObject.activeInHierarchy) continue;
+
+				// Find which storyId this row belongs to
+				string storyId = null;
+				foreach (var kvp in storyRows) {
+					if (kvp.Value != null && kvp.Value == child.gameObject) {
+						storyId = kvp.Key;
+						break;
+					}
+				}
+				if (storyId == null) continue;
+
+				var hierRef = child.GetComponent<HierarchyReferences>();
+				if (hierRef == null) continue;
+
+				string name = "";
+				if (hierRef.HasReference("Label")) {
+					var labelText = hierRef.GetReference<LocText>("Label");
+					if (labelText != null)
+						name = labelText.text;
+				}
+				if (string.IsNullOrEmpty(name)) continue;
+
+				MultiToggle checkbox = null;
+				if (hierRef.HasReference("checkbox"))
+					checkbox = hierRef.GetReference<MultiToggle>("checkbox");
+				if (checkbox == null) continue;
+
+				// Read state: 0=Forbidden, 1=Guaranteed
+				string state = STRINGS.ONIACCESS.STATES.FORBIDDEN;
+				if (storyStates.Contains(storyId)) {
+					int stateVal = (int)storyStates[storyId];
+					state = stateVal == 1
+						? STRINGS.ONIACCESS.STATES.GUARANTEED
+						: STRINGS.ONIACCESS.STATES.FORBIDDEN;
+				}
+
+				_widgets.Add(new WidgetInfo {
+					Label = $"{name}, {state}",
+					Component = checkbox,
+					Type = WidgetType.Toggle,
+					GameObject = checkbox.gameObject,
+					Tag = storyId
+				});
+			}
+		}
+
+		/// <summary>
+		/// Discover mixing widgets from MixingContentPanel.
+		/// DLC toggles have a "Checkbox" MultiToggle; cycler widgets have "Cycler" arrows.
+		/// </summary>
+		private void DiscoverMixingWidgets(KScreen screen) {
+			var mixingPanel = Traverse.Create(screen).Field("mixingPanel").GetValue<object>();
+			if (mixingPanel == null) return;
+
+			var widgets = Traverse.Create(mixingPanel).Field("widgets")
+				.GetValue<System.Collections.Generic.List<CustomGameSettingWidget>>();
+			if (widgets == null) return;
+
+			foreach (var widget in widgets) {
+				if (widget == null || !widget.gameObject.activeInHierarchy) continue;
+
+				// DLC toggle: has "Checkbox" child
+				var checkboxTransform = widget.transform.Find("Checkbox");
+				if (checkboxTransform != null) {
+					// Skip disabled widgets
+					var overlayDisabled = checkboxTransform.Find("OverlayDisabled");
+					if (overlayDisabled != null && overlayDisabled.gameObject.activeSelf) continue;
+
+					var toggle = checkboxTransform.GetComponent<MultiToggle>();
+					if (toggle == null) continue;
+
+					var labelLocText = widget.transform.Find("Label");
+					string name = "";
+					if (labelLocText != null) {
+						var lt = labelLocText.GetComponent<LocText>();
+						if (lt != null) name = lt.text;
+					}
+					if (string.IsNullOrEmpty(name)) continue;
+
+					string state = toggle.CurrentState == 1 ? "enabled" : "disabled";
+					_widgets.Add(new WidgetInfo {
+						Label = $"{name}, {state}",
+						Component = toggle,
+						Type = WidgetType.Toggle,
+						GameObject = widget.gameObject
+					});
+					continue;
+				}
+
+				// Cycler widget: has "Cycler" child
+				var cyclerTransform = widget.transform.Find("Cycler");
+				if (cyclerTransform != null) {
+					// Skip disabled widgets
+					var overlayDisabled = cyclerTransform.Find("OverlayDisabled");
+					if (overlayDisabled != null && overlayDisabled.gameObject.activeSelf) continue;
+
+					var labelLocText = widget.transform.Find("Label");
+					string name = "";
+					if (labelLocText != null) {
+						var lt = labelLocText.GetComponent<LocText>();
+						if (lt != null) name = lt.text;
+					}
+					if (string.IsNullOrEmpty(name)) continue;
+
+					// Read current value from "Cycler/Box/Value Label"
+					string value = "";
+					var boxTransform = cyclerTransform.Find("Box");
+					if (boxTransform != null) {
+						var valueLabelTransform = boxTransform.Find("Value Label");
+						if (valueLabelTransform != null) {
+							var vlt = valueLabelTransform.GetComponent<LocText>();
+							if (vlt != null) value = vlt.text;
+						}
+					}
+
+					string label = !string.IsNullOrEmpty(value)
+						? $"{name}, {value}"
+						: name;
+
+					_widgets.Add(new WidgetInfo {
+						Label = label,
+						Component = widget,
+						Type = WidgetType.Dropdown,
+						GameObject = widget.gameObject
+					});
+				}
+			}
+		}
+
+		/// <summary>
+		/// Discover action buttons and coordinate field on ColonyDestinationSelectScreen.
+		/// </summary>
+		private void DiscoverActionWidgets(KScreen screen) {
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "backButton", null, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "shuffleButton", null, _widgets);
+
+			// Coordinate text field
+			try {
+				var coordinate = Traverse.Create(screen).Field("coordinate")
+					.GetValue<KInputTextField>();
+				if (coordinate != null && coordinate.gameObject.activeInHierarchy) {
+					string currentValue = coordinate.text ?? "";
+					_widgets.Add(new WidgetInfo {
+						Label = $"{STRINGS.ONIACCESS.PANELS.COORDINATE}, {currentValue}",
+						Component = coordinate,
+						Type = WidgetType.TextInput,
+						GameObject = coordinate.gameObject
+					});
+				}
+			} catch (System.Exception) { }
+
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "launchButton", null, _widgets);
+		}
+
+		// ========================================
+		// WIDGET VALIDITY
+		// ========================================
+
+		/// <summary>
+		/// Accept MultiToggle as valid Toggle (story traits, mixing DLC toggles).
+		/// Cluster entries have null GameObject — base handles them as Label.
+		/// </summary>
+		protected override bool IsWidgetValid(WidgetInfo widget) {
+			if (widget == null) return false;
+			if (widget.Type == WidgetType.Toggle) {
+				var mt = widget.Component as MultiToggle;
+				if (mt != null) {
+					if (widget.GameObject == null) return false;
+					return widget.GameObject.activeInHierarchy;
+				}
+			}
+			return base.IsWidgetValid(widget);
 		}
 
 		// ========================================
@@ -336,20 +557,87 @@ namespace OniAccess.Input.Handlers {
 		// ========================================
 
 		/// <summary>
-		/// For Dropdown (settings), read current label + value live.
+		/// Read widget state live for each panel type.
 		/// </summary>
 		protected override string GetWidgetSpeechText(WidgetInfo widget) {
+			// Story trait toggles: re-read state live from storyStates dict
+			if (_currentPanel == PanelStoryTraits && widget.Type == WidgetType.Toggle
+				&& widget.Tag is string storyId) {
+				var storyPanel = Traverse.Create(_screen).Field("storyContentPanel").GetValue<object>();
+				if (storyPanel != null) {
+					var storyStates = Traverse.Create(storyPanel).Field("storyStates")
+						.GetValue<System.Collections.IDictionary>();
+					if (storyStates != null && storyStates.Contains(storyId)) {
+						int stateVal = (int)storyStates[storyId];
+						string state = stateVal == 1
+							? STRINGS.ONIACCESS.STATES.GUARANTEED
+							: STRINGS.ONIACCESS.STATES.FORBIDDEN;
+
+						// Re-read the name from the checkbox's parent HierarchyReferences
+						string name = "";
+						var mt = widget.Component as MultiToggle;
+						if (mt != null) {
+							var hierRef = mt.transform.parent.GetComponent<HierarchyReferences>();
+							if (hierRef != null && hierRef.HasReference("Label")) {
+								var lt = hierRef.GetReference<LocText>("Label");
+								if (lt != null) name = lt.text;
+							}
+						}
+						if (string.IsNullOrEmpty(name)) name = widget.Label;
+						return $"{name}, {state}";
+					}
+				}
+			}
+
+			// Mixing DLC toggles: read CurrentState live
+			if (_currentPanel == PanelMixing && widget.Type == WidgetType.Toggle) {
+				var mt = widget.Component as MultiToggle;
+				if (mt != null) {
+					string state = mt.CurrentState == 1 ? "enabled" : "disabled";
+					// Read label from widget's "Label" child LocText
+					string name = "";
+					if (widget.GameObject != null) {
+						var labelTransform = widget.GameObject.transform.Find("Label");
+						if (labelTransform != null) {
+							var lt = labelTransform.GetComponent<LocText>();
+							if (lt != null) name = lt.text;
+						}
+					}
+					if (string.IsNullOrEmpty(name)) name = widget.Label;
+					return $"{name}, {state}";
+				}
+			}
+
+			// Mixing cyclers and game settings dropdowns
 			if (widget.Type == WidgetType.Dropdown && widget.Component is CustomGameSettingWidget settingWidget) {
+				// Try standard settings fields first (Label + ValueLabel)
 				var wt = Traverse.Create(settingWidget);
 				var labelText = wt.Field("Label").GetValue<LocText>();
 				var valueText = wt.Field("ValueLabel").GetValue<LocText>();
 				string name = labelText != null ? labelText.text : "";
 				string value = valueText != null ? valueText.text : "";
+
+				// Fallback for mixing cyclers: read from "Cycler/Box/Value Label"
+				if (string.IsNullOrEmpty(value) && settingWidget.gameObject != null) {
+					var cyclerTransform = settingWidget.transform.Find("Cycler");
+					if (cyclerTransform != null) {
+						var boxTransform = cyclerTransform.Find("Box");
+						if (boxTransform != null) {
+							var valueLabelTransform = boxTransform.Find("Value Label");
+							if (valueLabelTransform != null) {
+								var vlt = valueLabelTransform.GetComponent<LocText>();
+								if (vlt != null) value = vlt.text;
+							}
+						}
+					}
+				}
+
 				return !string.IsNullOrEmpty(value) ? $"{name}, {value}" : name;
 			}
 
+			// Coordinate text field
 			if (widget.Type == WidgetType.TextInput && widget.Component is KInputTextField textField) {
-				return $"{STRINGS.ONIACCESS.PANELS.SEED}, {textField.text}";
+				return $"{STRINGS.ONIACCESS.PANELS.COORDINATE}, {textField.text}";
 			}
 
 			return base.GetWidgetSpeechText(widget);
@@ -379,6 +667,22 @@ namespace OniAccess.Input.Handlers {
 			// Cluster entry: select via panel
 			if (!IsClusterCategoryScreen && _currentPanel == PanelClusters && widget.Tag is string clusterKey) {
 				SelectCluster(clusterKey);
+				return;
+			}
+
+			// Story trait toggle: invoke checkbox onClick, then speak new state
+			if (_currentPanel == PanelStoryTraits && widget.Type == WidgetType.Toggle
+				&& widget.Component is MultiToggle storyCheckbox) {
+				storyCheckbox.onClick?.Invoke();
+				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
+				return;
+			}
+
+			// Mixing DLC toggle: invoke MultiToggle onClick, then speak new state
+			if (_currentPanel == PanelMixing && widget.Type == WidgetType.Toggle
+				&& widget.Component is MultiToggle mixingToggle) {
+				mixingToggle.onClick?.Invoke();
+				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
 				return;
 			}
 
@@ -434,17 +738,36 @@ namespace OniAccess.Input.Handlers {
 		protected override void CycleDropdown(WidgetInfo widget, int direction) {
 			if (!(widget.Component is CustomGameSettingWidget settingWidget)) return;
 
-			// CustomGameSettingListWidget has CycleLeft and CycleRight KButtons
 			var wt = Traverse.Create(settingWidget);
+			bool cycled = false;
 
+			// Try standard CycleLeft/CycleRight fields (game settings)
 			if (direction > 0) {
 				var cycleRight = wt.Field("CycleRight").GetValue<KButton>();
-				if (cycleRight != null && cycleRight.isInteractable)
+				if (cycleRight != null && cycleRight.isInteractable) {
 					cycleRight.SignalClick(KKeyCode.Mouse0);
+					cycled = true;
+				}
 			} else {
 				var cycleLeft = wt.Field("CycleLeft").GetValue<KButton>();
-				if (cycleLeft != null && cycleLeft.isInteractable)
+				if (cycleLeft != null && cycleLeft.isInteractable) {
 					cycleLeft.SignalClick(KKeyCode.Mouse0);
+					cycled = true;
+				}
+			}
+
+			// Fallback: try Cycler/Arrow_Left and Cycler/Arrow_Right (mixing widgets)
+			if (!cycled) {
+				var cyclerTransform = settingWidget.transform.Find("Cycler");
+				if (cyclerTransform != null) {
+					string arrowName = direction > 0 ? "Arrow_Right" : "Arrow_Left";
+					var arrowTransform = cyclerTransform.Find(arrowName);
+					if (arrowTransform != null) {
+						var arrowButton = arrowTransform.GetComponent<KButton>();
+						if (arrowButton != null && arrowButton.isInteractable)
+							arrowButton.SignalClick(KKeyCode.Mouse0);
+					}
+				}
 			}
 
 			// Read the new value after cycling
@@ -477,10 +800,9 @@ namespace OniAccess.Input.Handlers {
 		/// and restore the cached value.
 		/// </summary>
 		public override bool HandleKeyDown(KButtonEvent e) {
-			if (base.HandleKeyDown(e)) return true;
-
 			if (_isEditingText) {
-				// Escape cancels text edit
+				// Escape cancels text edit — check before base so it doesn't
+				// get consumed as a search-clear
 				if (e.TryConsume(Action.Escape)) {
 					CancelTextEdit();
 					return true;
@@ -488,6 +810,8 @@ namespace OniAccess.Input.Handlers {
 				// Let all other keys pass through to the input field
 				return false;
 			}
+
+			if (base.HandleKeyDown(e)) return true;
 
 			return false;
 		}

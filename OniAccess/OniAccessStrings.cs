@@ -62,7 +62,11 @@ namespace STRINGS {
 
 		public class PANELS {
 			public static LocString CLUSTERS = "Clusters";
+			public static LocString STORY_TRAITS = "Story traits";
+			public static LocString MIXING = "Mixing";
 			public static LocString SETTINGS = "Settings";
+			public static LocString ACTIONS = "Actions";
+			public static LocString COORDINATE = "Coordinate";
 			public static LocString SEED = "World seed";
 			public static LocString ACHIEVEMENTS = "Achievements";
 			public static LocString VICTORY_CONDITIONS = "Victory conditions";
@@ -81,6 +85,8 @@ namespace STRINGS {
 
 		public class STATES {
 			public static LocString SELECTED = "selected";
+			public static LocString GUARANTEED = "guaranteed";
+			public static LocString FORBIDDEN = "forbidden";
 		}
 
 		public class SAVE_LOAD {
