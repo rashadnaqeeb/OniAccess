@@ -37,9 +37,9 @@ namespace OniAccess.Input.Handlers {
 		private const int PanelCount = 2;
 
 		// Sub-tabs inside Customize overlay
-		private const int SubTabStoryTraits = 0;
+		private const int SubTabSettings = 0;
 		private const int SubTabMixing = 1;
-		private const int SubTabSettings = 2;
+		private const int SubTabStoryTraits = 2;
 		private const int SubTabCount = 3;
 
 		/// <summary>
@@ -184,8 +184,10 @@ namespace OniAccess.Input.Handlers {
 		private void SyncGameTab() {
 			if (IsClusterCategoryScreen || IsModeSelectScreen) return;
 			if (_inCustomize) {
-				// SubTabStoryTraits=0→2, SubTabMixing=1→3, SubTabSettings=2→4
-				int gameTabIdx = _currentSubTab + 2;
+				// Game tabs: 2=StoryTraits, 3=Mixing, 4=Settings
+				// Sub-tabs:  0=Settings,    1=Mixing,  2=StoryTraits
+				int gameTabIdx = _currentSubTab == SubTabSettings ? 4
+					: _currentSubTab == SubTabMixing ? 3 : 2;
 				var st = Traverse.Create(_screen);
 				st.Field("selectedMenuTabIdx").SetValue(gameTabIdx);
 				st.Method("RefreshMenuTabs").GetValue();
@@ -1136,10 +1138,10 @@ namespace OniAccess.Input.Handlers {
 				if (btnField != null && btnField == customizeBtn) {
 					Traverse.Create(_screen).Method("CustomizeClicked").GetValue();
 					_inCustomize = true;
-					_currentSubTab = SubTabStoryTraits;
-					// Switch game tab to Story Traits (tab index 2)
+					_currentSubTab = SubTabSettings;
+					// Switch game tab to Settings (tab index 4)
 					var st = Traverse.Create(_screen);
-					st.Field("selectedMenuTabIdx").SetValue(2);
+					st.Field("selectedMenuTabIdx").SetValue(4);
 					st.Method("RefreshMenuTabs").GetValue();
 					_search.Clear();
 					DiscoverWidgets(_screen);
