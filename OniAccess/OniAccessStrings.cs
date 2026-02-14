@@ -38,6 +38,12 @@ namespace STRINGS {
 			public static LocString FEEDBACK = "Feedback";
 			public static LocString CREDITS = "Credits";
 			public static LocString KEY_BINDINGS = "Key bindings";
+			public static LocString SUPPLY_CLOSET = "Supply closet";
+		}
+
+		public class SUPPLY_CLOSET {
+			public static LocString NO_ITEMS = "No items to claim";
+			public static LocString OFFLINE = "Not connected to server";
 		}
 
 		public class HELP {

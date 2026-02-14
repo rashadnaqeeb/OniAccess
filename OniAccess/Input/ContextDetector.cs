@@ -176,6 +176,10 @@ namespace OniAccess.Input {
 			var infoDialogType = HarmonyLib.AccessTools.TypeByName("InfoDialogScreen");
 			Register(infoDialogType, screen => new Handlers.ConfirmDialogHandler(screen));
 
+			// LockerMenuScreen (KModalScreen -- Supply Closet hub from main menu)
+			// Show patch pushes/pops via ContextDetector since OnActivate calls Show(false)
+			Register<LockerMenuScreen>(screen => new Handlers.LockerMenuHandler(screen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 

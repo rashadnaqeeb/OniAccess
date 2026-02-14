@@ -87,4 +87,21 @@ namespace OniAccess.Patches {
 			return true;
 		}
 	}
+
+	/// <summary>
+	/// LockerMenuScreen.OnActivate() immediately calls Show(false) during prefab init,
+	/// so KScreen.Activate/Deactivate hooks don't fire for user-visible show/hide.
+	/// Patch Show(bool) to push/pop the handler via ContextDetector instead.
+	/// </summary>
+	[HarmonyPatch(typeof(LockerMenuScreen), nameof(LockerMenuScreen.Show))]
+	internal static class LockerMenuScreen_Show_Patch {
+		private static void Postfix(LockerMenuScreen __instance, bool show) {
+			if (!VanillaMode.IsEnabled) return;
+			if (show) {
+				ContextDetector.OnScreenActivated(__instance);
+			} else {
+				ContextDetector.OnScreenDeactivating(__instance);
+			}
+		}
+	}
 }
