@@ -413,10 +413,10 @@ namespace OniAccess.Input.Handlers {
 					continue;
 				}
 
-				// Game's "No Traits" placeholder (<i> italic text) → emit our NONE string
+				// Game's "No Traits" placeholder (<i> italic text) — use actual game text
 				if (text.StartsWith("<i>")) {
 					_widgets.Add(new WidgetInfo {
-						Label = (string)STRINGS.ONIACCESS.INFO.NONE,
+						Label = Speech.TextFilter.FilterForSpeech(text),
 						Type = WidgetType.Label
 					});
 					continue;
@@ -432,55 +432,6 @@ namespace OniAccess.Input.Handlers {
 					traitLabel += $" — {Speech.TextFilter.FilterForSpeech(tooltip)}";
 				_widgets.Add(new WidgetInfo {
 					Label = traitLabel,
-					Type = WidgetType.Label
-				});
-			}
-
-			// Story traits section
-			_widgets.Add(new WidgetInfo {
-				Label = $"{STRINGS.ONIACCESS.INFO.STORY_TRAITS}:",
-				Type = WidgetType.Label
-			});
-
-			try {
-				var storyPanel = Traverse.Create(screen).Field("storyContentPanel").GetValue<object>();
-				if (storyPanel != null) {
-					var activeStories = Traverse.Create(storyPanel).Method("GetActiveStories")
-						.GetValue<System.Collections.Generic.List<string>>();
-					if (activeStories != null && activeStories.Count > 0) {
-						bool isPureVanilla = DlcManager.IsPureVanilla();
-						foreach (var storyId in activeStories) {
-							var story = Db.Get().Stories.Get(storyId);
-							if (story == null) continue;
-							var storyTrait = story.StoryTrait;
-							if (storyTrait == null) continue;
-							string storyName = Strings.Get(storyTrait.name);
-							string storyDesc = isPureVanilla
-								? Strings.Get(storyTrait.description + "_SHORT")
-								: Strings.Get(storyTrait.description);
-							string storyLabel = Speech.TextFilter.FilterForSpeech(storyName);
-							if (!string.IsNullOrEmpty(storyDesc))
-								storyLabel += $" — {Speech.TextFilter.FilterForSpeech(storyDesc)}";
-							_widgets.Add(new WidgetInfo {
-								Label = storyLabel,
-								Type = WidgetType.Label
-							});
-						}
-					} else {
-						_widgets.Add(new WidgetInfo {
-							Label = (string)STRINGS.ONIACCESS.INFO.NONE,
-							Type = WidgetType.Label
-						});
-					}
-				} else {
-					_widgets.Add(new WidgetInfo {
-						Label = (string)STRINGS.ONIACCESS.INFO.NONE,
-						Type = WidgetType.Label
-					});
-				}
-			} catch (System.Exception) {
-				_widgets.Add(new WidgetInfo {
-					Label = (string)STRINGS.ONIACCESS.INFO.NONE,
 					Type = WidgetType.Label
 				});
 			}
