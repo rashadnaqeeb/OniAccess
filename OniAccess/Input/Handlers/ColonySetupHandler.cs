@@ -110,18 +110,24 @@ namespace OniAccess.Input.Handlers {
 		protected override void NavigateTabForward() {
 			if (IsClusterCategoryScreen || IsModeSelectScreen) return;
 
-			_currentPanel = (_currentPanel + 1) % PanelCount;
-			if (_currentPanel == 0) PlayWrapSound();
-			RediscoverForCurrentPanel();
+			for (int i = 0; i < PanelCount; i++) {
+				_currentPanel = (_currentPanel + 1) % PanelCount;
+				if (_currentPanel == 0) PlayWrapSound();
+				RediscoverForCurrentPanel();
+				if (_widgets.Count > 0) break;
+			}
 		}
 
 		protected override void NavigateTabBackward() {
 			if (IsClusterCategoryScreen || IsModeSelectScreen) return;
 
-			int prev = _currentPanel;
-			_currentPanel = (_currentPanel - 1 + PanelCount) % PanelCount;
-			if (_currentPanel == PanelCount - 1 && prev == 0) PlayWrapSound();
-			RediscoverForCurrentPanel();
+			for (int i = 0; i < PanelCount; i++) {
+				int prev = _currentPanel;
+				_currentPanel = (_currentPanel - 1 + PanelCount) % PanelCount;
+				if (_currentPanel == PanelCount - 1 && prev == 0) PlayWrapSound();
+				RediscoverForCurrentPanel();
+				if (_widgets.Count > 0) break;
+			}
 		}
 
 		/// <summary>
@@ -710,7 +716,16 @@ namespace OniAccess.Input.Handlers {
 				if (titleTextTransform != null) {
 					var titleLocText = titleTextTransform.GetComponent<LocText>();
 					if (titleLocText != null) {
-						sectionName = titleLocText.text ?? "";
+						sectionName = "";
+						// SetText() populates TMPro's internal buffer but not m_text;
+						// GetParsedText() reads from that buffer
+						try { sectionName = titleLocText.GetParsedText() ?? ""; }
+						catch { /* can throw if mesh not generated yet */ }
+						// Fallback to .text, but reject prefab placeholders (start with _)
+						if (string.IsNullOrEmpty(sectionName)) {
+							string raw = titleLocText.text ?? "";
+							if (!raw.StartsWith("_")) sectionName = raw;
+						}
 						if (string.IsNullOrEmpty(sectionName)) {
 							// Fallback: LocText.key stores the string table key
 							string key = Traverse.Create(titleLocText).Field("key").GetValue<string>();
@@ -775,7 +790,7 @@ namespace OniAccess.Input.Handlers {
 						}
 						if (string.IsNullOrEmpty(name)) continue;
 
-						string state = toggle.CurrentState == 0 ? "enabled" : "disabled";
+						string state = toggle.CurrentState == 1 ? "enabled" : "disabled";
 						_widgets.Add(new WidgetInfo {
 							Label = $"{name}, {state}",
 							Component = toggle,
@@ -916,7 +931,7 @@ namespace OniAccess.Input.Handlers {
 			if (_currentPanel == PanelMixing && widget.Type == WidgetType.Toggle) {
 				var mt = widget.Component as MultiToggle;
 				if (mt != null) {
-					string state = mt.CurrentState == 0 ? "enabled" : "disabled";
+					string state = mt.CurrentState == 1 ? "enabled" : "disabled";
 					// Read label from widget's "Label" child LocText
 					string name = "";
 					if (widget.GameObject != null) {
@@ -938,6 +953,7 @@ namespace OniAccess.Input.Handlers {
 				var labelText = wt.Field("Label").GetValue<LocText>();
 				var valueText = wt.Field("ValueLabel").GetValue<LocText>();
 				string name = labelText != null ? labelText.text : "";
+
 				string value = valueText != null ? valueText.text : "";
 
 				// Fallback for mixing cyclers: read from "Cycler/Box/Value Label"
