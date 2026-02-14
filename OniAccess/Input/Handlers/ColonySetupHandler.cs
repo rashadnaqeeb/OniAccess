@@ -13,8 +13,9 @@ namespace OniAccess.Input.Handlers {
 	///
 	/// ModeSelectScreen: two MultiToggle buttons (Survival / No Sweat).
 	/// ClusterCategorySelectionScreen: simple list of MultiToggle buttons for game modes.
-	/// ColonyDestinationSelectScreen: five tabbed panels with Tab/Shift+Tab switching:
-	///   Clusters → Story Traits → Mixing → Settings → Actions
+	/// ColonyDestinationSelectScreen: two main tabs (Clusters, Actions) with Tab/Shift+Tab.
+	///   Customize button in Actions opens a sub-view with three sub-tabs:
+	///   Story Traits → Mixing → Settings (cycled with Tab/Shift+Tab, Escape exits).
 	///
 	/// Per locked decisions:
 	/// - Game mode entries speak name + description together
@@ -23,19 +24,23 @@ namespace OniAccess.Input.Handlers {
 	/// - Mixing DLC toggles speak name + enabled/disabled; Enter toggles
 	/// - Mixing cyclers speak name + value; Left/Right cycles
 	/// - Settings speak "label, value" with Left/Right cycling
-	/// - Actions panel: Back, Shuffle, Coordinate field, Launch
+	/// - Actions panel: Back, Shuffle, Coordinate field, Customize, Launch
 	/// - Tab/Shift+Tab switches panels on destination screen only
 	/// </summary>
 	public class ColonySetupHandler: BaseMenuHandler {
 		/// <summary>
-		/// The five logical panels on ColonyDestinationSelectScreen.
+		/// Main tabs on ColonyDestinationSelectScreen.
+		/// Customize sub-view holds Story Traits, Mixing, and Settings.
 		/// </summary>
 		private const int PanelClusters = 0;
-		private const int PanelStoryTraits = 1;
-		private const int PanelMixing = 2;
-		private const int PanelSettings = 3;
-		private const int PanelActions = 4;
-		private const int PanelCount = 5;
+		private const int PanelActions = 1;
+		private const int PanelCount = 2;
+
+		// Sub-tabs inside Customize overlay
+		private const int SubTabStoryTraits = 0;
+		private const int SubTabMixing = 1;
+		private const int SubTabSettings = 2;
+		private const int SubTabCount = 3;
 
 		/// <summary>
 		/// Current panel index for ColonyDestinationSelectScreen.
@@ -67,6 +72,16 @@ namespace OniAccess.Input.Handlers {
 		/// Index of the cluster in the list before entering info submenu.
 		/// </summary>
 		private int _infoReturnIndex;
+
+		/// <summary>
+		/// Whether we are inside the Customize sub-view (Story Traits / Mixing / Settings).
+		/// </summary>
+		private bool _inCustomize;
+
+		/// <summary>
+		/// Which sub-tab is active inside the Customize overlay.
+		/// </summary>
+		private int _currentSubTab;
 
 		/// <summary>
 		/// Delays speech by one frame after cluster navigation so traits
@@ -110,6 +125,21 @@ namespace OniAccess.Input.Handlers {
 		protected override void NavigateTabForward() {
 			if (IsClusterCategoryScreen || IsModeSelectScreen) return;
 
+			if (_inCustomize) {
+				_currentSubTab = (_currentSubTab + 1) % SubTabCount;
+				if (_currentSubTab == 0) PlayWrapSound();
+				SyncGameTab();
+				_search.Clear();
+				DiscoverWidgets(_screen);
+				string name = GetPanelName();
+				Speech.SpeechPipeline.SpeakInterrupt(name);
+				if (_widgets.Count > 0) {
+					_currentIndex = 0;
+					Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
+				}
+				return;
+			}
+
 			for (int i = 0; i < PanelCount; i++) {
 				_currentPanel = (_currentPanel + 1) % PanelCount;
 				if (_currentPanel == 0) PlayWrapSound();
@@ -121,6 +151,22 @@ namespace OniAccess.Input.Handlers {
 		protected override void NavigateTabBackward() {
 			if (IsClusterCategoryScreen || IsModeSelectScreen) return;
 
+			if (_inCustomize) {
+				int prev = _currentSubTab;
+				_currentSubTab = (_currentSubTab - 1 + SubTabCount) % SubTabCount;
+				if (_currentSubTab == SubTabCount - 1 && prev == 0) PlayWrapSound();
+				SyncGameTab();
+				_search.Clear();
+				DiscoverWidgets(_screen);
+				string name = GetPanelName();
+				Speech.SpeechPipeline.SpeakInterrupt(name);
+				if (_widgets.Count > 0) {
+					_currentIndex = 0;
+					Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
+				}
+				return;
+			}
+
 			for (int i = 0; i < PanelCount; i++) {
 				int prev = _currentPanel;
 				_currentPanel = (_currentPanel - 1 + PanelCount) % PanelCount;
@@ -131,17 +177,26 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
-		/// Sync the game's visible tab with our _currentPanel index.
-		/// The game hides non-selected tab panels via SetActive(false), so we
-		/// must tell it to switch before discovering widgets.
+		/// Sync the game's visible tab with our navigation state.
+		/// In normal mode, PanelClusters maps to game tab 1.
+		/// In Customize mode, sub-tabs map to game tabs 2/3/4.
 		/// </summary>
 		private void SyncGameTab() {
 			if (IsClusterCategoryScreen || IsModeSelectScreen) return;
-			if (_currentPanel > PanelSettings) return; // Actions has no game tab
-			int gameTabIdx = _currentPanel + 1; // Our 0-3 maps to game's 1-4
-			var st = Traverse.Create(_screen);
-			st.Field("selectedMenuTabIdx").SetValue(gameTabIdx);
-			st.Method("RefreshMenuTabs").GetValue();
+			if (_inCustomize) {
+				// SubTabStoryTraits=0→2, SubTabMixing=1→3, SubTabSettings=2→4
+				int gameTabIdx = _currentSubTab + 2;
+				var st = Traverse.Create(_screen);
+				st.Field("selectedMenuTabIdx").SetValue(gameTabIdx);
+				st.Method("RefreshMenuTabs").GetValue();
+				return;
+			}
+			if (_currentPanel == PanelActions) return;
+			// PanelClusters maps to game tab 1
+			int tabIdx = _currentPanel + 1;
+			var stn = Traverse.Create(_screen);
+			stn.Field("selectedMenuTabIdx").SetValue(tabIdx);
+			stn.Method("RefreshMenuTabs").GetValue();
 		}
 
 		/// <summary>
@@ -152,7 +207,7 @@ namespace OniAccess.Input.Handlers {
 			_search.Clear();
 			SyncGameTab();
 			DiscoverWidgets(_screen);
-			string panelName = GetPanelName(_currentPanel);
+			string panelName = GetPanelName();
 			Speech.SpeechPipeline.SpeakInterrupt(panelName);
 			if (_widgets.Count > 0) {
 				if (_currentPanel == PanelClusters) {
@@ -171,12 +226,17 @@ namespace OniAccess.Input.Handlers {
 			}
 		}
 
-		private static string GetPanelName(int panel) {
-			switch (panel) {
+		private string GetPanelName() {
+			if (_inCustomize) {
+				switch (_currentSubTab) {
+					case SubTabStoryTraits: return STRINGS.ONIACCESS.PANELS.STORY_TRAITS;
+					case SubTabMixing: return STRINGS.ONIACCESS.PANELS.MIXING;
+					case SubTabSettings: return STRINGS.ONIACCESS.PANELS.SETTINGS;
+					default: return "";
+				}
+			}
+			switch (_currentPanel) {
 				case PanelClusters: return STRINGS.ONIACCESS.PANELS.CLUSTERS;
-				case PanelStoryTraits: return STRINGS.ONIACCESS.PANELS.STORY_TRAITS;
-				case PanelMixing: return STRINGS.ONIACCESS.PANELS.MIXING;
-				case PanelSettings: return STRINGS.ONIACCESS.PANELS.SETTINGS;
 				case PanelActions: return STRINGS.ONIACCESS.PANELS.ACTIONS;
 				default: return "";
 			}
@@ -193,6 +253,18 @@ namespace OniAccess.Input.Handlers {
 				DiscoverModeSelectWidgets(screen);
 			} else if (IsClusterCategoryScreen) {
 				DiscoverGameModeWidgets(screen);
+			} else if (_inCustomize) {
+				switch (_currentSubTab) {
+					case SubTabStoryTraits:
+						DiscoverStoryTraitWidgets(screen);
+						break;
+					case SubTabMixing:
+						DiscoverMixingWidgets(screen);
+						break;
+					case SubTabSettings:
+						DiscoverSettingsWidgets(screen);
+						break;
+				}
 			} else {
 				switch (_currentPanel) {
 					case PanelClusters:
@@ -201,22 +273,11 @@ namespace OniAccess.Input.Handlers {
 						else
 							DiscoverClusterWidgets(screen);
 						break;
-					case PanelStoryTraits:
-						DiscoverStoryTraitWidgets(screen);
-						break;
-					case PanelMixing:
-						DiscoverMixingWidgets(screen);
-						break;
-					case PanelSettings:
-						DiscoverSettingsWidgets(screen);
-						break;
 					case PanelActions:
 						DiscoverActionWidgets(screen);
 						break;
 				}
 			}
-
-			Util.Log.Debug($"ColonySetupHandler.DiscoverWidgets: {_widgets.Count} widgets");
 		}
 
 		/// <summary>
@@ -560,7 +621,17 @@ namespace OniAccess.Input.Handlers {
 					var valueText = wt.Field("ValueLabel").GetValue<LocText>();
 					string name = labelText != null ? labelText.text : "";
 					string value = valueText != null ? valueText.text : "";
-					if (string.IsNullOrEmpty(name)) continue;
+					if (string.IsNullOrEmpty(name)) {
+						// LocText may be empty if parent hierarchy is inactive;
+						// fall back to config.label from the setting definition
+						var config = wt.Field("config").GetValue<object>();
+						if (config != null) {
+							name = Traverse.Create(config).Property("label").GetValue<string>() ?? "";
+							if (string.IsNullOrEmpty(name))
+								name = Traverse.Create(config).Property("id").GetValue<string>() ?? "setting";
+						}
+						if (string.IsNullOrEmpty(name)) name = "setting";
+					}
 					string label = !string.IsNullOrEmpty(value)
 						? $"{name}, {value}"
 						: name;
@@ -575,7 +646,15 @@ namespace OniAccess.Input.Handlers {
 					var labelText = wt.Field("Label").GetValue<LocText>();
 					var toggle = wt.Field("Toggle").GetValue<MultiToggle>();
 					string name = labelText != null ? labelText.text : "";
-					if (string.IsNullOrEmpty(name)) continue;
+					if (string.IsNullOrEmpty(name)) {
+						var config = wt.Field("config").GetValue<object>();
+						if (config != null) {
+							name = Traverse.Create(config).Property("label").GetValue<string>() ?? "";
+							if (string.IsNullOrEmpty(name))
+								name = Traverse.Create(config).Property("id").GetValue<string>() ?? "setting";
+						}
+						if (string.IsNullOrEmpty(name)) name = "setting";
+					}
 					string state = (toggle != null && toggle.CurrentState == 1) ? "enabled" : "disabled";
 					_widgets.Add(new WidgetInfo {
 						Label = $"{name}, {state}",
@@ -734,8 +813,6 @@ namespace OniAccess.Input.Handlers {
 							if (!string.IsNullOrEmpty(key))
 								sectionName = Strings.Get(new StringKey(key));
 						}
-						if (string.IsNullOrEmpty(sectionName))
-							Util.Log.Debug($"Mixing section {s}: text='{titleLocText.text}' key='{Traverse.Create(titleLocText).Field("key").GetValue<string>()}'");
 					}
 				}
 
@@ -863,6 +940,7 @@ namespace OniAccess.Input.Handlers {
 				}
 			} catch (System.Exception) { }
 
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "customizeButton", null, _widgets);
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "launchButton", null, _widgets);
 		}
 
@@ -895,7 +973,7 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		protected override string GetWidgetSpeechText(WidgetInfo widget) {
 			// Story trait toggles: re-read state live via CustomGameSettings
-			if (_currentPanel == PanelStoryTraits && widget.Type == WidgetType.Toggle
+			if (_inCustomize && _currentSubTab == SubTabStoryTraits && widget.Type == WidgetType.Toggle
 				&& widget.Tag is string storyId) {
 				string state = STRINGS.ONIACCESS.STATES.FORBIDDEN;
 				try {
@@ -930,7 +1008,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Mixing DLC toggles: read CurrentState live
-			if (_currentPanel == PanelMixing && widget.Type == WidgetType.Toggle) {
+			if (_inCustomize && _currentSubTab == SubTabMixing && widget.Type == WidgetType.Toggle) {
 				var mt = widget.Component as MultiToggle;
 				if (mt != null) {
 					string state = mt.CurrentState == 1 ? "enabled" : "disabled";
@@ -955,6 +1033,8 @@ namespace OniAccess.Input.Handlers {
 				var labelText = wt.Field("Label").GetValue<LocText>();
 				var valueText = wt.Field("ValueLabel").GetValue<LocText>();
 				string name = labelText != null ? labelText.text : "";
+				// LocText may be empty when parent hierarchy is inactive; use stored label
+				if (string.IsNullOrEmpty(name)) name = widget.Label;
 
 				string value = valueText != null ? valueText.text : "";
 
@@ -977,7 +1057,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Settings toggle widgets: read Toggle.CurrentState live
-			if (_currentPanel == PanelSettings && widget.Component is CustomGameSettingToggleWidget toggleWidget) {
+			if (_inCustomize && _currentSubTab == SubTabSettings && widget.Component is CustomGameSettingToggleWidget toggleWidget) {
 				var twt = Traverse.Create(toggleWidget);
 				var labelText = twt.Field("Label").GetValue<LocText>();
 				var toggle = twt.Field("Toggle").GetValue<MultiToggle>();
@@ -987,7 +1067,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Settings seed widget: read Input.text live
-			if (_currentPanel == PanelSettings && widget.Component is CustomGameSettingSeed seedWidget) {
+			if (_inCustomize && _currentSubTab == SubTabSettings && widget.Component is CustomGameSettingSeed seedWidget) {
 				var swt = Traverse.Create(seedWidget);
 				var labelText = swt.Field("Label").GetValue<LocText>();
 				var inputField = swt.Field("Input").GetValue<KInputTextField>();
@@ -1032,7 +1112,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Story trait toggle: invoke checkbox onClick, then speak new state
-			if (_currentPanel == PanelStoryTraits && widget.Type == WidgetType.Toggle
+			if (_inCustomize && _currentSubTab == SubTabStoryTraits && widget.Type == WidgetType.Toggle
 				&& widget.Component is MultiToggle storyCheckbox) {
 				storyCheckbox.onClick?.Invoke();
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
@@ -1041,7 +1121,7 @@ namespace OniAccess.Input.Handlers {
 
 			// Mixing DLC toggle: invoke MultiToggle onClick, then announce new state
 			// ChangeState() runs async (next Update), so compute new state from old
-			if (_currentPanel == PanelMixing && widget.Type == WidgetType.Toggle
+			if (_inCustomize && _currentSubTab == SubTabMixing && widget.Type == WidgetType.Toggle
 				&& widget.Component is MultiToggle mixingToggle) {
 				string newState = mixingToggle.CurrentState == 1 ? "disabled" : "enabled";
 				mixingToggle.onClick?.Invoke();
@@ -1050,16 +1130,44 @@ namespace OniAccess.Input.Handlers {
 				return;
 			}
 
+			// Customize button: open customSettings overlay and enter Customize sub-view
+			if (_currentPanel == PanelActions && widget.Component is KButton customizeBtn) {
+				var btnField = Traverse.Create(_screen).Field("customizeButton").GetValue<KButton>();
+				if (btnField != null && btnField == customizeBtn) {
+					Traverse.Create(_screen).Method("CustomizeClicked").GetValue();
+					_inCustomize = true;
+					_currentSubTab = SubTabStoryTraits;
+					// Switch game tab to Story Traits (tab index 2)
+					var st = Traverse.Create(_screen);
+					st.Field("selectedMenuTabIdx").SetValue(2);
+					st.Method("RefreshMenuTabs").GetValue();
+					_search.Clear();
+					DiscoverWidgets(_screen);
+					string panelName = GetPanelName();
+					Speech.SpeechPipeline.SpeakInterrupt(panelName);
+					if (_widgets.Count > 0) {
+						_currentIndex = 0;
+						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
+					}
+					return;
+				}
+			}
 
-			// Settings toggle: call ToggleSetting(), then speak new state
-			if (_currentPanel == PanelSettings && widget.Component is CustomGameSettingToggleWidget settingsToggle) {
+			// Settings toggle: compute new state from old, then call ToggleSetting()
+			// ChangeState() runs async (next Update), so read before toggling
+			if (_inCustomize && _currentSubTab == SubTabSettings && widget.Component is CustomGameSettingToggleWidget settingsToggle) {
+				var twt = Traverse.Create(settingsToggle);
+				var settingsMultiToggle = twt.Field("Toggle").GetValue<MultiToggle>();
+				string newState = (settingsMultiToggle != null && settingsMultiToggle.CurrentState == 1) ? "disabled" : "enabled";
+				var labelText = twt.Field("Label").GetValue<LocText>();
+				string name = labelText != null ? labelText.text : widget.Label;
 				settingsToggle.ToggleSetting();
-				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
+				Speech.SpeechPipeline.SpeakInterrupt($"{name}, {newState}");
 				return;
 			}
 
 			// Settings seed: randomize, then speak new value
-			if (_currentPanel == PanelSettings && widget.Component is CustomGameSettingSeed settingsSeed) {
+			if (_inCustomize && _currentSubTab == SubTabSettings && widget.Component is CustomGameSettingSeed settingsSeed) {
 				var randomizeBtn = Traverse.Create(settingsSeed).Field("RandomizeButton")
 					.GetValue<KButton>();
 				if (randomizeBtn != null)
@@ -1307,6 +1415,23 @@ namespace OniAccess.Input.Handlers {
 				}
 				// Let all other keys pass through to the input field
 				return false;
+			}
+
+			// Escape exits Customize sub-view back to Actions
+			if (_inCustomize) {
+				if (e.TryConsume(Action.Escape)) {
+					Traverse.Create(_screen).Method("CustomizeClose").GetValue();
+					_inCustomize = false;
+					_currentPanel = PanelActions;
+					_search.Clear();
+					DiscoverWidgets(_screen);
+					_currentIndex = 0;
+					string panelName = GetPanelName();
+					Speech.SpeechPipeline.SpeakInterrupt(panelName);
+					if (_widgets.Count > 0)
+						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
+					return true;
+				}
 			}
 
 			// Escape exits info submenu back to cluster list
