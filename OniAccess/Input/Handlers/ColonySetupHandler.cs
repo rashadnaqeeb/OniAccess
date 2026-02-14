@@ -54,6 +54,21 @@ namespace OniAccess.Input.Handlers {
 		private bool _isEditingText;
 
 		/// <summary>
+		/// Whether we are in the Shift+I info submenu for a cluster.
+		/// </summary>
+		private bool _inInfoSubmenu;
+
+		/// <summary>
+		/// Cluster key stored when entering the info submenu, used to restore position on exit.
+		/// </summary>
+		private string _infoClusterKey;
+
+		/// <summary>
+		/// Index of the cluster in the list before entering info submenu.
+		/// </summary>
+		private int _infoReturnIndex;
+
+		/// <summary>
 		/// Display name changes based on which screen is active.
 		/// </summary>
 		public override string DisplayName {
@@ -104,10 +119,26 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
+		/// Sync the game's visible tab with our _currentPanel index.
+		/// The game hides non-selected tab panels via SetActive(false), so we
+		/// must tell it to switch before discovering widgets.
+		/// </summary>
+		private void SyncGameTab() {
+			if (IsClusterCategoryScreen || IsModeSelectScreen) return;
+			if (_currentPanel > PanelSettings) return; // Actions has no game tab
+			int gameTabIdx = _currentPanel + 1; // Our 0-3 maps to game's 1-4
+			var st = Traverse.Create(_screen);
+			st.Field("selectedMenuTabIdx").SetValue(gameTabIdx);
+			st.Method("RefreshMenuTabs").GetValue();
+		}
+
+		/// <summary>
 		/// Re-discover widgets for the current panel and announce it.
 		/// </summary>
 		private void RediscoverForCurrentPanel() {
+			_inInfoSubmenu = false;
 			_search.Clear();
+			SyncGameTab();
 			DiscoverWidgets(_screen);
 			string panelName = GetPanelName(_currentPanel);
 			Speech.SpeechPipeline.SpeakInterrupt(panelName);
@@ -142,7 +173,10 @@ namespace OniAccess.Input.Handlers {
 			} else {
 				switch (_currentPanel) {
 					case PanelClusters:
-						DiscoverClusterWidgets(screen);
+						if (_inInfoSubmenu)
+							DiscoverClusterInfoWidgets(screen);
+						else
+							DiscoverClusterWidgets(screen);
 						break;
 					case PanelStoryTraits:
 						DiscoverStoryTraitWidgets(screen);
@@ -262,46 +296,33 @@ namespace OniAccess.Input.Handlers {
 				if (string.IsNullOrEmpty(name))
 					name = belt.startWorldName;
 
-				// Starting world description
-				var startWorld = belt.GetStartWorld;
-				string desc = startWorld != null ? Strings.Get(startWorld.description) : "";
-
 				// Difficulty from survivalOptions
 				int diffIdx = UnityEngine.Mathf.Clamp(
 					belt.difficulty, 0,
 					ColonyDestinationAsteroidBeltData.survivalOptions.Count - 1);
 				string difficulty = ColonyDestinationAsteroidBeltData.survivalOptions[diffIdx].first;
 
-				// Moon names (Spaced Out only)
-				var moonNames = new List<string>();
-				if (belt.worlds != null) {
-					foreach (var world in belt.worlds) {
-						string moonName = Strings.Get(world.name);
-						if (!string.IsNullOrEmpty(moonName))
-							moonNames.Add(Speech.TextFilter.FilterForSpeech(moonName));
-					}
-				}
-
-				// World traits (filtered: skip empty separators from the visual list)
+				// Trait count — only actual world traits (colored entries)
 				var traits = belt.GetTraitDescriptors();
-				var traitNames = new List<string>();
+				int traitCount = 0;
 				foreach (var trait in traits) {
-					string traitText = Speech.TextFilter.FilterForSpeech(trait.text);
-					if (!string.IsNullOrEmpty(traitText))
-						traitNames.Add(traitText);
+					string t = trait.text?.Trim() ?? "";
+					if (t.StartsWith("<color")) traitCount++;
 				}
 
-				// Build label: name, description, difficulty, moons, traits, selected
-				string label = Speech.TextFilter.FilterForSpeech(name);
-				if (!string.IsNullOrEmpty(desc))
-					label += $", {Speech.TextFilter.FilterForSpeech(desc)}";
-				label += $", {Speech.TextFilter.FilterForSpeech(difficulty)}";
-				if (moonNames.Count > 0)
-					label += ", " + string.Join(", ", moonNames);
-				if (traitNames.Count > 0)
-					label += ", " + string.Join(", ", traitNames);
+				// Moon count (Spaced Out only)
+				int moonCount = belt.worlds != null ? belt.worlds.Count : 0;
+
+				// Build slim label: [selected], name, difficulty, N traits, N moons, Shift I for info
+				string label = "";
 				if (i == selectedIndex)
-					label += $", {STRINGS.ONIACCESS.STATES.SELECTED}";
+					label = $"{STRINGS.ONIACCESS.STATES.SELECTED}, ";
+				label += Speech.TextFilter.FilterForSpeech(name);
+				label += $", {Speech.TextFilter.FilterForSpeech(difficulty)}";
+				label += $", {traitCount} {STRINGS.ONIACCESS.INFO.TRAITS}";
+				if (moonCount > 0)
+					label += $", {moonCount} {STRINGS.ONIACCESS.INFO.MOONS}";
+				label += $", {STRINGS.ONIACCESS.INFO.SHIFT_I_HINT}";
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
@@ -309,6 +330,158 @@ namespace OniAccess.Input.Handlers {
 					Type = WidgetType.Label,
 					GameObject = null,
 					Tag = key // Store cluster key for activation
+				});
+			}
+		}
+
+		/// <summary>
+		/// Build info submenu widgets for the cluster stored in _infoClusterKey.
+		/// Shows description, difficulty, moons, and per-world traits as read-only labels.
+		/// </summary>
+		private void DiscoverClusterInfoWidgets(KScreen screen) {
+			var panelTraverse = Traverse.Create(screen).Field("destinationMapPanel");
+			var panel = panelTraverse.GetValue<object>();
+			if (panel == null) return;
+
+			var pt = Traverse.Create(panel);
+			var asteroidData = pt.Field("asteroidData")
+				.GetValue<System.Collections.Generic.Dictionary<string, ColonyDestinationAsteroidBeltData>>();
+			if (asteroidData == null || !asteroidData.TryGetValue(_infoClusterKey, out var belt)) return;
+
+			// Description
+			var startWorld = belt.GetStartWorld;
+			if (startWorld != null) {
+				string desc = Strings.Get(startWorld.description);
+				if (!string.IsNullOrEmpty(desc)) {
+					_widgets.Add(new WidgetInfo {
+						Label = $"{STRINGS.ONIACCESS.INFO.DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(desc)}",
+						Type = WidgetType.Label
+					});
+				}
+			}
+
+			// Difficulty + flavor text
+			int diffIdx = UnityEngine.Mathf.Clamp(
+				belt.difficulty, 0,
+				ColonyDestinationAsteroidBeltData.survivalOptions.Count - 1);
+			string diffName = ColonyDestinationAsteroidBeltData.survivalOptions[diffIdx].first;
+			string diffTooltip = ColonyDestinationAsteroidBeltData.survivalOptions[diffIdx].second;
+			string diffLabel = $"{STRINGS.ONIACCESS.INFO.DIFFICULTY}: {Speech.TextFilter.FilterForSpeech(diffName)}";
+			if (!string.IsNullOrEmpty(diffTooltip))
+				diffLabel += $" — {Speech.TextFilter.FilterForSpeech(diffTooltip)}";
+			_widgets.Add(new WidgetInfo {
+				Label = diffLabel,
+				Type = WidgetType.Label
+			});
+
+			// Moons (Spaced Out only)
+			if (belt.worlds != null && belt.worlds.Count > 0) {
+				var moonNames = new List<string>();
+				foreach (var world in belt.worlds) {
+					string moonName = Strings.Get(world.name);
+					if (!string.IsNullOrEmpty(moonName))
+						moonNames.Add(Speech.TextFilter.FilterForSpeech(moonName));
+				}
+				string moonsLabel = moonNames.Count > 0
+					? $"{STRINGS.ONIACCESS.INFO.MOONS}: {string.Join(", ", moonNames)}"
+					: $"{STRINGS.ONIACCESS.INFO.MOONS}: {STRINGS.ONIACCESS.INFO.NO_MOONS}";
+				_widgets.Add(new WidgetInfo {
+					Label = moonsLabel,
+					Type = WidgetType.Label
+				});
+			}
+
+			// World traits header
+			_widgets.Add(new WidgetInfo {
+				Label = $"{STRINGS.ONIACCESS.INFO.WORLD_TRAITS}:",
+				Type = WidgetType.Label
+			});
+
+			// Traits — grouped per-world in Spaced Out (bold world name headers)
+			var traitDescriptors = belt.GetTraitDescriptors();
+			foreach (var trait in traitDescriptors) {
+				string text = trait.text?.Trim() ?? "";
+				if (string.IsNullOrEmpty(text)) continue;
+
+				// Bold world name headers → emit as standalone header widget
+				if (text.StartsWith("<b>")) {
+					string worldName = Speech.TextFilter.FilterForSpeech(text);
+					_widgets.Add(new WidgetInfo {
+						Label = $"{worldName} {STRINGS.ONIACCESS.INFO.TRAITS}:",
+						Type = WidgetType.Label
+					});
+					continue;
+				}
+
+				// Game's "No Traits" placeholder (<i> italic text) → emit our NONE string
+				if (text.StartsWith("<i>")) {
+					_widgets.Add(new WidgetInfo {
+						Label = (string)STRINGS.ONIACCESS.INFO.NONE,
+						Type = WidgetType.Label
+					});
+					continue;
+				}
+
+				// Skip plain-text entries — these are story traits injected by the game
+				if (!text.StartsWith("<color")) continue;
+
+				// Actual world trait entry — name + tooltip description
+				string traitLabel = Speech.TextFilter.FilterForSpeech(text);
+				string tooltip = trait.tooltip?.Trim() ?? "";
+				if (!string.IsNullOrEmpty(tooltip))
+					traitLabel += $" — {Speech.TextFilter.FilterForSpeech(tooltip)}";
+				_widgets.Add(new WidgetInfo {
+					Label = traitLabel,
+					Type = WidgetType.Label
+				});
+			}
+
+			// Story traits section
+			_widgets.Add(new WidgetInfo {
+				Label = $"{STRINGS.ONIACCESS.INFO.STORY_TRAITS}:",
+				Type = WidgetType.Label
+			});
+
+			try {
+				var storyPanel = Traverse.Create(screen).Field("storyContentPanel").GetValue<object>();
+				if (storyPanel != null) {
+					var activeStories = Traverse.Create(storyPanel).Method("GetActiveStories")
+						.GetValue<System.Collections.Generic.List<string>>();
+					if (activeStories != null && activeStories.Count > 0) {
+						bool isPureVanilla = DlcManager.IsPureVanilla();
+						foreach (var storyId in activeStories) {
+							var story = Db.Get().Stories.Get(storyId);
+							if (story == null) continue;
+							var storyTrait = story.StoryTrait;
+							if (storyTrait == null) continue;
+							string storyName = Strings.Get(storyTrait.name);
+							string storyDesc = isPureVanilla
+								? Strings.Get(storyTrait.description + "_SHORT")
+								: Strings.Get(storyTrait.description);
+							string storyLabel = Speech.TextFilter.FilterForSpeech(storyName);
+							if (!string.IsNullOrEmpty(storyDesc))
+								storyLabel += $" — {Speech.TextFilter.FilterForSpeech(storyDesc)}";
+							_widgets.Add(new WidgetInfo {
+								Label = storyLabel,
+								Type = WidgetType.Label
+							});
+						}
+					} else {
+						_widgets.Add(new WidgetInfo {
+							Label = (string)STRINGS.ONIACCESS.INFO.NONE,
+							Type = WidgetType.Label
+						});
+					}
+				} else {
+					_widgets.Add(new WidgetInfo {
+						Label = (string)STRINGS.ONIACCESS.INFO.NONE,
+						Type = WidgetType.Label
+					});
+				}
+			} catch (System.Exception) {
+				_widgets.Add(new WidgetInfo {
+					Label = (string)STRINGS.ONIACCESS.INFO.NONE,
+					Type = WidgetType.Label
 				});
 			}
 		}
@@ -792,6 +965,28 @@ namespace OniAccess.Input.Handlers {
 				return;
 			}
 
+			// Shift+I opens cluster info submenu
+			if (!IsClusterCategoryScreen && !IsModeSelectScreen
+				&& _currentPanel == PanelClusters && !_inInfoSubmenu
+				&& UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)
+				&& (UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
+					|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift))) {
+				if (_currentIndex >= 0 && _currentIndex < _widgets.Count
+					&& _widgets[_currentIndex].Tag is string clusterKey) {
+					_inInfoSubmenu = true;
+					_infoClusterKey = clusterKey;
+					_infoReturnIndex = _currentIndex;
+					_search.Clear();
+					DiscoverWidgets(_screen);
+					Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.INFO.PANEL_NAME);
+					if (_widgets.Count > 0) {
+						_currentIndex = 0;
+						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
+					}
+				}
+				return;
+			}
+
 			base.Tick();
 		}
 
@@ -809,6 +1004,20 @@ namespace OniAccess.Input.Handlers {
 				}
 				// Let all other keys pass through to the input field
 				return false;
+			}
+
+			// Escape exits info submenu back to cluster list
+			if (_inInfoSubmenu) {
+				if (e.TryConsume(Action.Escape)) {
+					_inInfoSubmenu = false;
+					_search.Clear();
+					DiscoverWidgets(_screen);
+					_currentIndex = UnityEngine.Mathf.Clamp(_infoReturnIndex, 0,
+						_widgets.Count > 0 ? _widgets.Count - 1 : 0);
+					if (_currentIndex < _widgets.Count)
+						Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[_currentIndex]));
+					return true;
+				}
 			}
 
 			if (base.HandleKeyDown(e)) return true;
