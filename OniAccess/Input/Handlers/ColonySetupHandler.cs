@@ -69,6 +69,12 @@ namespace OniAccess.Input.Handlers {
 		private int _infoReturnIndex;
 
 		/// <summary>
+		/// Delays speech by one frame after cluster navigation so traits
+		/// have time to populate after ReInitialize (triggered by OnAsteroidClicked).
+		/// </summary>
+		private bool _pendingClusterRefresh;
+
+		/// <summary>
 		/// Display name changes based on which screen is active.
 		/// </summary>
 		public override string DisplayName {
@@ -143,8 +149,19 @@ namespace OniAccess.Input.Handlers {
 			string panelName = GetPanelName(_currentPanel);
 			Speech.SpeechPipeline.SpeakInterrupt(panelName);
 			if (_widgets.Count > 0) {
-				_currentIndex = 0;
-				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
+				if (_currentPanel == PanelClusters) {
+					// Return to the game's selected cluster instead of index 0
+					var panelObj = Traverse.Create(_screen).Field("destinationMapPanel").GetValue<object>();
+					if (panelObj != null) {
+						int selectedIndex = Traverse.Create(panelObj).Field("selectedIndex").GetValue<int>();
+						_currentIndex = UnityEngine.Mathf.Clamp(selectedIndex, 0, _widgets.Count - 1);
+					} else {
+						_currentIndex = 0;
+					}
+				} else {
+					_currentIndex = 0;
+				}
+				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[_currentIndex]));
 			}
 		}
 
@@ -280,7 +297,6 @@ namespace OniAccess.Input.Handlers {
 			var clusterKeys = pt.Field("clusterKeys").GetValue<System.Collections.Generic.List<string>>();
 			var asteroidData = pt.Field("asteroidData")
 				.GetValue<System.Collections.Generic.Dictionary<string, ColonyDestinationAsteroidBeltData>>();
-			int selectedIndex = pt.Field("selectedIndex").GetValue<int>();
 
 			if (clusterKeys == null || asteroidData == null) return;
 
@@ -313,15 +329,14 @@ namespace OniAccess.Input.Handlers {
 				// Moon count (Spaced Out only)
 				int moonCount = belt.worlds != null ? belt.worlds.Count : 0;
 
-				// Build slim label: [selected], name, difficulty, N traits, N moons, Shift I for info
-				string label = "";
-				if (i == selectedIndex)
-					label = $"{STRINGS.ONIACCESS.STATES.SELECTED}, ";
-				label += Speech.TextFilter.FilterForSpeech(name);
+				// Build slim label: name, difficulty, N traits, N moons, Shift I for info
+				string label = Speech.TextFilter.FilterForSpeech(name);
 				label += $", {Speech.TextFilter.FilterForSpeech(difficulty)}";
 				label += $", {traitCount} {STRINGS.ONIACCESS.INFO.TRAITS}";
-				if (moonCount > 0)
-					label += $", {moonCount} {STRINGS.ONIACCESS.INFO.MOONS}";
+				if (moonCount > 0) {
+					string planetoidTerm = STRINGS.UI.CLUSTERMAP.PLANETOID + "s";
+					label += $", {moonCount} {planetoidTerm}";
+				}
 				label += $", {STRINGS.ONIACCESS.INFO.SHIFT_I_HINT}";
 
 				_widgets.Add(new WidgetInfo {
@@ -336,7 +351,9 @@ namespace OniAccess.Input.Handlers {
 
 		/// <summary>
 		/// Build info submenu widgets for the cluster stored in _infoClusterKey.
-		/// Shows description, difficulty, moons, and per-world traits as read-only labels.
+		/// Single-world clusters: description, difficulty, traits.
+		/// Multi-world clusters: description, difficulty, nearby/distant asteroid lists,
+		/// then per-world sections (name, description, traits).
 		/// </summary>
 		private void DiscoverClusterInfoWidgets(KScreen screen) {
 			var panelTraverse = Traverse.Create(screen).Field("destinationMapPanel");
@@ -348,10 +365,12 @@ namespace OniAccess.Input.Handlers {
 				.GetValue<System.Collections.Generic.Dictionary<string, ColonyDestinationAsteroidBeltData>>();
 			if (asteroidData == null || !asteroidData.TryGetValue(_infoClusterKey, out var belt)) return;
 
-			// Description
 			var startWorld = belt.GetStartWorld;
+			bool hasPlanetoids = belt.worlds != null && belt.worlds.Count > 0;
+
+			// Description (start world / cluster description)
 			if (startWorld != null) {
-				string desc = Strings.Get(startWorld.description);
+				string desc = startWorld.GetProperDescription();
 				if (!string.IsNullOrEmpty(desc)) {
 					_widgets.Add(new WidgetInfo {
 						Label = $"{STRINGS.ONIACCESS.INFO.DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(desc)}",
@@ -374,66 +393,143 @@ namespace OniAccess.Input.Handlers {
 				Type = WidgetType.Label
 			});
 
-			// Moons (Spaced Out only)
-			if (belt.worlds != null && belt.worlds.Count > 0) {
-				var moonNames = new List<string>();
+			if (hasPlanetoids) {
+				// Classify planetoids by distance using WorldPlacement.locationType
+				var nearbyNames = new List<string>();
+				var distantNames = new List<string>();
+				var placements = belt.Layout != null ? belt.Layout.worldPlacements : null;
+
 				foreach (var world in belt.worlds) {
-					string moonName = Strings.Get(world.name);
-					if (!string.IsNullOrEmpty(moonName))
-						moonNames.Add(Speech.TextFilter.FilterForSpeech(moonName));
+					string worldName = world.GetProperName();
+					if (string.IsNullOrEmpty(worldName)) continue;
+					string filtered = Speech.TextFilter.FilterForSpeech(worldName);
+
+					// Determine location type from matching WorldPlacement
+					bool isDistant = false;
+					if (placements != null) {
+						foreach (var wp in placements) {
+							if (wp.world == world.filePath) {
+								isDistant = wp.locationType == ProcGen.WorldPlacement.LocationType.Cluster;
+								break;
+							}
+						}
+					}
+
+					if (isDistant)
+						distantNames.Add(filtered);
+					else
+						nearbyNames.Add(filtered);
 				}
-				string moonsLabel = moonNames.Count > 0
-					? $"{STRINGS.ONIACCESS.INFO.MOONS}: {string.Join(", ", moonNames)}"
-					: $"{STRINGS.ONIACCESS.INFO.MOONS}: {STRINGS.ONIACCESS.INFO.NO_MOONS}";
-				_widgets.Add(new WidgetInfo {
-					Label = moonsLabel,
-					Type = WidgetType.Label
-				});
-			}
 
-			// World traits header
-			_widgets.Add(new WidgetInfo {
-				Label = $"{STRINGS.ONIACCESS.INFO.WORLD_TRAITS}:",
-				Type = WidgetType.Label
-			});
-
-			// Traits — grouped per-world in Spaced Out (bold world name headers)
-			var traitDescriptors = belt.GetTraitDescriptors();
-			foreach (var trait in traitDescriptors) {
-				string text = trait.text?.Trim() ?? "";
-				if (string.IsNullOrEmpty(text)) continue;
-
-				// Bold world name headers → emit as standalone header widget
-				if (text.StartsWith("<b>")) {
-					string worldName = Speech.TextFilter.FilterForSpeech(text);
+				if (nearbyNames.Count > 0) {
+					string header = STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.HEADER_ASTEROID_NEARBY;
 					_widgets.Add(new WidgetInfo {
-						Label = $"{worldName} {STRINGS.ONIACCESS.INFO.TRAITS}:",
+						Label = $"{header}: {string.Join(", ", nearbyNames)}",
 						Type = WidgetType.Label
 					});
-					continue;
 				}
-
-				// Game's "No Traits" placeholder (<i> italic text) — use actual game text
-				if (text.StartsWith("<i>")) {
+				if (distantNames.Count > 0) {
+					string header = STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.HEADER_ASTEROID_DISTANT;
 					_widgets.Add(new WidgetInfo {
-						Label = Speech.TextFilter.FilterForSpeech(text),
+						Label = $"{header}: {string.Join(", ", distantNames)}",
 						Type = WidgetType.Label
 					});
-					continue;
 				}
 
-				// Skip plain-text entries — these are story traits injected by the game
-				if (!text.StartsWith("<color")) continue;
+				// Per-world detail sections: start world first, then planetoids
+				var allWorlds = new List<ProcGen.World>();
+				if (startWorld != null) allWorlds.Add(startWorld);
+				allWorlds.AddRange(belt.worlds);
 
-				// Actual world trait entry — name + tooltip description
-				string traitLabel = Speech.TextFilter.FilterForSpeech(text);
-				string tooltip = trait.tooltip?.Trim() ?? "";
-				if (!string.IsNullOrEmpty(tooltip))
-					traitLabel += $" — {Speech.TextFilter.FilterForSpeech(tooltip)}";
+				foreach (var world in allWorlds) {
+					// World name header
+					string wName = world.GetProperName();
+					if (string.IsNullOrEmpty(wName)) continue;
+					_widgets.Add(new WidgetInfo {
+						Label = Speech.TextFilter.FilterForSpeech(wName),
+						Type = WidgetType.Label
+					});
+
+					// World description
+					string wDesc = world.GetProperDescription();
+					if (!string.IsNullOrEmpty(wDesc)) {
+						_widgets.Add(new WidgetInfo {
+							Label = $"{STRINGS.ONIACCESS.INFO.DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(wDesc)}",
+							Type = WidgetType.Label
+						});
+					}
+
+					// World traits for this specific world
+					var worldTraits = belt.GenerateTraitDescriptors(world);
+					bool hasTraits = false;
+					foreach (var trait in worldTraits) {
+						string text = trait.text?.Trim() ?? "";
+						if (string.IsNullOrEmpty(text)) continue;
+						if (!text.StartsWith("<color")) continue;
+
+						string traitLabel = Speech.TextFilter.FilterForSpeech(text);
+						string tooltip = trait.tooltip?.Trim() ?? "";
+						if (!string.IsNullOrEmpty(tooltip))
+							traitLabel += $" — {Speech.TextFilter.FilterForSpeech(tooltip)}";
+						_widgets.Add(new WidgetInfo {
+							Label = traitLabel,
+							Type = WidgetType.Label
+						});
+						hasTraits = true;
+					}
+
+					if (!hasTraits) {
+						string noTraits = STRINGS.WORLD_TRAITS.NO_TRAITS.NAME;
+						string noTraitsDesc = STRINGS.WORLD_TRAITS.NO_TRAITS.DESCRIPTION;
+						string label = Speech.TextFilter.FilterForSpeech(noTraits);
+						if (!string.IsNullOrEmpty(noTraitsDesc))
+							label += $" — {Speech.TextFilter.FilterForSpeech(noTraitsDesc)}";
+						_widgets.Add(new WidgetInfo {
+							Label = label,
+							Type = WidgetType.Label
+						});
+					}
+				}
+			} else {
+				// Single world — just show traits directly
 				_widgets.Add(new WidgetInfo {
-					Label = traitLabel,
+					Label = $"{STRINGS.ONIACCESS.INFO.WORLD_TRAITS}:",
 					Type = WidgetType.Label
 				});
+
+				var traitDescriptors = belt.GetTraitDescriptors();
+				bool hasTraits = false;
+				foreach (var trait in traitDescriptors) {
+					string text = trait.text?.Trim() ?? "";
+					if (string.IsNullOrEmpty(text)) continue;
+					if (text.StartsWith("<i>")) {
+						_widgets.Add(new WidgetInfo {
+							Label = Speech.TextFilter.FilterForSpeech(text),
+							Type = WidgetType.Label
+						});
+						hasTraits = true;
+						continue;
+					}
+					if (!text.StartsWith("<color")) continue;
+
+					string traitLabel = Speech.TextFilter.FilterForSpeech(text);
+					string tooltip = trait.tooltip?.Trim() ?? "";
+					if (!string.IsNullOrEmpty(tooltip))
+						traitLabel += $" — {Speech.TextFilter.FilterForSpeech(tooltip)}";
+					_widgets.Add(new WidgetInfo {
+						Label = traitLabel,
+						Type = WidgetType.Label
+					});
+					hasTraits = true;
+				}
+
+				if (!hasTraits) {
+					string noTraits = STRINGS.WORLD_TRAITS.NO_TRAITS.NAME;
+					_widgets.Add(new WidgetInfo {
+						Label = Speech.TextFilter.FilterForSpeech(noTraits),
+						Type = WidgetType.Label
+					});
+				}
 			}
 		}
 
@@ -995,6 +1091,41 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
+		/// Select a cluster without speaking — used by auto-select on navigation.
+		/// Fires OnAsteroidClicked to populate traits; speech comes after
+		/// the one-frame delay via _pendingClusterRefresh.
+		/// </summary>
+		private void SelectClusterSilent(string clusterKey) {
+			var panelTraverse = Traverse.Create(_screen).Field("destinationMapPanel");
+			var panel = panelTraverse.GetValue<object>();
+			if (panel == null) return;
+
+			var pt = Traverse.Create(panel);
+			var asteroidData = pt.Field("asteroidData")
+				.GetValue<System.Collections.Generic.Dictionary<string, ColonyDestinationAsteroidBeltData>>();
+
+			if (asteroidData != null && asteroidData.TryGetValue(clusterKey, out var belt)) {
+				var onClicked = pt.Field("OnAsteroidClicked")
+					.GetValue<System.Action<ColonyDestinationAsteroidBeltData>>();
+				onClicked?.Invoke(belt);
+			}
+		}
+
+		/// <summary>
+		/// Find the next valid widget index from startIndex in the given direction,
+		/// with wrap-around. Returns -1 if no valid widget found.
+		/// </summary>
+		private int FindNextValidWidget(int startIndex, int direction) {
+			if (_widgets.Count == 0) return -1;
+			for (int i = 0; i < _widgets.Count; i++) {
+				int candidate = ((startIndex + direction * (i + 1)) % _widgets.Count + _widgets.Count) % _widgets.Count;
+				if (IsWidgetValid(_widgets[candidate]))
+					return candidate;
+			}
+			return -1;
+		}
+
+		/// <summary>
 		/// Cycle dropdown for settings widgets.
 		/// CustomGameSettingListWidget has CycleLeft/CycleRight KButtons.
 		/// We invoke the appropriate cycle direction.
@@ -1054,6 +1185,52 @@ namespace OniAccess.Input.Handlers {
 				}
 				// Block all other key handling during text edit
 				return;
+			}
+
+			// Deferred cluster refresh: traits needed one frame to populate
+			// after SelectCluster fired OnAsteroidClicked. Now re-discover
+			// widgets and speak the current cluster with accurate trait counts.
+			if (_pendingClusterRefresh) {
+				_pendingClusterRefresh = false;
+				int savedIndex = _currentIndex;
+				DiscoverWidgets(_screen);
+				_currentIndex = UnityEngine.Mathf.Clamp(savedIndex, 0,
+					_widgets.Count > 0 ? _widgets.Count - 1 : 0);
+				SpeakCurrentWidget();
+				return;
+			}
+
+			// Auto-select clusters on arrow/Home/End navigation so traits populate
+			if (!IsClusterCategoryScreen && !IsModeSelectScreen
+				&& _currentPanel == PanelClusters && !_inInfoSubmenu) {
+				int targetIndex = -1;
+
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
+					targetIndex = FindNextValidWidget(_currentIndex, 1);
+				} else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
+					targetIndex = FindNextValidWidget(_currentIndex, -1);
+				} else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home)) {
+					targetIndex = FindNextValidWidget(-1, 1);
+				} else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)) {
+					targetIndex = FindNextValidWidget(_widgets.Count, -1);
+				}
+
+				if (targetIndex >= 0 && targetIndex < _widgets.Count) {
+					var widget = _widgets[targetIndex];
+					if (widget.Tag is string navKey) {
+						bool wrapped = false;
+						if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow))
+							wrapped = targetIndex <= _currentIndex;
+						else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow))
+							wrapped = targetIndex >= _currentIndex;
+						if (wrapped) PlayWrapSound();
+
+						_currentIndex = targetIndex;
+						SelectClusterSilent(navKey);
+						_pendingClusterRefresh = true;
+					}
+					return;
+				}
 			}
 
 			// Shift+I opens cluster info submenu

@@ -93,9 +93,7 @@ namespace STRINGS {
 			public static LocString SHIFT_I_HINT = "Shift I for info";
 			public static LocString DESCRIPTION = "Description";
 			public static LocString DIFFICULTY = "Difficulty";
-			public static LocString MOONS = "Moons";
 			public static LocString TRAITS = "traits";
-			public static LocString NO_MOONS = "no moons";
 			public static LocString PANEL_NAME = "Info";
 			public static LocString WORLD_TRAITS = "World traits";
 			public static LocString STORY_TRAITS = "Story traits";
