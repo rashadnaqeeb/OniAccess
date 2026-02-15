@@ -547,7 +547,8 @@ namespace OniAccess.Handlers.Screens {
 			if (ddCount == 0) return;
 
 			int ddNewIndex = (dropdown.value + direction + ddCount) % ddCount;
-			dropdown.value = ddNewIndex;  // Fires onValueChanged
+			dropdown.value = ddNewIndex;
+			dropdown.RefreshShownValue();
 
 			string optionText = dropdown.options[ddNewIndex].text;
 			Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {optionText}");
