@@ -91,7 +91,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Add close/navigation buttons at the end
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.ONIACCESS.BUTTONS.CLOSE, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP, _widgets);
 		}
 
 		// ========================================
@@ -152,7 +152,7 @@ namespace OniAccess.Input.Handlers {
 
 			// Navigation buttons: "View other colonies" and "Close"
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "viewOtherColoniesButton", (string)STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES, _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.ONIACCESS.BUTTONS.CLOSE, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP, _widgets);
 		}
 
 		// ========================================
@@ -224,7 +224,7 @@ namespace OniAccess.Input.Handlers {
 			if (!_inColonyDetail && widget.Type == WidgetType.Button) {
 				// Check if this is a colony entry (not the close button)
 				var kbutton = widget.Component as KButton;
-				if (kbutton != null && widget.Label != (string)STRINGS.ONIACCESS.BUTTONS.CLOSE) {
+				if (kbutton != null && widget.Label != (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP) {
 					// Click the colony entry to open detail view
 					kbutton.SignalClick(KKeyCode.Mouse0);
 					_inColonyDetail = true;

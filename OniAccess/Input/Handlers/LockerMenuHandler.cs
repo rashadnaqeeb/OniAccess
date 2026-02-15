@@ -67,7 +67,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Close button
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", STRINGS.ONIACCESS.BUTTONS.CLOSE, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", STRINGS.UI.TOOLTIPS.CLOSETOOLTIP, _widgets);
 
 			Log.Debug($"LockerMenuHandler.DiscoverWidgets: {_widgets.Count} widgets");
 			return true;
@@ -79,7 +79,7 @@ namespace OniAccess.Input.Handlers {
 				case 1: return STRINGS.UI.LOCKER_MENU.BUTTON_DUPLICANTS;
 				case 2: return STRINGS.UI.LOCKER_MENU.BUTTON_OUTFITS;
 				case 3: return STRINGS.UI.LOCKER_MENU.BUTTON_CLAIM;
-				default: return (string)STRINGS.ONIACCESS.BUTTONS.UNKNOWN;
+				default: return (string)STRINGS.UI.FRONTEND.TRANSLATIONS_SCREEN.UNKNOWN;
 			}
 		}
 

@@ -177,7 +177,7 @@ namespace OniAccess.Input.Handlers {
 				var proceedButton = Traverse.Create(screen).Field("proceedButton")
 					.GetValue<KButton>();
 				if (proceedButton != null && proceedButton.gameObject.activeInHierarchy) {
-					string label = GetButtonLabel(proceedButton, (string)STRINGS.ONIACCESS.BUTTONS.EMBARK);
+					string label = GetButtonLabel(proceedButton, (string)STRINGS.UI.IMMIGRANTSCREEN.EMBARK);
 					_widgets.Add(new WidgetInfo {
 						Label = label,
 						Component = proceedButton,
@@ -196,7 +196,7 @@ namespace OniAccess.Input.Handlers {
 						.GetValue<KButton>();
 					if (backButton != null && backButton.gameObject.activeInHierarchy
 						&& backButton.isInteractable) {
-						string label = GetButtonLabel(backButton, (string)STRINGS.ONIACCESS.BUTTONS.BACK);
+						string label = GetButtonLabel(backButton, (string)STRINGS.UI.SANDBOXTOOLS.FILTERS.BACK);
 						_widgets.Add(new WidgetInfo {
 							Label = label,
 							Component = backButton,
@@ -586,7 +586,7 @@ namespace OniAccess.Input.Handlers {
 				if (reshuffleButton != null && reshuffleButton.gameObject.activeInHierarchy
 					&& reshuffleButton.isInteractable) {
 					_widgets.Add(new WidgetInfo {
-						Label = (string)STRINGS.ONIACCESS.BUTTONS.REROLL,
+						Label = (string)STRINGS.UI.IMMIGRANTSCREEN.SHUFFLE,
 						Component = reshuffleButton,
 						Type = WidgetType.Button,
 						GameObject = reshuffleButton.gameObject,

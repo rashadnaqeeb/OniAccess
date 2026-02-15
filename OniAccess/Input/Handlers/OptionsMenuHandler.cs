@@ -21,7 +21,7 @@ namespace OniAccess.Input.Handlers {
 	public class OptionsMenuHandler: BaseMenuHandler {
 		private string _displayName;
 
-		public override string DisplayName => _displayName ?? (string)STRINGS.ONIACCESS.HANDLERS.OPTIONS;
+		public override string DisplayName => _displayName ?? (string)STRINGS.UI.FRONTEND.PAUSE_SCREEN.OPTIONS;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
@@ -407,7 +407,7 @@ namespace OniAccess.Input.Handlers {
 			// Add CloseButton
 			var closeButton = traverse.Field("CloseButton").GetValue<KButton>();
 			if (closeButton != null) {
-				string label = CleanLabel(GetButtonLabel(closeButton)) ?? (string)STRINGS.ONIACCESS.BUTTONS.CLOSE;
+				string label = CleanLabel(GetButtonLabel(closeButton)) ?? (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP;
 				_widgets.Add(new WidgetInfo {
 					Label = label,
 					Component = closeButton,
@@ -931,9 +931,9 @@ namespace OniAccess.Input.Handlers {
 				case "FeedbackScreen":
 					return STRINGS.ONIACCESS.HANDLERS.FEEDBACK;
 				case "CreditsScreen":
-					return STRINGS.ONIACCESS.HANDLERS.CREDITS;
+					return STRINGS.UI.FRONTEND.OPTIONS_SCREEN.CREDITS;
 				default:
-					return STRINGS.ONIACCESS.HANDLERS.OPTIONS;
+					return STRINGS.UI.FRONTEND.PAUSE_SCREEN.OPTIONS;
 			}
 		}
 	}

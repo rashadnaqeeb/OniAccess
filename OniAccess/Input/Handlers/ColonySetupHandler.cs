@@ -466,7 +466,7 @@ namespace OniAccess.Input.Handlers {
 				string desc = startWorld.GetProperDescription();
 				if (!string.IsNullOrEmpty(desc)) {
 					_widgets.Add(new WidgetInfo {
-						Label = $"{STRINGS.ONIACCESS.INFO.DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(desc)}",
+						Label = $"{STRINGS.UI.FRONTEND.SCENARIOS_MENU.SCENARIO_DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(desc)}",
 						Type = WidgetType.Label
 					});
 				}
@@ -547,7 +547,7 @@ namespace OniAccess.Input.Handlers {
 					string wDesc = world.GetProperDescription();
 					if (!string.IsNullOrEmpty(wDesc)) {
 						_widgets.Add(new WidgetInfo {
-							Label = $"{STRINGS.ONIACCESS.INFO.DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(wDesc)}",
+							Label = $"{STRINGS.UI.FRONTEND.SCENARIOS_MENU.SCENARIO_DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(wDesc)}",
 							Type = WidgetType.Label
 						});
 					}

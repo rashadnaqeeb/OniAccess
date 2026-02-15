@@ -21,8 +21,6 @@ namespace STRINGS {
 			public static LocString HELP = "Help";
 			public static LocString MAIN_MENU = "Main menu";
 			public static LocString PAUSE_MENU = "Pause menu";
-			public static LocString CONFIRM_DIALOG = "Confirm";
-			public static LocString OPTIONS = "Options";
 			public static LocString AUDIO_OPTIONS = "Audio options";
 			public static LocString GRAPHICS_OPTIONS = "Graphics options";
 			public static LocString GAME_OPTIONS = "Game options";
@@ -34,7 +32,6 @@ namespace STRINGS {
 			public static LocString TRANSLATIONS = "Translations";
 			public static LocString DATA_OPTIONS = "Data options";
 			public static LocString FEEDBACK = "Feedback";
-			public static LocString CREDITS = "Credits";
 			public static LocString KEY_BINDINGS = "Key bindings";
 			public static LocString SUPPLY_CLOSET = "Supply closet";
 			public static LocString ITEM_DROP = "Claim blueprints";
@@ -100,19 +97,10 @@ namespace STRINGS {
 		}
 
 		public class BUTTONS {
-			public static LocString OK = "OK";
-			public static LocString CANCEL = "Cancel";
-			public static LocString CLOSE = "Close";
 			public static LocString ACCEPT = "Accept";
 			public static LocString MANAGE = "Manage";
-			public static LocString RESUME_GAME = "Resume Game";
-			public static LocString REROLL = "Reroll";
 			public static LocString VIEW_OTHER_COLONIES = "View other colonies";
-			public static LocString UNKNOWN = "Unknown";
-			public static LocString EMBARK = "Embark";
-			public static LocString BACK = "Back";
 			public static LocString TOGGLE_ALL = "Toggle all";
-			public static LocString WORKSHOP = "Workshop";
 		}
 
 		public class WORLD_GEN {
@@ -121,10 +109,8 @@ namespace STRINGS {
 		}
 
 		public class INFO {
-			public static LocString DESCRIPTION = "Description";
 			public static LocString DIFFICULTY = "Difficulty";
 			public static LocString STORY_TRAITS = "Story traits";
-			public static LocString NONE = "None";
 			public static LocString SETTING = "setting";
 			public static LocString ACHIEVEMENT = "achievement";
 			public static LocString INTEREST = "Interest";

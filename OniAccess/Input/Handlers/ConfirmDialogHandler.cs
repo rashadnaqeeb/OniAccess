@@ -14,7 +14,7 @@ namespace OniAccess.Input.Handlers {
 		private string _dialogTitle;
 
 		public override string DisplayName => _dialogTitle
-			?? (string)STRINGS.ONIACCESS.HANDLERS.CONFIRM_DIALOG;
+			?? (string)STRINGS.UI.FRONTEND.SAVESCREEN.CONFIRMNAME;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
@@ -73,8 +73,8 @@ namespace OniAccess.Input.Handlers {
 			var screenTraverse = Traverse.Create(screen);
 			bool foundNamedButtons = false;
 
-			foundNamedButtons |= TryAddButtonField(screenTraverse, "confirmButton", (string)STRINGS.ONIACCESS.BUTTONS.OK);
-			foundNamedButtons |= TryAddButtonField(screenTraverse, "cancelButton", (string)STRINGS.ONIACCESS.BUTTONS.CANCEL);
+			foundNamedButtons |= TryAddButtonField(screenTraverse, "confirmButton", (string)STRINGS.UI.CONFIRMDIALOG.OK);
+			foundNamedButtons |= TryAddButtonField(screenTraverse, "cancelButton", (string)STRINGS.UI.FRONTEND.NEWGAMESETTINGS.BUTTONS.CANCEL);
 			foundNamedButtons |= TryAddButtonField(screenTraverse, "configurableButton", null);
 
 			// If no named buttons found, walk children for any KButton instances.

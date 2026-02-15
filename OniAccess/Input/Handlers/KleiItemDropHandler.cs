@@ -75,7 +75,7 @@ namespace OniAccess.Input.Handlers {
 						if (cg != null && cg.alpha <= 0.5f) visible = false;
 					}
 					if (visible) {
-						string label = GetButtonLabel(acknowledgeButton, (string)STRINGS.ONIACCESS.BUTTONS.OK);
+						string label = GetButtonLabel(acknowledgeButton, (string)STRINGS.UI.CONFIRMDIALOG.OK);
 						_widgets.Add(new WidgetInfo {
 							Label = label,
 							Component = acknowledgeButton,

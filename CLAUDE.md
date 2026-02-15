@@ -41,8 +41,11 @@ Builds and runs the offline test suite (`OniAccess.Tests`). Tests run without th
 ### Reuse game data, avoid hardcoding
 Use the game's localized text (`STRINGS` namespace, `LocText` components), UI state, and entity data wherever possible. Hardcoded text becomes stale across game updates and blocks translation. Only hardcode when no game data source exists. Avoid caching for the same reason; stale data is worse than a re-query.
 
-### Mod-authored strings go in OniAccessStrings.cs
-All text the mod speaks or displays must be a `LocString` field in `OniAccessStrings.cs` under the `STRINGS.ONIACCESS` hierarchy (e.g., `STRINGS.ONIACCESS.HANDLERS.MAIN_MENU`). Never inline string literals for user-facing text.
+### Game strings first, OniAccessStrings.cs second
+Before creating a new `LocString` in `OniAccessStrings.cs`, search the game's `STRINGS` namespace (see `docs/CODEBASE_INDEX.md` and `ONI-Decompiled/`) for existing localized text that conveys the same meaning. The game already has strings for common labels like "Embark", "Close", "Cancel", etc. Only add to `OniAccessStrings.cs` when no game string exists or the mod needs text with no game equivalent (e.g., screen reader instructions, mod-specific labels). Every mod-authored string is a translation burden and a divergence from the game's own wording.
+
+### No inline string literals
+All user-facing text must come from a `LocString` reference, either the game's `STRINGS` namespace or `STRINGS.ONIACCESS` in `OniAccessStrings.cs`. Never inline string literals for text that gets spoken or displayed.
 
 ### Concise announcements
 Users are experienced screen reader users. Strip fluff, never strip information. These rules apply to mod-authored text only; never alter, truncate, or reword game text. Ordering rules (variation-first, below) apply to both.

@@ -77,8 +77,8 @@ namespace OniAccess.Input.Handlers {
 
 			// Append action buttons
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "toggleAllButton", STRINGS.ONIACCESS.BUTTONS.TOGGLE_ALL, _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "workshopButton", STRINGS.ONIACCESS.BUTTONS.WORKSHOP, _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", STRINGS.ONIACCESS.BUTTONS.CLOSE, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "workshopButton", STRINGS.UI.FRONTEND.SCENARIOS_MENU.BUTTON_WORKSHOP, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", STRINGS.UI.TOOLTIPS.CLOSETOOLTIP, _widgets);
 
 			Log.Debug($"ModsHandler.DiscoverWidgets: {_widgets.Count} widgets");
 			return true;
