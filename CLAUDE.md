@@ -62,6 +62,9 @@ Users are experienced screen reader users. Strip fluff, never strip information.
 ### Conscious hotkey management
 ONI has extensive hotkeys. Many are useless to blind players and can be overwritten. But every overwrite is a deliberate decision; document what the original hotkey did and why it's being replaced. See `docs/hotkey-reference.md` for the complete ONI key binding map, safe keys, and screen reader keys to avoid.
 
+### No silent failures
+This mod runs on Harmony patches and reflection. Both fail in ways that produce no visible error unless we log it. A swallowed exception in a patch means the feature silently stops working and the user has no idea why. **Every catch block must log via `Log.Warn` or `Log.Error`.** Never write an empty catch, never catch-and-return-default without logging. If something fails, the player log must say what and where. A logged failure is actionable; a silent one is invisible.
+
 ## Architecture Gotchas
 - New screen handlers must be registered in `ContextDetector.RegisterMenuHandlers()` or they will never activate
 - Key detection goes in `Tick()` via `UnityEngine.Input.GetKeyDown()`. `HandleKeyDown()` is only for Escape interception through KButtonEvent
