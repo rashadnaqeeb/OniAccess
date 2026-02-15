@@ -36,6 +36,11 @@ namespace OniAccess.Input.Handlers {
 		private const int SubTabStoryTraits = 2;
 		private const int SubTabCount = 3;
 
+		private static readonly System.Type ClusterCategoryScreenType =
+			AccessTools.TypeByName("ClusterCategorySelectionScreen");
+		private static readonly System.Type ModeSelectScreenType =
+			AccessTools.TypeByName("ModeSelectScreen");
+
 		/// <summary>
 		/// Ordered list of cluster keys from the destination panel.
 		/// </summary>
@@ -100,13 +105,13 @@ namespace OniAccess.Input.Handlers {
 		/// Whether the active screen is ClusterCategorySelectionScreen.
 		/// </summary>
 		private bool IsClusterCategoryScreen =>
-			_screen != null && _screen.GetType().Name == "ClusterCategorySelectionScreen";
+			_screen != null && _screen.GetType() == ClusterCategoryScreenType;
 
 		/// <summary>
 		/// Whether the active screen is ModeSelectScreen (Survival vs No Sweat).
 		/// </summary>
 		private bool IsModeSelectScreen =>
-			_screen != null && _screen.GetType().Name == "ModeSelectScreen";
+			_screen != null && _screen.GetType() == ModeSelectScreenType;
 
 		public ColonySetupHandler(KScreen screen) : base(screen) {
 			HelpEntries = BuildHelpEntries();

@@ -785,20 +785,20 @@ namespace OniAccess.Input.Handlers {
 		private void AnnounceNameAndInterests() {
 			if (_widgets.Count > 0)
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
-			QueueNameAndInterests();
+			QueueNameAndInterests(includeName: false);
 		}
 
 		/// <summary>
 		/// Queue-speak name (first widget) and all interest-tagged widgets.
 		/// Does not change _currentIndex. Does not interrupt.
 		/// </summary>
-		private void QueueNameAndInterests() {
+		private void QueueNameAndInterests(bool includeName = true) {
 			bool seenInterest = false;
 			for (int i = 0; i < _widgets.Count; i++) {
 				var w = _widgets[i];
 				bool isInterest = w.Tag is string tag && tag == "interest";
 
-				if (i == 0 || isInterest) {
+				if (i == 0 && includeName || isInterest) {
 					Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(w));
 					if (isInterest) seenInterest = true;
 				} else if (seenInterest) {

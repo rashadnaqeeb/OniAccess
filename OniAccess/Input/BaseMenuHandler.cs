@@ -133,7 +133,7 @@ namespace OniAccess.Input {
 			} else {
 				// Screen not ready yet (subclass signaled false, or zero widgets
 				// because Harmony postfix fired before subclass OnSpawn). Retry
-				// once on the next Tick when the UI is ready.
+				// up to MaxDiscoveryRetries times on subsequent Ticks.
 				_pendingRediscovery = true;
 			}
 		}
