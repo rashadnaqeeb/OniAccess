@@ -66,6 +66,7 @@ namespace STRINGS {
 			public static LocString VICTORY_CONDITIONS = "Victory conditions";
 			public static LocString STATS = "Stats";
 			public static LocString BUTTONS = "Buttons";
+			public static LocString PLANETOIDS = "planetoids";
 			public static LocString DLC = "DLC";
 			public static LocString NEWS = "News";
 			public static LocString NO_NEWS = "No news available";

@@ -130,15 +130,7 @@ namespace OniAccess.Input.Handlers {
 			if (_inCustomize) {
 				_currentSubTab = (_currentSubTab + 1) % SubTabCount;
 				if (_currentSubTab == 0) PlayWrapSound();
-				SyncGameTab();
-				_search.Clear();
-				DiscoverWidgets(_screen);
-				string name = GetPanelName();
-				Speech.SpeechPipeline.SpeakInterrupt(name);
-				if (_widgets.Count > 0) {
-					_currentIndex = 0;
-					Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
-				}
+				RefreshSubTab();
 				return;
 			}
 
@@ -152,15 +144,7 @@ namespace OniAccess.Input.Handlers {
 				int prev = _currentSubTab;
 				_currentSubTab = (_currentSubTab - 1 + SubTabCount) % SubTabCount;
 				if (_currentSubTab == SubTabCount - 1 && prev == 0) PlayWrapSound();
-				SyncGameTab();
-				_search.Clear();
-				DiscoverWidgets(_screen);
-				string name = GetPanelName();
-				Speech.SpeechPipeline.SpeakInterrupt(name);
-				if (_widgets.Count > 0) {
-					_currentIndex = 0;
-					Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
-				}
+				RefreshSubTab();
 				return;
 			}
 
@@ -201,6 +185,29 @@ namespace OniAccess.Input.Handlers {
 				}
 			}
 			return "";
+		}
+
+		/// <summary>
+		/// Clear search, re-discover widgets, and reset to position 0.
+		/// Callers add their own speech after this returns.
+		/// </summary>
+		private void RediscoverAndReset() {
+			_search.Clear();
+			DiscoverWidgets(_screen);
+			_currentIndex = 0;
+		}
+
+		/// <summary>
+		/// Refresh after switching a Customize sub-tab: sync the game tab,
+		/// re-discover widgets, and speak the panel name + first widget.
+		/// </summary>
+		private void RefreshSubTab() {
+			SyncGameTab();
+			RediscoverAndReset();
+			string name = GetPanelName();
+			Speech.SpeechPipeline.SpeakInterrupt(name);
+			if (_widgets.Count > 0)
+				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
 		}
 
 		// ========================================
@@ -432,8 +439,7 @@ namespace OniAccess.Input.Handlers {
 			label += $", {Speech.TextFilter.FilterForSpeech(difficulty)}";
 			label += $", {traitCount} {STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.TRAITS_HEADER}";
 			if (moonCount > 0) {
-				string planetoidTerm = STRINGS.UI.CLUSTERMAP.PLANETOID + "s";
-				label += $", {moonCount} {planetoidTerm}";
+				label += $", {moonCount} {STRINGS.ONIACCESS.PANELS.PLANETOIDS}";
 			}
 
 			return label;
@@ -711,10 +717,7 @@ namespace OniAccess.Input.Handlers {
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "storyTraitShuffleButton", null, _widgets);
 
 			var storyPanel = Traverse.Create(screen).Field("storyContentPanel").GetValue<object>();
-			if (storyPanel == null) {
-				Util.Log.Debug("StoryTraits: storyContentPanel is null");
-				return;
-			}
+			if (storyPanel == null) return;
 
 			var spt = Traverse.Create(storyPanel);
 
@@ -724,10 +727,7 @@ namespace OniAccess.Input.Handlers {
 			// in Db.Get().Stories.resources order; child 0 is the inactive prefab
 			// template, so we track a separate story index for active rows only.
 			var containerGO = spt.Field("storyRowContainer").GetValue<UnityEngine.GameObject>();
-			if (containerGO == null) {
-				Util.Log.Debug("StoryTraits: storyRowContainer is null");
-				return;
-			}
+			if (containerGO == null) return;
 
 			var stories = Db.Get().Stories.resources;
 			var container = containerGO.transform;
@@ -1117,13 +1117,10 @@ namespace OniAccess.Input.Handlers {
 				if (_clusterKeys != null && _clusterIndex >= 0 && _clusterIndex < _clusterKeys.Count) {
 					_inInfoSubmenu = true;
 					_infoClusterKey = _clusterKeys[_clusterIndex];
-					_search.Clear();
-					DiscoverWidgets(_screen);
+					RediscoverAndReset();
 					Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.SELECTED_CLUSTER_TRAITS_HEADER);
-					if (_widgets.Count > 0) {
-						_currentIndex = 0;
+					if (_widgets.Count > 0)
 						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
-					}
 				}
 				return;
 			}
@@ -1158,14 +1155,11 @@ namespace OniAccess.Input.Handlers {
 					var st = Traverse.Create(_screen);
 					st.Field("selectedMenuTabIdx").SetValue(4);
 					st.Method("RefreshMenuTabs").GetValue();
-					_search.Clear();
-					DiscoverWidgets(_screen);
+					RediscoverAndReset();
 					string panelName = GetPanelName();
 					Speech.SpeechPipeline.SpeakInterrupt(panelName);
-					if (_widgets.Count > 0) {
-						_currentIndex = 0;
+					if (_widgets.Count > 0)
 						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
-					}
 					return;
 				}
 			}
@@ -1226,31 +1220,6 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			base.ActivateCurrentWidget();
-		}
-
-		/// <summary>
-		/// Select a cluster by key via the DestinationSelectPanel.
-		/// Fires OnAsteroidClicked which updates the screen.
-		/// </summary>
-		private void SelectCluster(string clusterKey) {
-			var panelTraverse = Traverse.Create(_screen).Field("destinationMapPanel");
-			var panel = panelTraverse.GetValue<object>();
-			if (panel == null) return;
-
-			var pt = Traverse.Create(panel);
-			var asteroidData = pt.Field("asteroidData")
-				.GetValue<Dictionary<string, ColonyDestinationAsteroidBeltData>>();
-
-			if (asteroidData != null && asteroidData.TryGetValue(clusterKey, out var belt)) {
-				// Fire the OnAsteroidClicked event which updates the screen
-				var onClicked = pt.Field("OnAsteroidClicked")
-					.GetValue<System.Action<ColonyDestinationAsteroidBeltData>>();
-				onClicked?.Invoke(belt);
-				string selectedName = Strings.Get(belt.properName);
-				if (string.IsNullOrEmpty(selectedName))
-					selectedName = belt.startWorldName;
-				Speech.SpeechPipeline.SpeakInterrupt($"Selected, {Speech.TextFilter.FilterForSpeech(selectedName)}");
-			}
 		}
 
 		/// <summary>
@@ -1427,9 +1396,7 @@ namespace OniAccess.Input.Handlers {
 					Traverse.Create(_screen).Method("CustomizeClose").GetValue();
 					_inCustomize = false;
 					SyncGameTab();
-					_search.Clear();
-					DiscoverWidgets(_screen);
-					_currentIndex = 0;
+					RediscoverAndReset();
 					if (_widgets.Count > 0)
 						Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
 					return true;
@@ -1440,9 +1407,7 @@ namespace OniAccess.Input.Handlers {
 			if (_inInfoSubmenu) {
 				if (e.TryConsume(Action.Escape)) {
 					_inInfoSubmenu = false;
-					_search.Clear();
-					DiscoverWidgets(_screen);
-					_currentIndex = 0;
+					RediscoverAndReset();
 					if (_widgets.Count > 0)
 						Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
 					return true;
