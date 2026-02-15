@@ -42,7 +42,7 @@ namespace OniAccess.Input {
 		/// postfix fires inside base.OnSpawn() before the screen subclass finishes
 		/// setting up its UI in its own OnSpawn override.
 		/// </summary>
-		private bool _pendingRediscovery;
+		protected bool _pendingRediscovery;
 
 		protected BaseMenuHandler(KScreen screen) : base(screen) { }
 

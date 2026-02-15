@@ -332,8 +332,11 @@ namespace OniAccess.Input.Handlers {
 				// Use queued speech so the screen title finishes first.
 				// Return early — don't add action buttons yet, or OnActivate
 				// will queue the shuffle button before the cluster selector.
+				// Clear _pendingRediscovery so the base Tick() doesn't also
+				// re-discover and speak the cluster selector a second time.
 				_pendingClusterRefresh = true;
 				_queuedClusterRefresh = true;
+				_pendingRediscovery = false;
 				return;
 			}
 
