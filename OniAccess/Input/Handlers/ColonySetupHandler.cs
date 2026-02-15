@@ -1189,7 +1189,13 @@ namespace OniAccess.Input.Handlers {
 				var labelText = twt.Field("Label").GetValue<LocText>();
 				string name = labelText != null ? labelText.text : widget.Label;
 				settingsToggle.ToggleSetting();
-				Speech.SpeechPipeline.SpeakInterrupt($"{name}, {newState}");
+				settingsToggle.Refresh();
+				var toggleTooltip = twt.Field("ToggleToolTip").GetValue<ToolTip>();
+				string tooltip = (toggleTooltip != null && toggleTooltip.multiStringCount > 0) ? toggleTooltip.GetMultiString(0) : "";
+				string speech = $"{name}, {newState}";
+				if (!string.IsNullOrEmpty(tooltip))
+					speech += $" \u2014 {Speech.TextFilter.FilterForSpeech(tooltip)}";
+				Speech.SpeechPipeline.SpeakInterrupt(speech);
 				return;
 			}
 
@@ -1319,10 +1325,22 @@ namespace OniAccess.Input.Handlers {
 			// next Update() via isDirty, so value labels are stale without this
 			settingWidget.Refresh();
 
+			// Read the value tooltip after refresh (describes what the new value does)
+			string valueTooltip = "";
+			if (settingWidget is CustomGameSettingListWidget) {
+				var vtt = Traverse.Create(settingWidget).Field("ValueToolTip").GetValue<ToolTip>();
+				if (vtt != null && vtt.multiStringCount > 0 && !string.IsNullOrEmpty(vtt.GetMultiString(0)))
+					valueTooltip = vtt.GetMultiString(0);
+			}
+
 			// Only announce if the value actually changed (boundary clamp = no-op)
 			string newText = GetWidgetSpeechText(widget);
-			if (newText != oldText)
-				Speech.SpeechPipeline.SpeakInterrupt(newText);
+			if (newText != oldText) {
+				string speech = newText;
+				if (!string.IsNullOrEmpty(valueTooltip))
+					speech += $" \u2014 {Speech.TextFilter.FilterForSpeech(valueTooltip)}";
+				Speech.SpeechPipeline.SpeakInterrupt(speech);
+			}
 		}
 
 		// ========================================
