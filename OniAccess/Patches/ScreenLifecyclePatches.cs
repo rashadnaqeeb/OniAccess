@@ -1,5 +1,5 @@
 using HarmonyLib;
-using OniAccess.Input;
+using OniAccess.Handlers;
 using OniAccess.Toggle;
 using OniAccess.Util;
 using UnityEngine;

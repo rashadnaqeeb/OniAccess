@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OniAccess.Input {
+namespace OniAccess.Handlers {
 	/// <summary>
 	/// Abstract base for ALL screen handlers. Provides only the infrastructure
 	/// that every screen type shares:
@@ -17,7 +17,7 @@ namespace OniAccess.Input {
 	/// - CapturesAllInput = true for all screen handlers
 	/// - Name first, vary early: DisplayName is spoken on activation
 	/// </summary>
-	public abstract class ScreenHandler: IAccessHandler {
+	public abstract class BaseScreenHandler: IAccessHandler {
 		protected KScreen _screen;
 
 		/// <summary>
@@ -48,7 +48,7 @@ namespace OniAccess.Input {
 		// CONSTRUCTOR
 		// ========================================
 
-		protected ScreenHandler(KScreen screen) {
+		protected BaseScreenHandler(KScreen screen) {
 			_screen = screen;
 		}
 

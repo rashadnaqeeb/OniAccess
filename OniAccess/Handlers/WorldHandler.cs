@@ -1,4 +1,4 @@
-namespace OniAccess.Input {
+namespace OniAccess.Handlers {
 	/// <summary>
 	/// Default handler for world view. Selective claim (CapturesAllInput = false).
 	/// Active when no menu/overlay is open. Per locked decision: when mod is on,

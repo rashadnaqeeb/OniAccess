@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using HarmonyLib;
 
-namespace OniAccess.Input.Handlers {
+using OniAccess.Input;
+using OniAccess.Widgets;
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for ModeSelectScreen (Survival vs No Sweat),
 	/// ClusterCategorySelectionScreen (game mode select), and

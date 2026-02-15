@@ -4,7 +4,8 @@ using HarmonyLib;
 using OniAccess.Util;
 using UnityEngine.UI;
 
-namespace OniAccess.Input.Handlers {
+using OniAccess.Widgets;
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for options screens: OptionsMenuScreen (top-level menu),
 	/// AudioOptionsScreen, GraphicsOptionsScreen, GameOptionsScreen,

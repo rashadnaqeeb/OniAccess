@@ -4,7 +4,8 @@ using HarmonyLib;
 using KMod;
 using OniAccess.Util;
 
-namespace OniAccess.Input.Handlers {
+using OniAccess.Widgets;
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for LanguageOptionsScreen: language/translation selection from the options menu.
 	///

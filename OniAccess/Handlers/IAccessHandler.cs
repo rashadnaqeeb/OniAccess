@@ -1,4 +1,4 @@
-namespace OniAccess.Input {
+namespace OniAccess.Handlers {
 	/// <summary>
 	/// Interface for mod input handlers in the handler stack.
 	///

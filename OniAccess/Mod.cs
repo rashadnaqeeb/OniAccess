@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using HarmonyLib;
+using OniAccess.Handlers;
 using OniAccess.Input;
 using OniAccess.Speech;
 using OniAccess.Util;

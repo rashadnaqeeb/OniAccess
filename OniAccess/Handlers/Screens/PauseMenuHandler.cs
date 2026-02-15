@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
 
-namespace OniAccess.Input.Handlers {
+using OniAccess.Widgets;
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for the pause menu (PauseScreen class).
 	/// PauseScreen inherits KModalButtonMenu (which inherits KButtonMenu), so we

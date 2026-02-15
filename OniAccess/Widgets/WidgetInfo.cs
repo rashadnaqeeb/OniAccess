@@ -1,4 +1,4 @@
-namespace OniAccess.Input {
+namespace OniAccess.Widgets {
 	/// <summary>
 	/// Type classification for interactive widgets in a screen's navigation list.
 	/// Used by BaseMenuHandler to dispatch activation and adjustment behavior.

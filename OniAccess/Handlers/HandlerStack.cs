@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OniAccess.Input {
+namespace OniAccess.Handlers {
 	/// <summary>
 	/// Manages a stack of IAccessHandler instances.
 	///

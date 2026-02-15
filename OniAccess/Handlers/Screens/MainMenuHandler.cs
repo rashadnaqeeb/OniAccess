@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
 
-namespace OniAccess.Input.Handlers {
+using OniAccess.Widgets;
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for the main menu (MainMenu class).
 	/// MainMenu inherits directly from KScreen (NOT KButtonMenu), so we cannot

@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using OniAccess.Input;
+using OniAccess.Handlers;
+using OniAccess.Handlers.Screens;
 using OniAccess.Speech;
 
 namespace OniAccess.Tests {

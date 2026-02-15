@@ -1,4 +1,4 @@
-namespace OniAccess.Input {
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Interface for handlers that support type-ahead search via TypeAheadSearch.HandleKey.
 	/// Handlers implement this to describe their searchable list at the current navigation level.

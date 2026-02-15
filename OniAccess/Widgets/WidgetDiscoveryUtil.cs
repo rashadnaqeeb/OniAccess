@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
 
-namespace OniAccess.Input {
+namespace OniAccess.Widgets {
 	/// <summary>
 	/// Shared helpers for widget discovery across handlers.
 	/// </summary>

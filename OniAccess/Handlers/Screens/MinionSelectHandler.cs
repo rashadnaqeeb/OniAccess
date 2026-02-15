@@ -3,7 +3,9 @@ using Database;
 using HarmonyLib;
 using Klei.AI;
 
-namespace OniAccess.Input.Handlers {
+using OniAccess.Input;
+using OniAccess.Widgets;
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for MinionSelectScreen (initial colony start — full game start screen)
 	/// and Printing Pod selection (recurring every 3 cycles).

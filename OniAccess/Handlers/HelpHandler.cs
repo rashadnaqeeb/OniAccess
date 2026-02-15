@@ -1,4 +1,4 @@
-namespace OniAccess.Input {
+namespace OniAccess.Handlers {
 	/// <summary>
 	/// Handler for F12 help mode. Captures all input.
 	/// Speaks help entries one at a time with Up/Down arrow navigation.

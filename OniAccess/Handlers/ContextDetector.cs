@@ -1,4 +1,6 @@
-namespace OniAccess.Input {
+using OniAccess.Handlers.Screens;
+
+namespace OniAccess.Handlers {
 	/// <summary>
 	/// Static class that receives screen lifecycle events from Harmony patches and
 	/// determines which handler to activate on the HandlerStack.
@@ -77,7 +79,7 @@ namespace OniAccess.Input {
 
 			// Guard: don't push a duplicate handler for the same screen instance
 			var active = HandlerStack.ActiveHandler;
-			if (active is ScreenHandler sh && sh.Screen == screen) {
+			if (active is BaseScreenHandler sh && sh.Screen == screen) {
 				Util.Log.Debug($"Screen activated (already handled): {screenType.Name}");
 				return;
 			}
@@ -99,14 +101,14 @@ namespace OniAccess.Input {
 			var active = HandlerStack.ActiveHandler;
 
 			// Match ScreenHandler subclasses (BaseMenuHandler, etc.) by Screen property
-			if (active is ScreenHandler screenHandler && screenHandler.Screen == screen) {
+			if (active is BaseScreenHandler screenHandler && screenHandler.Screen == screen) {
 				HandlerStack.Pop();
 				Util.Log.Debug($"Screen deactivating: {screen.GetType().Name} -> popped handler");
 				return;
 			}
 
 			// Match non-ScreenHandler handlers that track their screen (e.g., WorldGenHandler)
-			if (active is Handlers.WorldGenHandler worldGenHandler && worldGenHandler.Screen == screen) {
+			if (active is WorldGenHandler worldGenHandler && worldGenHandler.Screen == screen) {
 				HandlerStack.Pop();
 				Util.Log.Debug($"Screen deactivating: {screen.GetType().Name} -> popped WorldGenHandler");
 				return;
@@ -121,85 +123,85 @@ namespace OniAccess.Input {
 		/// </summary>
 		public static void RegisterMenuHandlers() {
 			// MainMenu (direct KScreen subclass, NOT KButtonMenu)
-			Register<MainMenu>(screen => new Handlers.MainMenuHandler(screen));
+			Register<MainMenu>(screen => new MainMenuHandler(screen));
 
 			// PauseScreen (KModalButtonMenu)
-			Register<PauseScreen>(screen => new Handlers.PauseMenuHandler(screen));
+			Register<PauseScreen>(screen => new PauseMenuHandler(screen));
 
 			// ConfirmDialogScreen (KModalScreen)
-			Register<ConfirmDialogScreen>(screen => new Handlers.ConfirmDialogHandler(screen));
+			Register<ConfirmDialogScreen>(screen => new ConfirmDialogHandler(screen));
 
 			// OptionsMenuScreen (KModalButtonMenu -- top-level options menu)
-			Register<OptionsMenuScreen>(screen => new Handlers.OptionsMenuHandler(screen));
+			Register<OptionsMenuScreen>(screen => new OptionsMenuHandler(screen));
 
 			// Options sub-screens may not have compile-time types available.
 			// Use AccessTools.TypeByName for runtime resolution and the non-generic Register overload.
 			var audioType = HarmonyLib.AccessTools.TypeByName("AudioOptionsScreen");
-			Register(audioType, screen => new Handlers.OptionsMenuHandler(screen));
+			Register(audioType, screen => new OptionsMenuHandler(screen));
 
 			var graphicsType = HarmonyLib.AccessTools.TypeByName("GraphicsOptionsScreen");
-			Register(graphicsType, screen => new Handlers.OptionsMenuHandler(screen));
+			Register(graphicsType, screen => new OptionsMenuHandler(screen));
 
 			var gameOptionsType = HarmonyLib.AccessTools.TypeByName("GameOptionsScreen");
-			Register(gameOptionsType, screen => new Handlers.OptionsMenuHandler(screen));
+			Register(gameOptionsType, screen => new OptionsMenuHandler(screen));
 
 			var inputBindingsType = HarmonyLib.AccessTools.TypeByName("InputBindingsScreen");
-			Register(inputBindingsType, screen => new Handlers.KeyBindingsHandler(screen));
+			Register(inputBindingsType, screen => new KeyBindingsHandler(screen));
 
 			var metricsType = HarmonyLib.AccessTools.TypeByName("MetricsOptionsScreen");
-			Register(metricsType, screen => new Handlers.OptionsMenuHandler(screen));
+			Register(metricsType, screen => new OptionsMenuHandler(screen));
 
 			var feedbackType = HarmonyLib.AccessTools.TypeByName("FeedbackScreen");
-			Register(feedbackType, screen => new Handlers.OptionsMenuHandler(screen));
+			Register(feedbackType, screen => new OptionsMenuHandler(screen));
 
 			var creditsType = HarmonyLib.AccessTools.TypeByName("CreditsScreen");
-			Register(creditsType, screen => new Handlers.OptionsMenuHandler(screen));
+			Register(creditsType, screen => new OptionsMenuHandler(screen));
 
 			// RetiredColonyInfoScreen (KModalScreen -- colony summary, MENU-09)
 			var retiredColonyType = HarmonyLib.AccessTools.TypeByName("RetiredColonyInfoScreen");
-			Register(retiredColonyType, screen => new Handlers.ColonySummaryHandler(screen));
+			Register(retiredColonyType, screen => new ColonySummaryHandler(screen));
 
 			// ModeSelectScreen (Survival vs No Sweat -- first screen after New Game)
 			var modeSelectType = HarmonyLib.AccessTools.TypeByName("ModeSelectScreen");
-			Register(modeSelectType, screen => new Handlers.ColonySetupHandler(screen));
+			Register(modeSelectType, screen => new ColonySetupHandler(screen));
 
 			// ClusterCategorySelectionScreen (game mode select -- Survival/No Sweat/Custom)
 			var clusterCategoryType = HarmonyLib.AccessTools.TypeByName("ClusterCategorySelectionScreen");
-			Register(clusterCategoryType, screen => new Handlers.ColonySetupHandler(screen));
+			Register(clusterCategoryType, screen => new ColonySetupHandler(screen));
 
 			// ColonyDestinationSelectScreen (asteroid selection, settings, seed)
-			Register<ColonyDestinationSelectScreen>(screen => new Handlers.ColonySetupHandler(screen));
+			Register<ColonyDestinationSelectScreen>(screen => new ColonySetupHandler(screen));
 
 			// WorldGenScreen (world generation progress -- no widgets, just progress polling)
 			var worldGenType = HarmonyLib.AccessTools.TypeByName("WorldGenScreen");
-			Register(worldGenType, screen => new Handlers.WorldGenHandler(screen));
+			Register(worldGenType, screen => new WorldGenHandler(screen));
 
 			// MinionSelectScreen (CharacterSelectionController -> NewGameFlowScreen)
 			// Handles both initial colony start and Printing Pod duplicant selection
-			Register<MinionSelectScreen>(screen => new Handlers.MinionSelectHandler(screen));
+			Register<MinionSelectScreen>(screen => new MinionSelectHandler(screen));
 
 			// LoadScreen (KModalScreen -- save/load with two-level colony/save navigation)
-			Register<LoadScreen>(screen => new Handlers.SaveLoadHandler(screen));
+			Register<LoadScreen>(screen => new SaveLoadHandler(screen));
 
 			// ModsScreen (KModalScreen -- mod management from main menu)
-			Register<ModsScreen>(screen => new Handlers.ModsHandler(screen));
+			Register<ModsScreen>(screen => new ModsHandler(screen));
 
 			// LanguageOptionsScreen (KModalScreen -- language/translation selection from options)
 			var langOptionsType = HarmonyLib.AccessTools.TypeByName("LanguageOptionsScreen");
-			Register(langOptionsType, screen => new Handlers.TranslationHandler(screen));
+			Register(langOptionsType, screen => new TranslationHandler(screen));
 
 			// InfoDialogScreen (KModalScreen -- used by DLC toggle, mod warnings, etc.)
 			var infoDialogType = HarmonyLib.AccessTools.TypeByName("InfoDialogScreen");
-			Register(infoDialogType, screen => new Handlers.ConfirmDialogHandler(screen));
+			Register(infoDialogType, screen => new ConfirmDialogHandler(screen));
 
 			// LockerMenuScreen (KModalScreen -- Supply Closet hub from main menu)
 			// Show patch pushes/pops via ContextDetector since OnActivate calls Show(false)
-			Register<LockerMenuScreen>(screen => new Handlers.LockerMenuHandler(screen));
+			Register<LockerMenuScreen>(screen => new LockerMenuHandler(screen));
 			_showPatchedTypes.Add(typeof(LockerMenuScreen));
 
 			// KleiItemDropScreen (KModalScreen -- cosmetic item claim/reveal)
 			// Show patch pushes/pops via ContextDetector since OnActivate calls Show(false)
-			Register<KleiItemDropScreen>(screen => new Handlers.KleiItemDropHandler(screen));
+			Register<KleiItemDropScreen>(screen => new KleiItemDropHandler(screen));
 			_showPatchedTypes.Add(typeof(KleiItemDropScreen));
 
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");

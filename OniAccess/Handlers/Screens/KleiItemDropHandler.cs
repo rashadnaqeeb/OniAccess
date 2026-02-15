@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using HarmonyLib;
 using OniAccess.Util;
 
-namespace OniAccess.Input.Handlers {
+using OniAccess.Widgets;
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for KleiItemDropScreen: cosmetic item reveal triggered from Supply Closet.
 	///

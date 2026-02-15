@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 
-namespace OniAccess.Input {
+using OniAccess.Input;
+using OniAccess.Widgets;
+
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// 1D list navigation layer extending ScreenHandler.
 	/// Owns the widget list, cursor index, and all menu-specific behavior:
@@ -31,7 +34,7 @@ namespace OniAccess.Input {
 	/// - Tab/Shift+Tab for tabbed screens (virtual stubs)
 	/// - Widget readout: label and value only, no type announcement
 	/// </summary>
-	public abstract class BaseMenuHandler: ScreenHandler, ISearchable {
+	public abstract class BaseMenuHandler: BaseScreenHandler, ISearchable {
 		protected readonly List<WidgetInfo> _widgets = new List<WidgetInfo>();
 		protected int _currentIndex;
 		protected readonly TypeAheadSearch _search = new TypeAheadSearch();

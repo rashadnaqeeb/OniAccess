@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
 
-namespace OniAccess.Input.Handlers {
+using OniAccess.Widgets;
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for confirmation dialogs (ConfirmDialogScreen).
 	/// Per locked decision: confirmation dialogs are treated as a vertical list.

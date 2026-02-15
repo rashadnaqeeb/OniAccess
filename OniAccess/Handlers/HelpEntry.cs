@@ -1,4 +1,4 @@
-namespace OniAccess.Input {
+namespace OniAccess.Handlers {
 	/// <summary>
 	/// Simple data class for help list entries.
 	/// Each handler provides its own list of these via IAccessHandler.HelpEntries.

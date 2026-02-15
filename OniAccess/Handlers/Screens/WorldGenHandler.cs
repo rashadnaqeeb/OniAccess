@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
 
-namespace OniAccess.Input.Handlers {
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for WorldGenScreen -- world generation progress display.
 	///

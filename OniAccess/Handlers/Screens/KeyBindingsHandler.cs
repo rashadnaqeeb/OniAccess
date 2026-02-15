@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using HarmonyLib;
 using OniAccess.Util;
 
-namespace OniAccess.Input.Handlers {
+using OniAccess.Widgets;
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for InputBindingsScreen -- keyboard rebinding UI.
 	/// Paginated categories (Global, Tool, Management, etc.) with Prev/Next navigation.

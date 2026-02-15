@@ -1,3 +1,4 @@
+using OniAccess.Handlers;
 using OniAccess.Toggle;
 
 namespace OniAccess.Input {
@@ -47,7 +48,7 @@ namespace OniAccess.Input {
 			// Guard: some screens (e.g., MetricsOptionsScreen) call Show(false) on Escape
 			// instead of Deactivate(). This hides the gameObject but never triggers our
 			// KScreen.Deactivate patch, leaving a stale handler on the stack. Detect and pop.
-			while (HandlerStack.ActiveHandler is ScreenHandler sh
+			while (HandlerStack.ActiveHandler is BaseScreenHandler sh
 				   && (sh.Screen == null || !sh.Screen.gameObject.activeInHierarchy)) {
 				Util.Log.Debug($"KeyPoller: popping stale handler for inactive screen ({sh.DisplayName})");
 				HandlerStack.Pop();
