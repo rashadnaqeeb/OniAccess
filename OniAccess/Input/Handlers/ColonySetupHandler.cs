@@ -330,8 +330,11 @@ namespace OniAccess.Input.Handlers {
 				// Panel not yet initialized (OnSpawn hasn't finished).
 				// Retry next frame when traits/data are populated.
 				// Use queued speech so the screen title finishes first.
+				// Return early — don't add action buttons yet, or OnActivate
+				// will queue the shuffle button before the cluster selector.
 				_pendingClusterRefresh = true;
 				_queuedClusterRefresh = true;
+				return;
 			}
 
 			// Action buttons (no back button)
