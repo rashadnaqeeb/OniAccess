@@ -18,7 +18,7 @@ namespace OniAccess.Input.Handlers {
 	/// Reset button resets all bindings to defaults.
 	/// Conflict dialogs are handled by ConfirmDialogHandler (auto-activates on stack).
 	/// </summary>
-	public class KeyBindingsHandler : BaseMenuHandler {
+	public class KeyBindingsHandler: BaseMenuHandler {
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.KEY_BINDINGS;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }

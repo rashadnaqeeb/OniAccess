@@ -111,6 +111,8 @@ namespace STRINGS {
 			public static LocString UNKNOWN = "Unknown";
 			public static LocString EMBARK = "Embark";
 			public static LocString BACK = "Back";
+			public static LocString TOGGLE_ALL = "Toggle all";
+			public static LocString WORKSHOP = "Workshop";
 		}
 
 		public class WORLD_GEN {

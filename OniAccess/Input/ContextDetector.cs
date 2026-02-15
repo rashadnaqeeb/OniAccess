@@ -116,9 +116,8 @@ namespace OniAccess.Input {
 		}
 
 		/// <summary>
-		/// Register all menu screen handlers for Phase 3 basic screens.
+		/// Register all menu screen handlers.
 		/// Called during mod initialization (Mod.OnLoad).
-		/// Future plans (03-03, 03-04) will add more registrations.
 		/// </summary>
 		public static void RegisterMenuHandlers() {
 			// MainMenu (direct KScreen subclass, NOT KButtonMenu)

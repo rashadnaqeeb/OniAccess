@@ -27,7 +27,7 @@ namespace OniAccess.Input.Handlers {
 	/// - Attributes: one per arrow press ("Athletics 3")
 	/// - After reroll: speak new name and interests automatically
 	/// </summary>
-	public class MinionSelectHandler : BaseMenuHandler {
+	public class MinionSelectHandler: BaseMenuHandler {
 		private int _currentSlot;
 		private UnityEngine.Component[] _containers;
 		private System.Action _pendingAnnounce;

@@ -13,7 +13,7 @@ namespace OniAccess.Input.Handlers {
 	/// prefab init, so the normal KScreen.Activate/Deactivate hooks don't work. A Harmony
 	/// patch on LockerMenuScreen.Show pushes/pops this handler instead.
 	/// </summary>
-	public class LockerMenuHandler : BaseMenuHandler {
+	public class LockerMenuHandler: BaseMenuHandler {
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.SUPPLY_CLOSET;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
@@ -67,7 +67,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Close button
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", null, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", STRINGS.ONIACCESS.BUTTONS.CLOSE, _widgets);
 
 			Log.Debug($"LockerMenuHandler.DiscoverWidgets: {_widgets.Count} widgets");
 			return true;

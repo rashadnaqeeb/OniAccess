@@ -94,16 +94,16 @@ namespace OniAccess.Input.Handlers {
 			switch (langType) {
 				case Localization.SelectedLanguageType.None:
 				case Localization.SelectedLanguageType.Preinstalled: {
-					var code = Localization.GetCurrentLanguageCode();
-					return !string.IsNullOrEmpty(code) ? code + "_button" : null;
-				}
+						var code = Localization.GetCurrentLanguageCode();
+						return !string.IsNullOrEmpty(code) ? code + "_button" : null;
+					}
 				case Localization.SelectedLanguageType.UGC: {
-					var modId = LanguageOptionsScreen.GetSavedLanguageMod();
-					if (modId == null) return null;
-					var mod = Global.Instance.modManager.mods
-						.FirstOrDefault(m => m.label.id == modId);
-					return mod != null ? mod.title + "_button" : null;
-				}
+						var modId = LanguageOptionsScreen.GetSavedLanguageMod();
+						if (modId == null) return null;
+						var mod = Global.Instance.modManager.mods
+							.FirstOrDefault(m => m.label.id == modId);
+						return mod != null ? mod.title + "_button" : null;
+					}
 				default:
 					return null;
 			}

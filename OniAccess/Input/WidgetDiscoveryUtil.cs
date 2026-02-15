@@ -8,9 +8,8 @@ namespace OniAccess.Input {
 	public static class WidgetDiscoveryUtil {
 		/// <summary>
 		/// Try to add a KButton from a named field on the screen as a widget.
-		/// Reads the button's LocText for a label, falling back to fallbackLabel
-		/// (or fieldName if fallbackLabel is null). Silently skips if the field
-		/// doesn't exist or the button is inactive.
+		/// Reads the button's LocText for a label, falling back to fallbackLabel.
+		/// Silently skips if the field doesn't exist or the button is inactive.
 		/// </summary>
 		public static void TryAddButtonField(KScreen screen, string fieldName, string fallbackLabel, List<WidgetInfo> widgets) {
 			try {
@@ -18,7 +17,7 @@ namespace OniAccess.Input {
 					.GetValue<KButton>();
 				if (button == null || !button.gameObject.activeInHierarchy) return;
 
-				string label = fallbackLabel ?? fieldName;
+				string label = fallbackLabel;
 				var locText = button.GetComponentInChildren<LocText>();
 				if (locText != null && !string.IsNullOrEmpty(locText.text))
 					label = locText.text;

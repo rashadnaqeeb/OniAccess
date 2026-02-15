@@ -11,9 +11,6 @@ namespace OniAccess.Input {
 	/// Builds a filtered results list (word-start matching) that can be navigated with Up/Down.
 	/// Use HandleKey() with an ISearchable for centralized search behavior,
 	/// or the lower-level API (AddChar/Search/NavigateResults) for custom handling.
-	///
-	/// Ported from repo-root TypeAheadSearch.cs into OniAccess namespace.
-	/// Uses SpeechPipeline.SpeakInterrupt instead of external Speech class.
 	/// </summary>
 	public class TypeAheadSearch {
 		private StringBuilder _buffer = new StringBuilder(32);

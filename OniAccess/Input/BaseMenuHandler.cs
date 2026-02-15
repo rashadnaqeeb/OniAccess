@@ -66,16 +66,14 @@ namespace OniAccess.Input {
 		/// <summary>
 		/// Help entries for menu-specific features (search).
 		/// </summary>
-		protected static readonly List<HelpEntry> MenuHelpEntries = new List<HelpEntry>
-		{
+		protected static readonly List<HelpEntry> MenuHelpEntries = new List<HelpEntry> {
 			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
 		};
 
 		/// <summary>
 		/// Help entries for 1D list navigation.
 		/// </summary>
-		protected static readonly List<HelpEntry> ListNavHelpEntries = new List<HelpEntry>
-		{
+		protected static readonly List<HelpEntry> ListNavHelpEntries = new List<HelpEntry> {
 			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
 			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
 			new HelpEntry("Enter", STRINGS.ONIACCESS.HELP.SELECT_ITEM),

@@ -263,10 +263,10 @@ namespace OniAccess.Input.Handlers {
 				// TMPro's internal buffer, not the .text property.
 				string name = "";
 				switch (configName) {
-					case "vanillaStyle":  name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.VANILLA_TITLE; break;
-					case "classicStyle":  name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.CLASSIC_TITLE; break;
+					case "vanillaStyle": name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.VANILLA_TITLE; break;
+					case "classicStyle": name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.CLASSIC_TITLE; break;
 					case "spacedOutStyle": name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.SPACEDOUT_TITLE; break;
-					case "eventStyle":    name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.EVENT_TITLE; break;
+					case "eventStyle": name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.EVENT_TITLE; break;
 				}
 				string label = !string.IsNullOrEmpty(hoverDesc)
 					? $"{name}, {Speech.TextFilter.FilterForSpeech(hoverDesc)}"

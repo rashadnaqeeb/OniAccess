@@ -41,7 +41,7 @@ namespace OniAccess.Input.Handlers {
 					if (hierRef.HasReference("Title"))
 						titleText = hierRef.GetReference<LocText>("Title");
 
-					string label = titleText != null ? titleText.text : child.gameObject.name;
+					string label = titleText != null ? titleText.text : null;
 					if (string.IsNullOrEmpty(label)) continue;
 
 					// EnabledToggle MultiToggle for the enabled/disabled state
@@ -76,9 +76,9 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Append action buttons
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "toggleAllButton", null, _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "workshopButton", null, _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", null, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "toggleAllButton", STRINGS.ONIACCESS.BUTTONS.TOGGLE_ALL, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "workshopButton", STRINGS.ONIACCESS.BUTTONS.WORKSHOP, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", STRINGS.ONIACCESS.BUTTONS.CLOSE, _widgets);
 
 			Log.Debug($"ModsHandler.DiscoverWidgets: {_widgets.Count} widgets");
 			return true;
