@@ -62,7 +62,7 @@ namespace OniAccess.Handlers.Screens {
 					}
 				}
 			} catch (System.Exception ex) {
-				Log.Debug($"KleiItemDropHandler: acceptButton discovery failed: {ex.Message}");
+				Log.Error($"KleiItemDropHandler: acceptButton discovery failed: {ex.Message}");
 			}
 
 			// acknowledgeButton — visible when active and parent itemTextContainer has alpha > 0.5
@@ -86,7 +86,7 @@ namespace OniAccess.Handlers.Screens {
 					}
 				}
 			} catch (System.Exception ex) {
-				Log.Debug($"KleiItemDropHandler: acknowledgeButton discovery failed: {ex.Message}");
+				Log.Error($"KleiItemDropHandler: acknowledgeButton discovery failed: {ex.Message}");
 			}
 
 			// closeButton — uses plain SetActive, no alpha fade
@@ -138,7 +138,7 @@ namespace OniAccess.Handlers.Screens {
 					}
 				}
 			} catch (System.Exception ex) {
-				Log.Debug($"KleiItemDropHandler: item info detection failed: {ex.Message}");
+				Log.Error($"KleiItemDropHandler: item info detection failed: {ex.Message}");
 			}
 
 			// Detect error: errorMessage activated
@@ -158,7 +158,7 @@ namespace OniAccess.Handlers.Screens {
 					}
 				}
 			} catch (System.Exception ex) {
-				Log.Debug($"KleiItemDropHandler: error detection failed: {ex.Message}");
+				Log.Error($"KleiItemDropHandler: error detection failed: {ex.Message}");
 			}
 
 			// Detect new button availability: accept button text changes or widgets appear from zero
@@ -176,7 +176,7 @@ namespace OniAccess.Handlers.Screens {
 					_lastAcceptButtonText = currentText;
 				}
 			} catch (System.Exception ex) {
-				Log.Debug($"KleiItemDropHandler: accept button detection failed: {ex.Message}");
+				Log.Error($"KleiItemDropHandler: accept button detection failed: {ex.Message}");
 			}
 
 			base.Tick();

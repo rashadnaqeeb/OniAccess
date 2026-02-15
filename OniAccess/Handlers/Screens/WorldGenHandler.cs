@@ -99,7 +99,7 @@ namespace OniAccess.Handlers.Screens {
 					return percent;
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"WorldGenHandler: failed to read currentPercent: {ex.Message}");
+				Util.Log.Error($"WorldGenHandler: failed to read currentPercent: {ex.Message}");
 			}
 
 			// Fallback: try to read the percentText LocText
@@ -116,7 +116,7 @@ namespace OniAccess.Handlers.Screens {
 					}
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"WorldGenHandler: failed to read percentText: {ex.Message}");
+				Util.Log.Error($"WorldGenHandler: failed to read percentText: {ex.Message}");
 			}
 
 			return -1f;

@@ -29,7 +29,7 @@ namespace OniAccess.Widgets {
 					GameObject = button.gameObject
 				});
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"WidgetDiscoveryUtil.TryAddButtonField({fieldName}): {ex.Message}");
+				Util.Log.Error($"WidgetDiscoveryUtil.TryAddButtonField({fieldName}): {ex.Message}");
 			}
 		}
 	}

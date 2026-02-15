@@ -362,7 +362,7 @@ namespace OniAccess.Handlers.Screens {
 						GameObject = coordinate.gameObject
 					});
 				}
-			} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.DiscoverWidgets(coordinate): {ex.Message}"); }
+			} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.DiscoverWidgets(coordinate): {ex.Message}"); }
 
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "customizeButton", null, _widgets);
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "launchButton", null, _widgets);
@@ -762,7 +762,7 @@ namespace OniAccess.Handlers.Screens {
 						var level = CustomGameSettings.Instance.GetCurrentStoryTraitSetting(storyId);
 						if (level != null && level.id == "Guaranteed")
 							state = STRINGS.ONIACCESS.STATES.GUARANTEED;
-					} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.DiscoverStoryWidgets(state): {ex.Message}"); }
+					} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.DiscoverStoryWidgets(state): {ex.Message}"); }
 
 					// Build label with description
 					string label = $"{name}, {state}";
@@ -774,7 +774,7 @@ namespace OniAccess.Handlers.Screens {
 							if (!string.IsNullOrEmpty(desc))
 								label = $"{name}, {state}, {Speech.TextFilter.FilterForSpeech(desc)}";
 						}
-					} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.DiscoverStoryWidgets(desc): {ex.Message}"); }
+					} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.DiscoverStoryWidgets(desc): {ex.Message}"); }
 
 					_widgets.Add(new WidgetInfo {
 						Label = label,
@@ -785,7 +785,7 @@ namespace OniAccess.Handlers.Screens {
 					});
 					storyIdx++;
 				} catch (System.Exception ex) {
-					Util.Log.Debug($"ColonySetupHandler.DiscoverStoryWidgets: {ex.Message}");
+					Util.Log.Error($"ColonySetupHandler.DiscoverStoryWidgets: {ex.Message}");
 					storyIdx++;
 				}
 			}
@@ -824,7 +824,7 @@ namespace OniAccess.Handlers.Screens {
 						try {
 							titleLocText.ForceMeshUpdate();
 							sectionName = titleLocText.GetParsedText() ?? "";
-						} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.DiscoverMixingWidgets(title): {ex.Message}"); }
+						} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.DiscoverMixingWidgets(title): {ex.Message}"); }
 						// Fallback to .text, but reject prefab placeholders (start with _)
 						if (string.IsNullOrEmpty(sectionName)) {
 							string raw = titleLocText.text ?? "";
@@ -987,7 +987,7 @@ namespace OniAccess.Handlers.Screens {
 					var level = CustomGameSettings.Instance.GetCurrentStoryTraitSetting(storyId);
 					if (level != null && level.id == "Guaranteed")
 						state = STRINGS.ONIACCESS.STATES.GUARANTEED;
-				} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.GetWidgetSpeechText(storyState): {ex.Message}"); }
+				} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.GetWidgetSpeechText(storyState): {ex.Message}"); }
 
 				// Re-read the name from the database (LocText.text may be empty)
 				string name = "";
@@ -995,7 +995,7 @@ namespace OniAccess.Handlers.Screens {
 					var story = Db.Get().Stories.Get(storyId);
 					if (story?.StoryTrait != null)
 						name = Strings.Get(story.StoryTrait.name);
-				} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.GetWidgetSpeechText(storyName): {ex.Message}"); }
+				} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.GetWidgetSpeechText(storyName): {ex.Message}"); }
 				if (string.IsNullOrEmpty(name)) name = widget.Label;
 
 				// Include trait description
@@ -1010,7 +1010,7 @@ namespace OniAccess.Handlers.Screens {
 						if (!string.IsNullOrEmpty(desc))
 							label = $"{name}, {state}, {Speech.TextFilter.FilterForSpeech(desc)}";
 					}
-				} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.GetWidgetSpeechText(storyDesc): {ex.Message}"); }
+				} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.GetWidgetSpeechText(storyDesc): {ex.Message}"); }
 				return label;
 			}
 

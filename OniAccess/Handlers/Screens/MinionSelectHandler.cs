@@ -157,7 +157,7 @@ namespace OniAccess.Handlers.Screens {
 						}
 					}
 				} catch (System.Exception ex) {
-					Util.Log.Debug($"MinionSelectHandler.DiscoverTopLevelWidgets(BaseNaming): {ex.Message}");
+					Util.Log.Error($"MinionSelectHandler.DiscoverTopLevelWidgets(BaseNaming): {ex.Message}");
 				}
 			}
 
@@ -188,7 +188,7 @@ namespace OniAccess.Handlers.Screens {
 					});
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.DiscoverTopLevelWidgets(proceedButton): {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.DiscoverTopLevelWidgets(proceedButton): {ex.Message}");
 			}
 
 			// Back button (MinionSelectScreen only)
@@ -207,7 +207,7 @@ namespace OniAccess.Handlers.Screens {
 						});
 					}
 				} catch (System.Exception ex) {
-					Util.Log.Debug($"MinionSelectHandler.DiscoverTopLevelWidgets(backButton): {ex.Message}");
+					Util.Log.Error($"MinionSelectHandler.DiscoverTopLevelWidgets(backButton): {ex.Message}");
 				}
 			}
 
@@ -335,7 +335,7 @@ namespace OniAccess.Handlers.Screens {
 					});
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.DiscoverNameWidget: {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.DiscoverNameWidget: {ex.Message}");
 			}
 		}
 
@@ -372,7 +372,7 @@ namespace OniAccess.Handlers.Screens {
 					}
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.DiscoverInterestsWidget: {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.DiscoverInterestsWidget: {ex.Message}");
 			}
 		}
 
@@ -407,7 +407,7 @@ namespace OniAccess.Handlers.Screens {
 					});
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.DiscoverTraitWidgets: {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.DiscoverTraitWidgets: {ex.Message}");
 			}
 		}
 
@@ -429,7 +429,7 @@ namespace OniAccess.Handlers.Screens {
 								label = $"{label}, {ttText}";
 							}
 						} catch (System.Exception ex) {
-							Util.Log.Debug($"MinionSelectHandler.DiscoverExpectationWidgets(tooltip): {ex.Message}");
+							Util.Log.Error($"MinionSelectHandler.DiscoverExpectationWidgets(tooltip): {ex.Message}");
 						}
 					}
 
@@ -441,7 +441,7 @@ namespace OniAccess.Handlers.Screens {
 					});
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.DiscoverExpectationWidgets: {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.DiscoverExpectationWidgets: {ex.Message}");
 			}
 		}
 
@@ -458,7 +458,7 @@ namespace OniAccess.Handlers.Screens {
 					});
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.DiscoverDescriptionWidget: {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.DiscoverDescriptionWidget: {ex.Message}");
 			}
 		}
 
@@ -484,7 +484,7 @@ namespace OniAccess.Handlers.Screens {
 								label = $"{label}, {flat}";
 							}
 						} catch (System.Exception ex) {
-							Util.Log.Debug($"MinionSelectHandler.DiscoverAttributeWidgets(tooltip): {ex.Message}");
+							Util.Log.Error($"MinionSelectHandler.DiscoverAttributeWidgets(tooltip): {ex.Message}");
 						}
 					}
 
@@ -496,7 +496,7 @@ namespace OniAccess.Handlers.Screens {
 					});
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.DiscoverAttributeWidgets: {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.DiscoverAttributeWidgets: {ex.Message}");
 			}
 		}
 
@@ -514,7 +514,7 @@ namespace OniAccess.Handlers.Screens {
 					});
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.DiscoverFilterDropdown: {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.DiscoverFilterDropdown: {ex.Message}");
 			}
 		}
 
@@ -531,7 +531,7 @@ namespace OniAccess.Handlers.Screens {
 					? $"{STRINGS.ONIACCESS.INFO.INTEREST_FILTER}, {skillGroup.Name}"
 					: $"{STRINGS.ONIACCESS.INFO.INTEREST_FILTER}, {aptId}";
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.GetInterestFilterLabel: {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.GetInterestFilterLabel: {ex.Message}");
 				return (string)STRINGS.ONIACCESS.INFO.INTEREST_FILTER;
 			}
 		}
@@ -577,7 +577,7 @@ namespace OniAccess.Handlers.Screens {
 				// Reshuffle triggers a coroutine — delay one frame then announce
 				_pendingAnnounce = AnnounceAfterFilterChange;
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.CycleDropdown: {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.CycleDropdown: {ex.Message}");
 			}
 		}
 
@@ -596,7 +596,7 @@ namespace OniAccess.Handlers.Screens {
 					});
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"MinionSelectHandler.DiscoverRerollButton: {ex.Message}");
+				Util.Log.Error($"MinionSelectHandler.DiscoverRerollButton: {ex.Message}");
 			}
 		}
 
@@ -708,7 +708,7 @@ namespace OniAccess.Handlers.Screens {
 						}
 					}
 				} catch (System.Exception ex) {
-					Util.Log.Debug($"MinionSelectHandler.ActivateCurrentWidget(colony_shuffle): {ex.Message}");
+					Util.Log.Error($"MinionSelectHandler.ActivateCurrentWidget(colony_shuffle): {ex.Message}");
 				}
 				return;
 			}
@@ -725,7 +725,7 @@ namespace OniAccess.Handlers.Screens {
 							.Field("inputField").GetValue<KInputTextField>();
 					});
 				} catch (System.Exception ex) {
-					Util.Log.Debug($"MinionSelectHandler.ActivateCurrentWidget(dupe_rename): {ex.Message}");
+					Util.Log.Error($"MinionSelectHandler.ActivateCurrentWidget(dupe_rename): {ex.Message}");
 				}
 				return;
 			}
@@ -744,7 +744,7 @@ namespace OniAccess.Handlers.Screens {
 						Speech.SpeechPipeline.SpeakInterrupt(locText.text);
 					}
 				} catch (System.Exception ex) {
-					Util.Log.Debug($"MinionSelectHandler.ActivateCurrentWidget(dupe_shuffle_name): {ex.Message}");
+					Util.Log.Error($"MinionSelectHandler.ActivateCurrentWidget(dupe_shuffle_name): {ex.Message}");
 				}
 				return;
 			}

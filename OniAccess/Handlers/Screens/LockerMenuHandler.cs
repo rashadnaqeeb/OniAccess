@@ -156,7 +156,7 @@ namespace OniAccess.Handlers.Screens {
 						(string)STRINGS.ONIACCESS.SUPPLY_CLOSET.OFFLINE);
 				}
 			} catch (System.Exception ex) {
-				Log.Debug($"LockerMenuHandler: failed to check connection icon: {ex.Message}");
+				Log.Error($"LockerMenuHandler: failed to check connection icon: {ex.Message}");
 			}
 		}
 

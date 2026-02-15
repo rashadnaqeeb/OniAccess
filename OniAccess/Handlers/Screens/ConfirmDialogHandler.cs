@@ -129,7 +129,7 @@ namespace OniAccess.Handlers.Screens {
 				});
 				return true;
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"ConfirmDialogHandler.TryAddButtonField: {ex.Message}");
+				Util.Log.Error($"ConfirmDialogHandler.TryAddButtonField: {ex.Message}");
 				return false;
 			}
 		}
@@ -149,7 +149,7 @@ namespace OniAccess.Handlers.Screens {
 					return;
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"ConfirmDialogHandler.TryExtractTitle(titleText): {ex.Message}");
+				Util.Log.Error($"ConfirmDialogHandler.TryExtractTitle(titleText): {ex.Message}");
 			}
 			try {
 				var header = Traverse.Create(screen).Field("header")
@@ -158,7 +158,7 @@ namespace OniAccess.Handlers.Screens {
 					_dialogTitle = header.text;
 				}
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"ConfirmDialogHandler.TryExtractTitle(header): {ex.Message}");
+				Util.Log.Error($"ConfirmDialogHandler.TryExtractTitle(header): {ex.Message}");
 			}
 		}
 	}

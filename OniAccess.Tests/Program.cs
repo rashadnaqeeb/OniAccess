@@ -399,10 +399,10 @@ namespace OniAccess.Tests {
 				threw = true;
 			}
 
-			// Push adds to stack before calling OnActivate, so thrower is on the stack
-			// even though OnActivate threw. Verify the stack isn't in a broken state:
-			// the thrower was added (count=2) and the exception propagated.
-			bool ok = threw && HandlerStack.Count == 2;
+			// Push calls OnActivate before adding to stack. If OnActivate throws,
+			// Push catches the exception, logs it, and does NOT add the handler.
+			// The exception does not propagate. Stack stays clean with only "Good".
+			bool ok = !threw && HandlerStack.Count == 1 && HandlerStack.ActiveHandler == good;
 			return Assert("ExceptionInOnActivateDoesNotCorruptStack", ok,
 				$"threw={threw}, count={HandlerStack.Count}");
 		}

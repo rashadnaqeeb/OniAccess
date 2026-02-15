@@ -50,8 +50,14 @@ namespace OniAccess.Handlers {
 				return;
 			}
 
+			try {
+				handler.OnActivate();
+			} catch (System.Exception ex) {
+				Util.Log.Error($"HandlerStack.Push: {handler.DisplayName} failed: {ex}");
+				Speech.SpeechPipeline.SpeakInterrupt($"Error: {handler.DisplayName} handler failed");
+				return;
+			}
 			_stack.Add(handler);
-			handler.OnActivate();
 			Util.Log.Debug($"HandlerStack.Push: {handler.DisplayName} (depth={_stack.Count})");
 		}
 
@@ -73,7 +79,13 @@ namespace OniAccess.Handlers {
 			// If a handler is now exposed underneath, reactivate it
 			var newActive = ActiveHandler;
 			if (newActive != null) {
-				newActive.OnActivate();
+				try {
+					newActive.OnActivate();
+				} catch (System.Exception ex) {
+					Util.Log.Error($"HandlerStack.Pop: reactivation of {newActive.DisplayName} failed: {ex}");
+					Speech.SpeechPipeline.SpeakInterrupt($"Error: {newActive.DisplayName} handler failed");
+					return;
+				}
 				Util.Log.Debug($"HandlerStack.Pop: reactivated {newActive.DisplayName}");
 			}
 		}
@@ -98,8 +110,14 @@ namespace OniAccess.Handlers {
 				Util.Log.Debug($"HandlerStack.Replace: removed {removed.DisplayName}");
 			}
 
+			try {
+				handler.OnActivate();
+			} catch (System.Exception ex) {
+				Util.Log.Error($"HandlerStack.Replace: {handler.DisplayName} failed: {ex}");
+				Speech.SpeechPipeline.SpeakInterrupt($"Error: {handler.DisplayName} handler failed");
+				return;
+			}
 			_stack.Add(handler);
-			handler.OnActivate();
 			Util.Log.Debug($"HandlerStack.Replace: activated {handler.DisplayName} (depth={_stack.Count})");
 		}
 

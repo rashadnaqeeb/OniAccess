@@ -563,7 +563,7 @@ namespace OniAccess.Handlers.Screens {
 			try {
 				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click_Close"));
 			} catch (System.Exception ex) {
-				Util.Log.Debug($"PlayWrapSound failed: {ex.Message}");
+				Util.Log.Error($"PlayWrapSound failed: {ex.Message}");
 			}
 		}
 
