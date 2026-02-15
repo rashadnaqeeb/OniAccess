@@ -46,15 +46,7 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		private int _clusterIndex;
 
-		/// <summary>
-		/// Cached pre-edit value for text input Escape rollback.
-		/// </summary>
-		private string _cachedTextValue;
-
-		/// <summary>
-		/// Whether we are currently editing a text input field (seed input).
-		/// </summary>
-		private bool _isEditingText;
+		private readonly TextEditHelper _textEdit = new TextEditHelper();
 
 		/// <summary>
 		/// Whether we are in the info submenu for a cluster.
@@ -1205,16 +1197,10 @@ namespace OniAccess.Input.Handlers {
 
 			// Text input: enter edit mode
 			if (widget.Type == WidgetType.TextInput && widget.Component is KInputTextField textField) {
-				if (!_isEditingText) {
-					_cachedTextValue = textField.text;
-					_isEditingText = true;
-					textField.ActivateInputField();
-					Speech.SpeechPipeline.SpeakInterrupt($"Editing, {textField.text}");
+				if (!_textEdit.IsEditing) {
+					_textEdit.Begin(textField);
 				} else {
-					// Enter confirms
-					_isEditingText = false;
-					textField.DeactivateInputField();
-					Speech.SpeechPipeline.SpeakInterrupt($"Confirmed, {textField.text}");
+					_textEdit.Confirm();
 				}
 				return;
 			}
@@ -1321,10 +1307,10 @@ namespace OniAccess.Input.Handlers {
 		/// Otherwise, handle Left/Right cluster cycling before base navigation.
 		/// </summary>
 		public override void Tick() {
-			if (_isEditingText) {
+			if (_textEdit.IsEditing) {
 				// Return/Enter confirms text edit
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
-					ConfirmTextEdit();
+					_textEdit.Confirm();
 				}
 				// Block all other key handling during text edit
 				return;
@@ -1379,11 +1365,11 @@ namespace OniAccess.Input.Handlers {
 		/// and restore the cached value.
 		/// </summary>
 		public override bool HandleKeyDown(KButtonEvent e) {
-			if (_isEditingText) {
+			if (_textEdit.IsEditing) {
 				// Escape cancels text edit — check before base so it doesn't
 				// get consumed as a search-clear
 				if (e.TryConsume(Action.Escape)) {
-					CancelTextEdit();
+					_textEdit.Cancel();
 					return true;
 				}
 				// Let all other keys pass through to the input field
@@ -1419,25 +1405,5 @@ namespace OniAccess.Input.Handlers {
 			return false;
 		}
 
-		private void CancelTextEdit() {
-			_isEditingText = false;
-			if (_currentIndex >= 0 && _currentIndex < _widgets.Count
-				&& _widgets[_currentIndex].Component is KInputTextField textField) {
-				textField.text = _cachedTextValue;
-				textField.DeactivateInputField();
-			}
-			Speech.SpeechPipeline.SpeakInterrupt($"Cancelled, {_cachedTextValue}");
-		}
-
-		private void ConfirmTextEdit() {
-			_isEditingText = false;
-			if (_currentIndex >= 0 && _currentIndex < _widgets.Count
-				&& _widgets[_currentIndex].Component is KInputTextField textField) {
-				textField.DeactivateInputField();
-				Speech.SpeechPipeline.SpeakInterrupt($"Confirmed, {textField.text}");
-			} else {
-				Speech.SpeechPipeline.SpeakInterrupt($"Cancelled, {_cachedTextValue}");
-			}
-		}
 	}
 }

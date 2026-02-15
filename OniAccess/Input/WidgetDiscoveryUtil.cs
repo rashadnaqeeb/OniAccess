@@ -29,8 +29,8 @@ namespace OniAccess.Input {
 					Type = WidgetType.Button,
 					GameObject = button.gameObject
 				});
-			} catch (System.Exception) {
-				// Field may not exist -- skip silently
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"WidgetDiscoveryUtil.TryAddButtonField({fieldName}): {ex.Message}");
 			}
 		}
 	}

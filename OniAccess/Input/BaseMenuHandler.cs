@@ -37,12 +37,20 @@ namespace OniAccess.Input {
 		protected readonly TypeAheadSearch _search = new TypeAheadSearch();
 
 		/// <summary>
-		/// When true, Tick() will retry DiscoverWidgets once.
+		/// When true, Tick() will retry DiscoverWidgets.
 		/// Set when OnActivate finds zero widgets — this happens when our Harmony
 		/// postfix fires inside base.OnSpawn() before the screen subclass finishes
 		/// setting up its UI in its own OnSpawn override.
+		/// Retries up to MaxDiscoveryRetries times (default 1).
 		/// </summary>
 		protected bool _pendingRediscovery;
+		private int _retryCount;
+
+		/// <summary>
+		/// Maximum number of frames to retry DiscoverWidgets when it returns false.
+		/// Override in subclasses that need more time (e.g., coroutine-driven screens).
+		/// </summary>
+		protected virtual int MaxDiscoveryRetries => 1;
 
 		protected BaseMenuHandler(KScreen screen) : base(screen) { }
 
@@ -110,6 +118,7 @@ namespace OniAccess.Input {
 		/// </summary>
 		public override void OnActivate() {
 			base.OnActivate();
+			_retryCount = 0;
 			bool ready = DiscoverWidgets(_screen);
 			_currentIndex = 0;
 			_search.Clear();
@@ -149,17 +158,24 @@ namespace OniAccess.Input {
 		public override void Tick() {
 			// Deferred rediscovery: screen UI wasn't ready during OnActivate
 			// (Harmony postfix fired inside base.OnSpawn before subclass setup).
-			// Retry once now that the frame has advanced.
+			// Retries up to MaxDiscoveryRetries frames.
 			if (_pendingRediscovery) {
 				_pendingRediscovery = false;
 				bool ready = DiscoverWidgets(_screen);
 				_currentIndex = 0;
 				if (ready && _widgets.Count > 0) {
+					_retryCount = 0;
 					var w = _widgets[0];
 					string text = GetWidgetSpeechText(w);
 					string tip = GetTooltipText(w);
 					if (tip != null) text = $"{text}, {tip}";
 					Speech.SpeechPipeline.SpeakQueued(text);
+				} else if (_retryCount < MaxDiscoveryRetries) {
+					_retryCount++;
+					_pendingRediscovery = true;
+				} else {
+					_retryCount = 0;
+					Util.Log.Warn($"{GetType().Name}: gave up retrying DiscoverWidgets after {MaxDiscoveryRetries} attempts");
 				}
 			}
 

@@ -30,21 +30,26 @@ namespace OniAccess.Input.Handlers {
 	public class MinionSelectHandler : BaseMenuHandler {
 		private int _currentSlot;
 		private UnityEngine.Component[] _containers;
-		private bool _pendingRerollAnnounce;
-		private bool _pendingFilterAnnounce;
+		private System.Action _pendingAnnounce;
 		private bool _pendingColonyNameAnnounce;
 		private bool _inDupeMode;
-		private bool _isEditingText;
-		private string _cachedTextValue;
-		private int _retryCount;
-		private const int MaxRetries = 10;
+		private readonly TextEditHelper _textEdit = new TextEditHelper();
+
+		private static readonly System.Type MinionSelectScreenType =
+			HarmonyLib.AccessTools.TypeByName("MinionSelectScreen");
 
 		/// <summary>
 		/// Whether the screen is MinionSelectScreen (has colony naming).
 		/// Printing Pod (ImmigrantScreen) does not have BaseNaming.
 		/// </summary>
 		private bool IsMinionSelectScreen =>
-			_screen != null && _screen.GetType().Name == "MinionSelectScreen";
+			_screen != null && _screen.GetType() == MinionSelectScreenType;
+
+		/// <summary>
+		/// CharacterContainer uses coroutines (DelayedGeneration, SetAttributes)
+		/// that take multiple frames to complete.
+		/// </summary>
+		protected override int MaxDiscoveryRetries => 10;
 
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.MINION_SELECT;
 
@@ -53,16 +58,13 @@ namespace OniAccess.Input.Handlers {
 		public MinionSelectHandler(KScreen screen) : base(screen) {
 			_currentSlot = 0;
 			_inDupeMode = false;
-			_isEditingText = false;
-			_retryCount = 0;
 			HelpEntries = BuildHelpEntries(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_DUPE_SLOT));
 		}
 
 		public override void OnActivate() {
-			_retryCount = 0;
 			_inDupeMode = false;
-			_isEditingText = false;
 			_pendingColonyNameAnnounce = false;
+			_pendingAnnounce = null;
 			base.OnActivate();
 		}
 
@@ -152,7 +154,9 @@ namespace OniAccess.Input.Handlers {
 							}
 						}
 					}
-				} catch (System.Exception) { }
+				} catch (System.Exception ex) {
+					Util.Log.Debug($"MinionSelectHandler.DiscoverTopLevelWidgets(BaseNaming): {ex.Message}");
+				}
 			}
 
 			// "Select duplicants" virtual button (enters dupe mode)
@@ -181,7 +185,9 @@ namespace OniAccess.Input.Handlers {
 						GameObject = proceedButton.gameObject
 					});
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.DiscoverTopLevelWidgets(proceedButton): {ex.Message}");
+			}
 
 			// Back button (MinionSelectScreen only)
 			if (IsMinionSelectScreen) {
@@ -198,7 +204,9 @@ namespace OniAccess.Input.Handlers {
 							GameObject = backButton.gameObject
 						});
 					}
-				} catch (System.Exception) { }
+				} catch (System.Exception ex) {
+					Util.Log.Debug($"MinionSelectHandler.DiscoverTopLevelWidgets(backButton): {ex.Message}");
+				}
 			}
 
 			if (_widgets.Count == 0) {
@@ -324,7 +332,9 @@ namespace OniAccess.Input.Handlers {
 						Tag = "dupe_shuffle_name"
 					});
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.DiscoverNameWidget: {ex.Message}");
+			}
 		}
 
 		/// <summary>
@@ -359,7 +369,9 @@ namespace OniAccess.Input.Handlers {
 						});
 					}
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.DiscoverInterestsWidget: {ex.Message}");
+			}
 		}
 
 		/// <summary>
@@ -392,7 +404,9 @@ namespace OniAccess.Input.Handlers {
 						GameObject = container.gameObject
 					});
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.DiscoverTraitWidgets: {ex.Message}");
+			}
 		}
 
 		private void DiscoverExpectationWidgets(CharacterContainer container, Traverse traverse) {
@@ -412,7 +426,9 @@ namespace OniAccess.Input.Handlers {
 							if (!string.IsNullOrEmpty(ttText)) {
 								label = $"{label}, {ttText}";
 							}
-						} catch (System.Exception) { }
+						} catch (System.Exception ex) {
+							Util.Log.Debug($"MinionSelectHandler.DiscoverExpectationWidgets(tooltip): {ex.Message}");
+						}
 					}
 
 					_widgets.Add(new WidgetInfo {
@@ -422,7 +438,9 @@ namespace OniAccess.Input.Handlers {
 						GameObject = lt.gameObject
 					});
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.DiscoverExpectationWidgets: {ex.Message}");
+			}
 		}
 
 		private void DiscoverDescriptionWidget(CharacterContainer container, Traverse traverse) {
@@ -437,7 +455,9 @@ namespace OniAccess.Input.Handlers {
 						GameObject = descLocText.gameObject
 					});
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.DiscoverDescriptionWidget: {ex.Message}");
+			}
 		}
 
 		private void DiscoverAttributeWidgets(CharacterContainer container, Traverse traverse) {
@@ -461,7 +481,9 @@ namespace OniAccess.Input.Handlers {
 								string flat = ttText.Replace("\n", ", ").Replace("\r", "");
 								label = $"{label}, {flat}";
 							}
-						} catch (System.Exception) { }
+						} catch (System.Exception ex) {
+							Util.Log.Debug($"MinionSelectHandler.DiscoverAttributeWidgets(tooltip): {ex.Message}");
+						}
 					}
 
 					_widgets.Add(new WidgetInfo {
@@ -471,7 +493,9 @@ namespace OniAccess.Input.Handlers {
 						GameObject = go
 					});
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.DiscoverAttributeWidgets: {ex.Message}");
+			}
 		}
 
 		private void DiscoverFilterDropdown(CharacterContainer container, Traverse traverse) {
@@ -487,7 +511,9 @@ namespace OniAccess.Input.Handlers {
 						Tag = "interest_filter"
 					});
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.DiscoverFilterDropdown: {ex.Message}");
+			}
 		}
 
 		private string GetInterestFilterLabel() {
@@ -546,8 +572,10 @@ namespace OniAccess.Input.Handlers {
 				}
 
 				// Reshuffle triggers a coroutine — delay one frame then announce
-				_pendingFilterAnnounce = true;
-			} catch (System.Exception) { }
+				_pendingAnnounce = AnnounceAfterFilterChange;
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.CycleDropdown: {ex.Message}");
+			}
 		}
 
 		private void DiscoverRerollButton(CharacterContainer container, Traverse traverse) {
@@ -564,7 +592,9 @@ namespace OniAccess.Input.Handlers {
 						Tag = "reroll"
 					});
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.DiscoverRerollButton: {ex.Message}");
+			}
 		}
 
 		// ========================================
@@ -637,7 +667,6 @@ namespace OniAccess.Input.Handlers {
 			if (widget.Tag is string tag && tag == "enter_dupe_mode") {
 				_inDupeMode = true;
 				_currentSlot = 0;
-				_retryCount = 0;
 				bool ready = DiscoverWidgets(_screen);
 				_currentIndex = 0;
 				if (ready && _widgets.Count > 0) {
@@ -652,15 +681,10 @@ namespace OniAccess.Input.Handlers {
 			// Colony name text editing
 			if (widget.Tag is string nameTag && nameTag == "colony_name"
 				&& widget.Component is KInputTextField textField) {
-				if (!_isEditingText) {
-					_cachedTextValue = textField.text;
-					_isEditingText = true;
-					textField.ActivateInputField();
-					Speech.SpeechPipeline.SpeakInterrupt($"Editing, {textField.text}");
+				if (!_textEdit.IsEditing) {
+					_textEdit.Begin(textField);
 				} else {
-					_isEditingText = false;
-					textField.DeactivateInputField();
-					Speech.SpeechPipeline.SpeakInterrupt($"Confirmed, {textField.text}");
+					_textEdit.Confirm();
 				}
 				return;
 			}
@@ -680,29 +704,26 @@ namespace OniAccess.Input.Handlers {
 								$"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {inputField.text}");
 						}
 					}
-				} catch (System.Exception) { }
+				} catch (System.Exception ex) {
+					Util.Log.Debug($"MinionSelectHandler.ActivateCurrentWidget(colony_shuffle): {ex.Message}");
+				}
 				return;
 			}
 
 			// Dupe rename button: enter text edit mode on EditableTitleBar.inputField
 			if (widget.Tag is string renameTag && renameTag == "dupe_rename") {
 				try {
-					var container = _containers[_currentSlot] as CharacterContainer;
-					var titleBar = Traverse.Create(container)
-						.Field("characterNameTitle").GetValue<object>();
-					var tbt = Traverse.Create(titleBar);
-					var inputField = tbt.Field("inputField").GetValue<KInputTextField>();
-					if (inputField != null) {
-						_cachedTextValue = inputField.text;
-						_isEditingText = true;
-						// Activate editing state via the EditableTitleBar
-						inputField.gameObject.SetActive(true);
-						inputField.text = _cachedTextValue;
-						inputField.Select();
-						inputField.ActivateInputField();
-						Speech.SpeechPipeline.SpeakInterrupt($"Editing, {_cachedTextValue}");
-					}
-				} catch (System.Exception) { }
+					int slot = _currentSlot;
+					_textEdit.Begin(() => {
+						var c = _containers[slot] as CharacterContainer;
+						var tb = Traverse.Create(c)
+							.Field("characterNameTitle").GetValue<object>();
+						return Traverse.Create(tb)
+							.Field("inputField").GetValue<KInputTextField>();
+					});
+				} catch (System.Exception ex) {
+					Util.Log.Debug($"MinionSelectHandler.ActivateCurrentWidget(dupe_rename): {ex.Message}");
+				}
 				return;
 			}
 
@@ -719,7 +740,9 @@ namespace OniAccess.Input.Handlers {
 					if (locText != null) {
 						Speech.SpeechPipeline.SpeakInterrupt(locText.text);
 					}
-				} catch (System.Exception) { }
+				} catch (System.Exception ex) {
+					Util.Log.Debug($"MinionSelectHandler.ActivateCurrentWidget(dupe_shuffle_name): {ex.Message}");
+				}
 				return;
 			}
 
@@ -728,7 +751,7 @@ namespace OniAccess.Input.Handlers {
 				var kbutton = widget.Component as KButton;
 				kbutton?.SignalClick(KKeyCode.Mouse0);
 				// Delay announcement by one frame for SetAttributes coroutine
-				_pendingRerollAnnounce = true;
+				_pendingAnnounce = AnnounceAfterReroll;
 				return;
 			}
 
@@ -739,7 +762,6 @@ namespace OniAccess.Input.Handlers {
 		/// After reroll, wait one frame then rediscover and announce.
 		/// </summary>
 		private void AnnounceAfterReroll() {
-			_pendingRerollAnnounce = false;
 			DiscoverWidgets(_screen);
 			_currentIndex = FindWidgetByTag("reroll");
 			AnnounceNameAndInterests();
@@ -786,7 +808,6 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		private void AnnounceAfterFilterChange() {
-			_pendingFilterAnnounce = false;
 			DiscoverWidgets(_screen);
 			// Find the filter widget by tag — index shifts when trait/interest count changes
 			_currentIndex = FindWidgetByTag("interest_filter");
@@ -804,9 +825,9 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		public override bool HandleKeyDown(KButtonEvent e) {
 			// Text editing: Escape cancels
-			if (_isEditingText) {
+			if (_textEdit.IsEditing) {
 				if (e.TryConsume(Action.Escape)) {
-					CancelTextEdit();
+					_textEdit.Cancel();
 					return true;
 				}
 				return false;
@@ -830,38 +851,14 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		// ========================================
-		// TICK: RETRY, TEXT EDIT, REROLL
+		// TICK: TEXT EDIT, DEFERRED ANNOUNCE
 		// ========================================
 
 		public override void Tick() {
 			// Text edit mode: only handle Return to confirm
-			if (_isEditingText) {
+			if (_textEdit.IsEditing) {
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
-					ConfirmTextEdit();
-				}
-				return;
-			}
-
-			// Multi-frame retry: override base class single-retry behavior.
-			// CharacterContainer uses coroutines (DelayedGeneration, SetAttributes)
-			// that take multiple frames to complete.
-			if (_pendingRediscovery) {
-				_pendingRediscovery = false;
-				bool ready = DiscoverWidgets(_screen);
-				_currentIndex = 0;
-				if (ready && _widgets.Count > 0) {
-					_retryCount = 0;
-					var w = _widgets[0];
-					string text = GetWidgetSpeechText(w);
-					string tip = GetTooltipText(w);
-					if (tip != null) text = $"{text}, {tip}";
-					Speech.SpeechPipeline.SpeakQueued(text);
-				} else if (_retryCount < MaxRetries) {
-					_retryCount++;
-					_pendingRediscovery = true;
-				} else {
-					_retryCount = 0;
-					Util.Log.Warn("MinionSelectHandler: gave up retrying DiscoverWidgets");
+					_textEdit.Confirm();
 				}
 				return;
 			}
@@ -878,64 +875,15 @@ namespace OniAccess.Input.Handlers {
 				// Don't return — allow other tick logic to run
 			}
 
-			// Pending reroll announce (one-frame delay for SetAttributes coroutine)
-			if (_pendingRerollAnnounce) {
-				AnnounceAfterReroll();
-				return;
-			}
-
-			// Pending filter change announce
-			if (_pendingFilterAnnounce) {
-				AnnounceAfterFilterChange();
+			// Deferred one-frame announce (reroll, filter change)
+			if (_pendingAnnounce != null) {
+				var action = _pendingAnnounce;
+				_pendingAnnounce = null;
+				action();
 				return;
 			}
 
 			base.Tick();
-		}
-
-		// ========================================
-		// TEXT EDITING
-		// ========================================
-
-		private KInputTextField GetActiveInputField() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return null;
-			var widget = _widgets[_currentIndex];
-
-			// Colony name: component IS the text field
-			if (widget.Component is KInputTextField tf) return tf;
-
-			// Dupe rename: get inputField from EditableTitleBar
-			if (widget.Tag is string tag && tag == "dupe_rename" && _inDupeMode) {
-				try {
-					var container = _containers[_currentSlot] as CharacterContainer;
-					var titleBar = Traverse.Create(container)
-						.Field("characterNameTitle").GetValue<object>();
-					return Traverse.Create(titleBar)
-						.Field("inputField").GetValue<KInputTextField>();
-				} catch (System.Exception) { }
-			}
-			return null;
-		}
-
-		private void CancelTextEdit() {
-			_isEditingText = false;
-			var textField = GetActiveInputField();
-			if (textField != null) {
-				textField.text = _cachedTextValue;
-				textField.DeactivateInputField();
-			}
-			Speech.SpeechPipeline.SpeakInterrupt($"Cancelled, {_cachedTextValue}");
-		}
-
-		private void ConfirmTextEdit() {
-			_isEditingText = false;
-			var textField = GetActiveInputField();
-			if (textField != null) {
-				textField.DeactivateInputField();
-				Speech.SpeechPipeline.SpeakInterrupt($"Confirmed, {textField.text}");
-			} else {
-				Speech.SpeechPipeline.SpeakInterrupt($"Cancelled, {_cachedTextValue}");
-			}
 		}
 	}
 }
