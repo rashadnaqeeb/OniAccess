@@ -13,29 +13,23 @@ namespace OniAccess.Input.Handlers {
 	///
 	/// ModeSelectScreen: two MultiToggle buttons (Survival / No Sweat).
 	/// ClusterCategorySelectionScreen: simple list of MultiToggle buttons for game modes.
-	/// ColonyDestinationSelectScreen: two main tabs (Clusters, Actions) with Tab/Shift+Tab.
-	///   Customize button in Actions opens a sub-view with three sub-tabs:
-	///   Story Traits → Mixing → Settings (cycled with Tab/Shift+Tab, Escape exits).
+	/// ColonyDestinationSelectScreen: flat widget list — cluster selector at position 0
+	///   (Left/Right cycles clusters, Enter opens info), then action buttons below.
+	///   Customize button opens a sub-view with three sub-tabs:
+	///   Settings → Mixing → Story Traits (cycled with Tab/Shift+Tab, Escape exits).
 	///
 	/// Per locked decisions:
 	/// - Game mode entries speak name + description together
-	/// - Cluster entries speak name, description, difficulty, moons, traits, selected
+	/// - Cluster selector speaks name, difficulty, traits, moons
+	/// - Enter on cluster selector opens info submenu
 	/// - Story traits speak name + guaranteed/forbidden state; Enter toggles
 	/// - Mixing DLC toggles speak name + enabled/disabled; Enter toggles
 	/// - Mixing cyclers speak name + value; Left/Right cycles
 	/// - Settings speak "label, value" with Left/Right cycling
-	/// - Actions panel: Back, Shuffle, Coordinate field, Customize, Launch
-	/// - Tab/Shift+Tab switches panels on destination screen only
+	/// - Actions: Shuffle, Coordinate field, Customize, Launch (no back button)
+	/// - Tab/Shift+Tab does nothing on the main destination screen
 	/// </summary>
 	public class ColonySetupHandler: BaseMenuHandler {
-		/// <summary>
-		/// Main tabs on ColonyDestinationSelectScreen.
-		/// Customize sub-view holds Story Traits, Mixing, and Settings.
-		/// </summary>
-		private const int PanelClusters = 0;
-		private const int PanelActions = 1;
-		private const int PanelCount = 2;
-
 		// Sub-tabs inside Customize overlay
 		private const int SubTabSettings = 0;
 		private const int SubTabMixing = 1;
@@ -43,10 +37,14 @@ namespace OniAccess.Input.Handlers {
 		private const int SubTabCount = 3;
 
 		/// <summary>
-		/// Current panel index for ColonyDestinationSelectScreen.
-		/// Ignored for ClusterCategorySelectionScreen.
+		/// Ordered list of cluster keys from the destination panel.
 		/// </summary>
-		private int _currentPanel;
+		private List<string> _clusterKeys;
+
+		/// <summary>
+		/// Current index into _clusterKeys for Left/Right cycling.
+		/// </summary>
+		private int _clusterIndex;
 
 		/// <summary>
 		/// Cached pre-edit value for text input Escape rollback.
@@ -59,7 +57,7 @@ namespace OniAccess.Input.Handlers {
 		private bool _isEditingText;
 
 		/// <summary>
-		/// Whether we are in the Shift+I info submenu for a cluster.
+		/// Whether we are in the info submenu for a cluster.
 		/// </summary>
 		private bool _inInfoSubmenu;
 
@@ -67,11 +65,6 @@ namespace OniAccess.Input.Handlers {
 		/// Cluster key stored when entering the info submenu, used to restore position on exit.
 		/// </summary>
 		private string _infoClusterKey;
-
-		/// <summary>
-		/// Index of the cluster in the list before entering info submenu.
-		/// </summary>
-		private int _infoReturnIndex;
 
 		/// <summary>
 		/// Whether we are inside the Customize sub-view (Story Traits / Mixing / Settings).
@@ -88,6 +81,20 @@ namespace OniAccess.Input.Handlers {
 		/// have time to populate after ReInitialize (triggered by OnAsteroidClicked).
 		/// </summary>
 		private bool _pendingClusterRefresh;
+
+		/// <summary>
+		/// When true, the pending cluster refresh uses SpeakQueued instead of
+		/// SpeakInterrupt, so the screen title finishes before the first widget.
+		/// Set during the initial deferred discovery when cluster keys weren't
+		/// ready at OnActivate time.
+		/// </summary>
+		private bool _queuedClusterRefresh;
+
+		/// <summary>
+		/// When true, the next cluster speech omits the "Choose a Destination" prefix.
+		/// Set by Left/Right cycling so the repeated prefix isn't annoying.
+		/// </summary>
+		private bool _speakClusterNameOnly;
 
 		/// <summary>
 		/// Display name changes based on which screen is active.
@@ -115,11 +122,11 @@ namespace OniAccess.Input.Handlers {
 			_screen != null && _screen.GetType().Name == "ModeSelectScreen";
 
 		public ColonySetupHandler(KScreen screen) : base(screen) {
-			HelpEntries = BuildHelpEntries(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
+			HelpEntries = BuildHelpEntries();
 		}
 
 		// ========================================
-		// TAB NAVIGATION (ColonyDestinationSelectScreen only)
+		// TAB NAVIGATION (Customize sub-tabs only)
 		// ========================================
 
 		protected override void NavigateTabForward() {
@@ -140,12 +147,7 @@ namespace OniAccess.Input.Handlers {
 				return;
 			}
 
-			for (int i = 0; i < PanelCount; i++) {
-				_currentPanel = (_currentPanel + 1) % PanelCount;
-				if (_currentPanel == 0) PlayWrapSound();
-				RediscoverForCurrentPanel();
-				if (_widgets.Count > 0) break;
-			}
+			// No-op on the main destination screen
 		}
 
 		protected override void NavigateTabBackward() {
@@ -167,18 +169,12 @@ namespace OniAccess.Input.Handlers {
 				return;
 			}
 
-			for (int i = 0; i < PanelCount; i++) {
-				int prev = _currentPanel;
-				_currentPanel = (_currentPanel - 1 + PanelCount) % PanelCount;
-				if (_currentPanel == PanelCount - 1 && prev == 0) PlayWrapSound();
-				RediscoverForCurrentPanel();
-				if (_widgets.Count > 0) break;
-			}
+			// No-op on the main destination screen
 		}
 
 		/// <summary>
 		/// Sync the game's visible tab with our navigation state.
-		/// In normal mode, PanelClusters maps to game tab 1.
+		/// In normal mode, always sync to game tab 1 (clusters).
 		/// In Customize mode, sub-tabs map to game tabs 2/3/4.
 		/// </summary>
 		private void SyncGameTab() {
@@ -193,39 +189,11 @@ namespace OniAccess.Input.Handlers {
 				st.Method("RefreshMenuTabs").GetValue();
 				return;
 			}
-			if (_currentPanel == PanelActions) return;
-			// PanelClusters maps to game tab 1
-			int tabIdx = _currentPanel + 1;
+			// Main screen: always sync to game tab 1
+			int tabIdx = 1;
 			var stn = Traverse.Create(_screen);
 			stn.Field("selectedMenuTabIdx").SetValue(tabIdx);
 			stn.Method("RefreshMenuTabs").GetValue();
-		}
-
-		/// <summary>
-		/// Re-discover widgets for the current panel and announce it.
-		/// </summary>
-		private void RediscoverForCurrentPanel() {
-			_inInfoSubmenu = false;
-			_search.Clear();
-			SyncGameTab();
-			DiscoverWidgets(_screen);
-			string panelName = GetPanelName();
-			Speech.SpeechPipeline.SpeakInterrupt(panelName);
-			if (_widgets.Count > 0) {
-				if (_currentPanel == PanelClusters) {
-					// Return to the game's selected cluster instead of index 0
-					var panelObj = Traverse.Create(_screen).Field("destinationMapPanel").GetValue<object>();
-					if (panelObj != null) {
-						int selectedIndex = Traverse.Create(panelObj).Field("selectedIndex").GetValue<int>();
-						_currentIndex = UnityEngine.Mathf.Clamp(selectedIndex, 0, _widgets.Count - 1);
-					} else {
-						_currentIndex = 0;
-					}
-				} else {
-					_currentIndex = 0;
-				}
-				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[_currentIndex]));
-			}
 		}
 
 		private string GetPanelName() {
@@ -237,11 +205,7 @@ namespace OniAccess.Input.Handlers {
 					default: return "";
 				}
 			}
-			switch (_currentPanel) {
-				case PanelClusters: return STRINGS.ONIACCESS.PANELS.CLUSTERS;
-				case PanelActions: return STRINGS.ONIACCESS.PANELS.ACTIONS;
-				default: return "";
-			}
+			return "";
 		}
 
 		// ========================================
@@ -267,18 +231,10 @@ namespace OniAccess.Input.Handlers {
 						DiscoverSettingsWidgets(screen);
 						break;
 				}
+			} else if (_inInfoSubmenu) {
+				DiscoverClusterInfoWidgets(screen);
 			} else {
-				switch (_currentPanel) {
-					case PanelClusters:
-						if (_inInfoSubmenu)
-							DiscoverClusterInfoWidgets(screen);
-						else
-							DiscoverClusterWidgets(screen);
-						break;
-					case PanelActions:
-						DiscoverActionWidgets(screen);
-						break;
-				}
+				DiscoverDestinationWidgets(screen);
 			}
 		}
 
@@ -353,69 +309,127 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
-		/// Discover cluster/asteroid entries on ColonyDestinationSelectScreen.
-		/// Uses DestinationSelectPanel's clusterKeys and asteroidData to build
-		/// composite labels: "name, difficulty, traits".
+		/// Discover the flat destination widget list:
+		/// Position 0 = cluster selector (Left/Right cycles, Enter = info)
+		/// Position 1+ = Shuffle, Coordinate, Customize, Launch
 		/// </summary>
-		private void DiscoverClusterWidgets(KScreen screen) {
-			var panelTraverse = Traverse.Create(screen).Field("destinationMapPanel");
-			var panel = panelTraverse.GetValue<object>();
-			if (panel == null) return;
-
-			var pt = Traverse.Create(panel);
-			var clusterKeys = pt.Field("clusterKeys").GetValue<System.Collections.Generic.List<string>>();
-			var asteroidData = pt.Field("asteroidData")
-				.GetValue<System.Collections.Generic.Dictionary<string, ColonyDestinationAsteroidBeltData>>();
-
-			if (clusterKeys == null || asteroidData == null) return;
-
-			for (int i = 0; i < clusterKeys.Count; i++) {
-				string key = clusterKeys[i];
-				if (!asteroidData.TryGetValue(key, out var belt)) continue;
-
-				// Cluster name: properName is a string table key, resolve via Strings.Get
-				string name = "";
-				string rawName = belt.properName;
-				if (!string.IsNullOrEmpty(rawName))
-					name = Strings.Get(rawName);
-				if (string.IsNullOrEmpty(name))
-					name = belt.startWorldName;
-
-				// Difficulty from survivalOptions
-				int diffIdx = UnityEngine.Mathf.Clamp(
-					belt.difficulty, 0,
-					ColonyDestinationAsteroidBeltData.survivalOptions.Count - 1);
-				string difficulty = ColonyDestinationAsteroidBeltData.survivalOptions[diffIdx].first;
-
-				// Trait count — only actual world traits (colored entries)
-				var traits = belt.GetTraitDescriptors();
-				int traitCount = 0;
-				foreach (var trait in traits) {
-					string t = trait.text?.Trim() ?? "";
-					if (t.StartsWith("<color")) traitCount++;
-				}
-
-				// Moon count (Spaced Out only)
-				int moonCount = belt.worlds != null ? belt.worlds.Count : 0;
-
-				// Build slim label: name, difficulty, N traits, N moons, Shift I for info
-				string label = Speech.TextFilter.FilterForSpeech(name);
-				label += $", {Speech.TextFilter.FilterForSpeech(difficulty)}";
-				label += $", {traitCount} {STRINGS.ONIACCESS.INFO.TRAITS}";
-				if (moonCount > 0) {
-					string planetoidTerm = STRINGS.UI.CLUSTERMAP.PLANETOID + "s";
-					label += $", {moonCount} {planetoidTerm}";
-				}
-				label += $", {STRINGS.ONIACCESS.INFO.SHIFT_I_HINT}";
-
+		private void DiscoverDestinationWidgets(KScreen screen) {
+			// Position 0: cluster selector
+			PopulateClusterKeys(screen);
+			if (_clusterKeys != null && _clusterKeys.Count > 0) {
+				_clusterIndex = UnityEngine.Mathf.Clamp(_clusterIndex, 0, _clusterKeys.Count - 1);
+				string clusterLabel = BuildClusterSelectorLabel(_clusterKeys[_clusterIndex]);
 				_widgets.Add(new WidgetInfo {
-					Label = label,
-					Component = null, // No single clickable component; activation selects via panel
+					Label = clusterLabel,
+					Component = null,
 					Type = WidgetType.Label,
 					GameObject = null,
-					Tag = key // Store cluster key for activation
+					Tag = "cluster_selector"
 				});
+			} else {
+				// Panel not yet initialized (OnSpawn hasn't finished).
+				// Retry next frame when traits/data are populated.
+				// Use queued speech so the screen title finishes first.
+				_pendingClusterRefresh = true;
+				_queuedClusterRefresh = true;
 			}
+
+			// Action buttons (no back button)
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "shuffleButton", null, _widgets);
+
+			// Coordinate text field
+			try {
+				var coordinate = Traverse.Create(screen).Field("coordinate")
+					.GetValue<KInputTextField>();
+				if (coordinate != null && coordinate.gameObject.activeInHierarchy) {
+					string currentValue = coordinate.text ?? "";
+					_widgets.Add(new WidgetInfo {
+						Label = $"{STRINGS.ONIACCESS.PANELS.COORDINATE}, {currentValue}",
+						Component = coordinate,
+						Type = WidgetType.TextInput,
+						GameObject = coordinate.gameObject
+					});
+				}
+			} catch (System.Exception) { }
+
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "customizeButton", null, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "launchButton", null, _widgets);
+		}
+
+		/// <summary>
+		/// Extract cluster keys from the destination panel and sync _clusterIndex
+		/// to the game's currently selected cluster.
+		/// </summary>
+		private void PopulateClusterKeys(KScreen screen) {
+			var panelTraverse = Traverse.Create(screen).Field("destinationMapPanel");
+			var panel = panelTraverse.GetValue<object>();
+			if (panel == null) {
+				_clusterKeys = null;
+				return;
+			}
+
+			var pt = Traverse.Create(panel);
+			_clusterKeys = pt.Field("clusterKeys").GetValue<List<string>>();
+			if (_clusterKeys == null || _clusterKeys.Count == 0) return;
+
+			// Sync to game's selected index
+			int selectedIndex = pt.Field("selectedIndex").GetValue<int>();
+			_clusterIndex = UnityEngine.Mathf.Clamp(selectedIndex, 0, _clusterKeys.Count - 1);
+		}
+
+		/// <summary>
+		/// Build the label for the cluster selector widget showing the cluster
+		/// at the given key: name, difficulty, N traits, N planetoids.
+		/// </summary>
+		private string BuildClusterSelectorLabel(string clusterKey, bool includePrefix = true) {
+			var panelTraverse = Traverse.Create(_screen).Field("destinationMapPanel");
+			var panel = panelTraverse.GetValue<object>();
+			if (panel == null) return clusterKey;
+
+			var pt = Traverse.Create(panel);
+			var asteroidData = pt.Field("asteroidData")
+				.GetValue<Dictionary<string, ColonyDestinationAsteroidBeltData>>();
+			if (asteroidData == null || !asteroidData.TryGetValue(clusterKey, out var belt))
+				return clusterKey;
+
+			// Cluster name
+			string name = "";
+			string rawName = belt.properName;
+			if (!string.IsNullOrEmpty(rawName))
+				name = Strings.Get(rawName);
+			if (string.IsNullOrEmpty(name))
+				name = belt.startWorldName;
+
+			// Difficulty
+			int diffIdx = UnityEngine.Mathf.Clamp(
+				belt.difficulty, 0,
+				ColonyDestinationAsteroidBeltData.survivalOptions.Count - 1);
+			string difficulty = ColonyDestinationAsteroidBeltData.survivalOptions[diffIdx].first;
+
+			// Trait count — only actual world traits (colored entries)
+			var traits = belt.GetTraitDescriptors();
+			int traitCount = 0;
+			foreach (var trait in traits) {
+				string t = trait.text?.Trim() ?? "";
+				if (t.StartsWith("<color")) traitCount++;
+			}
+
+			// Moon count (Spaced Out only)
+			int moonCount = belt.worlds != null ? belt.worlds.Count : 0;
+
+			// Build label: name, difficulty, N traits, N planetoids
+			string filteredName = Speech.TextFilter.FilterForSpeech(name);
+			string label = includePrefix
+				? $"{STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.TITLE}: {filteredName}"
+				: filteredName;
+			label += $", {Speech.TextFilter.FilterForSpeech(difficulty)}";
+			label += $", {traitCount} {STRINGS.ONIACCESS.INFO.TRAITS}";
+			if (moonCount > 0) {
+				string planetoidTerm = STRINGS.UI.CLUSTERMAP.PLANETOID + "s";
+				label += $", {moonCount} {planetoidTerm}";
+			}
+
+			return label;
 		}
 
 		/// <summary>
@@ -431,7 +445,7 @@ namespace OniAccess.Input.Handlers {
 
 			var pt = Traverse.Create(panel);
 			var asteroidData = pt.Field("asteroidData")
-				.GetValue<System.Collections.Generic.Dictionary<string, ColonyDestinationAsteroidBeltData>>();
+				.GetValue<Dictionary<string, ColonyDestinationAsteroidBeltData>>();
 			if (asteroidData == null || !asteroidData.TryGetValue(_infoClusterKey, out var belt)) return;
 
 			var startWorld = belt.GetStartWorld;
@@ -611,7 +625,7 @@ namespace OniAccess.Input.Handlers {
 			if (settingsPanel == null) return;
 
 			var widgets = Traverse.Create(settingsPanel).Field("widgets")
-				.GetValue<System.Collections.Generic.List<CustomGameSettingWidget>>();
+				.GetValue<List<CustomGameSettingWidget>>();
 			if (widgets == null) return;
 
 			foreach (var widget in widgets) {
@@ -920,39 +934,13 @@ namespace OniAccess.Input.Handlers {
 			}
 		}
 
-		/// <summary>
-		/// Discover action buttons and coordinate field on ColonyDestinationSelectScreen.
-		/// </summary>
-		private void DiscoverActionWidgets(KScreen screen) {
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "backButton", null, _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "shuffleButton", null, _widgets);
-
-			// Coordinate text field
-			try {
-				var coordinate = Traverse.Create(screen).Field("coordinate")
-					.GetValue<KInputTextField>();
-				if (coordinate != null && coordinate.gameObject.activeInHierarchy) {
-					string currentValue = coordinate.text ?? "";
-					_widgets.Add(new WidgetInfo {
-						Label = $"{STRINGS.ONIACCESS.PANELS.COORDINATE}, {currentValue}",
-						Component = coordinate,
-						Type = WidgetType.TextInput,
-						GameObject = coordinate.gameObject
-					});
-				}
-			} catch (System.Exception) { }
-
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "customizeButton", null, _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "launchButton", null, _widgets);
-		}
-
 		// ========================================
 		// WIDGET VALIDITY
 		// ========================================
 
 		/// <summary>
 		/// Accept MultiToggle as valid Toggle (story traits, mixing DLC toggles).
-		/// Cluster entries have null GameObject — base handles them as Label.
+		/// Cluster selector has null GameObject — accept it as a Label.
 		/// </summary>
 		protected override bool IsWidgetValid(WidgetInfo widget) {
 			if (widget == null) return false;
@@ -974,6 +962,16 @@ namespace OniAccess.Input.Handlers {
 		/// Read widget state live for each panel type.
 		/// </summary>
 		protected override string GetWidgetSpeechText(WidgetInfo widget) {
+			// Cluster selector: rebuild label live
+			if (widget.Tag is string tag && tag == "cluster_selector") {
+				if (_clusterKeys != null && _clusterIndex >= 0 && _clusterIndex < _clusterKeys.Count) {
+					bool includePrefix = !_speakClusterNameOnly;
+					_speakClusterNameOnly = false;
+					return BuildClusterSelectorLabel(_clusterKeys[_clusterIndex], includePrefix);
+				}
+				return widget.Label;
+			}
+
 			// Story trait toggles: re-read state live via CustomGameSettings
 			if (_inCustomize && _currentSubTab == SubTabStoryTraits && widget.Type == WidgetType.Toggle
 				&& widget.Tag is string storyId) {
@@ -1093,7 +1091,7 @@ namespace OniAccess.Input.Handlers {
 		/// <summary>
 		/// Activate the current widget:
 		/// - Game mode buttons: invoke MultiToggle.onClick (selects mode, may auto-advance)
-		/// - Cluster entries: select that cluster via DestinationSelectPanel
+		/// - Cluster selector: open info submenu
 		/// - Text input: enter edit mode
 		/// - Other: base behavior
 		/// </summary>
@@ -1107,9 +1105,19 @@ namespace OniAccess.Input.Handlers {
 				return;
 			}
 
-			// Cluster entry: select via panel
-			if (!IsClusterCategoryScreen && _currentPanel == PanelClusters && widget.Tag is string clusterKey) {
-				SelectCluster(clusterKey);
+			// Cluster selector: open info submenu
+			if (_currentIndex == 0 && widget.Tag is string selectorTag && selectorTag == "cluster_selector") {
+				if (_clusterKeys != null && _clusterIndex >= 0 && _clusterIndex < _clusterKeys.Count) {
+					_inInfoSubmenu = true;
+					_infoClusterKey = _clusterKeys[_clusterIndex];
+					_search.Clear();
+					DiscoverWidgets(_screen);
+					Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.INFO.PANEL_NAME);
+					if (_widgets.Count > 0) {
+						_currentIndex = 0;
+						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
+					}
+				}
 				return;
 			}
 
@@ -1133,7 +1141,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Customize button: open customSettings overlay and enter Customize sub-view
-			if (_currentPanel == PanelActions && widget.Component is KButton customizeBtn) {
+			if (widget.Component is KButton customizeBtn) {
 				var btnField = Traverse.Create(_screen).Field("customizeButton").GetValue<KButton>();
 				if (btnField != null && btnField == customizeBtn) {
 					Traverse.Create(_screen).Method("CustomizeClicked").GetValue();
@@ -1151,6 +1159,16 @@ namespace OniAccess.Input.Handlers {
 						_currentIndex = 0;
 						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
 					}
+					return;
+				}
+			}
+
+			// Shuffle button: activate and flag for cluster refresh
+			if (widget.Component is KButton shuffleCandidate) {
+				var shuffleField = Traverse.Create(_screen).Field("shuffleButton").GetValue<KButton>();
+				if (shuffleField != null && shuffleField == shuffleCandidate) {
+					base.ActivateCurrentWidget();
+					_pendingClusterRefresh = true;
 					return;
 				}
 			}
@@ -1208,7 +1226,7 @@ namespace OniAccess.Input.Handlers {
 
 			var pt = Traverse.Create(panel);
 			var asteroidData = pt.Field("asteroidData")
-				.GetValue<System.Collections.Generic.Dictionary<string, ColonyDestinationAsteroidBeltData>>();
+				.GetValue<Dictionary<string, ColonyDestinationAsteroidBeltData>>();
 
 			if (asteroidData != null && asteroidData.TryGetValue(clusterKey, out var belt)) {
 				// Fire the OnAsteroidClicked event which updates the screen
@@ -1223,7 +1241,7 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
-		/// Select a cluster without speaking — used by auto-select on navigation.
+		/// Select a cluster without speaking — used by Left/Right cycling.
 		/// Fires OnAsteroidClicked to populate traits; speech comes after
 		/// the one-frame delay via _pendingClusterRefresh.
 		/// </summary>
@@ -1234,27 +1252,13 @@ namespace OniAccess.Input.Handlers {
 
 			var pt = Traverse.Create(panel);
 			var asteroidData = pt.Field("asteroidData")
-				.GetValue<System.Collections.Generic.Dictionary<string, ColonyDestinationAsteroidBeltData>>();
+				.GetValue<Dictionary<string, ColonyDestinationAsteroidBeltData>>();
 
 			if (asteroidData != null && asteroidData.TryGetValue(clusterKey, out var belt)) {
 				var onClicked = pt.Field("OnAsteroidClicked")
 					.GetValue<System.Action<ColonyDestinationAsteroidBeltData>>();
 				onClicked?.Invoke(belt);
 			}
-		}
-
-		/// <summary>
-		/// Find the next valid widget index from startIndex in the given direction,
-		/// with wrap-around. Returns -1 if no valid widget found.
-		/// </summary>
-		private int FindNextValidWidget(int startIndex, int direction) {
-			if (_widgets.Count == 0) return -1;
-			for (int i = 0; i < _widgets.Count; i++) {
-				int candidate = ((startIndex + direction * (i + 1)) % _widgets.Count + _widgets.Count) % _widgets.Count;
-				if (IsWidgetValid(_widgets[candidate]))
-					return candidate;
-			}
-			return -1;
 		}
 
 		/// <summary>
@@ -1315,12 +1319,12 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		// ========================================
-		// TICK: TEXT EDIT MODE
+		// TICK: TEXT EDIT MODE + CLUSTER CYCLING
 		// ========================================
 
 		/// <summary>
 		/// When in text edit mode, only check Return (to confirm edit).
-		/// Otherwise, delegate to base for normal menu navigation.
+		/// Otherwise, handle Left/Right cluster cycling before base navigation.
 		/// </summary>
 		public override void Tick() {
 			if (_isEditingText) {
@@ -1337,67 +1341,48 @@ namespace OniAccess.Input.Handlers {
 			// widgets and speak the current cluster with accurate trait counts.
 			if (_pendingClusterRefresh) {
 				_pendingClusterRefresh = false;
+				bool queued = _queuedClusterRefresh;
+				_queuedClusterRefresh = false;
 				int savedIndex = _currentIndex;
 				DiscoverWidgets(_screen);
 				_currentIndex = UnityEngine.Mathf.Clamp(savedIndex, 0,
 					_widgets.Count > 0 ? _widgets.Count - 1 : 0);
-				SpeakCurrentWidget();
+				if (queued) {
+					// Initial deferred discovery: queue so screen title finishes first
+					if (_currentIndex >= 0 && _currentIndex < _widgets.Count)
+						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[_currentIndex]));
+				} else {
+					SpeakCurrentWidget();
+				}
 				return;
 			}
 
-			// Auto-select clusters on arrow/Home/End navigation so traits populate
+			// Left/Right cluster cycling when on the cluster selector (index 0)
 			if (!IsClusterCategoryScreen && !IsModeSelectScreen
-				&& _currentPanel == PanelClusters && !_inInfoSubmenu) {
-				int targetIndex = -1;
+				&& !_inInfoSubmenu && !_inCustomize
+				&& _currentIndex == 0 && _widgets.Count > 0
+				&& _widgets[0].Tag is string sTag && sTag == "cluster_selector"
+				&& _clusterKeys != null && _clusterKeys.Count > 0) {
 
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
-					targetIndex = FindNextValidWidget(_currentIndex, 1);
-				} else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
-					targetIndex = FindNextValidWidget(_currentIndex, -1);
-				} else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home)) {
-					targetIndex = FindNextValidWidget(-1, 1);
-				} else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)) {
-					targetIndex = FindNextValidWidget(_widgets.Count, -1);
-				}
-
-				if (targetIndex >= 0 && targetIndex < _widgets.Count) {
-					var widget = _widgets[targetIndex];
-					if (widget.Tag is string navKey) {
-						bool wrapped = false;
-						if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow))
-							wrapped = targetIndex <= _currentIndex;
-						else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow))
-							wrapped = targetIndex >= _currentIndex;
-						if (wrapped) PlayWrapSound();
-
-						_currentIndex = targetIndex;
-						SelectClusterSilent(navKey);
-						_pendingClusterRefresh = true;
-					}
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)) {
+					int next = (_clusterIndex + 1) % _clusterKeys.Count;
+					if (next == 0) PlayWrapSound();
+					_clusterIndex = next;
+					SelectClusterSilent(_clusterKeys[_clusterIndex]);
+					_speakClusterNameOnly = true;
+					_pendingClusterRefresh = true;
 					return;
 				}
-			}
 
-			// Shift+I opens cluster info submenu
-			if (!IsClusterCategoryScreen && !IsModeSelectScreen
-				&& _currentPanel == PanelClusters && !_inInfoSubmenu
-				&& UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)
-				&& (UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
-					|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift))) {
-				if (_currentIndex >= 0 && _currentIndex < _widgets.Count
-					&& _widgets[_currentIndex].Tag is string clusterKey) {
-					_inInfoSubmenu = true;
-					_infoClusterKey = clusterKey;
-					_infoReturnIndex = _currentIndex;
-					_search.Clear();
-					DiscoverWidgets(_screen);
-					Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.INFO.PANEL_NAME);
-					if (_widgets.Count > 0) {
-						_currentIndex = 0;
-						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
-					}
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
+					int next = (_clusterIndex - 1 + _clusterKeys.Count) % _clusterKeys.Count;
+					if (next == _clusterKeys.Count - 1) PlayWrapSound();
+					_clusterIndex = next;
+					SelectClusterSilent(_clusterKeys[_clusterIndex]);
+					_speakClusterNameOnly = true;
+					_pendingClusterRefresh = true;
+					return;
 				}
-				return;
 			}
 
 			base.Tick();
@@ -1419,33 +1404,29 @@ namespace OniAccess.Input.Handlers {
 				return false;
 			}
 
-			// Escape exits Customize sub-view back to Actions
+			// Escape exits Customize sub-view back to main destination list
 			if (_inCustomize) {
 				if (e.TryConsume(Action.Escape)) {
 					Traverse.Create(_screen).Method("CustomizeClose").GetValue();
 					_inCustomize = false;
-					_currentPanel = PanelActions;
 					_search.Clear();
 					DiscoverWidgets(_screen);
 					_currentIndex = 0;
-					string panelName = GetPanelName();
-					Speech.SpeechPipeline.SpeakInterrupt(panelName);
 					if (_widgets.Count > 0)
-						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
+						Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
 					return true;
 				}
 			}
 
-			// Escape exits info submenu back to cluster list
+			// Escape exits info submenu back to cluster selector
 			if (_inInfoSubmenu) {
 				if (e.TryConsume(Action.Escape)) {
 					_inInfoSubmenu = false;
 					_search.Clear();
 					DiscoverWidgets(_screen);
-					_currentIndex = UnityEngine.Mathf.Clamp(_infoReturnIndex, 0,
-						_widgets.Count > 0 ? _widgets.Count - 1 : 0);
-					if (_currentIndex < _widgets.Count)
-						Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[_currentIndex]));
+					_currentIndex = 0;
+					if (_widgets.Count > 0)
+						Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
 					return true;
 				}
 			}

@@ -90,7 +90,6 @@ namespace STRINGS {
 		}
 
 		public class INFO {
-			public static LocString SHIFT_I_HINT = "Shift I for info";
 			public static LocString DESCRIPTION = "Description";
 			public static LocString DIFFICULTY = "Difficulty";
 			public static LocString TRAITS = "traits";
