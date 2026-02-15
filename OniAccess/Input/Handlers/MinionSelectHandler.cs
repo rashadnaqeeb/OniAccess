@@ -3,13 +3,18 @@ using HarmonyLib;
 
 namespace OniAccess.Input.Handlers {
 	/// <summary>
-	/// Handler for MinionSelectScreen (initial colony start duplicant selection)
+	/// Handler for MinionSelectScreen (initial colony start — full game start screen)
 	/// and Printing Pod selection (recurring every 3 cycles).
 	///
-	/// The screen has 3 duplicant slots (CharacterContainer instances). Tab/Shift+Tab
-	/// switches between slots. Within each slot, Up/Down navigates a flat list of:
-	/// name, interests, traits (with full info), attributes, interest filter dropdown,
-	/// and reroll button.
+	/// Two-level navigation:
+	/// TOP LEVEL (Up/Down): Colony name, Shuffle name, Select duplicants, Embark
+	/// DUPE MODE (Up/Down within slot, Tab/Shift+Tab between slots):
+	///   name, interests, traits, attributes, interest filter, reroll
+	///
+	/// Colony name is editable (Enter to edit, Enter to confirm, Escape to cancel).
+	/// Shuffle name button clicks and speaks the new name.
+	/// Select duplicants enters dupe mode.
+	/// Tab/Shift+Tab in dupe mode preserves widget position across slots.
 	///
 	/// Per Pitfall 4: CharacterContainer inherits KScreen but is NOT pushed to
 	/// KScreenManager -- ContextDetector ignores it. Navigation is handled entirely
@@ -19,20 +24,41 @@ namespace OniAccess.Input.Handlers {
 	/// - Traits: full info upfront (name, effect, description all spoken together)
 	/// - Attributes: one per arrow press ("Athletics 3")
 	/// - After reroll: speak new name, interests, and traits automatically
-	/// - Shift+I re-reads the full trait/attribute info (same as normal navigation)
 	/// </summary>
-	public class DuplicantSelectHandler: BaseMenuHandler {
+	public class MinionSelectHandler : BaseMenuHandler {
 		private int _currentSlot;
 		private UnityEngine.Component[] _containers;
 		private bool _pendingRerollAnnounce;
+		private bool _inDupeMode;
+		private bool _isEditingText;
+		private string _cachedTextValue;
+		private int _retryCount;
+		private const int MaxRetries = 10;
 
-		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.DUPLICANT_SELECT;
+		/// <summary>
+		/// Whether the screen is MinionSelectScreen (has colony naming).
+		/// Printing Pod (ImmigrantScreen) does not have BaseNaming.
+		/// </summary>
+		private bool IsMinionSelectScreen =>
+			_screen != null && _screen.GetType().Name == "MinionSelectScreen";
+
+		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.MINION_SELECT;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
-		public DuplicantSelectHandler(KScreen screen) : base(screen) {
+		public MinionSelectHandler(KScreen screen) : base(screen) {
 			_currentSlot = 0;
+			_inDupeMode = false;
+			_isEditingText = false;
+			_retryCount = 0;
 			HelpEntries = BuildHelpEntries(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_DUPE_SLOT));
+		}
+
+		public override void OnActivate() {
+			_retryCount = 0;
+			_inDupeMode = false;
+			_isEditingText = false;
+			base.OnActivate();
 		}
 
 		// ========================================
@@ -40,34 +66,35 @@ namespace OniAccess.Input.Handlers {
 		// ========================================
 
 		protected override void NavigateTabForward() {
+			if (!_inDupeMode) return;
 			if (_containers == null || _containers.Length == 0) return;
-			int prev = _currentSlot;
+			int savedIndex = _currentIndex;
 			_currentSlot = (_currentSlot + 1) % _containers.Length;
 			if (_currentSlot == 0) PlayWrapSound();
 
-			RediscoverAndSpeakSlot();
+			RediscoverAndSpeakSlot(savedIndex);
 		}
 
 		protected override void NavigateTabBackward() {
+			if (!_inDupeMode) return;
 			if (_containers == null || _containers.Length == 0) return;
+			int savedIndex = _currentIndex;
 			int prev = _currentSlot;
 			_currentSlot = (_currentSlot - 1 + _containers.Length) % _containers.Length;
 			if (_currentSlot == _containers.Length - 1 && prev == 0) PlayWrapSound();
 
-			RediscoverAndSpeakSlot();
+			RediscoverAndSpeakSlot(savedIndex);
 		}
 
 		/// <summary>
-		/// Rediscover widgets for the current slot and speak the dupe name + first widget.
+		/// Rediscover widgets for the current slot, preserving position index.
 		/// </summary>
-		private void RediscoverAndSpeakSlot() {
+		private void RediscoverAndSpeakSlot(int savedIndex) {
 			DiscoverWidgets(_screen);
-			_currentIndex = 0;
+			_currentIndex = System.Math.Min(savedIndex, _widgets.Count > 0 ? _widgets.Count - 1 : 0);
 			if (_widgets.Count > 0) {
-				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
-				if (_widgets.Count > 1) {
-					Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[1]));
-				}
+				Speech.SpeechPipeline.SpeakInterrupt(
+					$"Slot {_currentSlot + 1}, {GetWidgetSpeechText(_widgets[_currentIndex])}");
 			}
 		}
 
@@ -78,30 +105,140 @@ namespace OniAccess.Input.Handlers {
 		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
-			// Find CharacterContainer instances
-			// CharacterContainer inherits KScreen but is used as a child component
+			if (_inDupeMode) {
+				return DiscoverDupeModeWidgets(screen);
+			}
+
+			return DiscoverTopLevelWidgets(screen);
+		}
+
+		/// <summary>
+		/// Discover top-level widgets: colony name, shuffle, select dupes, embark.
+		/// </summary>
+		private bool DiscoverTopLevelWidgets(KScreen screen) {
+			// Colony name (MinionSelectScreen only, via BaseNaming component)
+			if (IsMinionSelectScreen) {
+				try {
+					// BaseNaming is on the same GameObject as MinionSelectScreen
+					var baseNamingObj = screen.gameObject.GetComponent(
+						HarmonyLib.AccessTools.TypeByName("BaseNaming"));
+					if (baseNamingObj != null) {
+						var bnt = Traverse.Create(baseNamingObj);
+						var inputField = bnt.Field("inputField").GetValue<KInputTextField>();
+						if (inputField != null) {
+							string currentName = inputField.text ?? "";
+							_widgets.Add(new WidgetInfo {
+								Label = $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {currentName}",
+								Component = inputField,
+								Type = WidgetType.TextInput,
+								GameObject = inputField.gameObject,
+								Tag = "colony_name"
+							});
+
+							// Shuffle colony name button
+							var shuffleBtn = bnt.Field("shuffleBaseNameButton").GetValue<KButton>();
+							if (shuffleBtn != null && shuffleBtn.gameObject.activeInHierarchy) {
+								_widgets.Add(new WidgetInfo {
+									Label = GetButtonLabel(shuffleBtn, "Shuffle name"),
+									Component = shuffleBtn,
+									Type = WidgetType.Button,
+									GameObject = shuffleBtn.gameObject,
+									Tag = "colony_shuffle"
+								});
+							}
+						}
+					}
+				} catch (System.Exception) { }
+			}
+
+			// "Select duplicants" virtual button (enters dupe mode)
+			// Verify containers exist before offering this option
+			_containers = screen.GetComponentsInChildren<CharacterContainer>(true);
+			if (_containers != null && _containers.Length > 0) {
+				_widgets.Add(new WidgetInfo {
+					Label = STRINGS.ONIACCESS.PANELS.SELECT_DUPLICANTS,
+					Component = null,
+					Type = WidgetType.Button,
+					GameObject = screen.gameObject,
+					Tag = "enter_dupe_mode"
+				});
+			}
+
+			// Embark / Proceed button (from CharacterSelectionController)
+			try {
+				var proceedButton = Traverse.Create(screen).Field("proceedButton")
+					.GetValue<KButton>();
+				if (proceedButton != null && proceedButton.gameObject.activeInHierarchy) {
+					string label = GetButtonLabel(proceedButton, "Embark");
+					_widgets.Add(new WidgetInfo {
+						Label = label,
+						Component = proceedButton,
+						Type = WidgetType.Button,
+						GameObject = proceedButton.gameObject
+					});
+				}
+			} catch (System.Exception) { }
+
+			// Back button (MinionSelectScreen only)
+			if (IsMinionSelectScreen) {
+				try {
+					var backButton = Traverse.Create(screen).Field("backButton")
+						.GetValue<KButton>();
+					if (backButton != null && backButton.gameObject.activeInHierarchy
+						&& backButton.isInteractable) {
+						string label = GetButtonLabel(backButton, "Back");
+						_widgets.Add(new WidgetInfo {
+							Label = label,
+							Component = backButton,
+							Type = WidgetType.Button,
+							GameObject = backButton.gameObject
+						});
+					}
+				} catch (System.Exception) { }
+			}
+
+			if (_widgets.Count == 0) {
+				Util.Log.Debug("MinionSelectHandler.DiscoverTopLevelWidgets: 0 widgets");
+				return false;
+			}
+
+			Util.Log.Debug($"MinionSelectHandler.DiscoverTopLevelWidgets: {_widgets.Count} widgets");
+			return true;
+		}
+
+		/// <summary>
+		/// Discover dupe mode widgets for the current slot.
+		/// </summary>
+		private bool DiscoverDupeModeWidgets(KScreen screen) {
 			_containers = screen.GetComponentsInChildren<CharacterContainer>(true);
 			if (_containers == null || _containers.Length == 0) {
-				Util.Log.Debug("DuplicantSelectHandler.DiscoverWidgets: 0 widgets");
-				return true;
+				Util.Log.Debug("MinionSelectHandler.DiscoverDupeModeWidgets: no containers");
+				return false;
 			}
 
-			// Clamp slot index
 			if (_currentSlot >= _containers.Length) _currentSlot = 0;
 			var container = _containers[_currentSlot] as CharacterContainer;
-			if (container == null) {
-				Util.Log.Debug("DuplicantSelectHandler.DiscoverWidgets: 0 widgets");
-				return true;
+			if (container == null || !container.gameObject.activeInHierarchy) {
+				Util.Log.Debug("MinionSelectHandler.DiscoverDupeModeWidgets: container null or inactive");
+				return false;
 			}
 
-			// Only process active containers
-			if (!container.gameObject.activeInHierarchy) {
-				Util.Log.Debug("DuplicantSelectHandler.DiscoverWidgets: 0 widgets");
-				return true;
+			// Check if character data is ready (stats populated by coroutine)
+			var ct = Traverse.Create(container);
+			var stats = ct.Field("stats").GetValue<object>();
+			if (stats == null) {
+				Util.Log.Debug("MinionSelectHandler.DiscoverDupeModeWidgets: stats null (coroutine pending)");
+				return false;
 			}
 
 			DiscoverSlotWidgets(container);
-			Util.Log.Debug($"DuplicantSelectHandler.DiscoverWidgets: {_widgets.Count} widgets");
+
+			if (_widgets.Count == 0) {
+				Util.Log.Debug("MinionSelectHandler.DiscoverDupeModeWidgets: 0 widgets after discovery");
+				return false;
+			}
+
+			Util.Log.Debug($"MinionSelectHandler.DiscoverDupeModeWidgets: {_widgets.Count} widgets in slot {_currentSlot}");
 			return true;
 		}
 
@@ -186,8 +323,6 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		private void DiscoverInterestsWidget(CharacterContainer container, Traverse traverse) {
 			try {
-				// CharacterContainer stores aptitude/interest info.
-				// Try to find aptitude label text from the container hierarchy.
 				var aptitudeLabel = traverse.Field("aptitudeLabel")
 					.GetValue<LocText>();
 				if (aptitudeLabel != null && !string.IsNullOrEmpty(aptitudeLabel.text)) {
@@ -235,11 +370,7 @@ namespace OniAccess.Input.Handlers {
 		/// Per locked decision: "Traits: full info upfront."
 		/// </summary>
 		private void DiscoverTraitWidgets(CharacterContainer container, Traverse traverse) {
-			// Traits are dynamically created LocText elements in the CharacterContainer.
-			// They have ToolTip components with the full description.
-			// Find the trait container/panel and walk its LocText children.
 			try {
-				// Try traitEntries field first
 				var traitEntries = traverse.Field("traitEntries")
 					.GetValue<System.Collections.IList>();
 				if (traitEntries != null) {
@@ -268,30 +399,20 @@ namespace OniAccess.Input.Handlers {
 			} catch (System.Exception) { }
 		}
 
-		/// <summary>
-		/// Add a trait widget from a trait entry object, combining LocText and ToolTip.
-		/// </summary>
 		private void AddTraitWidget(object entry) {
 			if (entry == null) return;
 
 			try {
 				var entryTraverse = Traverse.Create(entry);
 
-				// Try to get LocText from the entry
 				LocText locText = null;
-				UnityEngine.GameObject go = null;
 
-				// Entry might be a GameObject or a component
 				if (entry is UnityEngine.GameObject entryGo) {
 					locText = entryGo.GetComponentInChildren<LocText>();
-					go = entryGo;
 				} else if (entry is UnityEngine.Component entryComp) {
 					locText = entryComp.GetComponentInChildren<LocText>();
-					go = entryComp.gameObject;
 				} else {
-					// Try to get a label field
 					locText = entryTraverse.Field("label").GetValue<LocText>();
-					if (locText != null) go = locText.gameObject;
 				}
 
 				if (locText != null) {
@@ -300,18 +421,12 @@ namespace OniAccess.Input.Handlers {
 			} catch (System.Exception) { }
 		}
 
-		/// <summary>
-		/// Build a composite trait label from a LocText (name + effect) and its ToolTip
-		/// (description). Result: "Mole Hands, +2 Digging, Moves through tiles faster".
-		/// If tooltip is too long, truncates to first sentence.
-		/// </summary>
 		private void AddTraitFromLocText(LocText locText) {
 			if (locText == null || string.IsNullOrEmpty(locText.text)) return;
 
 			string traitText = locText.text.Trim();
 			string tooltipText = null;
 
-			// Get ToolTip description for the full trait info
 			var tooltip = locText.GetComponent<ToolTip>();
 			if (tooltip != null) {
 				try {
@@ -319,10 +434,8 @@ namespace OniAccess.Input.Handlers {
 				} catch (System.Exception) { }
 			}
 
-			// Build composite label
 			string label;
 			if (!string.IsNullOrEmpty(tooltipText)) {
-				// Truncate tooltip to first sentence if too long
 				string trimmedTooltip = TruncateToFirstSentence(tooltipText, 120);
 				label = $"{traitText}, {trimmedTooltip}";
 			} else {
@@ -337,9 +450,6 @@ namespace OniAccess.Input.Handlers {
 			});
 		}
 
-		/// <summary>
-		/// Truncate text to the first sentence if it exceeds maxLength.
-		/// </summary>
 		private static string TruncateToFirstSentence(string text, int maxLength) {
 			if (string.IsNullOrEmpty(text) || text.Length <= maxLength) return text;
 
@@ -351,15 +461,8 @@ namespace OniAccess.Input.Handlers {
 			return text.Substring(0, maxLength);
 		}
 
-		/// <summary>
-		/// Discover attribute widgets. Each attribute gets its own widget.
-		/// Reads the LocText text directly (e.g., "+3 Athletics").
-		/// Shift+I reads the full description from ToolTip.
-		/// </summary>
 		private void DiscoverAttributeWidgets(CharacterContainer container, Traverse traverse) {
-			// Attributes are in iconGroups -- dynamically created with LocText
 			try {
-				// Try to find attribute entries via various field names
 				var iconGroups = traverse.Field("iconGroups")
 					.GetValue<System.Collections.IList>();
 				if (iconGroups != null) {
@@ -370,7 +473,6 @@ namespace OniAccess.Input.Handlers {
 				}
 			} catch (System.Exception) { }
 
-			// Fallback: look for attributeLabels or similar
 			try {
 				var attrLabels = traverse.Field("attributeLabels")
 					.GetValue<LocText[]>();
@@ -388,7 +490,6 @@ namespace OniAccess.Input.Handlers {
 				}
 			} catch (System.Exception) { }
 
-			// Fallback: look for an attributes panel
 			try {
 				var attrPanel = traverse.Field("attributesPanel")
 					.GetValue<UnityEngine.GameObject>();
@@ -411,9 +512,6 @@ namespace OniAccess.Input.Handlers {
 			} catch (System.Exception) { }
 		}
 
-		/// <summary>
-		/// Extract attribute info from an iconGroup entry.
-		/// </summary>
 		private void AddAttributeFromGroup(object group) {
 			if (group == null) return;
 			try {
@@ -443,16 +541,11 @@ namespace OniAccess.Input.Handlers {
 			} catch (System.Exception) { }
 		}
 
-		/// <summary>
-		/// Discover the interest filter dropdown (archetypeDropDown).
-		/// Left/Right cycles the filter options.
-		/// </summary>
 		private void DiscoverFilterDropdown(CharacterContainer container, Traverse traverse) {
 			try {
 				var dropdown = traverse.Field("archetypeDropDown")
 					.GetValue<UnityEngine.Component>();
 				if (dropdown != null && dropdown.gameObject.activeInHierarchy) {
-					// Get current dropdown label
 					string label = "Interest filter";
 					var locText = dropdown.GetComponentInChildren<LocText>();
 					if (locText != null && !string.IsNullOrEmpty(locText.text)) {
@@ -469,10 +562,6 @@ namespace OniAccess.Input.Handlers {
 			} catch (System.Exception) { }
 		}
 
-		/// <summary>
-		/// Discover the reroll/reshuffle button. Only added if present and active
-		/// (Printing Pod variant may not have reroll).
-		/// </summary>
 		private void DiscoverRerollButton(CharacterContainer container, Traverse traverse) {
 			try {
 				var reshuffleButton = traverse.Field("reshuffleButton")
@@ -490,53 +579,107 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		// ========================================
-		// WIDGET ACTIVATION (Enter key)
+		// WIDGET SPEECH
 		// ========================================
 
 		/// <summary>
-		/// Override to handle reroll button post-click: after rerolling, rediscover
-		/// widgets and speak the new dupe name, interests, and traits.
+		/// Override to read colony name live from the input field.
 		/// </summary>
+		protected override string GetWidgetSpeechText(WidgetInfo widget) {
+			if (widget.Tag is string tag && tag == "colony_name"
+				&& widget.Component is KInputTextField tf) {
+				return $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {tf.text}";
+			}
+			return base.GetWidgetSpeechText(widget);
+		}
+
+		// ========================================
+		// WIDGET ACTIVATION (Enter key)
+		// ========================================
+
 		protected override void ActivateCurrentWidget() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
-			if (widget.Type == WidgetType.Button && widget.Label == "Reroll") {
-				// Click the reroll button
+			// Enter dupe mode
+			if (widget.Tag is string tag && tag == "enter_dupe_mode") {
+				_inDupeMode = true;
+				_currentSlot = 0;
+				_retryCount = 0;
+				bool ready = DiscoverWidgets(_screen);
+				_currentIndex = 0;
+				if (ready && _widgets.Count > 0) {
+					Speech.SpeechPipeline.SpeakInterrupt(
+						$"Slot {_currentSlot + 1}, {GetWidgetSpeechText(_widgets[0])}");
+				} else {
+					_pendingRediscovery = true;
+				}
+				return;
+			}
+
+			// Colony name text editing
+			if (widget.Tag is string nameTag && nameTag == "colony_name"
+				&& widget.Component is KInputTextField textField) {
+				if (!_isEditingText) {
+					_cachedTextValue = textField.text;
+					_isEditingText = true;
+					textField.ActivateInputField();
+					Speech.SpeechPipeline.SpeakInterrupt($"Editing, {textField.text}");
+				} else {
+					_isEditingText = false;
+					textField.DeactivateInputField();
+					Speech.SpeechPipeline.SpeakInterrupt($"Confirmed, {textField.text}");
+				}
+				return;
+			}
+
+			// Colony shuffle button: click, then read new name
+			if (widget.Tag is string shuffleTag && shuffleTag == "colony_shuffle") {
+				base.ActivateCurrentWidget();
+				// Read the updated colony name from BaseNaming.inputField
+				try {
+					var baseNamingObj = _screen.gameObject.GetComponent(
+						HarmonyLib.AccessTools.TypeByName("BaseNaming"));
+					if (baseNamingObj != null) {
+						var inputField = Traverse.Create(baseNamingObj)
+							.Field("inputField").GetValue<KInputTextField>();
+						if (inputField != null) {
+							Speech.SpeechPipeline.SpeakInterrupt(
+								$"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {inputField.text}");
+						}
+					}
+				} catch (System.Exception) { }
+				return;
+			}
+
+			// Reroll button in dupe mode
+			if (_inDupeMode && widget.Type == WidgetType.Button && widget.Label == "Reroll") {
 				var kbutton = widget.Component as KButton;
 				kbutton?.SignalClick(KKeyCode.Mouse0);
-
-				// Set flag for pending re-announcement
-				// The CharacterContainer updates synchronously on click in most cases,
-				// but if async, we check on next Tick
+				// Delay announcement by one frame for SetAttributes coroutine
 				_pendingRerollAnnounce = true;
-				AnnounceAfterReroll();
-			} else {
-				base.ActivateCurrentWidget();
+				return;
 			}
+
+			base.ActivateCurrentWidget();
 		}
 
 		/// <summary>
-		/// After reroll, rediscover widgets and announce the new duplicant.
-		/// Per decision: "speak new dupe name, interests, and traits."
+		/// After reroll, wait one frame then rediscover and announce.
 		/// </summary>
 		private void AnnounceAfterReroll() {
 			DiscoverWidgets(_screen);
 			_currentIndex = 0;
 
-			// Speak name, interests, and traits (the first few Label widgets)
 			bool first = true;
 			for (int i = 0; i < _widgets.Count; i++) {
 				var w = _widgets[i];
-				// Stop speaking at first non-Label widget (attributes come after traits,
-				// and the user navigates to read those manually per decision)
 				if (w.Type != WidgetType.Label
 					&& w.Type != WidgetType.Dropdown
 					&& w.Type != WidgetType.Button) {
 					break;
 				}
 
-				// Speak name, interests, traits but stop before attributes
 				if (w.Type == WidgetType.Label && LooksLikeAttribute(w.Label)) {
 					break;
 				}
@@ -552,13 +695,8 @@ namespace OniAccess.Input.Handlers {
 			_pendingRerollAnnounce = false;
 		}
 
-		/// <summary>
-		/// Heuristic: does this label look like an attribute value?
-		/// Attributes typically have format like "+3 Athletics" or "Athletics 3".
-		/// </summary>
 		private static bool LooksLikeAttribute(string label) {
 			if (string.IsNullOrEmpty(label)) return false;
-			// If it starts with + or - followed by a digit, it's an attribute
 			if (label.Length >= 2 && (label[0] == '+' || label[0] == '-')
 				&& char.IsDigit(label[1])) {
 				return true;
@@ -567,17 +705,108 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		// ========================================
-		// TICK: PENDING REROLL CHECK
+		// KEY HANDLING
 		// ========================================
 
 		/// <summary>
-		/// Check for pending reroll announcement each frame.
+		/// Intercept Escape for dupe mode exit and text edit cancel.
 		/// </summary>
+		public override bool HandleKeyDown(KButtonEvent e) {
+			// Text editing: Escape cancels
+			if (_isEditingText) {
+				if (e.TryConsume(Action.Escape)) {
+					CancelTextEdit();
+					return true;
+				}
+				return false;
+			}
+
+			// Dupe mode: Escape exits back to top level
+			if (_inDupeMode) {
+				if (e.TryConsume(Action.Escape)) {
+					_inDupeMode = false;
+					_search.Clear();
+					DiscoverWidgets(_screen);
+					_currentIndex = 0;
+					if (_widgets.Count > 0)
+						Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
+					return true;
+				}
+			}
+
+			if (base.HandleKeyDown(e)) return true;
+			return false;
+		}
+
+		// ========================================
+		// TICK: RETRY, TEXT EDIT, REROLL
+		// ========================================
+
 		public override void Tick() {
+			// Text edit mode: only handle Return to confirm
+			if (_isEditingText) {
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
+					ConfirmTextEdit();
+				}
+				return;
+			}
+
+			// Multi-frame retry: override base class single-retry behavior.
+			// CharacterContainer uses coroutines (DelayedGeneration, SetAttributes)
+			// that take multiple frames to complete.
+			if (_pendingRediscovery) {
+				_pendingRediscovery = false;
+				bool ready = DiscoverWidgets(_screen);
+				_currentIndex = 0;
+				if (ready && _widgets.Count > 0) {
+					_retryCount = 0;
+					var w = _widgets[0];
+					string text = GetWidgetSpeechText(w);
+					string tip = GetTooltipText(w);
+					if (tip != null) text = $"{text}, {tip}";
+					Speech.SpeechPipeline.SpeakQueued(text);
+				} else if (_retryCount < MaxRetries) {
+					_retryCount++;
+					_pendingRediscovery = true;
+				} else {
+					_retryCount = 0;
+					Util.Log.Warn("MinionSelectHandler: gave up retrying DiscoverWidgets");
+				}
+				return;
+			}
+
+			// Pending reroll announce (one-frame delay for SetAttributes coroutine)
 			if (_pendingRerollAnnounce) {
 				AnnounceAfterReroll();
+				return;
 			}
+
 			base.Tick();
+		}
+
+		// ========================================
+		// TEXT EDITING
+		// ========================================
+
+		private void CancelTextEdit() {
+			_isEditingText = false;
+			if (_currentIndex >= 0 && _currentIndex < _widgets.Count
+				&& _widgets[_currentIndex].Component is KInputTextField textField) {
+				textField.text = _cachedTextValue;
+				textField.DeactivateInputField();
+			}
+			Speech.SpeechPipeline.SpeakInterrupt($"Cancelled, {_cachedTextValue}");
+		}
+
+		private void ConfirmTextEdit() {
+			_isEditingText = false;
+			if (_currentIndex >= 0 && _currentIndex < _widgets.Count
+				&& _widgets[_currentIndex].Component is KInputTextField textField) {
+				textField.DeactivateInputField();
+				Speech.SpeechPipeline.SpeakInterrupt($"Confirmed, {textField.text}");
+			} else {
+				Speech.SpeechPipeline.SpeakInterrupt($"Cancelled, {_cachedTextValue}");
+			}
 		}
 	}
 }

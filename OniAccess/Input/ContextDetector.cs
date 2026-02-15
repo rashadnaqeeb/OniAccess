@@ -177,7 +177,7 @@ namespace OniAccess.Input {
 
 			// MinionSelectScreen (CharacterSelectionController -> NewGameFlowScreen)
 			// Handles both initial colony start and Printing Pod duplicant selection
-			Register<MinionSelectScreen>(screen => new Handlers.DuplicantSelectHandler(screen));
+			Register<MinionSelectScreen>(screen => new Handlers.MinionSelectHandler(screen));
 
 			// LoadScreen (KModalScreen -- save/load with two-level colony/save navigation)
 			Register<LoadScreen>(screen => new Handlers.SaveLoadHandler(screen));

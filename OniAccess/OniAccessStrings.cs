@@ -28,7 +28,7 @@ namespace STRINGS {
 			public static LocString GAME_OPTIONS = "Game options";
 			public static LocString COLONY_SUMMARY = "Colony summary";
 			public static LocString WORLD_GEN = "Generating world";
-			public static LocString DUPLICANT_SELECT = "Select duplicants";
+			public static LocString MINION_SELECT = "Select duplicants";
 			public static LocString SAVE_LOAD = "Save and load";
 			public static LocString MODS = "Mods";
 			public static LocString TRANSLATIONS = "Translations";
@@ -70,6 +70,8 @@ namespace STRINGS {
 			public static LocString DLC = "DLC";
 			public static LocString NEWS = "News";
 			public static LocString NO_NEWS = "No news available";
+			public static LocString COLONY_NAME = "Colony name";
+			public static LocString SELECT_DUPLICANTS = "Select duplicants";
 		}
 
 		public class DLC {

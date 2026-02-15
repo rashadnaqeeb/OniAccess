@@ -93,4 +93,17 @@ namespace OniAccess.Patches {
 			}
 		}
 	}
+
+	/// <summary>
+	/// MinionSelectScreen.OnSpawn() does not call base.OnSpawn(), so
+	/// KScreen.Activate() is never invoked and our generic KScreen_Activate_Patch
+	/// never fires. Patch OnSpawn directly to trigger handler activation.
+	/// </summary>
+	[HarmonyPatch(typeof(MinionSelectScreen), "OnSpawn")]
+	internal static class MinionSelectScreen_OnSpawn_Patch {
+		private static void Postfix(MinionSelectScreen __instance) {
+			if (!VanillaMode.IsEnabled) return;
+			ContextDetector.OnScreenActivated(__instance);
+		}
+	}
 }
