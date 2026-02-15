@@ -41,12 +41,6 @@ namespace OniAccess.Handlers.Screens {
 		};
 
 		/// <summary>
-		/// Maps sliders to their game-managed value display LocText (e.g., "Camera Pan Speed: 100%").
-		/// Used by FormatSliderValue to read the game's formatted value after stripping it from the label.
-		/// </summary>
-		private readonly Dictionary<KSlider, LocText> _sliderValueLabels = new Dictionary<KSlider, LocText>();
-
-		/// <summary>
 		/// Represents a group of HierRef radio toggles collapsed into a single cycleable widget.
 		/// </summary>
 		private class RadioGroupInfo {
@@ -67,7 +61,6 @@ namespace OniAccess.Handlers.Screens {
 
 		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
-			_sliderValueLabels.Clear();
 
 			string screenTypeName = screen.GetType().Name;
 
@@ -232,9 +225,6 @@ namespace OniAccess.Handlers.Screens {
 					}
 				}
 				if (label == null) continue;
-
-				if (sliderValueLt != null)
-					_sliderValueLabels[slider] = sliderValueLt;
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
