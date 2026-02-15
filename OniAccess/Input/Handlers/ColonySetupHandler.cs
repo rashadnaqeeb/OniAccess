@@ -97,8 +97,8 @@ namespace OniAccess.Input.Handlers {
 		public override string DisplayName {
 			get {
 				if (IsClusterCategoryScreen || IsModeSelectScreen)
-					return STRINGS.ONIACCESS.HANDLERS.GAME_MODE;
-				return STRINGS.ONIACCESS.HANDLERS.COLONY_DESTINATION;
+					return STRINGS.UI.FRONTEND.MODESELECTSCREEN.HEADER;
+				return STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.TITLE;
 			}
 		}
 
@@ -194,9 +194,9 @@ namespace OniAccess.Input.Handlers {
 		private string GetPanelName() {
 			if (_inCustomize) {
 				switch (_currentSubTab) {
-					case SubTabStoryTraits: return STRINGS.ONIACCESS.PANELS.STORY_TRAITS;
-					case SubTabMixing: return STRINGS.ONIACCESS.PANELS.MIXING;
-					case SubTabSettings: return STRINGS.ONIACCESS.PANELS.SETTINGS;
+					case SubTabStoryTraits: return STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.STORY_TRAITS_HEADER;
+					case SubTabMixing: return STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.MIXING_SETTINGS_HEADER;
+					case SubTabSettings: return STRINGS.UI.FRONTEND.NEWGAMESETTINGS.HEADER;
 					default: return "";
 				}
 			}
@@ -350,7 +350,7 @@ namespace OniAccess.Input.Handlers {
 				if (coordinate != null && coordinate.gameObject.activeInHierarchy) {
 					string currentValue = coordinate.text ?? "";
 					_widgets.Add(new WidgetInfo {
-						Label = $"{STRINGS.ONIACCESS.PANELS.COORDINATE}, {currentValue}",
+						Label = $"{((string)STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.COORDINATE).TrimEnd(':')}, {currentValue}",
 						Component = coordinate,
 						Type = WidgetType.TextInput,
 						GameObject = coordinate.gameObject
@@ -430,7 +430,7 @@ namespace OniAccess.Input.Handlers {
 				? $"{STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.TITLE}: {filteredName}"
 				: filteredName;
 			label += $", {Speech.TextFilter.FilterForSpeech(difficulty)}";
-			label += $", {traitCount} {STRINGS.ONIACCESS.INFO.TRAITS}";
+			label += $", {traitCount} {STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.TRAITS_HEADER}";
 			if (moonCount > 0) {
 				string planetoidTerm = STRINGS.UI.CLUSTERMAP.PLANETOID + "s";
 				label += $", {moonCount} {planetoidTerm}";
@@ -583,7 +583,7 @@ namespace OniAccess.Input.Handlers {
 			} else {
 				// Single world — just show traits directly
 				_widgets.Add(new WidgetInfo {
-					Label = $"{STRINGS.ONIACCESS.INFO.WORLD_TRAITS}:",
+					Label = $"{STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.TRAITS_HEADER}:",
 					Type = WidgetType.Label
 				});
 
@@ -1085,7 +1085,7 @@ namespace OniAccess.Input.Handlers {
 
 			// Coordinate text field
 			if (widget.Type == WidgetType.TextInput && widget.Component is KInputTextField textField) {
-				return $"{STRINGS.ONIACCESS.PANELS.COORDINATE}, {textField.text}";
+				return $"{((string)STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.COORDINATE).TrimEnd(':')}, {textField.text}";
 			}
 
 			return base.GetWidgetSpeechText(widget);
@@ -1119,7 +1119,7 @@ namespace OniAccess.Input.Handlers {
 					_infoClusterKey = _clusterKeys[_clusterIndex];
 					_search.Clear();
 					DiscoverWidgets(_screen);
-					Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.INFO.PANEL_NAME);
+					Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.SELECTED_CLUSTER_TRAITS_HEADER);
 					if (_widgets.Count > 0) {
 						_currentIndex = 0;
 						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));

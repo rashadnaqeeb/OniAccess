@@ -27,8 +27,6 @@ namespace STRINGS {
 			public static LocString GRAPHICS_OPTIONS = "Graphics options";
 			public static LocString GAME_OPTIONS = "Game options";
 			public static LocString COLONY_SUMMARY = "Colony summary";
-			public static LocString GAME_MODE = "Game mode";
-			public static LocString COLONY_DESTINATION = "Colony destination";
 			public static LocString WORLD_GEN = "Generating world";
 			public static LocString DUPLICANT_SELECT = "Select duplicants";
 			public static LocString SAVE_LOAD = "Save and load";
@@ -62,11 +60,7 @@ namespace STRINGS {
 
 		public class PANELS {
 			public static LocString CLUSTERS = "Clusters";
-			public static LocString STORY_TRAITS = "Story traits";
-			public static LocString MIXING = "Mixing";
-			public static LocString SETTINGS = "Settings";
 			public static LocString ACTIONS = "Actions";
-			public static LocString COORDINATE = "Coordinate";
 			public static LocString SEED = "World seed";
 			public static LocString ACHIEVEMENTS = "Achievements";
 			public static LocString VICTORY_CONDITIONS = "Victory conditions";
@@ -85,16 +79,13 @@ namespace STRINGS {
 
 		public class STATES {
 			public static LocString SELECTED = "selected";
-			public static LocString GUARANTEED = "guaranteed";
-			public static LocString FORBIDDEN = "forbidden";
+			public static LocString GUARANTEED = "present";
+			public static LocString FORBIDDEN = "not present";
 		}
 
 		public class INFO {
 			public static LocString DESCRIPTION = "Description";
 			public static LocString DIFFICULTY = "Difficulty";
-			public static LocString TRAITS = "traits";
-			public static LocString PANEL_NAME = "Info";
-			public static LocString WORLD_TRAITS = "World traits";
 			public static LocString STORY_TRAITS = "Story traits";
 			public static LocString NONE = "None";
 		}
