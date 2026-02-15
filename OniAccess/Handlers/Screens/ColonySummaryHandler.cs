@@ -276,10 +276,14 @@ namespace OniAccess.Handlers.Screens {
 		/// </summary>
 		private void ReturnToExplorerView() {
 			// Click the viewOtherColoniesButton to trigger game transition
-			var viewButton = Traverse.Create(_screen).Field("viewOtherColoniesButton")
-				.GetValue<KButton>();
-			if (viewButton != null) {
-				viewButton.SignalClick(KKeyCode.Mouse0);
+			try {
+				var viewButton = Traverse.Create(_screen).Field("viewOtherColoniesButton")
+					.GetValue<KButton>();
+				if (viewButton != null) {
+					viewButton.SignalClick(KKeyCode.Mouse0);
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Error($"ColonySummaryHandler.ReturnToExplorerView: {ex.Message}");
 			}
 
 			_inColonyDetail = false;
