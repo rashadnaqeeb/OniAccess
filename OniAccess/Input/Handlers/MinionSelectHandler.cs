@@ -101,7 +101,7 @@ namespace OniAccess.Input.Handlers {
 			_currentIndex = System.Math.Min(savedIndex, _widgets.Count > 0 ? _widgets.Count - 1 : 0);
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakInterrupt(
-					$"Slot {_currentSlot + 1}, {GetWidgetSpeechText(_widgets[_currentIndex])}");
+					$"{string.Format(STRINGS.ONIACCESS.INFO.SLOT, _currentSlot + 1)}, {GetWidgetSpeechText(_widgets[_currentIndex])}");
 			}
 		}
 
@@ -145,7 +145,7 @@ namespace OniAccess.Input.Handlers {
 							var shuffleBtn = bnt.Field("shuffleBaseNameButton").GetValue<KButton>();
 							if (shuffleBtn != null && shuffleBtn.gameObject.activeInHierarchy) {
 								_widgets.Add(new WidgetInfo {
-									Label = GetButtonLabel(shuffleBtn, "Shuffle name"),
+									Label = GetButtonLabel(shuffleBtn, (string)STRINGS.ONIACCESS.PANELS.SHUFFLE_NAME),
 									Component = shuffleBtn,
 									Type = WidgetType.Button,
 									GameObject = shuffleBtn.gameObject,
@@ -177,7 +177,7 @@ namespace OniAccess.Input.Handlers {
 				var proceedButton = Traverse.Create(screen).Field("proceedButton")
 					.GetValue<KButton>();
 				if (proceedButton != null && proceedButton.gameObject.activeInHierarchy) {
-					string label = GetButtonLabel(proceedButton, "Embark");
+					string label = GetButtonLabel(proceedButton, (string)STRINGS.ONIACCESS.BUTTONS.EMBARK);
 					_widgets.Add(new WidgetInfo {
 						Label = label,
 						Component = proceedButton,
@@ -196,7 +196,7 @@ namespace OniAccess.Input.Handlers {
 						.GetValue<KButton>();
 					if (backButton != null && backButton.gameObject.activeInHierarchy
 						&& backButton.isInteractable) {
-						string label = GetButtonLabel(backButton, "Back");
+						string label = GetButtonLabel(backButton, (string)STRINGS.ONIACCESS.BUTTONS.BACK);
 						_widgets.Add(new WidgetInfo {
 							Label = label,
 							Component = backButton,
@@ -361,7 +361,7 @@ namespace OniAccess.Input.Handlers {
 
 					if (parts.Count > 0) {
 						_widgets.Add(new WidgetInfo {
-							Label = $"Interest: {string.Join(", ", parts)}",
+							Label = $"{STRINGS.ONIACCESS.INFO.INTEREST}: {string.Join(", ", parts)}",
 							Component = null,
 							Type = WidgetType.Label,
 							GameObject = entryGo,
@@ -394,8 +394,8 @@ namespace OniAccess.Input.Handlers {
 
 					string tooltip = trait.GetTooltip();
 					string label = string.IsNullOrEmpty(tooltip)
-						? $"Trait: {name}"
-						: $"Trait: {name}, {tooltip}";
+						? $"{STRINGS.ONIACCESS.INFO.TRAIT}: {name}"
+						: $"{STRINGS.ONIACCESS.INFO.TRAIT}: {name}, {tooltip}";
 
 					_widgets.Add(new WidgetInfo {
 						Label = label,
@@ -522,14 +522,15 @@ namespace OniAccess.Input.Handlers {
 				var ct = Traverse.Create(container);
 				var aptId = ct.Field("guaranteedAptitudeID").GetValue<string>();
 				if (string.IsNullOrEmpty(aptId)) {
-					return "Interest filter, Any";
+					return $"{STRINGS.ONIACCESS.INFO.INTEREST_FILTER}, {STRINGS.ONIACCESS.STATES.ANY}";
 				}
 				var skillGroup = Db.Get().SkillGroups.TryGet(aptId);
 				return skillGroup != null
-					? $"Interest filter, {skillGroup.Name}"
-					: $"Interest filter, {aptId}";
-			} catch (System.Exception) {
-				return "Interest filter";
+					? $"{STRINGS.ONIACCESS.INFO.INTEREST_FILTER}, {skillGroup.Name}"
+					: $"{STRINGS.ONIACCESS.INFO.INTEREST_FILTER}, {aptId}";
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"MinionSelectHandler.GetInterestFilterLabel: {ex.Message}");
+				return (string)STRINGS.ONIACCESS.INFO.INTEREST_FILTER;
 			}
 		}
 
@@ -585,7 +586,7 @@ namespace OniAccess.Input.Handlers {
 				if (reshuffleButton != null && reshuffleButton.gameObject.activeInHierarchy
 					&& reshuffleButton.isInteractable) {
 					_widgets.Add(new WidgetInfo {
-						Label = "Reroll",
+						Label = (string)STRINGS.ONIACCESS.BUTTONS.REROLL,
 						Component = reshuffleButton,
 						Type = WidgetType.Button,
 						GameObject = reshuffleButton.gameObject,
@@ -671,7 +672,7 @@ namespace OniAccess.Input.Handlers {
 				_currentIndex = 0;
 				if (ready && _widgets.Count > 0) {
 					Speech.SpeechPipeline.SpeakInterrupt(
-						$"Slot {_currentSlot + 1}, {GetWidgetSpeechText(_widgets[0])}");
+						$"{string.Format(STRINGS.ONIACCESS.INFO.SLOT, _currentSlot + 1)}, {GetWidgetSpeechText(_widgets[0])}");
 				} else {
 					_pendingRediscovery = true;
 				}

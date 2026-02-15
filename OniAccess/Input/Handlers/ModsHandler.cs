@@ -63,7 +63,7 @@ namespace OniAccess.Input.Handlers {
 						var manageBtn = hierRef.GetReference<KButton>("ManageButton");
 						if (manageBtn != null && manageBtn.isInteractable) {
 							var manageText = manageBtn.GetComponentInChildren<LocText>();
-							string manageLabel = manageText != null ? manageText.text : "Manage";
+							string manageLabel = manageText != null ? manageText.text : (string)STRINGS.ONIACCESS.BUTTONS.MANAGE;
 							_widgets.Add(new WidgetInfo {
 								Label = manageLabel,
 								Component = manageBtn,
@@ -109,7 +109,7 @@ namespace OniAccess.Input.Handlers {
 			if (widget.Type == WidgetType.Toggle) {
 				var mt = widget.Component as MultiToggle;
 				if (mt != null) {
-					string state = mt.CurrentState == 1 ? "enabled" : "disabled";
+					string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
 					return $"{widget.Label}, {state}";
 				}
 			}

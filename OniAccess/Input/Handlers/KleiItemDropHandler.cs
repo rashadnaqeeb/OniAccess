@@ -50,7 +50,7 @@ namespace OniAccess.Input.Handlers {
 					if (cg == null || cg.alpha > 0.5f) {
 						var acceptButton = t.Field<KButton>("acceptButton").Value;
 						if (acceptButton != null) {
-							string label = GetButtonLabel(acceptButton, "Accept");
+							string label = GetButtonLabel(acceptButton, (string)STRINGS.ONIACCESS.BUTTONS.ACCEPT);
 							_widgets.Add(new WidgetInfo {
 								Label = label,
 								Component = acceptButton,
@@ -75,7 +75,7 @@ namespace OniAccess.Input.Handlers {
 						if (cg != null && cg.alpha <= 0.5f) visible = false;
 					}
 					if (visible) {
-						string label = GetButtonLabel(acknowledgeButton, "OK");
+						string label = GetButtonLabel(acknowledgeButton, (string)STRINGS.ONIACCESS.BUTTONS.OK);
 						_widgets.Add(new WidgetInfo {
 							Label = label,
 							Component = acknowledgeButton,

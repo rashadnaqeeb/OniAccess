@@ -79,7 +79,7 @@ namespace OniAccess.Input.Handlers {
 				case 1: return STRINGS.UI.LOCKER_MENU.BUTTON_DUPLICANTS;
 				case 2: return STRINGS.UI.LOCKER_MENU.BUTTON_OUTFITS;
 				case 3: return STRINGS.UI.LOCKER_MENU.BUTTON_CLAIM;
-				default: return "Unknown";
+				default: return (string)STRINGS.ONIACCESS.BUTTONS.UNKNOWN;
 			}
 		}
 

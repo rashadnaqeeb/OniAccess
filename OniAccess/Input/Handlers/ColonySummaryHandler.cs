@@ -91,7 +91,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Add close/navigation buttons at the end
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", "Close", _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.ONIACCESS.BUTTONS.CLOSE, _widgets);
 		}
 
 		// ========================================
@@ -151,8 +151,8 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Navigation buttons: "View other colonies" and "Close"
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "viewOtherColoniesButton", "View other colonies", _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", "Close", _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "viewOtherColoniesButton", (string)STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.ONIACCESS.BUTTONS.CLOSE, _widgets);
 		}
 
 		// ========================================
@@ -200,7 +200,7 @@ namespace OniAccess.Input.Handlers {
 				}
 
 				_widgets.Add(new WidgetInfo {
-					Label = "achievement",
+					Label = (string)STRINGS.ONIACCESS.INFO.ACHIEVEMENT,
 					Component = null,
 					Type = WidgetType.Label,
 					GameObject = child.gameObject
@@ -224,7 +224,7 @@ namespace OniAccess.Input.Handlers {
 			if (!_inColonyDetail && widget.Type == WidgetType.Button) {
 				// Check if this is a colony entry (not the close button)
 				var kbutton = widget.Component as KButton;
-				if (kbutton != null && widget.Label != "Close") {
+				if (kbutton != null && widget.Label != (string)STRINGS.ONIACCESS.BUTTONS.CLOSE) {
 					// Click the colony entry to open detail view
 					kbutton.SignalClick(KKeyCode.Mouse0);
 					_inColonyDetail = true;
@@ -243,7 +243,7 @@ namespace OniAccess.Input.Handlers {
 				}
 			}
 
-			if (_inColonyDetail && widget.Label == "View other colonies") {
+			if (_inColonyDetail && widget.Label == (string)STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES) {
 				// Return to explorer view
 				ReturnToExplorerView();
 				return;
@@ -341,7 +341,7 @@ namespace OniAccess.Input.Handlers {
 		protected override string GetWidgetSpeechText(WidgetInfo widget) {
 			if (_currentSection == SectionAchievements
 				&& widget.GameObject != null
-				&& widget.Label == "achievement") {
+				&& widget.Label == (string)STRINGS.ONIACCESS.INFO.ACHIEVEMENT) {
 				return ReadAchievementText(widget.GameObject.transform);
 			}
 			return base.GetWidgetSpeechText(widget);
@@ -370,7 +370,7 @@ namespace OniAccess.Input.Handlers {
 				}
 			}
 
-			if (string.IsNullOrEmpty(name)) return "achievement";
+			if (string.IsNullOrEmpty(name)) return (string)STRINGS.ONIACCESS.INFO.ACHIEVEMENT;
 			if (!string.IsNullOrEmpty(desc) && desc != name)
 				return $"{name}, {desc}";
 			return name;

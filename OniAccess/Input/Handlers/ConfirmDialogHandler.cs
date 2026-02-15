@@ -73,8 +73,8 @@ namespace OniAccess.Input.Handlers {
 			var screenTraverse = Traverse.Create(screen);
 			bool foundNamedButtons = false;
 
-			foundNamedButtons |= TryAddButtonField(screenTraverse, "confirmButton", "OK");
-			foundNamedButtons |= TryAddButtonField(screenTraverse, "cancelButton", "Cancel");
+			foundNamedButtons |= TryAddButtonField(screenTraverse, "confirmButton", (string)STRINGS.ONIACCESS.BUTTONS.OK);
+			foundNamedButtons |= TryAddButtonField(screenTraverse, "cancelButton", (string)STRINGS.ONIACCESS.BUTTONS.CANCEL);
 			foundNamedButtons |= TryAddButtonField(screenTraverse, "configurableButton", null);
 
 			// If no named buttons found, walk children for any KButton instances.
@@ -127,7 +127,8 @@ namespace OniAccess.Input.Handlers {
 					GameObject = go
 				});
 				return true;
-			} catch (System.Exception) {
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"ConfirmDialogHandler.TryAddButtonField: {ex.Message}");
 				return false;
 			}
 		}
@@ -146,14 +147,18 @@ namespace OniAccess.Input.Handlers {
 					_dialogTitle = titleText.text;
 					return;
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"ConfirmDialogHandler.TryExtractTitle(titleText): {ex.Message}");
+			}
 			try {
 				var header = Traverse.Create(screen).Field("header")
 					.GetValue<LocText>();
 				if (header != null && !string.IsNullOrEmpty(header.text)) {
 					_dialogTitle = header.text;
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"ConfirmDialogHandler.TryExtractTitle(header): {ex.Message}");
+			}
 		}
 	}
 }

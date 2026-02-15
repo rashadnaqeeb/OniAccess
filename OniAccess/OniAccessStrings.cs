@@ -82,10 +82,40 @@ namespace STRINGS {
 			public static LocString NOT_OWNED = "Not owned";
 		}
 
+		public class TEXT_EDIT {
+			public static LocString EDITING = "Editing";
+			public static LocString CONFIRMED = "Confirmed";
+			public static LocString CANCELLED = "Cancelled";
+		}
+
 		public class STATES {
 			public static LocString SELECTED = "selected";
 			public static LocString GUARANTEED = "present";
 			public static LocString FORBIDDEN = "not present";
+			public static LocString ON = "on";
+			public static LocString OFF = "off";
+			public static LocString ENABLED = "enabled";
+			public static LocString DISABLED = "disabled";
+			public static LocString ANY = "Any";
+		}
+
+		public class BUTTONS {
+			public static LocString OK = "OK";
+			public static LocString CANCEL = "Cancel";
+			public static LocString CLOSE = "Close";
+			public static LocString ACCEPT = "Accept";
+			public static LocString MANAGE = "Manage";
+			public static LocString RESUME_GAME = "Resume Game";
+			public static LocString REROLL = "Reroll";
+			public static LocString VIEW_OTHER_COLONIES = "View other colonies";
+			public static LocString UNKNOWN = "Unknown";
+			public static LocString EMBARK = "Embark";
+			public static LocString BACK = "Back";
+		}
+
+		public class WORLD_GEN {
+			public static LocString COMPLETE = "World generation complete";
+			public static LocString PERCENT = "{0} percent";
 		}
 
 		public class INFO {
@@ -93,6 +123,12 @@ namespace STRINGS {
 			public static LocString DIFFICULTY = "Difficulty";
 			public static LocString STORY_TRAITS = "Story traits";
 			public static LocString NONE = "None";
+			public static LocString SETTING = "setting";
+			public static LocString ACHIEVEMENT = "achievement";
+			public static LocString INTEREST = "Interest";
+			public static LocString INTEREST_FILTER = "Interest filter";
+			public static LocString TRAIT = "Trait";
+			public static LocString SLOT = "Slot {0}";
 		}
 
 		public class SAVE_LOAD {
@@ -100,6 +136,8 @@ namespace STRINGS {
 			public static LocString CONVERT_ALL_TO_CLOUD = "Convert all to cloud";
 			public static LocString CONVERT_ALL_TO_LOCAL = "Convert all to local";
 			public static LocString DELETE = "Delete";
+			public static LocString NEWEST = "newest";
+			public static LocString AUTO_SAVE = "auto-save";
 		}
 
 		public class KEY_BINDINGS {

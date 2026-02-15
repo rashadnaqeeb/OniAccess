@@ -407,7 +407,7 @@ namespace OniAccess.Input.Handlers {
 			// Add CloseButton
 			var closeButton = traverse.Field("CloseButton").GetValue<KButton>();
 			if (closeButton != null) {
-				string label = CleanLabel(GetButtonLabel(closeButton)) ?? "Close";
+				string label = CleanLabel(GetButtonLabel(closeButton)) ?? (string)STRINGS.ONIACCESS.BUTTONS.CLOSE;
 				_widgets.Add(new WidgetInfo {
 					Label = label,
 					Component = closeButton,
@@ -463,14 +463,14 @@ namespace OniAccess.Input.Handlers {
 						// MultiToggle: read CurrentState
 						var mt = widget.Component as MultiToggle;
 						if (mt != null) {
-							string state = mt.CurrentState == 1 ? "on" : "off";
+							string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 							return $"{widget.Label}, {state}";
 						}
 						// HierRef toggle: read CheckMark active state
 						if (widget.Tag is HierarchyReferences hr) {
 							string checkRef = hr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
 							bool isOn = hr.GetReference(checkRef)?.gameObject.activeSelf ?? false;
-							string state = isOn ? "on" : "off";
+							string state = isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 							return $"{widget.Label}, {state}";
 						}
 						// KToggle — fall through to base
@@ -513,7 +513,7 @@ namespace OniAccess.Input.Handlers {
 				var multiToggle = widget.Component as MultiToggle;
 				if (multiToggle != null) {
 					multiToggle.onClick?.Invoke();
-					string state = multiToggle.CurrentState == 1 ? "on" : "off";
+					string state = multiToggle.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 					Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
 					return;
 				}
@@ -525,7 +525,7 @@ namespace OniAccess.Input.Handlers {
 					// Read state after click — CheckMark active means "on"
 					string checkRef = hr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
 					bool isOn = hr.GetReference(checkRef)?.gameObject.activeSelf ?? false;
-					string state = isOn ? "on" : "off";
+					string state = isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 					Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
 					return;
 				}

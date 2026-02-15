@@ -301,7 +301,7 @@ namespace OniAccess.Input.Handlers {
 			if (screens != null && idx >= 0 && idx < screens.Count)
 				return screens[idx];
 
-			return "Key bindings";
+			return (string)STRINGS.ONIACCESS.HANDLERS.KEY_BINDINGS;
 		}
 	}
 }

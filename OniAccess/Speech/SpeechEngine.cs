@@ -6,14 +6,11 @@ using UnityEngine;
 namespace OniAccess.Speech {
 	/// <summary>
 	/// Tolk P/Invoke wrapper providing screen reader speech output.
-	/// Evolved from Speech.cs -- preserves all working Tolk signatures
-	/// and initialization logic with proper lifecycle management.
-	///
-	/// Text filtering is NOT handled here (deferred to TextFilter.cs in Plan 02).
-	/// Say() passes text directly to Tolk without filtering.
+	/// Say() passes text directly to Tolk without filtering;
+	/// filtering is handled by TextFilter via SpeechPipeline.
 	/// </summary>
 	public static class SpeechEngine {
-		// Tolk P/Invoke declarations (preserved from Speech.cs)
+		// Tolk P/Invoke declarations
 		[DllImport("Tolk.dll", CallingConvention = CallingConvention.Cdecl)]
 		private static extern void Tolk_Load();
 
@@ -35,7 +32,7 @@ namespace OniAccess.Speech {
 		[DllImport("Tolk.dll", CallingConvention = CallingConvention.Cdecl)]
 		private static extern bool Tolk_Silence();
 
-		// State tracking (preserved from Speech.cs)
+		// State tracking
 		private static bool _initialized = false;
 		private static bool _available = false;
 
@@ -104,7 +101,6 @@ namespace OniAccess.Speech {
 		/// <summary>
 		/// Speak the given text through the screen reader.
 		/// Text is passed directly to Tolk without filtering.
-		/// Plan 02 will insert the TextFilter pipeline before the Tolk call.
 		/// </summary>
 		/// <param name="text">Text to speak</param>
 		/// <param name="interrupt">If true, interrupts any current speech</param>

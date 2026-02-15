@@ -63,7 +63,7 @@ namespace OniAccess.Input.Handlers {
 			if (resumeButton != null && resumeButton.gameObject.activeInHierarchy
 				&& resumeButton.isInteractable) {
 				var resumeLabel = resumeButton.GetComponentInChildren<LocText>();
-				string resumeText = resumeLabel != null ? resumeLabel.text : "Resume Game";
+				string resumeText = resumeLabel != null ? resumeLabel.text : (string)STRINGS.ONIACCESS.BUTTONS.RESUME_GAME;
 				_widgets.Add(new WidgetInfo {
 					Label = resumeText,
 					Component = resumeButton,

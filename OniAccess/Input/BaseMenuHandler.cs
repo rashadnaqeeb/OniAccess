@@ -103,10 +103,10 @@ namespace OniAccess.Input {
 		/// Each subclass implements to enumerate that screen's interactive elements.
 		/// </summary>
 		/// <returns>
-	/// true if discovery is complete and widgets are ready to speak;
-	/// false if the screen isn't ready yet — BaseMenuHandler will retry next frame.
-	/// </returns>
-	public abstract bool DiscoverWidgets(KScreen screen);
+		/// true if discovery is complete and widgets are ready to speak;
+		/// false if the screen isn't ready yet, BaseMenuHandler will retry next frame.
+		/// </returns>
+		public abstract bool DiscoverWidgets(KScreen screen);
 
 		// ========================================
 		// LIFECYCLE
@@ -407,7 +407,7 @@ namespace OniAccess.Input {
 				case WidgetType.Toggle: {
 						var toggle = widget.Component as KToggle;
 						if (toggle != null) {
-							string state = toggle.isOn ? "on" : "off";
+							string state = toggle.isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 							return $"{widget.Label}, {state}";
 						}
 						return widget.Label;
@@ -469,7 +469,7 @@ namespace OniAccess.Input {
 						var toggle = widget.Component as KToggle;
 						if (toggle != null) {
 							toggle.Click();
-							string state = toggle.isOn ? "on" : "off";
+							string state = toggle.isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 							Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
 						}
 						break;

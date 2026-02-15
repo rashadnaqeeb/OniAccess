@@ -61,7 +61,9 @@ namespace OniAccess.Input.Handlers {
 			try {
 				saveButtonRoot = traverse.Field("saveButtonRoot")
 					.GetValue<UnityEngine.GameObject>();
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"SaveLoadHandler.DiscoverColonyList(saveButtonRoot): {ex.Message}");
+			}
 
 			if (saveButtonRoot == null || !saveButtonRoot.activeInHierarchy) {
 				DiscoverColonyListFallback(screen);
@@ -136,7 +138,9 @@ namespace OniAccess.Input.Handlers {
 					Type = WidgetType.Button,
 					GameObject = button.gameObject
 				});
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"SaveLoadHandler.AddTraverseButton: {ex.Message}");
+			}
 		}
 
 		/// <summary>
@@ -184,7 +188,9 @@ namespace OniAccess.Input.Handlers {
 					?? component.gameObject.GetComponent<LocText>();
 				if (locText != null && !string.IsNullOrEmpty(locText.text))
 					return locText.text.Trim();
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"SaveLoadHandler.GetReferenceText: {ex.Message}");
+			}
 			return null;
 		}
 
@@ -228,7 +234,9 @@ namespace OniAccess.Input.Handlers {
 			try {
 				colonyViewRoot = traverse.Field("colonyViewRoot")
 					.GetValue<UnityEngine.GameObject>();
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"SaveLoadHandler.DiscoverColonySaves(colonyViewRoot): {ex.Message}");
+			}
 
 			if (colonyViewRoot == null || !colonyViewRoot.activeInHierarchy) {
 				_inColonySaveView = false;
@@ -296,7 +304,9 @@ namespace OniAccess.Input.Handlers {
 							});
 						}
 					}
-				} catch (System.Exception) { }
+				} catch (System.Exception ex) {
+					Util.Log.Debug($"SaveLoadHandler.DiscoverColonySaves(deleteButton): {ex.Message}");
+				}
 			}
 		}
 
@@ -311,8 +321,8 @@ namespace OniAccess.Input.Handlers {
 			bool isAutoSave = IsLabelActive(entry, "AutoLabel");
 			bool isNewest = IsLabelActive(entry, "NewestLabel");
 
-			if (isNewest) parts.Add("newest");
-			if (isAutoSave) parts.Add("auto-save");
+			if (isNewest) parts.Add((string)STRINGS.ONIACCESS.SAVE_LOAD.NEWEST);
+			if (isAutoSave) parts.Add((string)STRINGS.ONIACCESS.SAVE_LOAD.AUTO_SAVE);
 
 			string saveText = GetReferenceText(entry, "SaveText");
 			if (!string.IsNullOrEmpty(saveText)) {
@@ -336,7 +346,8 @@ namespace OniAccess.Input.Handlers {
 			try {
 				var obj = refs.GetReference(refName);
 				return obj != null && obj.gameObject.activeInHierarchy;
-			} catch (System.Exception) {
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"SaveLoadHandler.IsLabelActive: {ex.Message}");
 				return false;
 			}
 		}
@@ -473,7 +484,9 @@ namespace OniAccess.Input.Handlers {
 						backButton?.SignalClick(KKeyCode.Mouse0);
 					}
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"SaveLoadHandler.TransitionToColonyList: {ex.Message}");
+			}
 
 			_inColonySaveView = false;
 			DiscoverWidgets(_screen);
@@ -493,7 +506,8 @@ namespace OniAccess.Input.Handlers {
 				var viewRoot = Traverse.Create(_screen).Field("colonyViewRoot")
 					.GetValue<UnityEngine.GameObject>();
 				return viewRoot != null && viewRoot.activeInHierarchy;
-			} catch (System.Exception) {
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"SaveLoadHandler.IsColonyViewRootActive: {ex.Message}");
 				return false;
 			}
 		}

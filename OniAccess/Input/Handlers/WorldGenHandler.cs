@@ -77,9 +77,9 @@ namespace OniAccess.Input.Handlers {
 			// Speak at 25% intervals
 			if (rounded >= _lastSpokenPercent + SpeechInterval) {
 				if (percent >= 1f) {
-					Speech.SpeechPipeline.SpeakInterrupt("World generation complete");
+					Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.WORLD_GEN.COMPLETE);
 				} else {
-					Speech.SpeechPipeline.SpeakInterrupt($"{rounded} percent");
+					Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.WORLD_GEN.PERCENT, rounded));
 				}
 				_lastSpokenPercent = rounded;
 			}

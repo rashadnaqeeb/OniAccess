@@ -13,7 +13,7 @@ namespace OniAccess.Input.Handlers {
 	///
 	/// ModeSelectScreen: two MultiToggle buttons (Survival / No Sweat).
 	/// ClusterCategorySelectionScreen: simple list of MultiToggle buttons for game modes.
-	/// ColonyDestinationSelectScreen: flat widget list — cluster selector at position 0
+	/// ColonyDestinationSelectScreen: flat widget list -- cluster selector at position 0
 	///   (Left/Right cycles clusters, Enter opens info), then action buttons below.
 	///   Customize button opens a sub-view with three sub-tabs:
 	///   Settings → Mixing → Story Traits (cycled with Tab/Shift+Tab, Escape exits).
@@ -77,7 +77,7 @@ namespace OniAccess.Input.Handlers {
 		/// Delays speech by one frame after cluster cycling or shuffle so traits
 		/// have time to populate after OnAsteroidClicked triggers ReInitialize.
 		/// Only used for runtime re-queries (Left/Right cycling, shuffle button),
-		/// not for initial screen open — that case returns false from DiscoverWidgets
+		/// not for initial screen open,that case returns false from DiscoverWidgets
 		/// and the base class handles the retry.
 		/// </summary>
 		private bool _pendingClusterRefresh;
@@ -258,7 +258,7 @@ namespace OniAccess.Input.Handlers {
 
 				var hoverDesc = configTraverse.Field("hoverDescriptionText").GetValue<string>();
 
-				// Read title from game STRINGS — LocText.text returns prefab
+				// Read title from game STRINGS,LocText.text returns prefab
 				// placeholders (e.g. "_event") because SetText() populates
 				// TMPro's internal buffer, not the .text property.
 				string name = "";
@@ -360,7 +360,7 @@ namespace OniAccess.Input.Handlers {
 						GameObject = coordinate.gameObject
 					});
 				}
-			} catch (System.Exception) { }
+			} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.DiscoverWidgets(coordinate): {ex.Message}"); }
 
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "customizeButton", null, _widgets);
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "launchButton", null, _widgets);
@@ -417,7 +417,7 @@ namespace OniAccess.Input.Handlers {
 				ColonyDestinationAsteroidBeltData.survivalOptions.Count - 1);
 			string difficulty = ColonyDestinationAsteroidBeltData.survivalOptions[diffIdx].first;
 
-			// Trait count — only actual world traits (colored entries)
+			// Trait count,only actual world traits (colored entries)
 			var traits = belt.GetTraitDescriptors();
 			int traitCount = 0;
 			foreach (var trait in traits) {
@@ -480,7 +480,7 @@ namespace OniAccess.Input.Handlers {
 			string diffTooltip = ColonyDestinationAsteroidBeltData.survivalOptions[diffIdx].second;
 			string diffLabel = $"{STRINGS.ONIACCESS.INFO.DIFFICULTY}: {Speech.TextFilter.FilterForSpeech(diffName)}";
 			if (!string.IsNullOrEmpty(diffTooltip))
-				diffLabel += $" — {Speech.TextFilter.FilterForSpeech(diffTooltip)}";
+				diffLabel += $", {Speech.TextFilter.FilterForSpeech(diffTooltip)}";
 			_widgets.Add(new WidgetInfo {
 				Label = diffLabel,
 				Type = WidgetType.Label
@@ -563,7 +563,7 @@ namespace OniAccess.Input.Handlers {
 						string traitLabel = Speech.TextFilter.FilterForSpeech(text);
 						string tooltip = trait.tooltip?.Trim() ?? "";
 						if (!string.IsNullOrEmpty(tooltip))
-							traitLabel += $" — {Speech.TextFilter.FilterForSpeech(tooltip)}";
+							traitLabel += $", {Speech.TextFilter.FilterForSpeech(tooltip)}";
 						_widgets.Add(new WidgetInfo {
 							Label = traitLabel,
 							Type = WidgetType.Label
@@ -576,7 +576,7 @@ namespace OniAccess.Input.Handlers {
 						string noTraitsDesc = STRINGS.WORLD_TRAITS.NO_TRAITS.DESCRIPTION;
 						string label = Speech.TextFilter.FilterForSpeech(noTraits);
 						if (!string.IsNullOrEmpty(noTraitsDesc))
-							label += $" — {Speech.TextFilter.FilterForSpeech(noTraitsDesc)}";
+							label += $", {Speech.TextFilter.FilterForSpeech(noTraitsDesc)}";
 						_widgets.Add(new WidgetInfo {
 							Label = label,
 							Type = WidgetType.Label
@@ -584,7 +584,7 @@ namespace OniAccess.Input.Handlers {
 					}
 				}
 			} else {
-				// Single world — just show traits directly
+				// Single world,just show traits directly
 				_widgets.Add(new WidgetInfo {
 					Label = $"{STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.TRAITS_HEADER}:",
 					Type = WidgetType.Label
@@ -608,7 +608,7 @@ namespace OniAccess.Input.Handlers {
 					string traitLabel = Speech.TextFilter.FilterForSpeech(text);
 					string tooltip = trait.tooltip?.Trim() ?? "";
 					if (!string.IsNullOrEmpty(tooltip))
-						traitLabel += $" — {Speech.TextFilter.FilterForSpeech(tooltip)}";
+						traitLabel += $", {Speech.TextFilter.FilterForSpeech(tooltip)}";
 					_widgets.Add(new WidgetInfo {
 						Label = traitLabel,
 						Type = WidgetType.Label
@@ -654,9 +654,9 @@ namespace OniAccess.Input.Handlers {
 						if (config != null) {
 							name = Traverse.Create(config).Property("label").GetValue<string>() ?? "";
 							if (string.IsNullOrEmpty(name))
-								name = Traverse.Create(config).Property("id").GetValue<string>() ?? "setting";
+								name = Traverse.Create(config).Property("id").GetValue<string>() ?? (string)STRINGS.ONIACCESS.INFO.SETTING;
 						}
-						if (string.IsNullOrEmpty(name)) name = "setting";
+						if (string.IsNullOrEmpty(name)) name = (string)STRINGS.ONIACCESS.INFO.SETTING;
 					}
 					string label = !string.IsNullOrEmpty(value)
 						? $"{name}, {value}"
@@ -677,11 +677,11 @@ namespace OniAccess.Input.Handlers {
 						if (config != null) {
 							name = Traverse.Create(config).Property("label").GetValue<string>() ?? "";
 							if (string.IsNullOrEmpty(name))
-								name = Traverse.Create(config).Property("id").GetValue<string>() ?? "setting";
+								name = Traverse.Create(config).Property("id").GetValue<string>() ?? (string)STRINGS.ONIACCESS.INFO.SETTING;
 						}
-						if (string.IsNullOrEmpty(name)) name = "setting";
+						if (string.IsNullOrEmpty(name)) name = (string)STRINGS.ONIACCESS.INFO.SETTING;
 					}
-					string state = (toggle != null && toggle.CurrentState == 1) ? "enabled" : "disabled";
+					string state = (toggle != null && toggle.CurrentState == 1) ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
 					_widgets.Add(new WidgetInfo {
 						Label = $"{name}, {state}",
 						Component = widget,
@@ -740,7 +740,7 @@ namespace OniAccess.Input.Handlers {
 					var hierRef = rowGO.GetComponent<HierarchyReferences>();
 					if (hierRef == null) { storyIdx++; continue; }
 
-					// Get name from the database — LocText.text is empty at discovery time
+					// Get name from the database,LocText.text is empty at discovery time
 					string name = "";
 					var storyTrait = stories[storyIdx].StoryTrait;
 					if (storyTrait != null)
@@ -760,7 +760,7 @@ namespace OniAccess.Input.Handlers {
 						var level = CustomGameSettings.Instance.GetCurrentStoryTraitSetting(storyId);
 						if (level != null && level.id == "Guaranteed")
 							state = STRINGS.ONIACCESS.STATES.GUARANTEED;
-					} catch (System.Exception) { }
+					} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.DiscoverStoryWidgets(state): {ex.Message}"); }
 
 					// Build label with description
 					string label = $"{name}, {state}";
@@ -770,9 +770,9 @@ namespace OniAccess.Input.Handlers {
 								? Strings.Get(storyTrait.description + "_SHORT")
 								: Strings.Get(storyTrait.description);
 							if (!string.IsNullOrEmpty(desc))
-								label = $"{name}, {state} — {Speech.TextFilter.FilterForSpeech(desc)}";
+								label = $"{name}, {state}, {Speech.TextFilter.FilterForSpeech(desc)}";
 						}
-					} catch (System.Exception) { }
+					} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.DiscoverStoryWidgets(desc): {ex.Message}"); }
 
 					_widgets.Add(new WidgetInfo {
 						Label = label,
@@ -782,7 +782,8 @@ namespace OniAccess.Input.Handlers {
 						Tag = storyId
 					});
 					storyIdx++;
-				} catch (System.Exception) {
+				} catch (System.Exception ex) {
+					Util.Log.Debug($"ColonySetupHandler.DiscoverStoryWidgets: {ex.Message}");
 					storyIdx++;
 				}
 			}
@@ -821,7 +822,7 @@ namespace OniAccess.Input.Handlers {
 						try {
 							titleLocText.ForceMeshUpdate();
 							sectionName = titleLocText.GetParsedText() ?? "";
-						} catch { /* can throw if mesh not generated yet */ }
+						} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.DiscoverMixingWidgets(title): {ex.Message}"); }
 						// Fallback to .text, but reject prefab placeholders (start with _)
 						if (string.IsNullOrEmpty(sectionName)) {
 							string raw = titleLocText.text ?? "";
@@ -889,7 +890,7 @@ namespace OniAccess.Input.Handlers {
 						}
 						if (string.IsNullOrEmpty(name)) continue;
 
-						string state = toggle.CurrentState == 1 ? "enabled" : "disabled";
+						string state = toggle.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
 						_widgets.Add(new WidgetInfo {
 							Label = $"{name}, {state}",
 							Component = toggle,
@@ -944,7 +945,7 @@ namespace OniAccess.Input.Handlers {
 
 		/// <summary>
 		/// Accept MultiToggle as valid Toggle (story traits, mixing DLC toggles).
-		/// Cluster selector has null GameObject — accept it as a Label.
+		/// Cluster selector has null GameObject,accept it as a Label.
 		/// </summary>
 		protected override bool IsWidgetValid(WidgetInfo widget) {
 			if (widget == null) return false;
@@ -984,7 +985,7 @@ namespace OniAccess.Input.Handlers {
 					var level = CustomGameSettings.Instance.GetCurrentStoryTraitSetting(storyId);
 					if (level != null && level.id == "Guaranteed")
 						state = STRINGS.ONIACCESS.STATES.GUARANTEED;
-				} catch (System.Exception) { }
+				} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.GetWidgetSpeechText(storyState): {ex.Message}"); }
 
 				// Re-read the name from the database (LocText.text may be empty)
 				string name = "";
@@ -992,7 +993,7 @@ namespace OniAccess.Input.Handlers {
 					var story = Db.Get().Stories.Get(storyId);
 					if (story?.StoryTrait != null)
 						name = Strings.Get(story.StoryTrait.name);
-				} catch (System.Exception) { }
+				} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.GetWidgetSpeechText(storyName): {ex.Message}"); }
 				if (string.IsNullOrEmpty(name)) name = widget.Label;
 
 				// Include trait description
@@ -1005,9 +1006,9 @@ namespace OniAccess.Input.Handlers {
 							? Strings.Get(story.StoryTrait.description + "_SHORT")
 							: Strings.Get(story.StoryTrait.description);
 						if (!string.IsNullOrEmpty(desc))
-							label = $"{name}, {state} — {Speech.TextFilter.FilterForSpeech(desc)}";
+							label = $"{name}, {state}, {Speech.TextFilter.FilterForSpeech(desc)}";
 					}
-				} catch (System.Exception) { }
+				} catch (System.Exception ex) { Util.Log.Debug($"ColonySetupHandler.GetWidgetSpeechText(storyDesc): {ex.Message}"); }
 				return label;
 			}
 
@@ -1015,7 +1016,7 @@ namespace OniAccess.Input.Handlers {
 			if (_inCustomize && _currentSubTab == SubTabMixing && widget.Type == WidgetType.Toggle) {
 				var mt = widget.Component as MultiToggle;
 				if (mt != null) {
-					string state = mt.CurrentState == 1 ? "enabled" : "disabled";
+					string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
 					// Read label from widget's "Label" child LocText
 					string name = "";
 					if (widget.GameObject != null) {
@@ -1066,7 +1067,7 @@ namespace OniAccess.Input.Handlers {
 				var labelText = twt.Field("Label").GetValue<LocText>();
 				var toggle = twt.Field("Toggle").GetValue<MultiToggle>();
 				string name = labelText != null ? labelText.text : widget.Label;
-				string state = (toggle != null && toggle.CurrentState == 1) ? "enabled" : "disabled";
+				string state = (toggle != null && toggle.CurrentState == 1) ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
 				return $"{name}, {state}";
 			}
 
@@ -1134,7 +1135,7 @@ namespace OniAccess.Input.Handlers {
 			// ChangeState() runs async (next Update), so compute new state from old
 			if (_inCustomize && _currentSubTab == SubTabMixing && widget.Type == WidgetType.Toggle
 				&& widget.Component is MultiToggle mixingToggle) {
-				string newState = mixingToggle.CurrentState == 1 ? "disabled" : "enabled";
+				string newState = mixingToggle.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.DISABLED : (string)STRINGS.ONIACCESS.STATES.ENABLED;
 				mixingToggle.onClick?.Invoke();
 				string name = widget.Label.Contains(",") ? widget.Label.Substring(0, widget.Label.IndexOf(',')) : widget.Label;
 				Speech.SpeechPipeline.SpeakInterrupt($"{name}, {newState}");
@@ -1176,7 +1177,7 @@ namespace OniAccess.Input.Handlers {
 			if (_inCustomize && _currentSubTab == SubTabSettings && widget.Component is CustomGameSettingToggleWidget settingsToggle) {
 				var twt = Traverse.Create(settingsToggle);
 				var settingsMultiToggle = twt.Field("Toggle").GetValue<MultiToggle>();
-				string newState = (settingsMultiToggle != null && settingsMultiToggle.CurrentState == 1) ? "disabled" : "enabled";
+				string newState = (settingsMultiToggle != null && settingsMultiToggle.CurrentState == 1) ? (string)STRINGS.ONIACCESS.STATES.DISABLED : (string)STRINGS.ONIACCESS.STATES.ENABLED;
 				var labelText = twt.Field("Label").GetValue<LocText>();
 				string name = labelText != null ? labelText.text : widget.Label;
 				settingsToggle.ToggleSetting();
@@ -1185,7 +1186,7 @@ namespace OniAccess.Input.Handlers {
 				string tooltip = (toggleTooltip != null && toggleTooltip.multiStringCount > 0) ? toggleTooltip.GetMultiString(0) : "";
 				string speech = $"{name}, {newState}";
 				if (!string.IsNullOrEmpty(tooltip))
-					speech += $" \u2014 {Speech.TextFilter.FilterForSpeech(tooltip)}";
+					speech += $", {Speech.TextFilter.FilterForSpeech(tooltip)}";
 				Speech.SpeechPipeline.SpeakInterrupt(speech);
 				return;
 			}
@@ -1214,7 +1215,7 @@ namespace OniAccess.Input.Handlers {
 		}
 
 		/// <summary>
-		/// Select a cluster without speaking — used by Left/Right cycling.
+		/// Select a cluster without speaking,used by Left/Right cycling.
 		/// Fires OnAsteroidClicked to populate traits; speech comes after
 		/// the one-frame delay via _pendingClusterRefresh.
 		/// </summary>
@@ -1281,7 +1282,7 @@ namespace OniAccess.Input.Handlers {
 
 			if (!cycled) return;
 
-			// Force synchronous UI refresh — the game defers Refresh() to the
+			// Force synchronous UI refresh,the game defers Refresh() to the
 			// next Update() via isDirty, so value labels are stale without this
 			settingWidget.Refresh();
 
@@ -1298,7 +1299,7 @@ namespace OniAccess.Input.Handlers {
 			if (newText != oldText) {
 				string speech = newText;
 				if (!string.IsNullOrEmpty(valueTooltip))
-					speech += $" \u2014 {Speech.TextFilter.FilterForSpeech(valueTooltip)}";
+					speech += $", {Speech.TextFilter.FilterForSpeech(valueTooltip)}";
 				Speech.SpeechPipeline.SpeakInterrupt(speech);
 			}
 		}
@@ -1371,7 +1372,7 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (_textEdit.IsEditing) {
-				// Escape cancels text edit — check before base so it doesn't
+				// Escape cancels text edit,check before base so it doesn't
 				// get consumed as a search-clear
 				if (e.TryConsume(Action.Escape)) {
 					_textEdit.Cancel();

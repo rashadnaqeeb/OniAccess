@@ -9,7 +9,7 @@ namespace OniAccess.Input {
 			_fieldAccessor = () => field;
 			IsEditing = true;
 			field.ActivateInputField();
-			Speech.SpeechPipeline.SpeakInterrupt($"Editing, {field.text}");
+			Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.EDITING}, {field.text}");
 		}
 
 		public void Begin(System.Func<KInputTextField> accessor) {
@@ -22,7 +22,7 @@ namespace OniAccess.Input {
 			field.text = _cachedValue;
 			field.Select();
 			field.ActivateInputField();
-			Speech.SpeechPipeline.SpeakInterrupt($"Editing, {_cachedValue}");
+			Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.EDITING}, {_cachedValue}");
 		}
 
 		public void Confirm() {
@@ -30,9 +30,9 @@ namespace OniAccess.Input {
 			var field = _fieldAccessor?.Invoke();
 			if (field != null) {
 				field.DeactivateInputField();
-				Speech.SpeechPipeline.SpeakInterrupt($"Confirmed, {field.text}");
+				Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.CONFIRMED}, {field.text}");
 			} else {
-				Speech.SpeechPipeline.SpeakInterrupt($"Cancelled, {_cachedValue}");
+				Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED}, {_cachedValue}");
 			}
 		}
 
@@ -43,7 +43,7 @@ namespace OniAccess.Input {
 				field.text = _cachedValue;
 				field.DeactivateInputField();
 			}
-			Speech.SpeechPipeline.SpeakInterrupt($"Cancelled, {_cachedValue}");
+			Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED}, {_cachedValue}");
 		}
 	}
 }
