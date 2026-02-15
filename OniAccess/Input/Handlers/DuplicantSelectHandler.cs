@@ -75,7 +75,7 @@ namespace OniAccess.Input.Handlers {
 		// WIDGET DISCOVERY
 		// ========================================
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			// Find CharacterContainer instances
@@ -83,7 +83,7 @@ namespace OniAccess.Input.Handlers {
 			_containers = screen.GetComponentsInChildren<CharacterContainer>(true);
 			if (_containers == null || _containers.Length == 0) {
 				Util.Log.Debug("DuplicantSelectHandler.DiscoverWidgets: 0 widgets");
-				return;
+				return true;
 			}
 
 			// Clamp slot index
@@ -91,17 +91,18 @@ namespace OniAccess.Input.Handlers {
 			var container = _containers[_currentSlot] as CharacterContainer;
 			if (container == null) {
 				Util.Log.Debug("DuplicantSelectHandler.DiscoverWidgets: 0 widgets");
-				return;
+				return true;
 			}
 
 			// Only process active containers
 			if (!container.gameObject.activeInHierarchy) {
 				Util.Log.Debug("DuplicantSelectHandler.DiscoverWidgets: 0 widgets");
-				return;
+				return true;
 			}
 
 			DiscoverSlotWidgets(container);
 			Util.Log.Debug($"DuplicantSelectHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			return true;
 		}
 
 		/// <summary>

@@ -40,7 +40,7 @@ namespace OniAccess.Input.Handlers {
 		// WIDGET DISCOVERY
 		// ========================================
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			switch (_currentSection) {
@@ -50,6 +50,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			Util.Log.Debug($"MainMenuHandler.DiscoverWidgets: section={_currentSection}, {_widgets.Count} widgets");
+			return true;
 		}
 
 		/// <summary>

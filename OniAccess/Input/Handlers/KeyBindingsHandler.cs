@@ -89,13 +89,13 @@ namespace OniAccess.Input.Handlers {
 		// WIDGET DISCOVERY
 		// ========================================
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			var parentObj = _parentField?.GetValue<UnityEngine.GameObject>();
 			if (parentObj == null) {
 				Log.Debug("KeyBindingsHandler: parent GameObject is null");
-				return;
+				return true;
 			}
 
 			var parentTransform = parentObj.transform;
@@ -138,6 +138,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			Log.Debug($"KeyBindingsHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			return true;
 		}
 
 		// ========================================

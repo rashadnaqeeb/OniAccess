@@ -23,7 +23,7 @@ namespace OniAccess.Input.Handlers {
 			HelpEntries = BuildHelpEntries();
 		}
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			// Walk entryParent's direct children — each is a mod entry with HierarchyReferences
@@ -81,6 +81,7 @@ namespace OniAccess.Input.Handlers {
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", null, _widgets);
 
 			Log.Debug($"ModsHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			return true;
 		}
 
 		/// <summary>

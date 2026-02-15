@@ -37,7 +37,7 @@ namespace OniAccess.Input.Handlers {
 			base.OnActivate();
 		}
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			if (!_inColonyDetail) {
@@ -51,6 +51,7 @@ namespace OniAccess.Input.Handlers {
 				else
 					DiscoverDetailViewWidgets(screen);
 			}
+			return true;
 		}
 
 		// ========================================

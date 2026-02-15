@@ -64,7 +64,7 @@ namespace OniAccess.Input.Handlers {
 			base.OnActivate();
 		}
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 			_sliderValueLabels.Clear();
 
@@ -79,6 +79,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			Log.Debug($"OptionsMenuHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			return true;
 		}
 
 		/// <summary>

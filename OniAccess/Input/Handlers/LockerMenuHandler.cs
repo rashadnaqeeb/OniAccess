@@ -33,7 +33,7 @@ namespace OniAccess.Input.Handlers {
 			HelpEntries = BuildHelpEntries();
 		}
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			var screenTraverse = Traverse.Create(screen);
@@ -70,6 +70,7 @@ namespace OniAccess.Input.Handlers {
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", null, _widgets);
 
 			Log.Debug($"LockerMenuHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			return true;
 		}
 
 		private static string GetFallbackLabel(int index) {

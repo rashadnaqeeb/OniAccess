@@ -35,7 +35,7 @@ namespace OniAccess.Input.Handlers {
 			return base.GetWidgetSpeechText(widget);
 		}
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			// Determine which button name corresponds to the active language.
@@ -81,6 +81,7 @@ namespace OniAccess.Input.Handlers {
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "dismissButton", null, _widgets);
 
 			Log.Debug($"TranslationHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			return true;
 		}
 
 		/// <summary>

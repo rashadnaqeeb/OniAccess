@@ -77,18 +77,13 @@ namespace OniAccess.Input.Handlers {
 		private int _currentSubTab;
 
 		/// <summary>
-		/// Delays speech by one frame after cluster navigation so traits
-		/// have time to populate after ReInitialize (triggered by OnAsteroidClicked).
+		/// Delays speech by one frame after cluster cycling or shuffle so traits
+		/// have time to populate after OnAsteroidClicked triggers ReInitialize.
+		/// Only used for runtime re-queries (Left/Right cycling, shuffle button),
+		/// not for initial screen open — that case returns false from DiscoverWidgets
+		/// and the base class handles the retry.
 		/// </summary>
 		private bool _pendingClusterRefresh;
-
-		/// <summary>
-		/// When true, the pending cluster refresh uses SpeakQueued instead of
-		/// SpeakInterrupt, so the screen title finishes before the first widget.
-		/// Set during the initial deferred discovery when cluster keys weren't
-		/// ready at OnActivate time.
-		/// </summary>
-		private bool _queuedClusterRefresh;
 
 		/// <summary>
 		/// When true, the next cluster speech omits the "Choose a Destination" prefix.
@@ -212,7 +207,7 @@ namespace OniAccess.Input.Handlers {
 		// WIDGET DISCOVERY
 		// ========================================
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			if (IsModeSelectScreen) {
@@ -234,8 +229,9 @@ namespace OniAccess.Input.Handlers {
 			} else if (_inInfoSubmenu) {
 				DiscoverClusterInfoWidgets(screen);
 			} else {
-				DiscoverDestinationWidgets(screen);
+				return DiscoverDestinationWidgets(screen);
 			}
+			return true;
 		}
 
 		/// <summary>
@@ -313,32 +309,28 @@ namespace OniAccess.Input.Handlers {
 		/// Position 0 = cluster selector (Left/Right cycles, Enter = info)
 		/// Position 1+ = Shuffle, Coordinate, Customize, Launch
 		/// </summary>
-		private void DiscoverDestinationWidgets(KScreen screen) {
+		/// <returns>
+		/// false if the destination panel isn't initialized yet (cluster keys not
+		/// available). The base class will retry next frame via _pendingRediscovery.
+		/// </returns>
+		private bool DiscoverDestinationWidgets(KScreen screen) {
 			// Position 0: cluster selector
 			PopulateClusterKeys(screen);
-			if (_clusterKeys != null && _clusterKeys.Count > 0) {
-				_clusterIndex = UnityEngine.Mathf.Clamp(_clusterIndex, 0, _clusterKeys.Count - 1);
-				string clusterLabel = BuildClusterSelectorLabel(_clusterKeys[_clusterIndex]);
-				_widgets.Add(new WidgetInfo {
-					Label = clusterLabel,
-					Component = null,
-					Type = WidgetType.Label,
-					GameObject = null,
-					Tag = "cluster_selector"
-				});
-			} else {
+			if (_clusterKeys == null || _clusterKeys.Count == 0) {
 				// Panel not yet initialized (OnSpawn hasn't finished).
-				// Retry next frame when traits/data are populated.
-				// Use queued speech so the screen title finishes first.
-				// Return early — don't add action buttons yet, or OnActivate
-				// will queue the shuffle button before the cluster selector.
-				// Clear _pendingRediscovery so the base Tick() doesn't also
-				// re-discover and speak the cluster selector a second time.
-				_pendingClusterRefresh = true;
-				_queuedClusterRefresh = true;
-				_pendingRediscovery = false;
-				return;
+				// Signal "not ready" so the base class retries next frame.
+				return false;
 			}
+
+			_clusterIndex = UnityEngine.Mathf.Clamp(_clusterIndex, 0, _clusterKeys.Count - 1);
+			string clusterLabel = BuildClusterSelectorLabel(_clusterKeys[_clusterIndex]);
+			_widgets.Add(new WidgetInfo {
+				Label = clusterLabel,
+				Component = null,
+				Type = WidgetType.Label,
+				GameObject = null,
+				Tag = "cluster_selector"
+			});
 
 			// Action buttons (no back button)
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "shuffleButton", null, _widgets);
@@ -360,6 +352,7 @@ namespace OniAccess.Input.Handlers {
 
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "customizeButton", null, _widgets);
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "launchButton", null, _widgets);
+			return true;
 		}
 
 		/// <summary>
@@ -1343,23 +1336,15 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Deferred cluster refresh: traits needed one frame to populate
-			// after SelectCluster fired OnAsteroidClicked. Now re-discover
-			// widgets and speak the current cluster with accurate trait counts.
+			// after Left/Right cycling or shuffle fired OnAsteroidClicked.
+			// Re-discover widgets and speak the current cluster.
 			if (_pendingClusterRefresh) {
 				_pendingClusterRefresh = false;
-				bool queued = _queuedClusterRefresh;
-				_queuedClusterRefresh = false;
 				int savedIndex = _currentIndex;
 				DiscoverWidgets(_screen);
 				_currentIndex = UnityEngine.Mathf.Clamp(savedIndex, 0,
 					_widgets.Count > 0 ? _widgets.Count - 1 : 0);
-				if (queued) {
-					// Initial deferred discovery: queue so screen title finishes first
-					if (_currentIndex >= 0 && _currentIndex < _widgets.Count)
-						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[_currentIndex]));
-				} else {
-					SpeakCurrentWidget();
-				}
+				SpeakCurrentWidget();
 				return;
 			}
 

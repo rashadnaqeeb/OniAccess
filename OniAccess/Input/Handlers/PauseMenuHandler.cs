@@ -20,7 +20,7 @@ namespace OniAccess.Input.Handlers {
 			HelpEntries = BuildHelpEntries();
 		}
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			// KButtonMenu.buttons is an IList of ButtonInfo structs with .text labels
@@ -30,7 +30,7 @@ namespace OniAccess.Input.Handlers {
 			var buttonObjects = Traverse.Create(screen).Field("buttonObjects")
 				.GetValue<UnityEngine.GameObject[]>();
 
-			if (buttons == null || buttonObjects == null) return;
+			if (buttons == null || buttonObjects == null) return true;
 
 			int count = System.Math.Min(buttons.Count, buttonObjects.Length);
 			for (int i = 0; i < count; i++) {
@@ -53,6 +53,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			Util.Log.Debug($"PauseMenuHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			return true;
 		}
 	}
 }

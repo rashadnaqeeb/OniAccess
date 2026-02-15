@@ -34,7 +34,7 @@ namespace OniAccess.Input.Handlers {
 		// WIDGET DISCOVERY
 		// ========================================
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			if (!_inColonySaveView) {
@@ -44,6 +44,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			Util.Log.Debug($"SaveLoadHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			return true;
 		}
 
 		/// <summary>

@@ -37,7 +37,7 @@ namespace OniAccess.Input.Handlers {
 			base.OnActivate();
 		}
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			var t = Traverse.Create(screen);
@@ -92,6 +92,7 @@ namespace OniAccess.Input.Handlers {
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", null, _widgets);
 
 			Log.Debug($"KleiItemDropHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			return true;
 		}
 
 		public override void Tick() {

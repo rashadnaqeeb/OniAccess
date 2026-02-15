@@ -28,7 +28,7 @@ namespace OniAccess.Input.Handlers {
 			base.OnActivate();
 		}
 
-		public override void DiscoverWidgets(KScreen screen) {
+		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			// Find the dialog message text via popupMessage field or titleText field
@@ -99,6 +99,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			Util.Log.Debug($"ConfirmDialogHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			return true;
 		}
 
 		/// <summary>

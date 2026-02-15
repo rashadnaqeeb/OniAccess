@@ -94,7 +94,11 @@ namespace OniAccess.Input {
 		/// Populate _widgets from the screen's UI hierarchy.
 		/// Each subclass implements to enumerate that screen's interactive elements.
 		/// </summary>
-		public abstract void DiscoverWidgets(KScreen screen);
+		/// <returns>
+	/// true if discovery is complete and widgets are ready to speak;
+	/// false if the screen isn't ready yet — BaseMenuHandler will retry next frame.
+	/// </returns>
+	public abstract bool DiscoverWidgets(KScreen screen);
 
 		// ========================================
 		// LIFECYCLE
@@ -106,11 +110,11 @@ namespace OniAccess.Input {
 		/// </summary>
 		public override void OnActivate() {
 			base.OnActivate();
-			DiscoverWidgets(_screen);
+			bool ready = DiscoverWidgets(_screen);
 			_currentIndex = 0;
 			_search.Clear();
 
-			if (_widgets.Count > 0) {
+			if (ready && _widgets.Count > 0) {
 				_pendingRediscovery = false;
 				var w = _widgets[0];
 				string text = GetWidgetSpeechText(w);
@@ -118,9 +122,9 @@ namespace OniAccess.Input {
 				if (tip != null) text = $"{text}, {tip}";
 				Speech.SpeechPipeline.SpeakQueued(text);
 			} else {
-				// Screen may not be fully initialized yet (Harmony postfix fires
-				// inside base.OnSpawn before subclass finishes setup). Retry once
-				// on the next Tick when the UI is ready.
+				// Screen not ready yet (subclass signaled false, or zero widgets
+				// because Harmony postfix fired before subclass OnSpawn). Retry
+				// once on the next Tick when the UI is ready.
 				_pendingRediscovery = true;
 			}
 		}
@@ -148,9 +152,9 @@ namespace OniAccess.Input {
 			// Retry once now that the frame has advanced.
 			if (_pendingRediscovery) {
 				_pendingRediscovery = false;
-				DiscoverWidgets(_screen);
+				bool ready = DiscoverWidgets(_screen);
 				_currentIndex = 0;
-				if (_widgets.Count > 0) {
+				if (ready && _widgets.Count > 0) {
 					var w = _widgets[0];
 					string text = GetWidgetSpeechText(w);
 					string tip = GetTooltipText(w);
