@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using HarmonyLib;
+using Klei.AI;
 
 namespace OniAccess.Input.Handlers {
 	/// <summary>
@@ -9,7 +10,7 @@ namespace OniAccess.Input.Handlers {
 	/// Two-level navigation:
 	/// TOP LEVEL (Up/Down): Colony name, Shuffle name, Select duplicants, Embark
 	/// DUPE MODE (Up/Down within slot, Tab/Shift+Tab between slots):
-	///   name, interests, traits, attributes, interest filter, reroll
+	///   name, interests, traits, expectations (stress/joy), attributes, description, interest filter, reroll
 	///
 	/// Colony name is editable (Enter to edit, Enter to confirm, Escape to cancel).
 	/// Shuffle name button clicks and speaks the new name.
@@ -23,7 +24,7 @@ namespace OniAccess.Input.Handlers {
 	/// Per locked decisions:
 	/// - Traits: full info upfront (name, effect, description all spoken together)
 	/// - Attributes: one per arrow press ("Athletics 3")
-	/// - After reroll: speak new name, interests, and traits automatically
+	/// - After reroll: speak new name and interests automatically
 	/// </summary>
 	public class MinionSelectHandler : BaseMenuHandler {
 		private int _currentSlot;
@@ -250,22 +251,28 @@ namespace OniAccess.Input.Handlers {
 		private void DiscoverSlotWidgets(CharacterContainer container) {
 			var traverse = Traverse.Create(container);
 
-			// (a) Name: get from characterNameTitle or EditableTitleBar
+			// (a) Name
 			DiscoverNameWidget(container, traverse);
 
-			// (b) Interests: combined as one label
+			// (b) Interests: one per interest with attribute bonus
 			DiscoverInterestsWidget(container, traverse);
 
-			// (c) Traits: one per trait, with full info (name + effect + description)
+			// (c) Traits: one per trait, with full info
 			DiscoverTraitWidgets(container, traverse);
 
-			// (d) Attributes: one per attribute
+			// (d) Expectations: stress reaction & overjoyed response
+			DiscoverExpectationWidgets(container, traverse);
+
+			// (e) Attributes: one per attribute
 			DiscoverAttributeWidgets(container, traverse);
 
-			// (e) Interest filter dropdown (archetypeDropDown)
+			// (f) Description / bio
+			DiscoverDescriptionWidget(container, traverse);
+
+			// (g) Interest filter dropdown (archetypeDropDown)
 			DiscoverFilterDropdown(container, traverse);
 
-			// (f) Reroll button (reshuffleButton)
+			// (h) Reroll button (reshuffleButton)
 			DiscoverRerollButton(container, traverse);
 		}
 
@@ -275,46 +282,46 @@ namespace OniAccess.Input.Handlers {
 		/// to searching for LocText children with a name-like pattern.
 		/// </summary>
 		private void DiscoverNameWidget(CharacterContainer container, Traverse traverse) {
-			string name = null;
-			UnityEngine.GameObject nameGo = null;
-
-			// Try EditableTitleBar.text via characterNameTitle field
 			try {
 				var titleBar = traverse.Field("characterNameTitle").GetValue<object>();
-				if (titleBar != null) {
-					var titleBarTraverse = Traverse.Create(titleBar);
-					// EditableTitleBar stores its text in a LocText child
-					var locText = titleBarTraverse.Field("titleText")
-						.GetValue<LocText>();
-					if (locText != null && !string.IsNullOrEmpty(locText.text)) {
-						name = locText.text;
-						nameGo = locText.gameObject;
-					}
+				if (titleBar == null) return;
+				var titleBarTraverse = Traverse.Create(titleBar);
+
+				// Name label
+				var locText = titleBarTraverse.Field("titleText").GetValue<LocText>();
+				if (locText != null && !string.IsNullOrEmpty(locText.text)) {
+					_widgets.Add(new WidgetInfo {
+						Label = locText.text,
+						Component = null,
+						Type = WidgetType.Label,
+						GameObject = locText.gameObject
+					});
 				}
-			} catch (System.Exception) {
-				// Field may not exist or be a different type
-			}
 
-			// Fallback: look for any prominent LocText that might be the name
-			if (string.IsNullOrEmpty(name)) {
-				try {
-					var nameTitle = traverse.Field("nameTitle")
-						.GetValue<LocText>();
-					if (nameTitle != null && !string.IsNullOrEmpty(nameTitle.text)) {
-						name = nameTitle.text;
-						nameGo = nameTitle.gameObject;
-					}
-				} catch (System.Exception) { }
-			}
+				// Rename button (editNameButton)
+				var editBtn = titleBarTraverse.Field("editNameButton").GetValue<KButton>();
+				if (editBtn != null && editBtn.gameObject.activeInHierarchy) {
+					_widgets.Add(new WidgetInfo {
+						Label = STRINGS.ONIACCESS.PANELS.RENAME,
+						Component = editBtn,
+						Type = WidgetType.Button,
+						GameObject = editBtn.gameObject,
+						Tag = "dupe_rename"
+					});
+				}
 
-			if (!string.IsNullOrEmpty(name)) {
-				_widgets.Add(new WidgetInfo {
-					Label = name,
-					Component = null,
-					Type = WidgetType.Label,
-					GameObject = nameGo ?? container.gameObject
-				});
-			}
+				// Shuffle name button (randomNameButton)
+				var randomBtn = titleBarTraverse.Field("randomNameButton").GetValue<KButton>();
+				if (randomBtn != null) {
+					_widgets.Add(new WidgetInfo {
+						Label = STRINGS.ONIACCESS.PANELS.SHUFFLE_NAME,
+						Component = randomBtn,
+						Type = WidgetType.Button,
+						GameObject = randomBtn.gameObject,
+						Tag = "dupe_shuffle_name"
+					});
+				}
+			} catch (System.Exception) { }
 		}
 
 		/// <summary>
@@ -323,41 +330,29 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		private void DiscoverInterestsWidget(CharacterContainer container, Traverse traverse) {
 			try {
-				var aptitudeLabel = traverse.Field("aptitudeLabel")
-					.GetValue<LocText>();
-				if (aptitudeLabel != null && !string.IsNullOrEmpty(aptitudeLabel.text)) {
-					_widgets.Add(new WidgetInfo {
-						Label = aptitudeLabel.text,
-						Component = null,
-						Type = WidgetType.Label,
-						GameObject = aptitudeLabel.gameObject
-					});
-					return;
-				}
-			} catch (System.Exception) { }
-
-			// Fallback: look for interest entries in the container hierarchy
-			try {
 				var aptitudeEntries = traverse.Field("aptitudeEntries")
-					.GetValue<System.Collections.IList>();
-				if (aptitudeEntries != null && aptitudeEntries.Count > 0) {
-					var interestNames = new List<string>();
-					foreach (var entry in aptitudeEntries) {
-						var entryTraverse = Traverse.Create(entry);
-						var locText = entryTraverse.Field("label")
-							.GetValue<LocText>();
-						if (locText != null && !string.IsNullOrEmpty(locText.text)) {
-							interestNames.Add(locText.text);
-						}
+					.GetValue<List<UnityEngine.GameObject>>();
+				if (aptitudeEntries == null) return;
+				foreach (var entryGo in aptitudeEntries) {
+					if (entryGo == null || !entryGo.activeInHierarchy) continue;
+					var locTexts = entryGo.GetComponentsInChildren<LocText>(false);
+					if (locTexts == null || locTexts.Length == 0) continue;
+
+					// Combine active LocTexts: interest name + attribute bonus
+					var parts = new List<string>();
+					foreach (var lt in locTexts) {
+						if (lt == null || string.IsNullOrEmpty(lt.text)
+							|| !lt.gameObject.activeInHierarchy) continue;
+						parts.Add(lt.text.Trim());
 					}
 
-					if (interestNames.Count > 0) {
-						string combined = "Interests: " + string.Join(", ", interestNames);
+					if (parts.Count > 0) {
 						_widgets.Add(new WidgetInfo {
-							Label = combined,
+							Label = string.Join(", ", parts),
 							Component = null,
 							Type = WidgetType.Label,
-							GameObject = container.gameObject
+							GameObject = entryGo,
+							Tag = "interest"
 						});
 					}
 				}
@@ -371,171 +366,106 @@ namespace OniAccess.Input.Handlers {
 		/// </summary>
 		private void DiscoverTraitWidgets(CharacterContainer container, Traverse traverse) {
 			try {
-				var traitEntries = traverse.Field("traitEntries")
-					.GetValue<System.Collections.IList>();
-				if (traitEntries != null) {
-					foreach (var entry in traitEntries) {
-						AddTraitWidget(entry);
-					}
-					return;
+				var stats = traverse.Field("stats").GetValue<MinionStartingStats>();
+				if (stats == null) return;
+				var traits = stats.Traits;
+				if (traits == null) return;
+
+				// Skip index 0 (same as game's SetInfoText does)
+				for (int i = 1; i < traits.Count; i++) {
+					var trait = traits[i];
+					string name = trait.GetName();
+					if (string.IsNullOrEmpty(name)) continue;
+
+					string tooltip = trait.GetTooltip();
+					string label = string.IsNullOrEmpty(tooltip)
+						? name
+						: $"{name}, {tooltip}";
+
+					_widgets.Add(new WidgetInfo {
+						Label = label,
+						Component = null,
+						Type = WidgetType.Label,
+						GameObject = container.gameObject
+					});
 				}
 			} catch (System.Exception) { }
+		}
 
-			// Fallback: look for a traits panel and walk its LocText children
+		private void DiscoverExpectationWidgets(CharacterContainer container, Traverse traverse) {
 			try {
-				var traitPanel = traverse.Field("traitsPanel")
-					.GetValue<UnityEngine.GameObject>();
-				if (traitPanel == null) {
-					traitPanel = traverse.Field("traitsList")
-						.GetValue<UnityEngine.GameObject>();
-				}
-				if (traitPanel != null) {
-					var locTexts = traitPanel.GetComponentsInChildren<LocText>(false);
-					foreach (var lt in locTexts) {
-						if (lt == null || string.IsNullOrEmpty(lt.text)) continue;
-						AddTraitFromLocText(lt);
+				var labels = traverse.Field("expectationLabels")
+					.GetValue<List<LocText>>();
+				if (labels == null) return;
+				foreach (var lt in labels) {
+					if (lt == null || string.IsNullOrEmpty(lt.text)
+						|| !lt.gameObject.activeInHierarchy) continue;
+
+					string label = lt.text.Trim();
+					var tooltip = lt.GetComponent<ToolTip>();
+					if (tooltip != null) {
+						try {
+							string ttText = tooltip.GetMultiString(0);
+							if (!string.IsNullOrEmpty(ttText)) {
+								label = $"{label}, {ttText}";
+							}
+						} catch (System.Exception) { }
 					}
+
+					_widgets.Add(new WidgetInfo {
+						Label = label,
+						Component = null,
+						Type = WidgetType.Label,
+						GameObject = lt.gameObject
+					});
 				}
 			} catch (System.Exception) { }
 		}
 
-		private void AddTraitWidget(object entry) {
-			if (entry == null) return;
-
+		private void DiscoverDescriptionWidget(CharacterContainer container, Traverse traverse) {
 			try {
-				var entryTraverse = Traverse.Create(entry);
-
-				LocText locText = null;
-
-				if (entry is UnityEngine.GameObject entryGo) {
-					locText = entryGo.GetComponentInChildren<LocText>();
-				} else if (entry is UnityEngine.Component entryComp) {
-					locText = entryComp.GetComponentInChildren<LocText>();
-				} else {
-					locText = entryTraverse.Field("label").GetValue<LocText>();
-				}
-
-				if (locText != null) {
-					AddTraitFromLocText(locText);
+				var descLocText = traverse.Field("description")
+					.GetValue<LocText>();
+				if (descLocText != null && !string.IsNullOrEmpty(descLocText.text)) {
+					_widgets.Add(new WidgetInfo {
+						Label = descLocText.text.Trim(),
+						Component = null,
+						Type = WidgetType.Label,
+						GameObject = descLocText.gameObject
+					});
 				}
 			} catch (System.Exception) { }
-		}
-
-		private void AddTraitFromLocText(LocText locText) {
-			if (locText == null || string.IsNullOrEmpty(locText.text)) return;
-
-			string traitText = locText.text.Trim();
-			string tooltipText = null;
-
-			var tooltip = locText.GetComponent<ToolTip>();
-			if (tooltip != null) {
-				try {
-					tooltipText = tooltip.GetMultiString(0);
-				} catch (System.Exception) { }
-			}
-
-			string label;
-			if (!string.IsNullOrEmpty(tooltipText)) {
-				string trimmedTooltip = TruncateToFirstSentence(tooltipText, 120);
-				label = $"{traitText}, {trimmedTooltip}";
-			} else {
-				label = traitText;
-			}
-
-			_widgets.Add(new WidgetInfo {
-				Label = label,
-				Component = null,
-				Type = WidgetType.Label,
-				GameObject = locText.gameObject
-			});
-		}
-
-		private static string TruncateToFirstSentence(string text, int maxLength) {
-			if (string.IsNullOrEmpty(text) || text.Length <= maxLength) return text;
-
-			int periodIdx = text.IndexOf('.');
-			if (periodIdx > 0 && periodIdx < maxLength) {
-				return text.Substring(0, periodIdx + 1);
-			}
-
-			return text.Substring(0, maxLength);
 		}
 
 		private void DiscoverAttributeWidgets(CharacterContainer container, Traverse traverse) {
 			try {
 				var iconGroups = traverse.Field("iconGroups")
-					.GetValue<System.Collections.IList>();
-				if (iconGroups != null) {
-					foreach (var group in iconGroups) {
-						AddAttributeFromGroup(group);
+					.GetValue<List<UnityEngine.GameObject>>();
+				if (iconGroups == null) return;
+				foreach (var go in iconGroups) {
+					if (go == null || !go.activeInHierarchy) continue;
+					var locText = go.GetComponentInChildren<LocText>();
+					if (locText == null || string.IsNullOrEmpty(locText.text)) continue;
+
+					string label = locText.text.Trim();
+
+					// Tooltip is on the parent GameObject, not the LocText
+					var tooltip = go.GetComponent<ToolTip>();
+					if (tooltip != null) {
+						try {
+							string ttText = tooltip.GetMultiString(0);
+							if (!string.IsNullOrEmpty(ttText)) {
+								string flat = ttText.Replace("\n", ", ").Replace("\r", "");
+								label = $"{label}, {flat}";
+							}
+						} catch (System.Exception) { }
 					}
-					return;
-				}
-			} catch (System.Exception) { }
 
-			try {
-				var attrLabels = traverse.Field("attributeLabels")
-					.GetValue<LocText[]>();
-				if (attrLabels != null) {
-					foreach (var lt in attrLabels) {
-						if (lt == null || string.IsNullOrEmpty(lt.text)) continue;
-						_widgets.Add(new WidgetInfo {
-							Label = lt.text,
-							Component = null,
-							Type = WidgetType.Label,
-							GameObject = lt.gameObject
-						});
-					}
-					return;
-				}
-			} catch (System.Exception) { }
-
-			try {
-				var attrPanel = traverse.Field("attributesPanel")
-					.GetValue<UnityEngine.GameObject>();
-				if (attrPanel == null) {
-					attrPanel = traverse.Field("attributesList")
-						.GetValue<UnityEngine.GameObject>();
-				}
-				if (attrPanel != null) {
-					var locTexts = attrPanel.GetComponentsInChildren<LocText>(false);
-					foreach (var lt in locTexts) {
-						if (lt == null || string.IsNullOrEmpty(lt.text)) continue;
-						_widgets.Add(new WidgetInfo {
-							Label = lt.text,
-							Component = null,
-							Type = WidgetType.Label,
-							GameObject = lt.gameObject
-						});
-					}
-				}
-			} catch (System.Exception) { }
-		}
-
-		private void AddAttributeFromGroup(object group) {
-			if (group == null) return;
-			try {
-				LocText locText = null;
-				UnityEngine.GameObject go = null;
-
-				if (group is UnityEngine.GameObject groupGo) {
-					locText = groupGo.GetComponentInChildren<LocText>();
-					go = groupGo;
-				} else if (group is UnityEngine.Component groupComp) {
-					locText = groupComp.GetComponentInChildren<LocText>();
-					go = groupComp.gameObject;
-				} else {
-					var groupTraverse = Traverse.Create(group);
-					locText = groupTraverse.Field("label").GetValue<LocText>();
-					if (locText != null) go = locText.gameObject;
-				}
-
-				if (locText != null && !string.IsNullOrEmpty(locText.text)) {
 					_widgets.Add(new WidgetInfo {
-						Label = locText.text,
+						Label = label,
 						Component = null,
 						Type = WidgetType.Label,
-						GameObject = go ?? locText.gameObject
+						GameObject = go
 					});
 				}
 			} catch (System.Exception) { }
@@ -652,6 +582,45 @@ namespace OniAccess.Input.Handlers {
 				return;
 			}
 
+			// Dupe rename button: enter text edit mode on EditableTitleBar.inputField
+			if (widget.Tag is string renameTag && renameTag == "dupe_rename") {
+				try {
+					var container = _containers[_currentSlot] as CharacterContainer;
+					var titleBar = Traverse.Create(container)
+						.Field("characterNameTitle").GetValue<object>();
+					var tbt = Traverse.Create(titleBar);
+					var inputField = tbt.Field("inputField").GetValue<KInputTextField>();
+					if (inputField != null) {
+						_cachedTextValue = inputField.text;
+						_isEditingText = true;
+						// Activate editing state via the EditableTitleBar
+						inputField.gameObject.SetActive(true);
+						inputField.text = _cachedTextValue;
+						inputField.Select();
+						inputField.ActivateInputField();
+						Speech.SpeechPipeline.SpeakInterrupt($"Editing, {_cachedTextValue}");
+					}
+				} catch (System.Exception) { }
+				return;
+			}
+
+			// Dupe shuffle name button: click, then read new name
+			if (widget.Tag is string dupeShuffleTag && dupeShuffleTag == "dupe_shuffle_name") {
+				var kbutton = widget.Component as KButton;
+				kbutton?.SignalClick(KKeyCode.Mouse0);
+				try {
+					var container = _containers[_currentSlot] as CharacterContainer;
+					var titleBar = Traverse.Create(container)
+						.Field("characterNameTitle").GetValue<object>();
+					var locText = Traverse.Create(titleBar).Field("titleText")
+						.GetValue<LocText>();
+					if (locText != null) {
+						Speech.SpeechPipeline.SpeakInterrupt(locText.text);
+					}
+				} catch (System.Exception) { }
+				return;
+			}
+
 			// Reroll button in dupe mode
 			if (_inDupeMode && widget.Type == WidgetType.Button && widget.Label == "Reroll") {
 				var kbutton = widget.Component as KButton;
@@ -671,37 +640,28 @@ namespace OniAccess.Input.Handlers {
 			DiscoverWidgets(_screen);
 			_currentIndex = 0;
 
-			bool first = true;
+			// Announce only name (first widget) and interest-tagged widgets
+			bool seenInterest = false;
 			for (int i = 0; i < _widgets.Count; i++) {
 				var w = _widgets[i];
-				if (w.Type != WidgetType.Label
-					&& w.Type != WidgetType.Dropdown
-					&& w.Type != WidgetType.Button) {
-					break;
-				}
+				bool isInterest = w.Tag is string tag && tag == "interest";
 
-				if (w.Type == WidgetType.Label && LooksLikeAttribute(w.Label)) {
-					break;
-				}
-
-				if (first) {
+				// First widget is always the name
+				if (i == 0) {
 					Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(w));
-					first = false;
-				} else {
+					continue;
+				}
+
+				if (isInterest) {
+					seenInterest = true;
 					Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(w));
+				} else if (seenInterest) {
+					// Past the interest block, stop
+					break;
 				}
 			}
 
 			_pendingRerollAnnounce = false;
-		}
-
-		private static bool LooksLikeAttribute(string label) {
-			if (string.IsNullOrEmpty(label)) return false;
-			if (label.Length >= 2 && (label[0] == '+' || label[0] == '-')
-				&& char.IsDigit(label[1])) {
-				return true;
-			}
-			return false;
 		}
 
 		// ========================================
@@ -788,10 +748,30 @@ namespace OniAccess.Input.Handlers {
 		// TEXT EDITING
 		// ========================================
 
+		private KInputTextField GetActiveInputField() {
+			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return null;
+			var widget = _widgets[_currentIndex];
+
+			// Colony name: component IS the text field
+			if (widget.Component is KInputTextField tf) return tf;
+
+			// Dupe rename: get inputField from EditableTitleBar
+			if (widget.Tag is string tag && tag == "dupe_rename" && _inDupeMode) {
+				try {
+					var container = _containers[_currentSlot] as CharacterContainer;
+					var titleBar = Traverse.Create(container)
+						.Field("characterNameTitle").GetValue<object>();
+					return Traverse.Create(titleBar)
+						.Field("inputField").GetValue<KInputTextField>();
+				} catch (System.Exception) { }
+			}
+			return null;
+		}
+
 		private void CancelTextEdit() {
 			_isEditingText = false;
-			if (_currentIndex >= 0 && _currentIndex < _widgets.Count
-				&& _widgets[_currentIndex].Component is KInputTextField textField) {
+			var textField = GetActiveInputField();
+			if (textField != null) {
 				textField.text = _cachedTextValue;
 				textField.DeactivateInputField();
 			}
@@ -800,8 +780,8 @@ namespace OniAccess.Input.Handlers {
 
 		private void ConfirmTextEdit() {
 			_isEditingText = false;
-			if (_currentIndex >= 0 && _currentIndex < _widgets.Count
-				&& _widgets[_currentIndex].Component is KInputTextField textField) {
+			var textField = GetActiveInputField();
+			if (textField != null) {
 				textField.DeactivateInputField();
 				Speech.SpeechPipeline.SpeakInterrupt($"Confirmed, {textField.text}");
 			} else {

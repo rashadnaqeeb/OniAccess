@@ -72,6 +72,8 @@ namespace STRINGS {
 			public static LocString NO_NEWS = "No news available";
 			public static LocString COLONY_NAME = "Colony name";
 			public static LocString SELECT_DUPLICANTS = "Select duplicants";
+			public static LocString RENAME = "Rename";
+			public static LocString SHUFFLE_NAME = "Shuffle name";
 		}
 
 		public class DLC {
