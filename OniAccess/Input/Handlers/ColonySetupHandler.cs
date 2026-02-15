@@ -1409,6 +1409,7 @@ namespace OniAccess.Input.Handlers {
 				if (e.TryConsume(Action.Escape)) {
 					Traverse.Create(_screen).Method("CustomizeClose").GetValue();
 					_inCustomize = false;
+					SyncGameTab();
 					_search.Clear();
 					DiscoverWidgets(_screen);
 					_currentIndex = 0;
