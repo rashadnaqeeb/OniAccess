@@ -38,7 +38,6 @@ namespace OniAccess.Speech {
 
 			string filtered = TextFilter.FilterForSpeech(text);
 			if (string.IsNullOrEmpty(filtered)) return;
-
 			SpeechEngine.Say(filtered);
 		}
 
@@ -53,7 +52,6 @@ namespace OniAccess.Speech {
 
 			string filtered = TextFilter.FilterForSpeech(text);
 			if (string.IsNullOrEmpty(filtered)) return;
-
 			SpeechEngine.Say(filtered, interrupt: false);
 		}
 

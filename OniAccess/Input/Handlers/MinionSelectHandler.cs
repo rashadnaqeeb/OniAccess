@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Database;
 using HarmonyLib;
 using Klei.AI;
 
@@ -30,6 +31,8 @@ namespace OniAccess.Input.Handlers {
 		private int _currentSlot;
 		private UnityEngine.Component[] _containers;
 		private bool _pendingRerollAnnounce;
+		private bool _pendingFilterAnnounce;
+		private bool _pendingColonyNameAnnounce;
 		private bool _inDupeMode;
 		private bool _isEditingText;
 		private string _cachedTextValue;
@@ -59,6 +62,7 @@ namespace OniAccess.Input.Handlers {
 			_retryCount = 0;
 			_inDupeMode = false;
 			_isEditingText = false;
+			_pendingColonyNameAnnounce = false;
 			base.OnActivate();
 		}
 
@@ -127,9 +131,8 @@ namespace OniAccess.Input.Handlers {
 						var bnt = Traverse.Create(baseNamingObj);
 						var inputField = bnt.Field("inputField").GetValue<KInputTextField>();
 						if (inputField != null) {
-							string currentName = inputField.text ?? "";
 							_widgets.Add(new WidgetInfo {
-								Label = $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {currentName}",
+								Label = $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {inputField.text}",
 								Component = inputField,
 								Type = WidgetType.TextInput,
 								GameObject = inputField.gameObject,
@@ -348,7 +351,7 @@ namespace OniAccess.Input.Handlers {
 
 					if (parts.Count > 0) {
 						_widgets.Add(new WidgetInfo {
-							Label = string.Join(", ", parts),
+							Label = $"Interest: {string.Join(", ", parts)}",
 							Component = null,
 							Type = WidgetType.Label,
 							GameObject = entryGo,
@@ -379,8 +382,8 @@ namespace OniAccess.Input.Handlers {
 
 					string tooltip = trait.GetTooltip();
 					string label = string.IsNullOrEmpty(tooltip)
-						? name
-						: $"{name}, {tooltip}";
+						? $"Trait: {name}"
+						: $"Trait: {name}, {tooltip}";
 
 					_widgets.Add(new WidgetInfo {
 						Label = label,
@@ -449,7 +452,7 @@ namespace OniAccess.Input.Handlers {
 
 					string label = locText.text.Trim();
 
-					// Tooltip is on the parent GameObject, not the LocText
+					// Tooltip is on the iconGroup GameObject itself (SetSimpleTooltip)
 					var tooltip = go.GetComponent<ToolTip>();
 					if (tooltip != null) {
 						try {
@@ -474,21 +477,76 @@ namespace OniAccess.Input.Handlers {
 		private void DiscoverFilterDropdown(CharacterContainer container, Traverse traverse) {
 			try {
 				var dropdown = traverse.Field("archetypeDropDown")
-					.GetValue<UnityEngine.Component>();
+					.GetValue<DropDown>();
 				if (dropdown != null && dropdown.gameObject.activeInHierarchy) {
-					string label = "Interest filter";
-					var locText = dropdown.GetComponentInChildren<LocText>();
-					if (locText != null && !string.IsNullOrEmpty(locText.text)) {
-						label = locText.text;
-					}
-
 					_widgets.Add(new WidgetInfo {
-						Label = label,
+						Label = GetInterestFilterLabel(),
 						Component = dropdown,
 						Type = WidgetType.Dropdown,
-						GameObject = dropdown.gameObject
+						GameObject = dropdown.gameObject,
+						Tag = "interest_filter"
 					});
 				}
+			} catch (System.Exception) { }
+		}
+
+		private string GetInterestFilterLabel() {
+			try {
+				var container = _containers[_currentSlot] as CharacterContainer;
+				var ct = Traverse.Create(container);
+				var aptId = ct.Field("guaranteedAptitudeID").GetValue<string>();
+				if (string.IsNullOrEmpty(aptId)) {
+					return "Interest filter, Any";
+				}
+				var skillGroup = Db.Get().SkillGroups.TryGet(aptId);
+				return skillGroup != null
+					? $"Interest filter, {skillGroup.Name}"
+					: $"Interest filter, {aptId}";
+			} catch (System.Exception) {
+				return "Interest filter";
+			}
+		}
+
+		protected override void CycleDropdown(WidgetInfo widget, int direction) {
+			if (!(widget.Tag is string tag) || tag != "interest_filter") return;
+			try {
+				var container = _containers[_currentSlot] as CharacterContainer;
+				var ct = Traverse.Create(container);
+				var dropdown = ct.Field("archetypeDropDown").GetValue<DropDown>();
+				if (dropdown == null) return;
+
+				var entries = dropdown.Entries;
+				if (entries == null || entries.Count == 0) return;
+
+				var currentId = ct.Field("guaranteedAptitudeID").GetValue<string>();
+
+				// Find current index (-1 = "Any" / no filter)
+				int currentIdx = -1;
+				if (!string.IsNullOrEmpty(currentId)) {
+					for (int i = 0; i < entries.Count; i++) {
+						if (entries[i] is SkillGroup sg && sg.Id == currentId) {
+							currentIdx = i;
+							break;
+						}
+					}
+				}
+
+				// Cycle: -1 (Any) -> 0 -> 1 -> ... -> Count-1 -> -1 (Any)
+				int newIdx = currentIdx + direction;
+				if (newIdx < -1) newIdx = entries.Count - 1;
+				if (newIdx >= entries.Count) newIdx = -1;
+
+				// Invoke the callback through the dropdown's onEntrySelectedAction
+				var onSelect = Traverse.Create(dropdown)
+					.Field("onEntrySelectedAction")
+					.GetValue<System.Action<IListableOption, object>>();
+				if (onSelect != null) {
+					var selected = newIdx >= 0 ? entries[newIdx] : null;
+					onSelect(selected, dropdown.targetData);
+				}
+
+				// Reshuffle triggers a coroutine — delay one frame then announce
+				_pendingFilterAnnounce = true;
 			} catch (System.Exception) { }
 		}
 
@@ -502,7 +560,8 @@ namespace OniAccess.Input.Handlers {
 						Label = "Reroll",
 						Component = reshuffleButton,
 						Type = WidgetType.Button,
-						GameObject = reshuffleButton.gameObject
+						GameObject = reshuffleButton.gameObject,
+						Tag = "reroll"
 					});
 				}
 			} catch (System.Exception) { }
@@ -513,14 +572,57 @@ namespace OniAccess.Input.Handlers {
 		// ========================================
 
 		/// <summary>
-		/// Override to read colony name live from the input field.
+		/// Override to read colony name live from the input field,
+		/// and read the interest filter's current selection.
 		/// </summary>
 		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			if (widget.Tag is string tag && tag == "colony_name"
-				&& widget.Component is KInputTextField tf) {
-				return $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {tf.text}";
+			if (widget.Tag is string tag) {
+				if (tag == "colony_name" && widget.Component is KInputTextField tf) {
+					if (string.IsNullOrEmpty(tf.text)) {
+						_pendingColonyNameAnnounce = true;
+						return STRINGS.ONIACCESS.PANELS.COLONY_NAME;
+					}
+					return $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {tf.text}";
+				}
+				if (tag == "interest_filter") {
+					return GetInterestFilterLabel();
+				}
 			}
 			return base.GetWidgetSpeechText(widget);
+		}
+
+		/// <summary>
+		/// Allow the shuffle name button to be navigated even when its
+		/// GameObject is inactive — the game hides randomNameButton by default
+		/// but we can still click it programmatically.
+		/// </summary>
+		protected override bool IsWidgetValid(WidgetInfo widget) {
+			if (widget.Tag is string tag && tag == "dupe_shuffle_name")
+				return widget.Component != null;
+			return base.IsWidgetValid(widget);
+		}
+
+		/// <summary>
+		/// Suppress auto-tooltip for widgets that already bake tooltip into
+		/// their label, or where the auto-discovered tooltip is wrong
+		/// (e.g., enter_dupe_mode picks up editNameButton's tooltip).
+		/// </summary>
+		protected override string GetTooltipText(WidgetInfo widget) {
+			if (widget.Tag is string tag) {
+				switch (tag) {
+					// These already have tooltip content in their Label
+					case "interest":
+					case "dupe_rename":
+					case "dupe_shuffle_name":
+					// This picks up an unrelated child tooltip
+					case "enter_dupe_mode":
+						return null;
+				}
+			}
+			// In dupe mode, traits/expectations/attributes/description are all
+			// label-only widgets with no tag — suppress tooltip for plain labels
+			if (_inDupeMode && widget.Type == WidgetType.Label) return null;
+			return base.GetTooltipText(widget);
 		}
 
 		// ========================================
@@ -622,7 +724,7 @@ namespace OniAccess.Input.Handlers {
 			}
 
 			// Reroll button in dupe mode
-			if (_inDupeMode && widget.Type == WidgetType.Button && widget.Label == "Reroll") {
+			if (widget.Tag is string rerollTag && rerollTag == "reroll") {
 				var kbutton = widget.Component as KButton;
 				kbutton?.SignalClick(KKeyCode.Mouse0);
 				// Delay announcement by one frame for SetAttributes coroutine
@@ -637,31 +739,60 @@ namespace OniAccess.Input.Handlers {
 		/// After reroll, wait one frame then rediscover and announce.
 		/// </summary>
 		private void AnnounceAfterReroll() {
+			_pendingRerollAnnounce = false;
 			DiscoverWidgets(_screen);
-			_currentIndex = 0;
+			_currentIndex = FindWidgetByTag("reroll");
+			AnnounceNameAndInterests();
+		}
 
-			// Announce only name (first widget) and interest-tagged widgets
+		/// <summary>
+		/// Find a widget by tag, returning its index or clamped fallback.
+		/// </summary>
+		private int FindWidgetByTag(string targetTag) {
+			for (int i = 0; i < _widgets.Count; i++) {
+				if (_widgets[i].Tag is string t && t == targetTag)
+					return i;
+			}
+			return _widgets.Count > 0 ? _widgets.Count - 1 : 0;
+		}
+
+		/// <summary>
+		/// Interrupt-speak name (first widget) then queue interest-tagged widgets.
+		/// Does not change _currentIndex.
+		/// </summary>
+		private void AnnounceNameAndInterests() {
+			if (_widgets.Count > 0)
+				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
+			QueueNameAndInterests();
+		}
+
+		/// <summary>
+		/// Queue-speak name (first widget) and all interest-tagged widgets.
+		/// Does not change _currentIndex. Does not interrupt.
+		/// </summary>
+		private void QueueNameAndInterests() {
 			bool seenInterest = false;
 			for (int i = 0; i < _widgets.Count; i++) {
 				var w = _widgets[i];
 				bool isInterest = w.Tag is string tag && tag == "interest";
 
-				// First widget is always the name
-				if (i == 0) {
-					Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(w));
-					continue;
-				}
-
-				if (isInterest) {
-					seenInterest = true;
+				if (i == 0 || isInterest) {
 					Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(w));
+					if (isInterest) seenInterest = true;
 				} else if (seenInterest) {
-					// Past the interest block, stop
 					break;
 				}
 			}
+		}
 
-			_pendingRerollAnnounce = false;
+		private void AnnounceAfterFilterChange() {
+			_pendingFilterAnnounce = false;
+			DiscoverWidgets(_screen);
+			// Find the filter widget by tag — index shifts when trait/interest count changes
+			_currentIndex = FindWidgetByTag("interest_filter");
+			Speech.SpeechPipeline.SpeakInterrupt(GetInterestFilterLabel());
+			// Queue name + interests after the filter label (don't interrupt)
+			QueueNameAndInterests();
 		}
 
 		// ========================================
@@ -735,9 +866,27 @@ namespace OniAccess.Input.Handlers {
 				return;
 			}
 
+			// Colony name not yet populated by BaseNaming.OnSpawn — re-announce
+			if (_pendingColonyNameAnnounce && _currentIndex == 0 && _widgets.Count > 0) {
+				var w = _widgets[0];
+				if (w.Tag is string t && t == "colony_name" && w.Component is KInputTextField tf
+					&& !string.IsNullOrEmpty(tf.text)) {
+					_pendingColonyNameAnnounce = false;
+					Speech.SpeechPipeline.SpeakInterrupt(
+						$"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {tf.text}");
+				}
+				// Don't return — allow other tick logic to run
+			}
+
 			// Pending reroll announce (one-frame delay for SetAttributes coroutine)
 			if (_pendingRerollAnnounce) {
 				AnnounceAfterReroll();
+				return;
+			}
+
+			// Pending filter change announce
+			if (_pendingFilterAnnounce) {
+				AnnounceAfterFilterChange();
 				return;
 			}
 
