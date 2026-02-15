@@ -54,7 +54,7 @@ namespace OniAccess.Handlers {
 				handler.OnActivate();
 			} catch (System.Exception ex) {
 				Util.Log.Error($"HandlerStack.Push: {handler.DisplayName} failed: {ex}");
-				Speech.SpeechPipeline.SpeakInterrupt($"Error: {handler.DisplayName} handler failed");
+				Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.SPEECH.HANDLER_FAILED, handler.DisplayName));
 				return;
 			}
 			_stack.Add(handler);
@@ -83,7 +83,7 @@ namespace OniAccess.Handlers {
 					newActive.OnActivate();
 				} catch (System.Exception ex) {
 					Util.Log.Error($"HandlerStack.Pop: reactivation of {newActive.DisplayName} failed: {ex}");
-					Speech.SpeechPipeline.SpeakInterrupt($"Error: {newActive.DisplayName} handler failed");
+					Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.SPEECH.HANDLER_FAILED, newActive.DisplayName));
 					return;
 				}
 				Util.Log.Debug($"HandlerStack.Pop: reactivated {newActive.DisplayName}");
@@ -114,7 +114,7 @@ namespace OniAccess.Handlers {
 				handler.OnActivate();
 			} catch (System.Exception ex) {
 				Util.Log.Error($"HandlerStack.Replace: {handler.DisplayName} failed: {ex}");
-				Speech.SpeechPipeline.SpeakInterrupt($"Error: {handler.DisplayName} handler failed");
+				Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.SPEECH.HANDLER_FAILED, handler.DisplayName));
 				return;
 			}
 			_stack.Add(handler);

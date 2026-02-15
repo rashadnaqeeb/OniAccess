@@ -5,6 +5,7 @@ namespace STRINGS {
 			public static LocString MOD_ON = "Oni-Access on";
 			public static LocString MOD_OFF = "Oni-Access off";
 			public static LocString NO_COMMANDS = "No commands available in this context";
+			public static LocString HANDLER_FAILED = "Error, {0} failed";
 		}
 
 		public class SEARCH {
