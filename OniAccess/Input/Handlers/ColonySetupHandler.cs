@@ -252,10 +252,18 @@ namespace OniAccess.Input.Handlers {
 				var multiToggle = configTraverse.Field("button").GetValue<MultiToggle>();
 				if (multiToggle == null || !multiToggle.gameObject.activeInHierarchy) continue;
 
-				var headerLabel = configTraverse.Field("headerLabel").GetValue<LocText>();
 				var hoverDesc = configTraverse.Field("hoverDescriptionText").GetValue<string>();
 
-				string name = headerLabel != null ? headerLabel.text : configName;
+				// Read title from game STRINGS — LocText.text returns prefab
+				// placeholders (e.g. "_event") because SetText() populates
+				// TMPro's internal buffer, not the .text property.
+				string name = "";
+				switch (configName) {
+					case "vanillaStyle":  name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.VANILLA_TITLE; break;
+					case "classicStyle":  name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.CLASSIC_TITLE; break;
+					case "spacedOutStyle": name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.SPACEDOUT_TITLE; break;
+					case "eventStyle":    name = STRINGS.UI.FRONTEND.CLUSTERCATEGORYSELECTSCREEN.EVENT_TITLE; break;
+				}
 				string label = !string.IsNullOrEmpty(hoverDesc)
 					? $"{name}, {Speech.TextFilter.FilterForSpeech(hoverDesc)}"
 					: name;
