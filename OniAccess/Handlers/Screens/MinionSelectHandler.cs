@@ -77,33 +77,26 @@ namespace OniAccess.Handlers.Screens {
 		protected override void NavigateTabForward() {
 			if (!_inDupeMode) return;
 			if (_containers == null || _containers.Length == 0) return;
-			int savedIndex = _currentIndex;
 			_currentSlot = (_currentSlot + 1) % _containers.Length;
 			if (_currentSlot == 0) PlayWrapSound();
-
-			RediscoverAndSpeakSlot(savedIndex);
+			RediscoverAndSpeakSlot();
 		}
 
 		protected override void NavigateTabBackward() {
 			if (!_inDupeMode) return;
 			if (_containers == null || _containers.Length == 0) return;
-			int savedIndex = _currentIndex;
 			int prev = _currentSlot;
 			_currentSlot = (_currentSlot - 1 + _containers.Length) % _containers.Length;
 			if (_currentSlot == _containers.Length - 1 && prev == 0) PlayWrapSound();
-
-			RediscoverAndSpeakSlot(savedIndex);
+			RediscoverAndSpeakSlot();
 		}
 
-		/// <summary>
-		/// Rediscover widgets for the current slot, preserving position index.
-		/// </summary>
-		private void RediscoverAndSpeakSlot(int savedIndex) {
+		private void RediscoverAndSpeakSlot() {
 			DiscoverWidgets(_screen);
-			_currentIndex = System.Math.Min(savedIndex, _widgets.Count > 0 ? _widgets.Count - 1 : 0);
+			_currentIndex = 0;
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakInterrupt(
-					$"{string.Format(STRINGS.ONIACCESS.INFO.SLOT, _currentSlot + 1)}, {GetWidgetSpeechText(_widgets[_currentIndex])}");
+					$"{string.Format(STRINGS.ONIACCESS.INFO.SLOT, _currentSlot + 1)}, {GetWidgetSpeechText(_widgets[0])}");
 			}
 		}
 
