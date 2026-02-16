@@ -21,6 +21,17 @@ namespace OniAccess.Handlers.Screens {
 			HelpEntries = BuildHelpEntries();
 		}
 
+		public override void OnActivate() {
+			base.OnActivate();
+			var worldSeedText = Traverse.Create(_screen).Field<LocText>("worldSeed").Value;
+			if (worldSeedText != null) {
+				string coords = worldSeedText.text;
+				if (!string.IsNullOrEmpty(coords)) {
+					Speech.SpeechPipeline.SpeakQueued(coords);
+				}
+			}
+		}
+
 		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 

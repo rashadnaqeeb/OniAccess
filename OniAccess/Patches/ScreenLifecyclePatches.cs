@@ -95,6 +95,22 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
+	/// PauseScreen.OnActivate() calls Show(false) during prefab init (same as LockerMenuScreen).
+	/// Patch Show(bool) to push/pop the handler via ContextDetector instead.
+	/// </summary>
+	[HarmonyPatch(typeof(PauseScreen), nameof(PauseScreen.Show))]
+	internal static class PauseScreen_Show_Patch {
+		private static void Postfix(PauseScreen __instance, bool show) {
+			if (!VanillaMode.IsEnabled) return;
+			if (show) {
+				ContextDetector.OnScreenActivated(__instance);
+			} else {
+				ContextDetector.OnScreenDeactivating(__instance);
+			}
+		}
+	}
+
+	/// <summary>
 	/// MinionSelectScreen.OnSpawn() does not call base.OnSpawn(), so
 	/// KScreen.Activate() is never invoked and our generic KScreen_Activate_Patch
 	/// never fires. Patch OnSpawn directly to trigger handler activation.

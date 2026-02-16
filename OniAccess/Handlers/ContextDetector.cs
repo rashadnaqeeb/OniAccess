@@ -126,7 +126,9 @@ namespace OniAccess.Handlers {
 			Register<MainMenu>(screen => new MainMenuHandler(screen));
 
 			// PauseScreen (KModalButtonMenu)
+			// Show patch pushes/pops via ContextDetector since OnActivate calls Show(false)
 			Register<PauseScreen>(screen => new PauseMenuHandler(screen));
+			_showPatchedTypes.Add(typeof(PauseScreen));
 
 			// ConfirmDialogScreen (KModalScreen)
 			Register<ConfirmDialogScreen>(screen => new ConfirmDialogHandler(screen));
