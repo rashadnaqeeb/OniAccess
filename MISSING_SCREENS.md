@@ -4,8 +4,8 @@ Screens a blind player can encounter that have no handler registered.
 
 ## Critical (blocks save flow)
 
-- [ ] **SaveScreen** -- Save game dialog (KModalScreen). Pause > Save. Every session.
-- [ ] **FileNameDialog** -- Name a new save (KModalScreen). First save of a colony.
+- [x] **SaveScreen** -- Save game dialog (KModalScreen). Pause > Save. Every session.
+- [x] **FileNameDialog** -- Name a new save (KModalScreen). First save of a colony.
 
 ## Important (blocks gameplay)
 

@@ -185,6 +185,13 @@ namespace OniAccess.Handlers {
 			// LoadScreen (KModalScreen -- save/load with two-level colony/save navigation)
 			Register<LoadScreen>(screen => new SaveLoadHandler(screen));
 
+			// SaveScreen (KModalScreen -- save game dialog from pause menu)
+			Register<SaveScreen>(screen => new SaveScreenHandler(screen));
+
+			// FileNameDialog (KModalScreen -- filename entry for new saves)
+			var fileNameDialogType = HarmonyLib.AccessTools.TypeByName("FileNameDialog");
+			Register(fileNameDialogType, screen => new FileNameDialogHandler(screen));
+
 			// ModsScreen (KModalScreen -- mod management from main menu)
 			Register<ModsScreen>(screen => new ModsHandler(screen));
 
