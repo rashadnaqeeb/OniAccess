@@ -53,6 +53,7 @@ namespace OniAccess.Handlers.Screens {
 		/// Retries up to MaxDiscoveryRetries times (default 1).
 		/// </summary>
 		protected bool _pendingRediscovery;
+		private bool _pendingSilentRefresh;
 		private int _retryCount;
 
 		/// <summary>
@@ -132,11 +133,7 @@ namespace OniAccess.Handlers.Screens {
 
 			if (ready && _widgets.Count > 0) {
 				_pendingRediscovery = false;
-				var w = _widgets[0];
-				string text = GetWidgetSpeechText(w);
-				string tip = GetTooltipText(w);
-				if (tip != null) text = $"{text}, {tip}";
-				Speech.SpeechPipeline.SpeakQueued(text);
+				_pendingSilentRefresh = true;
 			} else {
 				// Screen not ready yet (subclass signaled false, or zero widgets
 				// because Harmony postfix fired before subclass OnSpawn). Retry
@@ -167,6 +164,25 @@ namespace OniAccess.Handlers.Screens {
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return))
 					_textEdit.Confirm();
 				return;
+			}
+
+			// Deferred first-widget announcement: rediscover to pick up widgets
+			// that weren't activeInHierarchy on frame 0, then queue the first widget.
+			// OnActivate defers this so the announcement reflects the complete list.
+			if (_pendingSilentRefresh) {
+				_pendingSilentRefresh = false;
+				int oldCount = _widgets.Count;
+				DiscoverWidgets(_screen);
+				_currentIndex = System.Math.Min(_currentIndex, System.Math.Max(0, _widgets.Count - 1));
+				if (_widgets.Count != oldCount)
+					Util.Log.Debug($"{GetType().Name}: deferred refresh changed widget count {oldCount} → {_widgets.Count}");
+				if (_widgets.Count > 0) {
+					var w = _widgets[_currentIndex];
+					string text = GetWidgetSpeechText(w);
+					string tip = GetTooltipText(w);
+					if (tip != null) text = $"{text}, {tip}";
+					Speech.SpeechPipeline.SpeakQueued(text);
+				}
 			}
 
 			// Deferred rediscovery: screen UI wasn't ready during OnActivate
