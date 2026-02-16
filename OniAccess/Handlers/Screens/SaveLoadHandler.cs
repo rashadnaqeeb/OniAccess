@@ -21,6 +21,7 @@ namespace OniAccess.Handlers.Screens {
 	public class SaveLoadHandler: BaseMenuHandler {
 		private bool _inColonySaveView;
 		private bool _pendingViewTransition;
+		private int _lastSyncedIndex = -1;
 
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.SAVE_LOAD;
 
@@ -281,11 +282,15 @@ namespace OniAccess.Handlers.Screens {
 				if (loadButton == null)
 					loadButton = entry.GetComponentInChildren<KButton>();
 
+				// Row button syncs game selection when navigated to
+				KButton rowButton = child.GetComponent<KButton>();
+
 				_widgets.Add(new WidgetInfo {
 					Label = label,
 					Component = loadButton,
 					Type = loadButton != null ? WidgetType.Button : WidgetType.Label,
-					GameObject = entry.gameObject
+					GameObject = entry.gameObject,
+					Tag = rowButton
 				});
 			}
 
@@ -421,6 +426,16 @@ namespace OniAccess.Handlers.Screens {
 				_pendingViewTransition = false;
 			}
 
+			// Sync game selection when cursor moves to a different save entry
+			if (_inColonySaveView && _currentIndex != _lastSyncedIndex
+				&& _currentIndex >= 0 && _currentIndex < _widgets.Count) {
+				var widget = _widgets[_currentIndex];
+				if (widget.Tag is KButton rowButton) {
+					rowButton.SignalClick(KKeyCode.Mouse0);
+				}
+				_lastSyncedIndex = _currentIndex;
+			}
+
 			// Stale widget detection: after delete or dialog rebuild, the current
 			// widget's GameObject may be destroyed. Rediscover and clamp cursor.
 			if (_widgets.Count > 0 && _currentIndex >= 0
@@ -460,6 +475,7 @@ namespace OniAccess.Handlers.Screens {
 		/// </summary>
 		private void TransitionToSaveView() {
 			_inColonySaveView = true;
+			_lastSyncedIndex = -1;
 			DiscoverWidgets(_screen);
 			_currentIndex = 0;
 
@@ -490,6 +506,7 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			_inColonySaveView = false;
+			_lastSyncedIndex = -1;
 			DiscoverWidgets(_screen);
 			_currentIndex = 0;
 

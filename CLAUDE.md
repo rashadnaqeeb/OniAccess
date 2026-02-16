@@ -26,8 +26,6 @@ When a build fails on a type or method signature, look it up in `ONI-Decompiled/
 
 ## Code Style
 
-Formatting (tabs, K&R braces) is enforced by `.editorconfig` + a `dotnet format` hook that runs after every Edit/Write. Don't restate those rules here.
-
 - Harmony patch classes: `GameType_MethodName_Patch` (e.g., `KScreen_Activate_Patch`)
 - All speech goes through `SpeechPipeline`, never call `SpeechEngine.Say()` directly
 - All logging goes through `Log.Info/Debug/Warn/Error`, never use `Debug.Log` directly
@@ -55,7 +53,7 @@ Before creating a new `LocString` in `OniAccessStrings.cs`, search the game's `S
 All user-facing text must come from a `LocString` reference, either the game's `STRINGS` namespace or `STRINGS.ONIACCESS` in `OniAccessStrings.cs`. Never inline string literals for text that gets spoken or displayed.
 
 ### Concise announcements
-Users are experienced screen reader users. Strip fluff, never strip information. These rules apply to mod-authored text only; never alter, truncate, or reword game text. Ordering rules (variation-first, below) apply to both.
+Users are experienced screen reader users. Strip fluff, never strip information. These rules apply to mod-authored text only; never alter, truncate, or reword game text. 
 - No item counts ("3 of 10")
 - No navigation hints ("press Enter to select") unless unusual controls, and on a delay
 - No redundant context ("You are now in...")
