@@ -736,24 +736,10 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			// Colony shuffle button: click, then read new name
+			// Colony shuffle button: click, defer read by one frame
 			if (widget.Tag is string shuffleTag && shuffleTag == "colony_shuffle") {
 				base.ActivateCurrentWidget();
-				// Read the updated colony name from BaseNaming.inputField
-				try {
-					var baseNamingObj = _screen.gameObject.GetComponent(
-						HarmonyLib.AccessTools.TypeByName("BaseNaming"));
-					if (baseNamingObj != null) {
-						var inputField = Traverse.Create(baseNamingObj)
-							.Field("inputField").GetValue<KInputTextField>();
-						if (inputField != null) {
-							Speech.SpeechPipeline.SpeakInterrupt(
-								$"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {inputField.text}");
-						}
-					}
-				} catch (System.Exception ex) {
-					Util.Log.Error($"MinionSelectHandler.ActivateCurrentWidget(colony_shuffle): {ex.Message}");
-				}
+				_pendingAnnounce = AnnounceAfterColonyShuffle;
 				return;
 			}
 
@@ -774,22 +760,11 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			// Dupe shuffle name button: click, then read new name
+			// Dupe shuffle name button: click, defer read by one frame
 			if (widget.Tag is string dupeShuffleTag && dupeShuffleTag == "dupe_shuffle_name") {
 				var kbutton = widget.Component as KButton;
 				kbutton?.SignalClick(KKeyCode.Mouse0);
-				try {
-					var container = _containers[_currentSlot] as CharacterContainer;
-					var titleBar = Traverse.Create(container)
-						.Field("characterNameTitle").GetValue<object>();
-					var locText = Traverse.Create(titleBar).Field("titleText")
-						.GetValue<LocText>();
-					if (locText != null) {
-						Speech.SpeechPipeline.SpeakInterrupt(locText.text);
-					}
-				} catch (System.Exception ex) {
-					Util.Log.Error($"MinionSelectHandler.ActivateCurrentWidget(dupe_shuffle_name): {ex.Message}");
-				}
+				_pendingAnnounce = AnnounceAfterDupeShuffle;
 				return;
 			}
 
@@ -812,6 +787,31 @@ namespace OniAccess.Handlers.Screens {
 			DiscoverWidgets(_screen);
 			_currentIndex = FindWidgetByTag("reroll");
 			AnnounceNameAndInterests();
+		}
+
+		private void AnnounceAfterColonyShuffle() {
+			try {
+				var baseNamingObj = _screen.gameObject.GetComponent(
+					HarmonyLib.AccessTools.TypeByName("BaseNaming"));
+				if (baseNamingObj != null) {
+					var inputField = Traverse.Create(baseNamingObj)
+						.Field("inputField").GetValue<KInputTextField>();
+					if (inputField != null) {
+						Speech.SpeechPipeline.SpeakInterrupt(
+							$"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {inputField.text}");
+					}
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Error($"MinionSelectHandler.AnnounceAfterColonyShuffle: {ex.Message}");
+			}
+		}
+
+		private void AnnounceAfterDupeShuffle() {
+			DiscoverWidgets(_screen);
+			_currentIndex = FindWidgetByTag("dupe_shuffle_name");
+			if (_widgets.Count > 0) {
+				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
+			}
 		}
 
 		/// <summary>
