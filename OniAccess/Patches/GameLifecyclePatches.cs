@@ -1,14 +1,17 @@
 using HarmonyLib;
-using OniAccess.Handlers;
 using OniAccess.Input;
-using OniAccess.Speech;
 using OniAccess.Util;
 
 namespace OniAccess.Patches {
 	/// <summary>
-	/// Harmony patches for one-time game lifecycle events (startup, shutdown).
+	/// Harmony patches for one-time game lifecycle events.
 	/// Screen lifecycle patches (activate, deactivate, show/hide) are in
 	/// ScreenLifecyclePatches.cs.
+	///
+	/// Game.OnDestroy is intentionally NOT patched. It fires during scene
+	/// transitions (loading a save), not just on application quit. A previous
+	/// patch called SpeechEngine.Shutdown() here, which killed all speech
+	/// after loading a save. Tolk cleanup is handled by OS process exit.
 	/// </summary>
 
 	/// <summary>
@@ -45,22 +48,6 @@ namespace OniAccess.Patches {
 					Log.Warn($"Game build '{buildText}' is newer than last tested 'U57-707956'. Field names may have changed.");
 			} catch (System.Exception ex) {
 				Log.Error($"Failed to register ModInputRouter: {ex}");
-			}
-		}
-	}
-
-	/// <summary>
-	/// Ensures SpeechEngine.Shutdown is called when the game is destroyed,
-	/// properly unloading Tolk and releasing native resources.
-	/// </summary>
-	[HarmonyPatch(typeof(Game), "OnDestroy")]
-	internal static class Game_OnDestroy_Patch {
-		private static void Postfix() {
-			try {
-				Log.Info("Game shutting down, cleaning up speech engine");
-				SpeechEngine.Shutdown();
-			} catch (System.Exception ex) {
-				Log.Error($"Failed to shutdown speech engine: {ex}");
 			}
 		}
 	}
