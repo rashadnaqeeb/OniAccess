@@ -96,9 +96,9 @@ namespace OniAccess.Patches {
 
 	/// <summary>
 	/// PauseScreen.OnActivate() calls Show(false) during prefab init (same as LockerMenuScreen).
-	/// Patch Show(bool) to push/pop the handler via ContextDetector instead.
+	/// PauseScreen overrides OnShow (not Show), so patch OnShow directly.
 	/// </summary>
-	[HarmonyPatch(typeof(PauseScreen), nameof(PauseScreen.Show))]
+	[HarmonyPatch(typeof(PauseScreen), "OnShow")]
 	internal static class PauseScreen_Show_Patch {
 		private static void Postfix(PauseScreen __instance, bool show) {
 			if (!VanillaMode.IsEnabled) return;
