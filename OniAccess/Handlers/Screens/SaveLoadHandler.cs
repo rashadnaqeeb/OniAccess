@@ -6,29 +6,27 @@ namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for LoadScreen (save/load screen).
 	///
-	/// Two-level navigation:
+	/// Three-level navigation:
 	/// 1. Colony list (colonyListRoot): browse colonies by name, cycle, date
 	/// 2. Colony save view (colonyViewRoot): individual saves for a selected colony
+	/// 3. Save detail: info fields, Load button, Delete button for a selected save
 	///
-	/// Enter on a colony drills into its saves. Escape in save view goes back to
-	/// colony list. Enter on a save loads it.
-	///
-	/// Per locked decisions:
-	/// - Read colony name, cycle number, duplicant count, and date per entry
-	/// - File size omitted
-	/// - Standard list navigation (arrows, Home/End, Enter, type-ahead)
+	/// Enter on a colony drills into its saves. Enter on a save drills into its
+	/// detail view. Enter on Load loads the game. Escape goes back one level.
 	/// </summary>
 	public class SaveLoadHandler: BaseMenuHandler {
-		private bool _inColonySaveView;
+		private enum ViewLevel { ColonyList, SaveList, SaveDetail }
+		private ViewLevel _viewLevel;
 		private bool _pendingViewTransition;
-		private int _lastSyncedIndex = -1;
+		private HierarchyReferences _selectedSaveEntry;
+		private int _saveListCursorIndex;
 
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.SAVE_LOAD;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
 		public SaveLoadHandler(KScreen screen) : base(screen) {
-			_inColonySaveView = false;
+			_viewLevel = ViewLevel.ColonyList;
 			HelpEntries = BuildHelpEntries();
 		}
 
@@ -39,13 +37,19 @@ namespace OniAccess.Handlers.Screens {
 		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
-			if (!_inColonySaveView) {
-				DiscoverColonyList(screen);
-			} else {
-				DiscoverColonySaves(screen);
+			switch (_viewLevel) {
+				case ViewLevel.ColonyList:
+					DiscoverColonyList(screen);
+					break;
+				case ViewLevel.SaveList:
+					DiscoverColonySaves(screen);
+					break;
+				case ViewLevel.SaveDetail:
+					DiscoverSaveDetail(screen);
+					break;
 			}
 
-			Util.Log.Debug($"SaveLoadHandler.DiscoverWidgets: {_widgets.Count} widgets");
+			Util.Log.Debug($"SaveLoadHandler.DiscoverWidgets: {_widgets.Count} widgets ({_viewLevel})");
 			return true;
 		}
 
@@ -197,6 +201,30 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
+		/// Add a detail panel LocText field as a Label widget.
+		/// Uses the field's own GameObject so tooltip lookup stays scoped
+		/// to the individual field rather than picking up the panel's tooltip.
+		/// </summary>
+		private void AddDetailField(HierarchyReferences refs, string refName) {
+			if (!refs.HasReference(refName)) return;
+			try {
+				var component = refs.GetReference(refName);
+				if (component == null) return;
+				var locText = component as LocText
+					?? component.gameObject.GetComponent<LocText>();
+				if (locText == null || string.IsNullOrEmpty(locText.text)) return;
+
+				_widgets.Add(new WidgetInfo {
+					Label = locText.text.Trim(),
+					Type = WidgetType.Label,
+					GameObject = component.gameObject
+				});
+			} catch (System.Exception ex) {
+				Util.Log.Error($"SaveLoadHandler.AddDetailField: {ex.Message}");
+			}
+		}
+
+		/// <summary>
 		/// Fallback colony list discovery when saveButtonRoot field is not accessible.
 		/// Walks the screen's children for KButton instances with LocText labels.
 		/// </summary>
@@ -241,7 +269,7 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			if (colonyViewRoot == null || !colonyViewRoot.activeInHierarchy) {
-				_inColonySaveView = false;
+				_viewLevel = ViewLevel.ColonyList;
 				DiscoverColonyList(screen);
 				return;
 			}
@@ -272,30 +300,120 @@ namespace OniAccess.Handlers.Screens {
 				string label = BuildSaveEntryLabel(entry);
 				if (string.IsNullOrEmpty(label)) continue;
 
-				// Find the LoadButton via non-generic reference
-				KButton loadButton = null;
-				if (entry.HasReference("LoadButton")) {
-					var lbRef = entry.GetReference("LoadButton");
-					if (lbRef != null)
-						loadButton = lbRef.gameObject.GetComponent<KButton>();
-				}
-				if (loadButton == null)
-					loadButton = entry.GetComponentInChildren<KButton>();
-
-				// Row button syncs game selection when navigated to
+				// Row button used to drill into detail view
 				KButton rowButton = child.GetComponent<KButton>();
 
 				_widgets.Add(new WidgetInfo {
 					Label = label,
-					Component = loadButton,
-					Type = loadButton != null ? WidgetType.Button : WidgetType.Label,
+					Component = rowButton,
+					Type = rowButton != null ? WidgetType.Button : WidgetType.Label,
 					GameObject = entry.gameObject,
 					Tag = rowButton
 				});
 			}
+		}
 
-			// Add Delete button from the detail panel
-			if (viewRefs != null && viewRefs.HasReference("DeleteButton")) {
+		// ========================================
+		// SAVE DETAIL VIEW
+		// ========================================
+
+		/// <summary>
+		/// Discover detail fields and action buttons for the selected save.
+		/// Reads LocText fields from colonyViewRoot that were populated by
+		/// ShowColonySave() when the row was clicked during transition.
+		/// </summary>
+		private void DiscoverSaveDetail(KScreen screen) {
+			// Guard: if the selected entry was destroyed, fall back to save list
+			if (_selectedSaveEntry == null
+				|| _selectedSaveEntry.gameObject == null) {
+				TransitionToSaveList();
+				return;
+			}
+
+			var traverse = Traverse.Create(screen);
+
+			UnityEngine.GameObject colonyViewRoot = null;
+			try {
+				colonyViewRoot = traverse.Field("colonyViewRoot")
+					.GetValue<UnityEngine.GameObject>();
+			} catch (System.Exception ex) {
+				Util.Log.Error($"SaveLoadHandler.DiscoverSaveDetail(colonyViewRoot): {ex.Message}");
+			}
+
+			if (colonyViewRoot == null || !colonyViewRoot.activeInHierarchy) {
+				TransitionToSaveList();
+				return;
+			}
+
+			var viewRefs = colonyViewRoot.GetComponent<HierarchyReferences>();
+			if (viewRefs == null) {
+				TransitionToSaveList();
+				return;
+			}
+
+			// Detail info fields from the panel LocText components.
+			// Each widget gets the field's own GameObject so tooltips are
+			// scoped to the individual field, not the whole panel.
+			string[] detailFields = {
+				"Title", "Date", "InfoWorld", "InfoCycles",
+				"InfoDupes", "FileSize", "Filename"
+			};
+			foreach (string field in detailFields) {
+				AddDetailField(viewRefs, field);
+			}
+
+			// AutoInfo: version warning, only if active/visible
+			if (viewRefs.HasReference("AutoInfo")) {
+				try {
+					var autoRef = viewRefs.GetReference("AutoInfo");
+					if (autoRef != null && autoRef.gameObject.activeInHierarchy) {
+						string autoText = null;
+						var locText = autoRef as LocText
+							?? autoRef.gameObject.GetComponent<LocText>();
+						if (locText != null && !string.IsNullOrEmpty(locText.text))
+							autoText = locText.text.Trim();
+						if (!string.IsNullOrEmpty(autoText)) {
+							_widgets.Add(new WidgetInfo {
+								Label = autoText,
+								Type = WidgetType.Label,
+								GameObject = autoRef.gameObject
+							});
+						}
+					}
+				} catch (System.Exception ex) {
+					Util.Log.Error($"SaveLoadHandler.DiscoverSaveDetail(AutoInfo): {ex.Message}");
+				}
+			}
+
+			// Load button from the save entry clone
+			if (_selectedSaveEntry.HasReference("LoadButton")) {
+				try {
+					var lbRef = _selectedSaveEntry.GetReference("LoadButton");
+					if (lbRef != null) {
+						var loadButton = lbRef.gameObject.GetComponent<KButton>();
+						if (loadButton != null && lbRef.gameObject.activeInHierarchy) {
+							string label = null;
+							var locText = lbRef.gameObject.GetComponentInChildren<LocText>();
+							if (locText != null && !string.IsNullOrEmpty(locText.text))
+								label = locText.text.Trim();
+							if (string.IsNullOrEmpty(label))
+								label = (string)STRINGS.UI.FRONTEND.LOADSCREEN.TITLE;
+
+							_widgets.Add(new WidgetInfo {
+								Label = label,
+								Component = loadButton,
+								Type = WidgetType.Button,
+								GameObject = lbRef.gameObject
+							});
+						}
+					}
+				} catch (System.Exception ex) {
+					Util.Log.Error($"SaveLoadHandler.DiscoverSaveDetail(LoadButton): {ex.Message}");
+				}
+			}
+
+			// Delete button from the detail panel
+			if (viewRefs.HasReference("DeleteButton")) {
 				try {
 					var delRef = viewRefs.GetReference("DeleteButton");
 					if (delRef != null) {
@@ -311,7 +429,7 @@ namespace OniAccess.Handlers.Screens {
 						}
 					}
 				} catch (System.Exception ex) {
-					Util.Log.Error($"SaveLoadHandler.DiscoverColonySaves(deleteButton): {ex.Message}");
+					Util.Log.Error($"SaveLoadHandler.DiscoverSaveDetail(DeleteButton): {ex.Message}");
 				}
 			}
 		}
@@ -387,33 +505,43 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		/// <summary>
-		/// Override to handle two-level navigation:
-		/// - In colony list: Enter on colony_entry drills into saves; other buttons click normally
-		/// - In save view: Enter loads the selected save
+		/// Override to handle three-level navigation:
+		/// - Colony list: Enter on colony_entry drills into saves; other buttons click normally
+		/// - Save list: Enter on save entry drills into detail view
+		/// - Save detail: Enter on buttons (Load/Delete) activates them normally
 		/// </summary>
 		protected override void ActivateCurrentWidget() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
-			if (!_inColonySaveView) {
-				// Only colony_entry tagged widgets trigger the drill-into-saves transition
-				if (widget.Type == WidgetType.Button
-					&& widget.Tag is string tag && tag == "colony_entry") {
-					var kbutton = widget.Component as KButton;
-					kbutton?.SignalClick(KKeyCode.Mouse0);
+			switch (_viewLevel) {
+				case ViewLevel.ColonyList:
+					if (widget.Type == WidgetType.Button
+						&& widget.Tag is string tag && tag == "colony_entry") {
+						var kbutton = widget.Component as KButton;
+						kbutton?.SignalClick(KKeyCode.Mouse0);
 
-					if (IsColonyViewRootActive()) {
-						TransitionToSaveView();
+						if (IsColonyViewRootActive()) {
+							TransitionToSaveView();
+						} else {
+							_pendingViewTransition = true;
+						}
 					} else {
-						_pendingViewTransition = true;
+						base.ActivateCurrentWidget();
 					}
-				} else {
-					// Management buttons: normal click without view transition
+					break;
+
+				case ViewLevel.SaveList:
+					if (widget.Tag is KButton) {
+						TransitionToSaveDetail();
+					} else {
+						base.ActivateCurrentWidget();
+					}
+					break;
+
+				case ViewLevel.SaveDetail:
 					base.ActivateCurrentWidget();
-				}
-			} else {
-				// Save view: Enter loads the selected save
-				base.ActivateCurrentWidget();
+					break;
 			}
 		}
 
@@ -424,16 +552,6 @@ namespace OniAccess.Handlers.Screens {
 			if (_pendingViewTransition && IsColonyViewRootActive()) {
 				TransitionToSaveView();
 				_pendingViewTransition = false;
-			}
-
-			// Sync game selection when cursor moves to a different save entry
-			if (_inColonySaveView && _currentIndex != _lastSyncedIndex
-				&& _currentIndex >= 0 && _currentIndex < _widgets.Count) {
-				var widget = _widgets[_currentIndex];
-				if (widget.Tag is KButton rowButton) {
-					rowButton.SignalClick(KKeyCode.Mouse0);
-				}
-				_lastSyncedIndex = _currentIndex;
 			}
 
 			// Stale widget detection: after delete or dialog rebuild, the current
@@ -456,13 +574,17 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// Escape in save view goes back to colony list instead of closing the screen.
-		/// Escape in colony list passes through to close the screen normally.
+		/// Escape goes back one level: detail → save list → colony list → close screen.
 		/// </summary>
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (base.HandleKeyDown(e)) return true;
 
-			if (_inColonySaveView && e.TryConsume(Action.Escape)) {
+			if (_viewLevel == ViewLevel.SaveDetail && e.TryConsume(Action.Escape)) {
+				TransitionToSaveList();
+				return true;
+			}
+
+			if (_viewLevel == ViewLevel.SaveList && e.TryConsume(Action.Escape)) {
 				TransitionToColonyList();
 				return true;
 			}
@@ -474,13 +596,54 @@ namespace OniAccess.Handlers.Screens {
 		/// Transition from colony list to individual save view.
 		/// </summary>
 		private void TransitionToSaveView() {
-			_inColonySaveView = true;
-			_lastSyncedIndex = -1;
+			_viewLevel = ViewLevel.SaveList;
 			DiscoverWidgets(_screen);
 			_currentIndex = 0;
 
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
+			}
+		}
+
+		/// <summary>
+		/// Transition from save list to save detail view.
+		/// Clicks the row button to sync game selection and populate the detail panel.
+		/// </summary>
+		private void TransitionToSaveDetail() {
+			_saveListCursorIndex = _currentIndex;
+
+			var widget = _widgets[_currentIndex];
+			_selectedSaveEntry = widget.GameObject.GetComponent<HierarchyReferences>();
+
+			// Click the row to trigger ShowColonySave() and populate detail fields
+			var rowButton = widget.Tag as KButton;
+			rowButton?.SignalClick(KKeyCode.Mouse0);
+
+			_viewLevel = ViewLevel.SaveDetail;
+			DiscoverWidgets(_screen);
+			_currentIndex = 0;
+
+			if (_widgets.Count > 0) {
+				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
+			}
+		}
+
+		/// <summary>
+		/// Transition from save detail back to save list.
+		/// </summary>
+		private void TransitionToSaveList() {
+			_selectedSaveEntry = null;
+			_viewLevel = ViewLevel.SaveList;
+			DiscoverWidgets(_screen);
+
+			// Restore cursor position, clamped to valid range
+			if (_saveListCursorIndex >= _widgets.Count)
+				_saveListCursorIndex = _widgets.Count > 0 ? _widgets.Count - 1 : 0;
+			_currentIndex = _saveListCursorIndex;
+
+			if (_widgets.Count > 0 && _currentIndex < _widgets.Count) {
+				Speech.SpeechPipeline.SpeakInterrupt(
+					GetWidgetSpeechText(_widgets[_currentIndex]));
 			}
 		}
 
@@ -505,8 +668,8 @@ namespace OniAccess.Handlers.Screens {
 				Util.Log.Error($"SaveLoadHandler.TransitionToColonyList: {ex.Message}");
 			}
 
-			_inColonySaveView = false;
-			_lastSyncedIndex = -1;
+			_selectedSaveEntry = null;
+			_viewLevel = ViewLevel.ColonyList;
 			DiscoverWidgets(_screen);
 			_currentIndex = 0;
 
