@@ -180,6 +180,18 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
+			// Detect invalidated widgets: RefreshButtons (or similar) destroyed
+			// cached references after DiscoverWidgets already captured them.
+			// Re-trigger discovery so the next Tick picks up fresh references.
+			if (!_pendingRediscovery && _widgets.Count > 0) {
+				int idx = System.Math.Min(_currentIndex, _widgets.Count - 1);
+				if (!IsWidgetValid(_widgets[idx])) {
+					_pendingRediscovery = true;
+					_retryCount = 0;
+					return;
+				}
+			}
+
 			bool ctrlHeld = InputUtil.CtrlHeld();
 			bool altHeld = InputUtil.AltHeld();
 

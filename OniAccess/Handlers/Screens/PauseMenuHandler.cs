@@ -51,8 +51,7 @@ namespace OniAccess.Handlers.Screens {
 				var kbutton = buttonObjects[i].GetComponent<KButton>();
 				if (kbutton == null || !kbutton.isInteractable) continue;
 
-				// Access ButtonInfo.text via Traverse (it's a property on the ButtonInfo struct)
-				string label = Traverse.Create(buttons[i]).Property("text")
+				string label = Traverse.Create(buttons[i]).Field("text")
 					.GetValue<string>();
 				if (string.IsNullOrEmpty(label)) continue;
 
