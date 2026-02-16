@@ -21,6 +21,22 @@ namespace OniAccess.Handlers.Screens {
 			HelpEntries = BuildHelpEntries();
 		}
 
+		/// <summary>
+		/// Consume Escape to close the pause screen ourselves. PauseScreen joins
+		/// KScreenManager's dispatch via Activate (called by OnSpawn on first open).
+		/// Without this, a held Escape key generates a second event next frame that
+		/// KScreenManager dispatches to PauseScreen.OnKeyDown, closing the menu
+		/// before the user can interact with it.
+		/// </summary>
+		public override bool HandleKeyDown(KButtonEvent e) {
+			if (base.HandleKeyDown(e)) return true;
+			if (e.TryConsume(Action.Escape)) {
+				_screen.Show(false);
+				return true;
+			}
+			return false;
+		}
+
 		public override void OnActivate() {
 			base.OnActivate();
 			var worldSeedText = Traverse.Create(_screen).Field<LocText>("worldSeed").Value;
