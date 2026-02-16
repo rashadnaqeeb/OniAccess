@@ -285,6 +285,9 @@ namespace OniAccess.Handlers.Screens {
 			// (g) Interest filter dropdown (archetypeDropDown)
 			DiscoverFilterDropdown(container, traverse);
 
+			// (g.5) Model filter dropdown (modelDropDown, DLC3 only)
+			DiscoverModelDropdown(container, traverse);
+
 			// (h) Reroll button (reshuffleButton)
 			DiscoverRerollButton(container, traverse);
 		}
@@ -309,6 +312,18 @@ namespace OniAccess.Handlers.Screens {
 						Type = WidgetType.Label,
 						GameObject = locText.gameObject
 					});
+
+					// Bionic model type label (standard dupes get no label — it's the default)
+					var nameStats = traverse.Field("stats").GetValue<MinionStartingStats>();
+					if (nameStats != null && nameStats.personality.model == GameTags.Minions.Models.Bionic) {
+						_widgets.Add(new WidgetInfo {
+							Label = (string)STRINGS.DUPLICANTS.MODEL.BIONIC.NAME,
+							Component = null,
+							Type = WidgetType.Label,
+							GameObject = locText.gameObject,
+							Tag = "model_type"
+						});
+					}
 				}
 
 				// Rename button (editNameButton)
@@ -380,6 +395,7 @@ namespace OniAccess.Handlers.Screens {
 		/// Discover trait widgets. Each trait gets its own widget with full info:
 		/// name + effect + description combined into one label.
 		/// Per locked decision: "Traits: full info upfront."
+		/// Distinguishes positive/negative traits, and bionic upgrade/bug for bionic dupes.
 		/// </summary>
 		private void DiscoverTraitWidgets(CharacterContainer container, Traverse traverse) {
 			try {
@@ -388,16 +404,33 @@ namespace OniAccess.Handlers.Screens {
 				var traits = stats.Traits;
 				if (traits == null) return;
 
+				bool isBionic = stats.personality.model == GameTags.Minions.Models.Bionic;
+
 				// Skip index 0 (same as game's SetInfoText does)
 				for (int i = 1; i < traits.Count; i++) {
 					var trait = traits[i];
 					string name = trait.GetName();
 					if (string.IsNullOrEmpty(name)) continue;
 
+					string prefix;
+					if (isBionic) {
+						prefix = trait.PositiveTrait
+							? (string)STRINGS.ONIACCESS.INFO.BIONIC_UPGRADE
+							: (string)STRINGS.ONIACCESS.INFO.BIONIC_BUG;
+					} else {
+						prefix = trait.PositiveTrait
+							? (string)STRINGS.ONIACCESS.INFO.POSITIVE_TRAIT
+							: (string)STRINGS.ONIACCESS.INFO.NEGATIVE_TRAIT;
+					}
+
 					string tooltip = trait.GetTooltip();
-					string label = string.IsNullOrEmpty(tooltip)
-						? $"{STRINGS.ONIACCESS.INFO.TRAIT}: {name}"
-						: $"{STRINGS.ONIACCESS.INFO.TRAIT}: {name}, {tooltip}";
+					string label;
+					if (string.IsNullOrEmpty(tooltip)) {
+						label = $"{prefix}: {name}";
+					} else {
+						string flat = tooltip.Replace("\n• ", ", ").Replace("\n", ", ");
+						label = $"{prefix}: {name}, {flat}";
+					}
 
 					_widgets.Add(new WidgetInfo {
 						Label = label,
@@ -537,7 +570,12 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		protected override void CycleDropdown(WidgetInfo widget, int direction) {
-			if (!(widget.Tag is string tag) || tag != "interest_filter") return;
+			if (!(widget.Tag is string tag)) return;
+			if (tag == "model_filter") {
+				CycleModelDropdown(direction);
+				return;
+			}
+			if (tag != "interest_filter") return;
 			try {
 				var container = _containers[_currentSlot] as CharacterContainer;
 				var ct = Traverse.Create(container);
@@ -620,6 +658,9 @@ namespace OniAccess.Handlers.Screens {
 				if (tag == "interest_filter") {
 					return GetInterestFilterLabel();
 				}
+				if (tag == "model_filter") {
+					return GetModelFilterLabel();
+				}
 			}
 			return base.GetWidgetSpeechText(widget);
 		}
@@ -649,6 +690,9 @@ namespace OniAccess.Handlers.Screens {
 					case "dupe_shuffle_name":
 					// This picks up an unrelated child tooltip
 					case "enter_dupe_mode":
+					// Label-only widgets with no useful tooltip
+					case "model_type":
+					case "model_filter":
 						return null;
 				}
 			}
@@ -816,6 +860,94 @@ namespace OniAccess.Handlers.Screens {
 			_currentIndex = FindWidgetByTag("interest_filter");
 			Speech.SpeechPipeline.SpeakInterrupt(GetInterestFilterLabel());
 			// Queue name + interests after the filter label (don't interrupt)
+			QueueNameAndInterests();
+		}
+
+		// ========================================
+		// MODEL FILTER DROPDOWN (DLC3)
+		// ========================================
+
+		private void DiscoverModelDropdown(CharacterContainer container, Traverse traverse) {
+			try {
+				var dropdown = traverse.Field("modelDropDown").GetValue<DropDown>();
+				if (dropdown != null && dropdown.transform.parent.gameObject.activeInHierarchy) {
+					_widgets.Add(new WidgetInfo {
+						Label = GetModelFilterLabel(),
+						Component = dropdown,
+						Type = WidgetType.Dropdown,
+						GameObject = dropdown.gameObject,
+						Tag = "model_filter"
+					});
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Error($"MinionSelectHandler.DiscoverModelDropdown: {ex.Message}");
+			}
+		}
+
+		private string GetModelFilterLabel() {
+			try {
+				var container = _containers[_currentSlot] as CharacterContainer;
+				var ct = Traverse.Create(container);
+				var models = ct.Field("permittedModels").GetValue<List<Tag>>();
+				string title = (string)STRINGS.DUPLICANTS.MODELTITLE;
+				if (models.Count > 1) {
+					return $"{title}{STRINGS.UI.CHARACTERCONTAINER_ALL_MODELS}";
+				}
+				if (models[0] == GameTags.Minions.Models.Bionic) {
+					return $"{title}{STRINGS.DUPLICANTS.MODEL.BIONIC.NAME}";
+				}
+				return $"{title}{STRINGS.DUPLICANTS.MODEL.STANDARD.NAME}";
+			} catch (System.Exception ex) {
+				Util.Log.Error($"MinionSelectHandler.GetModelFilterLabel: {ex.Message}");
+				return (string)STRINGS.DUPLICANTS.MODELTITLE;
+			}
+		}
+
+		private void CycleModelDropdown(int direction) {
+			try {
+				var container = _containers[_currentSlot] as CharacterContainer;
+				var ct = Traverse.Create(container);
+				var dropdown = ct.Field("modelDropDown").GetValue<DropDown>();
+				if (dropdown == null) return;
+
+				var entries = dropdown.Entries;
+				if (entries == null || entries.Count == 0) return;
+
+				var models = ct.Field("permittedModels").GetValue<List<Tag>>();
+
+				// Current index: -1 = Any, 0 = Standard, 1 = Bionic
+				int currentIdx;
+				if (models.Count > 1) {
+					currentIdx = -1;
+				} else if (models[0] == GameTags.Minions.Models.Bionic) {
+					currentIdx = 1;
+				} else {
+					currentIdx = 0;
+				}
+
+				// Cycle: -1 (Any) -> 0 -> 1 -> ... -> Count-1 -> -1 (Any)
+				int newIdx = currentIdx + direction;
+				if (newIdx < -1) newIdx = entries.Count - 1;
+				if (newIdx >= entries.Count) newIdx = -1;
+
+				var onSelect = Traverse.Create(dropdown)
+					.Field("onEntrySelectedAction")
+					.GetValue<System.Action<IListableOption, object>>();
+				if (onSelect != null) {
+					var selected = newIdx >= 0 ? entries[newIdx] : null;
+					onSelect(selected, dropdown.targetData);
+				}
+
+				_pendingAnnounce = AnnounceAfterModelChange;
+			} catch (System.Exception ex) {
+				Util.Log.Error($"MinionSelectHandler.CycleModelDropdown: {ex.Message}");
+			}
+		}
+
+		private void AnnounceAfterModelChange() {
+			DiscoverWidgets(_screen);
+			_currentIndex = FindWidgetByTag("model_filter");
+			Speech.SpeechPipeline.SpeakInterrupt(GetModelFilterLabel());
 			QueueNameAndInterests();
 		}
 

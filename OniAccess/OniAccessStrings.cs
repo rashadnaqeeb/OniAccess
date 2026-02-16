@@ -117,6 +117,10 @@ namespace STRINGS {
 			public static LocString INTEREST = "Interest";
 			public static LocString INTEREST_FILTER = "Interest filter";
 			public static LocString TRAIT = "Trait";
+			public static LocString POSITIVE_TRAIT = "Positive trait";
+			public static LocString NEGATIVE_TRAIT = "Negative trait";
+			public static LocString BIONIC_UPGRADE = "Bionic upgrade";
+			public static LocString BIONIC_BUG = "Bionic bug";
 			public static LocString SLOT = "Slot {0}";
 		}
 
