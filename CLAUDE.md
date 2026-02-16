@@ -1,5 +1,7 @@
 # OniAccess - Claude Code Instructions
 
+OniAccess is an accessibility mod for Oxygen Not Included that makes the game playable for blind users. It uses Harmony patches to hook into the game's UI and provides speech output as the sole interface — there is no visual fallback. Every decision should be weighed against the fact that if something fails silently or speaks stale data, the player has no way to know.
+
 ## Build
 
 Always use the build script, never `dotnet build` directly. The project references game assemblies via the `ONI_MANAGED` environment variable which the build script sets automatically.
@@ -12,6 +14,8 @@ The script builds the DLL, deploys it to the game's local mods directory, and pa
 
 LSP diagnostics about missing types (KScreen, KButton, KToggle, etc.) are expected; the language server cannot resolve game assembly references. Ignore these; use the build script to verify compilation.
 
+When a build fails on a type or method signature, look it up in `ONI-Decompiled/` before guessing at fixes.
+
 ## Project Structure
 
 - `OniAccess/` - mod source code (C#, .NET Framework 4.7.2, Harmony patches)
@@ -21,9 +25,9 @@ LSP diagnostics about missing types (KScreen, KButton, KToggle, etc.) are expect
 - `.planning/` - project planning files
 
 ## Code Style
-- **Tabs for indentation**, never spaces
-- **K&R braces** - opening brace on the same line, not Allman style. `} else {` not `}\nelse\n{`
-- **Edit discipline** - always Read the exact lines immediately before editing. Never compose old_string from memory or earlier reads; tab depth is easy to miscount
+
+Formatting (tabs, K&R braces) is enforced by `.editorconfig` + a `dotnet format` hook that runs after every Edit/Write. Don't restate those rules here.
+
 - Harmony patch classes: `GameType_MethodName_Patch` (e.g., `KScreen_Activate_Patch`)
 - All speech goes through `SpeechPipeline`, never call `SpeechEngine.Say()` directly
 - All logging goes through `Log.Info/Debug/Warn/Error`, never use `Debug.Log` directly
@@ -69,6 +73,7 @@ ONI has extensive hotkeys. Many are useless to blind players and can be overwrit
 This mod runs on Harmony patches and reflection. Both fail in ways that produce no visible error unless we log it. A swallowed exception in a patch means the feature silently stops working and the user has no idea why. **Every catch block must log via `Log.Warn` or `Log.Error`.** Never write an empty catch, never catch-and-return-default without logging. If something fails, the player log must say what and where. A logged failure is actionable; a silent one is invisible.
 
 ## Architecture Gotchas
+- **Edit discipline** - always Read the exact lines immediately before editing. Never compose old_string from memory or earlier reads; tab depth is easy to miscount
 - New screen handlers must be registered in `ContextDetector.RegisterMenuHandlers()` or they will never activate
 - Key detection goes in `Tick()` via `UnityEngine.Input.GetKeyDown()`. `HandleKeyDown()` is only for Escape interception through KButtonEvent
 - `UnityEngine.Input` must be fully qualified inside the `OniAccess.Input` namespace. Bare `Input` resolves to the namespace, not the Unity class
@@ -90,47 +95,27 @@ Comments should describe the current state, not the change history. Consider whe
 Before adding a null check, consider whether nullability has already been established by a caller or earlier in the method. Don't re-check what's already guaranteed.
 
 ### Defensive coding
-Excessive validation hides bugs. Let code crash to find edge cases.
+Excessive validation hides bugs. Let code crash to find edge cases. (The flip side: when you *do* catch, always log — see "No silent failures" above.)
 
-**WRONG**:
+**WRONG** — null-checking every intermediate step and silently returning empty:
 ```csharp
-public List ProcessSignals(Entity entity) {
-	if (entity == null) return new List();
-	var controller = entity.GetControlBehavior();
-	if (controller == null) return new List();
-	var sections = controller.Sections;
-	if (sections == null) return new List();
-	foreach (var section in sections) {
-		int count = section?.FiltersCount ?? 0;
-		for (int i = 0; i < count; i++) {
-			var slot = section.GetSlot(i);
-			if (slot?.Value != null) {
-				// process slot
-			}
-		}
+if (entity == null) return new List();
+var controller = entity.GetControlBehavior();
+if (controller == null) return new List();
+```
+
+**CORRECT** — only guard what's legitimately nullable:
+```csharp
+var controller = entity.GetControlBehavior();
+foreach (var section in controller.Sections) {
+	var slot = section.GetSlot(i);
+	if (slot.Value != null) { // Only check what's expected to be null
+		// process slot
 	}
 }
 ```
 
-This hides bugs. Silent empty returns mask null entities, missing controllers, and missing data. `section?.FiltersCount ?? 0` and `slot?.Value` silently skip unexpected nulls.
-
-**CORRECT**:
-```csharp
-public List ProcessSignals(Entity entity) {
-	var controller = entity.GetControlBehavior();
-	foreach (var section in controller.Sections) {
-		for (int i = 0; i < section.FiltersCount; i++) {
-			var slot = section.GetSlot(i);
-			if (slot.Value != null) { // Only check what's expected to be null
-				// process slot
-			}
-		}
-	}
-}
-```
-
-**When to validate:** public API boundaries, UI entry points, legitimately nullable values.
-**When NOT to validate:** private/internal methods, properties that should always exist, returning empty/default silently.
+Validate at public API boundaries and UI entry points. Trust private callers.
 
 ### Null-conditional operator abuse
 Do **NOT** use `?.` to avoid thinking about whether something *should* be null. Only use it where null is a legitimate, expected state.
@@ -139,6 +124,3 @@ Do **NOT** use `?.` to avoid thinking about whether something *should* be null. 
 **CORRECT**: `var name = entity.GetController().Sections.FirstOrDefault()?.Name ?? "default";`
 
 Only guard after `FirstOrDefault()` which legitimately returns null. Everything before it should crash if broken.
-
-### Access modifiers as validation boundaries
-Public methods are your contract with the outside world; validate there. Private and internal methods are your own territory; trust the caller. If you're adding null checks in a `private` method, the real fix is ensuring the calling code never passes null.
