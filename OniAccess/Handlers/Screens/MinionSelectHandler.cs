@@ -35,8 +35,6 @@ namespace OniAccess.Handlers.Screens {
 		private System.Action _pendingAnnounce;
 		private bool _pendingColonyNameAnnounce;
 		private bool _inDupeMode;
-		private readonly TextEditHelper _textEdit = new TextEditHelper();
-
 		private static readonly System.Type MinionSelectScreenType =
 			HarmonyLib.AccessTools.TypeByName("MinionSelectScreen");
 
@@ -717,14 +715,10 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			// Colony name text editing
+			// Colony name text editing — base handles KInputTextField via TextEdit
 			if (widget.Tag is string nameTag && nameTag == "colony_name"
-				&& widget.Component is KInputTextField textField) {
-				if (!_textEdit.IsEditing) {
-					_textEdit.Begin(textField);
-				} else {
-					_textEdit.Confirm();
-				}
+				&& widget.Component is KInputTextField) {
+				base.ActivateCurrentWidget();
 				return;
 			}
 
@@ -739,7 +733,7 @@ namespace OniAccess.Handlers.Screens {
 			if (widget.Tag is string renameTag && renameTag == "dupe_rename") {
 				try {
 					int slot = _currentSlot;
-					_textEdit.Begin(() => {
+					TextEdit.Begin(() => {
 						var c = _containers[slot] as CharacterContainer;
 						var tb = Traverse.Create(c)
 							.Field("characterNameTitle").GetValue<object>();
@@ -949,17 +943,11 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		/// <summary>
-		/// Intercept Escape for dupe mode exit and text edit cancel.
+		/// Intercept Escape for dupe mode exit.
+		/// Text edit Escape handling is in base.HandleKeyDown.
 		/// </summary>
 		public override bool HandleKeyDown(KButtonEvent e) {
-			// Text editing: Escape cancels
-			if (_textEdit.IsEditing) {
-				if (e.TryConsume(Action.Escape)) {
-					_textEdit.Cancel();
-					return true;
-				}
-				return false;
-			}
+			if (base.HandleKeyDown(e)) return true;
 
 			// Dupe mode: Escape exits back to top level
 			if (_inDupeMode) {
@@ -974,23 +962,14 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
-			if (base.HandleKeyDown(e)) return true;
 			return false;
 		}
 
 		// ========================================
-		// TICK: TEXT EDIT, DEFERRED ANNOUNCE
+		// TICK: DEFERRED ANNOUNCE
 		// ========================================
 
 		public override void Tick() {
-			// Text edit mode: only handle Return to confirm
-			if (_textEdit.IsEditing) {
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
-					_textEdit.Confirm();
-				}
-				return;
-			}
-
 			// Colony name not yet populated by BaseNaming.OnSpawn — re-announce
 			if (_pendingColonyNameAnnounce && _currentIndex == 0 && _widgets.Count > 0) {
 				var w = _widgets[0];

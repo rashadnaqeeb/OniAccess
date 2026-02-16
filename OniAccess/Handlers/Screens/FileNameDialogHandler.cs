@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using HarmonyLib;
 
-using OniAccess.Input;
 using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens {
@@ -9,12 +8,10 @@ namespace OniAccess.Handlers.Screens {
 	/// Handler for FileNameDialog (filename entry for new saves).
 	///
 	/// Presents a text field (Enter to edit, Enter to confirm, Escape to cancel)
-	/// followed by OK and Cancel buttons. Uses TextEditHelper for text editing,
-	/// same pattern as colony name / dupe rename in MinionSelectHandler.
+	/// followed by OK and Cancel buttons. Text editing is handled by the base
+	/// class via TextEdit; this handler only adds speech and OnActivate logic.
 	/// </summary>
 	public class FileNameDialogHandler : BaseMenuHandler {
-		private readonly TextEditHelper _textEdit = new TextEditHelper();
-
 		public override string DisplayName => (string)STRINGS.UI.FRONTEND.SAVESCREEN.SAVENAMETITLE;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
@@ -98,44 +95,6 @@ namespace OniAccess.Handlers.Screens {
 				return $"{(string)STRINGS.UI.FRONTEND.SAVESCREEN.SAVENAMETITLE}, {textField.text}";
 
 			return base.GetWidgetSpeechText(widget);
-		}
-
-		protected override void ActivateCurrentWidget() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
-
-			if (widget.Type == WidgetType.TextInput && widget.Component is KInputTextField textField) {
-				if (!_textEdit.IsEditing) {
-					_textEdit.Begin(textField);
-				} else {
-					_textEdit.Confirm();
-				}
-				return;
-			}
-
-			base.ActivateCurrentWidget();
-		}
-
-		public override bool HandleKeyDown(KButtonEvent e) {
-			if (_textEdit.IsEditing) {
-				if (e.TryConsume(Action.Escape)) {
-					_textEdit.Cancel();
-					return true;
-				}
-				return false;
-			}
-
-			return base.HandleKeyDown(e);
-		}
-
-		public override void Tick() {
-			if (_textEdit.IsEditing) {
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return))
-					_textEdit.Confirm();
-				return;
-			}
-
-			base.Tick();
 		}
 	}
 }

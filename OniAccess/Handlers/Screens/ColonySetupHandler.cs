@@ -53,8 +53,6 @@ namespace OniAccess.Handlers.Screens {
 		/// </summary>
 		private int _clusterIndex;
 
-		private readonly TextEditHelper _textEdit = new TextEditHelper();
-
 		/// <summary>
 		/// Whether we are in the info submenu for a cluster.
 		/// </summary>
@@ -945,21 +943,6 @@ namespace OniAccess.Handlers.Screens {
 		// WIDGET VALIDITY
 		// ========================================
 
-		/// <summary>
-		/// Accept MultiToggle as valid Toggle (story traits, mixing DLC toggles).
-		/// Cluster selector has null GameObject,accept it as a Label.
-		/// </summary>
-		protected override bool IsWidgetValid(WidgetInfo widget) {
-			if (widget == null) return false;
-			if (widget.Type == WidgetType.Toggle) {
-				var mt = widget.Component as MultiToggle;
-				if (mt != null) {
-					if (widget.GameObject == null) return false;
-					return widget.GameObject.activeInHierarchy;
-				}
-			}
-			return base.IsWidgetValid(widget);
-		}
 
 		// ========================================
 		// WIDGET SPEECH
@@ -1203,16 +1186,6 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			// Text input: enter edit mode
-			if (widget.Type == WidgetType.TextInput && widget.Component is KInputTextField textField) {
-				if (!_textEdit.IsEditing) {
-					_textEdit.Begin(textField);
-				} else {
-					_textEdit.Confirm();
-				}
-				return;
-			}
-
 			base.ActivateCurrentWidget();
 		}
 
@@ -1307,23 +1280,14 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		// ========================================
-		// TICK: TEXT EDIT MODE + CLUSTER CYCLING
+		// TICK: CLUSTER CYCLING
 		// ========================================
 
 		/// <summary>
-		/// When in text edit mode, only check Return (to confirm edit).
-		/// Otherwise, handle Left/Right cluster cycling before base navigation.
+		/// Handle Left/Right cluster cycling before base navigation.
+		/// Text edit mode (Return to confirm, Escape to cancel) is handled by base.
 		/// </summary>
 		public override void Tick() {
-			if (_textEdit.IsEditing) {
-				// Return/Enter confirms text edit
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
-					_textEdit.Confirm();
-				}
-				// Block all other key handling during text edit
-				return;
-			}
-
 			// Deferred cluster refresh: traits needed one frame to populate
 			// after Left/Right cycling or shuffle fired OnAsteroidClicked.
 			// Re-discover widgets and speak the current cluster.
@@ -1369,20 +1333,11 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// When in text edit mode, intercept Escape to cancel editing
-		/// and restore the cached value.
+		/// Intercept Escape for Customize sub-view and info submenu exits.
+		/// Text edit Escape handling is in base.HandleKeyDown.
 		/// </summary>
 		public override bool HandleKeyDown(KButtonEvent e) {
-			if (_textEdit.IsEditing) {
-				// Escape cancels text edit,check before base so it doesn't
-				// get consumed as a search-clear
-				if (e.TryConsume(Action.Escape)) {
-					_textEdit.Cancel();
-					return true;
-				}
-				// Let all other keys pass through to the input field
-				return false;
-			}
+			if (base.HandleKeyDown(e)) return true;
 
 			// Escape exits Customize sub-view back to main destination list
 			if (_inCustomize) {
@@ -1407,8 +1362,6 @@ namespace OniAccess.Handlers.Screens {
 					return true;
 				}
 			}
-
-			if (base.HandleKeyDown(e)) return true;
 
 			return false;
 		}

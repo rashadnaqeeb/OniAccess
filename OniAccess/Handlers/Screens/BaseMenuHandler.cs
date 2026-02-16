@@ -33,11 +33,17 @@ namespace OniAccess.Handlers.Screens {
 	/// - Shift+Left/Right for large step adjustment
 	/// - Tab/Shift+Tab for tabbed screens (virtual stubs)
 	/// - Widget readout: label and value only, no type announcement
+	/// - TextInput: Enter to begin editing, Enter to confirm, Escape to cancel
+	///   (via TextEdit helper; subclasses using accessor-based Begin() override
+	///   ActivateCurrentWidget for that widget)
 	/// </summary>
 	public abstract class BaseMenuHandler: BaseScreenHandler, ISearchable {
 		protected readonly List<WidgetInfo> _widgets = new List<WidgetInfo>();
 		protected int _currentIndex;
 		protected readonly TypeAheadSearch _search = new TypeAheadSearch();
+		private TextEditHelper _textEdit;
+		protected TextEditHelper TextEdit => _textEdit ??= new TextEditHelper();
+		protected bool IsTextEditing => _textEdit != null && _textEdit.IsEditing;
 
 		/// <summary>
 		/// When true, Tick() will retry DiscoverWidgets.
@@ -157,6 +163,12 @@ namespace OniAccess.Handlers.Screens {
 		/// tooltip reading, and widget interaction.
 		/// </summary>
 		public override void Tick() {
+			if (_textEdit != null && _textEdit.IsEditing) {
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return))
+					_textEdit.Confirm();
+				return;
+			}
+
 			// Deferred rediscovery: screen UI wasn't ready during OnActivate
 			// (Harmony postfix fired inside base.OnSpawn before subclass setup).
 			// Retries up to MaxDiscoveryRetries frames.
@@ -275,6 +287,14 @@ namespace OniAccess.Handlers.Screens {
 		/// Subclasses that override must call base.HandleKeyDown first.
 		/// </summary>
 		public override bool HandleKeyDown(KButtonEvent e) {
+			if (_textEdit != null && _textEdit.IsEditing) {
+				if (e.TryConsume(Action.Escape)) {
+					_textEdit.Cancel();
+					return true;
+				}
+				return false;
+			}
+
 			if (_search.IsSearchActive && e.TryConsume(Action.Escape)) {
 				_search.Clear();
 				Speech.SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SEARCH.CLEARED);
@@ -308,11 +328,13 @@ namespace OniAccess.Handlers.Screens {
 				case WidgetType.Button: {
 						var btn = widget.Component as KButton;
 						if (btn != null) return btn.isInteractable;
+						if (widget.Component is MultiToggle) return true;
 						break;
 					}
 				case WidgetType.Toggle: {
 						var toggle = widget.Component as KToggle;
 						if (toggle != null) return toggle.IsInteractable();
+						if (widget.Component is MultiToggle) return true;
 						break;
 					}
 				case WidgetType.Slider: {
@@ -423,6 +445,11 @@ namespace OniAccess.Handlers.Screens {
 							string state = toggle.isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 							return $"{widget.Label}, {state}";
 						}
+						var mt = widget.Component as MultiToggle;
+						if (mt != null) {
+							string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
+							return $"{widget.Label}, {state}";
+						}
 						return widget.Label;
 					}
 				case WidgetType.Slider: {
@@ -465,7 +492,7 @@ namespace OniAccess.Handlers.Screens {
 		/// Activate the currently focused widget. Dispatches by WidgetType:
 		/// - Button: SignalClick (triggers onClick + plays button sound)
 		/// - Toggle: Click() then speak new state
-		/// - TextInput: no-op (subclasses handle)
+		/// - TextInput: Begin/Confirm via TextEdit (Enter toggles editing)
 		/// </summary>
 		protected virtual void ActivateCurrentWidget() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
@@ -487,9 +514,16 @@ namespace OniAccess.Handlers.Screens {
 						}
 						break;
 					}
-				case WidgetType.TextInput:
-					// No-op default. Subclasses handle text input activation.
-					break;
+				case WidgetType.TextInput: {
+						var textField = widget.Component as KInputTextField;
+						if (textField != null) {
+							if (!TextEdit.IsEditing)
+								TextEdit.Begin(textField);
+							else
+								TextEdit.Confirm();
+						}
+						break;
+					}
 			}
 		}
 

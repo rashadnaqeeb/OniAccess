@@ -422,16 +422,11 @@ namespace OniAccess.Handlers.Screens {
 
 			switch (widget.Type) {
 				case WidgetType.Toggle: {
-						// KToggle
-						var toggle = widget.Component as KToggle;
-						if (toggle != null) return toggle.IsInteractable();
-						// MultiToggle
-						var mt = widget.Component as MultiToggle;
-						if (mt != null) return true;
 						// HierRef toggle (Component is KButton)
 						var kb = widget.Component as KButton;
 						if (kb != null) return kb.isInteractable;
-						return false;
+						// KToggle and MultiToggle handled by base
+						return base.IsWidgetValid(widget);
 					}
 				case WidgetType.Dropdown: {
 						if (widget.Tag is RadioGroupInfo)
@@ -451,13 +446,8 @@ namespace OniAccess.Handlers.Screens {
 		protected override string GetWidgetSpeechText(WidgetInfo widget) {
 			switch (widget.Type) {
 				case WidgetType.Toggle: {
-						// MultiToggle: read CurrentState
-						var mt = widget.Component as MultiToggle;
-						if (mt != null) {
-							string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-							return $"{widget.Label}, {state}";
-						}
 						// HierRef toggle: read CheckMark active state
+						// MultiToggle ON/OFF handled by base
 						if (widget.Tag is HierarchyReferences hr) {
 							string checkRef = hr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
 							bool isOn = hr.GetReference(checkRef)?.gameObject.activeSelf ?? false;

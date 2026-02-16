@@ -86,23 +86,6 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// Accept MultiToggle as valid Toggle (base only accepts KToggle).
-		/// Same pattern as OptionsMenuHandler.
-		/// </summary>
-		protected override bool IsWidgetValid(WidgetInfo widget) {
-			if (widget == null || widget.GameObject == null) return false;
-			if (!widget.GameObject.activeInHierarchy) return false;
-
-			if (widget.Type == WidgetType.Toggle) {
-				var mt = widget.Component as MultiToggle;
-				if (mt != null) return true;
-				return false;
-			}
-
-			return base.IsWidgetValid(widget);
-		}
-
-		/// <summary>
 		/// Toggles: "ModName, enabled" / "ModName, disabled" via MultiToggle.CurrentState.
 		/// Buttons: read live LocText (Toggle All label changes between "ENABLE ALL"/"DISABLE ALL").
 		/// </summary>
