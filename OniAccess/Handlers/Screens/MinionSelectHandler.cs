@@ -532,7 +532,7 @@ namespace OniAccess.Handlers.Screens {
 					.GetValue<DropDown>();
 				if (dropdown != null && dropdown.gameObject.activeInHierarchy) {
 					_widgets.Add(new WidgetInfo {
-						Label = GetInterestFilterLabel(),
+						Label = GetInterestFilterLabel(container),
 						Component = dropdown,
 						Type = WidgetType.Dropdown,
 						GameObject = dropdown.gameObject,
@@ -544,9 +544,8 @@ namespace OniAccess.Handlers.Screens {
 			}
 		}
 
-		private string GetInterestFilterLabel() {
+		private string GetInterestFilterLabel(CharacterContainer container) {
 			try {
-				var container = _containers[_currentSlot] as CharacterContainer;
 				var ct = Traverse.Create(container);
 				var aptId = ct.Field("guaranteedAptitudeID").GetValue<string>();
 				if (string.IsNullOrEmpty(aptId)) {
@@ -649,7 +648,7 @@ namespace OniAccess.Handlers.Screens {
 					return $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {tf.text}";
 				}
 				if (tag == "interest_filter") {
-					return GetInterestFilterLabel();
+					return GetInterestFilterLabel(_containers[_currentSlot] as CharacterContainer);
 				}
 				if (tag == "model_filter") {
 					return GetModelFilterLabel();
@@ -755,16 +754,14 @@ namespace OniAccess.Handlers.Screens {
 
 			// Dupe shuffle name button: click, defer read by one frame
 			if (widget.Tag is string dupeShuffleTag && dupeShuffleTag == "dupe_shuffle_name") {
-				var kbutton = widget.Component as KButton;
-				kbutton?.SignalClick(KKeyCode.Mouse0);
+				((KButton)widget.Component).SignalClick(KKeyCode.Mouse0);
 				_pendingAnnounce = AnnounceAfterDupeShuffle;
 				return;
 			}
 
 			// Reroll button in dupe mode
 			if (widget.Tag is string rerollTag && rerollTag == "reroll") {
-				var kbutton = widget.Component as KButton;
-				kbutton?.SignalClick(KKeyCode.Mouse0);
+				((KButton)widget.Component).SignalClick(KKeyCode.Mouse0);
 				// Delay announcement by one frame for SetAttributes coroutine
 				_pendingAnnounce = AnnounceAfterReroll;
 				return;
@@ -851,7 +848,8 @@ namespace OniAccess.Handlers.Screens {
 			DiscoverWidgets(_screen);
 			// Find the filter widget by tag — index shifts when trait/interest count changes
 			_currentIndex = FindWidgetByTag("interest_filter");
-			Speech.SpeechPipeline.SpeakInterrupt(GetInterestFilterLabel());
+			Speech.SpeechPipeline.SpeakInterrupt(
+				GetInterestFilterLabel(_containers[_currentSlot] as CharacterContainer));
 			// Queue name + interests after the filter label (don't interrupt)
 			QueueNameAndInterests();
 		}
@@ -883,6 +881,7 @@ namespace OniAccess.Handlers.Screens {
 				var ct = Traverse.Create(container);
 				var models = ct.Field("permittedModels").GetValue<List<Tag>>();
 				string title = (string)STRINGS.DUPLICANTS.MODELTITLE;
+				if (models == null || models.Count == 0) return title;
 				if (models.Count > 1) {
 					return $"{title}{STRINGS.UI.CHARACTERCONTAINER_ALL_MODELS}";
 				}
@@ -907,6 +906,7 @@ namespace OniAccess.Handlers.Screens {
 				if (entries == null || entries.Count == 0) return;
 
 				var models = ct.Field("permittedModels").GetValue<List<Tag>>();
+				if (models == null || models.Count == 0) return;
 
 				// Current index: -1 = Any, 0 = Standard, 1 = Bionic
 				int currentIdx;
