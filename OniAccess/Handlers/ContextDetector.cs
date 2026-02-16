@@ -196,6 +196,25 @@ namespace OniAccess.Handlers {
 			var infoDialogType = HarmonyLib.AccessTools.TypeByName("InfoDialogScreen");
 			Register(infoDialogType, screen => new ConfirmDialogHandler(screen));
 
+			// CustomizableDialogScreen (KModalScreen -- multi-button dialogs, DLC toggles, mod warnings)
+			var customDialogType = HarmonyLib.AccessTools.TypeByName("CustomizableDialogScreen");
+			Register(customDialogType, screen => new ConfirmDialogHandler(screen));
+
+			// GameOverScreen (KModalScreen -- colony death)
+			var gameOverType = HarmonyLib.AccessTools.TypeByName("GameOverScreen");
+			Register(gameOverType, screen => new ConfirmDialogHandler(screen,
+				(string)STRINGS.UI.COLONYLOSTSCREEN.COLONYLOST));
+
+			// VictoryScreen (KModalScreen -- achievement completion)
+			var victoryType = HarmonyLib.AccessTools.TypeByName("VictoryScreen");
+			Register(victoryType, screen => new ConfirmDialogHandler(screen,
+				(string)STRINGS.UI.VICTORYSCREEN.HEADER));
+
+			// PatchNotesScreen (KModalScreen -- post-update notes)
+			var patchNotesType = HarmonyLib.AccessTools.TypeByName("PatchNotesScreen");
+			Register(patchNotesType, screen => new ConfirmDialogHandler(screen,
+				(string)STRINGS.UI.FRONTEND.PATCHNOTESSCREEN.HEADER));
+
 			// LockerMenuScreen (KModalScreen -- Supply Closet hub from main menu)
 			// Show patch pushes/pops via ContextDetector since OnActivate calls Show(false)
 			Register<LockerMenuScreen>(screen => new LockerMenuHandler(screen));

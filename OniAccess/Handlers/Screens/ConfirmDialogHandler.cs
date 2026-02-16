@@ -13,13 +13,15 @@ namespace OniAccess.Handlers.Screens {
 	/// </summary>
 	public class ConfirmDialogHandler: BaseMenuHandler {
 		private string _dialogTitle;
+		private string _displayNameOverride;
 
-		public override string DisplayName => _dialogTitle
+		public override string DisplayName => _displayNameOverride ?? _dialogTitle
 			?? (string)STRINGS.UI.FRONTEND.SAVESCREEN.CONFIRMNAME;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
-		public ConfirmDialogHandler(KScreen screen) : base(screen) {
+		public ConfirmDialogHandler(KScreen screen, string displayNameOverride = null) : base(screen) {
+			_displayNameOverride = displayNameOverride;
 			HelpEntries = BuildHelpEntries();
 		}
 
