@@ -684,7 +684,7 @@ namespace OniAccess.Handlers.Screens {
 		/// </summary>
 		protected void PlayWrapSound() {
 			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click_Close"));
+				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
 			} catch (System.Exception ex) {
 				Util.Log.Error($"PlayWrapSound failed: {ex.Message}");
 			}
