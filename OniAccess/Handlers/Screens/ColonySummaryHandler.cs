@@ -35,9 +35,6 @@ namespace OniAccess.Handlers.Screens {
 		private const int DetailSectionAchievements = 3;
 		private const int DetailSectionCount = 4;
 
-		/// Sentinel label for widgets whose text is read live at speech time.
-		private const string LiveReadSentinel = "\x01LIVE";
-
 		private bool _inColonyDetail;
 		private int _currentSection;
 		private KButton _viewOtherColoniesButton;
@@ -186,11 +183,13 @@ namespace OniAccess.Handlers.Screens {
 				// Pagination creates empty placeholder GameObjects without HierarchyReferences
 				if (child.GetComponent<HierarchyReferences>() == null) continue;
 
+				var dupGO = child.gameObject;
 				_widgets.Add(new WidgetInfo {
-					Label = LiveReadSentinel,
+					Label = "",
 					Component = null,
 					Type = WidgetType.Label,
-					GameObject = child.gameObject
+					GameObject = dupGO,
+					SpeechFunc = () => ReadDuplicantEntry(dupGO.transform)
 				});
 			}
 
@@ -251,11 +250,13 @@ namespace OniAccess.Handlers.Screens {
 
 				if (child.GetComponent<HierarchyReferences>() == null) continue;
 
+				var bldgGO = child.gameObject;
 				_widgets.Add(new WidgetInfo {
-					Label = LiveReadSentinel,
+					Label = "",
 					Component = null,
 					Type = WidgetType.Label,
-					GameObject = child.gameObject
+					GameObject = bldgGO,
+					SpeechFunc = () => ReadBuildingEntry(bldgGO.transform)
 				});
 			}
 
@@ -299,11 +300,14 @@ namespace OniAccess.Handlers.Screens {
 					if (kvp.Key == "timelapse" || kvp.Key == "duplicants" || kvp.Key == "buildings")
 						continue;
 
+					var statGO = kvp.Value;
+					string statKey = kvp.Key;
 					_widgets.Add(new WidgetInfo {
-						Label = kvp.Key,
+						Label = statKey,
 						Component = null,
 						Type = WidgetType.Label,
-						GameObject = kvp.Value
+						GameObject = statGO,
+						SpeechFunc = () => ReadStatEntry(statGO, statKey)
 					});
 				}
 			}
@@ -387,11 +391,13 @@ namespace OniAccess.Handlers.Screens {
 					});
 				}
 
+				var achGO = child.gameObject;
 				_widgets.Add(new WidgetInfo {
 					Label = (string)STRINGS.ONIACCESS.INFO.ACHIEVEMENT,
 					Component = null,
 					Type = WidgetType.Label,
-					GameObject = child.gameObject
+					GameObject = achGO,
+					SpeechFunc = () => ReadAchievementText(achGO.transform)
 				});
 			}
 
@@ -564,45 +570,6 @@ namespace OniAccess.Handlers.Screens {
 		// WIDGET SPEECH
 		// ========================================
 
-		/// <summary>
-		/// Read widget text live for duplicants, buildings, stats, and achievements.
-		/// The game populates LocTexts via SetText() which needs a frame before
-		/// GetParsedText() returns the updated text. By reading at speech time
-		/// (always at least one frame after discovery), the data is current.
-		/// </summary>
-		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			if (widget.GameObject != null) {
-				if (widget.Label == LiveReadSentinel) {
-					string live = ReadLiveWidget(widget.GameObject);
-					if (!string.IsNullOrEmpty(live)) return live;
-				}
-
-				if (_inColonyDetail && _currentSection == DetailSectionStats
-					&& widget.Type == WidgetType.Label && widget.Label != LiveReadSentinel) {
-					string stat = ReadStatEntry(widget.GameObject, widget.Label);
-					if (!string.IsNullOrEmpty(stat)) return stat;
-				}
-			}
-
-			int achSection = _inColonyDetail ? DetailSectionAchievements : ExplorerSectionAchievements;
-			if (_currentSection == achSection
-				&& widget.GameObject != null
-				&& widget.Label == (string)STRINGS.ONIACCESS.INFO.ACHIEVEMENT) {
-				return ReadAchievementText(widget.GameObject.transform);
-			}
-			return base.GetWidgetSpeechText(widget);
-		}
-
-		/// <summary>
-		/// Dispatch live reading based on current section.
-		/// </summary>
-		private string ReadLiveWidget(UnityEngine.GameObject go) {
-			switch (_currentSection) {
-				case DetailSectionDuplicants: return ReadDuplicantEntry(go.transform);
-				case DetailSectionBuildings: return ReadBuildingEntry(go.transform);
-				default: return null;
-			}
-		}
 
 		/// <summary>
 		/// Read achievement name and description live from HierarchyReferences.

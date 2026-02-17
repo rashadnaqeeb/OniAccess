@@ -341,7 +341,15 @@ namespace OniAccess.Handlers.Screens {
 				Component = null,
 				Type = WidgetType.Label,
 				GameObject = null,
-				Tag = "cluster_selector"
+				Tag = "cluster_selector",
+				SpeechFunc = () => {
+					if (_clusterKeys != null && _clusterIndex >= 0 && _clusterIndex < _clusterKeys.Count) {
+						bool includePrefix = !_speakClusterNameOnly;
+						_speakClusterNameOnly = false;
+						return BuildClusterSelectorLabel(_clusterKeys[_clusterIndex], includePrefix);
+					}
+					return clusterLabel;
+				}
 			});
 
 			// Action buttons (no back button)
@@ -357,7 +365,8 @@ namespace OniAccess.Handlers.Screens {
 						Label = $"{((string)STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.COORDINATE).TrimEnd(':')}, {currentValue}",
 						Component = coordinate,
 						Type = WidgetType.TextInput,
-						GameObject = coordinate.gameObject
+						GameObject = coordinate.gameObject,
+						SpeechFunc = () => $"{((string)STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.COORDINATE).TrimEnd(':')}, {coordinate.text}"
 					});
 				}
 			} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.DiscoverWidgets(coordinate): {ex.Message}"); }
@@ -665,7 +674,8 @@ namespace OniAccess.Handlers.Screens {
 						Label = label,
 						Component = widget,
 						Type = WidgetType.Dropdown,
-						GameObject = widget.gameObject
+						GameObject = widget.gameObject,
+						SpeechFunc = () => BuildSettingDropdownSpeech(widget, name)
 					});
 				} else if (widget is CustomGameSettingToggleWidget toggleWidget) {
 					var wt = Traverse.Create(toggleWidget);
@@ -686,7 +696,15 @@ namespace OniAccess.Handlers.Screens {
 						Label = $"{name}, {state}",
 						Component = widget,
 						Type = WidgetType.Toggle,
-						GameObject = widget.gameObject
+						GameObject = widget.gameObject,
+						SpeechFunc = () => {
+							var t = Traverse.Create(toggleWidget);
+							var lt = t.Field("Label").GetValue<LocText>();
+							var tg = t.Field("Toggle").GetValue<MultiToggle>();
+							string n = lt != null ? lt.text : name;
+							string s = (tg != null && tg.CurrentState == 1) ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
+							return $"{n}, {s}";
+						}
 					});
 				} else if (widget is CustomGameSettingSeed seedWidget) {
 					var wt = Traverse.Create(seedWidget);
@@ -698,7 +716,15 @@ namespace OniAccess.Handlers.Screens {
 						Label = $"{name}, {value}",
 						Component = widget,
 						Type = WidgetType.Button, // Enter randomizes seed
-						GameObject = widget.gameObject
+						GameObject = widget.gameObject,
+						SpeechFunc = () => {
+							var s = Traverse.Create(seedWidget);
+							var lt = s.Field("Label").GetValue<LocText>();
+							var inp = s.Field("Input").GetValue<KInputTextField>();
+							string n = lt != null ? lt.text : name;
+							string v = inp != null ? inp.text : "";
+							return $"{n}, {v}";
+						}
 					});
 				}
 			}
@@ -774,12 +800,14 @@ namespace OniAccess.Handlers.Screens {
 						}
 					} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.DiscoverStoryWidgets(desc): {ex.Message}"); }
 
+					var capturedStoryId = storyId;
 					_widgets.Add(new WidgetInfo {
 						Label = label,
 						Component = checkbox,
 						Type = WidgetType.Toggle,
 						GameObject = checkbox.gameObject,
-						Tag = storyId
+						Tag = storyId,
+						SpeechFunc = () => BuildStoryTraitSpeech(capturedStoryId, label)
 					});
 					storyIdx++;
 				} catch (System.Exception ex) {
@@ -891,11 +919,27 @@ namespace OniAccess.Handlers.Screens {
 						if (string.IsNullOrEmpty(name)) continue;
 
 						string state = toggle.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
+						var mixToggle = toggle;
+						var mixGO = widget.gameObject;
+						string mixLabel = name;
 						_widgets.Add(new WidgetInfo {
 							Label = $"{name}, {state}",
 							Component = toggle,
 							Type = WidgetType.Toggle,
-							GameObject = widget.gameObject
+							GameObject = mixGO,
+							SpeechFunc = () => {
+								string n = "";
+								if (mixGO != null) {
+									var lt2 = mixGO.transform.Find("Label");
+									if (lt2 != null) {
+										var loc = lt2.GetComponent<LocText>();
+										if (loc != null) n = loc.text;
+									}
+								}
+								if (string.IsNullOrEmpty(n)) n = mixLabel;
+								string s = mixToggle.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
+								return $"{n}, {s}";
+							}
 						});
 						continue;
 					}
@@ -932,7 +976,8 @@ namespace OniAccess.Handlers.Screens {
 							Label = label,
 							Component = widget,
 							Type = WidgetType.Dropdown,
-							GameObject = widget.gameObject
+							GameObject = widget.gameObject,
+							SpeechFunc = () => BuildSettingDropdownSpeech(widget, name)
 						});
 					}
 				}
@@ -948,130 +993,61 @@ namespace OniAccess.Handlers.Screens {
 		// WIDGET SPEECH
 		// ========================================
 
-		/// <summary>
-		/// Read widget state live for each panel type.
-		/// </summary>
-		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			// Cluster selector: rebuild label live
-			if (widget.Tag is string tag && tag == "cluster_selector") {
-				if (_clusterKeys != null && _clusterIndex >= 0 && _clusterIndex < _clusterKeys.Count) {
-					bool includePrefix = !_speakClusterNameOnly;
-					_speakClusterNameOnly = false;
-					return BuildClusterSelectorLabel(_clusterKeys[_clusterIndex], includePrefix);
+		private string BuildStoryTraitSpeech(string storyId, string fallbackLabel) {
+			string state = STRINGS.ONIACCESS.STATES.FORBIDDEN;
+			try {
+				var level = CustomGameSettings.Instance.GetCurrentStoryTraitSetting(storyId);
+				if (level != null && level.id == "Guaranteed")
+					state = STRINGS.ONIACCESS.STATES.GUARANTEED;
+			} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.BuildStoryTraitSpeech(state): {ex.Message}"); }
+
+			string name = "";
+			try {
+				var story = Db.Get().Stories.Get(storyId);
+				if (story?.StoryTrait != null)
+					name = Strings.Get(story.StoryTrait.name);
+			} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.BuildStoryTraitSpeech(name): {ex.Message}"); }
+			if (string.IsNullOrEmpty(name)) name = fallbackLabel;
+
+			string label = $"{name}, {state}";
+			try {
+				bool isPureVanilla = DlcManager.IsPureVanilla();
+				var story = Db.Get().Stories.Get(storyId);
+				if (story?.StoryTrait != null) {
+					string desc = isPureVanilla
+						? Strings.Get(story.StoryTrait.description + "_SHORT")
+						: Strings.Get(story.StoryTrait.description);
+					if (!string.IsNullOrEmpty(desc))
+						label = $"{name}, {state}, {Speech.TextFilter.FilterForSpeech(desc)}";
 				}
-				return widget.Label;
-			}
+			} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.BuildStoryTraitSpeech(desc): {ex.Message}"); }
+			return label;
+		}
 
-			// Story trait toggles: re-read state live via CustomGameSettings
-			if (_inCustomize && _currentSubTab == SubTabStoryTraits && widget.Type == WidgetType.Toggle
-				&& widget.Tag is string storyId) {
-				string state = STRINGS.ONIACCESS.STATES.FORBIDDEN;
-				try {
-					var level = CustomGameSettings.Instance.GetCurrentStoryTraitSetting(storyId);
-					if (level != null && level.id == "Guaranteed")
-						state = STRINGS.ONIACCESS.STATES.GUARANTEED;
-				} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.GetWidgetSpeechText(storyState): {ex.Message}"); }
+		private static string BuildSettingDropdownSpeech(CustomGameSettingWidget settingWidget, string fallbackName) {
+			var wt = Traverse.Create(settingWidget);
+			var labelText = wt.Field("Label").GetValue<LocText>();
+			var valueText = wt.Field("ValueLabel").GetValue<LocText>();
+			string name = labelText != null ? labelText.text : "";
+			if (string.IsNullOrEmpty(name)) name = fallbackName;
 
-				// Re-read the name from the database (LocText.text may be empty)
-				string name = "";
-				try {
-					var story = Db.Get().Stories.Get(storyId);
-					if (story?.StoryTrait != null)
-						name = Strings.Get(story.StoryTrait.name);
-				} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.GetWidgetSpeechText(storyName): {ex.Message}"); }
-				if (string.IsNullOrEmpty(name)) name = widget.Label;
+			string value = valueText != null ? valueText.text : "";
 
-				// Include trait description
-				string label = $"{name}, {state}";
-				try {
-					bool isPureVanilla = DlcManager.IsPureVanilla();
-					var story = Db.Get().Stories.Get(storyId);
-					if (story?.StoryTrait != null) {
-						string desc = isPureVanilla
-							? Strings.Get(story.StoryTrait.description + "_SHORT")
-							: Strings.Get(story.StoryTrait.description);
-						if (!string.IsNullOrEmpty(desc))
-							label = $"{name}, {state}, {Speech.TextFilter.FilterForSpeech(desc)}";
-					}
-				} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.GetWidgetSpeechText(storyDesc): {ex.Message}"); }
-				return label;
-			}
-
-			// Mixing DLC toggles: read CurrentState live
-			if (_inCustomize && _currentSubTab == SubTabMixing && widget.Type == WidgetType.Toggle) {
-				var mt = widget.Component as MultiToggle;
-				if (mt != null) {
-					string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
-					// Read label from widget's "Label" child LocText
-					string name = "";
-					if (widget.GameObject != null) {
-						var labelTransform = widget.GameObject.transform.Find("Label");
-						if (labelTransform != null) {
-							var lt = labelTransform.GetComponent<LocText>();
-							if (lt != null) name = lt.text;
-						}
-					}
-					if (string.IsNullOrEmpty(name)) name = widget.Label;
-					return $"{name}, {state}";
-				}
-			}
-
-			// Mixing cyclers and game settings dropdowns
-			if (widget.Type == WidgetType.Dropdown && widget.Component is CustomGameSettingWidget settingWidget) {
-				// Try standard settings fields first (Label + ValueLabel)
-				var wt = Traverse.Create(settingWidget);
-				var labelText = wt.Field("Label").GetValue<LocText>();
-				var valueText = wt.Field("ValueLabel").GetValue<LocText>();
-				string name = labelText != null ? labelText.text : "";
-				// LocText may be empty when parent hierarchy is inactive; use stored label
-				if (string.IsNullOrEmpty(name)) name = widget.Label;
-
-				string value = valueText != null ? valueText.text : "";
-
-				// Fallback for mixing cyclers: read from "Cycler/Box/Value Label"
-				if (string.IsNullOrEmpty(value) && settingWidget.gameObject != null) {
-					var cyclerTransform = settingWidget.transform.Find("Cycler");
-					if (cyclerTransform != null) {
-						var boxTransform = cyclerTransform.Find("Box");
-						if (boxTransform != null) {
-							var valueLabelTransform = boxTransform.Find("Value Label");
-							if (valueLabelTransform != null) {
-								var vlt = valueLabelTransform.GetComponent<LocText>();
-								if (vlt != null) value = vlt.text;
-							}
+			if (string.IsNullOrEmpty(value) && settingWidget.gameObject != null) {
+				var cyclerTransform = settingWidget.transform.Find("Cycler");
+				if (cyclerTransform != null) {
+					var boxTransform = cyclerTransform.Find("Box");
+					if (boxTransform != null) {
+						var valueLabelTransform = boxTransform.Find("Value Label");
+						if (valueLabelTransform != null) {
+							var vlt = valueLabelTransform.GetComponent<LocText>();
+							if (vlt != null) value = vlt.text;
 						}
 					}
 				}
-
-				return !string.IsNullOrEmpty(value) ? $"{name}, {value}" : name;
 			}
 
-			// Settings toggle widgets: read Toggle.CurrentState live
-			if (_inCustomize && _currentSubTab == SubTabSettings && widget.Component is CustomGameSettingToggleWidget toggleWidget) {
-				var twt = Traverse.Create(toggleWidget);
-				var labelText = twt.Field("Label").GetValue<LocText>();
-				var toggle = twt.Field("Toggle").GetValue<MultiToggle>();
-				string name = labelText != null ? labelText.text : widget.Label;
-				string state = (toggle != null && toggle.CurrentState == 1) ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
-				return $"{name}, {state}";
-			}
-
-			// Settings seed widget: read Input.text live
-			if (_inCustomize && _currentSubTab == SubTabSettings && widget.Component is CustomGameSettingSeed seedWidget) {
-				var swt = Traverse.Create(seedWidget);
-				var labelText = swt.Field("Label").GetValue<LocText>();
-				var inputField = swt.Field("Input").GetValue<KInputTextField>();
-				string name = labelText != null ? labelText.text : (string)STRINGS.ONIACCESS.PANELS.SEED;
-				string value = inputField != null ? inputField.text : "";
-				return $"{name}, {value}";
-			}
-
-			// Coordinate text field
-			if (widget.Type == WidgetType.TextInput && widget.Component is KInputTextField textField) {
-				return $"{((string)STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.COORDINATE).TrimEnd(':')}, {textField.text}";
-			}
-
-			return base.GetWidgetSpeechText(widget);
+			return !string.IsNullOrEmpty(value) ? $"{name}, {value}" : name;
 		}
 
 		// ========================================

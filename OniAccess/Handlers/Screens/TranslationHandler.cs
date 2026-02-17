@@ -30,12 +30,6 @@ namespace OniAccess.Handlers.Screens {
 			HelpEntries = BuildHelpEntries();
 		}
 
-		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			if (widget.Tag is bool isSelected && isSelected)
-				return $"{STRINGS.ONIACCESS.STATES.SELECTED}, {widget.Label}";
-			return base.GetWidgetSpeechText(widget);
-		}
-
 		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
@@ -66,12 +60,17 @@ namespace OniAccess.Handlers.Screens {
 					if (string.IsNullOrEmpty(label))
 						label = go.name;
 
+					bool isSelected = selectedButtonName != null && go.name == selectedButtonName;
+					string widgetLabel = label;
 					_widgets.Add(new WidgetInfo {
-						Label = label,
+						Label = widgetLabel,
 						Component = kbutton,
 						Type = WidgetType.Button,
 						GameObject = go,
-						Tag = selectedButtonName != null && go.name == selectedButtonName
+						Tag = isSelected,
+						SpeechFunc = isSelected
+							? () => $"{STRINGS.ONIACCESS.STATES.SELECTED}, {widgetLabel}"
+							: (System.Func<string>)null
 					});
 				}
 			}

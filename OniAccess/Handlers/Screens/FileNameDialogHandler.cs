@@ -49,7 +49,8 @@ namespace OniAccess.Handlers.Screens {
 						Component = inputField,
 						Type = WidgetType.TextInput,
 						GameObject = inputField.gameObject,
-						Tag = "filename"
+						Tag = "filename",
+						SpeechFunc = () => $"{(string)STRINGS.UI.FRONTEND.SAVESCREEN.SAVENAMETITLE}, {inputField.text}"
 					});
 				}
 			} catch (System.Exception ex) {
@@ -90,11 +91,5 @@ namespace OniAccess.Handlers.Screens {
 			return _widgets.Count > 0;
 		}
 
-		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			if (widget.Type == WidgetType.TextInput && widget.Component is KInputTextField textField)
-				return $"{(string)STRINGS.UI.FRONTEND.SAVESCREEN.SAVENAMETITLE}, {textField.text}";
-
-			return base.GetWidgetSpeechText(widget);
-		}
 	}
 }

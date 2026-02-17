@@ -454,6 +454,11 @@ namespace OniAccess.Handlers.Screens {
 		/// just "label" for buttons/labels. No type announcement per locked decision.
 		/// </summary>
 		protected virtual string GetWidgetSpeechText(WidgetInfo widget) {
+			if (widget.SpeechFunc != null) {
+				string result = widget.SpeechFunc();
+				if (result != null) return result;
+			}
+
 			switch (widget.Type) {
 				case WidgetType.Toggle: {
 						var toggle = widget.Component as KToggle;

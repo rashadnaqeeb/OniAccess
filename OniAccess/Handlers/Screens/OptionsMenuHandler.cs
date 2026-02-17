@@ -180,12 +180,20 @@ namespace OniAccess.Handlers.Screens {
 				if (label == null) continue;
 
 				hierToggleButtons.Add(kbutton);
+				var hierRefForSpeech = hr;
+				string toggleLabel = label;
 				_widgets.Add(new WidgetInfo {
 					Label = label,
 					Component = kbutton,
 					Type = WidgetType.Toggle,
 					GameObject = hr.gameObject,
-					Tag = hr  // Store HierarchyReferences for reading CheckMark state
+					Tag = hr,
+					SpeechFunc = () => {
+						string ckRef = hierRefForSpeech.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
+						bool on = hierRefForSpeech.GetReference(ckRef)?.gameObject.activeSelf ?? false;
+						string st = on ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
+						return $"{toggleLabel}, {st}";
+					}
 				});
 			}
 
@@ -289,11 +297,18 @@ namespace OniAccess.Handlers.Screens {
 					label = LabelFromGameObjectName(dd.gameObject.name);
 				if (label == null) continue;
 
+				var dropdownRef = dd;
+				string ddLabel = label;
 				_widgets.Add(new WidgetInfo {
 					Label = label,
 					Component = dd,
 					Type = WidgetType.Dropdown,
-					GameObject = dd.gameObject
+					GameObject = dd.gameObject,
+					SpeechFunc = () => {
+						if (dropdownRef.options.Count > 0)
+							return $"{ddLabel}, {dropdownRef.options[dropdownRef.value].text}";
+						return ddLabel;
+					}
 				});
 			}
 
@@ -440,48 +455,6 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// Build speech text with state for MultiToggle, HierRef toggles, and Dropdowns.
-		/// Base only handles KToggle and KSlider.
-		/// </summary>
-		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			switch (widget.Type) {
-				case WidgetType.Toggle: {
-						// HierRef toggle: read CheckMark active state
-						// MultiToggle ON/OFF handled by base
-						if (widget.Tag is HierarchyReferences hr) {
-							string checkRef = hr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
-							bool isOn = hr.GetReference(checkRef)?.gameObject.activeSelf ?? false;
-							string state = isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-							return $"{widget.Label}, {state}";
-						}
-						// KToggle — fall through to base
-						break;
-					}
-				case WidgetType.Dropdown: {
-						// Radio group: read live checkmark state
-						if (widget.Tag is RadioGroupInfo radio) {
-							for (int i = 0; i < radio.Members.Count; i++) {
-								var rhr = radio.Members[i].HierRef;
-								string ckRef = rhr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
-								if (rhr.GetReference(ckRef)?.gameObject.activeSelf ?? false) {
-									radio.CurrentIndex = i;
-									return $"{widget.Label}, {radio.Members[i].Label}";
-								}
-							}
-							return $"{widget.Label}, {radio.Members[radio.CurrentIndex].Label}";
-						}
-						var dd = widget.Component as Dropdown;
-						if (dd != null && dd.options.Count > 0) {
-							string optionText = dd.options[dd.value].text;
-							return $"{widget.Label}, {optionText}";
-						}
-						return widget.Label;
-					}
-			}
-			return base.GetWidgetSpeechText(widget);
-		}
-
-		/// <summary>
 		/// Activate the current widget. Extends base behavior with support for
 		/// MultiToggle and HierarchyReferences-based toggle patterns.
 		/// </summary>
@@ -624,12 +597,25 @@ namespace OniAccess.Handlers.Screens {
 
 				// Replace first widget with radio group dropdown
 				int firstIdx = kvp.Value[0];
+				string radioLabel = groupLabel ?? _widgets[firstIdx].Label;
+				var radioInfo = new RadioGroupInfo { Members = members, CurrentIndex = activeIndex };
 				_widgets[firstIdx] = new WidgetInfo {
-					Label = groupLabel ?? _widgets[firstIdx].Label,
+					Label = radioLabel,
 					Component = members[activeIndex].Button,
 					Type = WidgetType.Dropdown,
 					GameObject = kvp.Key.gameObject,
-					Tag = new RadioGroupInfo { Members = members, CurrentIndex = activeIndex }
+					Tag = radioInfo,
+					SpeechFunc = () => {
+						for (int k = 0; k < radioInfo.Members.Count; k++) {
+							var rhr = radioInfo.Members[k].HierRef;
+							string ckRef = rhr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
+							if (rhr.GetReference(ckRef)?.gameObject.activeSelf ?? false) {
+								radioInfo.CurrentIndex = k;
+								return $"{radioLabel}, {radioInfo.Members[k].Label}";
+							}
+						}
+						return $"{radioLabel}, {radioInfo.Members[radioInfo.CurrentIndex].Label}";
+					}
 				};
 				Log.Debug($"    Collapsed {kvp.Value.Count} toggles into radio group '{_widgets[firstIdx].Label}'");
 

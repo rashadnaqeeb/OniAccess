@@ -51,11 +51,21 @@ namespace OniAccess.Handlers.Screens {
 
 				// Description for tooltip -- Claim Items is dynamic based on state
 				string description = DescriptionStrings[i];
-				if (i == 3) {
+				if (MultiToggleFields[i] == "buttonClaimItems") {
 					// Claim Items: check state to pick the right description
 					description = multiToggle.CurrentState == 0
 						? STRINGS.UI.LOCKER_MENU.BUTTON_CLAIM_DESCRIPTION
 						: STRINGS.UI.LOCKER_MENU.BUTTON_CLAIM_NONE_DESCRIPTION;
+				}
+
+				// Claim Items button: SpeechFunc reads live state to append "no items" when empty
+				System.Func<string> speechFunc = null;
+				if (MultiToggleFields[i] == "buttonClaimItems") {
+					var claimToggle = multiToggle;
+					string claimLabel = label;
+					speechFunc = () => claimToggle.CurrentState != 0
+						? $"{claimLabel}, {(string)STRINGS.ONIACCESS.SUPPLY_CLOSET.NO_ITEMS}"
+						: claimLabel;
 				}
 
 				_widgets.Add(new WidgetInfo {
@@ -63,7 +73,8 @@ namespace OniAccess.Handlers.Screens {
 					Component = multiToggle,
 					Type = WidgetType.Button,
 					GameObject = multiToggle.gameObject,
-					Tag = description
+					Tag = description,
+					SpeechFunc = speechFunc
 				});
 			}
 
@@ -84,20 +95,6 @@ namespace OniAccess.Handlers.Screens {
 			}
 		}
 
-		/// <summary>
-		/// For Claim Items, append availability status.
-		/// </summary>
-		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			var mt = widget.Component as MultiToggle;
-			if (mt != null && widget == GetClaimItemsWidget()) {
-				// State 0 = has claimable items, state 1 = none
-				if (mt.CurrentState != 0) {
-					return $"{widget.Label}, {(string)STRINGS.ONIACCESS.SUPPLY_CLOSET.NO_ITEMS}";
-				}
-			}
-
-			return base.GetWidgetSpeechText(widget);
-		}
 
 		/// <summary>
 		/// Return description from Tag for tooltip.
@@ -163,14 +160,5 @@ namespace OniAccess.Handlers.Screens {
 			return LockerNavigator.Instance != null && LockerNavigator.Instance.isActiveAndEnabled;
 		}
 
-		private WidgetInfo GetClaimItemsWidget() {
-			for (int i = 0; i < _widgets.Count; i++) {
-				var mt = _widgets[i].Component as MultiToggle;
-				if (mt == null) continue;
-				var field = Traverse.Create(_screen).Field<MultiToggle>("buttonClaimItems").Value;
-				if (mt == field) return _widgets[i];
-			}
-			return null;
-		}
 	}
 }

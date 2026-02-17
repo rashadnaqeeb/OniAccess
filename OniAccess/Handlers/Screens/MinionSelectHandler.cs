@@ -126,12 +126,20 @@ namespace OniAccess.Handlers.Screens {
 						var bnt = Traverse.Create(baseNamingObj);
 						var inputField = bnt.Field("inputField").GetValue<KInputTextField>();
 						if (inputField != null) {
+							var colonyField = inputField;
 							_widgets.Add(new WidgetInfo {
 								Label = $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {inputField.text}",
 								Component = inputField,
 								Type = WidgetType.TextInput,
 								GameObject = inputField.gameObject,
-								Tag = "colony_name"
+								Tag = "colony_name",
+								SpeechFunc = () => {
+									if (string.IsNullOrEmpty(colonyField.text)) {
+										_pendingColonyNameAnnounce = true;
+										return STRINGS.ONIACCESS.PANELS.COLONY_NAME;
+									}
+									return $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {colonyField.text}";
+								}
 							});
 
 							// Shuffle colony name button
@@ -534,7 +542,8 @@ namespace OniAccess.Handlers.Screens {
 						Component = dropdown,
 						Type = WidgetType.Dropdown,
 						GameObject = dropdown.gameObject,
-						Tag = "interest_filter"
+						Tag = "interest_filter",
+						SpeechFunc = () => GetInterestFilterLabel(_containers[_currentSlot] as CharacterContainer)
 					});
 				}
 			} catch (System.Exception ex) {
@@ -631,29 +640,6 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 		// WIDGET SPEECH
 		// ========================================
-
-		/// <summary>
-		/// Override to read colony name live from the input field,
-		/// and read the interest filter's current selection.
-		/// </summary>
-		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			if (widget.Tag is string tag) {
-				if (tag == "colony_name" && widget.Component is KInputTextField tf) {
-					if (string.IsNullOrEmpty(tf.text)) {
-						_pendingColonyNameAnnounce = true;
-						return STRINGS.ONIACCESS.PANELS.COLONY_NAME;
-					}
-					return $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {tf.text}";
-				}
-				if (tag == "interest_filter") {
-					return GetInterestFilterLabel(_containers[_currentSlot] as CharacterContainer);
-				}
-				if (tag == "model_filter") {
-					return GetModelFilterLabel();
-				}
-			}
-			return base.GetWidgetSpeechText(widget);
-		}
 
 		/// <summary>
 		/// Allow the shuffle name button to be navigated even when its
@@ -861,7 +847,8 @@ namespace OniAccess.Handlers.Screens {
 						Component = dropdown,
 						Type = WidgetType.Dropdown,
 						GameObject = dropdown.gameObject,
-						Tag = "model_filter"
+						Tag = "model_filter",
+						SpeechFunc = () => GetModelFilterLabel()
 					});
 				}
 			} catch (System.Exception ex) {

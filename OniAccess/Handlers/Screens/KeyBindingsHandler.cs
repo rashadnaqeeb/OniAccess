@@ -119,12 +119,20 @@ namespace OniAccess.Handlers.Screens {
 				string actionName = actionLocText.text;
 				if (string.IsNullOrEmpty(actionName)) continue;
 
+				var keyRef = keyLocText;
+				string bindingLabel = actionName;
 				_widgets.Add(new WidgetInfo {
 					Label = actionName,
 					Component = rebindButton,
 					Type = WidgetType.Button,
 					GameObject = row.gameObject,
-					Tag = keyLocText // Store key LocText for reading current binding
+					Tag = keyLocText,
+					SpeechFunc = () => {
+						string keyText = keyRef != null ? keyRef.text : null;
+						if (string.IsNullOrEmpty(keyText) || keyText == "None")
+							return $"{bindingLabel}, {(string)STRINGS.ONIACCESS.KEY_BINDINGS.UNBOUND}";
+						return $"{bindingLabel}, {keyText}";
+					}
 				});
 			}
 
@@ -146,22 +154,6 @@ namespace OniAccess.Handlers.Screens {
 		// SPEECH
 		// ========================================
 
-		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			// Reset button -- just speak the label
-			if (widget.Component == _resetButton) {
-				return widget.Label;
-			}
-
-			// Binding row: "action name, key text" or "action name, Unbound"
-			var keyLocText = widget.Tag as LocText;
-			string keyText = keyLocText != null ? keyLocText.text : null;
-
-			if (string.IsNullOrEmpty(keyText) || keyText == "None") {
-				return $"{widget.Label}, {(string)STRINGS.ONIACCESS.KEY_BINDINGS.UNBOUND}";
-			}
-
-			return $"{widget.Label}, {keyText}";
-		}
 
 		// ========================================
 		// TICK: REBIND MODE + KEY DETECTION

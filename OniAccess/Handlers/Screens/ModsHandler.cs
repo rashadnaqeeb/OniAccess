@@ -52,11 +52,17 @@ namespace OniAccess.Handlers.Screens {
 
 					if (toggle == null) continue;
 
+					var modToggle = toggle;
+					string modLabel = label;
 					_widgets.Add(new WidgetInfo {
 						Label = label,
 						Component = toggle,
 						Type = WidgetType.Toggle,
-						GameObject = child.gameObject
+						GameObject = child.gameObject,
+						SpeechFunc = () => {
+							string state = modToggle.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
+							return $"{modLabel}, {state}";
+						}
 					});
 
 					// ManageButton — "Browse" for local mods, "Subscription" for Workshop
@@ -65,11 +71,16 @@ namespace OniAccess.Handlers.Screens {
 						if (manageBtn != null && manageBtn.isInteractable) {
 							var manageText = manageBtn.GetComponentInChildren<LocText>();
 							string manageLabel = manageText != null ? manageText.text : (string)STRINGS.ONIACCESS.BUTTONS.MANAGE;
+							var btn = manageBtn;
 							_widgets.Add(new WidgetInfo {
 								Label = manageLabel,
 								Component = manageBtn,
 								Type = WidgetType.Button,
-								GameObject = manageBtn.gameObject
+								GameObject = manageBtn.gameObject,
+								SpeechFunc = () => {
+									var lt = btn.GetComponentInChildren<LocText>();
+									return lt != null && !string.IsNullOrEmpty(lt.text) ? lt.text : manageLabel;
+								}
 							});
 						}
 					}
@@ -77,7 +88,20 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			// Append action buttons
+			int beforeToggleAll = _widgets.Count;
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "toggleAllButton", STRINGS.ONIACCESS.BUTTONS.TOGGLE_ALL, _widgets);
+			// Toggle All label changes between "ENABLE ALL"/"DISABLE ALL"; read LocText live
+			if (_widgets.Count > beforeToggleAll) {
+				var toggleAllWidget = _widgets[beforeToggleAll];
+				var toggleAllBtn = toggleAllWidget.Component as KButton;
+				if (toggleAllBtn != null) {
+					var fallback = toggleAllWidget.Label;
+					toggleAllWidget.SpeechFunc = () => {
+						var lt = toggleAllBtn.GetComponentInChildren<LocText>();
+						return lt != null && !string.IsNullOrEmpty(lt.text) ? lt.text : fallback;
+					};
+				}
+			}
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "workshopButton", STRINGS.UI.FRONTEND.SCENARIOS_MENU.BUTTON_WORKSHOP, _widgets);
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", STRINGS.UI.TOOLTIPS.CLOSETOOLTIP, _widgets);
 
@@ -85,31 +109,6 @@ namespace OniAccess.Handlers.Screens {
 			return true;
 		}
 
-		/// <summary>
-		/// Toggles: "ModName, enabled" / "ModName, disabled" via MultiToggle.CurrentState.
-		/// Buttons: read live LocText (Toggle All label changes between "ENABLE ALL"/"DISABLE ALL").
-		/// </summary>
-		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			if (widget.Type == WidgetType.Toggle) {
-				var mt = widget.Component as MultiToggle;
-				if (mt != null) {
-					string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
-					return $"{widget.Label}, {state}";
-				}
-			}
-
-			if (widget.Type == WidgetType.Button) {
-				// Re-read live LocText for buttons whose label changes (Toggle All)
-				var kb = widget.Component as KButton;
-				if (kb != null) {
-					var locText = kb.GetComponentInChildren<LocText>();
-					if (locText != null && !string.IsNullOrEmpty(locText.text))
-						return locText.text;
-				}
-			}
-
-			return base.GetWidgetSpeechText(widget);
-		}
 
 		/// <summary>
 		/// Toggle widgets: invoke multiToggle.onClick(), then RediscoverAndRestore by label.

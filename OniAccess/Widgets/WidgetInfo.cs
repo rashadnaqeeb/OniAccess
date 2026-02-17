@@ -42,5 +42,11 @@ namespace OniAccess.Widgets {
 		/// Used by ColonySetupHandler to store cluster keys for activation.
 		/// </summary>
 		public object Tag { get; set; }
+
+		/// <summary>
+		/// Optional lambda that reads live widget state at speech time.
+		/// When set, GetWidgetSpeechText uses this instead of the WidgetType switch.
+		/// </summary>
+		public System.Func<string> SpeechFunc { get; set; }
 	}
 }
