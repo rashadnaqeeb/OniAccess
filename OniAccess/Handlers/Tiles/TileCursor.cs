@@ -12,6 +12,7 @@ namespace OniAccess.Handlers.Tiles {
 	/// </summary>
 	public class TileCursor {
 		private int _cell;
+		private bool _wasPanning;
 
 		public CoordinateMode Mode { get; private set; }
 
@@ -80,14 +81,24 @@ namespace OniAccess.Handlers.Tiles {
 		/// Re-sync cursor to the camera's center cell. Called every frame
 		/// so the cursor follows game-initiated camera movement (alerts,
 		/// follow-cam, etc.) and the mouse lock stays correct.
+		/// Returns tile speech when the camera finishes a pan, null otherwise.
 		/// </summary>
-		public void SyncToCamera() {
-			if (Camera.main == null) return;
+		public string SyncToCamera() {
+			if (Camera.main == null) return null;
 			Vector3 center = Camera.main.transform.position;
 			int cell = Grid.PosToCell(center);
 			if (Grid.IsValidCell(cell) && cell != _cell && IsInWorldBounds(cell))
 				_cell = cell;
 			LockMouseToCell(_cell);
+
+			bool panning = CameraController.Instance != null
+				&& CameraController.Instance.isTargetPosSet;
+			if (_wasPanning && !panning) {
+				_wasPanning = false;
+				return BuildCellSpeech();
+			}
+			_wasPanning = panning;
+			return null;
 		}
 
 		// ========================================

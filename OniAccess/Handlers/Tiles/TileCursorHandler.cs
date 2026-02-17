@@ -46,7 +46,9 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void Tick() {
-			_cursor.SyncToCamera();
+			string arrived = _cursor.SyncToCamera();
+			if (arrived != null)
+				SpeechPipeline.SpeakInterrupt(arrived);
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
 				&& !InputUtil.AnyModifierHeld()) {
