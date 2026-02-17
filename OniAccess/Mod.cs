@@ -24,6 +24,7 @@ namespace OniAccess {
 
 			// Switch logging from Console (test default) to Unity's Debug.Log
 			LogUnityBackend.Install();
+			ConfigManager.Load(ModDir);
 
 			// Set DLL search path for Tolk native libraries before any Tolk calls
 			string tolkDir = Path.Combine(ModDir, "tolk", "dist");

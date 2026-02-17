@@ -14,7 +14,7 @@ namespace OniAccess.Handlers.Tiles {
 		private int _cell;
 		private bool _wasPanning;
 
-		public CoordinateMode Mode { get; private set; }
+		public CoordinateMode Mode { get; private set; } = ConfigManager.Config.CoordinateMode;
 
 		public int Cell => _cell;
 
@@ -64,17 +64,24 @@ namespace OniAccess.Handlers.Tiles {
 		/// Returns the spoken name of the new mode.
 		/// </summary>
 		public string CycleMode() {
+			string spoken;
 			switch (Mode) {
 				case CoordinateMode.Off:
 					Mode = CoordinateMode.Append;
-					return (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_APPEND;
+					spoken = (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_APPEND;
+					break;
 				case CoordinateMode.Append:
 					Mode = CoordinateMode.Prepend;
-					return (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_PREPEND;
+					spoken = (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_PREPEND;
+					break;
 				default:
 					Mode = CoordinateMode.Off;
-					return (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_OFF;
+					spoken = (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_OFF;
+					break;
 			}
+			ConfigManager.Config.CoordinateMode = Mode;
+			ConfigManager.Save();
+			return spoken;
 		}
 
 		/// <summary>
