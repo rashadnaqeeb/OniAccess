@@ -23,6 +23,9 @@ namespace OniAccess.Tests {
 		}
 
 		static int RunTests() {
+			// Replace Unity time source to avoid native calls in tests
+			SpeechPipeline.TimeSource = () => 0f;
+
 			var results = new List<(string name, bool passed, string detail)>();
 
 			// --- HandlerStack (9 existing + 4 new edge cases) ---

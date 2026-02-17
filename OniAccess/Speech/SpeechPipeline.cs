@@ -19,6 +19,12 @@ namespace OniAccess.Speech {
 		private const float DeduplicateWindowSeconds = 0.2f;
 
 		/// <summary>
+		/// Time source for deduplication. Defaults to Unity's unscaledTime;
+		/// tests replace this to avoid native Unity calls.
+		/// </summary>
+		internal static System.Func<float> TimeSource = () => UnityEngine.Time.unscaledTime;
+
+		/// <summary>
 		/// Whether the pipeline is active. When false (mod toggled off),
 		/// all methods return immediately.
 		/// </summary>
@@ -42,10 +48,11 @@ namespace OniAccess.Speech {
 
 			string filtered = TextFilter.FilterForSpeech(text);
 			if (string.IsNullOrEmpty(filtered)) return;
-			if (filtered == _lastInterruptText && UnityEngine.Time.unscaledTime - _lastInterruptTime < DeduplicateWindowSeconds)
+			float now = TimeSource();
+			if (filtered == _lastInterruptText && now - _lastInterruptTime < DeduplicateWindowSeconds)
 				return;
 			_lastInterruptText = filtered;
-			_lastInterruptTime = UnityEngine.Time.unscaledTime;
+			_lastInterruptTime = now;
 			SpeechEngine.Say(filtered);
 		}
 
