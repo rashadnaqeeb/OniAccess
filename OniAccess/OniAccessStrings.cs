@@ -96,6 +96,7 @@ namespace STRINGS {
 			public static LocString ENABLED = "enabled";
 			public static LocString DISABLED = "disabled";
 			public static LocString ANY = "Any";
+			public static LocString NONE = "None";
 		}
 
 		public class BUTTONS {

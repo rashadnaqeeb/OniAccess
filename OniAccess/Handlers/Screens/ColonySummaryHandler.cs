@@ -13,16 +13,38 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Navigation:
 	/// - Explorer view: Up/Down navigates colony entries, Enter opens colony detail
-	/// - Detail view: Up/Down navigates stat/achievement entries, Escape returns to explorer
-	/// - "View other colonies" button in detail view also returns to explorer
+	/// - Detail view: Up/Down navigates entries within current section, Tab switches sections
+	/// - Escape returns from detail to explorer, or closes the screen from explorer
+	///
+	/// Detail view sections (Tab navigation):
+	/// 0 = Duplicants, 1 = Buildings, 2 = Statistics, 3 = Achievements
+	/// Explorer view sections: 0 = Colonies, 1 = Achievements
+	///
+	/// Duplicant, building, and stat widgets use live reading at speech time
+	/// because the game populates LocTexts via SetText() which updates TMP's
+	/// internal buffer but not m_text. GetParsedText() needs a frame to catch up.
 	/// </summary>
 	public class ColonySummaryHandler: BaseMenuHandler {
-		private const int SectionMain = 0;
-		private const int SectionAchievements = 1;
-		private const int SectionCount = 2;
+		private const int ExplorerSectionMain = 0;
+		private const int ExplorerSectionAchievements = 1;
+		private const int ExplorerSectionCount = 2;
+
+		private const int DetailSectionDuplicants = 0;
+		private const int DetailSectionBuildings = 1;
+		private const int DetailSectionStats = 2;
+		private const int DetailSectionAchievements = 3;
+		private const int DetailSectionCount = 4;
+
+		/// Sentinel label for widgets whose text is read live at speech time.
+		private const string LiveReadSentinel = "\x01LIVE";
 
 		private bool _inColonyDetail;
 		private int _currentSection;
+		private KButton _viewOtherColoniesButton;
+
+		protected override int MaxDiscoveryRetries => 5;
+
+		private int SectionCount => _inColonyDetail ? DetailSectionCount : ExplorerSectionCount;
 
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.COLONY_SUMMARY;
 
@@ -34,38 +56,52 @@ namespace OniAccess.Handlers.Screens {
 
 		public override void OnActivate() {
 			_inColonyDetail = false;
-			_currentSection = SectionMain;
+			_currentSection = ExplorerSectionMain;
+			CacheButtons();
 			base.OnActivate();
+		}
+
+		private void CacheButtons() {
+			try {
+				_viewOtherColoniesButton = Traverse.Create(_screen).Field("viewOtherColoniesButton")
+					.GetValue<KButton>();
+			} catch (System.Exception ex) {
+				Util.Log.Error($"ColonySummaryHandler.CacheButtons: {ex.Message}");
+			}
 		}
 
 		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
 			if (!_inColonyDetail) {
-				if (_currentSection == SectionAchievements)
+				if (_currentSection == ExplorerSectionAchievements)
 					DiscoverAchievementWidgets(screen);
 				else
 					DiscoverExplorerViewWidgets(screen);
 			} else {
-				if (_currentSection == SectionAchievements)
-					DiscoverAchievementWidgets(screen);
-				else
-					DiscoverDetailViewWidgets(screen);
+				switch (_currentSection) {
+					case DetailSectionDuplicants:
+						DiscoverDuplicantWidgets(screen);
+						break;
+					case DetailSectionBuildings:
+						DiscoverBuildingWidgets(screen);
+						break;
+					case DetailSectionStats:
+						DiscoverStatWidgets(screen);
+						break;
+					case DetailSectionAchievements:
+						DiscoverAchievementWidgets(screen);
+						break;
+				}
 			}
-			return true;
+			return _widgets.Count > 0;
 		}
 
 		// ========================================
 		// EXPLORER VIEW (colony list)
 		// ========================================
 
-		/// <summary>
-		/// Discover colony entry buttons in the explorer view.
-		/// Each colony entry in the explorerGrid has a KButton and LocText with the colony name.
-		/// </summary>
 		private void DiscoverExplorerViewWidgets(KScreen screen) {
-			// Walk the explorerGrid to find colony entry buttons
-			// explorerGrid is a GameObject in RetiredColonyInfoScreen
 			var explorerGridGO = Traverse.Create(screen).Field("explorerGrid")
 				.GetValue<UnityEngine.GameObject>();
 			var explorerGrid = explorerGridGO != null ? explorerGridGO.transform : null;
@@ -78,12 +114,11 @@ namespace OniAccess.Handlers.Screens {
 					var kbutton = child.GetComponent<KButton>();
 					if (kbutton == null) continue;
 
-					// Find colony name from child LocText
-					string colonyName = GetColonyEntryLabel(child);
-					if (string.IsNullOrEmpty(colonyName)) continue;
+					string label = ReadColonyEntryLabel(child);
+					if (string.IsNullOrEmpty(label)) continue;
 
 					_widgets.Add(new WidgetInfo {
-						Label = colonyName,
+						Label = label,
 						Component = kbutton,
 						Type = WidgetType.Button,
 						GameObject = kbutton.gameObject
@@ -91,69 +126,221 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
-			// Add close/navigation buttons at the end
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP, _widgets);
+			AddDetailButtons(screen);
+		}
+
+		/// <summary>
+		/// Read colony entry label from HierarchyReferences using GetParsedText()
+		/// to avoid the SetText()/TMP buffer quirk where .text returns stale data.
+		/// Format: "ColonyName, Cycle Count: X, date"
+		/// </summary>
+		private static string ReadColonyEntryLabel(UnityEngine.Transform entry) {
+			var hierRef = entry.GetComponent<HierarchyReferences>();
+			if (hierRef == null) return null;
+
+			string name = null;
+			string cycles = null;
+			string date = null;
+
+			if (hierRef.HasReference("ColonyNameLabel")) {
+				var label = hierRef.GetReference<LocText>("ColonyNameLabel");
+				if (label != null) name = label.GetParsedText();
+			}
+			if (hierRef.HasReference("CycleCountLabel")) {
+				var label = hierRef.GetReference<LocText>("CycleCountLabel");
+				if (label != null) cycles = label.GetParsedText();
+			}
+			if (hierRef.HasReference("DateLabel")) {
+				var label = hierRef.GetReference<LocText>("DateLabel");
+				if (label != null) date = label.GetParsedText();
+			}
+
+			if (string.IsNullOrEmpty(name)) return null;
+
+			var parts = new List<string> { name };
+			if (!string.IsNullOrEmpty(cycles)) parts.Add(cycles);
+			if (!string.IsNullOrEmpty(date)) parts.Add(date);
+			return string.Join(", ", parts);
 		}
 
 		// ========================================
-		// DETAIL VIEW (colony stats)
+		// DETAIL VIEW - DUPLICANTS (section 0)
 		// ========================================
 
-		/// <summary>
-		/// Discover widgets in the colony detail view: colony header,
-		/// stat blocks, and navigation buttons.
-		/// </summary>
-		private void DiscoverDetailViewWidgets(KScreen screen) {
-			// Colony name header
-			var colonyName = Traverse.Create(screen).Field("colonyName")
-				.GetValue<LocText>();
-			string header = colonyName != null ? colonyName.text : null;
+		private void DiscoverDuplicantWidgets(KScreen screen) {
+			var activeWidgets = Traverse.Create(screen).Field("activeColonyWidgets")
+				.GetValue<Dictionary<string, UnityEngine.GameObject>>();
+			if (activeWidgets == null || !activeWidgets.TryGetValue("duplicants", out var dupBlock))
+				return;
 
-			// Cycle count
-			var cycleCount = Traverse.Create(screen).Field("cycleCount")
-				.GetValue<LocText>();
-			string cycles = cycleCount != null ? cycleCount.text : null;
+			var hierRef = dupBlock.GetComponent<HierarchyReferences>();
+			if (hierRef == null || !hierRef.HasReference("Content")) return;
 
-			// Add header as a Label widget (colony name + cycle count)
-			string headerText = header;
-			if (!string.IsNullOrEmpty(cycles)) {
-				headerText = string.IsNullOrEmpty(header)
-					? cycles
-					: $"{header}, {cycles}";
-			}
-			if (!string.IsNullOrEmpty(headerText)) {
+			var contentTransform = hierRef.GetReference("Content").transform;
+			if (contentTransform == null) return;
+
+			for (int i = 0; i < contentTransform.childCount; i++) {
+				var child = contentTransform.GetChild(i);
+				if (child == null || !child.gameObject.activeInHierarchy) continue;
+
+				// Pagination creates empty placeholder GameObjects without HierarchyReferences
+				if (child.GetComponent<HierarchyReferences>() == null) continue;
+
 				_widgets.Add(new WidgetInfo {
-					Label = headerText,
+					Label = LiveReadSentinel,
 					Component = null,
 					Type = WidgetType.Label,
-					GameObject = screen.gameObject
+					GameObject = child.gameObject
 				});
 			}
 
-			// Find stat entries in statsContainer
-			var statsContainerGO = Traverse.Create(screen).Field("statsContainer")
-				.GetValue<UnityEngine.GameObject>();
-			var statsContainer = statsContainerGO != null ? statsContainerGO.transform : null;
-			if (statsContainer != null) {
-				for (int i = 0; i < statsContainer.childCount; i++) {
-					var child = statsContainer.GetChild(i);
-					if (child == null || !child.gameObject.activeInHierarchy) continue;
+			AddDetailButtons(screen);
+		}
 
-					var locText = child.GetComponentInChildren<LocText>();
-					if (locText == null || string.IsNullOrEmpty(locText.text)) continue;
+		/// <summary>
+		/// Read duplicant entry live from HierarchyReferences at speech time.
+		/// </summary>
+		private static string ReadDuplicantEntry(UnityEngine.Transform entry) {
+			var refs = entry.GetComponent<HierarchyReferences>();
+			if (refs == null) return null;
+
+			string name = null;
+			string age = null;
+			string skill = null;
+
+			if (refs.HasReference("NameLabel")) {
+				var label = refs.GetReference<LocText>("NameLabel");
+				if (label != null) name = label.GetParsedText();
+			}
+			if (refs.HasReference("AgeLabel")) {
+				var label = refs.GetReference<LocText>("AgeLabel");
+				if (label != null) age = label.GetParsedText();
+			}
+			if (refs.HasReference("SkillLabel")) {
+				var label = refs.GetReference<LocText>("SkillLabel");
+				if (label != null) skill = label.GetParsedText();
+			}
+
+			if (string.IsNullOrEmpty(name)) return null;
+
+			var parts = new List<string> { name };
+			if (!string.IsNullOrEmpty(age)) parts.Add(age);
+			if (!string.IsNullOrEmpty(skill)) parts.Add(skill);
+			return string.Join(", ", parts);
+		}
+
+		// ========================================
+		// DETAIL VIEW - BUILDINGS (section 1)
+		// ========================================
+
+		private void DiscoverBuildingWidgets(KScreen screen) {
+			var activeWidgets = Traverse.Create(screen).Field("activeColonyWidgets")
+				.GetValue<Dictionary<string, UnityEngine.GameObject>>();
+			if (activeWidgets == null || !activeWidgets.TryGetValue("buildings", out var bldgBlock))
+				return;
+
+			var hierRef = bldgBlock.GetComponent<HierarchyReferences>();
+			if (hierRef == null || !hierRef.HasReference("Content")) return;
+
+			var contentTransform = hierRef.GetReference("Content").transform;
+			if (contentTransform == null) return;
+
+			for (int i = 0; i < contentTransform.childCount; i++) {
+				var child = contentTransform.GetChild(i);
+				if (child == null || !child.gameObject.activeInHierarchy) continue;
+
+				if (child.GetComponent<HierarchyReferences>() == null) continue;
+
+				_widgets.Add(new WidgetInfo {
+					Label = LiveReadSentinel,
+					Component = null,
+					Type = WidgetType.Label,
+					GameObject = child.gameObject
+				});
+			}
+
+			AddDetailButtons(screen);
+		}
+
+		/// <summary>
+		/// Read building entry live from HierarchyReferences at speech time.
+		/// </summary>
+		private static string ReadBuildingEntry(UnityEngine.Transform entry) {
+			var refs = entry.GetComponent<HierarchyReferences>();
+			if (refs == null) return null;
+
+			string name = null;
+			string count = null;
+
+			if (refs.HasReference("NameLabel")) {
+				var label = refs.GetReference<LocText>("NameLabel");
+				if (label != null) name = label.GetParsedText();
+			}
+			if (refs.HasReference("CountLabel")) {
+				var label = refs.GetReference<LocText>("CountLabel");
+				if (label != null) count = label.GetParsedText();
+			}
+
+			if (string.IsNullOrEmpty(name)) return null;
+			if (!string.IsNullOrEmpty(count))
+				return $"{name}, {count}";
+			return name;
+		}
+
+		// ========================================
+		// DETAIL VIEW - STATISTICS (section 2)
+		// ========================================
+
+		private void DiscoverStatWidgets(KScreen screen) {
+			var activeWidgets = Traverse.Create(screen).Field("activeColonyWidgets")
+				.GetValue<Dictionary<string, UnityEngine.GameObject>>();
+			if (activeWidgets != null) {
+				foreach (var kvp in activeWidgets) {
+					if (kvp.Key == "timelapse" || kvp.Key == "duplicants" || kvp.Key == "buildings")
+						continue;
 
 					_widgets.Add(new WidgetInfo {
-						Label = locText.text,
+						Label = kvp.Key,
 						Component = null,
 						Type = WidgetType.Label,
-						GameObject = child.gameObject
+						GameObject = kvp.Value
 					});
 				}
 			}
 
-			// Navigation buttons: "View other colonies" and "Close"
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "viewOtherColoniesButton", (string)STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES, _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP, _widgets);
+			AddDetailButtons(screen);
+		}
+
+		/// <summary>
+		/// Read stat name and latest value live from the GraphBase component.
+		/// Each stat graph widget has a GraphBase with graphName and a LineLayer
+		/// containing a GraphedLine with the data points (cycle, value).
+		/// When no data points exist, appends "None" so the user knows the stat
+		/// is present but empty rather than thinking the mod failed to read it.
+		/// </summary>
+		private static string ReadStatEntry(UnityEngine.GameObject go, string fallbackName) {
+			var graph = go.GetComponentInChildren<GraphBase>();
+			string name = graph != null ? graph.graphName : null;
+			if (string.IsNullOrEmpty(name)) name = fallbackName;
+			if (string.IsNullOrEmpty(name)) return null;
+
+			if (graph != null) {
+				var lineLayer = go.GetComponentInChildren<LineLayer>();
+				if (lineLayer != null) {
+					var lines = Traverse.Create(lineLayer).Field("lines")
+						.GetValue<List<GraphedLine>>();
+					if (lines != null && lines.Count > 0) {
+						var points = Traverse.Create(lines[0]).Field("points")
+							.GetValue<UnityEngine.Vector2[]>();
+						if (points != null && points.Length > 0) {
+							float lastValue = points[points.Length - 1].y;
+							return $"{name}, {lastValue:N1}";
+						}
+					}
+				}
+			}
+
+			return $"{name}, {(string)STRINGS.ONIACCESS.STATES.NONE}";
 		}
 
 		// ========================================
@@ -207,6 +394,23 @@ namespace OniAccess.Handlers.Screens {
 					GameObject = child.gameObject
 				});
 			}
+
+			if (_inColonyDetail)
+				AddDetailButtons(screen);
+		}
+
+		// ========================================
+		// SHARED BUTTONS
+		// ========================================
+
+		/// <summary>
+		/// Add navigation buttons common to all detail view sections.
+		/// Also used by explorer view for close/quit buttons.
+		/// </summary>
+		private void AddDetailButtons(KScreen screen) {
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "viewOtherColoniesButton", (string)STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP, _widgets);
+			WidgetDiscoveryUtil.TryAddButtonField(screen, "quitToMainMenuButton", (string)STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.BUTTONS.QUIT_TO_MENU, _widgets);
 		}
 
 		// ========================================
@@ -223,35 +427,52 @@ namespace OniAccess.Handlers.Screens {
 			var widget = _widgets[_currentIndex];
 
 			if (!_inColonyDetail && widget.Type == WidgetType.Button) {
-				// Check if this is a colony entry (not the close button)
-				var kbutton = widget.Component as KButton;
-				if (kbutton != null && widget.Label != (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP) {
-					// Click the colony entry to open detail view
+				// Colony entries have HierarchyReferences with "ColonyNameLabel"
+				var hierRef = widget.GameObject != null
+					? widget.GameObject.GetComponent<HierarchyReferences>() : null;
+				if (hierRef != null && hierRef.HasReference("ColonyNameLabel")) {
+					var kbutton = widget.Component as KButton;
 					kbutton.SignalClick(KKeyCode.Mouse0);
 					_inColonyDetail = true;
-					_currentSection = SectionMain;
+					_currentSection = DetailSectionDuplicants;
 
-					// Rediscover widgets for the detail view
-					DiscoverWidgets(_screen);
-					_currentIndex = 0;
-
-					// Speak colony name and first stat
-					Speech.SpeechPipeline.SpeakInterrupt(widget.Label);
-					if (_widgets.Count > 0) {
-						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
-					}
+					// Defer widget discovery: LoadColony uses coroutines to populate
+					// the detail view. Widgets aren't ready until a later frame.
+					_pendingRediscovery = true;
+					SpeakDetailHeader();
 					return;
 				}
 			}
 
-			if (_inColonyDetail && widget.Label == (string)STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES) {
-				// Return to explorer view
+			if (_inColonyDetail && widget.Component is KButton btn && btn == _viewOtherColoniesButton) {
 				ReturnToExplorerView();
 				return;
 			}
 
-			// Default behavior for other buttons (e.g., Close)
 			base.ActivateCurrentWidget();
+		}
+
+		/// <summary>
+		/// Speak the colony name and cycle count header when entering detail view.
+		/// Uses .text here (not GetParsedText) because LoadColony sets colonyName.text
+		/// and cycleCount.text directly via assignment, not via SetText().
+		/// </summary>
+		private void SpeakDetailHeader() {
+			var colonyNameLoc = Traverse.Create(_screen).Field("colonyName")
+				.GetValue<LocText>();
+			var cycleCountLoc = Traverse.Create(_screen).Field("cycleCount")
+				.GetValue<LocText>();
+
+			string name = colonyNameLoc != null ? colonyNameLoc.text : null;
+			string cycles = cycleCountLoc != null ? cycleCountLoc.text : null;
+
+			var parts = new List<string>();
+			if (!string.IsNullOrEmpty(name)) parts.Add(name);
+			if (!string.IsNullOrEmpty(cycles)) parts.Add(cycles);
+			string sectionName = GetSectionName(_currentSection);
+			parts.Add(sectionName);
+
+			Speech.SpeechPipeline.SpeakInterrupt(string.Join(", ", parts));
 		}
 
 		/// <summary>
@@ -275,19 +496,16 @@ namespace OniAccess.Handlers.Screens {
 		/// then rediscovers widgets and speaks the explorer view.
 		/// </summary>
 		private void ReturnToExplorerView() {
-			// Click the viewOtherColoniesButton to trigger game transition
 			try {
-				var viewButton = Traverse.Create(_screen).Field("viewOtherColoniesButton")
-					.GetValue<KButton>();
-				if (viewButton != null) {
-					viewButton.SignalClick(KKeyCode.Mouse0);
+				if (_viewOtherColoniesButton != null) {
+					_viewOtherColoniesButton.SignalClick(KKeyCode.Mouse0);
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ColonySummaryHandler.ReturnToExplorerView: {ex.Message}");
 			}
 
 			_inColonyDetail = false;
-			_currentSection = SectionMain;
+			_currentSection = ExplorerSectionMain;
 			DiscoverWidgets(_screen);
 			_currentIndex = 0;
 
@@ -302,15 +520,17 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected override void NavigateTabForward() {
-			_currentSection = (_currentSection + 1) % SectionCount;
+			int count = SectionCount;
+			_currentSection = (_currentSection + 1) % count;
 			if (_currentSection == 0) PlayWrapSound();
 			RediscoverForCurrentSection();
 		}
 
 		protected override void NavigateTabBackward() {
+			int count = SectionCount;
 			int prev = _currentSection;
-			_currentSection = (_currentSection - 1 + SectionCount) % SectionCount;
-			if (_currentSection == SectionCount - 1 && prev == 0) PlayWrapSound();
+			_currentSection = (_currentSection - 1 + count) % count;
+			if (_currentSection == count - 1 && prev == 0) PlayWrapSound();
 			RediscoverForCurrentSection();
 		}
 
@@ -324,32 +544,64 @@ namespace OniAccess.Handlers.Screens {
 			}
 		}
 
-		private static string GetSectionName(int section) {
-			switch (section) {
-				case SectionAchievements: return STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS;
-				default: return STRINGS.ONIACCESS.PANELS.STATS;
+		private string GetSectionName(int section) {
+			if (_inColonyDetail) {
+				switch (section) {
+					case DetailSectionDuplicants: return STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.TITLES.DUPLICANTS;
+					case DetailSectionBuildings: return STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.TITLES.BUILDINGS;
+					case DetailSectionStats: return STRINGS.ONIACCESS.PANELS.STATS;
+					case DetailSectionAchievements: return STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS;
+				}
+			} else {
+				switch (section) {
+					case ExplorerSectionAchievements: return STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS;
+				}
 			}
+			return DisplayName;
 		}
-
-		// ========================================
-		// WIDGET VALIDATION
-		// ========================================
 
 		// ========================================
 		// WIDGET SPEECH
 		// ========================================
 
 		/// <summary>
-		/// For achievement widgets, read LocTexts live because the game
-		/// populates them after our DiscoverWidgets runs.
+		/// Read widget text live for duplicants, buildings, stats, and achievements.
+		/// The game populates LocTexts via SetText() which needs a frame before
+		/// GetParsedText() returns the updated text. By reading at speech time
+		/// (always at least one frame after discovery), the data is current.
 		/// </summary>
 		protected override string GetWidgetSpeechText(WidgetInfo widget) {
-			if (_currentSection == SectionAchievements
+			if (widget.GameObject != null) {
+				if (widget.Label == LiveReadSentinel) {
+					string live = ReadLiveWidget(widget.GameObject);
+					if (!string.IsNullOrEmpty(live)) return live;
+				}
+
+				if (_inColonyDetail && _currentSection == DetailSectionStats
+					&& widget.Type == WidgetType.Label && widget.Label != LiveReadSentinel) {
+					string stat = ReadStatEntry(widget.GameObject, widget.Label);
+					if (!string.IsNullOrEmpty(stat)) return stat;
+				}
+			}
+
+			int achSection = _inColonyDetail ? DetailSectionAchievements : ExplorerSectionAchievements;
+			if (_currentSection == achSection
 				&& widget.GameObject != null
 				&& widget.Label == (string)STRINGS.ONIACCESS.INFO.ACHIEVEMENT) {
 				return ReadAchievementText(widget.GameObject.transform);
 			}
 			return base.GetWidgetSpeechText(widget);
+		}
+
+		/// <summary>
+		/// Dispatch live reading based on current section.
+		/// </summary>
+		private string ReadLiveWidget(UnityEngine.GameObject go) {
+			switch (_currentSection) {
+				case DetailSectionDuplicants: return ReadDuplicantEntry(go.transform);
+				case DetailSectionBuildings: return ReadBuildingEntry(go.transform);
+				default: return null;
+			}
 		}
 
 		/// <summary>
@@ -379,26 +631,6 @@ namespace OniAccess.Handlers.Screens {
 			if (!string.IsNullOrEmpty(desc) && desc != name)
 				return $"{name}, {desc}";
 			return name;
-		}
-
-		// ========================================
-		// UTILITY METHODS
-		// ========================================
-
-		/// <summary>
-		/// Get the colony name label from an explorer grid entry.
-		/// Colony entries have LocText children with the colony name.
-		/// </summary>
-		private string GetColonyEntryLabel(UnityEngine.Transform entry) {
-			var locTexts = entry.GetComponentsInChildren<LocText>();
-			if (locTexts != null && locTexts.Length > 0) {
-				// First LocText is typically the colony name
-				foreach (var lt in locTexts) {
-					if (lt != null && !string.IsNullOrEmpty(lt.text))
-						return lt.text;
-				}
-			}
-			return null;
 		}
 
 	}
