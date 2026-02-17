@@ -448,7 +448,7 @@ namespace OniAccess.Handlers.Screens {
 					var tooltip = lt.GetComponent<ToolTip>();
 					if (tooltip != null) {
 						try {
-							string ttText = tooltip.GetMultiString(0);
+							string ttText = ReadAllTooltipText(tooltip);
 							if (!string.IsNullOrEmpty(ttText)) {
 								label = $"{label}, {ttText}";
 							}
@@ -502,7 +502,7 @@ namespace OniAccess.Handlers.Screens {
 					var tooltip = go.GetComponent<ToolTip>();
 					if (tooltip != null) {
 						try {
-							string ttText = tooltip.GetMultiString(0);
+							string ttText = ReadAllTooltipText(tooltip);
 							if (!string.IsNullOrEmpty(ttText)) {
 								string flat = ttText.Replace("\n", ", ").Replace("\r", "");
 								label = $"{label}, {flat}";

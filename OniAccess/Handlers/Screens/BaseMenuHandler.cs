@@ -605,13 +605,32 @@ namespace OniAccess.Handlers.Screens {
 				tooltip = widget.GameObject.GetComponentInChildren<ToolTip>();
 			if (tooltip == null) return null;
 
-			string text = null;
-			if (tooltip.multiStringCount > 0)
-				text = tooltip.GetMultiString(0);
-			if (string.IsNullOrEmpty(text) && tooltip.OnToolTip != null)
-				text = tooltip.OnToolTip();
+			return ReadAllTooltipText(tooltip);
+		}
 
-			return string.IsNullOrEmpty(text) ? null : text;
+		/// <summary>
+		/// Rebuild a ToolTip's dynamic content and return all multiString
+		/// entries joined with ", ". Shared by GetTooltipText and inline
+		/// tooltip reads so every site gets fresh, complete text.
+		/// </summary>
+		protected static string ReadAllTooltipText(ToolTip tooltip) {
+			tooltip.RebuildDynamicTooltip();
+
+			if (tooltip.multiStringCount == 0) return null;
+
+			if (tooltip.multiStringCount == 1) {
+				string single = tooltip.GetMultiString(0);
+				return string.IsNullOrEmpty(single) ? null : single;
+			}
+
+			var sb = new System.Text.StringBuilder();
+			for (int i = 0; i < tooltip.multiStringCount; i++) {
+				string entry = tooltip.GetMultiString(i);
+				if (string.IsNullOrEmpty(entry)) continue;
+				if (sb.Length > 0) sb.Append(", ");
+				sb.Append(entry);
+			}
+			return sb.Length == 0 ? null : sb.ToString();
 		}
 
 		// ========================================

@@ -1168,7 +1168,7 @@ namespace OniAccess.Handlers.Screens {
 				settingsToggle.ToggleSetting();
 				settingsToggle.Refresh();
 				var toggleTooltip = twt.Field("ToggleToolTip").GetValue<ToolTip>();
-				string tooltip = (toggleTooltip != null && toggleTooltip.multiStringCount > 0) ? toggleTooltip.GetMultiString(0) : "";
+				string tooltip = toggleTooltip != null ? (ReadAllTooltipText(toggleTooltip) ?? "") : "";
 				string speech = $"{name}, {newState}";
 				if (!string.IsNullOrEmpty(tooltip))
 					speech += $", {Speech.TextFilter.FilterForSpeech(tooltip)}";
@@ -1265,8 +1265,8 @@ namespace OniAccess.Handlers.Screens {
 			string valueTooltip = "";
 			if (settingWidget is CustomGameSettingListWidget) {
 				var vtt = Traverse.Create(settingWidget).Field("ValueToolTip").GetValue<ToolTip>();
-				if (vtt != null && vtt.multiStringCount > 0 && !string.IsNullOrEmpty(vtt.GetMultiString(0)))
-					valueTooltip = vtt.GetMultiString(0);
+				if (vtt != null)
+					valueTooltip = ReadAllTooltipText(vtt) ?? "";
 			}
 
 			// Only announce if the value actually changed (boundary clamp = no-op)

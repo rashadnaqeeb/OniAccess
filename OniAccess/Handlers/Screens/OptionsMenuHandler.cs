@@ -557,13 +557,7 @@ namespace OniAccess.Handlers.Screens {
 					tooltip = go.GetComponentInChildren<ToolTip>();
 				if (tooltip == null) return null;
 
-				string text = null;
-				if (tooltip.multiStringCount > 0)
-					text = tooltip.GetMultiString(0);
-				if (string.IsNullOrEmpty(text) && tooltip.OnToolTip != null)
-					text = tooltip.OnToolTip();
-
-				return string.IsNullOrEmpty(text) ? null : text;
+				return ReadAllTooltipText(tooltip);
 			}
 
 			return base.GetTooltipText(widget);
