@@ -232,6 +232,9 @@ namespace OniAccess.Handlers {
 			Register<KleiItemDropScreen>(screen => new KleiItemDropHandler(screen));
 			_showPatchedTypes.Add(typeof(KleiItemDropScreen));
 
+			// WattsonMessage (KScreen -- welcome narrative at colony start)
+			Register<WattsonMessage>(screen => new WattsonMessageHandler(screen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 

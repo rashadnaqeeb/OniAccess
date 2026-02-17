@@ -36,6 +36,7 @@ namespace STRINGS {
 			public static LocString KEY_BINDINGS = "Key bindings";
 			public static LocString SUPPLY_CLOSET = "Supply closet";
 			public static LocString ITEM_DROP = "Claim blueprints";
+			public static LocString WELCOME_MESSAGE = "Welcome message";
 		}
 
 		public class SUPPLY_CLOSET {
