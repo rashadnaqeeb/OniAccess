@@ -1,14 +1,12 @@
 namespace OniAccess.Handlers {
 	/// <summary>
-	/// Default handler for world view. Selective claim (CapturesAllInput = false).
-	/// Active when no menu/overlay is open. Per locked decision: when mod is on,
-	/// there is always an active handler -- WorldHandler is that baseline.
-	///
-	/// F12 help is handled centrally by KeyPoller.
-	/// Phase 4 adds arrow keys for cursor movement.
+	/// Silent baseline handler that sits at the bottom of the handler stack.
+	/// Always present when the mod is active, ensuring the stack is never empty.
+	/// Announces "Loading" since this handler is typically active during phase
+	/// transitions before a real context handler takes over.
 	/// </summary>
-	public class WorldHandler: IAccessHandler {
-		public string DisplayName => STRINGS.ONIACCESS.HANDLERS.WORLD_VIEW;
+	public class BaselineHandler: IAccessHandler {
+		public string DisplayName => STRINGS.ONIACCESS.HANDLERS.LOADING;
 		public bool CapturesAllInput => false;
 
 		public System.Collections.Generic.IReadOnlyList<HelpEntry> HelpEntries { get; }

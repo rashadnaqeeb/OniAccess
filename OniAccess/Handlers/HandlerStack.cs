@@ -12,7 +12,7 @@ namespace OniAccess.Handlers {
 	/// callbacks. OnDeactivate only fires when a handler is popped off.
 	///
 	/// The stack represents the current input context hierarchy:
-	/// e.g., [WorldHandler] or [WorldHandler, BuildHandler] or [WorldHandler, BuildHandler, HelpHandler].
+	/// e.g., [BaselineHandler] or [BaselineHandler, BuildHandler] or [BaselineHandler, BuildHandler, HelpHandler].
 	///
 	/// All methods are safe for null/empty stack (no exceptions thrown).
 	/// </summary>
@@ -94,7 +94,7 @@ namespace OniAccess.Handlers {
 		/// Replace the current active handler with a new one.
 		/// Pops the current handler (calling OnDeactivate), then pushes the new handler
 		/// (calling OnActivate). Used by ContextDetector when switching between
-		/// same-level handlers (e.g., WorldHandler to MenuHandler).
+		/// same-level handlers (e.g., BaselineHandler to MenuHandler).
 		/// If stack is empty, equivalent to Push.
 		/// </summary>
 		public static void Replace(IAccessHandler handler) {

@@ -243,7 +243,7 @@ namespace OniAccess.Handlers {
 		/// Called when mod is toggled ON to determine what handler should be active.
 		///
 		/// Checks KScreenManager screen stack for any open registered screens.
-		/// If found, creates and pushes the handler. Otherwise, pushes WorldHandler as baseline.
+		/// If found, creates and pushes the handler. Otherwise, pushes BaselineHandler as baseline.
 		/// screenStack is private, so we use Harmony Traverse to access it.
 		/// </summary>
 		public static void DetectAndActivate() {
@@ -265,9 +265,9 @@ namespace OniAccess.Handlers {
 
 							var screenType = entry.GetType();
 							if (_registry.TryGetValue(screenType, out var factory)) {
-								// Found a registered screen -- push WorldHandler first as baseline,
+								// Found a registered screen -- push BaselineHandler first as baseline,
 								// then push the screen handler on top
-								HandlerStack.Push(new WorldHandler());
+								HandlerStack.Push(new BaselineHandler());
 								var handler = factory(entry);
 								HandlerStack.Push(handler);
 								Util.Log.Debug($"DetectAndActivate: found {screenType.Name}, pushed handler");
@@ -280,8 +280,8 @@ namespace OniAccess.Handlers {
 				}
 			}
 
-			// Baseline: WorldHandler so input handling works after toggle cycle
-			HandlerStack.Push(new WorldHandler());
+			// Baseline: BaselineHandler so input handling works after toggle cycle
+			HandlerStack.Push(new BaselineHandler());
 		}
 	}
 }

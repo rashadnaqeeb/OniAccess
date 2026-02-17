@@ -18,7 +18,7 @@ namespace STRINGS {
 		}
 
 		public class HANDLERS {
-			public static LocString WORLD_VIEW = "World view";
+			public static LocString LOADING = "Loading";
 			public static LocString HELP = "Help";
 			public static LocString MAIN_MENU = "Main menu";
 			public static LocString PAUSE_MENU = "Pause menu";

@@ -45,9 +45,9 @@ namespace OniAccess {
 			// Register screen-to-handler mappings for ContextDetector
 			ContextDetector.RegisterMenuHandlers();
 
-			// Push initial WorldHandler -- the default "nothing special happening" handler
+			// Push BaselineHandler so the stack is never empty
 			// ModInputRouter will be registered later via Harmony patch on InputInit.Awake
-			HandlerStack.Push(new WorldHandler());
+			HandlerStack.Push(new BaselineHandler());
 
 			// Startup announcement
 			SpeechPipeline.SpeakInterrupt(
