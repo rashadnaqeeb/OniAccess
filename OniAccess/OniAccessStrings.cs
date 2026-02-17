@@ -37,6 +37,7 @@ namespace STRINGS {
 			public static LocString SUPPLY_CLOSET = "Supply closet";
 			public static LocString ITEM_DROP = "Claim blueprints";
 			public static LocString WELCOME_MESSAGE = "Welcome message";
+			public static LocString COLONY_VIEW = "colony view";
 		}
 
 		public class SUPPLY_CLOSET {
@@ -55,6 +56,9 @@ namespace STRINGS {
 			public static LocString TYPE_SEARCH = "Type-ahead search";
 			public static LocString SWITCH_PANEL = "Switch panel";
 			public static LocString SWITCH_DUPE_SLOT = "Switch duplicant slot";
+			public static LocString MOVE_CURSOR = "Move tile cursor";
+			public static LocString READ_COORDS = "Read coordinates";
+			public static LocString CYCLE_COORD_MODE = "Cycle coordinate display";
 		}
 
 		public class PANELS {
@@ -140,6 +144,14 @@ namespace STRINGS {
 			public static LocString PRESS_KEY_FOR = "Press a key for {0}";
 			public static LocString RESET_ALL = "Reset all to defaults";
 			public static LocString BINDINGS_RESET = "All bindings reset to defaults";
+		}
+
+		public class TILE_CURSOR {
+			public static LocString UNEXPLORED = "unexplored";
+			public static LocString COORDS = "{0}, {1}";
+			public static LocString COORD_OFF = "coordinates off";
+			public static LocString COORD_APPEND = "coordinates append";
+			public static LocString COORD_PREPEND = "coordinates prepend";
 		}
 	}
 }

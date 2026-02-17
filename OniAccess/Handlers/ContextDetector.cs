@@ -235,6 +235,9 @@ namespace OniAccess.Handlers {
 			// WattsonMessage (KScreen -- welcome narrative at colony start)
 			Register<WattsonMessage>(screen => new WattsonMessageHandler(screen));
 
+			// Hud (KScreen -- game world HUD, tile cursor navigation)
+			Register<Hud>(screen => new Tiles.TileCursorHandler(screen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 
