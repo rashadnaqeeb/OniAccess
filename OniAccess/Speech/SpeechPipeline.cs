@@ -14,6 +14,10 @@ namespace OniAccess.Speech {
 		/// </summary>
 		private static bool _enabled = true;
 
+		private static string _lastInterruptText;
+		private static float _lastInterruptTime;
+		private const float DeduplicateWindowSeconds = 0.2f;
+
 		/// <summary>
 		/// Whether the pipeline is active. When false (mod toggled off),
 		/// all methods return immediately.
@@ -38,6 +42,10 @@ namespace OniAccess.Speech {
 
 			string filtered = TextFilter.FilterForSpeech(text);
 			if (string.IsNullOrEmpty(filtered)) return;
+			if (filtered == _lastInterruptText && UnityEngine.Time.unscaledTime - _lastInterruptTime < DeduplicateWindowSeconds)
+				return;
+			_lastInterruptText = filtered;
+			_lastInterruptTime = UnityEngine.Time.unscaledTime;
 			SpeechEngine.Say(filtered);
 		}
 
