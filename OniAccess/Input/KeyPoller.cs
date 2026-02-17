@@ -45,14 +45,11 @@ namespace OniAccess.Input {
 				}
 			}
 
-			// Guard: some screens (e.g., MetricsOptionsScreen) call Show(false) on Escape
-			// instead of Deactivate(). This hides the gameObject but never triggers our
-			// KScreen.Deactivate patch, leaving a stale handler on the stack. Detect and pop.
-			while (HandlerStack.ActiveHandler is BaseScreenHandler sh
-				   && (sh.Screen == null || !sh.Screen.gameObject.activeInHierarchy)) {
-				Util.Log.Debug($"KeyPoller: popping stale handler for inactive screen ({sh.DisplayName})");
-				HandlerStack.Pop();
-			}
+			// Remove screen handlers whose KScreen has been destroyed or hidden
+			// without firing Deactivate. Walks the entire stack so stale handlers
+			// buried under non-capturing handlers (e.g., MainMenu under TileCursorHandler)
+			// are cleaned up, not just the top.
+			HandlerStack.RemoveStaleHandlers();
 
 			// F12 (no modifiers): open help with entries from all reachable handlers.
 			// Centralized here to prevent double-push when layered non-capturing

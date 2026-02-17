@@ -145,6 +145,27 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
+		/// Remove BaseScreenHandlers whose KScreen has been destroyed or hidden
+		/// without firing Deactivate. Walks the entire stack, not just the top,
+		/// so stale handlers buried under non-capturing handlers are cleaned up.
+		/// Calls OnDeactivate on each removed handler.
+		/// </summary>
+		public static void RemoveStaleHandlers() {
+			for (int i = _stack.Count - 1; i >= 0; i--) {
+				if (!(_stack[i] is BaseScreenHandler sh)) continue;
+				if (sh.Screen != null && sh.Screen.gameObject.activeInHierarchy) continue;
+
+				_stack.RemoveAt(i);
+				try {
+					sh.OnDeactivate();
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"HandlerStack.RemoveStaleHandlers: OnDeactivate failed for {sh.DisplayName}: {ex.Message}");
+				}
+				Util.Log.Debug($"HandlerStack.RemoveStaleHandlers: removed {sh.DisplayName} at index {i}");
+			}
+		}
+
+		/// <summary>
 		/// Walk the stack top-to-bottom (mirroring KeyPoller's tick walk),
 		/// collecting HelpEntries from each reachable handler. Stops after
 		/// a CapturesAllInput barrier (inclusive). Deduplicates by KeyName —
