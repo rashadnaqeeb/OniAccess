@@ -36,6 +36,7 @@ namespace OniAccess.Handlers.Screens {
 		private const int DetailSectionCount = 4;
 
 		private bool _inColonyDetail;
+		private bool _isInGameContext;
 		private int _currentSection;
 		private KButton _viewOtherColoniesButton;
 
@@ -53,8 +54,23 @@ namespace OniAccess.Handlers.Screens {
 
 		public override void OnActivate() {
 			_inColonyDetail = false;
+			_isInGameContext = false;
 			_currentSection = ExplorerSectionMain;
 			CacheButtons();
+
+			try {
+				var explorerRoot = Traverse.Create(_screen).Field("explorerRoot")
+					.GetValue<UnityEngine.GameObject>();
+				if (explorerRoot != null && !explorerRoot.activeSelf) {
+					_isInGameContext = true;
+					_inColonyDetail = true;
+					_currentSection = DetailSectionDuplicants;
+					_pendingRediscovery = true;
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Error($"ColonySummaryHandler.OnActivate: {ex.Message}");
+			}
+
 			base.OnActivate();
 		}
 
@@ -416,7 +432,6 @@ namespace OniAccess.Handlers.Screens {
 		private void AddDetailButtons(KScreen screen) {
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "viewOtherColoniesButton", (string)STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES, _widgets);
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP, _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "quitToMainMenuButton", (string)STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.BUTTONS.QUIT_TO_MENU, _widgets);
 		}
 
 		// ========================================
@@ -455,6 +470,13 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
+			if (_isInGameContext && _currentSection == DetailSectionAchievements
+				&& widget.GameObject != null
+				&& widget.GameObject.GetComponent<AchievementWidget>() != null) {
+				SpeakAchievementProgress(widget.GameObject);
+				return;
+			}
+
 			base.ActivateCurrentWidget();
 		}
 
@@ -488,7 +510,7 @@ namespace OniAccess.Handlers.Screens {
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (base.HandleKeyDown(e)) return true;
 
-			if (_inColonyDetail && e.TryConsume(global::Action.Escape)) {
+			if (_inColonyDetail && !_isInGameContext && e.TryConsume(global::Action.Escape)) {
 				ReturnToExplorerView();
 				return true;
 			}
@@ -502,6 +524,8 @@ namespace OniAccess.Handlers.Screens {
 		/// then rediscovers widgets and speaks the explorer view.
 		/// </summary>
 		private void ReturnToExplorerView() {
+			if (_isInGameContext) return;
+
 			try {
 				if (_viewOtherColoniesButton != null) {
 					ClickButton(_viewOtherColoniesButton);
@@ -598,6 +622,52 @@ namespace OniAccess.Handlers.Screens {
 			if (!string.IsNullOrEmpty(desc) && desc != name)
 				return $"{name}, {desc}";
 			return name;
+		}
+
+		/// <summary>
+		/// Read achievement progress requirements directly from AchievementWidget's
+		/// progressParent children. ShowProgress populates these during colony loading
+		/// while progressParent is inactive.
+		///
+		/// SetText() stores text in TMP's internal char buffer, not m_text. So .text
+		/// returns the prefab default and GetParsedText() returns empty (inactive object,
+		/// TMP hasn't rendered). To get the real text we temporarily activate
+		/// progressParent, force a canvas update so TMP renders, then restore state.
+		/// </summary>
+		private void SpeakAchievementProgress(UnityEngine.GameObject achGO) {
+			var achievementWidget = achGO.GetComponent<AchievementWidget>();
+			if (achievementWidget == null) return;
+
+			var progressParent = Traverse.Create(achievementWidget).Field("progressParent")
+				.GetValue<UnityEngine.RectTransform>();
+			if (progressParent == null || progressParent.childCount == 0) return;
+
+			bool wasActive = progressParent.gameObject.activeSelf;
+			if (!wasActive)
+				progressParent.gameObject.SetActive(true);
+			UnityEngine.Canvas.ForceUpdateCanvases();
+
+			var entries = new List<string>();
+			for (int i = 0; i < progressParent.childCount; i++) {
+				var child = progressParent.GetChild(i);
+				if (child == null) continue;
+
+				var refs = child.GetComponent<HierarchyReferences>();
+				if (refs == null || !refs.HasReference("Desc")) continue;
+
+				var descLoc = refs.GetReference<LocText>("Desc");
+				if (descLoc == null) continue;
+
+				string text = descLoc.GetParsedText();
+				if (!string.IsNullOrEmpty(text))
+					entries.Add(text);
+			}
+
+			if (!wasActive)
+				progressParent.gameObject.SetActive(false);
+
+			if (entries.Count > 0)
+				Speech.SpeechPipeline.SpeakInterrupt(string.Join(". ", entries));
 		}
 
 	}
