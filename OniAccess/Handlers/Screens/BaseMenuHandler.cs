@@ -391,6 +391,7 @@ namespace OniAccess.Handlers.Screens {
 					bool wrapped = candidate <= _currentIndex;
 					_currentIndex = candidate;
 					if (wrapped) PlayWrapSound();
+					else PlayHoverSound();
 					SpeakCurrentWidget();
 					return;
 				}
@@ -410,6 +411,7 @@ namespace OniAccess.Handlers.Screens {
 					bool wrapped = candidate >= _currentIndex;
 					_currentIndex = candidate;
 					if (wrapped) PlayWrapSound();
+					else PlayHoverSound();
 					SpeakCurrentWidget();
 					return;
 				}
@@ -584,9 +586,17 @@ namespace OniAccess.Handlers.Screens {
 							step = isLargeStep ? range * 0.1f : range * 0.01f;
 						}
 
+						float oldValue = slider.value;
 						slider.value = UnityEngine.Mathf.Clamp(
 							slider.value + step * direction,
 							slider.minValue, slider.maxValue);
+
+						if (slider.value <= slider.minValue && direction < 0)
+							PlaySliderSound("Slider_Boundary_Low");
+						else if (slider.value >= slider.maxValue && direction > 0)
+							PlaySliderSound("Slider_Boundary_High");
+						else if (slider.value != oldValue)
+							PlaySliderSound("Slider_Move");
 
 						// KSlider.onValueChanged fires automatically from setting .value
 						Speech.SpeechPipeline.SpeakInterrupt(
@@ -687,6 +697,28 @@ namespace OniAccess.Handlers.Screens {
 				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
 			} catch (System.Exception ex) {
 				Util.Log.Error($"PlayWrapSound failed: {ex.Message}");
+			}
+		}
+
+		/// <summary>
+		/// Play the hover sound when navigating between widgets.
+		/// </summary>
+		protected void PlayHoverSound() {
+			try {
+				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover"));
+			} catch (System.Exception ex) {
+				Util.Log.Error($"PlayHoverSound failed: {ex.Message}");
+			}
+		}
+
+		/// <summary>
+		/// Play a slider sound by name (Slider_Move, Slider_Boundary_Low, etc.).
+		/// </summary>
+		private void PlaySliderSound(string soundName) {
+			try {
+				KFMOD.PlayUISound(GlobalAssets.GetSound(soundName));
+			} catch (System.Exception ex) {
+				Util.Log.Error($"PlaySliderSound({soundName}) failed: {ex.Message}");
 			}
 		}
 
