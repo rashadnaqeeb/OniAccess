@@ -5,6 +5,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// Lists loose items (pickupables) on the cell by proper name.
 	/// Uses GetProperName (not GetUnitFormattedName) so no mass is spoken.
 	/// Traverses the ObjectLayerListItem linked list for stacked items.
+	/// Skips duplicants and critters (handled by EntitySection).
 	/// </summary>
 	public class DebrisSection : ICellSection {
 		public IEnumerable<string> Read(int cell) {
@@ -17,7 +18,9 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var tokens = new List<string>();
 			var item = pickupable.objectLayerListItem;
 			while (item != null) {
-				tokens.Add(item.gameObject.GetProperName());
+				if (item.gameObject.GetComponent<MinionIdentity>() == null
+					&& item.gameObject.GetComponent<CreatureBrain>() == null)
+					tokens.Add(item.gameObject.GetProperName());
 				item = item.nextItem;
 			}
 			return tokens;

@@ -2,9 +2,10 @@ using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
-	/// Reads duplicants (ObjectLayer.Minion), critters (ObjectLayer.Critter),
-	/// and plants (ObjectLayer.Plants) at a cell. Traverses ObjectLayerListItem
-	/// linked lists to find all entities per layer. Plants include growth state.
+	/// Reads duplicants (ObjectLayer.Minion), critters (CreatureBrain on
+	/// ObjectLayer.Pickupables), and plants (ObjectLayer.Plants) at a cell.
+	/// Traverses ObjectLayerListItem linked lists for critters.
+	/// Plants include growth state.
 	/// </summary>
 	public class EntitySection : ICellSection {
 		public IEnumerable<string> Read(int cell) {
@@ -24,22 +25,19 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		private static void ReadCritters(int cell, List<string> tokens) {
-			var go = Grid.Objects[cell, (int)ObjectLayer.Critter];
+			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 			if (go == null) return;
 
 			var pickupable = go.GetComponent<Pickupable>();
-			if (pickupable == null) {
-				var selectable = go.GetComponent<KSelectable>();
-				if (selectable != null)
-					tokens.Add(selectable.GetName());
-				return;
-			}
+			if (pickupable == null) return;
 
 			var item = pickupable.objectLayerListItem;
 			while (item != null) {
-				var selectable = item.gameObject.GetComponent<KSelectable>();
-				if (selectable != null)
-					tokens.Add(selectable.GetName());
+				if (item.gameObject.GetComponent<CreatureBrain>() != null) {
+					var selectable = item.gameObject.GetComponent<KSelectable>();
+					if (selectable != null)
+						tokens.Add(selectable.GetName());
+				}
 				item = item.nextItem;
 			}
 		}
