@@ -16,7 +16,7 @@ namespace OniAccess.Speech {
 
 		private static string _lastInterruptText;
 		private static float _lastInterruptTime;
-		private const float DeduplicateWindowSeconds = 0.2f;
+		private const float DeduplicateWindowSeconds = 0.05f;
 
 		/// <summary>
 		/// Time source for deduplication. Defaults to Unity's unscaledTime;

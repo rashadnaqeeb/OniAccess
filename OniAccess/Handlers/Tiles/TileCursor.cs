@@ -38,13 +38,12 @@ namespace OniAccess.Handlers.Tiles {
 		public string Move(Direction direction) {
 			int candidate = GetNeighbor(_cell, direction);
 			if (candidate == Grid.InvalidCell || !IsInWorldBounds(candidate)) {
-				PlayWallSound();
+				PlayBoundarySound();
 				return null;
 			}
 			_cell = candidate;
 			LockMouseToCell(_cell);
-			PanCameraToCell(_cell);
-			PlayMoveSound();
+			SnapCameraToCell(_cell);
 			return BuildCellSpeech();
 		}
 
@@ -75,6 +74,20 @@ namespace OniAccess.Handlers.Tiles {
 					Mode = CoordinateMode.Off;
 					return (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_OFF;
 			}
+		}
+
+		/// <summary>
+		/// Re-sync cursor to the camera's center cell. Called every frame
+		/// so the cursor follows game-initiated camera movement (alerts,
+		/// follow-cam, etc.) and the mouse lock stays correct.
+		/// </summary>
+		public void SyncToCamera() {
+			if (Camera.main == null) return;
+			Vector3 center = Camera.main.transform.position;
+			int cell = Grid.PosToCell(center);
+			if (Grid.IsValidCell(cell) && cell != _cell && IsInWorldBounds(cell))
+				_cell = cell;
+			LockMouseToCell(_cell);
 		}
 
 		// ========================================
@@ -145,16 +158,6 @@ namespace OniAccess.Handlers.Tiles {
 			KInputManager.lockedMousePos = screenPos;
 		}
 
-		private static void PanCameraToCell(int cell) {
-			if (CameraController.Instance == null) {
-				Util.Log.Warn("TileCursor.PanCameraToCell: CameraController.Instance is null");
-				return;
-			}
-			Vector3 worldPos = Grid.CellToPosCCC(cell, Grid.SceneLayer.Move);
-			CameraController.Instance.SetTargetPos(worldPos,
-				CameraController.Instance.OrthographicSize, false);
-		}
-
 		private static void SnapCameraToCell(int cell) {
 			if (CameraController.Instance == null) {
 				Util.Log.Warn("TileCursor.SnapCameraToCell: CameraController.Instance is null");
@@ -175,19 +178,11 @@ namespace OniAccess.Handlers.Tiles {
 			}
 		}
 
-		private static void PlayMoveSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover"));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"TileCursor.PlayMoveSound: {ex.Message}");
-			}
-		}
-
-		private static void PlayWallSound() {
+		private static void PlayBoundarySound() {
 			try {
 				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
 			} catch (System.Exception ex) {
-				Util.Log.Error($"TileCursor.PlayWallSound: {ex.Message}");
+				Util.Log.Error($"TileCursor.PlayBoundarySound: {ex.Message}");
 			}
 		}
 	}

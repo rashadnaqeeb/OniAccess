@@ -46,6 +46,8 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void Tick() {
+			_cursor.SyncToCamera();
+
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
 				&& !InputUtil.AnyModifierHeld()) {
 				SpeakMove(Direction.Up);
