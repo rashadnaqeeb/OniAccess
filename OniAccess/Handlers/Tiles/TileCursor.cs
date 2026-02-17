@@ -8,11 +8,13 @@ namespace OniAccess.Handlers.Tiles {
 	/// <summary>
 	/// Owns a cell index for tile-by-tile world navigation.
 	/// Arrow key movement, world bounds clamping, KInputManager mouse lock,
-	/// camera follow, coordinate reading, and proof-of-life element speech.
+	/// camera follow, coordinate reading. Speech content is delegated to
+	/// GlanceComposer which runs the section pipeline.
 	/// </summary>
 	public class TileCursor {
 		private int _cell;
 		private bool _wasPanning;
+		private readonly GlanceComposer _composer = GlanceComposer.CreateDefault();
 
 		public CoordinateMode Mode { get; private set; } = ConfigManager.Config.CoordinateMode;
 
@@ -116,7 +118,9 @@ namespace OniAccess.Handlers.Tiles {
 			if (!Grid.IsVisible(_cell))
 				return AttachCoordinates((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 
-			string content = Grid.Element[_cell].name;
+			string content = _composer.Compose(_cell);
+			if (content == null)
+				content = Grid.Element[_cell].name;
 			return AttachCoordinates(content);
 		}
 

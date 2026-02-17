@@ -153,5 +153,30 @@ namespace STRINGS {
 			public static LocString COORD_APPEND = "coordinates append";
 			public static LocString COORD_PREPEND = "coordinates prepend";
 		}
+
+		public class GLANCE {
+			public static LocString UNDER_CONSTRUCTION = "constructing {0}";
+			public static LocString WORK_CELL = "work access";
+
+			public static LocString POWER_INPUT = "power input";
+			public static LocString POWER_OUTPUT = "power output";
+			public static LocString GAS_INPUT = "gas input";
+			public static LocString GAS_OUTPUT = "gas output";
+			public static LocString LIQUID_INPUT = "liquid input";
+			public static LocString LIQUID_OUTPUT = "liquid output";
+			public static LocString SOLID_INPUT = "conveyor input";
+			public static LocString SOLID_OUTPUT = "conveyor output";
+			public static LocString INPUT_PORT = "input";
+			public static LocString OUTPUT_PORT = "output";
+
+			public static LocString PLANT_GROWING = "growing";
+			public static LocString PLANT_GROWN = "grown";
+			public static LocString PLANT_STALLED = "stalled";
+
+			public static LocString ORDER_DIG = "pending dig";
+			public static LocString ORDER_MOP = "pending mop";
+			public static LocString ORDER_SWEEP = "pending sweep";
+			public static LocString ORDER_PRIORITY = "{0}, priority {1}";
+		}
 	}
 }
