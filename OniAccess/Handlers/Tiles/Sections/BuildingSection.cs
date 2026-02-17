@@ -8,8 +8,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	///
 	/// For each building: name, all status items, construction state.
 	/// Door access state comes through status items automatically.
-	/// Multi-tile buildings annotate work cells (always) and utility
-	/// ports (only when the matching overlay is active).
+	/// Multi-tile buildings annotate utility ports (only when the
+	/// matching overlay is active).
 	/// </summary>
 	public class BuildingSection : ICellSection {
 		public IEnumerable<string> Read(int cell) {
@@ -78,26 +78,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 			int origin = Grid.PosToCell(building.transform.GetPosition());
 
-			ReadWorkCell(go, origin, cell, tokens);
 			ReadUtilityPorts(building, origin, cell, tokens);
 			ReadAutomationPorts(building, origin, cell, tokens);
-		}
-
-		private static void ReadWorkCell(
-				GameObject go, int origin, int cell, List<string> tokens) {
-			if (cell == origin) return;
-
-			var workable = go.GetComponent<Workable>();
-			if (workable == null) return;
-
-			var offsets = workable.GetOffsets(origin);
-			foreach (var offset in offsets) {
-				int workCell = Grid.OffsetCell(origin, offset);
-				if (workCell == cell) {
-					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.WORK_CELL);
-					return;
-				}
-			}
 		}
 
 		private static void ReadUtilityPorts(

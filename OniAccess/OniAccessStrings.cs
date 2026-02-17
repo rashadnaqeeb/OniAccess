@@ -156,7 +156,6 @@ namespace STRINGS {
 
 		public class GLANCE {
 			public static LocString UNDER_CONSTRUCTION = "constructing {0}";
-			public static LocString WORK_CELL = "work access";
 
 			public static LocString POWER_INPUT = "power input";
 			public static LocString POWER_OUTPUT = "power output";
