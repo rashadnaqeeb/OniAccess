@@ -455,38 +455,24 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// Activate the current widget. Extends base behavior with support for
-		/// MultiToggle and HierarchyReferences-based toggle patterns.
+		/// Activate the current widget. Extends base for HierarchyReferences toggles
+		/// (KButton + CheckMark visibility pattern used by some options screen toggles).
 		/// </summary>
 		protected override void ActivateCurrentWidget() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
-			if (widget.Type == WidgetType.Toggle) {
-				// MultiToggle: invoke its onClick delegate (game code hooks toggle logic here)
-				var multiToggle = widget.Component as MultiToggle;
-				if (multiToggle != null) {
-					multiToggle.onClick?.Invoke();
-					string state = multiToggle.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-					Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
-					return;
-				}
-
-				// HierarchyReferences toggle: click the inner KButton, read CheckMark state
-				if (widget.Tag is HierarchyReferences hr) {
-					var kbutton = widget.Component as KButton;
-					if (kbutton != null)
-						ClickButton(kbutton);
-					// Read state after click — CheckMark active means "on"
-					string checkRef = hr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
-					bool isOn = hr.GetReference(checkRef)?.gameObject.activeSelf ?? false;
-					string state = isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-					Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
-					return;
-				}
+			if (widget.Type == WidgetType.Toggle && widget.Tag is HierarchyReferences hr) {
+				var kbutton = widget.Component as KButton;
+				if (kbutton != null)
+					ClickButton(kbutton);
+				string checkRef = hr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
+				bool isOn = hr.GetReference(checkRef)?.gameObject.activeSelf ?? false;
+				string state = isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
+				Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
+				return;
 			}
 
-			// KToggle, KButton, TextInput — handled by base
 			base.ActivateCurrentWidget();
 		}
 

@@ -523,8 +523,13 @@ namespace OniAccess.Handlers.Screens {
 			switch (widget.Type) {
 				case WidgetType.Button: {
 						var kbutton = widget.Component as KButton;
-						if (kbutton != null)
+						if (kbutton != null) {
 							ClickButton(kbutton);
+						} else {
+							var mt = widget.Component as MultiToggle;
+							if (mt != null)
+								ClickMultiToggle(mt);
+						}
 						break;
 					}
 				case WidgetType.Toggle: {
@@ -533,6 +538,13 @@ namespace OniAccess.Handlers.Screens {
 							toggle.Click();
 							string state = toggle.isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 							Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
+						} else {
+							var mt = widget.Component as MultiToggle;
+							if (mt != null) {
+								ClickMultiToggle(mt);
+								string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
+								Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
+							}
 						}
 						break;
 					}

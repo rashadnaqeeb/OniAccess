@@ -105,22 +105,6 @@ namespace OniAccess.Handlers.Screens {
 			return null;
 		}
 
-		/// <summary>
-		/// OnPointerClick for MultiToggle buttons, base behavior for KButton (close).
-		/// </summary>
-		protected override void ActivateCurrentWidget() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
-
-			var multiToggle = widget.Component as MultiToggle;
-			if (multiToggle != null) {
-				ClickMultiToggle(multiToggle);
-				return;
-			}
-
-			base.ActivateCurrentWidget();
-		}
-
 		public override void OnActivate() {
 			base.OnActivate();
 

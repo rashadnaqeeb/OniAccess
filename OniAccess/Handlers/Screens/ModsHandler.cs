@@ -111,9 +111,8 @@ namespace OniAccess.Handlers.Screens {
 
 
 		/// <summary>
-		/// Toggle widgets: invoke multiToggle.onClick(), then RediscoverAndRestore by label.
-		/// Toggle All button: SignalClick, then RediscoverAndRestore(null) to stay on button.
-		/// Other buttons (Workshop, Close): default SignalClick.
+		/// Mod toggles and Toggle All rebuild the widget list, so we rediscover after clicking.
+		/// Other buttons (Workshop, Close): handled by base.
 		/// </summary>
 		protected override void ActivateCurrentWidget() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
@@ -123,7 +122,7 @@ namespace OniAccess.Handlers.Screens {
 				var multiToggle = widget.Component as MultiToggle;
 				if (multiToggle != null) {
 					string label = widget.Label;
-					multiToggle.onClick?.Invoke();
+					ClickMultiToggle(multiToggle);
 					RediscoverAndRestore(label);
 					return;
 				}
@@ -132,7 +131,6 @@ namespace OniAccess.Handlers.Screens {
 			if (widget.Type == WidgetType.Button) {
 				var kb = widget.Component as KButton;
 				if (kb != null) {
-					// Toggle All button: triggers BuildDisplay, need to rediscover
 					string fieldName = GetButtonFieldName(kb);
 					if (fieldName == "toggleAllButton") {
 						ClickButton(kb);
@@ -142,7 +140,6 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
-			// Workshop, Close, or anything else
 			base.ActivateCurrentWidget();
 		}
 
