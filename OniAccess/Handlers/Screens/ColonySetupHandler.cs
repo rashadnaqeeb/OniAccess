@@ -1157,7 +1157,7 @@ namespace OniAccess.Handlers.Screens {
 				var randomizeBtn = Traverse.Create(settingsSeed).Field("RandomizeButton")
 					.GetValue<KButton>();
 				if (randomizeBtn != null)
-					randomizeBtn.SignalClick(KKeyCode.Mouse0);
+					ClickButton(randomizeBtn);
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
 				return;
 			}
@@ -1204,13 +1204,13 @@ namespace OniAccess.Handlers.Screens {
 			if (direction > 0) {
 				var cycleRight = wt.Field("CycleRight").GetValue<KButton>();
 				if (cycleRight != null && cycleRight.isInteractable) {
-					cycleRight.SignalClick(KKeyCode.Mouse0);
+					ClickButton(cycleRight);
 					cycled = true;
 				}
 			} else {
 				var cycleLeft = wt.Field("CycleLeft").GetValue<KButton>();
 				if (cycleLeft != null && cycleLeft.isInteractable) {
-					cycleLeft.SignalClick(KKeyCode.Mouse0);
+					ClickButton(cycleLeft);
 					cycled = true;
 				}
 			}
@@ -1224,7 +1224,7 @@ namespace OniAccess.Handlers.Screens {
 					if (arrowTransform != null) {
 						var arrowButton = arrowTransform.GetComponent<KButton>();
 						if (arrowButton != null && arrowButton.isInteractable) {
-							arrowButton.SignalClick(KKeyCode.Mouse0);
+							ClickButton(arrowButton);
 							cycled = true;
 						}
 					}

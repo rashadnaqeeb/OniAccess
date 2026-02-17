@@ -438,7 +438,7 @@ namespace OniAccess.Handlers.Screens {
 					? widget.GameObject.GetComponent<HierarchyReferences>() : null;
 				if (hierRef != null && hierRef.HasReference("ColonyNameLabel")) {
 					var kbutton = widget.Component as KButton;
-					kbutton.SignalClick(KKeyCode.Mouse0);
+					ClickButton(kbutton);
 					_inColonyDetail = true;
 					_currentSection = DetailSectionDuplicants;
 
@@ -504,7 +504,7 @@ namespace OniAccess.Handlers.Screens {
 		private void ReturnToExplorerView() {
 			try {
 				if (_viewOtherColoniesButton != null) {
-					_viewOtherColoniesButton.SignalClick(KKeyCode.Mouse0);
+					ClickButton(_viewOtherColoniesButton);
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ColonySummaryHandler.ReturnToExplorerView: {ex.Message}");

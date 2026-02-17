@@ -114,12 +114,7 @@ namespace OniAccess.Handlers.Screens {
 
 			var multiToggle = widget.Component as MultiToggle;
 			if (multiToggle != null) {
-				var eventData = new UnityEngine.EventSystems.PointerEventData(
-					UnityEngine.EventSystems.EventSystem.current) {
-					button = UnityEngine.EventSystems.PointerEventData.InputButton.Left,
-					clickCount = 1
-				};
-				multiToggle.OnPointerClick(eventData);
+				ClickMultiToggle(multiToggle);
 				return;
 			}
 

@@ -240,14 +240,8 @@ namespace OniAccess.Handlers.Screens {
 					.GetValue<HierarchyReferences>();
 				if (hierRef != null) {
 					var multiToggle = hierRef.GetReference<MultiToggle>("multitoggle");
-					if (multiToggle != null) {
-						var eventData = new UnityEngine.EventSystems.PointerEventData(
-							UnityEngine.EventSystems.EventSystem.current) {
-							button = UnityEngine.EventSystems.PointerEventData.InputButton.Left,
-							clickCount = 1
-						};
-						multiToggle.OnPointerClick(eventData);
-					}
+					if (multiToggle != null)
+						ClickMultiToggle(multiToggle);
 				}
 				return;
 			}
@@ -261,7 +255,7 @@ namespace OniAccess.Handlers.Screens {
 						var triggerButton = Traverse.Create(urlOpener).Field("triggerButton")
 							.GetValue<KButton>();
 						if (triggerButton != null)
-							triggerButton.SignalClick(KKeyCode.Mouse0);
+							ClickButton(triggerButton);
 					}
 				}
 				return;

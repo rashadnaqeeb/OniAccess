@@ -475,7 +475,8 @@ namespace OniAccess.Handlers.Screens {
 				// HierarchyReferences toggle: click the inner KButton, read CheckMark state
 				if (widget.Tag is HierarchyReferences hr) {
 					var kbutton = widget.Component as KButton;
-					kbutton?.SignalClick(KKeyCode.Mouse0);
+					if (kbutton != null)
+						ClickButton(kbutton);
 					// Read state after click — CheckMark active means "on"
 					string checkRef = hr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
 					bool isOn = hr.GetReference(checkRef)?.gameObject.activeSelf ?? false;
@@ -497,7 +498,8 @@ namespace OniAccess.Handlers.Screens {
 			if (widget.Tag is RadioGroupInfo radio) {
 				int count = radio.Members.Count;
 				int newIndex = (radio.CurrentIndex + direction + count) % count;
-				radio.Members[newIndex].Button?.SignalClick(KKeyCode.Mouse0);
+				if (radio.Members[newIndex].Button != null)
+					ClickButton(radio.Members[newIndex].Button);
 				radio.CurrentIndex = newIndex;
 				Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {radio.Members[newIndex].Label}");
 				return;

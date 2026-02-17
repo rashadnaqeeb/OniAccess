@@ -211,7 +211,7 @@ namespace OniAccess.Handlers.Screens {
 
 			// Reset button: click it, then rediscover and announce
 			if (widget.Component == _resetButton) {
-				_resetButton.SignalClick(KKeyCode.Mouse0);
+				ClickButton(_resetButton);
 				// OnReset runs synchronously: resets bindings + calls BuildDisplay()
 				DiscoverWidgets(_screen);
 				_currentIndex = 0;
@@ -235,7 +235,7 @@ namespace OniAccess.Handlers.Screens {
 		private IEnumerator DeferredRebindClick(KButton button) {
 			yield return null;
 			_rebindCoroutine = null;
-			button.SignalClick(KKeyCode.Mouse0);
+			ClickButton(button);
 		}
 
 		// ========================================
@@ -246,7 +246,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_nextScreenButton == null) return;
 
 			int before = _activeScreenField?.GetValue<int>() ?? -1;
-			_nextScreenButton.SignalClick(KKeyCode.Mouse0);
+			ClickButton(_nextScreenButton);
 			int after = _activeScreenField?.GetValue<int>() ?? -1;
 
 			OnCategoryChanged(after < before);
@@ -256,7 +256,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_prevScreenButton == null) return;
 
 			int before = _activeScreenField?.GetValue<int>() ?? -1;
-			_prevScreenButton.SignalClick(KKeyCode.Mouse0);
+			ClickButton(_prevScreenButton);
 			int after = _activeScreenField?.GetValue<int>() ?? -1;
 
 			OnCategoryChanged(after > before);

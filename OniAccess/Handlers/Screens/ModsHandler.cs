@@ -135,7 +135,7 @@ namespace OniAccess.Handlers.Screens {
 					// Toggle All button: triggers BuildDisplay, need to rediscover
 					string fieldName = GetButtonFieldName(kb);
 					if (fieldName == "toggleAllButton") {
-						kb.SignalClick(KKeyCode.Mouse0);
+						ClickButton(kb);
 						RediscoverAndRestore(null);
 						return;
 					}

@@ -519,7 +519,8 @@ namespace OniAccess.Handlers.Screens {
 					if (widget.Type == WidgetType.Button
 						&& widget.Tag is string tag && tag == "colony_entry") {
 						var kbutton = widget.Component as KButton;
-						kbutton?.SignalClick(KKeyCode.Mouse0);
+						if (kbutton != null)
+							ClickButton(kbutton);
 
 						if (IsColonyViewRootActive()) {
 							TransitionToSaveView();
@@ -617,7 +618,8 @@ namespace OniAccess.Handlers.Screens {
 
 			// Click the row to trigger ShowColonySave() and populate detail fields
 			var rowButton = widget.Tag as KButton;
-			rowButton?.SignalClick(KKeyCode.Mouse0);
+			if (rowButton != null)
+				ClickButton(rowButton);
 
 			_viewLevel = ViewLevel.SaveDetail;
 			DiscoverWidgets(_screen);
@@ -661,7 +663,8 @@ namespace OniAccess.Handlers.Screens {
 					if (viewRefs != null && viewRefs.HasReference("Back")) {
 						var backRef = viewRefs.GetReference("Back");
 						var backButton = backRef?.gameObject.GetComponent<KButton>();
-						backButton?.SignalClick(KKeyCode.Mouse0);
+						if (backButton != null)
+							ClickButton(backButton);
 					}
 				}
 			} catch (System.Exception ex) {

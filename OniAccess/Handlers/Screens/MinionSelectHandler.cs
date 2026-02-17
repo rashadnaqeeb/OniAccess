@@ -734,14 +734,14 @@ namespace OniAccess.Handlers.Screens {
 
 			// Dupe shuffle name button: click, defer read by one frame
 			if (widget.Tag is string dupeShuffleTag && dupeShuffleTag == "dupe_shuffle_name") {
-				((KButton)widget.Component).SignalClick(KKeyCode.Mouse0);
+				ClickButton((KButton)widget.Component);
 				_pendingAnnounce = AnnounceAfterDupeShuffle;
 				return;
 			}
 
 			// Reroll button in dupe mode
 			if (widget.Tag is string rerollTag && rerollTag == "reroll") {
-				((KButton)widget.Component).SignalClick(KKeyCode.Mouse0);
+				ClickButton((KButton)widget.Component);
 				// Delay announcement by one frame for SetAttributes coroutine
 				_pendingAnnounce = AnnounceAfterReroll;
 				return;

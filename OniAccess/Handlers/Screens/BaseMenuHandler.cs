@@ -28,7 +28,7 @@ namespace OniAccess.Handlers.Screens {
 	/// Per locked decisions:
 	/// - Arrow keys navigate Up/Down between items with wrap-around
 	/// - Home/End jump to first/last
-	/// - Enter activates (KButton.SignalClick, KToggle.Click)
+	/// - Enter activates (ClickButton for KButton, KToggle.Click)
 	/// - Left/Right adjust sliders and cycle dropdowns
 	/// - Shift+Left/Right for large step adjustment
 	/// - Tab/Shift+Tab for tabbed screens (virtual stubs)
@@ -511,7 +511,7 @@ namespace OniAccess.Handlers.Screens {
 
 		/// <summary>
 		/// Activate the currently focused widget. Dispatches by WidgetType:
-		/// - Button: SignalClick (triggers onClick + plays button sound)
+		/// - Button: ClickButton (triggers onClick + plays button sound)
 		/// - Toggle: Click() then speak new state
 		/// - TextInput: Begin/Confirm via TextEdit (Enter toggles editing)
 		/// </summary>
@@ -523,7 +523,8 @@ namespace OniAccess.Handlers.Screens {
 			switch (widget.Type) {
 				case WidgetType.Button: {
 						var kbutton = widget.Component as KButton;
-						kbutton?.SignalClick(KKeyCode.Mouse0);
+						if (kbutton != null)
+							ClickButton(kbutton);
 						break;
 					}
 				case WidgetType.Toggle: {
@@ -641,6 +642,30 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 		// UTILITY METHODS
 		// ========================================
+
+		/// <summary>
+		/// Click a KButton with its configured sound (including any per-button override).
+		/// Use this instead of calling SignalClick directly, which bypasses OnPointerDown
+		/// and silently skips custom button sounds (e.g., DupeShuffle on the reroll button).
+		/// </summary>
+		protected static void ClickButton(KButton button) {
+			button.PlayPointerDownSound();
+			button.SignalClick(KKeyCode.Mouse0);
+		}
+
+		/// <summary>
+		/// Click a MultiToggle with its configured sound.
+		/// MultiToggle plays sounds in OnPointerDown, not OnPointerClick.
+		/// </summary>
+		protected static void ClickMultiToggle(MultiToggle toggle) {
+			var eventData = new UnityEngine.EventSystems.PointerEventData(
+				UnityEngine.EventSystems.EventSystem.current) {
+				button = UnityEngine.EventSystems.PointerEventData.InputButton.Left,
+				clickCount = 1
+			};
+			toggle.OnPointerDown(eventData);
+			toggle.OnPointerClick(eventData);
+		}
 
 		/// <summary>
 		/// Play the wrap-around earcon sound when navigation wraps.
