@@ -25,6 +25,12 @@ namespace OniAccess.Speech {
 		internal static System.Func<float> TimeSource = () => UnityEngine.Time.unscaledTime;
 
 		/// <summary>
+		/// Speech backend action. Defaults to SpeechEngine.Say;
+		/// tests replace this to capture output without P/Invoke.
+		/// </summary>
+		internal static System.Action<string, bool> SpeakAction = SpeechEngine.Say;
+
+		/// <summary>
 		/// Whether the pipeline is active. When false (mod toggled off),
 		/// all methods return immediately.
 		/// </summary>
@@ -36,6 +42,15 @@ namespace OniAccess.Speech {
 		/// </summary>
 		internal static void SetEnabled(bool enabled) {
 			_enabled = enabled;
+		}
+
+		/// <summary>
+		/// Reset pipeline state for test isolation.
+		/// </summary>
+		internal static void Reset() {
+			_lastInterruptText = null;
+			_lastInterruptTime = 0f;
+			_enabled = true;
 		}
 
 		/// <summary>
@@ -53,7 +68,7 @@ namespace OniAccess.Speech {
 				return;
 			_lastInterruptText = filtered;
 			_lastInterruptTime = now;
-			SpeechEngine.Say(filtered);
+			SpeakAction(filtered, true);
 		}
 
 		/// <summary>
@@ -67,7 +82,7 @@ namespace OniAccess.Speech {
 
 			string filtered = TextFilter.FilterForSpeech(text);
 			if (string.IsNullOrEmpty(filtered)) return;
-			SpeechEngine.Say(filtered, interrupt: false);
+			SpeakAction(filtered, false);
 		}
 
 		/// <summary>

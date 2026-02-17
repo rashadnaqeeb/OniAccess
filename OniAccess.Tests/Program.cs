@@ -5,6 +5,7 @@ using System.Reflection;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Screens;
 using OniAccess.Speech;
+using OniAccess.Util;
 
 namespace OniAccess.Tests {
 	class Program {
@@ -101,6 +102,30 @@ namespace OniAccess.Tests {
 			results.Add(TextFilterUnclosedTag());
 			results.Add(TextFilterMismatchedTags());
 			results.Add(TextFilterSpriteNameCaseInsensitive());
+
+			// --- Log class (5 new) ---
+			results.Add(LogDebugFormat());
+			results.Add(LogInfoFormat());
+			results.Add(LogWarnRoutesToWarnFn());
+			results.Add(LogErrorRoutesToErrorFn());
+			results.Add(LogBackendSwapWorks());
+
+			// --- HandlerStack diagnostic quality (4 new) ---
+			results.Add(PushFailureLogsHandlerNameAndException());
+			results.Add(PushNullLogsWarning());
+			results.Add(PopOnEmptyLogsWarning());
+			results.Add(ReplaceFailureLogsHandlerNameAndException());
+
+			HandlerStack.Clear();
+
+			// --- SpeechPipeline (7 new) ---
+			results.Add(PipelineDisabledSkipsSpeech());
+			results.Add(PipelineEnabledSpeaks());
+			results.Add(PipelineFiltersBeforeSpeaking());
+			results.Add(PipelineDeduplicatesSameText());
+			results.Add(PipelineAllowsSameTextAfterWindow());
+			results.Add(PipelineAllowsDifferentTextImmediately());
+			results.Add(PipelineNullAndEmptySkipped());
 
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
@@ -953,6 +978,255 @@ namespace OniAccess.Tests {
 			string result = TextFilter.FilterForSpeech("<sprite name=WARNING>text");
 			bool ok = result == "warning: text";
 			return Assert("TextFilterSpriteNameCaseInsensitive", ok, $"got \"{result}\"");
+		}
+
+		// ========================================
+		// LogCapture helper
+		// ========================================
+
+		private class LogCapture : IDisposable {
+			public List<string> LogMessages = new List<string>();
+			public List<string> WarnMessages = new List<string>();
+			public List<string> ErrorMessages = new List<string>();
+
+			private readonly Action<string> _origLog;
+			private readonly Action<string> _origWarn;
+			private readonly Action<string> _origError;
+
+			public LogCapture() {
+				_origLog = Log.LogFn;
+				_origWarn = Log.WarnFn;
+				_origError = Log.ErrorFn;
+				Log.LogFn = msg => LogMessages.Add(msg);
+				Log.WarnFn = msg => WarnMessages.Add(msg);
+				Log.ErrorFn = msg => ErrorMessages.Add(msg);
+			}
+
+			public void Dispose() {
+				Log.LogFn = _origLog;
+				Log.WarnFn = _origWarn;
+				Log.ErrorFn = _origError;
+			}
+		}
+
+		// ========================================
+		// Log class tests
+		// ========================================
+
+		private static (string, bool, string) LogDebugFormat() {
+			using (var capture = new LogCapture()) {
+				Log.Debug("msg");
+				bool ok = capture.LogMessages.Count == 1
+					   && capture.LogMessages[0] == "[OniAccess] [DEBUG] msg";
+				return Assert("LogDebugFormat", ok,
+					$"got \"{(capture.LogMessages.Count > 0 ? capture.LogMessages[0] : "<none>")}\"");
+			}
+		}
+
+		private static (string, bool, string) LogInfoFormat() {
+			using (var capture = new LogCapture()) {
+				Log.Info("msg");
+				bool ok = capture.LogMessages.Count == 1
+					   && capture.LogMessages[0] == "[OniAccess] msg";
+				return Assert("LogInfoFormat", ok,
+					$"got \"{(capture.LogMessages.Count > 0 ? capture.LogMessages[0] : "<none>")}\"");
+			}
+		}
+
+		private static (string, bool, string) LogWarnRoutesToWarnFn() {
+			using (var capture = new LogCapture()) {
+				Log.Warn("oops");
+				bool ok = capture.WarnMessages.Count == 1
+					   && capture.LogMessages.Count == 0;
+				return Assert("LogWarnRoutesToWarnFn", ok,
+					$"warn={capture.WarnMessages.Count}, log={capture.LogMessages.Count}");
+			}
+		}
+
+		private static (string, bool, string) LogErrorRoutesToErrorFn() {
+			using (var capture = new LogCapture()) {
+				Log.Error("bad");
+				bool ok = capture.ErrorMessages.Count == 1
+					   && capture.LogMessages.Count == 0;
+				return Assert("LogErrorRoutesToErrorFn", ok,
+					$"error={capture.ErrorMessages.Count}, log={capture.LogMessages.Count}");
+			}
+		}
+
+		private static (string, bool, string) LogBackendSwapWorks() {
+			var capture1 = new LogCapture();
+			Log.Info("first");
+			bool gotFirst = capture1.LogMessages.Count == 1;
+			capture1.Dispose();
+
+			var capture2 = new LogCapture();
+			Log.Info("second");
+			bool gotSecond = capture2.LogMessages.Count == 1
+						  && capture1.LogMessages.Count == 1; // original didn't get more
+			capture2.Dispose();
+
+			// Verify restore works: log after dispose should go to original backend
+			bool ok = gotFirst && gotSecond;
+			return Assert("LogBackendSwapWorks", ok,
+				$"gotFirst={gotFirst}, gotSecond={gotSecond}");
+		}
+
+		// ========================================
+		// HandlerStack diagnostic quality tests
+		// ========================================
+
+		private static (string, bool, string) PushFailureLogsHandlerNameAndException() {
+			Reset();
+			using (var capture = new LogCapture()) {
+				var thrower = new ThrowingHandler { ThrowOnActivate = true };
+				HandlerStack.Push(thrower);
+				bool ok = capture.ErrorMessages.Count > 0
+					   && capture.ErrorMessages[0].Contains("Thrower")
+					   && capture.ErrorMessages[0].Contains("OnActivate exploded");
+				return Assert("PushFailureLogsHandlerNameAndException", ok,
+					$"errors={capture.ErrorMessages.Count}" +
+					(capture.ErrorMessages.Count > 0 ? $", msg=\"{capture.ErrorMessages[0]}\"" : ""));
+			}
+		}
+
+		private static (string, bool, string) PushNullLogsWarning() {
+			Reset();
+			using (var capture = new LogCapture()) {
+				HandlerStack.Push(null);
+				bool ok = capture.WarnMessages.Count > 0
+					   && capture.WarnMessages[0].Contains("null");
+				return Assert("PushNullLogsWarning", ok,
+					$"warns={capture.WarnMessages.Count}" +
+					(capture.WarnMessages.Count > 0 ? $", msg=\"{capture.WarnMessages[0]}\"" : ""));
+			}
+		}
+
+		private static (string, bool, string) PopOnEmptyLogsWarning() {
+			Reset();
+			using (var capture = new LogCapture()) {
+				HandlerStack.Pop();
+				bool ok = capture.WarnMessages.Count > 0;
+				return Assert("PopOnEmptyLogsWarning", ok,
+					$"warns={capture.WarnMessages.Count}");
+			}
+		}
+
+		private static (string, bool, string) ReplaceFailureLogsHandlerNameAndException() {
+			Reset();
+			using (var capture = new LogCapture()) {
+				var thrower = new ThrowingHandler { ThrowOnActivate = true };
+				HandlerStack.Replace(thrower);
+				bool ok = capture.ErrorMessages.Count > 0
+					   && capture.ErrorMessages[0].Contains("Thrower")
+					   && capture.ErrorMessages[0].Contains("OnActivate exploded");
+				return Assert("ReplaceFailureLogsHandlerNameAndException", ok,
+					$"errors={capture.ErrorMessages.Count}" +
+					(capture.ErrorMessages.Count > 0 ? $", msg=\"{capture.ErrorMessages[0]}\"" : ""));
+			}
+		}
+
+		// ========================================
+		// SpeechPipeline tests
+		// ========================================
+
+		private static void ResetPipeline(ref float fakeTime, List<(string text, bool interrupt)> spoken) {
+			fakeTime = 0f;
+			spoken.Clear();
+			SpeechPipeline.Reset();
+		}
+
+		private static (string, bool, string) PipelineDisabledSkipsSpeech() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SetEnabled(false);
+			SpeechPipeline.SpeakInterrupt("hello");
+			bool ok = spoken.Count == 0;
+
+			SpeechPipeline.SetEnabled(true);
+			return Assert("PipelineDisabledSkipsSpeech", ok, $"spoken={spoken.Count}");
+		}
+
+		private static (string, bool, string) PipelineEnabledSpeaks() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakInterrupt("hello");
+			bool ok = spoken.Count == 1 && spoken[0].text == "hello";
+			return Assert("PipelineEnabledSpeaks", ok,
+				$"spoken={spoken.Count}" + (spoken.Count > 0 ? $", text=\"{spoken[0].text}\"" : ""));
+		}
+
+		private static (string, bool, string) PipelineFiltersBeforeSpeaking() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakInterrupt("<b>bold</b>");
+			bool ok = spoken.Count == 1 && spoken[0].text == "bold";
+			return Assert("PipelineFiltersBeforeSpeaking", ok,
+				$"spoken={spoken.Count}" + (spoken.Count > 0 ? $", text=\"{spoken[0].text}\"" : ""));
+		}
+
+		private static (string, bool, string) PipelineDeduplicatesSameText() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakInterrupt("hello");
+			SpeechPipeline.SpeakInterrupt("hello");
+			bool ok = spoken.Count == 1;
+			return Assert("PipelineDeduplicatesSameText", ok, $"spoken={spoken.Count}");
+		}
+
+		private static (string, bool, string) PipelineAllowsSameTextAfterWindow() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakInterrupt("hello");
+			fakeTime = 0.3f;
+			SpeechPipeline.SpeakInterrupt("hello");
+			bool ok = spoken.Count == 2;
+			return Assert("PipelineAllowsSameTextAfterWindow", ok, $"spoken={spoken.Count}");
+		}
+
+		private static (string, bool, string) PipelineAllowsDifferentTextImmediately() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakInterrupt("hello");
+			SpeechPipeline.SpeakInterrupt("world");
+			bool ok = spoken.Count == 2;
+			return Assert("PipelineAllowsDifferentTextImmediately", ok, $"spoken={spoken.Count}");
+		}
+
+		private static (string, bool, string) PipelineNullAndEmptySkipped() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakInterrupt(null);
+			SpeechPipeline.SpeakInterrupt("");
+			bool ok = spoken.Count == 0;
+			return Assert("PipelineNullAndEmptySkipped", ok, $"spoken={spoken.Count}");
 		}
 	}
 }
