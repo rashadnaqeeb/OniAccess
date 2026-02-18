@@ -50,11 +50,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				tokens.Add(selectable.GetName());
 			}
 
-			ReadStatusItems(selectable, tokens);
+			bool isPlant = go.GetComponent<Growing>() != null;
+			ReadStatusItems(selectable, isPlant, tokens);
 			ReadMultiTileAnnotations(go, cell, tokens);
 		}
 
-		private static void ReadStatusItems(KSelectable selectable, List<string> tokens) {
+		private static void ReadStatusItems(
+				KSelectable selectable, bool includeNeutral, List<string> tokens) {
 			var group = selectable.GetStatusItemGroup();
 			if (group == null) return;
 			var enumerator = group.GetEnumerator();
@@ -63,7 +65,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					var entry = enumerator.Current;
 					var severity = entry.item.notificationType;
 					if (severity != NotificationType.Bad
-						&& severity != NotificationType.BadMinor)
+						&& severity != NotificationType.BadMinor
+						&& !(includeNeutral && severity == NotificationType.Neutral))
 						continue;
 					string name = entry.GetName();
 					if (!string.IsNullOrEmpty(name))

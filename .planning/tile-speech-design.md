@@ -63,16 +63,45 @@ Content is spoken in this order:
 
 This ordering puts the most spatially distinguishing content first (building or element name), so even a partial utterance during fast navigation is useful.
 
+#### Overlay change announcement
+
+Switching overlays speaks the overlay name (including "default" when returning to no overlay). Implemented via `OverlayScreen.Instance.OnOverlayChanged` callback.
+
 #### Overlay glance profiles
 
 When an overlay is active, the overlay's profile provides its own ordered list of sections. Each profile is self-contained — it lists exactly which sections to include and in what order. A profile that wants "overlay info first, then the full default" simply lists its overlay section followed by all five default sections. A profile that wants to drop irrelevant defaults just omits them.
 
-Non-exhaustive examples:
+#### Per-overlay decisions
 
-- **Power**: Wire/building name, wattage consumed (-) or generated (+), circuit status (unpowered / overloading / straining / safe).
-- **Liquid Conduits**: Pipe name, pipe type (normal / insulated / radiant), conduit contents via `ConduitFlow.GetContents(cell)` — element, mass, temperature, germs.
+| Overlay | Decision | Details |
+|---|---|---|
+| **Oxygen** | Skip | Already covered by default glance (element name). Future candidate for audio sonification. |
+| **Light** | Prepend lux | Prepend light level (lux value) to default glance. |
+| **Thermal Conductivity** | Deferred | Needs more thought. |
+| **Priorities** | Deferred | Needs more research into how the priority system works beyond pending orders. |
+| **Heat Flow** | Skip | Stub overlay with no real implementation. Future candidate for audio sonification. |
+| **Rooms** | Deferred | Needs more research and thought on how to present room info without being noisy on every press. |
+| **Radiation** | Prepend rads | Prepend radiation level to default glance. (Spaced Out DLC only.) |
+| **Temperature** | Deferred | Complex overlay with 5 sub-modes. Needs research into how sighted players use it. |
+| **Power** | Full overlay profile | Prepend power layer data: wire/building on power layer, wattage consumed (-) or generated (+), circuit status (unpowered / overloading / straining / safe). Change building status filter to show power-relevant statuses normally filtered. Show power I/O ports on buildings. Network overview via dedicated key (TBD): announces providers and consumers on the connected network. |
+| **Liquid Conduits** | Full overlay profile | Prepend pipe type (normal / insulated / radiant), conduit contents via `ConduitFlow.GetContents(cell)` — element, mass, temperature, germs. Full building statuses. Show conduit I/O ports on buildings. Network overview via same TBD key. |
+| **Gas Conduits** | Full overlay profile | Same approach as Liquid Conduits. |
+| **Solid Conveyor** | Full overlay profile | Same approach as pipe overlays. Network overview via same TBD key. |
+| **Logic** | Full overlay profile | Prepend automation wire signal state (on/off, per-bit for ribbon cables), gate/sensor info, logic I/O ports. Full building statuses. Network overview via same TBD key. |
+| **Suit** | Skip | Scanner territory. |
+| **Decor** | Prepend decor value | Prepend decor value at tile. Rest available from tooltip. |
+| **Disease** | Prepend germ totals | List each germ type with summed count across all sources at the cell (tile, debris, buildings, pipes). "Clear" if zero. Tooltip for per-object breakdown. |
+| **Crop** | Skip | Plant growth statuses (Growing, ReadyForHarvest, Wilting) already come through as status items. Ensure these pass the default glance filter (currently filtered out as Neutral notification type). |
+| **Harvest** | Skip | Scanner territory. |
+| **Tile Mode** | Prepend material | Prepend material for all objects at the cell (buildings, debris, everything). Biggest future target for audio sonification. |
 
-Overlay profiles for all 19 gameplay overlays will be defined during implementation.
+#### Network overview key (TBD)
+
+Applies to Power, Liquid Conduits, Gas Conduits, Solid Conveyor, Logic overlays. On keypress, announces an overview of the connected network at the cursor: providers and consumers. Implementation details deferred.
+
+#### Default glance filter change
+
+The Crop overlay decision revealed that plant growth statuses (`Growing`, `GrowthFruit`, `ReadyForHarvest`, `Wilting`, etc.) are `NotificationType.Neutral` and currently filtered out by `BuildingSection`'s `Bad`/`BadMinor` filter. These must be included for plants in the default glance.
 
 ### Depth 2 — Tooltip (Q key)
 
@@ -309,9 +338,17 @@ Handles Depth 3. On Enter:
 
 ### Phase 4 — Overlay profiles
 
+Phase 4a — Overlay announcement and simple profiles (proof of concept):
 - `OverlayProfile`, `OverlayProfileRegistry`
-- `GlanceComposer` hooks `OverlayScreen.OnOverlayChanged`
-- Build one or two overlay sections (Power is a good first candidate) to prove the system, then fill in the rest incrementally
+- `GlanceComposer` hooks `OverlayScreen.OnOverlayChanged` to announce overlay name on switch (including "default")
+- Simple prepend sections: Light (lux), Radiation (rads), Decor (decor value)
+- Disease section (summed germs by type across all sources, "Clear" if zero)
+
+Phase 4b — Complex overlay profiles (deferred):
+- Tile Mode section (material for all objects)
+- Power, Liquid/Gas Conduits, Solid Conveyor, Logic (full overlay profiles)
+- Network overview key (TBD)
+- Remaining deferred overlays: Thermal Conductivity, Priorities, Rooms, Temperature
 
 ### Phase 5 — Inspect (Depth 3)
 
