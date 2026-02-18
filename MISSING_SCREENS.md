@@ -16,10 +16,9 @@ Screens a blind player can encounter that have no handler registered.
 ## Blocking walls (invisible to blind player, blocks input until dismissed)
 
 - [x] **WattsonMessage** -- Tutorial messages (KScreen). Early game popups.
-- [ ] **ComicViewer** -- Story comics (KScreen). New game start, story events.
 - [x] **StoryMessageScreen** -- Story event popups (KScreen). Story trait events.
 - [x] **PatchNotesScreen** -- Post-update notes (KModalScreen). After game updates.
-- [ ] **VideoScreen** -- Victory cinematic viewer (KModalScreen). Plays after StoryMessageScreen during victory sequences. Has overlay text + close/proceed buttons in looped phase.
+- [x] **VideoScreen** -- Victory cinematic viewer (KModalScreen). Plays after StoryMessageScreen during victory sequences. Has overlay text + close/proceed buttons in looped phase.
 
 ## Deferred (later phases)
 

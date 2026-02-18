@@ -115,6 +115,22 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
+	/// VideoScreen.OnActivate() calls Show(false) during prefab init (same as PauseScreen).
+	/// VideoScreen overrides OnShow (not Show), so patch OnShow directly.
+	/// </summary>
+	[HarmonyPatch(typeof(VideoScreen), "OnShow")]
+	internal static class VideoScreen_OnShow_Patch {
+		private static void Postfix(VideoScreen __instance, bool show) {
+			if (!VanillaMode.IsEnabled) return;
+			if (show) {
+				ContextDetector.OnScreenActivated(__instance);
+			} else {
+				ContextDetector.OnScreenDeactivating(__instance);
+			}
+		}
+	}
+
+	/// <summary>
 	/// MinionSelectScreen.OnSpawn() does not call base.OnSpawn(), so
 	/// KScreen.Activate() is never invoked and our generic KScreen_Activate_Patch
 	/// never fires. Patch OnSpawn directly to trigger handler activation.

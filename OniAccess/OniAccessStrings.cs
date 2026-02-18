@@ -38,6 +38,7 @@ namespace STRINGS {
 			public static LocString ITEM_DROP = "Claim blueprints";
 			public static LocString WELCOME_MESSAGE = "Welcome message";
 			public static LocString STORY_MESSAGE = "Story message";
+			public static LocString VIDEO = "Video";
 			public static LocString COLONY_VIEW = "colony view";
 			public static LocString TOOLTIP_BROWSER = "tooltip";
 		}
@@ -155,6 +156,10 @@ namespace STRINGS {
 			public static LocString COORD_OFF = "coordinates off";
 			public static LocString COORD_APPEND = "coordinates append";
 			public static LocString COORD_PREPEND = "coordinates prepend";
+		}
+
+		public class VIDEO {
+			public static LocString PLAYING = "Video playing";
 		}
 
 		public class TOOLTIP {

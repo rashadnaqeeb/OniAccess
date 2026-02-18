@@ -231,6 +231,11 @@ namespace OniAccess.Handlers {
 			// StoryMessageScreen (KScreen -- victory sequence story popup)
 			Register<StoryMessageScreen>(screen => new StoryMessageHandler(screen));
 
+			// VideoScreen (KModalScreen -- victory cinematics and intro videos)
+			// Show patch pushes/pops via ContextDetector since OnActivate calls Show(false)
+			Register<VideoScreen>(screen => new VideoScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(VideoScreen));
+
 			// Hud (KScreen -- game world HUD, tile cursor navigation)
 			Register<Hud>(screen => new Tiles.TileCursorHandler(screen));
 
