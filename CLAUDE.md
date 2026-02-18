@@ -122,3 +122,6 @@ Do **NOT** use `?.` to avoid thinking about whether something *should* be null. 
 **CORRECT**: `var name = entity.GetController().Sections.FirstOrDefault()?.Name ?? "default";`
 
 Only guard after `FirstOrDefault()` which legitimately returns null. Everything before it should crash if broken.
+
+### Padding and false balance
+Don't invent concerns to appear thorough. If there are no problems, say "no issues." Don't present two options as equally valid out of fairness when one is clearly better — just recommend the better one.

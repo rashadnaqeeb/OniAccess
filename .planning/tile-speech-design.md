@@ -159,10 +159,14 @@ OniAccess/
         EntitySection.cs         -- Duplicants, critters, plants
         OrderSection.cs          -- Pending dig/mop/build/sweep orders
         DebrisSection.cs         -- Pickupables linked list
+        LightSection.cs          -- Lux value at cell
+        RadiationSection.cs      -- Radiation level at cell
+        DecorSection.cs          -- Signed decor value at cell
+        DiseaseSection.cs        -- Aggregated germs by disease type across all sources
 
       Overlays/
-        OverlayProfile.cs        -- Data class: ordered list of ICellSection for one overlay
-        OverlayProfileRegistry.cs -- Maps overlay HashedString IDs to profiles
+        OverlayProfile.cs        -- Data class: overlay name + GlanceComposer
+        OverlayProfileRegistry.cs -- Maps overlay HashedString IDs to profiles; Build() factory
         (per-overlay sections as needed, e.g., PowerOverlaySection.cs)
 ```
 
@@ -232,17 +236,9 @@ Writes `KInputManager.lockedMousePos` on every move. Tells `CameraController` to
 
 #### GlanceComposer
 
-Holds two things:
-- A default section list (the five standard sections in order)
-- An `OverlayProfileRegistry` for overlay-specific section lists
+Holds an immutable section list. Runs each section's `Read(cell)` in order, collects non-empty results, joins with ", ". Returns null if all sections are empty. `CreateDefault()` builds the standard 5-section composer. Also exposes shared section singletons (`Building`, `Entity`, `Element`, `Order`, `Debris`, `Light`, `Radiation`, `Decor`, `Disease`) reused across overlay profiles.
 
-On cell change, determines the active section list:
-1. If an overlay is active and has a registered profile, use that profile's section list
-2. Otherwise, use the default list
-
-Runs each section's `Read(cell)` in order, collects non-empty results, sends the concatenated text to `SpeechPipeline.SpeakInterrupt()`. Checks `TileCursor.CoordinateMode` and attaches coordinate text to the beginning or end of the output if enabled.
-
-Listens for `OverlayScreen.Instance.OnOverlayChanged` to know when to switch profiles.
+Overlay-aware composer selection is handled by `OverlayProfileRegistry`, which `TileCursor` queries live on every `BuildCellSpeech()`. Overlay change announcements are handled by `TileCursorHandler` via `OverlayScreen.Instance.OnOverlayChanged` callback.
 
 #### ICellSection
 
@@ -338,11 +334,14 @@ Handles Depth 3. On Enter:
 
 ### Phase 4 — Overlay profiles
 
-Phase 4a — Overlay announcement and simple profiles (proof of concept):
-- `OverlayProfile`, `OverlayProfileRegistry`
-- `GlanceComposer` hooks `OverlayScreen.OnOverlayChanged` to announce overlay name on switch (including "default")
-- Simple prepend sections: Light (lux), Radiation (rads), Decor (decor value)
-- Disease section (summed germs by type across all sources, "Clear" if zero)
+Phase 4a — Overlay announcement and simple profiles ✓:
+- [x] `OverlayProfile`, `OverlayProfileRegistry` — instance registry built in `TileCursorHandler.OnActivate()`
+- [x] `TileCursorHandler` subscribes to `OverlayScreen.Instance.OnOverlayChanged` to announce overlay name on switch (including "default view")
+- [x] `TileCursor` queries registry live on every `BuildCellSpeech()` for overlay-aware composer selection
+- [x] `LightSection` — lux via `GameUtil.GetFormattedLux`
+- [x] `RadiationSection` — rads via `GameUtil.GetFormattedRads`
+- [x] `DecorSection` — signed decor value via `GameUtil.GetDecorAtCell`
+- [x] `DiseaseSection` — summed germs by type across tile surface, buildings, pickupables, pipe conduits; "clean" if zero
 
 Phase 4b — Complex overlay profiles (deferred):
 - Tile Mode section (material for all objects)
