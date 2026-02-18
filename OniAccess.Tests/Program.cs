@@ -82,6 +82,13 @@ namespace OniAccess.Tests {
 			results.Add(SearchNoMatch());
 			results.Add(SearchEmptyAfterClear());
 			results.Add(SearchBufferTimeoutResets());
+			results.Add(MatchTierStartWholeWord());
+			results.Add(MatchTierStartPrefix());
+			results.Add(MatchTierMidWholeWord());
+			results.Add(MatchTierMidPrefix());
+			results.Add(MatchTierSubstring());
+			results.Add(MatchTierNoMatch());
+			results.Add(SearchTierOrdering());
 
 			// --- TextFilter (12 ported + 3 new edge cases) ---
 			TextFilter.RegisterSprite("warning", "warning:");
@@ -899,6 +906,78 @@ namespace OniAccess.Tests {
 			bool ok = search.Buffer == "b";
 			return Assert("SearchBufferTimeoutResets", ok,
 				$"buffer=\"{search.Buffer}\", expected \"b\"");
+		}
+
+		private static (string, bool, string) MatchTierStartWholeWord() {
+			// "wood" at start of "wood club" = tier 0
+			int tier = TypeAheadSearch.MatchTier("wood club", "wood");
+			bool ok = tier == 0;
+			return Assert("MatchTierStartWholeWord", ok, $"tier={tier}");
+		}
+
+		private static (string, bool, string) MatchTierStartPrefix() {
+			// "wood" at start of "wooden club" = tier 1
+			int tier = TypeAheadSearch.MatchTier("wooden club", "wood");
+			bool ok = tier == 1;
+			return Assert("MatchTierStartPrefix", ok, $"tier={tier}");
+		}
+
+		private static (string, bool, string) MatchTierMidWholeWord() {
+			// "wood" as whole word mid-string in "pine wood" = tier 2
+			int tier = TypeAheadSearch.MatchTier("pine wood", "wood");
+			bool ok = tier == 2;
+			return Assert("MatchTierMidWholeWord", ok, $"tier={tier}");
+		}
+
+		private static (string, bool, string) MatchTierMidPrefix() {
+			// "wood" as prefix of mid-string word in "a wooden thing" = tier 3
+			int tier = TypeAheadSearch.MatchTier("a wooden thing", "wood");
+			bool ok = tier == 3;
+			return Assert("MatchTierMidPrefix", ok, $"tier={tier}");
+		}
+
+		private static (string, bool, string) MatchTierSubstring() {
+			// "wood" inside "plywood" = tier 4
+			int tier = TypeAheadSearch.MatchTier("plywood", "wood");
+			bool ok = tier == 4;
+			return Assert("MatchTierSubstring", ok, $"tier={tier}");
+		}
+
+		private static (string, bool, string) MatchTierNoMatch() {
+			int tier = TypeAheadSearch.MatchTier("banana", "wood");
+			bool ok = tier == -1;
+			return Assert("MatchTierNoMatch", ok, $"tier={tier}");
+		}
+
+		private static (string, bool, string) SearchTierOrdering() {
+			// Items designed so each tier is represented:
+			// "Wood Club" (tier 0), "Wooden Axe" (tier 1), "Pine Wood" (tier 2),
+			// "A Wooden Thing" (tier 3), "Plywood" (tier 4)
+			var items = new[] { "Plywood", "A Wooden Thing", "Pine Wood", "Wooden Axe", "Wood Club" };
+			string nameByIndex(int i) => i >= 0 && i < items.Length ? items[i] : null;
+
+			var search = new TypeAheadSearch(() => 0f);
+			search.AddChar('w');
+			search.AddChar('o');
+			search.AddChar('o');
+			search.AddChar('d');
+			search.Search(items.Length, nameByIndex);
+
+			// Expected order: Wood Club(4,t0), Wooden Axe(3,t1), Pine Wood(2,t2),
+			// A Wooden Thing(1,t3), Plywood(0,t4)
+			bool ok = search.ResultCount == 5;
+			if (ok) {
+				int[] expected = { 4, 3, 2, 1, 0 };
+				for (int i = 0; i < 5; i++) {
+					if (search.SelectedOriginalIndex != expected[i]) {
+						ok = false;
+						break;
+					}
+					if (i < 4) search.NavigateResults(1);
+				}
+			}
+			return Assert("SearchTierOrdering", ok,
+				$"ResultCount={search.ResultCount}");
 		}
 
 		// ========================================
