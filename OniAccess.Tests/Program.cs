@@ -464,20 +464,14 @@ namespace OniAccess.Tests {
 			HandlerStack.Push(bottom);
 			HandlerStack.Push(thrower);
 
-			bool threw = false;
-			try {
-				HandlerStack.Pop();
-			} catch (InvalidOperationException) {
-				threw = true;
-			}
+			// Pop wraps OnDeactivate in try/catch, so the exception should not propagate.
+			HandlerStack.Pop();
 
-			// Pop removes from stack before calling OnDeactivate, so thrower is gone
-			// even though OnDeactivate threw. Bottom should be reactivated... but the
-			// exception fires before reactivation. Verify removal happened.
-			bool ok = threw && HandlerStack.Count == 1
+			// Thrower is removed, bottom is reactivated despite the throw.
+			bool ok = HandlerStack.Count == 1
 				   && HandlerStack.ActiveHandler == bottom;
 			return Assert("ExceptionInOnDeactivateDoesNotCorruptStack", ok,
-				$"threw={threw}, count={HandlerStack.Count}, " +
+				$"count={HandlerStack.Count}, " +
 				$"active={HandlerStack.ActiveHandler?.DisplayName ?? "null"}");
 		}
 

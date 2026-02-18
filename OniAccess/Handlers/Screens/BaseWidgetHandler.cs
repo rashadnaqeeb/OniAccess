@@ -145,7 +145,6 @@ namespace OniAccess.Handlers.Screens {
 				bool ready = DiscoverWidgets(_screen);
 				_currentIndex = 0;
 				if (ready && _widgets.Count > 0) {
-					_retryCount = 0;
 					var w = _widgets[0];
 					string text = GetWidgetSpeechText(w);
 					string tip = GetTooltipText(w);

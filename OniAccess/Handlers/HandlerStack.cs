@@ -137,7 +137,11 @@ namespace OniAccess.Handlers {
 		public static void DeactivateAll() {
 			var active = ActiveHandler;
 			if (active != null) {
-				active.OnDeactivate();
+				try {
+					active.OnDeactivate();
+				} catch (System.Exception ex) {
+					Util.Log.Error($"HandlerStack.DeactivateAll: OnDeactivate of {active.DisplayName} failed: {ex}");
+				}
 				Util.Log.Debug($"HandlerStack.DeactivateAll: deactivated {active.DisplayName}");
 			}
 			_stack.Clear();
