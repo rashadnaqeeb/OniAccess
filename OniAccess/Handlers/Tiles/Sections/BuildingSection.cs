@@ -59,7 +59,12 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var enumerator = group.GetEnumerator();
 			try {
 				while (enumerator.MoveNext()) {
-					string name = enumerator.Current.GetName();
+					var entry = enumerator.Current;
+					var severity = entry.item.notificationType;
+					if (severity != NotificationType.Bad
+						&& severity != NotificationType.BadMinor)
+						continue;
+					string name = entry.GetName();
 					if (!string.IsNullOrEmpty(name))
 						tokens.Add(name);
 				}
