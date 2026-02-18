@@ -5,7 +5,7 @@ using UnityEngine;
 
 [assembly: InternalsVisibleTo("OniAccess.Tests")]
 
-namespace OniAccess.Handlers.Screens {
+namespace OniAccess.Handlers {
 	/// <summary>
 	/// Reusable type-ahead search helper for keyboard navigation.
 	/// Builds a filtered results list (tiered matching) that can be navigated with Up/Down.
