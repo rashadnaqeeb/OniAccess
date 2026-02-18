@@ -52,10 +52,14 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(KModalButtonMenu), "Unhide")]
 	internal static class KModalButtonMenu_Unhide_Patch {
 		private static bool Prefix(KModalButtonMenu __instance) {
-			var panelRoot = Traverse.Create(__instance).Field<GameObject>("panelRoot").Value;
-			if (panelRoot == null) {
-				Log.Debug("KModalButtonMenu.Unhide skipped: panelRoot is null (screen already destroyed)");
-				return false;
+			try {
+				var panelRoot = Traverse.Create(__instance).Field<GameObject>("panelRoot").Value;
+				if (panelRoot == null) {
+					Log.Debug("KModalButtonMenu.Unhide skipped: panelRoot is null (screen already destroyed)");
+					return false;
+				}
+			} catch (System.Exception ex) {
+				Log.Warn($"KModalButtonMenu_Unhide_Patch: Traverse failed: {ex.Message}");
 			}
 			return true;
 		}
