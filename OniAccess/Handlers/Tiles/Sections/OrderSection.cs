@@ -3,45 +3,48 @@ using UnityEngine;
 
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
-	/// Reads pending player orders at a cell:
-	///   - Dig (Diggable on ObjectLayer.DigPlacer)
-	///   - Mop (Moppable on ObjectLayer.MopPlacer)
-	///   - Sweep (Clearable.isMarkedForClear on ObjectLayer.Pickupables)
+	/// Reads pending player orders at a cell. Collects individual order
+	/// labels (with per-order priority), then emits a single token
+	/// prefixed with "pending": e.g. "pending dig priority 5, mop".
 	/// Build orders are handled by BuildingSection (Constructable check).
-	/// Each order includes its work priority from Prioritizable.
 	/// </summary>
 	public class OrderSection : ICellSection {
 		public IEnumerable<string> Read(int cell) {
-			var tokens = new List<string>();
-			ReadDigOrder(cell, tokens);
-			ReadMopOrder(cell, tokens);
-			ReadSweepOrder(cell, tokens);
-			return tokens;
+			var parts = new List<string>();
+			CollectDigOrder(cell, parts);
+			CollectMopOrder(cell, parts);
+			CollectSweepOrder(cell, parts);
+			CollectDeconstructOrder(cell, parts);
+			CollectHarvestOrder(cell, parts);
+			CollectUprootOrder(cell, parts);
+			CollectDisinfectOrder(cell, parts);
+
+			if (parts.Count == 0)
+				return parts;
+
+			string combined = string.Join(", ", parts.ToArray());
+			return new[] {
+				string.Format((string)STRINGS.ONIACCESS.GLANCE.ORDER_PREFIX, combined)
+			};
 		}
 
-		private static void ReadDigOrder(int cell, List<string> tokens) {
+		private static void CollectDigOrder(int cell, List<string> parts) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.DigPlacer];
 			if (go == null) return;
 			if (go.GetComponent<Diggable>() == null) return;
-			string priority = GetPriority(go);
-			tokens.Add(priority != null
-				? string.Format((string)STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY,
-					(string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG, priority)
-				: (string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG);
+			parts.Add(FormatOrder(
+				(string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG, go));
 		}
 
-		private static void ReadMopOrder(int cell, List<string> tokens) {
+		private static void CollectMopOrder(int cell, List<string> parts) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.MopPlacer];
 			if (go == null) return;
 			if (go.GetComponent<Moppable>() == null) return;
-			string priority = GetPriority(go);
-			tokens.Add(priority != null
-				? string.Format((string)STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY,
-					(string)STRINGS.ONIACCESS.GLANCE.ORDER_MOP, priority)
-				: (string)STRINGS.ONIACCESS.GLANCE.ORDER_MOP);
+			parts.Add(FormatOrder(
+				(string)STRINGS.ONIACCESS.GLANCE.ORDER_MOP, go));
 		}
 
-		private static void ReadSweepOrder(int cell, List<string> tokens) {
+		private static void CollectSweepOrder(int cell, List<string> parts) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 			if (go == null) return;
 			var pickupable = go.GetComponent<Pickupable>();
@@ -51,15 +54,74 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			while (item != null) {
 				var clearable = item.gameObject.GetComponent<Clearable>();
 				if (clearable != null && IsMarkedForClear(clearable)) {
-					string priority = GetPriority(item.gameObject);
-					tokens.Add(priority != null
-						? string.Format((string)STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY,
-							(string)STRINGS.ONIACCESS.GLANCE.ORDER_SWEEP, priority)
-						: (string)STRINGS.ONIACCESS.GLANCE.ORDER_SWEEP);
+					parts.Add(FormatOrder(
+						(string)STRINGS.ONIACCESS.GLANCE.ORDER_SWEEP,
+						item.gameObject));
 					return;
 				}
 				item = item.nextItem;
 			}
+		}
+
+		private static void CollectDeconstructOrder(int cell, List<string> parts) {
+			CollectDeconstructOnLayer(cell, (int)ObjectLayer.Building, parts);
+			CollectDeconstructOnLayer(cell, (int)ObjectLayer.FoundationTile, parts);
+		}
+
+		private static void CollectDeconstructOnLayer(
+				int cell, int layer, List<string> parts) {
+			var go = Grid.Objects[cell, layer];
+			if (go == null) return;
+			var deconstructable = go.GetComponent<Deconstructable>();
+			if (deconstructable == null) return;
+			if (!deconstructable.IsMarkedForDeconstruction()) return;
+			parts.Add(FormatOrder(
+				(string)STRINGS.ONIACCESS.GLANCE.ORDER_DECONSTRUCT, go));
+		}
+
+		private static void CollectHarvestOrder(int cell, List<string> parts) {
+			var go = Grid.Objects[cell, (int)ObjectLayer.Plants];
+			if (go == null) return;
+			var harvestable = go.GetComponent<HarvestDesignatable>();
+			if (harvestable == null) return;
+			if (!harvestable.MarkedForHarvest) return;
+			parts.Add(FormatOrder(
+				(string)STRINGS.ONIACCESS.GLANCE.ORDER_HARVEST, go));
+		}
+
+		private static void CollectUprootOrder(int cell, List<string> parts) {
+			var go = Grid.Objects[cell, (int)ObjectLayer.Plants];
+			if (go == null) return;
+			var uprootable = go.GetComponent<Uprootable>();
+			if (uprootable == null) return;
+			if (!uprootable.IsMarkedForUproot) return;
+			parts.Add(FormatOrder(
+				(string)STRINGS.ONIACCESS.GLANCE.ORDER_UPROOT, go));
+		}
+
+		private static void CollectDisinfectOrder(int cell, List<string> parts) {
+			CollectDisinfectOnLayer(cell, (int)ObjectLayer.Building, parts);
+			CollectDisinfectOnLayer(cell, (int)ObjectLayer.FoundationTile, parts);
+			CollectDisinfectOnLayer(cell, (int)ObjectLayer.Pickupables, parts);
+		}
+
+		private static void CollectDisinfectOnLayer(
+				int cell, int layer, List<string> parts) {
+			var go = Grid.Objects[cell, layer];
+			if (go == null) return;
+			var disinfectable = go.GetComponent<Disinfectable>();
+			if (disinfectable == null) return;
+			if (!IsMarkedForDisinfect(disinfectable)) return;
+			parts.Add(FormatOrder(
+				(string)STRINGS.ONIACCESS.GLANCE.ORDER_DISINFECT, go));
+		}
+
+		private static string FormatOrder(string label, GameObject go) {
+			string priority = GetPriority(go);
+			return priority != null
+				? string.Format((string)STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY,
+					label, priority)
+				: label;
 		}
 
 		private static string GetPriority(GameObject go) {
@@ -75,6 +137,16 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					.Field<bool>("isMarkedForClear").Value;
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"OrderSection.IsMarkedForClear: {ex}");
+				return false;
+			}
+		}
+
+		private static bool IsMarkedForDisinfect(Disinfectable disinfectable) {
+			try {
+				return HarmonyLib.Traverse.Create(disinfectable)
+					.Field<bool>("isMarkedForDisinfect").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"OrderSection.IsMarkedForDisinfect: {ex}");
 				return false;
 			}
 		}

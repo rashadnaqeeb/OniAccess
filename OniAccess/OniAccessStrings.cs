@@ -185,10 +185,15 @@ namespace STRINGS {
 			public static LocString PLANT_GROWN = "grown";
 			public static LocString PLANT_STALLED = "stalled";
 
-			public static LocString ORDER_DIG = "pending dig";
-			public static LocString ORDER_MOP = "pending mop";
-			public static LocString ORDER_SWEEP = "pending sweep";
-			public static LocString ORDER_PRIORITY = "{0}, priority {1}";
+			public static LocString ORDER_PREFIX = "pending {0}";
+			public static LocString ORDER_DIG = "dig";
+			public static LocString ORDER_MOP = "mop";
+			public static LocString ORDER_SWEEP = "sweep";
+			public static LocString ORDER_DECONSTRUCT = "deconstruct";
+			public static LocString ORDER_HARVEST = "harvest";
+			public static LocString ORDER_UPROOT = "uproot";
+			public static LocString ORDER_DISINFECT = "disinfect";
+			public static LocString ORDER_PRIORITY = "{0} priority {1}";
 
 			public static LocString TILE_OF_INTEREST = "P O I";
 			public static LocString DUPE_INTERACTION = "interaction point";
