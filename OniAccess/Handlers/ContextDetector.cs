@@ -246,45 +246,57 @@ namespace OniAccess.Handlers {
 		/// Detect current game state and activate the appropriate handler.
 		/// Called when mod is toggled ON to determine what handler should be active.
 		///
-		/// Checks KScreenManager screen stack for any open registered screens.
-		/// If found, creates and pushes the handler. Otherwise, pushes BaselineHandler as baseline.
-		/// screenStack is private, so we use Harmony Traverse to access it.
+		/// Uses FindObjectsOfType to discover all live KScreens in the scene,
+		/// then sorts by KScreenManager.screenStack position for layering order.
 		/// </summary>
 		public static void DetectAndActivate() {
 			if (HandlerStack.Count > 0) return;
 			Util.Log.Debug("ContextDetector.DetectAndActivate called");
 
-			// Check KScreenManager for open registered screens
-			// screenStack is a private field -- access via Harmony Traverse
-			if (KScreenManager.Instance != null) {
-				try {
-					var screenStack = HarmonyLib.Traverse.Create(KScreenManager.Instance)
-						.Field<System.Collections.Generic.List<KScreen>>("screenStack").Value;
+			// Find all live KScreens in the scene (ground truth, not a private stack)
+			var allScreens = UnityEngine.Object.FindObjectsOfType<KScreen>();
 
-					if (screenStack != null) {
-						// Walk from top of screen stack looking for registered screens
-						for (int i = screenStack.Count - 1; i >= 0; i--) {
-							var entry = screenStack[i];
-							if (entry == null) continue;
-
-							var screenType = entry.GetType();
-							if (_registry.TryGetValue(screenType, out var factory)) {
-								// Found a registered screen -- push BaselineHandler first as baseline,
-								// then push the screen handler on top
-								HandlerStack.Push(new BaselineHandler());
-								var handler = factory(entry);
-								HandlerStack.Push(handler);
-								Util.Log.Debug($"DetectAndActivate: found {screenType.Name}, pushed handler");
-								return;
-							}
-						}
-					}
-				} catch (System.Exception ex) {
-					Util.Log.Warn($"DetectAndActivate: failed to read screenStack: {ex.Message}");
-				}
+			// Filter to registered, visible screens
+			var matches = new System.Collections.Generic.List<KScreen>();
+			foreach (var screen in allScreens) {
+				if (!screen.gameObject.activeInHierarchy) continue;
+				if (!_registry.ContainsKey(screen.GetType())) continue;
+				matches.Add(screen);
 			}
 
-			// Baseline: BaselineHandler so input handling works after toggle cycle
+			if (matches.Count > 0) {
+				// Sort by position in KScreenManager.screenStack (layering order).
+				// Screens not in screenStack sort to the front (bottom of our handler stack).
+				System.Collections.Generic.List<KScreen> screenStack = null;
+				if (KScreenManager.Instance != null) {
+					try {
+						screenStack = HarmonyLib.Traverse.Create(KScreenManager.Instance)
+							.Field<System.Collections.Generic.List<KScreen>>("screenStack").Value;
+					} catch (System.Exception ex) {
+						Util.Log.Warn($"DetectAndActivate: screenStack read failed: {ex.Message}");
+					}
+				}
+
+				if (screenStack != null && matches.Count > 1) {
+					matches.Sort((a, b) => {
+						int idxA = screenStack.IndexOf(a);
+						int idxB = screenStack.IndexOf(b);
+						if (idxA < 0) idxA = -1;
+						if (idxB < 0) idxB = -1;
+						return idxA.CompareTo(idxB);
+					});
+				}
+
+				HandlerStack.Push(new BaselineHandler());
+				foreach (var screen in matches) {
+					var handler = _registry[screen.GetType()](screen);
+					HandlerStack.Push(handler);
+					Util.Log.Debug($"DetectAndActivate: pushed handler for {screen.GetType().Name}");
+				}
+				return;
+			}
+
+			// Nothing matched — push BaselineHandler as fallback
 			HandlerStack.Push(new BaselineHandler());
 		}
 	}
