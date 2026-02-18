@@ -145,14 +145,27 @@ If no rectangles are defined when Enter is pressed (including when only a first 
 
 The mod announces "Canceled," plays the tool's deactivate sound, discards any defined rectangles, and deactivates the tool.
 
-### Sounds
+### External Deactivation
 
-- **Confirm (most tools):** "Tile_Confirm"
-- **Confirm (Cancel tool):** "Tile_Confirm_NegativeTool"
-- **Confirm (Disconnect tool):** "OutletDisconnected"
-- **Deactivate (all tools):** "Tile_Cancel"
+If the tool is deactivated by something other than Enter or Escape (game hotkey re-press, overlay conflict, right-click), the handler detects this via the `ActiveToolChanged` event firing with `SelectTool`. The mod announces "Canceled," plays the deactivate sound, and discards any defined rectangles and pending corners — the same behavior as Escape.
 
-All sounds listed in this document (tool selection, drag, confirm, deactivate, priority change) should only be played by the mod after verifying via the game's source files that the game does not already play them as a side effect of calling the underlying tool APIs. Since the mod calls the game's tool activation and processing methods internally, some sounds may fire automatically through the existing code paths. Trace the call chain for each tool operation in the decompiled source to determine which sounds the game handles and which the mod must play, to avoid double-playing.
+### Sound Responsibilities
+
+Each sound is either played by the game automatically through the APIs the mod calls, or must be played by the mod explicitly. This has been traced through the decompiled source.
+
+**Played by the game automatically:**
+
+- **Tool selection** (UISounds.Sound.ClickObject): Played by `ToolMenu.ChooseTool()`. The mod's tool picker menu should activate tools through `ChooseTool()` rather than `PlayerController.ActivateTool()` directly, so the selection sound fires automatically.
+
+**Played by the mod:**
+
+- **Drag sound** ("Tile_Drag" / "Tile_Drag_NegativeTool"): The game only plays this in `OnMouseMove` when the area visualizer size changes. Since the mod manages selection state without driving the game's drag visualizer, the mod plays this on each corner-set with the `tileCount` FMOD parameter encoding the selection area.
+- **Deactivate sound** ("Tile_Cancel"): The game's ToolMenu UI handlers play this manually before deactivation logic — it does not fire from `DeactivateTool` or `OnDeactivateTool`. The mod must play it on Escape, Enter-with-no-rectangles, and external deactivation.
+- **Priority change sound** (PriorityScreen.PlayPriorityConfirmSound): `SetScreenPriority()` does not play it. The mod must call `PriorityScreen.PlayPriorityConfirmSound(priority)` explicitly when the player changes priority via number keys.
+
+**Suppressed and replaced by the mod:**
+
+- **Confirm sound** ("Tile_Confirm" / "Tile_Confirm_NegativeTool" / "OutletDisconnected"): The game plays this automatically in `OnLeftClickUp`, which fires once per rectangle submission. For multi-rectangle confirms this would play multiple times. The mod suppresses it via a Harmony prefix on `DragTool.GetConfirmSound()` (virtual method) that returns null while a suppression flag is set — `KMonoBehaviour.PlaySound` safely no-ops on null. After the last rectangle is submitted, the mod clears the flag and plays the confirm sound once. For single-rectangle confirms, the same mechanism applies uniformly.
 
 ## Entity-Based Tools
 
@@ -176,7 +189,11 @@ UtilityBuildTool and WireBuildTool use path tracing rather than rectangle select
 
 ### Mapping Rectangles to Game APIs
 
-Suggested approach (final implementation to be determined during planning): for cell-based tools, iterate the union of all selected cells and call `OnDragTool(cell, 0)` for each, then call `OnDragComplete()` once. `distFromOrigin` can be 0 for all cells since its only use is a visual ripple animation in DigTool, which is irrelevant for blind users. For entity-based tools (Attack, Capture), compute the bounding box of the union and let `OnDragComplete` handle entity detection as the game normally does.
+Rectangle selection state (corners, multiple rectangles) is managed entirely by the mod. The game's drag API is not touched until the player confirms with Enter.
+
+On confirm, each rectangle is submitted as a separate drag operation by calling the game's public drag lifecycle methods: `OnLeftClickDown(corner1Pos)` followed by `OnLeftClickUp(corner2Pos)`, where positions are world coordinates from `Grid.CellToPosCCC`. The game's `DragTool` base class computes the rectangle from those two positions and internally handles per-cell iteration, validity filtering, and `OnDragComplete`. This works uniformly for cell-based tools and entity-based tools (Attack, Capture) without needing to call protected methods like `OnDragTool` directly.
+
+Cells in overlapping rectangles may be processed more than once; this is harmless since the game either skips already-marked cells or re-marks them.
 
 ## Key Summary
 
