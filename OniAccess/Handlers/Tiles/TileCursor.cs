@@ -14,7 +14,11 @@ namespace OniAccess.Handlers.Tiles {
 	public class TileCursor {
 		private int _cell;
 		private bool _wasPanning;
-		private readonly GlanceComposer _composer = GlanceComposer.CreateDefault();
+		private readonly Overlays.OverlayProfileRegistry _registry;
+
+		public TileCursor(Overlays.OverlayProfileRegistry registry) {
+			_registry = registry;
+		}
 
 		public CoordinateMode Mode { get; private set; } = ConfigManager.Config.CoordinateMode;
 
@@ -118,7 +122,9 @@ namespace OniAccess.Handlers.Tiles {
 			if (!Grid.IsVisible(_cell))
 				return AttachCoordinates((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 
-			string content = _composer.Compose(_cell);
+			var overlayScreen = OverlayScreen.Instance;
+			var mode = overlayScreen != null ? overlayScreen.GetMode() : OverlayModes.None.ID;
+			string content = _registry.GetComposer(mode).Compose(_cell);
 			if (content == null)
 				content = $"{Grid.Element[_cell].name}, {Sections.ElementSection.FormatGlanceMass(Grid.Mass[_cell])}";
 			return AttachCoordinates(content);

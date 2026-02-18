@@ -14,7 +14,8 @@ namespace OniAccess.Handlers.Tiles {
 	/// pause) pass through.
 	/// </summary>
 	public class TileCursorHandler : BaseScreenHandler {
-		private readonly TileCursor _cursor = new TileCursor();
+		private TileCursor _cursor;
+		private Overlays.OverlayProfileRegistry _overlayRegistry;
 		private bool _hasActivated;
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
@@ -32,18 +33,29 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void OnActivate() {
-			if (_hasActivated) return;
-			_hasActivated = true;
-			SpeechPipeline.SpeakQueued(DisplayName);
-			try {
-				_cursor.Initialize();
-			} catch (System.Exception ex) {
-				Util.Log.Error($"TileCursorHandler.OnActivate: cursor init failed: {ex}");
+			if (!_hasActivated) {
+				_hasActivated = true;
+				_overlayRegistry = Overlays.OverlayProfileRegistry.Build();
+				_cursor = new TileCursor(_overlayRegistry);
+				SpeechPipeline.SpeakQueued(DisplayName);
+				try {
+					_cursor.Initialize();
+				} catch (System.Exception ex) {
+					Util.Log.Error($"TileCursorHandler.OnActivate: cursor init failed: {ex}");
+				}
 			}
+			if (OverlayScreen.Instance != null)
+				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
 		}
 
 		public override void OnDeactivate() {
 			KInputManager.isMousePosLocked = false;
+			if (OverlayScreen.Instance != null)
+				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
+		}
+
+		private void OnOverlayChanged(HashedString newMode) {
+			SpeechPipeline.SpeakInterrupt(_overlayRegistry.GetOverlayName(newMode));
 		}
 
 		public override void Tick() {

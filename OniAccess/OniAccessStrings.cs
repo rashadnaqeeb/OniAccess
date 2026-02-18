@@ -156,6 +156,7 @@ namespace STRINGS {
 			public static LocString COORD_OFF = "coordinates off";
 			public static LocString COORD_APPEND = "coordinates append";
 			public static LocString COORD_PREPEND = "coordinates prepend";
+			public static LocString OVERLAY_NONE = "default view";
 		}
 
 		public class VIDEO {
@@ -200,6 +201,10 @@ namespace STRINGS {
 			public static LocString RADBOLT_OUTPUT = "radbolt output";
 
 			public static LocString NUMBERED_PORT = "{0} {1}";
+
+			public static LocString OVERLAY_DECOR = "{0}{1} decor";
+			public static LocString DISEASE_CLEAR = "clean";
+			public static LocString DISEASE_ENTRY = "{0}, {1}";
 		}
 	}
 }
