@@ -2,17 +2,15 @@ using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
-	/// Reads duplicants (ObjectLayer.Minion), critters (CreatureBrain on
-	/// ObjectLayer.Pickupables), and plants (ObjectLayer.Plants) at a cell.
+	/// Reads duplicants (ObjectLayer.Minion) and critters (CreatureBrain on
+	/// ObjectLayer.Pickupables) at a cell.
 	/// Traverses ObjectLayerListItem linked lists for critters.
-	/// Plants include growth state.
 	/// </summary>
 	public class EntitySection : ICellSection {
 		public IEnumerable<string> Read(int cell) {
 			var tokens = new List<string>();
 			ReadMinions(cell, tokens);
 			ReadCritters(cell, tokens);
-			ReadPlants(cell, tokens);
 			return tokens;
 		}
 
@@ -42,22 +40,5 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			}
 		}
 
-		private static void ReadPlants(int cell, List<string> tokens) {
-			var go = Grid.Objects[cell, (int)ObjectLayer.Plants];
-			if (go == null) return;
-			var selectable = go.GetComponent<KSelectable>();
-			if (selectable == null) return;
-
-			tokens.Add(selectable.GetName());
-			var growing = go.GetComponent<Growing>();
-			if (growing != null) {
-				if (growing.IsGrown())
-					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.PLANT_GROWN);
-				else if (growing.IsGrowing())
-					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.PLANT_GROWING);
-				else
-					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.PLANT_STALLED);
-			}
-		}
 	}
 }

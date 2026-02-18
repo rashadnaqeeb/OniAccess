@@ -181,10 +181,6 @@ namespace STRINGS {
 			public static LocString INPUT_PORT = "input";
 			public static LocString OUTPUT_PORT = "output";
 
-			public static LocString PLANT_GROWING = "growing";
-			public static LocString PLANT_GROWN = "grown";
-			public static LocString PLANT_STALLED = "stalled";
-
 			public static LocString ORDER_PREFIX = "pending {0}";
 			public static LocString ORDER_DIG = "dig";
 			public static LocString ORDER_MOP = "mop";

@@ -5,6 +5,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Reads all buildings at a cell across ObjectLayer.Building,
 	/// ObjectLayer.FoundationTile, and ObjectLayer.Backwall.
+	/// Plants also occupy ObjectLayer.Building.
 	///
 	/// For each building: name, all status items, construction state.
 	/// Door access state comes through status items automatically.
