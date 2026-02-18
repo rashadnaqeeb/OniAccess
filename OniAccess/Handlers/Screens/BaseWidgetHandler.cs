@@ -114,8 +114,10 @@ namespace OniAccess.Handlers.Screens {
 
 		public override void Tick() {
 			if (_textEdit != null && _textEdit.IsEditing) {
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return))
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
 					_textEdit.Confirm();
+					QueueCurrentWidget();
+				}
 				return;
 			}
 
@@ -179,6 +181,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_textEdit != null && _textEdit.IsEditing) {
 				if (e.TryConsume(Action.Escape)) {
 					_textEdit.Cancel();
+					QueueCurrentWidget();
 					return true;
 				}
 				return false;
@@ -394,6 +397,21 @@ namespace OniAccess.Handlers.Screens {
 				string tip = GetTooltipText(w);
 				if (tip != null) text = $"{text}, {tip}";
 				Speech.SpeechPipeline.SpeakInterrupt(text);
+			}
+		}
+
+		/// <summary>
+		/// Queue the currently focused widget via SpeakQueued so it follows
+		/// a preceding SpeakInterrupt (e.g., after text-edit confirm/cancel).
+		/// </summary>
+		private void QueueCurrentWidget() {
+			if (_currentIndex >= 0 && _currentIndex < _widgets.Count) {
+				var w = _widgets[_currentIndex];
+				if (!IsWidgetValid(w)) return;
+				string text = GetWidgetSpeechText(w);
+				string tip = GetTooltipText(w);
+				if (tip != null) text = $"{text}, {tip}";
+				Speech.SpeechPipeline.SpeakQueued(text);
 			}
 		}
 

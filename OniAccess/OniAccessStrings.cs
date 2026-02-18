@@ -48,7 +48,7 @@ namespace STRINGS {
 
 		public class HELP {
 			public static LocString NAVIGATE = "Step through help entries";
-			public static LocString CLOSE = "Close help";
+			public static LocString CLOSE = "Close";
 			public static LocString NAVIGATE_ITEMS = "Navigate items";
 			public static LocString JUMP_FIRST_LAST = "Jump to first or last";
 			public static LocString SELECT_ITEM = "Activate selected item";
