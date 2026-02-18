@@ -157,6 +157,7 @@ namespace OniAccess.Handlers {
 		protected void NavigateFirst() {
 			if (ItemCount == 0) return;
 			_currentIndex = 0;
+			PlayHoverSound();
 			SpeakCurrentItem();
 		}
 
@@ -166,6 +167,7 @@ namespace OniAccess.Handlers {
 		protected void NavigateLast() {
 			if (ItemCount == 0) return;
 			_currentIndex = ItemCount - 1;
+			PlayHoverSound();
 			SpeakCurrentItem();
 		}
 
