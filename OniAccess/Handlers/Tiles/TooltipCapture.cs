@@ -67,19 +67,14 @@ namespace OniAccess.Handlers.Tiles {
 				_capturedLines = null;
 				return;
 			}
-			var allLines = new List<string>();
 			var blockTexts = new List<string>(_blocks.Count);
 			foreach (var block in _blocks) {
-				foreach (var line in block) {
-					if (!string.IsNullOrEmpty(line))
-						allLines.Add(line);
-				}
 				string blockText = string.Join(", ", block);
 				if (!string.IsNullOrEmpty(blockText))
 					blockTexts.Add(blockText);
 			}
 			_capturedText = blockTexts.Count > 0 ? string.Join(", ", blockTexts) : null;
-			_capturedLines = allLines.Count > 0 ? allLines.AsReadOnly() : null;
+			_capturedLines = blockTexts.Count > 0 ? blockTexts.AsReadOnly() : null;
 		}
 
 		internal static string GetTooltipText() => _capturedText;

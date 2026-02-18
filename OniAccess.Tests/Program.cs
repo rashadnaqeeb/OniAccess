@@ -130,7 +130,7 @@ namespace OniAccess.Tests {
 			results.Add(TooltipCaptureNewLineSeparatesLines());
 			results.Add(TooltipCaptureEmptyTextSkipped());
 			results.Add(TooltipCaptureResetClearsState());
-			results.Add(TooltipCaptureGetLinesReturnsFlatList());
+			results.Add(TooltipCaptureGetLinesGroupsByBlock());
 			TooltipCapture.Reset();
 
 			// --- SpeechPipeline (7 new) ---
@@ -1247,7 +1247,7 @@ namespace OniAccess.Tests {
 				$"got \"{result}\"");
 		}
 
-		private static (string, bool, string) TooltipCaptureGetLinesReturnsFlatList() {
+		private static (string, bool, string) TooltipCaptureGetLinesGroupsByBlock() {
 			TooltipCapture.Reset();
 			TooltipCapture.BeginFrame();
 			TooltipCapture.BeginBlock();
@@ -1258,11 +1258,10 @@ namespace OniAccess.Tests {
 			TooltipCapture.AppendText("21.8 C");
 			TooltipCapture.EndFrame();
 			var lines = TooltipCapture.GetTooltipLines();
-			bool ok = lines != null && lines.Count == 3
-				&& lines[0] == "OXYGEN"
-				&& lines[1] == "Breathable Gas"
-				&& lines[2] == "21.8 C";
-			return Assert("TooltipCaptureGetLinesReturnsFlatList", ok,
+			bool ok = lines != null && lines.Count == 2
+				&& lines[0] == "OXYGEN, Breathable Gas"
+				&& lines[1] == "21.8 C";
+			return Assert("TooltipCaptureGetLinesGroupsByBlock", ok,
 				lines == null ? "null" : $"count={lines.Count}: [{string.Join("|", lines)}]");
 		}
 

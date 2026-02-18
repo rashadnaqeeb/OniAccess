@@ -158,6 +158,7 @@ namespace STRINGS {
 
 		public class TOOLTIP {
 			public static LocString NO_TOOLTIP = "no tooltip";
+			public static LocString CLOSED = "closed";
 		}
 
 		public class GLANCE {

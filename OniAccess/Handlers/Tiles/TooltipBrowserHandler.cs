@@ -27,6 +27,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public void OnActivate() {
+			PlaySound("HUD_Click_Open");
 			_currentIndex = 0;
 			if (_lines.Count > 0)
 				SpeechPipeline.SpeakInterrupt(
@@ -34,6 +35,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public void OnDeactivate() {
+			PlaySound("HUD_Click_Close");
 			_currentIndex = 0;
 		}
 
@@ -79,7 +81,17 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private void Close() {
+			SpeechPipeline.SpeakInterrupt(
+				(string)STRINGS.ONIACCESS.TOOLTIP.CLOSED);
 			HandlerStack.Pop();
+		}
+
+		private static void PlaySound(string name) {
+			try {
+				KFMOD.PlayUISound(GlobalAssets.GetSound(name));
+			} catch (System.Exception ex) {
+				OniAccess.Util.Log.Error($"TooltipBrowserHandler.PlaySound failed: {ex.Message}");
+			}
 		}
 	}
 }
