@@ -152,23 +152,33 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
-		/// Jump to first item.
+		/// Jump to first valid item.
 		/// </summary>
 		protected void NavigateFirst() {
 			if (ItemCount == 0) return;
-			_currentIndex = 0;
-			PlayHoverSound();
-			SpeakCurrentItem();
+			for (int i = 0; i < ItemCount; i++) {
+				if (IsItemValid(i)) {
+					_currentIndex = i;
+					PlayHoverSound();
+					SpeakCurrentItem();
+					return;
+				}
+			}
 		}
 
 		/// <summary>
-		/// Jump to last item.
+		/// Jump to last valid item.
 		/// </summary>
 		protected void NavigateLast() {
 			if (ItemCount == 0) return;
-			_currentIndex = ItemCount - 1;
-			PlayHoverSound();
-			SpeakCurrentItem();
+			for (int i = ItemCount - 1; i >= 0; i--) {
+				if (IsItemValid(i)) {
+					_currentIndex = i;
+					PlayHoverSound();
+					SpeakCurrentItem();
+					return;
+				}
+			}
 		}
 
 		// ========================================
