@@ -65,6 +65,6 @@ The tool handler subscribes to the game's `ActiveToolChanged` event. When a non-
 
 On push, the handler reads the active tool's state (name, filter, priority) from the game and announces it. On pop, it discards rectangle state and clears the tool profile from the reading system.
 
-## Prerequisites
+## TileCursor as Shared Service (Implementation)
 
-**TileCursor extraction** -- TileCursor is currently created and owned by TileCursorHandler. Before the tool system can be built, TileCursor must be extracted into a shared service. This is a small refactor: TileCursor gets a static Instance property, created when Hud activates, cleared when Hud deactivates. TileCursorHandler and the tool handler both consume it. No behavioral change to existing code.
+TileCursor is accessed via `TileCursor.Instance`. `TileCursor.Create(registry)` sets the instance when Hud activates; `TileCursor.Destroy()` clears it and releases the mouse lock when Hud deactivates. TileCursorHandler and the tool handler both consume the shared instance.

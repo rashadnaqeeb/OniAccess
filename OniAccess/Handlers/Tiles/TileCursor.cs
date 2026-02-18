@@ -12,12 +12,24 @@ namespace OniAccess.Handlers.Tiles {
 	/// GlanceComposer which runs the section pipeline.
 	/// </summary>
 	public class TileCursor {
+		public static TileCursor Instance { get; private set; }
+
 		private int _cell;
 		private bool _wasPanning;
 		private readonly Overlays.OverlayProfileRegistry _registry;
 
 		public TileCursor(Overlays.OverlayProfileRegistry registry) {
 			_registry = registry;
+		}
+
+		public static TileCursor Create(Overlays.OverlayProfileRegistry registry) {
+			Instance = new TileCursor(registry);
+			return Instance;
+		}
+
+		public static void Destroy() {
+			Instance = null;
+			KInputManager.isMousePosLocked = false;
 		}
 
 		public CoordinateMode Mode { get; private set; } = ConfigManager.Config.CoordinateMode;

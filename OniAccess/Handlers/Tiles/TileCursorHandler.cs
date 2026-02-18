@@ -14,7 +14,6 @@ namespace OniAccess.Handlers.Tiles {
 	/// pause) pass through.
 	/// </summary>
 	public class TileCursorHandler : BaseScreenHandler {
-		private TileCursor _cursor;
 		private Overlays.OverlayProfileRegistry _overlayRegistry;
 		private bool _hasActivated;
 
@@ -36,10 +35,10 @@ namespace OniAccess.Handlers.Tiles {
 			if (!_hasActivated) {
 				_hasActivated = true;
 				_overlayRegistry = Overlays.OverlayProfileRegistry.Build();
-				_cursor = new TileCursor(_overlayRegistry);
+				TileCursor.Create(_overlayRegistry);
 				SpeechPipeline.SpeakQueued(DisplayName);
 				try {
-					_cursor.Initialize();
+					TileCursor.Instance.Initialize();
 				} catch (System.Exception ex) {
 					Util.Log.Error($"TileCursorHandler.OnActivate: cursor init failed: {ex}");
 				}
@@ -49,7 +48,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void OnDeactivate() {
-			KInputManager.isMousePosLocked = false;
+			TileCursor.Destroy();
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 		}
@@ -59,7 +58,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void Tick() {
-			string arrived = _cursor.SyncToCamera();
+			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null)
 				SpeechPipeline.SpeakInterrupt(arrived);
 
@@ -85,9 +84,9 @@ namespace OniAccess.Handlers.Tiles {
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.BackQuote)) {
 				if (InputUtil.ShiftHeld())
-					SpeechPipeline.SpeakInterrupt(_cursor.CycleMode());
+					SpeechPipeline.SpeakInterrupt(TileCursor.Instance.CycleMode());
 				else
-					SpeechPipeline.SpeakInterrupt(_cursor.ReadCoordinates());
+					SpeechPipeline.SpeakInterrupt(TileCursor.Instance.ReadCoordinates());
 				return;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)
@@ -98,13 +97,13 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private void SpeakMove(Direction direction) {
-			string speech = _cursor.Move(direction);
+			string speech = TileCursor.Instance.Move(direction);
 			if (speech != null)
 				SpeechPipeline.SpeakInterrupt(speech);
 		}
 
 		private void OpenTooltipBrowser() {
-			if (!Grid.IsVisible(_cursor.Cell)) {
+			if (!Grid.IsVisible(TileCursor.Instance.Cell)) {
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 				return;
