@@ -78,34 +78,120 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 			int origin = Grid.PosToCell(building.transform.GetPosition());
 
-			ReadUtilityPorts(building, origin, cell, tokens);
+			ReadConduitPorts(go, building, origin, cell, tokens);
 			ReadAutomationPorts(building, origin, cell, tokens);
+			ReadRadboltPorts(building, origin, cell, tokens);
+			ReadCellOfInterest(go, building, origin, cell, tokens);
 		}
 
-		private static void ReadUtilityPorts(
-				Building building, int origin, int cell, List<string> tokens) {
+		private static void ReadCellOfInterest(
+				GameObject go, Building building, int origin, int cell,
+				List<string> tokens) {
+			Vector3 originPos = building.transform.GetPosition();
+
+			bool isInteraction = (cell == origin);
+			bool isDelivery = (cell == origin);
+
+			int dropOffCell = origin;
+			var fabricator = go.GetComponent<ComplexFabricator>();
+			if (fabricator != null && fabricator.outputOffset != Vector3.zero)
+				dropOffCell = Grid.PosToCell(originPos + fabricator.outputOffset);
+
+			var geyser = go.GetComponent<Geyser>();
+			if (geyser != null && (geyser.outputOffset.x != 0 || geyser.outputOffset.y != 0))
+				dropOffCell = Grid.OffsetCell(origin,
+					new CellOffset(geyser.outputOffset.x, geyser.outputOffset.y));
+
+			var storage = go.GetComponent<Storage>();
+			if (storage != null && storage.dropOffset != Vector2.zero)
+				dropOffCell = Grid.PosToCell(
+					originPos + new Vector3(storage.dropOffset.x, storage.dropOffset.y, 0f));
+
+			var dispenser = go.GetComponent<ObjectDispenser>();
+			if (dispenser != null) {
+				var rotatable = go.GetComponent<Rotatable>();
+				CellOffset resolved = (rotatable != null)
+					? rotatable.GetRotatedCellOffset(dispenser.dropOffset)
+					: dispenser.dropOffset;
+				dropOffCell = Grid.OffsetCell(origin, resolved);
+			}
+
+			bool isDropOff = (cell == dropOffCell);
+
+			if (!isInteraction && !isDelivery && !isDropOff) return;
+
+			if (isInteraction && isDelivery && isDropOff) {
+				tokens.Add((string)STRINGS.ONIACCESS.GLANCE.TILE_OF_INTEREST);
+			} else {
+				if (isInteraction)
+					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.DUPE_INTERACTION);
+				if (isDelivery)
+					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.DELIVERY_POINT);
+				if (isDropOff)
+					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.DROP_OFF_POINT);
+			}
+		}
+
+		private static void ReadConduitPorts(
+				GameObject go, Building building, int origin, int cell,
+				List<string> tokens) {
 			if (OverlayScreen.Instance == null) return;
 
 			var activeMode = OverlayScreen.Instance.GetMode();
 			var def = building.Def;
 			var orientation = building.Orientation;
 
+			// Collect all input labels matching this cell
+			var inputs = new List<string>();
 			if (def.InputConduitType != ConduitType.None
 				&& activeMode == ConduitTypeToOverlayMode(def.InputConduitType)) {
 				var rotated = Rotatable.GetRotatedCellOffset(
 					def.UtilityInputOffset, orientation);
 				if (Grid.OffsetCell(origin, rotated) == cell)
-					tokens.Add(ConduitInputLabel(def.InputConduitType));
+					inputs.Add(ConduitInputLabel(def.InputConduitType));
+			}
+			foreach (var sec in go.GetComponents<ISecondaryInput>()) {
+				var portInfo = (sec as ConduitSecondaryInput).portInfo;
+				if (activeMode != ConduitTypeToOverlayMode(portInfo.conduitType))
+					continue;
+				var rotated = Rotatable.GetRotatedCellOffset(
+					portInfo.offset, orientation);
+				if (Grid.OffsetCell(origin, rotated) == cell)
+					inputs.Add(ConduitInputLabel(portInfo.conduitType));
 			}
 
+			// Collect all output labels matching this cell
+			var outputs = new List<string>();
 			if (def.OutputConduitType != ConduitType.None
 				&& activeMode == ConduitTypeToOverlayMode(def.OutputConduitType)) {
 				var rotated = Rotatable.GetRotatedCellOffset(
 					def.UtilityOutputOffset, orientation);
 				if (Grid.OffsetCell(origin, rotated) == cell)
-					tokens.Add(ConduitOutputLabel(def.OutputConduitType));
+					outputs.Add(ConduitOutputLabel(def.OutputConduitType));
+			}
+			foreach (var sec in go.GetComponents<ISecondaryOutput>()) {
+				var portInfo = (sec as ConduitSecondaryOutput).portInfo;
+				if (activeMode != ConduitTypeToOverlayMode(portInfo.conduitType))
+					continue;
+				var rotated = Rotatable.GetRotatedCellOffset(
+					portInfo.offset, orientation);
+				if (Grid.OffsetCell(origin, rotated) == cell)
+					outputs.Add(ConduitOutputLabel(portInfo.conduitType));
 			}
 
+			// Count total inputs/outputs across all cells to decide numbering.
+			// Primary gives 1 port; each secondary component gives 1 more.
+			int totalInputs = (def.InputConduitType != ConduitType.None
+				&& activeMode == ConduitTypeToOverlayMode(def.InputConduitType) ? 1 : 0)
+				+ CountSecondaryPorts<ISecondaryInput>(go, activeMode);
+			int totalOutputs = (def.OutputConduitType != ConduitType.None
+				&& activeMode == ConduitTypeToOverlayMode(def.OutputConduitType) ? 1 : 0)
+				+ CountSecondaryPorts<ISecondaryOutput>(go, activeMode);
+
+			AddNumberedLabels(inputs, totalInputs, tokens);
+			AddNumberedLabels(outputs, totalOutputs, tokens);
+
+			// Power ports (never have duplicates, no numbering needed)
 			if (activeMode == OverlayModes.Power.ID) {
 				if (def.RequiresPowerInput) {
 					var rotated = Rotatable.GetRotatedCellOffset(
@@ -122,6 +208,35 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			}
 		}
 
+		private static int CountSecondaryPorts<T>(
+				GameObject go, HashedString activeMode) where T : class {
+			int count = 0;
+			foreach (var comp in go.GetComponents<T>()) {
+				ConduitType type;
+				if (comp is ISecondaryInput input)
+					type = (input as ConduitSecondaryInput).portInfo.conduitType;
+				else
+					type = ((comp as ISecondaryOutput) as ConduitSecondaryOutput)
+						.portInfo.conduitType;
+				if (activeMode == ConduitTypeToOverlayMode(type))
+					count++;
+			}
+			return count;
+		}
+
+		private static void AddNumberedLabels(
+				List<string> labels, int totalOfKind, List<string> tokens) {
+			if (labels.Count == 0) return;
+			if (totalOfKind <= 1) {
+				tokens.AddRange(labels);
+			} else {
+				for (int i = 0; i < labels.Count; i++)
+					tokens.Add(string.Format(
+						(string)STRINGS.ONIACCESS.GLANCE.NUMBERED_PORT,
+						labels[i], i + 1));
+			}
+		}
+
 		private static void ReadAutomationPorts(
 				Building building, int origin, int cell, List<string> tokens) {
 			if (OverlayScreen.Instance == null) return;
@@ -132,21 +247,68 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 			var orientation = building.Orientation;
 
-			if (logicPorts.inputPortInfo != null) {
-				foreach (var port in logicPorts.inputPortInfo) {
-					var rotated = Rotatable.GetRotatedCellOffset(
-						port.cellOffset, orientation);
-					if (Grid.OffsetCell(origin, rotated) == cell)
-						tokens.Add(port.description);
+			ReadAutomationPortArray(
+				logicPorts.inputPortInfo, orientation, origin, cell, tokens);
+			ReadAutomationPortArray(
+				logicPorts.outputPortInfo, orientation, origin, cell, tokens);
+		}
+
+		private static void ReadAutomationPortArray(
+				LogicPorts.Port[] ports, Orientation orientation,
+				int origin, int cell, List<string> tokens) {
+			if (ports == null) return;
+
+			// Count how many ports share each description (across all cells)
+			var descCounts = new Dictionary<string, int>();
+			foreach (var port in ports) {
+				string desc = port.description;
+				if (descCounts.ContainsKey(desc))
+					descCounts[desc]++;
+				else
+					descCounts[desc] = 1;
+			}
+
+			// Track per-description ordinal for numbering
+			var descOrdinals = new Dictionary<string, int>();
+			foreach (var port in ports) {
+				string desc = port.description;
+				if (!descOrdinals.ContainsKey(desc))
+					descOrdinals[desc] = 1;
+				else
+					descOrdinals[desc]++;
+
+				var rotated = Rotatable.GetRotatedCellOffset(
+					port.cellOffset, orientation);
+				if (Grid.OffsetCell(origin, rotated) == cell) {
+					if (descCounts[desc] > 1)
+						tokens.Add(string.Format(
+							(string)STRINGS.ONIACCESS.GLANCE.NUMBERED_PORT,
+							desc, descOrdinals[desc]));
+					else
+						tokens.Add(desc);
 				}
 			}
-			if (logicPorts.outputPortInfo != null) {
-				foreach (var port in logicPorts.outputPortInfo) {
-					var rotated = Rotatable.GetRotatedCellOffset(
-						port.cellOffset, orientation);
-					if (Grid.OffsetCell(origin, rotated) == cell)
-						tokens.Add(port.description);
-				}
+		}
+
+		private static void ReadRadboltPorts(
+				Building building, int origin, int cell, List<string> tokens) {
+			if (OverlayScreen.Instance == null) return;
+			if (OverlayScreen.Instance.GetMode() != OverlayModes.Radiation.ID) return;
+
+			var def = building.Def;
+			var orientation = building.Orientation;
+
+			if (def.UseHighEnergyParticleInputPort) {
+				var rotated = Rotatable.GetRotatedCellOffset(
+					def.HighEnergyParticleInputOffset, orientation);
+				if (Grid.OffsetCell(origin, rotated) == cell)
+					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.RADBOLT_INPUT);
+			}
+			if (def.UseHighEnergyParticleOutputPort) {
+				var rotated = Rotatable.GetRotatedCellOffset(
+					def.HighEnergyParticleOutputOffset, orientation);
+				if (Grid.OffsetCell(origin, rotated) == cell)
+					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT);
 			}
 		}
 
