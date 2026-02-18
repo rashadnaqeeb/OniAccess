@@ -228,6 +228,9 @@ namespace OniAccess.Handlers {
 			// WattsonMessage (KScreen -- welcome narrative at colony start)
 			Register<WattsonMessage>(screen => new WattsonMessageHandler(screen));
 
+			// StoryMessageScreen (KScreen -- victory sequence story popup)
+			Register<StoryMessageScreen>(screen => new StoryMessageHandler(screen));
+
 			// Hud (KScreen -- game world HUD, tile cursor navigation)
 			Register<Hud>(screen => new Tiles.TileCursorHandler(screen));
 

@@ -17,8 +17,9 @@ Screens a blind player can encounter that have no handler registered.
 
 - [x] **WattsonMessage** -- Tutorial messages (KScreen). Early game popups.
 - [ ] **ComicViewer** -- Story comics (KScreen). New game start, story events.
-- [ ] **StoryMessageScreen** -- Story event popups (KScreen). Story trait events.
+- [x] **StoryMessageScreen** -- Story event popups (KScreen). Story trait events.
 - [x] **PatchNotesScreen** -- Post-update notes (KModalScreen). After game updates.
+- [ ] **VideoScreen** -- Victory cinematic viewer (KModalScreen). Plays after StoryMessageScreen during victory sequences. Has overlay text + close/proceed buttons in looped phase.
 
 ## Deferred (later phases)
 
