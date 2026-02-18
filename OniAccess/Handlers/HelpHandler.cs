@@ -56,6 +56,7 @@ namespace OniAccess.Handlers {
 		}
 
 		public override void OnActivate() {
+			PlaySound("HUD_Click_Open");
 			base.OnActivate();
 			if (_entries.Count > 0)
 				Speech.SpeechPipeline.SpeakQueued(_entries[_currentIndex].ToString());
@@ -82,7 +83,17 @@ namespace OniAccess.Handlers {
 		}
 
 		private void Close() {
+			Speech.SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.TOOLTIP.CLOSED);
+			PlaySound("HUD_Click_Close");
 			HandlerStack.Pop();
+		}
+
+		private static void PlaySound(string name) {
+			try {
+				KFMOD.PlayUISound(GlobalAssets.GetSound(name));
+			} catch (System.Exception ex) {
+				Util.Log.Error($"HelpHandler.PlaySound failed: {ex.Message}");
+			}
 		}
 	}
 }
