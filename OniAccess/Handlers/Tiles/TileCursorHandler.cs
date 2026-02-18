@@ -32,9 +32,9 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void OnActivate() {
+			SpeechPipeline.SpeakInterrupt(DisplayName);
 			if (_hasActivated) return;
 			_hasActivated = true;
-			SpeechPipeline.SpeakInterrupt(DisplayName);
 			try {
 				_cursor.Initialize();
 			} catch (System.Exception ex) {

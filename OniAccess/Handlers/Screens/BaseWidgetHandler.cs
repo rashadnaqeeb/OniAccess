@@ -160,12 +160,12 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
-			// Detect invalidated widgets
+			// Detect invalidated widgets — do not reset _retryCount here so the
+			// retry limit still applies if rediscovery keeps finding the same invalid widget.
 			if (!_pendingRediscovery && _widgets.Count > 0) {
 				int idx = System.Math.Min(_currentIndex, _widgets.Count - 1);
 				if (!IsWidgetValid(_widgets[idx])) {
 					_pendingRediscovery = true;
-					_retryCount = 0;
 					return;
 				}
 			}

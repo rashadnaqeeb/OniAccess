@@ -73,7 +73,11 @@ namespace OniAccess.Handlers {
 
 			var removed = _stack[_stack.Count - 1];
 			_stack.RemoveAt(_stack.Count - 1);
-			removed.OnDeactivate();
+			try {
+				removed.OnDeactivate();
+			} catch (System.Exception ex) {
+				Util.Log.Error($"HandlerStack.Pop: OnDeactivate of {removed.DisplayName} failed: {ex}");
+			}
 			Util.Log.Debug($"HandlerStack.Pop: {removed.DisplayName} (depth={_stack.Count})");
 
 			// If a handler is now exposed underneath, reactivate it
@@ -106,7 +110,11 @@ namespace OniAccess.Handlers {
 			if (_stack.Count > 0) {
 				var removed = _stack[_stack.Count - 1];
 				_stack.RemoveAt(_stack.Count - 1);
-				removed.OnDeactivate();
+				try {
+					removed.OnDeactivate();
+				} catch (System.Exception ex) {
+					Util.Log.Error($"HandlerStack.Replace: OnDeactivate of {removed.DisplayName} failed: {ex}");
+				}
 				Util.Log.Debug($"HandlerStack.Replace: removed {removed.DisplayName}");
 			}
 

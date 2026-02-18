@@ -20,7 +20,8 @@ namespace OniAccess.Handlers.Screens {
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
 		private static readonly string[] MultiToggleFields = {
-			"buttonInventory", "buttonDuplicants", "buttonOutfitBroswer", "buttonClaimItems"
+			"buttonInventory", "buttonDuplicants", "buttonOutfitBroswer", // sic: game typo
+			"buttonClaimItems"
 		};
 
 		private static readonly string[] DescriptionStrings = {

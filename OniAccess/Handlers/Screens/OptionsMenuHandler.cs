@@ -20,6 +20,14 @@ namespace OniAccess.Handlers.Screens {
 	/// toggle speech ("label, on/off"), and adjustment via Left/Right.
 	/// </summary>
 	public class OptionsMenuHandler: BaseWidgetHandler {
+		private static readonly Type OptionsMenuScreenType = AccessTools.TypeByName("OptionsMenuScreen");
+		private static readonly Type AudioOptionsScreenType = AccessTools.TypeByName("AudioOptionsScreen");
+		private static readonly Type GraphicsOptionsScreenType = AccessTools.TypeByName("GraphicsOptionsScreen");
+		private static readonly Type GameOptionsScreenType = AccessTools.TypeByName("GameOptionsScreen");
+		private static readonly Type CreditsScreenType = AccessTools.TypeByName("CreditsScreen");
+		private static readonly Type FeedbackScreenType = AccessTools.TypeByName("FeedbackScreen");
+		private static readonly Type MetricsOptionsScreenType = AccessTools.TypeByName("MetricsOptionsScreen");
+
 		private string _displayName;
 
 		public override string DisplayName => _displayName ?? (string)STRINGS.UI.FRONTEND.PAUSE_SCREEN.OPTIONS;
@@ -62,10 +70,8 @@ namespace OniAccess.Handlers.Screens {
 		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
-			string screenTypeName = screen.GetType().Name;
-
 			// OptionsMenuScreen is a KModalButtonMenu -- use buttons array pattern
-			if (screenTypeName == "OptionsMenuScreen") {
+			if (screen.GetType() == OptionsMenuScreenType) {
 				DiscoverButtonMenuWidgets(screen);
 			} else {
 				// Audio, Graphics, Game options sub-screens: discover sliders, toggles, buttons
@@ -114,16 +120,16 @@ namespace OniAccess.Handlers.Screens {
 		/// for Feedback/Data, then finds sliders, toggles, dropdowns, and buttons.
 		/// </summary>
 		private void DiscoverOptionWidgets(KScreen screen) {
-			string screenName = screen.GetType().Name;
+			var screenType = screen.GetType();
 
 			// Credits screen: only team names/members + close button
-			if (screenName == "CreditsScreen") {
+			if (screenType == CreditsScreenType) {
 				DiscoverCreditsWidgets(screen);
 				return;
 			}
 
 			// Feedback / Data screens: prepend descriptive text as labels
-			if (screenName == "FeedbackScreen" || screenName == "MetricsOptionsScreen") {
+			if (screenType == FeedbackScreenType || screenType == MetricsOptionsScreenType) {
 				DiscoverScreenDescription(screen);
 			}
 
@@ -868,23 +874,20 @@ namespace OniAccess.Handlers.Screens {
 		/// Determine display name from the screen type.
 		/// </summary>
 		private string GetDisplayNameForScreen(KScreen screen) {
-			string typeName = screen.GetType().Name;
-			switch (typeName) {
-				case "AudioOptionsScreen":
-					return STRINGS.ONIACCESS.HANDLERS.AUDIO_OPTIONS;
-				case "GraphicsOptionsScreen":
-					return STRINGS.ONIACCESS.HANDLERS.GRAPHICS_OPTIONS;
-				case "GameOptionsScreen":
-					return STRINGS.ONIACCESS.HANDLERS.GAME_OPTIONS;
-				case "MetricsOptionsScreen":
-					return STRINGS.ONIACCESS.HANDLERS.DATA_OPTIONS;
-				case "FeedbackScreen":
-					return STRINGS.ONIACCESS.HANDLERS.FEEDBACK;
-				case "CreditsScreen":
-					return STRINGS.UI.FRONTEND.OPTIONS_SCREEN.CREDITS;
-				default:
-					return STRINGS.UI.FRONTEND.PAUSE_SCREEN.OPTIONS;
-			}
+			var screenType = screen.GetType();
+			if (screenType == AudioOptionsScreenType)
+				return STRINGS.ONIACCESS.HANDLERS.AUDIO_OPTIONS;
+			if (screenType == GraphicsOptionsScreenType)
+				return STRINGS.ONIACCESS.HANDLERS.GRAPHICS_OPTIONS;
+			if (screenType == GameOptionsScreenType)
+				return STRINGS.ONIACCESS.HANDLERS.GAME_OPTIONS;
+			if (screenType == MetricsOptionsScreenType)
+				return STRINGS.ONIACCESS.HANDLERS.DATA_OPTIONS;
+			if (screenType == FeedbackScreenType)
+				return STRINGS.ONIACCESS.HANDLERS.FEEDBACK;
+			if (screenType == CreditsScreenType)
+				return STRINGS.UI.FRONTEND.OPTIONS_SCREEN.CREDITS;
+			return STRINGS.UI.FRONTEND.PAUSE_SCREEN.OPTIONS;
 		}
 	}
 }
