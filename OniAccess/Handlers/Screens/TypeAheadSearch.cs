@@ -8,7 +8,9 @@ using UnityEngine;
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Reusable type-ahead search helper for keyboard navigation.
-	/// Builds a filtered results list (word-start matching) that can be navigated with Up/Down.
+	/// Builds a filtered results list (tiered matching) that can be navigated with Up/Down.
+	/// Match priority: start-of-string whole word, start-of-string prefix,
+	/// mid-string whole word, mid-string prefix, substring anywhere.
 	/// Use HandleKey() with an ISearchable for centralized search behavior,
 	/// or the lower-level API (AddChar/Search/NavigateResults) for custom handling.
 	/// </summary>
@@ -22,7 +24,10 @@ namespace OniAccess.Handlers.Screens {
 		private List<string> _resultNames = new List<string>();
 		private int _resultCursor;
 
-		// Working lists for search (swapped into result lists on match, avoids allocation)
+		// Working lists for search, one pair per match tier (avoids allocation)
+		private const int TierCount = 5;
+		private List<int>[] _tierIndices;
+		private List<string>[] _tierNames;
 		private List<int> _workIndices = new List<int>();
 		private List<string> _workNames = new List<string>();
 
@@ -45,6 +50,12 @@ namespace OniAccess.Handlers.Screens {
 			_getTime = timeSource ?? DefaultGetTime;
 			_getLabelCached = i => _searchable.GetSearchLabel(i);
 			_moveToIndexCached = i => _searchable.SearchMoveTo(i);
+			_tierIndices = new List<int>[TierCount];
+			_tierNames = new List<string>[TierCount];
+			for (int t = 0; t < TierCount; t++) {
+				_tierIndices[t] = new List<int>();
+				_tierNames[t] = new List<string>();
+			}
 		}
 
 		private static float DefaultGetTime() => Time.realtimeSinceStartup;
@@ -213,7 +224,7 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// Perform a word-start-match search and announce results.
+		/// Perform a tiered search and announce results.
 		/// </summary>
 		/// <param name="itemCount">Number of items to search.</param>
 		/// <param name="nameByIndex">Function returning the searchable name for an index, or null to skip.</param>
@@ -243,28 +254,38 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			// Search into working lists
-			_workIndices.Clear();
-			_workNames.Clear();
+			// Classify each item into a match tier
+			for (int t = 0; t < TierCount; t++) {
+				_tierIndices[t].Clear();
+				_tierNames[t].Clear();
+			}
 			string lowerBuffer = bufferStr.ToLowerInvariant();
 
 			for (int i = 0; i < itemCount; i++) {
 				string name = nameByIndex(i);
-				if (!string.IsNullOrEmpty(name) && StartsAnyWord(name.ToLowerInvariant(), lowerBuffer)) {
-					_workIndices.Add(i);
-					_workNames.Add(name);
+				if (string.IsNullOrEmpty(name)) continue;
+				int tier = MatchTier(name.ToLowerInvariant(), lowerBuffer);
+				if (tier >= 0) {
+					_tierIndices[tier].Add(i);
+					_tierNames[tier].Add(name);
 				}
 			}
 
+			// Merge tiers into working lists (best tier first)
+			_workIndices.Clear();
+			_workNames.Clear();
+			for (int t = 0; t < TierCount; t++) {
+				_workIndices.AddRange(_tierIndices[t]);
+				_workNames.AddRange(_tierNames[t]);
+			}
+
 			if (_workIndices.Count == 0) {
-				// No match -- clear results but keep the buffer
 				_resultIndices.Clear();
 				_resultNames.Clear();
 				_resultCursor = 0;
 				_isSearchActive = true;
 				Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.SEARCH.NO_MATCH, bufferStr));
 			} else {
-				// Swap working lists into result lists (no allocation)
 				var tempIndices = _resultIndices;
 				var tempNames = _resultNames;
 				_resultIndices = _workIndices;
@@ -326,19 +347,52 @@ namespace OniAccess.Handlers.Screens {
 			return true;
 		}
 
-		private static bool StartsAnyWord(string lowerName, string lowerPrefix) {
-			if (lowerPrefix.Length <= lowerName.Length &&
-				string.Compare(lowerName, 0, lowerPrefix, 0, lowerPrefix.Length, System.StringComparison.Ordinal) == 0)
-				return true;
+		/// <summary>
+		/// Returns the match tier for a prefix against a name (both lowercase), or -1 for no match.
+		/// 0 = start of string, whole word ("wood" in "wood club")
+		/// 1 = start of string, prefix ("wood" in "wooden club")
+		/// 2 = mid-string whole word ("wood" in "pine wood")
+		/// 3 = mid-string word prefix ("wood" in "a wooden thing")
+		/// 4 = substring anywhere ("wood" in "plywood")
+		/// </summary>
+		internal static int MatchTier(string lowerName, string lowerPrefix) {
+			int prefixLen = lowerPrefix.Length;
+			if (prefixLen > lowerName.Length) {
+				// Prefix longer than name: only substring match possible if name contains prefix
+				// but that can't happen since prefix is longer. Check contained anyway for safety.
+				return lowerName.Contains(lowerPrefix) ? 4 : -1;
+			}
 
+			int bestTier = -1;
+
+			// Check start of string
+			if (string.Compare(lowerName, 0, lowerPrefix, 0, prefixLen, System.StringComparison.Ordinal) == 0) {
+				bool wholeWord = lowerName.Length == prefixLen || lowerName[prefixLen] == ' ' || lowerName[prefixLen] == ',';
+				return wholeWord ? 0 : 1;
+			}
+
+			// Check word starts after spaces
 			for (int i = 1; i < lowerName.Length; i++) {
-				if (lowerName[i - 1] == ' ' && lowerName.Length - i >= lowerPrefix.Length &&
-					string.Compare(lowerName, i, lowerPrefix, 0, lowerPrefix.Length, System.StringComparison.Ordinal) == 0) {
-					return true;
+				char prev = lowerName[i - 1];
+				if (prev != ' ' && prev != ',') continue;
+				// Skip separator characters to find the actual word start
+				if (lowerName[i] == ' ') continue;
+				if (lowerName.Length - i < prefixLen) break;
+				if (string.Compare(lowerName, i, lowerPrefix, 0, prefixLen, System.StringComparison.Ordinal) == 0) {
+					int afterMatch = i + prefixLen;
+					bool wholeWord = afterMatch >= lowerName.Length || lowerName[afterMatch] == ' ' || lowerName[afterMatch] == ',';
+					bestTier = wholeWord ? 2 : 3;
+					break;
 				}
 			}
 
-			return false;
+			if (bestTier >= 0) return bestTier;
+
+			// Substring anywhere
+			if (lowerName.IndexOf(lowerPrefix, System.StringComparison.Ordinal) >= 0)
+				return 4;
+
+			return -1;
 		}
 	}
 }

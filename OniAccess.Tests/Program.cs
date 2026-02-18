@@ -718,7 +718,8 @@ namespace OniAccess.Tests {
 			search.AddChar('a');
 			search.Search(SearchItems.Length, NameByIndex);
 
-			bool ok = search.ResultCount == 2 && search.SelectedOriginalIndex == 0;
+			// 'a' matches Apple(0,tier1), Apricot(1,tier1), Banana(2,tier4 substring)
+			bool ok = search.ResultCount == 3 && search.SelectedOriginalIndex == 0;
 			return Assert("SearchWordStartMatch", ok,
 				$"ResultCount={search.ResultCount}, SelectedOriginalIndex={search.SelectedOriginalIndex}");
 		}
@@ -728,8 +729,8 @@ namespace OniAccess.Tests {
 			search.AddChar('c');
 			search.Search(SearchItems.Length, NameByIndex);
 
-			// 'c' matches Blue Cheese(3) via "Cheese" word-start + Cherry(4)
-			bool ok = search.ResultCount == 2;
+			// 'c' matches Cherry(4,tier1), Blue Cheese(3,tier3), Apricot(1,tier4 substring)
+			bool ok = search.ResultCount == 3;
 			return Assert("SearchMultiWordMatch", ok,
 				$"ResultCount={search.ResultCount}");
 		}
@@ -750,8 +751,8 @@ namespace OniAccess.Tests {
 			search.AddChar('a');
 			search.Search(SearchItems.Length, NameByIndex);
 
-			// null at index 5 and "" at index 6 are skipped
-			bool ok = search.ResultCount == 2 && search.SelectedOriginalIndex == 0;
+			// null at index 5 and "" at index 6 are skipped; Banana matches as substring
+			bool ok = search.ResultCount == 3 && search.SelectedOriginalIndex == 0;
 			return Assert("SearchNullLabelsSkipped", ok,
 				$"ResultCount={search.ResultCount}, SelectedOriginalIndex={search.SelectedOriginalIndex}");
 		}
@@ -771,7 +772,8 @@ namespace OniAccess.Tests {
 			search.Search(SearchItems.Length, NameByIndex);
 			int afterApr = search.ResultCount;
 
-			bool ok = afterA == 2 && afterAp == 2 && afterApr == 1
+			// 'a' also matches Banana(substring), 'ap' narrows to Apple+Apricot, 'apr' to Apricot
+			bool ok = afterA == 3 && afterAp == 2 && afterApr == 1
 				   && search.SelectedOriginalIndex == 1; // Apricot
 			return Assert("SearchMultiCharNarrowing", ok,
 				$"a={afterA}, ap={afterAp}, apr={afterApr}, idx={search.SelectedOriginalIndex}");
@@ -803,7 +805,8 @@ namespace OniAccess.Tests {
 			search.Search(SearchItems.Length, NameByIndex);
 			int afterBackspace = search.ResultCount;
 
-			bool ok = afterAp == 2 && afterBackspace == 2
+			// backspace from 'ap' to 'a' restores Banana as substring match
+			bool ok = afterAp == 2 && afterBackspace == 3
 				   && search.Buffer == "a";
 			return Assert("SearchBackspace", ok,
 				$"ap={afterAp}, after backspace={afterBackspace}, buffer=\"{search.Buffer}\"");
@@ -826,9 +829,10 @@ namespace OniAccess.Tests {
 			var search = new TypeAheadSearch(() => 0f);
 			search.AddChar('a');
 			search.Search(SearchItems.Length, NameByIndex);
-			// 2 results: Apple(0), Apricot(1). Cursor at 0.
+			// 3 results: Apple(0), Apricot(1), Banana(2). Cursor at 0.
 
 			search.NavigateResults(1); // cursor -> 1
+			search.NavigateResults(1); // cursor -> 2
 			search.NavigateResults(1); // cursor -> 0 (wrap)
 
 			bool ok = search.SelectedOriginalIndex == 0; // back to Apple
@@ -840,15 +844,15 @@ namespace OniAccess.Tests {
 			var search = new TypeAheadSearch(() => 0f);
 			search.AddChar('a');
 			search.Search(SearchItems.Length, NameByIndex);
-			// 2 results: Apple(0), Apricot(1)
+			// 3 results: Apple(0), Apricot(1), Banana(2)
 
 			search.JumpToLastResult();
-			int lastIdx = search.SelectedOriginalIndex; // Apricot(1)
+			int lastIdx = search.SelectedOriginalIndex; // Banana(2)
 
 			search.JumpToFirstResult();
 			int firstIdx = search.SelectedOriginalIndex; // Apple(0)
 
-			bool ok = lastIdx == 1 && firstIdx == 0;
+			bool ok = lastIdx == 2 && firstIdx == 0;
 			return Assert("SearchJumpFirstLast", ok,
 				$"last={lastIdx}, first={firstIdx}");
 		}
