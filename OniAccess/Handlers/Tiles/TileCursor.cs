@@ -120,7 +120,7 @@ namespace OniAccess.Handlers.Tiles {
 
 			string content = _composer.Compose(_cell);
 			if (content == null)
-				content = Grid.Element[_cell].name;
+				content = $"{Grid.Element[_cell].name}, {GameUtil.GetFormattedMass(Grid.Mass[_cell])}";
 			return AttachCoordinates(content);
 		}
 

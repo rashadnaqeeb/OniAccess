@@ -16,7 +16,9 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				return System.Array.Empty<string>();
 			var element = Grid.Element[cell];
 			if (element == null) return System.Array.Empty<string>();
-			return new[] { element.name };
+			float mass = Grid.Mass[cell];
+			string formatted = GameUtil.GetFormattedMass(mass);
+			return new[] { $"{element.name}, {formatted}" };
 		}
 	}
 }
