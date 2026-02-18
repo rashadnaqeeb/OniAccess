@@ -19,6 +19,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrow keys", (string)STRINGS.ONIACCESS.HELP.MOVE_CURSOR),
+			new HelpEntry("Q", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
 			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.READ_COORDS),
 			new HelpEntry("Shift+`", (string)STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE),
 		}.AsReadOnly();
@@ -77,12 +78,32 @@ namespace OniAccess.Handlers.Tiles {
 					SpeechPipeline.SpeakInterrupt(_cursor.ReadCoordinates());
 				return;
 			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)
+				&& !InputUtil.AnyModifierHeld()) {
+				OpenTooltipBrowser();
+				return;
+			}
 		}
 
 		private void SpeakMove(Direction direction) {
 			string speech = _cursor.Move(direction);
 			if (speech != null)
 				SpeechPipeline.SpeakInterrupt(speech);
+		}
+
+		private void OpenTooltipBrowser() {
+			if (!Grid.IsVisible(_cursor.Cell)) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+				return;
+			}
+			var lines = TooltipCapture.GetTooltipLines();
+			if (lines == null || lines.Count == 0) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP);
+				return;
+			}
+			HandlerStack.Push(new TooltipBrowserHandler(lines));
 		}
 	}
 }

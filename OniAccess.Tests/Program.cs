@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Screens;
+using OniAccess.Handlers.Tiles;
 using OniAccess.Speech;
 using OniAccess.Util;
 
@@ -102,6 +103,7 @@ namespace OniAccess.Tests {
 			results.Add(TextFilterUnclosedTag());
 			results.Add(TextFilterMismatchedTags());
 			results.Add(TextFilterSpriteNameCaseInsensitive());
+			results.Add(TextFilterReplacesMasculineOrdinalDegree());
 
 			// --- Log class (5 new) ---
 			results.Add(LogDebugFormat());
@@ -117,6 +119,19 @@ namespace OniAccess.Tests {
 			results.Add(ReplaceFailureLogsHandlerNameAndException());
 
 			HandlerStack.Clear();
+
+			// --- TooltipCapture (8 new) ---
+			TooltipCapture.Reset();
+			results.Add(TooltipCaptureEmptyFrameReturnsNull());
+			results.Add(TooltipCaptureTextOutsideBlockDiscarded());
+			results.Add(TooltipCaptureSingleBlock());
+			results.Add(TooltipCaptureTwoBlocks());
+			results.Add(TooltipCaptureMultipleTokensInBlock());
+			results.Add(TooltipCaptureNewLineSeparatesLines());
+			results.Add(TooltipCaptureEmptyTextSkipped());
+			results.Add(TooltipCaptureResetClearsState());
+			results.Add(TooltipCaptureGetLinesReturnsFlatList());
+			TooltipCapture.Reset();
 
 			// --- SpeechPipeline (7 new) ---
 			results.Add(PipelineDisabledSkipsSpeech());
@@ -980,6 +995,12 @@ namespace OniAccess.Tests {
 			return Assert("TextFilterSpriteNameCaseInsensitive", ok, $"got \"{result}\"");
 		}
 
+		private static (string, bool, string) TextFilterReplacesMasculineOrdinalDegree() {
+			string result = TextFilter.FilterForSpeech("21.9 \u00BAC");
+			bool ok = result == "21.9 \u00B0C";
+			return Assert("TextFilterReplacesMasculineOrdinalDegree", ok, $"got \"{result}\"");
+		}
+
 		// ========================================
 		// LogCapture helper
 		// ========================================
@@ -1123,6 +1144,126 @@ namespace OniAccess.Tests {
 					$"errors={capture.ErrorMessages.Count}" +
 					(capture.ErrorMessages.Count > 0 ? $", msg=\"{capture.ErrorMessages[0]}\"" : ""));
 			}
+		}
+
+		// ========================================
+		// TooltipCapture tests
+		// ========================================
+
+		private static (string, bool, string) TooltipCaptureEmptyFrameReturnsNull() {
+			TooltipCapture.Reset();
+			TooltipCapture.BeginFrame();
+			TooltipCapture.EndFrame();
+			string result = TooltipCapture.GetTooltipText();
+			return Assert("TooltipCaptureEmptyFrameReturnsNull", result == null,
+				$"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TooltipCaptureTextOutsideBlockDiscarded() {
+			TooltipCapture.Reset();
+			TooltipCapture.BeginFrame();
+			TooltipCapture.AppendText("orphan");
+			TooltipCapture.EndFrame();
+			string result = TooltipCapture.GetTooltipText();
+			return Assert("TooltipCaptureTextOutsideBlockDiscarded", result == null,
+				$"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TooltipCaptureSingleBlock() {
+			TooltipCapture.Reset();
+			TooltipCapture.BeginFrame();
+			TooltipCapture.BeginBlock();
+			TooltipCapture.AppendText("Copper Ore");
+			TooltipCapture.EndFrame();
+			string result = TooltipCapture.GetTooltipText();
+			return Assert("TooltipCaptureSingleBlock", result == "Copper Ore",
+				$"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TooltipCaptureTwoBlocks() {
+			TooltipCapture.Reset();
+			TooltipCapture.BeginFrame();
+			TooltipCapture.BeginBlock();
+			TooltipCapture.AppendText("Copper Ore");
+			TooltipCapture.BeginBlock();
+			TooltipCapture.AppendText("Hot");
+			TooltipCapture.EndFrame();
+			string result = TooltipCapture.GetTooltipText();
+			return Assert("TooltipCaptureTwoBlocks", result == "Copper Ore, Hot",
+				$"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TooltipCaptureMultipleTokensInBlock() {
+			TooltipCapture.Reset();
+			TooltipCapture.BeginFrame();
+			TooltipCapture.BeginBlock();
+			TooltipCapture.AppendText("1657");
+			TooltipCapture.AppendText(".3");
+			TooltipCapture.AppendText(" g");
+			TooltipCapture.EndFrame();
+			string result = TooltipCapture.GetTooltipText();
+			return Assert("TooltipCaptureMultipleTokensInBlock", result == "1657.3 g",
+				$"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TooltipCaptureNewLineSeparatesLines() {
+			TooltipCapture.Reset();
+			TooltipCapture.BeginFrame();
+			TooltipCapture.BeginBlock();
+			TooltipCapture.AppendText("OXYGEN");
+			TooltipCapture.AppendNewLine();
+			TooltipCapture.AppendText("Breathable Gas");
+			TooltipCapture.AppendNewLine();
+			TooltipCapture.AppendText("1657");
+			TooltipCapture.AppendText(".3 g");
+			TooltipCapture.EndFrame();
+			string result = TooltipCapture.GetTooltipText();
+			return Assert("TooltipCaptureNewLineSeparatesLines",
+				result == "OXYGEN, Breathable Gas, 1657.3 g",
+				$"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TooltipCaptureEmptyTextSkipped() {
+			TooltipCapture.Reset();
+			TooltipCapture.BeginFrame();
+			TooltipCapture.BeginBlock();
+			TooltipCapture.AppendText(null);
+			TooltipCapture.AppendText("");
+			TooltipCapture.AppendText("   ");
+			TooltipCapture.AppendText("real");
+			TooltipCapture.EndFrame();
+			string result = TooltipCapture.GetTooltipText();
+			return Assert("TooltipCaptureEmptyTextSkipped", result == "real",
+				$"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TooltipCaptureResetClearsState() {
+			TooltipCapture.BeginFrame();
+			TooltipCapture.BeginBlock();
+			TooltipCapture.AppendText("should vanish");
+			TooltipCapture.Reset();
+			string result = TooltipCapture.GetTooltipText();
+			return Assert("TooltipCaptureResetClearsState", result == null,
+				$"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TooltipCaptureGetLinesReturnsFlatList() {
+			TooltipCapture.Reset();
+			TooltipCapture.BeginFrame();
+			TooltipCapture.BeginBlock();
+			TooltipCapture.AppendText("OXYGEN");
+			TooltipCapture.AppendNewLine();
+			TooltipCapture.AppendText("Breathable Gas");
+			TooltipCapture.BeginBlock();
+			TooltipCapture.AppendText("21.8 C");
+			TooltipCapture.EndFrame();
+			var lines = TooltipCapture.GetTooltipLines();
+			bool ok = lines != null && lines.Count == 3
+				&& lines[0] == "OXYGEN"
+				&& lines[1] == "Breathable Gas"
+				&& lines[2] == "21.8 C";
+			return Assert("TooltipCaptureGetLinesReturnsFlatList", ok,
+				lines == null ? "null" : $"count={lines.Count}: [{string.Join("|", lines)}]");
 		}
 
 		// ========================================

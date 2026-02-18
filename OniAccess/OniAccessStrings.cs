@@ -38,6 +38,7 @@ namespace STRINGS {
 			public static LocString ITEM_DROP = "Claim blueprints";
 			public static LocString WELCOME_MESSAGE = "Welcome message";
 			public static LocString COLONY_VIEW = "colony view";
+			public static LocString TOOLTIP_BROWSER = "tooltip";
 		}
 
 		public class SUPPLY_CLOSET {
@@ -59,6 +60,7 @@ namespace STRINGS {
 			public static LocString MOVE_CURSOR = "Move tile cursor";
 			public static LocString READ_COORDS = "Read coordinates";
 			public static LocString CYCLE_COORD_MODE = "Cycle coordinate display";
+			public static LocString READ_TOOLTIP = "Browse hover tooltip";
 		}
 
 		public class PANELS {
@@ -152,6 +154,10 @@ namespace STRINGS {
 			public static LocString COORD_OFF = "coordinates off";
 			public static LocString COORD_APPEND = "coordinates append";
 			public static LocString COORD_PREPEND = "coordinates prepend";
+		}
+
+		public class TOOLTIP {
+			public static LocString NO_TOOLTIP = "no tooltip";
 		}
 
 		public class GLANCE {

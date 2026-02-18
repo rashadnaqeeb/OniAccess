@@ -210,6 +210,7 @@ These are only relevant if debug mode is active, but listed for completeness to 
 | Context help | F12 | 1 | Not used by overlays (F1-F11), not used by game. NOTE: Conflicts with Steam Screenshot -- users may need to rebind in Steam |
 | Read coordinates | ` (backtick) | tile | Overwrites debug profiler toggle (debug mode only, opt-in and rare). Reads current cell X,Y position |
 | Cycle coordinate mode | Shift+` | tile | Cycles Off -> Append -> Prepend -> Off. Attaches coordinates to glance announcements |
+| Read hover tooltip | Q | tile | Overwrites BuildMenuKeyQ (active only in build submenu context, not tile cursor). Reads game's hover tooltip text |
 
 Further hotkeys assigned per-phase as features are built.
 

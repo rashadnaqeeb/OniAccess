@@ -82,6 +82,10 @@ namespace OniAccess.Speech {
 		public static string FilterForSpeech(string text) {
 			if (string.IsNullOrEmpty(text)) return "";
 
+			// Replace masculine ordinal indicator (º, U+00BA) with degree sign (°, U+00B0).
+			// Screen readers mispronounce º; ONI uses it in temperature strings.
+			text = text.Replace('\u00BA', '\u00B0');
+
 			// Fast path: skip regex pipeline for plain text (no markup)
 			if (text.IndexOf('<') < 0 && text.IndexOf('[') < 0 && text.IndexOf('{') < 0)
 				return WhitespaceRegex.Replace(text, " ").Trim();
