@@ -323,7 +323,7 @@ namespace OniAccess.Handlers {
 
 		public string GetSearchLabel(int index) {
 			if (index < 0 || index >= ItemCount) return null;
-			return GetItemLabel(index);
+			return Speech.TextFilter.FilterForSpeech(GetItemLabel(index));
 		}
 
 		public void SearchMoveTo(int index) {
