@@ -5,11 +5,8 @@ namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for WorldGenScreen -- world generation progress display.
 	///
-	/// NOT a BaseMenuHandler subclass. Per Pitfall 6: WorldGenScreen has no
-	/// interactive widgets. It's a progress display where the game blocks Escape
-	/// and has no buttons during generation.
-	///
-	/// Implements IAccessHandler directly for the handler stack.
+	/// Extends BaseScreenHandler but has no interactive widgets. It's a progress
+	/// display where the game blocks Escape and has no buttons during generation.
 	/// Tick() polls progress each frame.
 	///
 	/// Per locked decisions:
@@ -17,54 +14,41 @@ namespace OniAccess.Handlers.Screens {
 	/// - No user interaction during world generation
 	/// - CapturesAllInput = true to block all keys
 	/// </summary>
-	public class WorldGenHandler: IAccessHandler {
-		private readonly KScreen _screen;
+	public class WorldGenHandler: BaseScreenHandler {
 		private float _lastSpokenPercent = -1f;
 		private float _lastPollTime;
 		private const float PollInterval = 2f; // seconds between progress checks
 		private const float SpeechInterval = 25f; // speak every 25% increment
 
-		/// <summary>
-		/// Expose the screen reference so ContextDetector.OnScreenDeactivating can
-		/// match this non-ScreenHandler handler to its deactivating screen.
-		/// </summary>
-		public KScreen Screen => _screen;
-
-		public string DisplayName => STRINGS.ONIACCESS.HANDLERS.WORLD_GEN;
+		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.WORLD_GEN;
 
 		/// <summary>
 		/// Block all input during generation. The game also blocks Escape.
 		/// </summary>
-		public bool CapturesAllInput => true;
+		public override bool CapturesAllInput => true;
 
 		/// <summary>
 		/// Minimal help -- nothing to do during world gen.
 		/// </summary>
-		public IReadOnlyList<HelpEntry> HelpEntries { get; }
+		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 			= new List<HelpEntry>().AsReadOnly();
 
-		public WorldGenHandler(KScreen screen) {
-			_screen = screen;
-		}
+		public WorldGenHandler(KScreen screen) : base(screen) { }
 
 		/// <summary>
-		/// Speak "Generating world" on activation.
+		/// Speak "Generating world" on activation, initialize polling state.
 		/// </summary>
-		public void OnActivate() {
-			Speech.SpeechPipeline.SpeakInterrupt(DisplayName);
+		public override void OnActivate() {
+			base.OnActivate();
 			_lastSpokenPercent = 0f;
 			_lastPollTime = UnityEngine.Time.time;
-		}
-
-		public void OnDeactivate() {
-			// No cleanup needed
 		}
 
 		/// <summary>
 		/// Called each frame by KeyPoller.
 		/// Polls world generation progress and speaks at 25% intervals.
 		/// </summary>
-		public void Tick() {
+		public override void Tick() {
 			float now = UnityEngine.Time.time;
 			if (now - _lastPollTime < PollInterval) return;
 			_lastPollTime = now;
@@ -121,10 +105,5 @@ namespace OniAccess.Handlers.Screens {
 
 			return -1f;
 		}
-
-		/// <summary>
-		/// No Escape interception during world generation.
-		/// </summary>
-		public bool HandleKeyDown(KButtonEvent e) => false;
 	}
 }

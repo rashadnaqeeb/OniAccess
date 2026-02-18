@@ -153,7 +153,7 @@ namespace OniAccess.Handlers {
 		public static void RemoveStaleHandlers() {
 			for (int i = _stack.Count - 1; i >= 0; i--) {
 				if (!(_stack[i] is BaseScreenHandler sh)) continue;
-				if (sh.Screen != null && sh.Screen.gameObject.activeInHierarchy) continue;
+				if (sh.Screen == null || sh.Screen.gameObject.activeInHierarchy) continue;
 
 				_stack.RemoveAt(i);
 				try {

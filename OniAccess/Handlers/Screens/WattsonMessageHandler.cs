@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Screens {
 	/// OnPrefabInit) doesn't update the m_text field that the text getter reads.
 	/// We read the welcome message directly from game data instead.
 	/// </summary>
-	public class WattsonMessageHandler : BaseMenuHandler {
+	public class WattsonMessageHandler : BaseWidgetHandler {
 		public override string DisplayName =>
 			(string)STRINGS.ONIACCESS.HANDLERS.WELCOME_MESSAGE;
 

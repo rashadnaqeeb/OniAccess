@@ -14,7 +14,7 @@ namespace OniAccess.Handlers.Screens {
 	/// Enter on a colony drills into its saves. Enter on a save drills into its
 	/// detail view. Enter on Load loads the game. Escape goes back one level.
 	/// </summary>
-	public class SaveLoadHandler: BaseMenuHandler {
+	public class SaveLoadHandler: BaseWidgetHandler {
 		private enum ViewLevel { ColonyList, SaveList, SaveDetail }
 		private ViewLevel _viewLevel;
 		private bool _pendingViewTransition;
@@ -510,7 +510,7 @@ namespace OniAccess.Handlers.Screens {
 		/// - Save list: Enter on save entry drills into detail view
 		/// - Save detail: Enter on buttons (Load/Delete) activates them normally
 		/// </summary>
-		protected override void ActivateCurrentWidget() {
+		protected override void ActivateCurrentItem() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
@@ -528,7 +528,7 @@ namespace OniAccess.Handlers.Screens {
 							_pendingViewTransition = true;
 						}
 					} else {
-						base.ActivateCurrentWidget();
+						base.ActivateCurrentItem();
 					}
 					break;
 
@@ -536,12 +536,12 @@ namespace OniAccess.Handlers.Screens {
 					if (widget.Tag is KButton) {
 						TransitionToSaveDetail();
 					} else {
-						base.ActivateCurrentWidget();
+						base.ActivateCurrentItem();
 					}
 					break;
 
 				case ViewLevel.SaveDetail:
-					base.ActivateCurrentWidget();
+					base.ActivateCurrentItem();
 					break;
 			}
 		}

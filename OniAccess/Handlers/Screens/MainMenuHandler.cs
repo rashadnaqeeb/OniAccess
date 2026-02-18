@@ -17,7 +17,7 @@ namespace OniAccess.Handlers.Screens {
 	/// - DLC: 4 DLC logos showing name + ownership/activation status
 	/// - News: MOTD boxes with headlines from Klei's server (async-loaded)
 	/// </summary>
-	public class MainMenuHandler: BaseMenuHandler {
+	public class MainMenuHandler: BaseWidgetHandler {
 		private const int SectionButtons = 0;
 		private const int SectionDLC = 1;
 		private const int SectionNews = 2;
@@ -231,7 +231,7 @@ namespace OniAccess.Handlers.Screens {
 		/// News section: click the URLOpenFunction's triggerButton to open in browser.
 		/// Buttons section: default KButton.SignalClick behavior.
 		/// </summary>
-		protected override void ActivateCurrentWidget() {
+		protected override void ActivateCurrentItem() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
@@ -261,7 +261,7 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			base.ActivateCurrentWidget();
+			base.ActivateCurrentItem();
 		}
 
 		// ========================================

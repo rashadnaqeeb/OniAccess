@@ -24,7 +24,7 @@ namespace OniAccess.Handlers.Screens {
 	/// because the game populates LocTexts via SetText() which updates TMP's
 	/// internal buffer but not m_text. GetParsedText() needs a frame to catch up.
 	/// </summary>
-	public class ColonySummaryHandler: BaseMenuHandler {
+	public class ColonySummaryHandler: BaseWidgetHandler {
 		private const int ExplorerSectionMain = 0;
 		private const int ExplorerSectionAchievements = 1;
 		private const int ExplorerSectionCount = 2;
@@ -439,11 +439,11 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		/// <summary>
-		/// Override ActivateCurrentWidget to handle view transitions.
+		/// Override ActivateCurrentItem to handle view transitions.
 		/// When Enter is pressed on a colony in the explorer view, open colony detail.
 		/// When "View other colonies" is pressed in detail view, return to explorer.
 		/// </summary>
-		protected override void ActivateCurrentWidget() {
+		protected override void ActivateCurrentItem() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
@@ -477,7 +477,7 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			base.ActivateCurrentWidget();
+			base.ActivateCurrentItem();
 		}
 
 		/// <summary>

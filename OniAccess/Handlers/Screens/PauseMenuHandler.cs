@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Screens {
 	/// Per Pitfall 3: RefreshButtons() destroys cached references. The base class
 	/// already calls DiscoverWidgets on OnActivate, so references are always fresh.
 	/// </summary>
-	public class PauseMenuHandler: BaseMenuHandler {
+	public class PauseMenuHandler: BaseWidgetHandler {
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.PAUSE_MENU;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }

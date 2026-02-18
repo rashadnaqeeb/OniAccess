@@ -14,7 +14,7 @@ namespace OniAccess.Handlers.Screens {
 	/// prefab init, so the normal KScreen.Activate/Deactivate hooks don't work. A Harmony
 	/// patch on LockerMenuScreen.Show pushes/pops this handler instead.
 	/// </summary>
-	public class LockerMenuHandler: BaseMenuHandler {
+	public class LockerMenuHandler: BaseWidgetHandler {
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.SUPPLY_CLOSET;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }

@@ -100,17 +100,10 @@ namespace OniAccess.Handlers {
 
 			var active = HandlerStack.ActiveHandler;
 
-			// Match ScreenHandler subclasses (BaseMenuHandler, etc.) by Screen property
+			// Match BaseScreenHandler subclasses by Screen property
 			if (active is BaseScreenHandler screenHandler && screenHandler.Screen == screen) {
 				HandlerStack.Pop();
 				Util.Log.Debug($"Screen deactivating: {screen.GetType().Name} -> popped handler");
-				return;
-			}
-
-			// Match non-ScreenHandler handlers that track their screen (e.g., WorldGenHandler)
-			if (active is WorldGenHandler worldGenHandler && worldGenHandler.Screen == screen) {
-				HandlerStack.Pop();
-				Util.Log.Debug($"Screen deactivating: {screen.GetType().Name} -> popped WorldGenHandler");
 				return;
 			}
 

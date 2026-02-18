@@ -29,7 +29,7 @@ namespace OniAccess.Handlers.Screens {
 	/// - Attributes: one per arrow press ("Athletics 3")
 	/// - After reroll: speak new name and interests automatically
 	/// </summary>
-	public class MinionSelectHandler: BaseMenuHandler {
+	public class MinionSelectHandler: BaseWidgetHandler {
 		private int _currentSlot;
 		private UnityEngine.Component[] _containers;
 		private System.Action _pendingAnnounce;
@@ -682,7 +682,7 @@ namespace OniAccess.Handlers.Screens {
 		// WIDGET ACTIVATION (Enter key)
 		// ========================================
 
-		protected override void ActivateCurrentWidget() {
+		protected override void ActivateCurrentItem() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
@@ -704,13 +704,13 @@ namespace OniAccess.Handlers.Screens {
 			// Colony name text editing — base handles KInputTextField via TextEdit
 			if (widget.Tag is string nameTag && nameTag == "colony_name"
 				&& widget.Component is KInputTextField) {
-				base.ActivateCurrentWidget();
+				base.ActivateCurrentItem();
 				return;
 			}
 
 			// Colony shuffle button: click, defer read by one frame
 			if (widget.Tag is string shuffleTag && shuffleTag == "colony_shuffle") {
-				base.ActivateCurrentWidget();
+				base.ActivateCurrentItem();
 				_pendingAnnounce = AnnounceAfterColonyShuffle;
 				return;
 			}
@@ -727,7 +727,7 @@ namespace OniAccess.Handlers.Screens {
 							.Field("inputField").GetValue<KInputTextField>();
 					});
 				} catch (System.Exception ex) {
-					Util.Log.Error($"MinionSelectHandler.ActivateCurrentWidget(dupe_rename): {ex.Message}");
+					Util.Log.Error($"MinionSelectHandler.ActivateCurrentItem(dupe_rename): {ex.Message}");
 				}
 				return;
 			}
@@ -747,7 +747,7 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			base.ActivateCurrentWidget();
+			base.ActivateCurrentItem();
 		}
 
 		/// <summary>

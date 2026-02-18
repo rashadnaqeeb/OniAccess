@@ -15,7 +15,7 @@ namespace OniAccess.Handlers.Screens {
 	/// recreates all entries. RediscoverAndRestore re-discovers widgets and restores
 	/// the cursor position by label match.
 	/// </summary>
-	public class ModsHandler: BaseMenuHandler {
+	public class ModsHandler: BaseWidgetHandler {
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.MODS;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
@@ -114,7 +114,7 @@ namespace OniAccess.Handlers.Screens {
 		/// Mod toggles and Toggle All rebuild the widget list, so we rediscover after clicking.
 		/// Other buttons (Workshop, Close): handled by base.
 		/// </summary>
-		protected override void ActivateCurrentWidget() {
+		protected override void ActivateCurrentItem() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
@@ -140,7 +140,7 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
-			base.ActivateCurrentWidget();
+			base.ActivateCurrentItem();
 		}
 
 		/// <summary>

@@ -4,80 +4,65 @@ using OniAccess.Speech;
 namespace OniAccess.Handlers.Tiles {
 	/// <summary>
 	/// Navigable browser for tooltip lines. Pushed onto the HandlerStack when Q
-	/// is pressed in TileCursorHandler. Up/Down arrows step through entries.
+	/// is pressed in TileCursorHandler. Extends BaseMenuHandler for 1D navigation
+	/// with type-ahead search, Home/End, and wrap sounds. No KScreen.
 	/// Escape or Q closes the browser and returns to the tile cursor.
 	/// </summary>
-	public class TooltipBrowserHandler : IAccessHandler {
+	public class TooltipBrowserHandler : BaseMenuHandler {
 		private readonly IReadOnlyList<string> _lines;
-		private int _currentIndex;
 
-		public string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.TOOLTIP_BROWSER;
-		public bool CapturesAllInput => true;
+		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.TOOLTIP_BROWSER;
 
-		public IReadOnlyList<HelpEntry> HelpEntries { get; }
-			= new List<HelpEntry> {
-				new HelpEntry("Up/Down", (string)STRINGS.ONIACCESS.HELP.NAVIGATE),
-				new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.CLOSE),
-				new HelpEntry("Q", (string)STRINGS.ONIACCESS.HELP.CLOSE),
-			}.AsReadOnly();
+		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
+			= BuildBrowserHelpEntries();
 
 		public TooltipBrowserHandler(IReadOnlyList<string> lines) {
 			_lines = lines;
-			_currentIndex = 0;
 		}
 
-		public void OnActivate() {
+		public override int ItemCount => _lines.Count;
+
+		public override string GetItemLabel(int index) {
+			if (index < 0 || index >= _lines.Count) return null;
+			return _lines[index];
+		}
+
+		public override void SpeakCurrentItem() {
+			if (_currentIndex >= 0 && _currentIndex < _lines.Count)
+				SpeechPipeline.SpeakInterrupt(
+					TextFilter.FilterForSpeech(_lines[_currentIndex]));
+		}
+
+		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
 			_currentIndex = 0;
+			_search.Clear();
 			if (_lines.Count > 0)
 				SpeechPipeline.SpeakInterrupt(
 					TextFilter.FilterForSpeech(_lines[_currentIndex]));
 		}
 
-		public void OnDeactivate() {
+		public override void OnDeactivate() {
 			PlaySound("HUD_Click_Close");
-			_currentIndex = 0;
+			base.OnDeactivate();
 		}
 
-		public void Tick() {
+		public override void Tick() {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)) {
 				Close();
 				return;
 			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
-				NavigateNext();
-				return;
-			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
-				NavigatePrev();
-				return;
-			}
+			base.Tick();
 		}
 
-		public bool HandleKeyDown(KButtonEvent e) {
+		public override bool HandleKeyDown(KButtonEvent e) {
+			if (base.HandleKeyDown(e))
+				return true;
 			if (e.TryConsume(Action.Escape)) {
 				Close();
 				return true;
 			}
 			return false;
-		}
-
-		private void NavigateNext() {
-			if (_lines.Count == 0) return;
-			_currentIndex = (_currentIndex + 1) % _lines.Count;
-			SpeakCurrentLine();
-		}
-
-		private void NavigatePrev() {
-			if (_lines.Count == 0) return;
-			_currentIndex = (_currentIndex - 1 + _lines.Count) % _lines.Count;
-			SpeakCurrentLine();
-		}
-
-		private void SpeakCurrentLine() {
-			if (_currentIndex >= 0 && _currentIndex < _lines.Count)
-				SpeechPipeline.SpeakInterrupt(
-					TextFilter.FilterForSpeech(_lines[_currentIndex]));
 		}
 
 		private void Close() {
@@ -92,6 +77,16 @@ namespace OniAccess.Handlers.Tiles {
 			} catch (System.Exception ex) {
 				OniAccess.Util.Log.Error($"TooltipBrowserHandler.PlaySound failed: {ex.Message}");
 			}
+		}
+
+		private static IReadOnlyList<HelpEntry> BuildBrowserHelpEntries() {
+			return new List<HelpEntry> {
+				new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
+				new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
+				new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
+				new HelpEntry("Escape", STRINGS.ONIACCESS.HELP.CLOSE),
+				new HelpEntry("Q", STRINGS.ONIACCESS.HELP.CLOSE),
+			}.AsReadOnly();
 		}
 	}
 }

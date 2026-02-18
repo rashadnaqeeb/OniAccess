@@ -17,7 +17,7 @@ namespace OniAccess.Handlers.Screens {
 	/// Lifecycle note: Like LockerMenuScreen, OnActivate() calls Show(false) during prefab
 	/// init, so a Harmony patch on KleiItemDropScreen.Show pushes/pops this handler.
 	/// </summary>
-	public class KleiItemDropHandler: BaseMenuHandler {
+	public class KleiItemDropHandler: BaseWidgetHandler {
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.ITEM_DROP;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }

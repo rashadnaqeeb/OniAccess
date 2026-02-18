@@ -17,11 +17,11 @@ namespace OniAccess.Handlers.Screens {
 	/// Language buttons are dynamically created in OnSpawn, which runs after our Harmony
 	/// postfix on Activate — BaseMenuHandler's deferred rediscovery handles this automatically.
 	///
-	/// All widgets are KButtons, so base IsWidgetValid and ActivateCurrentWidget handle
+	/// All widgets are KButtons, so base IsWidgetValid and ActivateCurrentItem handle
 	/// them correctly. GetWidgetSpeechText is overridden to prefix "selected" on the
 	/// active language.
 	/// </summary>
-	public class TranslationHandler: BaseMenuHandler {
+	public class TranslationHandler: BaseWidgetHandler {
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.TRANSLATIONS;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }

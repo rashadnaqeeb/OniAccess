@@ -19,7 +19,7 @@ namespace OniAccess.Handlers.Screens {
 	/// BaseMenuHandler already handles slider speech ("label, value"),
 	/// toggle speech ("label, on/off"), and adjustment via Left/Right.
 	/// </summary>
-	public class OptionsMenuHandler: BaseMenuHandler {
+	public class OptionsMenuHandler: BaseWidgetHandler {
 		private string _displayName;
 
 		public override string DisplayName => _displayName ?? (string)STRINGS.UI.FRONTEND.PAUSE_SCREEN.OPTIONS;
@@ -458,7 +458,7 @@ namespace OniAccess.Handlers.Screens {
 		/// Activate the current widget. Extends base for HierarchyReferences toggles
 		/// (KButton + CheckMark visibility pattern used by some options screen toggles).
 		/// </summary>
-		protected override void ActivateCurrentWidget() {
+		protected override void ActivateCurrentItem() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
@@ -473,7 +473,7 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			base.ActivateCurrentWidget();
+			base.ActivateCurrentItem();
 		}
 
 		/// <summary>

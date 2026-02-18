@@ -31,7 +31,7 @@ namespace OniAccess.Handlers.Screens {
 	/// - Actions: Shuffle, Coordinate field, Customize, Launch (no back button)
 	/// - Tab/Shift+Tab does nothing on the main destination screen
 	/// </summary>
-	public class ColonySetupHandler: BaseMenuHandler {
+	public class ColonySetupHandler: BaseWidgetHandler {
 		// Sub-tabs inside Customize overlay
 		private const int SubTabSettings = 0;
 		private const int SubTabMixing = 1;
@@ -1061,7 +1061,7 @@ namespace OniAccess.Handlers.Screens {
 		/// - Text input: enter edit mode
 		/// - Other: base behavior
 		/// </summary>
-		protected override void ActivateCurrentWidget() {
+		protected override void ActivateCurrentItem() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
@@ -1127,7 +1127,7 @@ namespace OniAccess.Handlers.Screens {
 			if (widget.Component is KButton shuffleCandidate) {
 				var shuffleField = Traverse.Create(_screen).Field("shuffleButton").GetValue<KButton>();
 				if (shuffleField != null && shuffleField == shuffleCandidate) {
-					base.ActivateCurrentWidget();
+					base.ActivateCurrentItem();
 					_pendingClusterRefresh = true;
 					return;
 				}
@@ -1162,7 +1162,7 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			base.ActivateCurrentWidget();
+			base.ActivateCurrentItem();
 		}
 
 		/// <summary>

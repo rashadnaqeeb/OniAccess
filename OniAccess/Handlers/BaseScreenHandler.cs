@@ -48,7 +48,7 @@ namespace OniAccess.Handlers {
 		// CONSTRUCTOR
 		// ========================================
 
-		protected BaseScreenHandler(KScreen screen) {
+		protected BaseScreenHandler(KScreen screen = null) {
 			_screen = screen;
 		}
 

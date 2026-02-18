@@ -11,7 +11,7 @@ namespace OniAccess.Handlers.Screens {
 	/// ConfirmDialogScreen inherits KModalScreen (not KButtonMenu), so we manually
 	/// find the message text and confirm/cancel buttons via Traverse and child walks.
 	/// </summary>
-	public class ConfirmDialogHandler: BaseMenuHandler {
+	public class ConfirmDialogHandler: BaseWidgetHandler {
 		private string _dialogTitle;
 		private string _displayNameOverride;
 		private bool _firstDiscovery = true;

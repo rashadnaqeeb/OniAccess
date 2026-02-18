@@ -11,7 +11,7 @@ namespace OniAccess.Handlers.Screens {
 	/// and close button. Each save entry shows filename + date from
 	/// HierarchyReferences "Title" and "Date" refs (RectTransform -> LocText).
 	/// </summary>
-	public class SaveScreenHandler: BaseMenuHandler {
+	public class SaveScreenHandler: BaseWidgetHandler {
 		public override string DisplayName => (string)STRINGS.UI.FRONTEND.SAVESCREEN.TITLE;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }

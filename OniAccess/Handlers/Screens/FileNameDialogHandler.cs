@@ -11,7 +11,7 @@ namespace OniAccess.Handlers.Screens {
 	/// followed by OK and Cancel buttons. Text editing is handled by the base
 	/// class via TextEdit; this handler only adds speech and OnActivate logic.
 	/// </summary>
-	public class FileNameDialogHandler : BaseMenuHandler {
+	public class FileNameDialogHandler : BaseWidgetHandler {
 		public override string DisplayName => (string)STRINGS.UI.FRONTEND.SAVESCREEN.SAVENAMETITLE;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }

@@ -19,7 +19,7 @@ namespace OniAccess.Handlers.Screens {
 	/// Reset button resets all bindings to defaults.
 	/// Conflict dialogs are handled by ConfirmDialogHandler (auto-activates on stack).
 	/// </summary>
-	public class KeyBindingsHandler: BaseMenuHandler {
+	public class KeyBindingsHandler: BaseWidgetHandler {
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.KEY_BINDINGS;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
@@ -205,7 +205,7 @@ namespace OniAccess.Handlers.Screens {
 		// WIDGET ACTIVATION
 		// ========================================
 
-		protected override void ActivateCurrentWidget() {
+		protected override void ActivateCurrentItem() {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
