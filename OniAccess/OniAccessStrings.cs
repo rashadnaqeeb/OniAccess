@@ -190,7 +190,7 @@ namespace STRINGS {
 			public static LocString ORDER_SWEEP = "pending sweep";
 			public static LocString ORDER_PRIORITY = "{0}, priority {1}";
 
-			public static LocString TILE_OF_INTEREST = "tile of interest";
+			public static LocString TILE_OF_INTEREST = "P O I";
 			public static LocString DUPE_INTERACTION = "interaction point";
 			public static LocString DELIVERY_POINT = "delivery point";
 			public static LocString DROP_OFF_POINT = "drop-off point";
