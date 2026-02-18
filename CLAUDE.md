@@ -53,8 +53,8 @@ Before creating a new `LocString` in `OniAccessStrings.cs`, search the game's `S
 All user-facing text must come from a `LocString` reference, either the game's `STRINGS` namespace or `STRINGS.ONIACCESS` in `OniAccessStrings.cs`. Never inline string literals for text that gets spoken or displayed.
 
 ### Concise announcements
-Users are experienced screen reader users. Strip fluff, never strip information. These rules apply to mod-authored text only; never alter, truncate, or reword game text. 
-- No item counts ("3 of 10")
+**These rules apply to mod-authored text only; never alter, truncate, or reword game text.** Users are experienced screen reader users. Strip fluff, never strip information.
+- No positional item counts ("3 of 10") — the screen reader already tracks list position
 - No navigation hints ("press Enter to select") unless unusual controls, and on a delay
 - No redundant context ("You are now in...")
 - No type suffixes when obvious ("Lumber button")
