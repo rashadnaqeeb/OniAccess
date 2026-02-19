@@ -18,6 +18,21 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 		private static void ReadLayer(int cell, int layer, List<string> tokens) {
 			var go = Grid.Objects[cell, layer];
 			if (go == null) return;
+
+			if (layer == (int)ObjectLayer.Pickupables) {
+				var pickupable = go.GetComponent<Pickupable>();
+				if (pickupable == null) return;
+				var item = pickupable.objectLayerListItem;
+				while (item != null) {
+					ReadDisinfectable(item.gameObject, tokens);
+					item = item.nextItem;
+				}
+			} else {
+				ReadDisinfectable(go, tokens);
+			}
+		}
+
+		private static void ReadDisinfectable(UnityEngine.GameObject go, List<string> tokens) {
 			var disinfectable = go.GetComponent<Disinfectable>();
 			if (disinfectable == null) return;
 

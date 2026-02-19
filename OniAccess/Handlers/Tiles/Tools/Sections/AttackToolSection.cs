@@ -13,7 +13,10 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 			var item = pickupable.objectLayerListItem;
 			while (item != null) {
 				var faction = item.gameObject.GetComponent<FactionAlignment>();
-				if (faction != null) {
+				if (faction != null && faction.IsAlignmentActive()
+					&& FactionManager.Instance.GetDisposition(
+						FactionManager.FactionID.Duplicant, faction.Alignment)
+						!= FactionManager.Disposition.Assist) {
 					var sel = item.gameObject.GetComponent<KSelectable>();
 					if (sel != null) {
 						if (faction.IsPlayerTargeted())

@@ -95,6 +95,8 @@ namespace OniAccess.Handlers.Tools {
 				TileCursor.Instance.ActiveToolComposer = composer;
 			}
 
+			if (Game.Instance != null)
+				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
 			Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
 
 			SpeechPipeline.SpeakInterrupt(DisplayName);
