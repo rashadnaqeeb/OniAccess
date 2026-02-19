@@ -597,7 +597,7 @@ namespace OniAccess.Handlers.Tools {
 					"Tile_Drag", "Tile_Confirm",
 					(string)STRINGS.ONIACCESS.TOOLS.CONFIRM_HARVEST),
 				new ModToolInfo("EmptyPipeTool",
-					Strings.Get("STRINGS.UI.TOOLS.EMPTYPIPE.TOOLNAME"),
+					Strings.Get("STRINGS.UI.TOOLS.EMPTY_PIPE.TOOLNAME"),
 					typeof(EmptyPipeTool), true, false, true, false,
 					"Tile_Drag", "Tile_Confirm",
 					(string)STRINGS.ONIACCESS.TOOLS.CONFIRM_EMPTY_PIPE),
