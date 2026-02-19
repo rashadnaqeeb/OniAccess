@@ -22,6 +22,7 @@ namespace OniAccess.Handlers.Tools {
 		private int _pendingFirstCorner = Grid.InvalidCell;
 		private readonly List<RectCorners> _rectangles = new List<RectCorners>();
 		private ModToolInfo _toolInfo;
+		private string _lastFilterKey;
 
 		private struct RectCorners {
 			public int Cell1;
@@ -100,7 +101,12 @@ namespace OniAccess.Handlers.Tools {
 			Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
 
 			if (OverlayScreen.Instance != null)
+				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
+			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
+
+			if (_toolInfo != null && _toolInfo.HasFilterMenu)
+				_lastFilterKey = ReadActiveFilterKey();
 
 			SpeechPipeline.SpeakInterrupt(DisplayName);
 		}
@@ -117,6 +123,7 @@ namespace OniAccess.Handlers.Tools {
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 
+			_lastFilterKey = null;
 			_rectangles.Clear();
 			_pendingFirstCorner = Grid.InvalidCell;
 		}
@@ -133,17 +140,21 @@ namespace OniAccess.Handlers.Tools {
 			if (_toolInfo == null || !_toolInfo.HasFilterMenu)
 				return;
 
-			string filterName = ReadActiveFilterName();
-			if (filterName == null)
+			string newKey = ReadActiveFilterKey();
+			if (newKey == null || newKey == _lastFilterKey)
 				return;
+
+			_lastFilterKey = newKey;
 
 			bool hadSelection = HasSelection;
 			ClearSelection();
 
-			string announcement = filterName;
+			string announcement = newKey == ToolParameterMenu.FILTERLAYERS.ALL
+				? (string)STRINGS.ONIACCESS.TOOLS.FILTER_REMOVED
+				: (string)STRINGS.ONIACCESS.TOOLS.FILTERED;
 			if (hadSelection)
 				announcement += ", " + (string)STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED;
-			SpeechPipeline.SpeakInterrupt(announcement);
+			SpeechPipeline.SpeakQueued(announcement);
 		}
 
 		// ========================================
@@ -435,6 +446,19 @@ namespace OniAccess.Handlers.Tools {
 				if (kv.Value == ToolParameterMenu.ToggleState.On) {
 					return Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + kv.Key + ".NAME");
 				}
+			}
+			return null;
+		}
+
+		private static string ReadActiveFilterKey() {
+			var menuTraverse = Traverse.Create(ToolMenu.Instance.toolParameterMenu);
+			var parameters = menuTraverse
+				.Field<Dictionary<string, ToolParameterMenu.ToggleState>>("currentParameters")
+				.Value;
+			if (parameters == null) return null;
+			foreach (var kv in parameters) {
+				if (kv.Value == ToolParameterMenu.ToggleState.On)
+					return kv.Key;
 			}
 			return null;
 		}

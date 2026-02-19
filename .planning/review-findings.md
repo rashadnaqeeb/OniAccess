@@ -4,17 +4,9 @@ Post-implementation review. All previous findings (14 items) were resolved durin
 
 ## Significant deviations from design
 
-### 1. Filter scoping missing from 5 tool sections
+### 1. Filter scoping missing from 5 tool sections — FIXED
 
-The design specifies that cell readouts should be "scoped to active filter." None of the filtered-tool sections actually read the active filter:
-
-- **CancelToolSection** always shows dig orders, mop orders, and deconstruct orders regardless of filter. Design says: filter=Dig Orders shows only dig orders; filter=Liquid Pipes shows only liquid pipe objects; filter=All shows everything.
-- **DeconstructToolSection** always reads Building + FoundationTile layers. Design says filter=Liquid Pipes should only list liquid pipe objects, etc.
-- **PrioritizeToolSection** always reads dig + construction + deconstruction. Design says filter=Construction means only construction/deconstruction; filter=Digging means only dig; filter=Cleaning means only sweep/mop/storage.
-- **EmptyPipeToolSection** reads all 3 conduit types. Design says it should scope to the active filter (Liquid Pipes, Gas Pipes, Conveyor Rails).
-- **DisconnectToolSection** reads all conduit types + power. Same issue.
-
-The `ReadActiveFilterName()` helper exists in ToolHandler for the activation announcement, but no section calls it or `FilteredDragTool.IsActiveLayer()`. This is the largest gap between design and implementation.
+All 5 filtered-tool sections now check the active filter via FilteredDragTool.IsActiveLayer/GetFilterLayerFromGameObject. Cancel, Deconstruct, and Prioritize also expanded from Building+FoundationTile to all building-relevant layers (wires, conduits, logic, backwall, gantry). Prioritize walks the Pickupable linked list for sweep/mop/storage targets.
 
 **Files:** CancelToolSection.cs, DeconstructToolSection.cs, PrioritizeToolSection.cs, EmptyPipeToolSection.cs, DisconnectToolSection.cs
 
@@ -32,11 +24,9 @@ The string `NO_VALID_CELLS` exists in OniAccessStrings but is never referenced. 
 
 **Files:** ToolHandler.cs, OniAccessStrings.cs
 
-### 4. DeconstructToolSection missing material prefix
+### 4. DeconstructToolSection missing material prefix — NON-ISSUE
 
-The design says readout should be "built objects with material prefix" (e.g., "Granite Tile, Gold Amalgam Liquid Pipe"). The implementation uses `sel.GetName()` which is just the building name without material.
-
-**Files:** DeconstructToolSection.cs
+`sel.GetName()` returns the building name, which is sufficient. Material prefix is not needed for tool readouts.
 
 ## Minor oddities
 

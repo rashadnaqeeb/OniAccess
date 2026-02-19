@@ -220,6 +220,8 @@ namespace STRINGS {
 			public static LocString PIPE_CONTENTS = "{0}, {1}, {2}";
 			public static LocString DISCONNECT_TOO_FAR = "adjacent cells only";
 			public static LocString FILTER_CHANGED = "filter changed";
+			public static LocString FILTERED = "filtered";
+			public static LocString FILTER_REMOVED = "filter removed";
 			public static LocString SELECTION_CLEARED = "selection cleared";
 			public static LocString RECT_CLEARED = "rectangle cleared";
 			public static LocString ACTIVATION_PLAIN = "{0} tool";
