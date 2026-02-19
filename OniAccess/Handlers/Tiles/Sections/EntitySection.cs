@@ -6,7 +6,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// ObjectLayer.Pickupables) at a cell.
 	/// Traverses ObjectLayerListItem linked lists for critters.
 	/// </summary>
-	public class EntitySection : ICellSection {
+	public class EntitySection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
 			ReadMinions(cell, tokens);

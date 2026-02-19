@@ -1120,8 +1120,7 @@ namespace OniAccess.Handlers.Screens {
 					if (_widgets.Count > 0)
 						Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
 					return;
-				}
-				else {
+				} else {
 					Util.Log.Warn("ColonySetupHandler: customizeButton field not found via Traverse");
 				}
 			}
@@ -1133,8 +1132,7 @@ namespace OniAccess.Handlers.Screens {
 					base.ActivateCurrentItem();
 					_pendingClusterRefresh = true;
 					return;
-				}
-				else {
+				} else {
 					Util.Log.Warn("ColonySetupHandler: shuffleButton field not found via Traverse");
 				}
 			}

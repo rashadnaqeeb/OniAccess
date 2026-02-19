@@ -8,7 +8,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// Backwall (drywall, tempshift plate) is present, since sighted players
 	/// see the element through background buildings.
 	/// </summary>
-	public class ElementSection : ICellSection {
+	public class ElementSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			if (Grid.Objects[cell, (int)ObjectLayer.Building] != null)
 				return System.Array.Empty<string>();

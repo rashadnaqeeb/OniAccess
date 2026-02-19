@@ -4,7 +4,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Reads power infrastructure (wires, bridges) at a cell.
 	/// </summary>
-	public class PowerSection : ICellSection {
+	public class PowerSection: ICellSection {
 		private static readonly int[] _layers = {
 			(int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors
 		};

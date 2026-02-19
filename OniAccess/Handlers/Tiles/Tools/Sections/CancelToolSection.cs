@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
-	public class CancelToolSection : ICellSection {
+	public class CancelToolSection: ICellSection {
 		private static readonly int[] Layers = {
 			(int)ObjectLayer.Building,
 			(int)ObjectLayer.FoundationTile,

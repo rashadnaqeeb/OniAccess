@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// overlay-specific info is the first thing the player hears.
 	/// Door access state comes through status items automatically.
 	/// </summary>
-	public class BuildingSection : ICellSection {
+	public class BuildingSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
 			try {

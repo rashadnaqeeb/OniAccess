@@ -6,7 +6,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// tile surface, buildings, pickupables, and pipe contents.
 	/// Returns one token per disease type, or "clean" if total is zero.
 	/// </summary>
-	public class DiseaseSection : ICellSection {
+	public class DiseaseSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var totals = new Dictionary<byte, int>();
 			AddTileSurface(cell, totals);

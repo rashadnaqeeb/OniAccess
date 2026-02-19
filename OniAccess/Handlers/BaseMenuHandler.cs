@@ -16,7 +16,7 @@ namespace OniAccess.Handlers {
 	/// their list. Override ActivateCurrentItem, AdjustCurrentItem, and NavigateTab*
 	/// for interaction behavior.
 	/// </summary>
-	public abstract class BaseMenuHandler : BaseScreenHandler, ISearchable {
+	public abstract class BaseMenuHandler: BaseScreenHandler, ISearchable {
 		protected int _currentIndex;
 		protected readonly TypeAheadSearch _search = new TypeAheadSearch();
 

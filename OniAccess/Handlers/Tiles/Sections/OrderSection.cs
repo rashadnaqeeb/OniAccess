@@ -8,7 +8,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// prefixed with "pending": e.g. "pending dig priority 5, mop".
 	/// Build orders are handled by BuildingSection (Constructable check).
 	/// </summary>
-	public class OrderSection : ICellSection {
+	public class OrderSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var parts = new List<string>();
 			CollectDigOrder(cell, parts);
@@ -167,7 +167,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (go == null) continue;
 				var workable = go.GetComponent<IEmptyConduitWorkable>();
 				if (workable.IsNullOrDestroyed()) continue;
-				if (!IsMarkedForEmptying(workable))  continue;
+				if (!IsMarkedForEmptying(workable)) continue;
 				parts.Add(FormatOrder(
 					(string)STRINGS.ONIACCESS.GLANCE.ORDER_EMPTY_PIPE, go));
 			}

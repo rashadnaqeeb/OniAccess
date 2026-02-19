@@ -27,7 +27,7 @@ namespace OniAccess.Handlers.Screens {
 	///   (via TextEdit helper; subclasses using accessor-based Begin() override
 	///   ActivateCurrentItem for that widget)
 	/// </summary>
-	public abstract class BaseWidgetHandler : BaseMenuHandler {
+	public abstract class BaseWidgetHandler: BaseMenuHandler {
 		protected readonly List<WidgetInfo> _widgets = new List<WidgetInfo>();
 		private TextEditHelper _textEdit;
 		protected TextEditHelper TextEdit => _textEdit ??= new TextEditHelper();

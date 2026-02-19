@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
-	public class AttackToolSection : ICellSection {
+	public class AttackToolSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 			if (go == null) return System.Array.Empty<string>();

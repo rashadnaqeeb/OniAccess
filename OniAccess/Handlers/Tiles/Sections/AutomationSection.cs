@@ -4,7 +4,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Reads automation infrastructure (wires, gates) at a cell.
 	/// </summary>
-	public class AutomationSection : ICellSection {
+	public class AutomationSection: ICellSection {
 		private static readonly int[] _layers = {
 			(int)ObjectLayer.LogicWire, (int)ObjectLayer.LogicGate
 		};

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
-	public class DisconnectToolSection : ICellSection {
+	public class DisconnectToolSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tool = PlayerController.Instance.ActiveTool as FilteredDragTool;
 			var tokens = new List<string>();

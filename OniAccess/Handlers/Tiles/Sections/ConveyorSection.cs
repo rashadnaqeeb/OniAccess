@@ -4,7 +4,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Reads solid conveyor infrastructure (rails, bridges) at a cell.
 	/// </summary>
-	public class ConveyorSection : ICellSection {
+	public class ConveyorSection: ICellSection {
 		private static readonly int[] _layers = {
 			(int)ObjectLayer.SolidConduit, (int)ObjectLayer.SolidConduitConnection
 		};

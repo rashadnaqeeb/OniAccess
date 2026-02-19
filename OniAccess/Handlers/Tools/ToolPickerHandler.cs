@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Tools {
 	/// activates it directly or opens ToolFilterHandler for mode-pick first
 	/// (e.g., Harvest).
 	/// </summary>
-	public class ToolPickerHandler : BaseMenuHandler {
+	public class ToolPickerHandler: BaseMenuHandler {
 		public override string DisplayName => (string)STRINGS.ONIACCESS.TOOLS.PICKER_NAME;
 
 		internal static readonly IReadOnlyList<HelpEntry> ModalMenuHelp

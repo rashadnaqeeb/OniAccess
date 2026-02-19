@@ -13,7 +13,7 @@ namespace OniAccess.Handlers.Tiles {
 	/// CapturesAllInput = false: game hotkeys (overlays, tools, WASD camera,
 	/// pause) pass through.
 	/// </summary>
-	public class TileCursorHandler : BaseScreenHandler {
+	public class TileCursorHandler: BaseScreenHandler {
 		private Overlays.OverlayProfileRegistry _overlayRegistry;
 		private bool _hasActivated;
 		private bool _overlaySubscribed;

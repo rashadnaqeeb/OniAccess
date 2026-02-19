@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
-	public class DigToolSection : ICellSection {
+	public class DigToolSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
 

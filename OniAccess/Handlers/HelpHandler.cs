@@ -10,7 +10,7 @@ namespace OniAccess.Handlers {
 	/// Per locked decision: F12 opens a navigable list (arrow keys step through entries),
 	/// not a speech dump. Show only the active handler's keys.
 	/// </summary>
-	public class HelpHandler : BaseMenuHandler {
+	public class HelpHandler: BaseMenuHandler {
 		private readonly IReadOnlyList<HelpEntry> _entries;
 
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.HELP;

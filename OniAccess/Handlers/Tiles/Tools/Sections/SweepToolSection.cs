@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
-	public class SweepToolSection : ICellSection {
+	public class SweepToolSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
 			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];

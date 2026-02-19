@@ -13,7 +13,7 @@ namespace OniAccess.Handlers.Screens {
 	/// so DiscoverWidgets defers one frame via the _firstDiscovery pattern
 	/// (same as ConfirmDialogHandler) and allows up to 3 retries.
 	/// </summary>
-	public class StoryMessageHandler : BaseWidgetHandler {
+	public class StoryMessageHandler: BaseWidgetHandler {
 		private bool _firstDiscovery = true;
 
 		public override string DisplayName =>

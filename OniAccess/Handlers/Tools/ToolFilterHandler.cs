@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Tools {
 	/// 2. Opened from ToolPickerHandler for tools that require mode-pick before
 	///    activation (e.g., Harvest: pick "when ready" vs "do not harvest" first).
 	/// </summary>
-	public class ToolFilterHandler : BaseMenuHandler {
+	public class ToolFilterHandler: BaseMenuHandler {
 		internal const string HarvestWhenReadyKey = "HARVEST_WHEN_READY";
 		internal const string DoNotHarvestKey = "DO_NOT_HARVEST";
 

@@ -26,7 +26,7 @@ namespace OniAccess.Handlers.Screens {
 	/// so discovering during Phase 1 would pick up stale prefab state. Phase 2
 	/// transition is detected in Tick() by polling closeButton.activeSelf.
 	/// </summary>
-	public class VideoScreenHandler : BaseWidgetHandler {
+	public class VideoScreenHandler: BaseWidgetHandler {
 		private bool _announcedPlaying;
 		private bool _inVictoryLoop;
 

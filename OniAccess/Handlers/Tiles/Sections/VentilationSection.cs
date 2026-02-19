@@ -4,7 +4,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Reads gas ventilation infrastructure (pipes, bridges) at a cell.
 	/// </summary>
-	public class VentilationSection : ICellSection {
+	public class VentilationSection: ICellSection {
 		private static readonly int[] _layers = {
 			(int)ObjectLayer.GasConduit, (int)ObjectLayer.GasConduitConnection
 		};

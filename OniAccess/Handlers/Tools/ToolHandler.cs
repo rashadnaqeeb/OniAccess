@@ -16,7 +16,7 @@ namespace OniAccess.Handlers.Tools {
 	/// Manages rectangle selection state. On confirm, submits each rectangle
 	/// to the game via DragTool.OnLeftClickDown/OnLeftClickUp.
 	/// </summary>
-	public class ToolHandler : BaseScreenHandler {
+	public class ToolHandler: BaseScreenHandler {
 		public static ToolHandler Instance { get; private set; }
 
 		private int _pendingFirstCorner = Grid.InvalidCell;

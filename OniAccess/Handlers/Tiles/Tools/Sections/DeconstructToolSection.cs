@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
-	public class DeconstructToolSection : ICellSection {
+	public class DeconstructToolSection: ICellSection {
 		private static readonly int[] Layers = {
 			(int)ObjectLayer.Building,
 			(int)ObjectLayer.FoundationTile,

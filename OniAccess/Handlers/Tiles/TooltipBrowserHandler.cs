@@ -8,7 +8,7 @@ namespace OniAccess.Handlers.Tiles {
 	/// with type-ahead search, Home/End, and wrap sounds. No KScreen.
 	/// Escape or I closes the browser and returns to the tile cursor.
 	/// </summary>
-	public class TooltipBrowserHandler : BaseMenuHandler {
+	public class TooltipBrowserHandler: BaseMenuHandler {
 		private readonly IReadOnlyList<string> _lines;
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.TOOLTIP_BROWSER;

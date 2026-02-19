@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
-	public class DisinfectToolSection : ICellSection {
+	public class DisinfectToolSection: ICellSection {
 		private static readonly int[] Layers = {
 			(int)ObjectLayer.Building,
 			(int)ObjectLayer.FoundationTile,

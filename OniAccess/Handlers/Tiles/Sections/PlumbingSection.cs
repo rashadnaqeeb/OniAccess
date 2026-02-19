@@ -4,7 +4,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Reads liquid plumbing infrastructure (pipes, bridges) at a cell.
 	/// </summary>
-	public class PlumbingSection : ICellSection {
+	public class PlumbingSection: ICellSection {
 		private static readonly int[] _layers = {
 			(int)ObjectLayer.LiquidConduit, (int)ObjectLayer.LiquidConduitConnection
 		};
