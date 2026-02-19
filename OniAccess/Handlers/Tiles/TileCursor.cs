@@ -244,15 +244,13 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private string PrependRoomName(string content) {
-			string roomName = null;
 			var cavity = Game.Instance.roomProber.GetCavityForCell(_cell);
-			if (cavity?.room != null)
-				roomName = cavity.room.roomType.Name;
+			string roomName = cavity?.room != null
+				? cavity.room.roomType.Name
+				: (string)STRINGS.ONIACCESS.TILE_CURSOR.NO_ROOM;
 			if (roomName == _lastRoomName)
 				return content;
 			_lastRoomName = roomName;
-			if (roomName == null)
-				return content;
 			return roomName + ", " + content;
 		}
 

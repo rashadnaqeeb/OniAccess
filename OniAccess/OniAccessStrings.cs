@@ -169,6 +169,7 @@ namespace STRINGS {
 			public static LocString COORD_APPEND = "coordinates append";
 			public static LocString COORD_PREPEND = "coordinates prepend";
 			public static LocString OVERLAY_NONE = "default view";
+			public static LocString NO_ROOM = "no room";
 		}
 
 		public class VIDEO {
