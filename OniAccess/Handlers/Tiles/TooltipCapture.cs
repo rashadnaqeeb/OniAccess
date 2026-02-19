@@ -82,6 +82,87 @@ namespace OniAccess.Handlers.Tiles {
 		internal static System.Collections.Generic.IReadOnlyList<string> GetTooltipLines()
 			=> _capturedLines;
 
+		/// <summary>
+		/// Return the most relevant tooltip block for a quick summary.
+		/// Priority: overlay-specific block, then building, then first block.
+		/// Returns null when no tooltip is captured.
+		/// </summary>
+		internal static string GetPrioritySummary(int cell) {
+			var lines = _capturedLines;
+			if (lines == null || lines.Count == 0) return null;
+			if (lines.Count == 1) return lines[0];
+
+			var buildingNames = GetBuildingNames(cell);
+
+			// Overlay blocks are drawn first. If the active overlay produced
+			// one, lines[0] is the overlay block. Guard against false
+			// positives by checking lines[0] doesn't start with a building
+			// name (overlay titles like "Decor" never match building names).
+			if (HasOverlayTooltipBlock(cell)
+				&& !MatchesAnyName(lines[0], buildingNames))
+				return lines[0];
+
+			if (buildingNames.Count > 0) {
+				for (int i = 0; i < lines.Count; i++) {
+					if (MatchesAnyName(lines[i], buildingNames))
+						return lines[i];
+				}
+			}
+
+			return lines[0];
+		}
+
+		/// <summary>
+		/// Whether the active overlay draws its own tooltip block before
+		/// the entity loop in SelectToolHoverTextCard.UpdateHoverElements.
+		/// </summary>
+		private static bool HasOverlayTooltipBlock(int cell) {
+			if (OverlayScreen.Instance == null) return false;
+			var mode = OverlayScreen.Instance.GetMode();
+
+			if (mode == OverlayModes.Decor.ID) return true;
+			if (mode == OverlayModes.Light.ID) return true;
+			if (mode == OverlayModes.Radiation.ID) return true;
+			if (mode == OverlayModes.Logic.ID) return true;
+			if (mode == OverlayModes.Rooms.ID)
+				return Game.Instance != null
+					&& Game.Instance.roomProber != null
+					&& Game.Instance.roomProber.GetCavityForCell(cell) != null;
+			if (mode == OverlayModes.Temperature.ID
+				&& Game.Instance != null
+				&& Game.Instance.temperatureOverlayMode
+					== Game.TemperatureOverlayModes.HeatFlow
+				&& !Grid.Solid[cell])
+				return true;
+			return false;
+		}
+
+		private static List<string> GetBuildingNames(int cell) {
+			var names = new List<string>(3);
+			AddBuildingName(cell, (int)ObjectLayer.Building, names);
+			AddBuildingName(cell, (int)ObjectLayer.FoundationTile, names);
+			AddBuildingName(cell, (int)ObjectLayer.Backwall, names);
+			return names;
+		}
+
+		private static void AddBuildingName(
+				int cell, int layer, List<string> names) {
+			var go = Grid.Objects[cell, layer];
+			if (go == null) return;
+			string name = go.GetProperName();
+			if (!string.IsNullOrEmpty(name))
+				names.Add(name);
+		}
+
+		private static bool MatchesAnyName(string line, List<string> names) {
+			for (int i = 0; i < names.Count; i++) {
+				if (line.StartsWith(names[i],
+						System.StringComparison.OrdinalIgnoreCase))
+					return true;
+			}
+			return false;
+		}
+
 		internal static void Reset() {
 			_blocks.Clear();
 			_currentBlock = null;

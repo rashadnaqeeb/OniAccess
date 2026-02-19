@@ -166,13 +166,14 @@ namespace OniAccess.Handlers.Tiles {
 					(string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 				return;
 			}
-			var lines = TooltipCapture.GetTooltipLines();
-			if (lines == null || lines.Count == 0) {
+			string summary = TooltipCapture.GetPrioritySummary(
+				TileCursor.Instance.Cell);
+			if (summary == null) {
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP);
 				return;
 			}
-			SpeechPipeline.SpeakInterrupt(lines[0]);
+			SpeechPipeline.SpeakInterrupt(summary);
 		}
 
 		private void OpenTooltipBrowser() {
