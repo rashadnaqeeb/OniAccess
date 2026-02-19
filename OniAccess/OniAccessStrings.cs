@@ -62,7 +62,8 @@ namespace STRINGS {
 			public static LocString MOVE_CURSOR = "Move tile cursor";
 			public static LocString READ_COORDS = "Read coordinates";
 			public static LocString CYCLE_COORD_MODE = "Cycle coordinate display";
-			public static LocString READ_TOOLTIP = "Browse hover tooltip";
+			public static LocString READ_TOOLTIP_SUMMARY = "Read first tooltip entry";
+			public static LocString READ_TOOLTIP = "Browse all tooltip entries";
 
 			public class TOOLS_HELP {
 				public static LocString OPEN_TOOL_MENU = "Open tool menu";

@@ -212,7 +212,8 @@ These are only relevant if debug mode is active, but listed for completeness to 
 | Context help | F12 | 1 | Not used by overlays (F1-F11), not used by game. NOTE: Conflicts with Steam Screenshot -- users may need to rebind in Steam |
 | Read coordinates | K | tile | Overwrites Clear (Sweep) tool hotkey (tools are activated through the mod's tool menu). Reads current cell X,Y position |
 | Cycle coordinate mode | Shift+K | tile | Cycles Off -> Append -> Prepend -> Off. Attaches coordinates to glance announcements |
-| Read hover tooltip | I | tile | Overwrites Disinfect tool hotkey (tools are activated through the mod's tool menu). Reads game's hover tooltip text |
+| Read tooltip summary | I | tile | Overwrites Disinfect tool hotkey (tools are activated through the mod's tool menu). Speaks first block of hover tooltip |
+| Browse hover tooltip | Shift+I | tile | Opens tooltip browser with full hover tooltip broken into navigable sections |
 
 Further hotkeys assigned per-phase as features are built.
 
