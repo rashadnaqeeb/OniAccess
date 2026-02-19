@@ -89,7 +89,7 @@ namespace OniAccess.Tests {
 			results.Add(MatchTierNoMatch());
 			results.Add(SearchTierOrdering());
 
-			// --- TextFilter (12 ported + 3 new edge cases) ---
+			// --- TextFilter (12 ported + 4 new edge cases) ---
 			TextFilter.RegisterSprite("warning", "warning:");
 			TextFilter.RegisterSprite("logic_signal_green", "green signal");
 			TextFilter.RegisterSprite("logic_signal_red", "red signal");
@@ -110,6 +110,7 @@ namespace OniAccess.Tests {
 			results.Add(TextFilterMismatchedTags());
 			results.Add(TextFilterSpriteNameCaseInsensitive());
 			results.Add(TextFilterReplacesMasculineOrdinalDegree());
+			results.Add(TextFilterPreservesNumericBrackets());
 
 			// --- Log class (5 new) ---
 			results.Add(LogDebugFormat());
@@ -1078,6 +1079,12 @@ namespace OniAccess.Tests {
 			string result = TextFilter.FilterForSpeech("21.9 \u00BAC");
 			bool ok = result == "21.9 \u00B0C";
 			return Assert("TextFilterReplacesMasculineOrdinalDegree", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TextFilterPreservesNumericBrackets() {
+			string result = TextFilter.FilterForSpeech("Growing [45%]");
+			bool ok = result == "Growing 45%";
+			return Assert("TextFilterPreservesNumericBrackets", ok, $"got \"{result}\"");
 		}
 
 		// ========================================

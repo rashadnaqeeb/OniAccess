@@ -28,6 +28,10 @@ namespace OniAccess.Speech {
 		private static readonly Regex RichTextTagsRegex =
 			new Regex("<[^>]+>", RegexOptions.Compiled);
 
+		// Numeric bracket content like [45%] from status items
+		private static readonly Regex NumericBracketRegex =
+			new Regex(@"\[(\d[^\]]*)\]", RegexOptions.Compiled);
+
 		// TextMeshPro shorthand sprite tags like [icon_name]
 		private static readonly Regex TmpSpriteTagRegex =
 			new Regex(@"\[[^\]]+\]\s*", RegexOptions.Compiled);
@@ -74,10 +78,11 @@ namespace OniAccess.Speech {
 		/// 2. Extract link display text (before stripping tags)
 		/// 3. Strip hotkey placeholders
 		/// 4. Strip all remaining rich text tags
-		/// 5. Strip TMP bracket sprites
-		/// 6. Clean up empty brackets/parens
-		/// 7. Normalize whitespace
-		/// 8. Trim
+		/// 5. Extract numeric bracket content (e.g., [45%] -> 45%)
+		/// 6. Strip TMP bracket sprites
+		/// 7. Clean up empty brackets/parens
+		/// 8. Normalize whitespace
+		/// 9. Trim
 		/// </summary>
 		public static string FilterForSpeech(string text) {
 			if (string.IsNullOrEmpty(text)) return "";
@@ -112,17 +117,20 @@ namespace OniAccess.Speech {
 			// 4. Strip all remaining rich text tags
 			text = RichTextTagsRegex.Replace(text, "");
 
-			// 5. Strip TMP bracket sprites
+			// 5. Extract numeric bracket content (e.g., [45%] -> 45%)
+			text = NumericBracketRegex.Replace(text, "$1");
+
+			// 6. Strip TMP bracket sprites
 			text = TmpSpriteTagRegex.Replace(text, "");
 
-			// 6. Clean up empty brackets/parens left behind
+			// 7. Clean up empty brackets/parens left behind
 			text = text.Replace("[]", "");
 			text = text.Replace("()", "");
 
-			// 7. Normalize whitespace
+			// 8. Normalize whitespace
 			text = WhitespaceRegex.Replace(text, " ");
 
-			// 8. Trim
+			// 9. Trim
 			return text.Trim();
 		}
 	}
