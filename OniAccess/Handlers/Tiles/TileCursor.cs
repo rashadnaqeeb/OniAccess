@@ -16,6 +16,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		private int _cell;
 		private bool _wasPanning;
+		private string _lastRoomName;
 		private readonly Overlays.OverlayProfileRegistry _registry;
 
 		public GlanceComposer ActiveToolComposer { get; set; }
@@ -145,15 +146,20 @@ namespace OniAccess.Handlers.Tiles {
 				return AttachCoordinates((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 
 			GlanceComposer composer = ActiveToolComposer;
+			HashedString mode = OverlayModes.None.ID;
 			if (composer == null) {
 				var overlayScreen = OverlayScreen.Instance;
-				var mode = overlayScreen != null ? overlayScreen.GetMode() : OverlayModes.None.ID;
+				mode = overlayScreen != null ? overlayScreen.GetMode() : OverlayModes.None.ID;
 				composer = _registry.GetComposer(mode);
 			}
 
 			string content = composer.Compose(_cell);
 			if (content == null)
 				content = $"{Grid.Element[_cell].name}, {Sections.ElementSection.FormatGlanceMass(Grid.Mass[_cell])}";
+
+			if (mode == OverlayModes.Rooms.ID)
+				content = PrependRoomName(content);
+
 			return AttachCoordinates(content);
 		}
 
@@ -231,6 +237,23 @@ namespace OniAccess.Handlers.Tiles {
 				default:
 					return content;
 			}
+		}
+
+		public void ResetRoomName() {
+			_lastRoomName = null;
+		}
+
+		private string PrependRoomName(string content) {
+			string roomName = null;
+			var cavity = Game.Instance.roomProber.GetCavityForCell(_cell);
+			if (cavity?.room != null)
+				roomName = cavity.room.roomType.Name;
+			if (roomName == _lastRoomName)
+				return content;
+			_lastRoomName = roomName;
+			if (roomName == null)
+				return content;
+			return roomName + ", " + content;
 		}
 
 		private static void PlayBoundarySound() {

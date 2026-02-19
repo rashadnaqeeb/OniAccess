@@ -84,6 +84,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private void OnOverlayChanged(HashedString newMode) {
+			TileCursor.Instance.ResetRoomName();
 			SpeechPipeline.SpeakInterrupt(_overlayRegistry.GetOverlayName(newMode));
 		}
 
