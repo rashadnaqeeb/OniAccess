@@ -25,6 +25,9 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 				string hardness = GameUtil.GetHardnessString(element);
 				if (!string.IsNullOrEmpty(hardness))
 					tokens.Add(hardness);
+				float mass = Grid.Mass[cell];
+				if (mass > 0f)
+					tokens.Add(GameUtil.GetFormattedMass(mass));
 			}
 
 			return tokens;
