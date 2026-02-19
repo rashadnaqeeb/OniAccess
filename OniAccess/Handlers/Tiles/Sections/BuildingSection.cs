@@ -89,7 +89,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		private static void ReadPorts(
 				GameObject go, Building building, int cell, List<string> tokens) {
 			int origin = Grid.PosToCell(building.transform.GetPosition());
-			ReadConduitPorts(go, building, origin, cell, tokens);
+			ReadOverlayDetails(go, building, origin, cell, tokens);
 			ReadAutomationPorts(building, origin, cell, tokens);
 			ReadRadboltPorts(building, origin, cell, tokens);
 		}
@@ -139,7 +139,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			}
 		}
 
-		private static void ReadConduitPorts(
+		private static void ReadOverlayDetails(
 				GameObject go, Building building, int origin, int cell,
 				List<string> tokens) {
 			if (OverlayScreen.Instance == null) return;
@@ -212,6 +212,12 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					if (Grid.OffsetCell(origin, rotated) == cell)
 						tokens.Add((string)STRINGS.ONIACCESS.GLANCE.POWER_OUTPUT);
 				}
+			}
+
+			if (activeMode == OverlayModes.TileMode.ID) {
+				var pe = go.GetComponent<PrimaryElement>();
+				if (pe != null)
+					tokens.Add(pe.Element.name);
 			}
 		}
 
