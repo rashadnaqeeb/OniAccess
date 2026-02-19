@@ -1,0 +1,33 @@
+using System.Collections.Generic;
+
+namespace OniAccess.Handlers.Tiles.Tools.Sections {
+	public class DigToolSection : ICellSection {
+		public IEnumerable<string> Read(int cell) {
+			var tokens = new List<string>();
+
+			var digGo = Grid.Objects[cell, (int)ObjectLayer.DigPlacer];
+			if (digGo != null && digGo.GetComponent<Diggable>() != null) {
+				var pri = digGo.GetComponent<Prioritizable>();
+				if (pri != null)
+					tokens.Add(string.Format(
+						(string)STRINGS.ONIACCESS.TOOLS.DIG_ORDER_PRIORITY,
+						pri.GetMasterPriority().priority_value));
+				else
+					tokens.Add((string)STRINGS.ONIACCESS.TOOLS.DIG_ORDER);
+			}
+
+			var element = Grid.Element[cell];
+			if (element != null) {
+				tokens.Add(element.name);
+				var tag = element.GetMaterialCategoryTag();
+				if (tag.IsValid)
+					tokens.Add(tag.ProperName());
+				string hardness = GameUtil.GetHardnessString(element);
+				if (!string.IsNullOrEmpty(hardness))
+					tokens.Add(hardness);
+			}
+
+			return tokens;
+		}
+	}
+}

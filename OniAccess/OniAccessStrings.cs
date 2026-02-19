@@ -63,6 +63,17 @@ namespace STRINGS {
 			public static LocString READ_COORDS = "Read coordinates";
 			public static LocString CYCLE_COORD_MODE = "Cycle coordinate display";
 			public static LocString READ_TOOLTIP = "Browse hover tooltip";
+
+			public class TOOLS_HELP {
+				public static LocString OPEN_TOOL_MENU = "Open tool menu";
+				public static LocString SET_CORNER = "Set rectangle corner";
+				public static LocString CLEAR_RECT = "Clear rectangle at cursor";
+				public static LocString CONFIRM_TOOL = "Confirm and apply tool";
+				public static LocString CANCEL_TOOL = "Cancel tool";
+				public static LocString SET_PRIORITY = "Set priority";
+				public static LocString OPEN_FILTER = "Change filter";
+				public static LocString JUMP_SELECTION = "Jump to selection boundary";
+			}
 		}
 
 		public class PANELS {
@@ -168,6 +179,53 @@ namespace STRINGS {
 			public static LocString CLOSED = "closed";
 		}
 
+		public class TOOLS {
+			public static LocString PICKER_NAME = "tool menu";
+			public static LocString FILTER_NAME = "tool filter";
+			public static LocString CORNER_SET = "corner set";
+			public static LocString RECT_SUMMARY = "{0} by {1}, {2} valid, {3} invalid";
+			public static LocString ENTITY_RECT_SUMMARY = "{0} creatures";
+			public static LocString SELECTED = "selected";
+			public static LocString NO_CHANGE = "no change";
+			public static LocString CANCELED = "canceled";
+			public static LocString NO_VALID_CELLS = "no valid cells";
+			public static LocString CONFIRM_DIG = "marked {0} for digging at priority {1}";
+			public static LocString CONFIRM_MOP = "marked {0} for mopping at priority {1}";
+			public static LocString CONFIRM_DISINFECT = "marked {0} for disinfection at priority {1}";
+			public static LocString CONFIRM_SWEEP = "marked {0} for sweeping at priority {1}";
+			public static LocString CONFIRM_DECONSTRUCT = "marked {0} for deconstruction at priority {1}";
+			public static LocString CONFIRM_CANCEL = "cancelled {0} orders";
+			public static LocString CONFIRM_PRIORITIZE = "updated {0} orders to priority {1}";
+			public static LocString CONFIRM_HARVEST = "set harvest on {0} plants at priority {1}";
+			public static LocString CONFIRM_ATTACK = "marked {0} for attack at priority {1}";
+			public static LocString CONFIRM_CAPTURE = "marked {0} for capture at priority {1}";
+			public static LocString CONFIRM_EMPTY_PIPE = "marked {0} pipe cells for emptying at priority {1}";
+			public static LocString CONFIRM_DISCONNECT = "disconnected {0} segments";
+			public static LocString PRIORITY_BASIC = "priority {0}";
+			public static LocString PRIORITY_EMERGENCY = "emergency priority";
+			public static LocString DIG_ORDER = "dig order";
+			public static LocString DIG_ORDER_PRIORITY = "dig order, priority {0}";
+			public static LocString MOP_ORDER = "mop order";
+			public static LocString MOP_ORDER_PRIORITY = "mop order, priority {0}";
+			public static LocString MARKED_DISINFECT = "marked for disinfect";
+			public static LocString MARKED_SWEEP = "marked for sweep";
+			public static LocString MARKED_SWEEP_PRIORITY = "marked for sweep, priority {0}";
+			public static LocString MARKED_ATTACK = "marked for attack";
+			public static LocString MARKED_CAPTURE = "marked for capture";
+			public static LocString MARKED_DECONSTRUCT = "marked for deconstruct";
+			public static LocString MARKED_DECONSTRUCT_PRIORITY = "marked for deconstruct, priority {0}";
+			public static LocString MARKED_EMPTY = "marked for emptying";
+			public static LocString DISINFECT_OBJECT = "{0}, {1}, {2}";
+			public static LocString PIPE_EMPTY = "{0}, empty";
+			public static LocString PIPE_CONTENTS = "{0}, {1}, {2}";
+			public static LocString DISCONNECT_TOO_FAR = "adjacent cells only";
+			public static LocString FILTER_CHANGED = "filter changed";
+			public static LocString RECT_CLEARED = "rectangle cleared";
+			public static LocString ACTIVATION_PLAIN = "{0} tool";
+			public static LocString ACTIVATION = "{0} tool, {1}";
+			public static LocString ACTIVATION_WITH_FILTER = "{0} tool, {1}, {2}";
+		}
+
 		public class GLANCE {
 			public static LocString UNDER_CONSTRUCTION = "constructing {0}";
 
@@ -199,6 +257,12 @@ namespace STRINGS {
 
 			public static LocString RADBOLT_INPUT = "radbolt input";
 			public static LocString RADBOLT_OUTPUT = "radbolt output";
+
+			public static LocString CONDUIT_LIQUID = "liquid";
+			public static LocString CONDUIT_GAS = "gas";
+			public static LocString CONDUIT_SOLID = "solid";
+			public static LocString WIRE = "wire";
+			public static LocString UNKNOWN_ELEMENT = "unknown";
 
 			public static LocString NUMBERED_PORT = "{0} {1}";
 

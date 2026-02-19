@@ -19,6 +19,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrow keys", (string)STRINGS.ONIACCESS.HELP.MOVE_CURSOR),
+			new HelpEntry("T", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_TOOL_MENU),
 			new HelpEntry("Q", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
 			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.READ_COORDS),
 			new HelpEntry("Shift+`", (string)STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE),
@@ -35,6 +36,7 @@ namespace OniAccess.Handlers.Tiles {
 			if (!_hasActivated) {
 				_hasActivated = true;
 				_overlayRegistry = Overlays.OverlayProfileRegistry.Build();
+				Tools.ToolProfileRegistry.Build();
 				TileCursor.Create(_overlayRegistry);
 				SpeechPipeline.SpeakQueued(DisplayName);
 				try {
@@ -45,9 +47,13 @@ namespace OniAccess.Handlers.Tiles {
 			}
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
+			if (Game.Instance != null)
+				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
 		}
 
 		public override void OnDeactivate() {
+			if (Game.Instance != null)
+				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
 			TileCursor.Destroy();
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
@@ -61,6 +67,12 @@ namespace OniAccess.Handlers.Tiles {
 			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null)
 				SpeechPipeline.SpeakInterrupt(arrived);
+
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.T)
+				&& !InputUtil.AnyModifierHeld()) {
+				OpenToolPicker();
+				return;
+			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
 				&& !InputUtil.AnyModifierHeld()) {
@@ -100,6 +112,21 @@ namespace OniAccess.Handlers.Tiles {
 			string speech = TileCursor.Instance.Move(direction);
 			if (speech != null)
 				SpeechPipeline.SpeakInterrupt(speech);
+		}
+
+		private void OpenToolPicker() {
+			if (!(PlayerController.Instance.ActiveTool is SelectTool))
+				SelectTool.Instance.Activate();
+			HandlerStack.Push(new OniAccess.Handlers.Tools.ToolPickerHandler());
+		}
+
+		private void OnActiveToolChanged(object data) {
+			var tool = data as InterfaceTool;
+			if (tool == null || tool is SelectTool) return;
+			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolHandler) return;
+			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolPickerHandler) return;
+			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolFilterHandler) return;
+			HandlerStack.Push(new OniAccess.Handlers.Tools.ToolHandler());
 		}
 
 		private void OpenTooltipBrowser() {

@@ -18,6 +18,8 @@ namespace OniAccess.Handlers.Tiles {
 		private bool _wasPanning;
 		private readonly Overlays.OverlayProfileRegistry _registry;
 
+		public GlanceComposer ActiveToolComposer { get; set; }
+
 		public TileCursor(Overlays.OverlayProfileRegistry registry) {
 			_registry = registry;
 		}
@@ -126,6 +128,14 @@ namespace OniAccess.Handlers.Tiles {
 			return null;
 		}
 
+		public string JumpTo(int cell) {
+			if (!IsInWorldBounds(cell)) return null;
+			_cell = cell;
+			LockMouseToCell(_cell);
+			SnapCameraToCell(_cell);
+			return BuildCellSpeech();
+		}
+
 		// ========================================
 		// PRIVATE
 		// ========================================
@@ -134,9 +144,14 @@ namespace OniAccess.Handlers.Tiles {
 			if (!Grid.IsVisible(_cell))
 				return AttachCoordinates((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 
-			var overlayScreen = OverlayScreen.Instance;
-			var mode = overlayScreen != null ? overlayScreen.GetMode() : OverlayModes.None.ID;
-			string content = _registry.GetComposer(mode).Compose(_cell);
+			GlanceComposer composer = ActiveToolComposer;
+			if (composer == null) {
+				var overlayScreen = OverlayScreen.Instance;
+				var mode = overlayScreen != null ? overlayScreen.GetMode() : OverlayModes.None.ID;
+				composer = _registry.GetComposer(mode);
+			}
+
+			string content = composer.Compose(_cell);
 			if (content == null)
 				content = $"{Grid.Element[_cell].name}, {Sections.ElementSection.FormatGlanceMass(Grid.Mass[_cell])}";
 			return AttachCoordinates(content);
@@ -163,7 +178,7 @@ namespace OniAccess.Handlers.Tiles {
 			return 0;
 		}
 
-		private static int GetNeighbor(int cell, Direction direction) {
+		internal static int GetNeighbor(int cell, Direction direction) {
 			switch (direction) {
 				case Direction.Up: return Grid.CellAbove(cell);
 				case Direction.Down: return Grid.CellBelow(cell);
