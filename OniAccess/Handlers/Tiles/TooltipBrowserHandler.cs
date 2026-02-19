@@ -3,10 +3,10 @@ using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Tiles {
 	/// <summary>
-	/// Navigable browser for tooltip lines. Pushed onto the HandlerStack when Q
+	/// Navigable browser for tooltip lines. Pushed onto the HandlerStack when I
 	/// is pressed in TileCursorHandler. Extends BaseMenuHandler for 1D navigation
 	/// with type-ahead search, Home/End, and wrap sounds. No KScreen.
-	/// Escape or Q closes the browser and returns to the tile cursor.
+	/// Escape or I closes the browser and returns to the tile cursor.
 	/// </summary>
 	public class TooltipBrowserHandler : BaseMenuHandler {
 		private readonly IReadOnlyList<string> _lines;
@@ -48,7 +48,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void Tick() {
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)) {
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)) {
 				Close();
 				return;
 			}
@@ -85,7 +85,7 @@ namespace OniAccess.Handlers.Tiles {
 				new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
 				new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
 				new HelpEntry("Escape", STRINGS.ONIACCESS.HELP.CLOSE),
-				new HelpEntry("Q", STRINGS.ONIACCESS.HELP.CLOSE),
+				new HelpEntry("I", STRINGS.ONIACCESS.HELP.CLOSE),
 			}.AsReadOnly();
 		}
 	}

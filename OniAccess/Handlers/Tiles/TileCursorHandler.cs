@@ -7,8 +7,8 @@ namespace OniAccess.Handlers.Tiles {
 	/// BaseScreenHandler bound to the Hud KScreen. Active when the game world
 	/// is loaded and no modal menu is on top.
 	///
-	/// Routes arrow keys to TileCursor movement, backtick to coordinate
-	/// reading, Shift+backtick to coordinate mode cycling.
+	/// Routes arrow keys to TileCursor movement, K to coordinate
+	/// reading, Shift+K to coordinate mode cycling.
 	///
 	/// CapturesAllInput = false: game hotkeys (overlays, tools, WASD camera,
 	/// pause) pass through.
@@ -20,9 +20,9 @@ namespace OniAccess.Handlers.Tiles {
 
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.T),
-			new ConsumedKey(KKeyCode.Q),
-			new ConsumedKey(KKeyCode.BackQuote),
-			new ConsumedKey(KKeyCode.BackQuote, Modifier.Shift),
+			new ConsumedKey(KKeyCode.I),
+			new ConsumedKey(KKeyCode.K),
+			new ConsumedKey(KKeyCode.K, Modifier.Shift),
 			new ConsumedKey(KKeyCode.UpArrow),
 			new ConsumedKey(KKeyCode.DownArrow),
 			new ConsumedKey(KKeyCode.LeftArrow),
@@ -33,9 +33,9 @@ namespace OniAccess.Handlers.Tiles {
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrow keys", (string)STRINGS.ONIACCESS.HELP.MOVE_CURSOR),
 			new HelpEntry("T", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_TOOL_MENU),
-			new HelpEntry("Q", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
-			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.READ_COORDS),
-			new HelpEntry("Shift+`", (string)STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE),
+			new HelpEntry("I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
+			new HelpEntry("K", (string)STRINGS.ONIACCESS.HELP.READ_COORDS),
+			new HelpEntry("Shift+K", (string)STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;
@@ -121,14 +121,14 @@ namespace OniAccess.Handlers.Tiles {
 				SpeakMove(Direction.Right);
 				return;
 			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.BackQuote)) {
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.K)) {
 				if (InputUtil.ShiftHeld())
 					SpeechPipeline.SpeakInterrupt(TileCursor.Instance.CycleMode());
 				else
 					SpeechPipeline.SpeakInterrupt(TileCursor.Instance.ReadCoordinates());
 				return;
 			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)
 				&& !InputUtil.AnyModifierHeld()) {
 				OpenTooltipBrowser();
 				return;

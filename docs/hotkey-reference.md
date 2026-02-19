@@ -64,21 +64,23 @@ ONI organizes bindings into groups. Each group represents a context where those 
 
 ## Tool Commands
 
+All tool activation hotkeys are safe to overwrite. The mod activates tools through its own interface, so the original shortcut keys are unused by blind players.
+
 | Key | Action | Notes |
 |-----|--------|-------|
-| G | Dig | |
-| C | BuildingCancel | |
-| X | BuildingDeconstruct | |
-| P | Prioritize | |
-| M | Mop | |
-| K | Clear (Sweep) | K is also a common "read info" key in accessibility mods |
-| I | Disinfect | |
-| T | Attack | |
-| N | Capture (Wrangle) | NOTE: conflicts with ManageDiagnostics -- context-dependent |
-| Y | Harvest | |
-| Insert | Empty Pipe | ALSO a screen reader modifier -- see avoidance list below |
-| B | CopyBuilding | |
-| O | RotateBuilding | Active when placing a building |
+| G | Dig | Safe to overwrite |
+| C | BuildingCancel | Safe to overwrite |
+| X | BuildingDeconstruct | Safe to overwrite |
+| P | Prioritize | Safe to overwrite |
+| M | Mop | Safe to overwrite |
+| K | Clear (Sweep) | Safe to overwrite |
+| I | Disinfect | Safe to overwrite |
+| T | Attack | Safe to overwrite |
+| N | Capture (Wrangle) | Safe to overwrite. NOTE: also bound to ManageDiagnostics in Management context |
+| Y | Harvest | Safe to overwrite |
+| Insert | Empty Pipe | ALSO a screen reader modifier -- avoid |
+| B | CopyBuilding | Safe to overwrite |
+| O | RotateBuilding | Active when placing a building. Safe to overwrite |
 | Shift (hold) | Drag Straight | Constrains tool drag to straight lines |
 | Ctrl+S | ScreenShot1x | |
 
@@ -208,9 +210,9 @@ These are only relevant if debug mode is active, but listed for completeness to 
 |--------|-----|-------|-----------|
 | Toggle mod on/off | Ctrl+Shift+F12 | 1 | No game conflict, works in all contexts. NOTE: Ctrl+Shift+F12 is Debug Trigger Error in debug mode -- low risk since debug mode is rare |
 | Context help | F12 | 1 | Not used by overlays (F1-F11), not used by game. NOTE: Conflicts with Steam Screenshot -- users may need to rebind in Steam |
-| Read coordinates | ` (backtick) | tile | Overwrites debug profiler toggle (debug mode only, opt-in and rare). Reads current cell X,Y position |
-| Cycle coordinate mode | Shift+` | tile | Cycles Off -> Append -> Prepend -> Off. Attaches coordinates to glance announcements |
-| Read hover tooltip | Q | tile | Overwrites BuildMenuKeyQ (active only in build submenu context, not tile cursor). Reads game's hover tooltip text |
+| Read coordinates | K | tile | Overwrites Clear (Sweep) tool hotkey (tools are activated through the mod's tool menu). Reads current cell X,Y position |
+| Cycle coordinate mode | Shift+K | tile | Cycles Off -> Append -> Prepend -> Off. Attaches coordinates to glance announcements |
+| Read hover tooltip | I | tile | Overwrites Disinfect tool hotkey (tools are activated through the mod's tool menu). Reads game's hover tooltip text |
 
 Further hotkeys assigned per-phase as features are built.
 
