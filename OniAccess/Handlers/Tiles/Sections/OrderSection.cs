@@ -174,13 +174,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		private static bool IsMarkedForEmptying(IEmptyConduitWorkable workable) {
-			try {
-				return HarmonyLib.Traverse.Create(workable)
-					.Field<float>("elapsedTime").Value >= 0f;
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"OrderSection.IsMarkedForEmptying: {ex}");
-				return false;
-			}
+			var selectable = ((MonoBehaviour)workable).GetComponent<KSelectable>();
+			var group = selectable.GetStatusItemGroup();
+			return group.HasStatusItemID("EmptyLiquidConduit")
+				|| group.HasStatusItemID("EmptyGasConduit");
 		}
 
 		private static string FormatOrder(string label, GameObject go) {
