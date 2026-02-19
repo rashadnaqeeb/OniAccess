@@ -22,7 +22,13 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 			(int)ObjectLayer.Pickupables,
 		};
 
-		public IEnumerable<string> Read(int cell) {
+		private static readonly int[] BuildingLayers = {
+			(int)ObjectLayer.Building,
+			(int)ObjectLayer.FoundationTile,
+			(int)ObjectLayer.Backwall,
+		};
+
+		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tool = PlayerController.Instance.ActiveTool as FilteredDragTool;
 			var tokens = new List<string>();
 			foreach (int layer in Layers) {
@@ -41,21 +47,23 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 						ReadPrioritizable(obj, tool, tokens);
 					}
 				} else {
-					ReadPrioritizable(go, tool, tokens);
+					if (ReadPrioritizable(go, tool, tokens)
+						&& System.Array.IndexOf(BuildingLayers, layer) >= 0)
+						ctx.Claimed.Add(go);
 				}
 			}
 			return tokens;
 		}
 
-		private static void ReadPrioritizable(UnityEngine.GameObject go,
+		private static bool ReadPrioritizable(UnityEngine.GameObject go,
 			FilteredDragTool tool, List<string> tokens) {
 			if (tool != null) {
 				string filterLayer = tool.GetFilterLayerFromGameObject(go);
-				if (!tool.IsActiveLayer(filterLayer)) return;
+				if (!tool.IsActiveLayer(filterLayer)) return false;
 			}
 
 			var pri = go.GetComponent<Prioritizable>();
-			if (pri == null || !pri.showIcon || !pri.IsPrioritizable()) return;
+			if (pri == null || !pri.showIcon || !pri.IsPrioritizable()) return false;
 
 			int priority = pri.GetMasterPriority().priority_value;
 
@@ -63,7 +71,7 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 			if (diggable != null) {
 				tokens.Add(string.Format(
 					(string)STRINGS.ONIACCESS.TOOLS.DIG_ORDER_PRIORITY, priority));
-				return;
+				return true;
 			}
 
 			var constructable = go.GetComponent<Constructable>();
@@ -74,28 +82,28 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 					(string)STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION, name);
 				tokens.Add(string.Format(
 					(string)STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY, label, priority));
-				return;
+				return true;
 			}
 
 			var deconstructable = go.GetComponent<Deconstructable>();
 			if (deconstructable != null && deconstructable.IsMarkedForDeconstruction()) {
 				tokens.Add(string.Format(
 					(string)STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT_PRIORITY, priority));
-				return;
+				return true;
 			}
 
 			var clearable = go.GetComponent<Clearable>();
 			if (clearable != null) {
 				tokens.Add(string.Format(
 					(string)STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY, priority));
-				return;
+				return true;
 			}
 
 			var moppable = go.GetComponent<Moppable>();
 			if (moppable != null) {
 				tokens.Add(string.Format(
 					(string)STRINGS.ONIACCESS.TOOLS.MOP_ORDER_PRIORITY, priority));
-				return;
+				return true;
 			}
 
 			var sel2 = go.GetComponent<KSelectable>();
@@ -103,7 +111,9 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 				tokens.Add(string.Format(
 					(string)STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY,
 					sel2.GetName(), priority));
+				return true;
 			}
+			return false;
 		}
 	}
 }

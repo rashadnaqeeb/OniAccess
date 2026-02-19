@@ -11,6 +11,6 @@ namespace OniAccess.Handlers.Tiles {
 	/// from a LocString or game-provided string.
 	/// </summary>
 	public interface ICellSection {
-		IEnumerable<string> Read(int cell);
+		IEnumerable<string> Read(int cell, CellContext ctx);
 	}
 }

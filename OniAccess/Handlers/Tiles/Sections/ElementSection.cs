@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// see the element through background buildings.
 	/// </summary>
 	public class ElementSection : ICellSection {
-		public IEnumerable<string> Read(int cell) {
+		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			if (Grid.Objects[cell, (int)ObjectLayer.Building] != null)
 				return System.Array.Empty<string>();
 			if (Grid.Objects[cell, (int)ObjectLayer.FoundationTile] != null)

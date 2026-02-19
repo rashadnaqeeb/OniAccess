@@ -8,7 +8,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// Skips duplicants and critters (handled by EntitySection).
 	/// </summary>
 	public class DebrisSection : ICellSection {
-		public IEnumerable<string> Read(int cell) {
+		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 			if (go == null) return System.Array.Empty<string>();
 

@@ -7,7 +7,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// Traverses ObjectLayerListItem linked lists for critters.
 	/// </summary>
 	public class EntitySection : ICellSection {
-		public IEnumerable<string> Read(int cell) {
+		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
 			ReadMinions(cell, tokens);
 			ReadCritters(cell, tokens);

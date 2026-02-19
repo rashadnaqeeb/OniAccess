@@ -13,20 +13,21 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// matching overlay is active).
 	/// </summary>
 	public class BuildingSection : ICellSection {
-		public IEnumerable<string> Read(int cell) {
+		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
 			try {
 				var buildingGo = Grid.Objects[cell, (int)ObjectLayer.Building];
 				var foundationGo = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
 				var backwallGo = Grid.Objects[cell, (int)ObjectLayer.Backwall];
 
-				if (buildingGo != null)
+				if (buildingGo != null && !ctx.Claimed.Contains(buildingGo))
 					ReadBuilding(buildingGo, cell, tokens);
 
-				if (foundationGo != null && foundationGo != buildingGo)
+				if (foundationGo != null && foundationGo != buildingGo
+					&& !ctx.Claimed.Contains(foundationGo))
 					ReadBuilding(foundationGo, cell, tokens);
 
-				if (backwallGo != null) {
+				if (backwallGo != null && !ctx.Claimed.Contains(backwallGo)) {
 					var selectable = backwallGo.GetComponent<KSelectable>();
 					if (selectable != null)
 						tokens.Add(selectable.GetName());

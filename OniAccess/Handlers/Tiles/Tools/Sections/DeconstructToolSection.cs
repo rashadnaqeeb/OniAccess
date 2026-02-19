@@ -16,7 +16,7 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 			(int)ObjectLayer.LogicWire,
 		};
 
-		public IEnumerable<string> Read(int cell) {
+		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tool = PlayerController.Instance.ActiveTool as FilteredDragTool;
 			var tokens = new List<string>();
 			foreach (int layer in Layers) {

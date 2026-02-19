@@ -8,7 +8,7 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 			(int)ObjectLayer.Pickupables,
 		};
 
-		public IEnumerable<string> Read(int cell) {
+		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
 			foreach (int layer in Layers)
 				ReadLayer(cell, layer, tokens);

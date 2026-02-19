@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// Build orders are handled by BuildingSection (Constructable check).
 	/// </summary>
 	public class OrderSection : ICellSection {
-		public IEnumerable<string> Read(int cell) {
+		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var parts = new List<string>();
 			CollectDigOrder(cell, parts);
 			CollectMopOrder(cell, parts);

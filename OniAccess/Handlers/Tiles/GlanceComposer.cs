@@ -36,10 +36,11 @@ namespace OniAccess.Handlers.Tiles {
 		/// Fog-of-war gating is the caller's responsibility.
 		/// </summary>
 		public string Compose(int cell) {
+			var ctx = new CellContext();
 			var tokens = new List<string>();
 			foreach (var section in _sections) {
 				try {
-					foreach (var token in section.Read(cell)) {
+					foreach (var token in section.Read(cell, ctx)) {
 						if (!string.IsNullOrEmpty(token))
 							tokens.Add(token);
 					}
