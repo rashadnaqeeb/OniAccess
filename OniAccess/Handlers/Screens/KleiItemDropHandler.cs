@@ -27,6 +27,20 @@ namespace OniAccess.Handlers.Screens {
 		private bool _announcedError;
 		private string _lastAcceptButtonText;
 
+		// Cached component references resolved once in OnActivate via Traverse.
+		// These are live Unity component refs (allowed by caching rules);
+		// visibility/content is always read fresh from the components themselves.
+		private UnityEngine.RectTransform _acceptButtonRect;
+		private KButton _acceptButton;
+		private KButton _acknowledgeButton;
+		private UnityEngine.RectTransform _itemTextContainer;
+		private LocText _itemNameLabel;
+		private LocText _itemRarityLabel;
+		private LocText _itemCategoryLabel;
+		private LocText _itemDescriptionLabel;
+		private LocText _errorMessage;
+		private KButton _closeButton;
+
 		public KleiItemDropHandler(KScreen screen) : base(screen) {
 			HelpEntries = BuildHelpEntries();
 		}
@@ -35,28 +49,37 @@ namespace OniAccess.Handlers.Screens {
 			_announcedItemInfo = false;
 			_announcedError = false;
 			_lastAcceptButtonText = null;
+
+			var t = Traverse.Create(_screen);
+			_acceptButtonRect = t.Field<UnityEngine.RectTransform>("acceptButtonRect").Value;
+			_acceptButton = t.Field<KButton>("acceptButton").Value;
+			_acknowledgeButton = t.Field<KButton>("acknowledgeButton").Value;
+			_itemTextContainer = t.Field<UnityEngine.RectTransform>("itemTextContainer").Value;
+			_itemNameLabel = t.Field<LocText>("itemNameLabel").Value;
+			_itemRarityLabel = t.Field<LocText>("itemRarityLabel").Value;
+			_itemCategoryLabel = t.Field<LocText>("itemCategoryLabel").Value;
+			_itemDescriptionLabel = t.Field<LocText>("itemDescriptionLabel").Value;
+			_errorMessage = t.Field<LocText>("errorMessage").Value;
+			_closeButton = t.Field<KButton>("closeButton").Value;
+
 			base.OnActivate();
 		}
 
 		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 
-			var t = Traverse.Create(screen);
-
 			// acceptButton — visible when acceptButtonRect is active and CanvasGroup alpha > 0.5
 			try {
-				var acceptButtonRect = t.Field<UnityEngine.RectTransform>("acceptButtonRect").Value;
-				if (acceptButtonRect != null && acceptButtonRect.gameObject.activeInHierarchy) {
-					var cg = acceptButtonRect.GetComponent<UnityEngine.CanvasGroup>();
+				if (_acceptButtonRect != null && _acceptButtonRect.gameObject.activeInHierarchy) {
+					var cg = _acceptButtonRect.GetComponent<UnityEngine.CanvasGroup>();
 					if (cg == null || cg.alpha > 0.5f) {
-						var acceptButton = t.Field<KButton>("acceptButton").Value;
-						if (acceptButton != null) {
-							string label = GetButtonLabel(acceptButton, (string)STRINGS.ONIACCESS.BUTTONS.ACCEPT);
+						if (_acceptButton != null) {
+							string label = GetButtonLabel(_acceptButton, (string)STRINGS.ONIACCESS.BUTTONS.ACCEPT);
 							_widgets.Add(new WidgetInfo {
 								Label = label,
-								Component = acceptButton,
+								Component = _acceptButton,
 								Type = WidgetType.Button,
-								GameObject = acceptButton.gameObject
+								GameObject = _acceptButton.gameObject
 							});
 						}
 					}
@@ -67,21 +90,19 @@ namespace OniAccess.Handlers.Screens {
 
 			// acknowledgeButton — visible when active and parent itemTextContainer has alpha > 0.5
 			try {
-				var acknowledgeButton = t.Field<KButton>("acknowledgeButton").Value;
-				if (acknowledgeButton != null && acknowledgeButton.gameObject.activeInHierarchy) {
-					var itemTextContainer = t.Field<UnityEngine.RectTransform>("itemTextContainer").Value;
+				if (_acknowledgeButton != null && _acknowledgeButton.gameObject.activeInHierarchy) {
 					bool visible = true;
-					if (itemTextContainer != null) {
-						var cg = itemTextContainer.GetComponent<UnityEngine.CanvasGroup>();
+					if (_itemTextContainer != null) {
+						var cg = _itemTextContainer.GetComponent<UnityEngine.CanvasGroup>();
 						if (cg != null && cg.alpha <= 0.5f) visible = false;
 					}
 					if (visible) {
-						string label = GetButtonLabel(acknowledgeButton, (string)STRINGS.UI.CONFIRMDIALOG.OK);
+						string label = GetButtonLabel(_acknowledgeButton, (string)STRINGS.UI.CONFIRMDIALOG.OK);
 						_widgets.Add(new WidgetInfo {
 							Label = label,
-							Component = acknowledgeButton,
+							Component = _acknowledgeButton,
 							Type = WidgetType.Button,
-							GameObject = acknowledgeButton.gameObject
+							GameObject = _acknowledgeButton.gameObject
 						});
 					}
 				}
@@ -90,15 +111,24 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			// closeButton — uses plain SetActive, no alpha fade
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", null, _widgets);
+			if (_closeButton != null && _closeButton.gameObject.activeInHierarchy) {
+				string label = null;
+				var locText = _closeButton.GetComponentInChildren<LocText>();
+				if (locText != null && !string.IsNullOrEmpty(locText.text))
+					label = locText.text;
+				_widgets.Add(new WidgetInfo {
+					Label = label,
+					Component = _closeButton,
+					Type = WidgetType.Button,
+					GameObject = _closeButton.gameObject
+				});
+			}
 
 			Log.Debug($"KleiItemDropHandler.DiscoverWidgets: {_widgets.Count} widgets");
 			return true;
 		}
 
 		public override void Tick() {
-			var t = Traverse.Create(_screen);
-
 			// Re-discover widgets (buttons appear/disappear via coroutines)
 			int prevCount = _widgets.Count;
 			DiscoverWidgets(_screen);
@@ -110,19 +140,15 @@ namespace OniAccess.Handlers.Screens {
 
 			// Detect item reveal: itemNameLabel goes from empty to populated
 			try {
-				var itemNameLabel = t.Field<LocText>("itemNameLabel").Value;
-				if (itemNameLabel != null) {
-					string nameText = itemNameLabel.text;
+				if (_itemNameLabel != null) {
+					string nameText = _itemNameLabel.text;
 					if (!string.IsNullOrEmpty(nameText)) {
 						if (!_announcedItemInfo) {
 							_announcedItemInfo = true;
-							var itemRarityLabel = t.Field<LocText>("itemRarityLabel").Value;
-							var itemCategoryLabel = t.Field<LocText>("itemCategoryLabel").Value;
-							var itemDescriptionLabel = t.Field<LocText>("itemDescriptionLabel").Value;
 
-							string rarity = itemRarityLabel != null ? itemRarityLabel.text : "";
-							string category = itemCategoryLabel != null ? itemCategoryLabel.text : "";
-							string description = itemDescriptionLabel != null ? itemDescriptionLabel.text : "";
+							string rarity = _itemRarityLabel != null ? _itemRarityLabel.text : "";
+							string category = _itemCategoryLabel != null ? _itemCategoryLabel.text : "";
+							string description = _itemDescriptionLabel != null ? _itemDescriptionLabel.text : "";
 
 							var parts = new List<string>();
 							if (!string.IsNullOrEmpty(rarity)) parts.Add(rarity);
@@ -143,12 +169,11 @@ namespace OniAccess.Handlers.Screens {
 
 			// Detect error: errorMessage activated
 			try {
-				var errorMessage = t.Field<LocText>("errorMessage").Value;
-				if (errorMessage != null) {
-					if (errorMessage.gameObject.activeSelf) {
+				if (_errorMessage != null) {
+					if (_errorMessage.gameObject.activeSelf) {
 						if (!_announcedError) {
 							_announcedError = true;
-							string errorText = errorMessage.text;
+							string errorText = _errorMessage.text;
 							if (!string.IsNullOrEmpty(errorText)) {
 								Speech.SpeechPipeline.SpeakQueued(errorText);
 							}
@@ -163,13 +188,12 @@ namespace OniAccess.Handlers.Screens {
 
 			// Detect new button availability: accept button text changes or widgets appear from zero
 			try {
-				var acceptButton = t.Field<KButton>("acceptButton").Value;
-				if (acceptButton != null) {
-					var locText = acceptButton.GetComponentInChildren<LocText>();
+				if (_acceptButton != null) {
+					var locText = _acceptButton.GetComponentInChildren<LocText>();
 					string currentText = locText != null ? locText.text : null;
 					if (currentText != _lastAcceptButtonText && !string.IsNullOrEmpty(currentText)) {
 						// Only announce if the button is actually visible
-						if (_widgets.Count > 0 && _widgets[0].Component == acceptButton) {
+						if (_widgets.Count > 0 && _widgets[0].Component == _acceptButton) {
 							Speech.SpeechPipeline.SpeakQueued(currentText);
 						}
 					}

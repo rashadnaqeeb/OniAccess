@@ -609,7 +609,6 @@ namespace OniAccess.Handlers.Screens {
 							var rhr = radioInfo.Members[k].HierRef;
 							string ckRef = rhr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
 							if (rhr.GetReference(ckRef)?.gameObject.activeSelf ?? false) {
-								radioInfo.CurrentIndex = k;
 								return $"{radioLabel}, {radioInfo.Members[k].Label}";
 							}
 						}

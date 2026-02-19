@@ -61,8 +61,7 @@ namespace OniAccess.Handlers.Screens {
 				var locTexts = screen.GetComponentsInChildren<LocText>(false);
 				foreach (var lt in locTexts) {
 					if (lt != null && !string.IsNullOrEmpty(lt.text)
-						&& lt.text.Length > 10 // Skip short labels like button text
-						&& lt.text != _dialogTitle) // Skip title (already spoken)
+						&& lt.text != _dialogTitle)
 					{
 						messageText = lt.text;
 						break;
