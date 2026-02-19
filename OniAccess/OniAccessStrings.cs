@@ -39,8 +39,8 @@ namespace STRINGS {
 			public static LocString WELCOME_MESSAGE = "Welcome message";
 			public static LocString STORY_MESSAGE = "Story message";
 			public static LocString VIDEO = "Video";
-			public static LocString COLONY_VIEW = "colony view";
-			public static LocString TOOLTIP_BROWSER = "tooltip";
+			public static LocString COLONY_VIEW = "Colony View";
+			public static LocString TOOLTIP_BROWSER = "Tooltip";
 		}
 
 		public class SUPPLY_CLOSET {
@@ -85,7 +85,7 @@ namespace STRINGS {
 			public static LocString VICTORY_CONDITIONS = "Victory conditions";
 			public static LocString STATS = "Stats";
 			public static LocString BUTTONS = "Buttons";
-			public static LocString PLANETOIDS = "planetoids";
+			public static LocString PLANETOIDS = "Planetoids";
 			public static LocString DLC = "DLC";
 			public static LocString NEWS = "News";
 			public static LocString NO_NEWS = "No news available";
@@ -228,6 +228,7 @@ namespace STRINGS {
 			public static LocString ACTIVATION_PLAIN = "{0} tool";
 			public static LocString ACTIVATION = "{0} tool, {1}";
 			public static LocString ACTIVATION_WITH_FILTER = "{0} tool, {1}, {2}";
+			public static LocString FALLBACK_LABEL = "tool";
 		}
 
 		public class GLANCE {

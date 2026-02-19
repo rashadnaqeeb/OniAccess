@@ -69,12 +69,12 @@ namespace OniAccess.Speech {
 
 				return _available;
 			} catch (DllNotFoundException ex) {
-				Log.Error($"Tolk.dll not found: {ex.Message}");
+				Log.Error($"Tolk.dll not found: {ex}");
 				_initialized = true;
 				_available = false;
 				return false;
 			} catch (Exception ex) {
-				Log.Error($"Speech init failed: {ex.Message}");
+				Log.Error($"Speech init failed: {ex}");
 				_initialized = true;
 				_available = false;
 				return false;
@@ -91,7 +91,7 @@ namespace OniAccess.Speech {
 				Tolk_Unload();
 				Log.Info("Speech shutdown");
 			} catch (Exception ex) {
-				Log.Error($"Speech shutdown error: {ex.Message}");
+				Log.Error($"Speech shutdown error: {ex}");
 			} finally {
 				_initialized = false;
 				_available = false;
@@ -110,7 +110,7 @@ namespace OniAccess.Speech {
 			try {
 				Tolk_Output(text, interrupt);
 			} catch (Exception ex) {
-				Log.Error($"Speech error: {ex.Message}");
+				Log.Error($"Speech error: {ex}");
 			}
 		}
 
@@ -123,7 +123,7 @@ namespace OniAccess.Speech {
 			try {
 				Tolk_Silence();
 			} catch (Exception ex) {
-				Log.Error($"Speech stop error: {ex.Message}");
+				Log.Error($"Speech stop error: {ex}");
 			}
 		}
 	}

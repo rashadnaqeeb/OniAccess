@@ -85,11 +85,5 @@ namespace OniAccess.Speech {
 			SpeakAction(filtered, false);
 		}
 
-		/// <summary>
-		/// Stop all speech.
-		/// </summary>
-		public static void Silence() {
-			SpeechEngine.Stop();
-		}
 	}
 }

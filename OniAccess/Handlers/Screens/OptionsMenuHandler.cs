@@ -196,7 +196,12 @@ namespace OniAccess.Handlers.Screens {
 					Tag = hr,
 					SpeechFunc = () => {
 						string ckRef = hierRefForSpeech.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
-						bool on = hierRefForSpeech.GetReference(ckRef)?.gameObject.activeSelf ?? false;
+						var ckGo = hierRefForSpeech.GetReference(ckRef);
+						if (ckGo == null) {
+							Log.Warn("OptionsMenuHandler: checkmark ref '" + ckRef + "' is null for " + toggleLabel);
+							return toggleLabel;
+						}
+						bool on = ckGo.gameObject.activeSelf;
 						string st = on ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 						return $"{toggleLabel}, {st}";
 					}

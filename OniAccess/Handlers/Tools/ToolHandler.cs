@@ -96,9 +96,10 @@ namespace OniAccess.Handlers.Tools {
 				TileCursor.Instance.ActiveToolComposer = composer;
 			}
 
-			if (Game.Instance != null)
+			if (Game.Instance != null) {
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
-			Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
+				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
+			}
 
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
@@ -426,7 +427,7 @@ namespace OniAccess.Handlers.Tools {
 		// ========================================
 
 		private string BuildActivationAnnouncement() {
-			string label = _toolInfo != null ? _toolInfo.Label : "tool";
+			string label = _toolInfo != null ? _toolInfo.Label : (string)STRINGS.ONIACCESS.TOOLS.FALLBACK_LABEL;
 			string priorityText = null;
 			string filterText = null;
 

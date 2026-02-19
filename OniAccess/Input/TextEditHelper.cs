@@ -43,8 +43,10 @@ namespace OniAccess.Input {
 			if (field != null) {
 				field.text = _cachedValue;
 				field.DeactivateInputField();
+				Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED}, {field.text}");
+			} else {
+				Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED);
 			}
-			Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED}, {_cachedValue}");
 		}
 	}
 }

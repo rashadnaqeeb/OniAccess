@@ -10,6 +10,9 @@ namespace OniAccess.Handlers.Tools {
 	///    activation (e.g., Harvest: pick "when ready" vs "do not harvest" first).
 	/// </summary>
 	public class ToolFilterHandler : BaseMenuHandler {
+		internal const string HarvestWhenReadyKey = "HARVEST_WHEN_READY";
+		internal const string DoNotHarvestKey = "DO_NOT_HARVEST";
+
 		private readonly ToolHandler _owner;
 		private readonly ModToolInfo _pendingTool;
 		private List<string> _filterKeys;
@@ -61,8 +64,8 @@ namespace OniAccess.Handlers.Tools {
 
 			if (parameters == null && _pendingTool != null
 				&& _pendingTool.ToolType == typeof(HarvestTool)) {
-				_filterKeys.Add("HARVEST_WHEN_READY");
-				_filterKeys.Add("DO_NOT_HARVEST");
+				_filterKeys.Add(HarvestWhenReadyKey);
+				_filterKeys.Add(DoNotHarvestKey);
 				for (int i = 0; i < _filterKeys.Count; i++)
 					_filterNames.Add(Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + _filterKeys[i] + ".NAME"));
 			} else if (parameters != null) {
