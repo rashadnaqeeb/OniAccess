@@ -3,8 +3,6 @@ using System.Collections.Generic;
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
 	public class DeconstructToolSection : ICellSection {
 		private static readonly int[] Layers = {
-			(int)ObjectLayer.Building,
-			(int)ObjectLayer.FoundationTile,
 			(int)ObjectLayer.Gantry,
 			(int)ObjectLayer.Wire,
 			(int)ObjectLayer.WireConnectors,
@@ -16,7 +14,6 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 			(int)ObjectLayer.SolidConduitConnection,
 			(int)ObjectLayer.LogicGate,
 			(int)ObjectLayer.LogicWire,
-			(int)ObjectLayer.Backwall,
 		};
 
 		public IEnumerable<string> Read(int cell) {
