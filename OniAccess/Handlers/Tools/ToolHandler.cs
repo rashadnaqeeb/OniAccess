@@ -99,6 +99,9 @@ namespace OniAccess.Handlers.Tools {
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
 			Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
 
+			if (OverlayScreen.Instance != null)
+				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
+
 			SpeechPipeline.SpeakInterrupt(DisplayName);
 		}
 
@@ -111,6 +114,9 @@ namespace OniAccess.Handlers.Tools {
 			if (Game.Instance != null)
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
 
+			if (OverlayScreen.Instance != null)
+				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
+
 			_rectangles.Clear();
 			_pendingFirstCorner = Grid.InvalidCell;
 		}
@@ -121,6 +127,23 @@ namespace OniAccess.Handlers.Tools {
 				PlayDeactivateSound();
 				HandlerStack.Pop();
 			}
+		}
+
+		private void OnOverlayChanged(HashedString newMode) {
+			if (_toolInfo == null || !_toolInfo.HasFilterMenu)
+				return;
+
+			string filterName = ReadActiveFilterName();
+			if (filterName == null)
+				return;
+
+			bool hadSelection = HasSelection;
+			ClearSelection();
+
+			string announcement = filterName;
+			if (hadSelection)
+				announcement += ", " + (string)STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED;
+			SpeechPipeline.SpeakInterrupt(announcement);
 		}
 
 		// ========================================
