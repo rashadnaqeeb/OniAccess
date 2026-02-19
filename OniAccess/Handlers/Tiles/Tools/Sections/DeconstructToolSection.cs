@@ -3,6 +3,9 @@ using System.Collections.Generic;
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
 	public class DeconstructToolSection : ICellSection {
 		private static readonly int[] Layers = {
+			(int)ObjectLayer.Building,
+			(int)ObjectLayer.FoundationTile,
+			(int)ObjectLayer.Backwall,
 			(int)ObjectLayer.Gantry,
 			(int)ObjectLayer.Wire,
 			(int)ObjectLayer.WireConnectors,
@@ -14,6 +17,12 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 			(int)ObjectLayer.SolidConduitConnection,
 			(int)ObjectLayer.LogicGate,
 			(int)ObjectLayer.LogicWire,
+		};
+
+		private static readonly int[] BuildingLayers = {
+			(int)ObjectLayer.Building,
+			(int)ObjectLayer.FoundationTile,
+			(int)ObjectLayer.Backwall,
 		};
 
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
@@ -41,6 +50,8 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 						tokens.Add((string)STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT);
 				}
 				tokens.Add(sel.GetName());
+				if (System.Array.IndexOf(BuildingLayers, layer) >= 0)
+					ctx.Claimed.Add(go);
 			}
 			return tokens;
 		}

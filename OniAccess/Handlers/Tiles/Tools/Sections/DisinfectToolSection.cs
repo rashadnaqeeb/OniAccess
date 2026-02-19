@@ -8,14 +8,20 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 			(int)ObjectLayer.Pickupables,
 		};
 
+		private static readonly int[] BuildingLayers = {
+			(int)ObjectLayer.Building,
+			(int)ObjectLayer.FoundationTile,
+		};
+
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
 			foreach (int layer in Layers)
-				ReadLayer(cell, layer, tokens);
+				ReadLayer(cell, layer, ctx, tokens);
 			return tokens;
 		}
 
-		private static void ReadLayer(int cell, int layer, List<string> tokens) {
+		private static void ReadLayer(int cell, int layer, CellContext ctx,
+			List<string> tokens) {
 			var go = Grid.Objects[cell, layer];
 			if (go == null) return;
 
@@ -24,20 +30,24 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 				if (pickupable == null) return;
 				var item = pickupable.objectLayerListItem;
 				while (item != null) {
-					ReadDisinfectable(item.gameObject, tokens);
+					ReadDisinfectable(item.gameObject, -1, ctx, tokens);
 					item = item.nextItem;
 				}
 			} else {
-				ReadDisinfectable(go, tokens);
+				ReadDisinfectable(go, layer, ctx, tokens);
 			}
 		}
 
-		private static void ReadDisinfectable(UnityEngine.GameObject go, List<string> tokens) {
+		private static void ReadDisinfectable(UnityEngine.GameObject go, int layer,
+			CellContext ctx, List<string> tokens) {
 			var disinfectable = go.GetComponent<Disinfectable>();
 			if (disinfectable == null) return;
 
+			bool isBuildingLayer = System.Array.IndexOf(BuildingLayers, layer) >= 0;
+
 			if (IsMarkedForDisinfect(disinfectable)) {
 				tokens.Add((string)STRINGS.ONIACCESS.TOOLS.MARKED_DISINFECT);
+				if (isBuildingLayer) ctx.Claimed.Add(go);
 				return;
 			}
 
@@ -49,6 +59,7 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 				tokens.Add(string.Format(
 					(string)STRINGS.ONIACCESS.TOOLS.DISINFECT_OBJECT,
 					sel.GetName(), diseaseName, pe.DiseaseCount));
+				if (isBuildingLayer) ctx.Claimed.Add(go);
 			}
 		}
 
