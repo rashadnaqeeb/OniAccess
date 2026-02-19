@@ -105,8 +105,12 @@ namespace OniAccess.Handlers.Tools {
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
 
-			if (_toolInfo != null && _toolInfo.HasFilterMenu)
-				_lastFilterKey = ReadActiveFilterKey();
+			if (_toolInfo != null && _toolInfo.HasFilterMenu) {
+				var mode = OverlayScreen.Instance != null
+					? OverlayScreen.Instance.GetMode()
+					: OverlayModes.None.ID;
+				_lastFilterKey = FilterKeyForOverlay(mode);
+			}
 
 			SpeechPipeline.SpeakInterrupt(DisplayName);
 		}
@@ -140,8 +144,8 @@ namespace OniAccess.Handlers.Tools {
 			if (_toolInfo == null || !_toolInfo.HasFilterMenu)
 				return;
 
-			string newKey = ReadActiveFilterKey();
-			if (newKey == null || newKey == _lastFilterKey)
+			string newKey = FilterKeyForOverlay(newMode);
+			if (newKey == _lastFilterKey)
 				return;
 
 			_lastFilterKey = newKey;
@@ -155,6 +159,25 @@ namespace OniAccess.Handlers.Tools {
 			if (hadSelection)
 				announcement += ", " + (string)STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED;
 			SpeechPipeline.SpeakQueued(announcement);
+		}
+
+		/// <summary>
+		/// Maps an overlay mode to the filter key the game will apply.
+		/// Mirrors FilteredDragTool.OnOverlayChanged logic so we don't
+		/// depend on reading ToolParameterMenu after the game updates it.
+		/// </summary>
+		private static string FilterKeyForOverlay(HashedString overlay) {
+			if (overlay == OverlayModes.Power.ID)
+				return ToolParameterMenu.FILTERLAYERS.WIRES;
+			if (overlay == OverlayModes.LiquidConduits.ID)
+				return ToolParameterMenu.FILTERLAYERS.LIQUIDCONDUIT;
+			if (overlay == OverlayModes.GasConduits.ID)
+				return ToolParameterMenu.FILTERLAYERS.GASCONDUIT;
+			if (overlay == OverlayModes.SolidConveyor.ID)
+				return ToolParameterMenu.FILTERLAYERS.SOLIDCONDUIT;
+			if (overlay == OverlayModes.Logic.ID)
+				return ToolParameterMenu.FILTERLAYERS.LOGIC;
+			return ToolParameterMenu.FILTERLAYERS.ALL;
 		}
 
 		// ========================================
