@@ -3,14 +3,17 @@ using System.Collections.Generic;
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
 	public class EmptyPipeToolSection : ICellSection {
 		public IEnumerable<string> Read(int cell) {
+			var tool = PlayerController.Instance.ActiveTool as FilteredDragTool;
 			var tokens = new List<string>();
-			ReadConduit(cell, ConduitType.Liquid, tokens);
-			ReadConduit(cell, ConduitType.Gas, tokens);
-			ReadConduit(cell, ConduitType.Solid, tokens);
+			ReadConduit(cell, ConduitType.Liquid, ObjectLayer.LiquidConduit, tool, tokens);
+			ReadConduit(cell, ConduitType.Gas, ObjectLayer.GasConduit, tool, tokens);
+			ReadConduit(cell, ConduitType.Solid, ObjectLayer.SolidConduit, tool, tokens);
 			return tokens;
 		}
 
-		private static void ReadConduit(int cell, ConduitType type, List<string> tokens) {
+		private static void ReadConduit(int cell, ConduitType type, ObjectLayer layer,
+			FilteredDragTool tool, List<string> tokens) {
+			if (tool != null && !tool.IsActiveLayer(layer)) return;
 			var flow = Conduit.GetFlowManager(type);
 			if (flow == null) return;
 			if (!flow.HasConduit(cell)) return;

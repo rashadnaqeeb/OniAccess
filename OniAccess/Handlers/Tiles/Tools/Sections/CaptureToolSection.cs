@@ -19,6 +19,9 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 						if (capturable.IsMarkedForCapture)
 							tokens.Add(sel.GetName() + ", " +
 								(string)STRINGS.ONIACCESS.TOOLS.MARKED_CAPTURE);
+						else if (!capturable.allowCapture)
+							tokens.Add(sel.GetName() + ", " +
+								(string)STRINGS.UI.TOOLS.CAPTURE.NOT_CAPTURABLE);
 						else
 							tokens.Add(sel.GetName());
 					}

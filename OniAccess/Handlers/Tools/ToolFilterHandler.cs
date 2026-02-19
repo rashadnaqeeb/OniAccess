@@ -117,8 +117,12 @@ namespace OniAccess.Handlers.Tools {
 			}
 
 			if (_owner != null) {
+				bool hadSelection = _owner.HasSelection;
 				_owner.ClearSelection();
-				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.FILTER_CHANGED);
+				string announcement = _filterNames[_currentIndex];
+				if (hadSelection)
+					announcement += ", " + (string)STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED;
+				SpeechPipeline.SpeakInterrupt(announcement);
 				HandlerStack.Pop();
 			} else {
 				HandlerStack.Replace(new ToolHandler());

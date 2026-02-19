@@ -1,77 +1,65 @@
 # Tool System Review Findings
 
-Written after Phase 6 quality review. Work through each item: verify bug, verify fix, apply fix.
+Post-implementation review. All previous findings (14 items) were resolved during development.
 
-## Bugs
+## Significant deviations from design
 
-### 1. Double-announcement on Escape/Enter-cancel
-**Status:** TODO
-HandleKeyDown(Escape) speaks "canceled" + plays sound, then calls SelectTool.Instance.Activate() which triggers OnActiveToolChanged which speaks "canceled" + plays sound again. Same issue in ConfirmOrCancel() empty path and SubmitRectangles().
-**Files:** ToolHandler.cs lines 147-155, 199-204, 79-85
+### 1. Filter scoping missing from 5 tool sections
 
-### 2. Harvest mode choice discarded
-**Status:** TODO
-ToolFilterHandler.ActivateCurrentItem() applies filter before activating the tool, but HarvestTool.OnActivateTool() calls PopulateMenu() which overwrites currentParameters. User's mode selection is always lost.
-**Files:** ToolFilterHandler.cs lines 99-116
+The design specifies that cell readouts should be "scoped to active filter." None of the filtered-tool sections actually read the active filter:
 
-### 3. Double-push race from ToolPickerHandler
-**Status:** TODO
-When picker calls ActivateTool(), ActiveToolChanged fires while picker is still on stack. TileCursorHandler.OnActiveToolChanged pushes ToolHandler before picker pops. Final state is accidentally correct but produces an audible close-sound artifact after the tool announcement.
-**Files:** TileCursorHandler.cs lines 123-128, ToolPickerHandler.cs lines 56-59
+- **CancelToolSection** always shows dig orders, mop orders, and deconstruct orders regardless of filter. Design says: filter=Dig Orders shows only dig orders; filter=Liquid Pipes shows only liquid pipe objects; filter=All shows everything.
+- **DeconstructToolSection** always reads Building + FoundationTile layers. Design says filter=Liquid Pipes should only list liquid pipe objects, etc.
+- **PrioritizeToolSection** always reads dig + construction + deconstruction. Design says filter=Construction means only construction/deconstruction; filter=Digging means only dig; filter=Cleaning means only sweep/mop/storage.
+- **EmptyPipeToolSection** reads all 3 conduit types. Design says it should scope to the active filter (Liquid Pipes, Gas Pipes, Conveyor Rails).
+- **DisconnectToolSection** reads all conduit types + power. Same issue.
 
-### 4. Wrong string on Delete/Backspace
-**Status:** FIXED
-ClearRectAtCursor speaks FILTER_CHANGED ("selection cleared") instead of a rectangle-cleared announcement.
-**Files:** ToolHandler.cs line 267
+The `ReadActiveFilterName()` helper exists in ToolHandler for the activation announcement, but no section calls it or `FilteredDragTool.IsActiveLayer()`. This is the largest gap between design and implementation.
 
-### 5. PrioritizeToolSection nested format string
-**Status:** FIXED
-Passes UNDER_CONSTRUCTION ("constructing {0}") as an argument to ORDER_PRIORITY ("{0} priority {1}"), producing "constructing {0} priority 5" with a literal {0} in speech.
-**Files:** PrioritizeToolSection.cs lines 33-36
+**Files:** CancelToolSection.cs, DeconstructToolSection.cs, PrioritizeToolSection.cs, EmptyPipeToolSection.cs, DisconnectToolSection.cs
 
-### 6. Attack/Capture sections missing order state
-**Status:** FIXED
-Design spec requires "marked for attack" / "marked for capture" when creatures are already queued. Both sections omit this.
-**Files:** AttackToolSection.cs, CaptureToolSection.cs
+### 2. Overlay-filter coupling not implemented
 
-## DRY / Conventions
+The design says: "If the player changes overlays while a filtered tool is active, the filter auto-switches to match [...] An overlay-triggered filter change clears any existing selection and pending first corner. The new filter is announced, followed by 'Selection cleared' if a selection existed."
 
-### 7. Inline string literals
-**Status:** FIXED
-"Wire", "Unknown", "tool", ConduitType.ToString() all spoken to user without LocString backing.
-**Files:** DisconnectToolSection.cs line 23, EmptyPipeToolSection.cs line 24, ToolHandler.cs lines 347/377, EmptyPipeToolSection.cs line 17, DisconnectToolSection.cs line 17
+ToolHandler doesn't subscribe to overlay changes. The game internally updates the filter via `FilteredDragTool.OnOverlayChanged()`, but the mod never detects this, never announces the new filter, and never clears the selection. A blind player could have a stale selection that no longer matches the new filter.
 
-### 8. GetNeighbor duplicated
-**Status:** FIXED
-Identical static method in both TileCursor.cs (line 181) and ToolHandler.cs (line 297).
-**Files:** TileCursor.cs, ToolHandler.cs
-
-### 9. Rectangle bounds unpacking duplicated
-**Status:** FIXED
-minX/maxX/minY/maxY extraction from RectCorners copy-pasted in IsCellSelected (244), ClearRectAtCursor (258), BuildConfirmSummary (443).
 **Files:** ToolHandler.cs
 
-### 10. GetConfirmString 12-branch dispatch
-**Status:** FIXED
-12-branch type dispatch mirrors BuildAllTools(). Should be a property on ModToolInfo.
-**Files:** ToolHandler.cs lines 471-502, ToolInfo.cs
+### 3. NO_VALID_CELLS path not implemented
 
-### 11. PlaySound duplicated
-**Status:** FIXED
-Identical PlaySound helper in ToolPickerHandler and ToolFilterHandler.
-**Files:** ToolPickerHandler.cs lines 102-108, ToolFilterHandler.cs lines 137-143
+The string `NO_VALID_CELLS` exists in OniAccessStrings but is never referenced. The design says: "If no valid cells were acted on, the mod announces 'No valid cells,' plays the game's error/deactivate sound, and deactivates the tool." `SubmitRectangles()` always speaks the confirm summary regardless of outcome.
 
-### 12. Null-conditional on ToolProfileRegistry.Instance
-**Status:** FIXED
-ToolHandler.OnActivate uses ?. on ToolProfileRegistry.Instance which should never be null at that point. Violates project rule against null-conditional abuse.
-**Files:** ToolHandler.cs line 57
+**Files:** ToolHandler.cs, OniAccessStrings.cs
 
-### 13. HelpEntries duplicated
-**Status:** FIXED
-Both ToolPickerHandler and ToolFilterHandler define identical help entry lists instead of using BuildHelpEntries().
-**Files:** ToolPickerHandler.cs lines 15-22, ToolFilterHandler.cs lines 20-27
+### 4. DeconstructToolSection missing material prefix
 
-### 14. Silent failure in ToolFilterHandler
-**Status:** FIXED
-When parameters null for non-Harvest tool, filter menu opens with no items and no announcement. No Log.Warn.
-**Files:** ToolFilterHandler.cs lines 69-91
+The design says readout should be "built objects with material prefix" (e.g., "Granite Tile, Gold Amalgam Liquid Pipe"). The implementation uses `sel.GetName()` which is just the building name without material.
+
+**Files:** DeconstructToolSection.cs
+
+## Minor oddities
+
+### 5. Filter change doesn't announce the new filter name — FIXED
+
+Speaks filter name on change, appends "selection cleared" only if selection existed.
+
+**Files:** ToolFilterHandler.cs, ToolHandler.cs, OniAccessStrings.cs
+
+### 6. CaptureToolSection doesn't check allowCapture — FIXED
+
+Non-capturable creatures now get the game's NOT_CAPTURABLE string.
+
+**Files:** CaptureToolSection.cs
+
+### 7. Inline string literal in PrioritizeToolSection — FIXED
+
+Removed defensive fallback; KSelectable.GetName() called directly.
+
+**Files:** PrioritizeToolSection.cs
+
+### 8. ConduitName default case returns type.ToString() — FIXED
+
+Default case now returns UNKNOWN_ELEMENT LocString.
+
+**Files:** DisconnectToolSection.cs

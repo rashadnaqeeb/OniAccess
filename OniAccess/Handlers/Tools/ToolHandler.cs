@@ -349,6 +349,8 @@ namespace OniAccess.Handlers.Tools {
 			HandlerStack.Push(new ToolFilterHandler(this));
 		}
 
+		internal bool HasSelection => _rectangles.Count > 0 || _pendingFirstCorner != Grid.InvalidCell;
+
 		internal void ClearSelection() {
 			_rectangles.Clear();
 			_pendingFirstCorner = Grid.InvalidCell;
