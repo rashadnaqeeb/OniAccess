@@ -16,6 +16,7 @@ namespace OniAccess.Handlers.Tiles {
 	public class TileCursorHandler : BaseScreenHandler {
 		private Overlays.OverlayProfileRegistry _overlayRegistry;
 		private bool _hasActivated;
+		private bool _overlaySubscribed;
 
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.T),
@@ -61,8 +62,12 @@ namespace OniAccess.Handlers.Tiles {
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 			if (Game.Instance != null)
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
-			if (OverlayScreen.Instance != null)
+			if (OverlayScreen.Instance != null) {
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
+				_overlaySubscribed = true;
+			} else {
+				_overlaySubscribed = false;
+			}
 			if (Game.Instance != null)
 				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
 		}
@@ -73,6 +78,7 @@ namespace OniAccess.Handlers.Tiles {
 			TileCursor.Destroy();
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
+			_overlaySubscribed = false;
 		}
 
 		private void OnOverlayChanged(HashedString newMode) {
@@ -80,6 +86,11 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void Tick() {
+			if (!_overlaySubscribed && OverlayScreen.Instance != null) {
+				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
+				_overlaySubscribed = true;
+			}
+
 			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null)
 				SpeechPipeline.SpeakInterrupt(arrived);
