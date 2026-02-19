@@ -99,22 +99,21 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				List<string> tokens) {
 			Vector3 originPos = building.transform.GetPosition();
 
-			bool isInteraction = (cell == origin);
-			bool isDelivery = (cell == origin);
+			bool isAccess = (cell == origin);
 
-			int dropOffCell = origin;
+			int outputCell = origin;
 			var fabricator = go.GetComponent<ComplexFabricator>();
 			if (fabricator != null && fabricator.outputOffset != Vector3.zero)
-				dropOffCell = Grid.PosToCell(originPos + fabricator.outputOffset);
+				outputCell = Grid.PosToCell(originPos + fabricator.outputOffset);
 
 			var geyser = go.GetComponent<Geyser>();
 			if (geyser != null && (geyser.outputOffset.x != 0 || geyser.outputOffset.y != 0))
-				dropOffCell = Grid.OffsetCell(origin,
+				outputCell = Grid.OffsetCell(origin,
 					new CellOffset(geyser.outputOffset.x, geyser.outputOffset.y));
 
 			var storage = go.GetComponent<Storage>();
 			if (storage != null && storage.dropOffset != Vector2.zero)
-				dropOffCell = Grid.PosToCell(
+				outputCell = Grid.PosToCell(
 					originPos + new Vector3(storage.dropOffset.x, storage.dropOffset.y, 0f));
 
 			var dispenser = go.GetComponent<ObjectDispenser>();
@@ -123,22 +122,20 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				CellOffset resolved = (rotatable != null)
 					? rotatable.GetRotatedCellOffset(dispenser.dropOffset)
 					: dispenser.dropOffset;
-				dropOffCell = Grid.OffsetCell(origin, resolved);
+				outputCell = Grid.OffsetCell(origin, resolved);
 			}
 
-			bool isDropOff = (cell == dropOffCell);
+			bool isOutput = (cell == outputCell);
 
-			if (!isInteraction && !isDelivery && !isDropOff) return;
+			if (!isAccess && !isOutput) return;
 
-			if (isInteraction && isDelivery && isDropOff) {
+			if (isAccess && isOutput) {
 				tokens.Add((string)STRINGS.ONIACCESS.GLANCE.TILE_OF_INTEREST);
 			} else {
-				if (isInteraction)
-					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.DUPE_INTERACTION);
-				if (isDelivery)
-					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.DELIVERY_POINT);
-				if (isDropOff)
-					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.DROP_OFF_POINT);
+				if (isAccess)
+					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.ACCESS_POINT);
+				if (isOutput)
+					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.OUTPUT_POINT);
 			}
 		}
 

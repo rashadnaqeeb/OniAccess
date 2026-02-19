@@ -258,9 +258,8 @@ namespace STRINGS {
 			public static LocString ORDER_PRIORITY = "{0} priority {1}";
 
 			public static LocString TILE_OF_INTEREST = "P O I";
-			public static LocString DUPE_INTERACTION = "interaction point";
-			public static LocString DELIVERY_POINT = "delivery point";
-			public static LocString DROP_OFF_POINT = "drop-off point";
+			public static LocString ACCESS_POINT = "access point";
+			public static LocString OUTPUT_POINT = "output point";
 
 			public static LocString RADBOLT_INPUT = "radbolt input";
 			public static LocString RADBOLT_OUTPUT = "radbolt output";
