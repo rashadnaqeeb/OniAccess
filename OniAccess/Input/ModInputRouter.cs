@@ -62,19 +62,24 @@ namespace OniAccess.Input {
 		}
 
 		/// <summary>
-		/// Check if the event maps to a key declared in the handler's ConsumedKeys.
-		/// Matches by KeyCode + Modifier so handlers can claim keys without depending
-		/// on game Action enums.
+		/// Check if the event matches any action currently bound to the handler's
+		/// consumed physical keys. Iterates the global binding table to find every
+		/// action mapped to each consumed key+modifier, then checks the event against
+		/// those actions. This is rebind-safe: if the player moves an action to a
+		/// different key, only the new key triggers that action, and only our declared
+		/// physical keys get consumed regardless of what the game binds to them.
 		/// </summary>
 		private static bool IsConsumedKey(KButtonEvent e, IAccessHandler handler) {
 			var keys = handler.ConsumedKeys;
 			if (keys.Count == 0) return false;
-			var action = e.GetAction();
-			if (action == Action.NumActions) return false;
-			var entry = GameInputMapping.FindEntry(action);
+			var bindings = GameInputMapping.KeyBindings;
 			for (int i = 0; i < keys.Count; i++) {
-				if (keys[i].KeyCode == entry.mKeyCode && keys[i].Modifier == entry.mModifier)
-					return true;
+				for (int j = 0; j < bindings.Length; j++) {
+					if (bindings[j].mKeyCode == keys[i].KeyCode
+						&& bindings[j].mModifier == keys[i].Modifier
+						&& e.IsAction(bindings[j].mAction))
+						return true;
+				}
 			}
 			return false;
 		}
