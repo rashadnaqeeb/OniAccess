@@ -267,7 +267,15 @@ namespace OniAccess.Handlers.Tools {
 				DragToolPatches.SuppressConfirmSound = false;
 			}
 
-			SpeechPipeline.SpeakInterrupt(BuildConfirmSummary());
+			string summary = BuildConfirmSummary(out int total);
+			if (total == 0) {
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.NO_VALID_CELLS);
+				PlayNegativeSound();
+				DeactivateToolAndPop();
+				return;
+			}
+
+			SpeechPipeline.SpeakInterrupt(summary);
 			DeactivateToolAndPop();
 		}
 
@@ -465,11 +473,10 @@ namespace OniAccess.Handlers.Tools {
 			return count;
 		}
 
-		private string BuildConfirmSummary() {
+		private string BuildConfirmSummary(out int total) {
 			bool isEntityTool = _toolInfo != null
 				&& (_toolInfo.ToolType == typeof(AttackTool) || _toolInfo.ToolType == typeof(CaptureTool));
 
-			int total;
 			if (isEntityTool) {
 				total = CountEntitiesInRectangles(_rectangles);
 			} else {
@@ -546,6 +553,14 @@ namespace OniAccess.Handlers.Tools {
 				KFMOD.PlayUISound(GlobalAssets.GetSound("Tile_Cancel"));
 			} catch (Exception ex) {
 				Util.Log.Error($"ToolHandler.PlayDeactivateSound: {ex}");
+			}
+		}
+
+		private static void PlayNegativeSound() {
+			try {
+				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
+			} catch (Exception ex) {
+				Util.Log.Error($"ToolHandler.PlayNegativeSound: {ex}");
 			}
 		}
 
