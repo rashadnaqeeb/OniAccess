@@ -7,10 +7,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// ObjectLayer.FoundationTile, and ObjectLayer.Backwall.
 	/// Plants also occupy ObjectLayer.Building.
 	///
-	/// For each building: name, all status items, construction state.
+	/// For each building: utility ports (when overlay active), name,
+	/// status items, construction state. Ports come first so the
+	/// overlay-specific info is the first thing the player hears.
 	/// Door access state comes through status items automatically.
-	/// Multi-tile buildings annotate utility ports (only when the
-	/// matching overlay is active).
 	/// </summary>
 	public class BuildingSection : ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
@@ -42,6 +42,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var selectable = go.GetComponent<KSelectable>();
 			if (selectable == null) return;
 
+			var building = go.GetComponent<Building>();
+			if (building != null)
+				ReadPorts(go, building, cell, tokens);
+
 			var constructable = go.GetComponent<Constructable>();
 			if (constructable != null) {
 				tokens.Add(string.Format(
@@ -53,7 +57,11 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 			bool isPlant = go.GetComponent<Growing>() != null;
 			ReadStatusItems(selectable, isPlant, tokens);
-			ReadMultiTileAnnotations(go, cell, tokens);
+
+			if (building != null && building.PlacementCells.Length > 1) {
+				int origin = Grid.PosToCell(building.transform.GetPosition());
+				ReadCellOfInterest(go, building, origin, cell, tokens);
+			}
 		}
 
 		private static void ReadStatusItems(
@@ -78,20 +86,12 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			}
 		}
 
-		private static void ReadMultiTileAnnotations(
-				GameObject go, int cell, List<string> tokens) {
-			var building = go.GetComponent<Building>();
-			if (building == null) return;
-
-			int[] cells = building.PlacementCells;
-			if (cells.Length <= 1) return;
-
+		private static void ReadPorts(
+				GameObject go, Building building, int cell, List<string> tokens) {
 			int origin = Grid.PosToCell(building.transform.GetPosition());
-
 			ReadConduitPorts(go, building, origin, cell, tokens);
 			ReadAutomationPorts(building, origin, cell, tokens);
 			ReadRadboltPorts(building, origin, cell, tokens);
-			ReadCellOfInterest(go, building, origin, cell, tokens);
 		}
 
 		private static void ReadCellOfInterest(

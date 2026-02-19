@@ -71,16 +71,25 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 				(string)STRINGS.UI.OVERLAYS.OXYGEN.BUTTON, defaultComposer);
 			RegisterNameOnly(registry, OverlayModes.Temperature.ID,
 				(string)STRINGS.UI.OVERLAYS.TEMPERATURE.BUTTON, defaultComposer);
-			RegisterNameOnly(registry, OverlayModes.Power.ID,
-				(string)STRINGS.UI.OVERLAYS.ELECTRICAL.BUTTON, defaultComposer);
-			RegisterNameOnly(registry, OverlayModes.LiquidConduits.ID,
-				(string)STRINGS.UI.OVERLAYS.LIQUIDPLUMBING.BUTTON, defaultComposer);
-			RegisterNameOnly(registry, OverlayModes.GasConduits.ID,
-				(string)STRINGS.UI.OVERLAYS.GASPLUMBING.BUTTON, defaultComposer);
-			RegisterNameOnly(registry, OverlayModes.SolidConveyor.ID,
-				(string)STRINGS.UI.OVERLAYS.CONVEYOR.BUTTON, defaultComposer);
-			RegisterNameOnly(registry, OverlayModes.Logic.ID,
-				(string)STRINGS.UI.OVERLAYS.LOGIC.BUTTON, defaultComposer);
+			RegisterCustomProfile(registry, OverlayModes.Power.ID,
+				(string)STRINGS.UI.OVERLAYS.ELECTRICAL.BUTTON,
+				GlanceComposer.Power, defaultSections);
+
+			RegisterCustomProfile(registry, OverlayModes.LiquidConduits.ID,
+				(string)STRINGS.UI.OVERLAYS.LIQUIDPLUMBING.BUTTON,
+				GlanceComposer.Plumbing, defaultSections);
+
+			RegisterCustomProfile(registry, OverlayModes.GasConduits.ID,
+				(string)STRINGS.UI.OVERLAYS.GASPLUMBING.BUTTON,
+				GlanceComposer.Ventilation, defaultSections);
+
+			RegisterCustomProfile(registry, OverlayModes.SolidConveyor.ID,
+				(string)STRINGS.UI.OVERLAYS.CONVEYOR.BUTTON,
+				GlanceComposer.Conveyor, defaultSections);
+
+			RegisterCustomProfile(registry, OverlayModes.Logic.ID,
+				(string)STRINGS.UI.OVERLAYS.LOGIC.BUTTON,
+				GlanceComposer.Automation, defaultSections);
 			RegisterNameOnly(registry, OverlayModes.Crop.ID,
 				(string)STRINGS.UI.OVERLAYS.CROPS.BUTTON, defaultComposer);
 			RegisterNameOnly(registry, OverlayModes.Rooms.ID,

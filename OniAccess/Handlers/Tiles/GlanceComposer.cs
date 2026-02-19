@@ -25,6 +25,11 @@ namespace OniAccess.Handlers.Tiles {
 		internal static readonly ICellSection Radiation = new Sections.RadiationSection();
 		internal static readonly ICellSection Decor = new Sections.DecorSection();
 		internal static readonly ICellSection Disease = new Sections.DiseaseSection();
+		internal static readonly ICellSection Power = new Sections.PowerSection();
+		internal static readonly ICellSection Plumbing = new Sections.PlumbingSection();
+		internal static readonly ICellSection Ventilation = new Sections.VentilationSection();
+		internal static readonly ICellSection Conveyor = new Sections.ConveyorSection();
+		internal static readonly ICellSection Automation = new Sections.AutomationSection();
 
 		public GlanceComposer(IReadOnlyList<ICellSection> sections) {
 			_sections = sections;
