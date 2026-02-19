@@ -40,13 +40,7 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 		}
 
 		private static bool IsMarkedForClear(Clearable clearable) {
-			try {
-				return HarmonyLib.Traverse.Create(clearable)
-					.Field<bool>("isMarkedForClear").Value;
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"SweepToolSection: {ex.Message}");
-				return false;
-			}
+			return clearable.HasTag(GameTags.Garbage);
 		}
 	}
 }

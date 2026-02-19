@@ -53,13 +53,9 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 		}
 
 		private static bool IsMarkedForDisinfect(Disinfectable disinfectable) {
-			try {
-				return HarmonyLib.Traverse.Create(disinfectable)
-					.Field<bool>("isMarkedForDisinfect").Value;
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"DisinfectToolSection: {ex.Message}");
-				return false;
-			}
+			var selectable = disinfectable.GetComponent<KSelectable>();
+			return selectable != null
+				&& selectable.HasStatusItem(Db.Get().MiscStatusItems.MarkedForDisinfection);
 		}
 	}
 }

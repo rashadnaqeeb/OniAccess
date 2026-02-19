@@ -199,23 +199,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		private static bool IsMarkedForClear(Clearable clearable) {
-			try {
-				return HarmonyLib.Traverse.Create(clearable)
-					.Field<bool>("isMarkedForClear").Value;
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"OrderSection.IsMarkedForClear: {ex}");
-				return false;
-			}
+			return clearable.HasTag(GameTags.Garbage);
 		}
 
 		private static bool IsMarkedForDisinfect(Disinfectable disinfectable) {
-			try {
-				return HarmonyLib.Traverse.Create(disinfectable)
-					.Field<bool>("isMarkedForDisinfect").Value;
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"OrderSection.IsMarkedForDisinfect: {ex}");
-				return false;
-			}
+			var selectable = disinfectable.GetComponent<KSelectable>();
+			return selectable != null
+				&& selectable.HasStatusItem(Db.Get().MiscStatusItems.MarkedForDisinfection);
 		}
 	}
 }
