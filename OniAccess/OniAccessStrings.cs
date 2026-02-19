@@ -231,6 +231,11 @@ namespace STRINGS {
 			public static LocString FALLBACK_LABEL = "tool";
 		}
 
+		public class TEMPERATURE {
+			public static LocString NEAR_FREEZING = "near freezing";
+			public static LocString NEAR_BOILING = "near boiling";
+		}
+
 		public class GLANCE {
 			public static LocString UNDER_CONSTRUCTION = "constructing {0}";
 

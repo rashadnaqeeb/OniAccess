@@ -30,6 +30,7 @@ namespace OniAccess.Handlers.Tiles {
 		internal static readonly ICellSection Ventilation = new Sections.VentilationSection();
 		internal static readonly ICellSection Conveyor = new Sections.ConveyorSection();
 		internal static readonly ICellSection Automation = new Sections.AutomationSection();
+		internal static readonly ICellSection Temperature = new Sections.TemperatureSection();
 
 		public GlanceComposer(IReadOnlyList<ICellSection> sections) {
 			_sections = sections;

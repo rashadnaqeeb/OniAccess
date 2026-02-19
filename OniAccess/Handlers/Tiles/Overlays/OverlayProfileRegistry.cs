@@ -69,8 +69,9 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 			// Name-only entries for all other overlays (use default composer)
 			RegisterNameOnly(registry, OverlayModes.Oxygen.ID,
 				(string)STRINGS.UI.OVERLAYS.OXYGEN.BUTTON, defaultComposer);
-			RegisterNameOnly(registry, OverlayModes.Temperature.ID,
-				(string)STRINGS.UI.OVERLAYS.TEMPERATURE.BUTTON, defaultComposer);
+			RegisterCustomProfile(registry, OverlayModes.Temperature.ID,
+				(string)STRINGS.UI.OVERLAYS.TEMPERATURE.BUTTON,
+				GlanceComposer.Temperature, defaultSections);
 			RegisterCustomProfile(registry, OverlayModes.Power.ID,
 				(string)STRINGS.UI.OVERLAYS.ELECTRICAL.BUTTON,
 				GlanceComposer.Power, defaultSections);
