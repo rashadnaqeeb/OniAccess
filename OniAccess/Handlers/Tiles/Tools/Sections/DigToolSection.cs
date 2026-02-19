@@ -19,9 +19,6 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 			var element = Grid.Element[cell];
 			if (element != null) {
 				tokens.Add(element.name);
-				var tag = element.GetMaterialCategoryTag();
-				if (tag.IsValid)
-					tokens.Add(tag.ProperName());
 				string hardness = GameUtil.GetHardnessString(element);
 				if (!string.IsNullOrEmpty(hardness))
 					tokens.Add(hardness);
