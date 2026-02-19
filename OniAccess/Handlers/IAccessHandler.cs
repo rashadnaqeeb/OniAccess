@@ -36,6 +36,13 @@ namespace OniAccess.Handlers {
 		System.Collections.Generic.IReadOnlyList<HelpEntry> HelpEntries { get; }
 
 		/// <summary>
+		/// Keys this handler uses in Tick(). The router consumes matching
+		/// KButtonEvents so the game never sees them, same mechanism as
+		/// CapturesAllInput but scoped to specific keys.
+		/// </summary>
+		System.Collections.Generic.IReadOnlyList<ConsumedKey> ConsumedKeys { get; }
+
+		/// <summary>
 		/// Called once per frame by KeyPoller during top-to-bottom stack walk.
 		/// All key detection and mod logic happens here via UnityEngine.Input.GetKeyDown().
 		/// The walk stops after any CapturesAllInput barrier (inclusive).

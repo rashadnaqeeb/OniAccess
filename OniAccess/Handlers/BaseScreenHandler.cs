@@ -44,6 +44,9 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		public abstract bool CapturesAllInput { get; }
 
+		private static readonly IReadOnlyList<ConsumedKey> _noKeys = System.Array.Empty<ConsumedKey>();
+		public virtual IReadOnlyList<ConsumedKey> ConsumedKeys => _noKeys;
+
 		// ========================================
 		// CONSTRUCTOR
 		// ========================================

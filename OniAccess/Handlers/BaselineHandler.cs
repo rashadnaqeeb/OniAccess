@@ -12,6 +12,9 @@ namespace OniAccess.Handlers {
 		public System.Collections.Generic.IReadOnlyList<HelpEntry> HelpEntries { get; }
 			= new System.Collections.Generic.List<HelpEntry>().AsReadOnly();
 
+		public System.Collections.Generic.IReadOnlyList<ConsumedKey> ConsumedKeys { get; }
+			= System.Array.Empty<ConsumedKey>();
+
 		public void Tick() {
 		}
 

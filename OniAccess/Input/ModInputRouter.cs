@@ -36,6 +36,10 @@ namespace OniAccess.Input {
 					if (!IsPassThroughAction(e)) e.Consumed = true;
 					return;
 				}
+				if (IsConsumedKey(e, handler)) {
+					e.Consumed = true;
+					return;
+				}
 			}
 		}
 
@@ -50,7 +54,29 @@ namespace OniAccess.Input {
 					if (!IsPassThroughAction(e)) e.Consumed = true;
 					return;
 				}
+				if (IsConsumedKey(e, handler)) {
+					e.Consumed = true;
+					return;
+				}
 			}
+		}
+
+		/// <summary>
+		/// Check if the event maps to a key declared in the handler's ConsumedKeys.
+		/// Matches by KeyCode + Modifier so handlers can claim keys without depending
+		/// on game Action enums.
+		/// </summary>
+		private static bool IsConsumedKey(KButtonEvent e, IAccessHandler handler) {
+			var keys = handler.ConsumedKeys;
+			if (keys.Count == 0) return false;
+			var action = e.GetAction();
+			if (action == Action.NumActions) return false;
+			var entry = GameInputMapping.FindEntry(action);
+			for (int i = 0; i < keys.Count; i++) {
+				if (keys[i].KeyCode == entry.mKeyCode && keys[i].Modifier == entry.mModifier)
+					return true;
+			}
+			return false;
 		}
 
 		/// <summary>

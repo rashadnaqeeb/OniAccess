@@ -173,6 +173,8 @@ namespace OniAccess.Tests {
 			public string DisplayName { get; }
 			public bool CapturesAllInput { get; }
 			public IReadOnlyList<HelpEntry> HelpEntries { get; }
+			public IReadOnlyList<ConsumedKey> ConsumedKeys { get; }
+				= Array.Empty<ConsumedKey>();
 
 			public int ActivateCount { get; private set; }
 			public int DeactivateCount { get; private set; }
@@ -198,6 +200,8 @@ namespace OniAccess.Tests {
 			public bool CapturesAllInput => false;
 			public IReadOnlyList<HelpEntry> HelpEntries { get; }
 				= new List<HelpEntry>().AsReadOnly();
+			public IReadOnlyList<ConsumedKey> ConsumedKeys { get; }
+				= Array.Empty<ConsumedKey>();
 
 			public bool ThrowOnActivate { get; set; }
 			public bool ThrowOnDeactivate { get; set; }

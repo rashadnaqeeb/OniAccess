@@ -36,7 +36,10 @@ namespace OniAccess.Handlers.Tiles.Tools {
 			var emptyPipe = new Sections.EmptyPipeToolSection();
 			var disconnect = new Sections.DisconnectToolSection();
 
-			registry.Register(typeof(DigTool), MakeProfile("DigTool", dig));
+			registry.Register(typeof(DigTool), new ToolProfile("DigTool",
+				new GlanceComposer(new List<ICellSection> {
+					Selection, dig, GlanceComposer.Building
+				}.AsReadOnly())));
 			registry.Register(typeof(MopTool), MakeProfile("MopTool", mop));
 			registry.Register(typeof(DisinfectTool), MakeProfile("DisinfectTool", disinfect));
 			registry.Register(typeof(ClearTool), MakeProfile("ClearTool", sweep));

@@ -94,6 +94,9 @@ namespace OniAccess.Handlers.Tools {
 			base.OnDeactivate();
 		}
 
+		private static System.Reflection.MethodInfo _changeToSettingMethod;
+		private static System.Reflection.MethodInfo _onChangeMethod;
+
 		protected override void ActivateCurrentItem() {
 			if (_filterKeys == null || _currentIndex < 0 || _currentIndex >= _filterKeys.Count)
 				return;
@@ -102,12 +105,13 @@ namespace OniAccess.Handlers.Tools {
 				ToolPickerHandler.ActivateTool(_pendingTool);
 
 			try {
-				Traverse.Create(ToolMenu.Instance.toolParameterMenu)
-					.Method("ChangeToSetting", typeof(string))
-					.GetValue(_filterKeys[_currentIndex]);
-				Traverse.Create(ToolMenu.Instance.toolParameterMenu)
-					.Method("OnChange")
-					.GetValue();
+				var menu = ToolMenu.Instance.toolParameterMenu;
+				if (_changeToSettingMethod == null)
+					_changeToSettingMethod = AccessTools.Method(typeof(ToolParameterMenu), "ChangeToSetting");
+				if (_onChangeMethod == null)
+					_onChangeMethod = AccessTools.Method(typeof(ToolParameterMenu), "OnChange");
+				_changeToSettingMethod.Invoke(menu, new object[] { _filterKeys[_currentIndex] });
+				_onChangeMethod.Invoke(menu, null);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ToolFilterHandler.ActivateCurrentItem: filter apply failed: {ex}");
 			}

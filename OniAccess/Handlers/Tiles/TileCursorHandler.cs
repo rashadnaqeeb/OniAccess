@@ -17,6 +17,18 @@ namespace OniAccess.Handlers.Tiles {
 		private Overlays.OverlayProfileRegistry _overlayRegistry;
 		private bool _hasActivated;
 
+		private static readonly ConsumedKey[] _consumedKeys = {
+			new ConsumedKey(KKeyCode.T),
+			new ConsumedKey(KKeyCode.Q),
+			new ConsumedKey(KKeyCode.BackQuote),
+			new ConsumedKey(KKeyCode.BackQuote, Modifier.Shift),
+			new ConsumedKey(KKeyCode.UpArrow),
+			new ConsumedKey(KKeyCode.DownArrow),
+			new ConsumedKey(KKeyCode.LeftArrow),
+			new ConsumedKey(KKeyCode.RightArrow),
+		};
+		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
+
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrow keys", (string)STRINGS.ONIACCESS.HELP.MOVE_CURSOR),
 			new HelpEntry("T", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_TOOL_MENU),

@@ -42,6 +42,29 @@ namespace OniAccess.Handlers.Tools {
 			}
 		}
 
+		private static readonly ConsumedKey[] _consumedKeys = {
+			new ConsumedKey(KKeyCode.Space),
+			new ConsumedKey(KKeyCode.Return),
+			new ConsumedKey(KKeyCode.Delete),
+			new ConsumedKey(KKeyCode.Backspace),
+			new ConsumedKey(KKeyCode.F),
+			new ConsumedKey(KKeyCode.Alpha0),
+			new ConsumedKey(KKeyCode.Alpha1),
+			new ConsumedKey(KKeyCode.Alpha2),
+			new ConsumedKey(KKeyCode.Alpha3),
+			new ConsumedKey(KKeyCode.Alpha4),
+			new ConsumedKey(KKeyCode.Alpha5),
+			new ConsumedKey(KKeyCode.Alpha6),
+			new ConsumedKey(KKeyCode.Alpha7),
+			new ConsumedKey(KKeyCode.Alpha8),
+			new ConsumedKey(KKeyCode.Alpha9),
+			new ConsumedKey(KKeyCode.UpArrow, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.DownArrow, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.LeftArrow, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.RightArrow, Modifier.Ctrl),
+		};
+		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
+
 		public override string DisplayName => BuildActivationAnnouncement();
 		public override bool CapturesAllInput => false;
 
