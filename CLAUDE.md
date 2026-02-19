@@ -71,7 +71,7 @@ ONI has extensive hotkeys. Many are useless to blind players and can be overwrit
 This mod runs on Harmony patches and reflection. Both fail in ways that produce no visible error unless we log it. A swallowed exception in a patch means the feature silently stops working and the user has no idea why. **Every catch block must log via `Log.Warn` or `Log.Error`.** Never write an empty catch, never catch-and-return-default without logging. If something fails, the player log must say what and where. A logged failure is actionable; a silent one is invisible.
 
 ## Architecture Gotchas
-- **Edit discipline** - always Read the exact lines immediately before editing. Never compose old_string from memory or earlier reads; tab depth is easy to miscount
+- **Edit discipline** - always Read the exact lines immediately before editing. Never compose old_string from memory or earlier reads; tab depth is easy to miscount. Working tree files use CRLF on Windows (`core.autocrlf=true`, `.gitattributes: * text=auto`); the Edit tool matches bytes exactly, so stale reads will fail on line endings too
 - New screen handlers must be registered in `ContextDetector.RegisterMenuHandlers()` or they will never activate
 - Key detection goes in `Tick()` via `UnityEngine.Input.GetKeyDown()`. `HandleKeyDown()` is only for Escape interception through KButtonEvent
 - `UnityEngine.Input` must be fully qualified inside the `OniAccess.Input` namespace. Bare `Input` resolves to the namespace, not the Unity class
