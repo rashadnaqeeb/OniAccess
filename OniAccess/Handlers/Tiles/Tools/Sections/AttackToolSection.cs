@@ -3,15 +3,29 @@ using System.Collections.Generic;
 namespace OniAccess.Handlers.Tiles.Tools.Sections {
 	public class AttackToolSection : ICellSection {
 		public IEnumerable<string> Read(int cell) {
-			var go = Grid.Objects[cell, (int)ObjectLayer.Critter];
+			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 			if (go == null) return System.Array.Empty<string>();
-			var sel = go.GetComponent<KSelectable>();
-			if (sel == null) return System.Array.Empty<string>();
-			var faction = go.GetComponent<FactionAlignment>();
-			if (faction != null && faction.IsPlayerTargeted())
-				return new[] { sel.GetName() + ", " +
-					(string)STRINGS.ONIACCESS.TOOLS.MARKED_ATTACK };
-			return new[] { sel.GetName() };
+
+			var pickupable = go.GetComponent<Pickupable>();
+			if (pickupable == null) return System.Array.Empty<string>();
+
+			var tokens = new List<string>();
+			var item = pickupable.objectLayerListItem;
+			while (item != null) {
+				var faction = item.gameObject.GetComponent<FactionAlignment>();
+				if (faction != null) {
+					var sel = item.gameObject.GetComponent<KSelectable>();
+					if (sel != null) {
+						if (faction.IsPlayerTargeted())
+							tokens.Add(sel.GetName() + ", " +
+								(string)STRINGS.ONIACCESS.TOOLS.MARKED_ATTACK);
+						else
+							tokens.Add(sel.GetName());
+					}
+				}
+				item = item.nextItem;
+			}
+			return tokens;
 		}
 	}
 }

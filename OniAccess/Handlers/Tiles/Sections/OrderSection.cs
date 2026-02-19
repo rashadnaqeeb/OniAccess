@@ -18,6 +18,9 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			CollectHarvestOrder(cell, parts);
 			CollectUprootOrder(cell, parts);
 			CollectDisinfectOrder(cell, parts);
+			CollectAttackOrder(cell, parts);
+			CollectCaptureOrder(cell, parts);
+			CollectEmptyPipeOrder(cell, parts);
 
 			if (parts.Count == 0)
 				return parts;
@@ -80,7 +83,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		private static void CollectHarvestOrder(int cell, List<string> parts) {
-			var go = Grid.Objects[cell, (int)ObjectLayer.Plants];
+			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
 			if (go == null) return;
 			var harvestable = go.GetComponent<HarvestDesignatable>();
 			if (harvestable == null) return;
@@ -90,7 +93,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		private static void CollectUprootOrder(int cell, List<string> parts) {
-			var go = Grid.Objects[cell, (int)ObjectLayer.Plants];
+			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
 			if (go == null) return;
 			var uprootable = go.GetComponent<Uprootable>();
 			if (uprootable == null) return;
@@ -114,6 +117,70 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (!IsMarkedForDisinfect(disinfectable)) return;
 			parts.Add(FormatOrder(
 				(string)STRINGS.ONIACCESS.GLANCE.ORDER_DISINFECT, go));
+		}
+
+		private static void CollectAttackOrder(int cell, List<string> parts) {
+			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
+			if (go == null) return;
+			var pickupable = go.GetComponent<Pickupable>();
+			if (pickupable == null) return;
+
+			var item = pickupable.objectLayerListItem;
+			while (item != null) {
+				var faction = item.gameObject.GetComponent<FactionAlignment>();
+				if (faction != null && faction.IsPlayerTargeted()) {
+					parts.Add(FormatOrder(
+						(string)STRINGS.ONIACCESS.GLANCE.ORDER_ATTACK,
+						item.gameObject));
+				}
+				item = item.nextItem;
+			}
+		}
+
+		private static void CollectCaptureOrder(int cell, List<string> parts) {
+			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
+			if (go == null) return;
+			var pickupable = go.GetComponent<Pickupable>();
+			if (pickupable == null) return;
+
+			var item = pickupable.objectLayerListItem;
+			while (item != null) {
+				var capturable = item.gameObject.GetComponent<Capturable>();
+				if (capturable != null && capturable.IsMarkedForCapture) {
+					parts.Add(FormatOrder(
+						(string)STRINGS.ONIACCESS.GLANCE.ORDER_CAPTURE,
+						item.gameObject));
+				}
+				item = item.nextItem;
+			}
+		}
+
+		private static readonly int[] _conduitLayers = {
+			(int)ObjectLayer.GasConduit,
+			(int)ObjectLayer.LiquidConduit,
+			(int)ObjectLayer.SolidConduit,
+		};
+
+		private static void CollectEmptyPipeOrder(int cell, List<string> parts) {
+			for (int i = 0; i < _conduitLayers.Length; i++) {
+				var go = Grid.Objects[cell, _conduitLayers[i]];
+				if (go == null) continue;
+				var workable = go.GetComponent<IEmptyConduitWorkable>();
+				if (workable.IsNullOrDestroyed()) continue;
+				if (!IsMarkedForEmptying(workable))  continue;
+				parts.Add(FormatOrder(
+					(string)STRINGS.ONIACCESS.GLANCE.ORDER_EMPTY_PIPE, go));
+			}
+		}
+
+		private static bool IsMarkedForEmptying(IEmptyConduitWorkable workable) {
+			try {
+				return HarmonyLib.Traverse.Create(workable)
+					.Field<float>("elapsedTime").Value >= 0f;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"OrderSection.IsMarkedForEmptying: {ex}");
+				return false;
+			}
 		}
 
 		private static string FormatOrder(string label, GameObject go) {

@@ -130,19 +130,17 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
-		/// Deactivate the active handler and clear the entire stack.
-		/// Only calls OnDeactivate on the active (top) handler -- obscured handlers
-		/// are silently removed. Used by VanillaMode toggle OFF.
+		/// Deactivate all handlers top-to-bottom and clear the stack.
+		/// Used by VanillaMode toggle OFF.
 		/// </summary>
 		public static void DeactivateAll() {
-			var active = ActiveHandler;
-			if (active != null) {
+			for (int i = _stack.Count - 1; i >= 0; i--) {
 				try {
-					active.OnDeactivate();
+					_stack[i].OnDeactivate();
 				} catch (System.Exception ex) {
-					Util.Log.Error($"HandlerStack.DeactivateAll: OnDeactivate of {active.DisplayName} failed: {ex}");
+					Util.Log.Error($"HandlerStack.DeactivateAll: OnDeactivate of {_stack[i].DisplayName} failed: {ex}");
 				}
-				Util.Log.Debug($"HandlerStack.DeactivateAll: deactivated {active.DisplayName}");
+				Util.Log.Debug($"HandlerStack.DeactivateAll: deactivated {_stack[i].DisplayName}");
 			}
 			_stack.Clear();
 		}

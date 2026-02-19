@@ -344,9 +344,8 @@ namespace OniAccess.Tests {
 			HandlerStack.Push(top);
 			HandlerStack.DeactivateAll();
 
-			// Only the active (top) handler gets OnDeactivate
 			bool ok = top.DeactivateCount == 1
-				   && bottom.DeactivateCount == 0
+				   && bottom.DeactivateCount == 1
 				   && HandlerStack.Count == 0;
 			return Assert("DeactivateAllCallsOnDeactivate", ok,
 				$"top.Deactivate={top.DeactivateCount}, " +

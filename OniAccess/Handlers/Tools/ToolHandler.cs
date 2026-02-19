@@ -407,7 +407,8 @@ namespace OniAccess.Handlers.Tools {
 		private string BuildRectSummary(RectCorners rect) {
 			if (_toolInfo != null
 				&& (_toolInfo.ToolType == typeof(AttackTool) || _toolInfo.ToolType == typeof(CaptureTool))) {
-				int count = CountEntitiesInRect(rect);
+				var singleRect = new List<RectCorners> { rect };
+				int count = CountEntitiesInRectangles(singleRect);
 				return string.Format((string)STRINGS.ONIACCESS.TOOLS.ENTITY_RECT_SUMMARY, count);
 			}
 
@@ -430,34 +431,56 @@ namespace OniAccess.Handlers.Tools {
 			return string.Format((string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY, width, height, valid, invalid);
 		}
 
-		private static int CountEntitiesInRect(RectCorners rect) {
+		private int CountEntitiesInRectangles(IReadOnlyList<RectCorners> rects) {
 			int count = 0;
-			rect.GetBounds(out int minX, out int maxX, out int minY, out int maxY);
-
-			for (int y = minY; y <= maxY; y++) {
-				for (int x = minX; x <= maxX; x++) {
-					int cell = Grid.XYToCell(x, y);
-					if (!Grid.IsValidCell(cell)) continue;
-					var objects = Grid.Objects[cell, (int)ObjectLayer.Critter];
-					if (objects != null)
-						count++;
+			if (_toolInfo != null && _toolInfo.ToolType == typeof(CaptureTool)) {
+				foreach (var item in Components.Capturables.Items) {
+					if (!item.allowCapture) continue;
+					int cell = Grid.PosToCell(item.transform.GetPosition());
+					for (int i = 0; i < rects.Count; i++) {
+						if (rects[i].Contains(cell)) {
+							count++;
+							break;
+						}
+					}
+				}
+			} else {
+				foreach (var item in Components.FactionAlignments.Items) {
+					if (item.IsNullOrDestroyed()) continue;
+					if (FactionManager.Instance.GetDisposition(FactionManager.FactionID.Duplicant, item.Alignment)
+						== FactionManager.Disposition.Assist) continue;
+					int cell = Grid.PosToCell(item.transform.GetPosition());
+					for (int i = 0; i < rects.Count; i++) {
+						if (rects[i].Contains(cell)) {
+							count++;
+							break;
+						}
+					}
 				}
 			}
 			return count;
 		}
 
 		private string BuildConfirmSummary() {
-			var cells = new HashSet<int>();
-			foreach (var r in _rectangles) {
-				r.GetBounds(out int minX, out int maxX, out int minY, out int maxY);
-				for (int y = minY; y <= maxY; y++)
-					for (int x = minX; x <= maxX; x++) {
-						int cell = Grid.XYToCell(x, y);
-						if (Grid.IsValidCell(cell))
-							cells.Add(cell);
-					}
+			bool isEntityTool = _toolInfo != null
+				&& (_toolInfo.ToolType == typeof(AttackTool) || _toolInfo.ToolType == typeof(CaptureTool));
+
+			int total;
+			if (isEntityTool) {
+				total = CountEntitiesInRectangles(_rectangles);
+			} else {
+				var cells = new HashSet<int>();
+				foreach (var r in _rectangles) {
+					r.GetBounds(out int minX, out int maxX, out int minY, out int maxY);
+					for (int y = minY; y <= maxY; y++)
+						for (int x = minX; x <= maxX; x++) {
+							int cell = Grid.XYToCell(x, y);
+							if (Grid.IsValidCell(cell))
+								cells.Add(cell);
+						}
+				}
+				total = cells.Count;
 			}
-			int total = cells.Count;
 			string priorityText = "";
 			if (_toolInfo != null && _toolInfo.SupportsPriority) {
 				try {
@@ -509,6 +532,7 @@ namespace OniAccess.Handlers.Tools {
 
 		private void DeactivateToolAndPop() {
 			Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			ToolMenu.Instance.ClearSelection();
 			SelectTool.Instance.Activate();
 			HandlerStack.Pop();
 		}

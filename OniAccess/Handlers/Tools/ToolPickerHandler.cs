@@ -73,6 +73,7 @@ namespace OniAccess.Handlers.Tools {
 		}
 
 		private static System.Reflection.MethodInfo _chooseToolMethod;
+		private static System.Reflection.MethodInfo _chooseCollectionMethod;
 
 		internal static void ActivateTool(ModToolInfo tool) {
 			try {
@@ -86,8 +87,11 @@ namespace OniAccess.Handlers.Tools {
 					}
 
 				if (found != null) {
+					if (_chooseCollectionMethod == null)
+						_chooseCollectionMethod = AccessTools.Method(typeof(ToolMenu), "ChooseCollection");
 					if (_chooseToolMethod == null)
 						_chooseToolMethod = AccessTools.Method(typeof(ToolMenu), "ChooseTool");
+					_chooseCollectionMethod.Invoke(ToolMenu.Instance, new object[] { found.collection, false });
 					_chooseToolMethod.Invoke(ToolMenu.Instance, new object[] { found });
 				} else {
 					foreach (var interfaceTool in PlayerController.Instance.tools) {

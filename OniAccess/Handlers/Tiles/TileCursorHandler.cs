@@ -58,6 +58,10 @@ namespace OniAccess.Handlers.Tiles {
 				}
 			}
 			if (OverlayScreen.Instance != null)
+				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
+			if (Game.Instance != null)
+				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
 			if (Game.Instance != null)
 				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);

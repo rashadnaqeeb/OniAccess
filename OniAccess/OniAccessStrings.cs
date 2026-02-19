@@ -248,6 +248,9 @@ namespace STRINGS {
 			public static LocString ORDER_HARVEST = "harvest";
 			public static LocString ORDER_UPROOT = "uproot";
 			public static LocString ORDER_DISINFECT = "disinfect";
+			public static LocString ORDER_ATTACK = "attack";
+			public static LocString ORDER_CAPTURE = "capture";
+			public static LocString ORDER_EMPTY_PIPE = "empty pipe";
 			public static LocString ORDER_PRIORITY = "{0} priority {1}";
 
 			public static LocString TILE_OF_INTEREST = "P O I";
