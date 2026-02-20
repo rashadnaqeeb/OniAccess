@@ -17,6 +17,7 @@ namespace OniAccess.Handlers.Tiles {
 	public class TileCursorHandler: BaseScreenHandler {
 		private Overlays.OverlayProfileRegistry _overlayRegistry;
 		private ScannerNavigator _scanner;
+		private GameStateMonitor _monitor;
 		private bool _hasActivated;
 		private bool _overlaySubscribed;
 
@@ -41,6 +42,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.PageDown),
 			new ConsumedKey(KKeyCode.PageUp, Modifier.Alt),
 			new ConsumedKey(KKeyCode.PageDown, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Q),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -57,6 +59,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Shift+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_SUBCATEGORY),
 			new HelpEntry("PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM),
 			new HelpEntry("Alt+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE),
+			new HelpEntry("Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;
@@ -73,6 +76,7 @@ namespace OniAccess.Handlers.Tiles {
 				Tools.ToolProfileRegistry.Build();
 				TileCursor.Create(_overlayRegistry);
 				_scanner = new ScannerNavigator();
+				_monitor = new GameStateMonitor();
 				SpeechPipeline.SpeakQueued(DisplayName);
 				try {
 					TileCursor.Instance.Initialize();
@@ -116,6 +120,7 @@ namespace OniAccess.Handlers.Tiles {
 			}
 
 			_scanner.CheckWorldSwitch();
+			_monitor.Tick();
 
 			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null)
@@ -159,6 +164,11 @@ namespace OniAccess.Handlers.Tiles {
 					OpenTooltipBrowser();
 				else
 					ReadTooltipSummary();
+				return;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)
+				&& !InputUtil.AnyModifierHeld()) {
+				_monitor.SpeakCycleStatus();
 				return;
 			}
 

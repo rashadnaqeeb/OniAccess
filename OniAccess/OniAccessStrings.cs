@@ -176,6 +176,13 @@ namespace STRINGS {
 			public static LocString PLAYING = "Video playing";
 		}
 
+		public class GAME_STATE {
+			public static LocString UNPAUSED = "unpaused, {0}";
+			public static LocString CYCLE = "Cycle {0}";
+			public static LocString CYCLE_STATUS = "Cycle {0}, block {1}";
+			public static LocString READ_CYCLE_STATUS = "Read cycle status";
+		}
+
 		public class TOOLTIP {
 			public static LocString NO_TOOLTIP = "no tooltip";
 			public static LocString CLOSED = "closed";
