@@ -59,13 +59,17 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				int cell = Grid.PosToCell(go.transform.GetPosition());
 				if (!Grid.IsVisible(cell)) continue;
 
+				string name = def.ObjectLayer == ObjectLayer.Backwall
+					? def.Name
+					: go.GetComponent<KSelectable>()?.GetName() ?? prefabId;
+
 				yield return new ScanEntry {
 					Cell = cell,
 					Backend = this,
 					BackendData = go,
 					Category = category,
 					Subcategory = subcategory,
-					ItemName = go.GetComponent<KSelectable>()?.GetName() ?? prefabId,
+					ItemName = name,
 				};
 			}
 		}
