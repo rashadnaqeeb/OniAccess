@@ -403,7 +403,7 @@ namespace OniAccess.Handlers.Screens {
 		/// Queue the currently focused widget via SpeakQueued so it follows
 		/// a preceding SpeakInterrupt (e.g., after text-edit confirm/cancel).
 		/// </summary>
-		private void QueueCurrentWidget() {
+		protected void QueueCurrentWidget() {
 			if (_currentIndex >= 0 && _currentIndex < _widgets.Count) {
 				var w = _widgets[_currentIndex];
 				if (!IsWidgetValid(w)) return;
