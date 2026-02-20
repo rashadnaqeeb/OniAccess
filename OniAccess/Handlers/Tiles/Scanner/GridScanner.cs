@@ -302,6 +302,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			var building = go.GetComponent<Building>();
 			if (building == null) return;
 			if (building.Def.isUtility) return;
+			if (!building.Def.isKAnimTile) return;
 
 			_tileKey[cell] = building.Def.PrefabID.GetHashCode();
 			UnionWithNeighbors(_ufTiles, _tileKey, cell);
@@ -316,6 +317,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 			var building = go.GetComponent<Building>();
 			if (building == null) return;
+			if (!building.Def.isUtility) return;
 
 			_networkKey[typeIndex][cell] = building.Def.PrefabID.GetHashCode();
 			UnionWithNeighbors(_ufNetworks[typeIndex], _networkKey[typeIndex], cell);

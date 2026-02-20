@@ -48,7 +48,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 		private IEnumerable<ScanEntry> ScanBuildings(int worldId) {
 			foreach (var building in Components.BuildingCompletes.GetWorldItems(worldId)) {
 				var def = building.Def;
-				if (def.IsTilePiece) continue;
+				if (def.isKAnimTile) continue;
 				if (def.isUtility) continue;
 
 				string prefabId = def.PrefabID;
