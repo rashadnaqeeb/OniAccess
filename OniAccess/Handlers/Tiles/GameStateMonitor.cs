@@ -2,22 +2,24 @@ using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Tiles {
 	public class GameStateMonitor {
+		private bool _firstTick = true;
 		private bool _wasPaused;
 		private int _lastSpeed;
 		private int _lastCycle;
-
-		public GameStateMonitor() {
-			var speedScreen = SpeedControlScreen.Instance;
-			_wasPaused = speedScreen.IsPaused;
-			_lastSpeed = speedScreen.GetSpeed();
-			_lastCycle = GameClock.Instance.GetCycle();
-		}
 
 		public void Tick() {
 			var speedScreen = SpeedControlScreen.Instance;
 			bool paused = speedScreen.IsPaused;
 			int speed = speedScreen.GetSpeed();
 			int cycle = GameClock.Instance.GetCycle();
+
+			if (_firstTick) {
+				_firstTick = false;
+				_wasPaused = paused;
+				_lastSpeed = speed;
+				_lastCycle = cycle;
+				return;
+			}
 
 			if (paused != _wasPaused) {
 				_wasPaused = paused;
