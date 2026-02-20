@@ -284,7 +284,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 			Element elem = Grid.Element[cell];
 			if (elem.id == SimHashes.Vacuum) return;
-			if ((elem.state & Element.State.Unbreakable) != 0) return;
+			if (elem.IsSolid && (elem.state & Element.State.Unbreakable) != 0) return;
 
 			_elementKey[cell] = (int)elem.id;
 			UnionWithNeighbors(_ufElements, _elementKey, cell);

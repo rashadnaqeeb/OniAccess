@@ -21,14 +21,17 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 
 		private void Build() {
 			_names = new Dictionary<SubWorld.ZoneType, string>();
+			if (SettingsCache.subworlds == null) return;
 			foreach (var kvp in SettingsCache.subworlds) {
 				var subWorld = kvp.Value;
+				if (subWorld == null) continue;
 				if (_names.ContainsKey(subWorld.zoneType))
 					continue;
+				if (subWorld.nameKey == null) continue;
 				string localized = Strings.Get(subWorld.nameKey);
-				if (localized.EndsWith(" Biome"))
+				if (localized != null && localized.EndsWith(" Biome"))
 					localized = localized.Substring(0, localized.Length - 6);
-				_names[subWorld.zoneType] = localized;
+				_names[subWorld.zoneType] = localized ?? InsertSpaces(subWorld.zoneType.ToString());
 			}
 		}
 
