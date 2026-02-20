@@ -36,7 +36,9 @@ When a build fails on a type or method signature, look it up in `ONI-Decompiled/
 powershell -ExecutionPolicy Bypass -File test.ps1
 ```
 
-Builds and runs the offline test suite (`OniAccess.Tests`). Tests run without the game. All new tests must work offline — never add tests that require launching the game. Test base classes and major systems (e.g., handler stack, input routing, speech pipeline), not individual screen handlers.
+Builds and runs the offline test suite (`OniAccess.Tests`). Tests run without the game. All new tests must work offline — never add tests that require launching the game. Don't test individual screen handlers.
+
+Test systems where bugs hide: algorithmic logic, state machines with multiple transitions, non-obvious side effects (e.g., Pop reactivating the handler underneath), exception safety, and time-dependent behavior. Don't write tests for code you can verify by reading: null guards, flag checks, list indexing, cleanup methods, property accessors. TextFilter-style regression suites are the exception — keep full coverage when the code is a chain of replacements where any change can break unrelated cases.
 
 ## Project Rules
 
