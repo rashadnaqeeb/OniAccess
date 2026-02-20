@@ -27,6 +27,10 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 		/// Returns true if this pickupable should be excluded from debris.
 		/// </summary>
 		public static bool ShouldExclude(KPrefabID prefabId) {
+			if (prefabId.HasTag(GameTags.BaseMinion))
+				return true;
+			if (prefabId.HasTag(GameTags.Creature))
+				return true;
 			if (prefabId.HasTag(GameTags.GeyserFeature))
 				return true;
 			var uprootable = prefabId.GetComponent<Uprootable>();

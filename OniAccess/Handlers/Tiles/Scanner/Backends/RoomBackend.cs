@@ -17,6 +17,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 
 				int roomCell = room.cavity.cells[0];
 				if (Grid.WorldIdx[roomCell] != (byte)worldId) continue;
+				if (!Grid.IsVisible(roomCell)) continue;
 
 				yield return new ScanEntry {
 					Cell = roomCell,
