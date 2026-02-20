@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Input;
 using OniAccess.Speech;
 
@@ -15,6 +16,7 @@ namespace OniAccess.Handlers.Tiles {
 	/// </summary>
 	public class TileCursorHandler: BaseScreenHandler {
 		private Overlays.OverlayProfileRegistry _overlayRegistry;
+		private ScannerNavigator _scanner;
 		private bool _hasActivated;
 		private bool _overlaySubscribed;
 
@@ -28,6 +30,17 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.DownArrow),
 			new ConsumedKey(KKeyCode.LeftArrow),
 			new ConsumedKey(KKeyCode.RightArrow),
+			// Scanner keybinds
+			new ConsumedKey(KKeyCode.End),
+			new ConsumedKey(KKeyCode.Home),
+			new ConsumedKey(KKeyCode.PageUp, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.PageDown, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.PageUp, Modifier.Shift),
+			new ConsumedKey(KKeyCode.PageDown, Modifier.Shift),
+			new ConsumedKey(KKeyCode.PageUp),
+			new ConsumedKey(KKeyCode.PageDown),
+			new ConsumedKey(KKeyCode.PageUp, Modifier.Alt),
+			new ConsumedKey(KKeyCode.PageDown, Modifier.Alt),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -38,6 +51,12 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
 			new HelpEntry("K", (string)STRINGS.ONIACCESS.HELP.READ_COORDS),
 			new HelpEntry("Shift+K", (string)STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE),
+			new HelpEntry("End", (string)STRINGS.ONIACCESS.SCANNER.HELP.REFRESH),
+			new HelpEntry("Home", (string)STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT),
+			new HelpEntry("Ctrl+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_CATEGORY),
+			new HelpEntry("Shift+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_SUBCATEGORY),
+			new HelpEntry("PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM),
+			new HelpEntry("Alt+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;
@@ -53,6 +72,7 @@ namespace OniAccess.Handlers.Tiles {
 				_overlayRegistry = Overlays.OverlayProfileRegistry.Build();
 				Tools.ToolProfileRegistry.Build();
 				TileCursor.Create(_overlayRegistry);
+				_scanner = new ScannerNavigator();
 				SpeechPipeline.SpeakQueued(DisplayName);
 				try {
 					TileCursor.Instance.Initialize();
@@ -78,6 +98,7 @@ namespace OniAccess.Handlers.Tiles {
 			if (Game.Instance != null)
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
 			TileCursor.Destroy();
+			_scanner = null;
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 			_overlaySubscribed = false;
@@ -93,6 +114,8 @@ namespace OniAccess.Handlers.Tiles {
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
 				_overlaySubscribed = true;
 			}
+
+			_scanner.CheckWorldSwitch();
 
 			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null)
@@ -136,6 +159,40 @@ namespace OniAccess.Handlers.Tiles {
 					OpenTooltipBrowser();
 				else
 					ReadTooltipSummary();
+				return;
+			}
+
+			// Scanner keybinds
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)
+				&& !InputUtil.AnyModifierHeld()) {
+				_scanner.Refresh();
+				return;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home)
+				&& !InputUtil.AnyModifierHeld()) {
+				_scanner.Teleport();
+				return;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.PageUp)) {
+				if (InputUtil.CtrlHeld())
+					_scanner.CycleCategory(-1);
+				else if (InputUtil.ShiftHeld())
+					_scanner.CycleSubcategory(-1);
+				else if (InputUtil.AltHeld())
+					_scanner.CycleInstance(-1);
+				else
+					_scanner.CycleItem(-1);
+				return;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.PageDown)) {
+				if (InputUtil.CtrlHeld())
+					_scanner.CycleCategory(1);
+				else if (InputUtil.ShiftHeld())
+					_scanner.CycleSubcategory(1);
+				else if (InputUtil.AltHeld())
+					_scanner.CycleInstance(1);
+				else
+					_scanner.CycleItem(1);
 				return;
 			}
 		}
