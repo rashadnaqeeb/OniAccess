@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 	/// Debris, and Life. Iterates multiple Components registries.
 	/// Each entity is one ScanEntry with a GameObject reference as BackendData.
 	/// </summary>
-	public class EntityBackend : IScannerBackend {
+	public class EntityBackend: IScannerBackend {
 		private readonly BuildingRouter _buildingRouter;
 
 		public EntityBackend(BuildingRouter buildingRouter) {

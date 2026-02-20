@@ -4,7 +4,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Speaks cell temperature and warns when near a phase transition.
 	/// </summary>
-	public class TemperatureSection : ICellSection {
+	public class TemperatureSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			float kelvin = Grid.Temperature[cell];
 			if (kelvin <= 0f) yield break;

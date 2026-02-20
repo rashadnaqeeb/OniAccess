@@ -6,7 +6,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 	/// Each room is one instance. Teleport target is the nearest cell
 	/// in the room's cavity to the cursor.
 	/// </summary>
-	public class RoomBackend : IScannerBackend {
+	public class RoomBackend: IScannerBackend {
 
 		public IEnumerable<ScanEntry> Scan(int worldId) {
 			var rooms = Game.Instance.roomProber.rooms;

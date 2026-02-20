@@ -6,7 +6,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 	/// Backend for Buildings > Geysers. Iterates Components.Geysers and
 	/// Components.GeothermalVents. Each geyser is one instance.
 	/// </summary>
-	public class GeyserBackend : IScannerBackend {
+	public class GeyserBackend: IScannerBackend {
 
 		public IEnumerable<ScanEntry> Scan(int worldId) {
 			foreach (var geyser in Components.Geysers.GetItems(worldId)) {

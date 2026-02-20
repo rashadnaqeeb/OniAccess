@@ -5,7 +5,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 	/// Backend for natural elements (Solids, Liquids, Gases).
 	/// Receives pre-clustered data from GridScanner.
 	/// </summary>
-	public class ElementClusterBackend : IScannerBackend {
+	public class ElementClusterBackend: IScannerBackend {
 		private List<ElementCluster> _clusters;
 
 		public void SetGridData(List<ElementCluster> clusters) {

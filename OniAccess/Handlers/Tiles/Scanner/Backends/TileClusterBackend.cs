@@ -6,7 +6,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 	/// like FarmTile → Buildings > Farming). Receives pre-clustered data
 	/// from GridScanner.
 	/// </summary>
-	public class TileClusterBackend : IScannerBackend {
+	public class TileClusterBackend: IScannerBackend {
 		private List<TileCluster> _clusters;
 
 		public void SetGridData(List<TileCluster> clusters) {

@@ -6,7 +6,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 	/// Segments are clustered; bridges are individual instances.
 	/// Both coexist within the same scanner subcategory.
 	/// </summary>
-	public class NetworkSegmentBackend : IScannerBackend {
+	public class NetworkSegmentBackend: IScannerBackend {
 		private List<NetworkSegmentCluster> _segments;
 		private List<BridgeInstance> _bridges;
 
