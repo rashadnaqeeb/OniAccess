@@ -24,108 +24,120 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 				{ "RoleStation", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
 			};
 
-		// Whole-category mappings: any building in these game categories routes here
+		// Whole-category mappings: any building in these game categories routes here.
+		// Keys are lowercase — HashCache returns lowercase category strings at runtime.
 		private static readonly Dictionary<string, (string, string)> _wholeCategoryMap =
 			new Dictionary<string, (string, string)> {
-				{ "Oxygen", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Oxygen) },
-				{ "Refining", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Refining) },
-				{ "Medical", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Wellness) },
-				{ "Rocketry", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
-				{ "HEP", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
+				{ "oxygen", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Oxygen) },
+				{ "refining", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Refining) },
+				{ "medical", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Wellness) },
+				{ "rocketry", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
+				{ "hep", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
 			};
 
-		// Subcategory-level mappings: (game category, game subcategory) → scanner destination
+		// Subcategory-level mappings: (game category, game subcategory) → scanner destination.
+		// Category keys are lowercase — HashCache returns lowercase at runtime.
 		private static readonly Dictionary<(string, string), (string, string)> _subcategoryMap =
 			new Dictionary<(string, string), (string, string)> {
 				// Buildings > Generators
-				{ ("Power", "generators"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Generators) },
-				{ ("Power", "electrobankbuildings"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Generators) },
-				{ ("Equipment", "industrialstation"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Generators) },
+				{ ("power", "generators"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Generators) },
+				{ ("power", "electrobankbuildings"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Generators) },
+				{ ("equipment", "industrialstation"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Generators) },
 
 				// Buildings > Farming
-				{ ("Food", "farming"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
-				{ ("Food", "ranching"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
-				{ ("Equipment", "workstations"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
+				{ ("food", "farming"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
+				{ ("food", "ranching"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
+				{ ("equipment", "workstations"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
+				{ ("equipment", "farming"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
+				{ ("equipment", "ranching"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
 
 				// Buildings > Production
-				{ ("Food", "cooking"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
-				{ ("Equipment", "research"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
-				{ ("Equipment", "manufacturing"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
-				{ ("Equipment", "archaeology"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
-				{ ("Equipment", "meteordefense"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
+				{ ("food", "cooking"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
+				{ ("equipment", "research"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
+				{ ("equipment", "manufacturing"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
+				{ ("equipment", "archaeology"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
+				{ ("equipment", "meteordefense"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
 
 				// Buildings > Storage
-				{ ("Base", "storage"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Storage) },
-				{ ("Food", "storage"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Storage) },
+				{ ("base", "storage"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Storage) },
+				{ ("food", "storage"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Storage) },
 
 				// Buildings > Temperature
-				{ ("Utilities", "temperature"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Temperature) },
+				{ ("utilities", "temperature"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Temperature) },
 
 				// Buildings > Refining
-				{ ("Utilities", "oil"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Refining) },
+				{ ("utilities", "oil"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Refining) },
 
 				// Buildings > Wellness
-				{ ("Plumbing", "washroom"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Wellness) },
-				{ ("Furniture", "beds"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Wellness) },
+				{ ("plumbing", "washroom"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Wellness) },
+				{ ("furniture", "beds"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Wellness) },
 
 				// Buildings > Morale
-				{ ("Furniture", "lights"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Morale) },
-				{ ("Furniture", "dining"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Morale) },
-				{ ("Furniture", "recreation"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Morale) },
-				{ ("Furniture", "decor"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Morale) },
+				{ ("furniture", "lights"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Morale) },
+				{ ("furniture", "dining"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Morale) },
+				{ ("furniture", "recreation"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Morale) },
+				{ ("furniture", "decor"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Morale) },
 
 				// Buildings > Infrastructure
-				{ ("Base", "doors"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
-				{ ("Base", "printingpods"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
-				{ ("Base", "operations"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
-				{ ("Utilities", "sanitation"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
-				{ ("Equipment", "equipment"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
+				{ ("base", "doors"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
+				{ ("base", "printingpods"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
+				{ ("base", "operations"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
+				{ ("base", "tiles"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
+				{ ("base", "ladders"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
+				{ ("utilities", "sanitation"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
+				{ ("utilities", "materials"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
+				{ ("equipment", "equipment"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
+				{ ("equipment", "operations"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
 
 				// Buildings > Rocketry (subcategory-level additions)
-				{ ("Equipment", "exploration"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
-				{ ("Equipment", "telescopes"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
-				{ ("Plumbing", "buildmenuports"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
-				{ ("HVAC", "buildmenuports"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
-				{ ("Conveyance", "buildmenuports"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
+				{ ("equipment", "exploration"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
+				{ ("equipment", "telescopes"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
+				{ ("plumbing", "buildmenuports"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
+				{ ("hvac", "buildmenuports"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
+				{ ("conveyance", "buildmenuports"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
 
 				// Networks > Transport
-				{ ("Base", "transport"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Transport) },
+				{ ("base", "transport"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Transport) },
 
 				// Networks > Power
-				{ ("Power", "batteries"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Power) },
-				{ ("Power", "powercontrol"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Power) },
-				{ ("Power", "switches"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Power) },
+				{ ("power", "batteries"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Power) },
+				{ ("power", "powercontrol"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Power) },
+				{ ("power", "switches"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Power) },
+				{ ("power", "wires"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Power) },
 
 				// Networks > Liquid
-				{ ("Plumbing", "pumps"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Liquid) },
-				{ ("Plumbing", "pipes"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Liquid) },
-				{ ("Plumbing", "valves"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Liquid) },
-				{ ("Plumbing", "sensors"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Liquid) },
+				{ ("plumbing", "pumps"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Liquid) },
+				{ ("plumbing", "pipes"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Liquid) },
+				{ ("plumbing", "valves"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Liquid) },
+				{ ("plumbing", "sensors"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Liquid) },
 
 				// Networks > Gas
-				{ ("HVAC", "pumps"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Gas) },
-				{ ("HVAC", "pipes"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Gas) },
-				{ ("HVAC", "valves"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Gas) },
-				{ ("HVAC", "sensors"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Gas) },
+				{ ("hvac", "pumps"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Gas) },
+				{ ("hvac", "pipes"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Gas) },
+				{ ("hvac", "valves"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Gas) },
+				{ ("hvac", "sensors"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Gas) },
 
 				// Networks > Conveyor
-				{ ("Conveyance", "conveyancestructures"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Conveyor) },
-				{ ("Conveyance", "automated"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Conveyor) },
+				{ ("conveyance", "conveyancestructures"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Conveyor) },
+				{ ("conveyance", "automated"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Conveyor) },
+				{ ("conveyance", "pumps"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Conveyor) },
+				{ ("conveyance", "sensors"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Conveyor) },
+				{ ("conveyance", "valves"), (ScannerTaxonomy.Categories.Networks, ScannerTaxonomy.Subcategories.Conveyor) },
 
 				// Automation > Sensors
-				{ ("Automation", "sensors"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Sensors) },
+				{ ("automation", "sensors"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Sensors) },
 
 				// Automation > Gates
-				{ ("Automation", "logicgates"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Gates) },
+				{ ("automation", "logicgates"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Gates) },
 
 				// Automation > Controls
-				{ ("Automation", "switches"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Controls) },
-				{ ("Automation", "logicmanager"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Controls) },
-				{ ("Automation", "logicaudio"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Controls) },
-				{ ("Automation", "transmissions"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Controls) },
+				{ ("automation", "switches"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Controls) },
+				{ ("automation", "logicmanager"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Controls) },
+				{ ("automation", "logicaudio"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Controls) },
+				{ ("automation", "transmissions"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Controls) },
 
 				// Automation > Wires
-				{ ("Automation", "wires"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Wires) },
+				{ ("automation", "wires"), (ScannerTaxonomy.Categories.Automation, ScannerTaxonomy.Subcategories.Wires) },
 			};
 
 		public BuildingRouter() {

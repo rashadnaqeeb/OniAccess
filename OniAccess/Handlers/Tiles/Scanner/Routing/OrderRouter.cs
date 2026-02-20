@@ -154,7 +154,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 		/// </summary>
 		public static string GetBuildOrderName(int cell) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
-			return go.GetComponent<KSelectable>().GetName();
+			if (go == null) return null;
+			return go.GetComponent<KSelectable>()?.GetName();
 		}
 
 		public static string GetDeconstructOrderType(int cell) {
@@ -183,7 +184,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 			if (go == null) return null;
 			var d = go.GetComponent<Deconstructable>();
 			if (d == null || !d.IsMarkedForDeconstruction()) return null;
-			return go.GetComponent<KSelectable>().GetName();
+			return go.GetComponent<KSelectable>()?.GetName();
 		}
 
 		public static string GetHarvestOrderType(int cell) {
@@ -197,7 +198,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 
 		public static string GetHarvestOrderName(int cell) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
-			return go.GetComponent<KSelectable>().GetName();
+			if (go == null) return null;
+			return go.GetComponent<KSelectable>()?.GetName();
 		}
 
 		public static string GetUprootOrderType(int cell) {
@@ -211,7 +213,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 
 		public static string GetUprootOrderName(int cell) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
-			return go.GetComponent<KSelectable>().GetName();
+			if (go == null) return null;
+			return go.GetComponent<KSelectable>()?.GetName();
 		}
 
 		/// <summary>
@@ -223,9 +226,12 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 			var workable = go.GetComponent<IEmptyConduitWorkable>();
 			if (workable.IsNullOrDestroyed()) return false;
 			var selectable = ((UnityEngine.MonoBehaviour)workable).GetComponent<KSelectable>();
+			if (selectable == null) return false;
 			var group = selectable.GetStatusItemGroup();
+			if (group == null) return false;
 			return group.HasStatusItemID("EmptyLiquidConduit")
-				|| group.HasStatusItemID("EmptyGasConduit");
+				|| group.HasStatusItemID("EmptyGasConduit")
+				|| group.HasStatusItemID("EmptySolidConduit");
 		}
 	}
 }
