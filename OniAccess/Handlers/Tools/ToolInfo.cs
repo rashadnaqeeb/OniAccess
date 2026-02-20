@@ -15,6 +15,7 @@ namespace OniAccess.Handlers.Tools {
 		public string DragSound { get; }
 		public string ConfirmSound { get; }
 		public string ConfirmFormat { get; }
+		public Func<int, int> CountTargets { get; }
 
 		public ModToolInfo(
 			string toolName,
@@ -26,7 +27,8 @@ namespace OniAccess.Handlers.Tools {
 			bool isLineMode,
 			string dragSound,
 			string confirmSound,
-			string confirmFormat
+			string confirmFormat,
+			Func<int, int> countTargets
 		) {
 			ToolName = toolName;
 			Label = label;
@@ -38,6 +40,7 @@ namespace OniAccess.Handlers.Tools {
 			DragSound = dragSound;
 			ConfirmSound = confirmSound;
 			ConfirmFormat = confirmFormat;
+			CountTargets = countTargets;
 		}
 	}
 }
