@@ -19,6 +19,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 			new Dictionary<string, (string, string)> {
 				{ "HighEnergyParticleRedirector", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
 				{ "HEPBridgeTile", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
+				{ "ExteriorWall", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Morale) },
 				{ "Headquarters", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
 				{ "ResetSkillsStation", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
 				{ "RoleStation", (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
