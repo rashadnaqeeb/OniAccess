@@ -12,8 +12,6 @@ powershell -ExecutionPolicy Bypass -File build.ps1
 
 The script builds the DLL, deploys it to the game's local mods directory, and patches mods.json to keep the mod enabled.
 
-LSP diagnostics about missing types (KScreen, KButton, KToggle, etc.) are expected; the language server cannot resolve game assembly references. Ignore these; use the build script to verify compilation.
-
 When a build fails on a type or method signature, look it up in `ONI-Decompiled/` before guessing at fixes.
 
 ## Project Structure
