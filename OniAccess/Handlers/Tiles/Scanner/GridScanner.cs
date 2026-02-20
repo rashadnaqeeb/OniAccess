@@ -108,6 +108,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 		// Non-clustered output, emitted directly during forward pass
 		private readonly List<BridgeInstance> _bridges = new List<BridgeInstance>();
+		private readonly HashSet<int> _seenBridges = new HashSet<int>();
 		private readonly List<IndividualOrder> _individualOrders = new List<IndividualOrder>();
 
 		// Multi-cell building dedup for same-type orders during extraction.
@@ -232,6 +233,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			_sameTypeOrderClusters.Clear();
 			_biomeClusters.Clear();
 			_bridges.Clear();
+			_seenBridges.Clear();
 			_individualOrders.Clear();
 			_sameTypeSeenIds.Clear();
 		}
@@ -331,6 +333,9 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 					var building = go.GetComponent<Building>();
 					if (building == null || !building.Def.isUtility) continue;
 				}
+
+				if (_seenBridges.Contains(go.GetInstanceID())) continue;
+				_seenBridges.Add(go.GetInstanceID());
 
 				_bridges.Add(new BridgeInstance {
 					Cell = cell,

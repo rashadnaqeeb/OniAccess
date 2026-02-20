@@ -301,6 +301,8 @@ namespace STRINGS {
 			public static LocString ORDER_LABEL = "{0} {1}";
 			// {0} = tile count, {1} = order type, {2} = target name
 			public static LocString ORDER_CLUSTER_LABEL = "{0} {1} {2}";
+			// {0} = tile count, {1} = order type (no target)
+			public static LocString ORDER_CLUSTER_COUNT = "{0} {1}";
 			public static LocString INSTANCE_OF = "{0} of {1}";
 			public static LocString MIXED = "mixed";
 

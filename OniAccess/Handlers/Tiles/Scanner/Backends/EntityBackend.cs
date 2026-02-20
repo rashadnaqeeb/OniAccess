@@ -154,6 +154,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 
 		private IEnumerable<ScanEntry> ScanPlants(int worldId) {
 			foreach (var uprootable in Components.Uprootables.GetWorldItems(worldId)) {
+				if (uprootable.GetPlanterStorage == null) continue;
 				var go = uprootable.gameObject;
 				int cell = Grid.PosToCell(go.transform.GetPosition());
 				if (!Grid.IsVisible(cell)) continue;

@@ -61,7 +61,14 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 
 		public string FormatName(ScanEntry entry) {
 			if (entry.BackendData is OrderCluster cluster) {
-				string targetName = cluster.TargetName ?? "";
+				string targetName = cluster.TargetName;
+				if (string.IsNullOrEmpty(targetName)) {
+					if (cluster.Cells.Count == 1)
+						return cluster.OrderType.Label;
+					return string.Format(
+						(string)STRINGS.ONIACCESS.SCANNER.ORDER_CLUSTER_COUNT,
+						cluster.Cells.Count, cluster.OrderType.Label);
+				}
 				if (cluster.Cells.Count == 1)
 					return string.Format(
 						(string)STRINGS.ONIACCESS.SCANNER.ORDER_LABEL,
