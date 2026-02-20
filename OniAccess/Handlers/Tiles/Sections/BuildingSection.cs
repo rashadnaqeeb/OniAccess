@@ -30,7 +30,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (backwallGo != null && !ctx.Claimed.Contains(backwallGo)) {
 					var selectable = backwallGo.GetComponent<KSelectable>();
 					if (selectable != null)
-						tokens.Add(selectable.GetName());
+						tokens.Add(GetBuildingName(backwallGo, selectable));
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Error($"BuildingSection.Read: {ex}");
@@ -47,12 +47,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				ReadPorts(go, building, cell, tokens);
 
 			var constructable = go.GetComponent<Constructable>();
+			string displayName = GetBuildingName(go, selectable);
 			if (constructable != null) {
 				tokens.Add(string.Format(
 					(string)STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION,
-					selectable.GetName()));
+					displayName));
 			} else {
-				tokens.Add(selectable.GetName());
+				tokens.Add(displayName);
 			}
 
 			bool isPlant = go.GetComponent<Growing>() != null;
@@ -350,6 +351,23 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				case ConduitType.Solid: return (string)STRINGS.ONIACCESS.GLANCE.SOLID_OUTPUT;
 				default: return (string)STRINGS.ONIACCESS.GLANCE.OUTPUT_PORT;
 			}
+		}
+
+		private static bool IsDecorOverlay() {
+			return OverlayScreen.Instance != null
+				&& OverlayScreen.Instance.GetMode() == OverlayModes.Decor.ID;
+		}
+
+		private static string GetBuildingName(GameObject go, KSelectable selectable) {
+			if (IsDecorOverlay())
+				return selectable.GetName();
+			var facade = go.GetComponent<BuildingFacade>();
+			if (facade != null && !facade.IsOriginal) {
+				var building = go.GetComponent<Building>();
+				if (building != null)
+					return building.Def.Name;
+			}
+			return selectable.GetName();
 		}
 	}
 }
