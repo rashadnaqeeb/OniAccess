@@ -252,6 +252,7 @@ namespace STRINGS {
 			public static LocString OUTPUT_PORT = "output";
 
 			public static LocString ORDER_PREFIX = "pending {0}";
+			public static LocString ORDER_BUILD = "build";
 			public static LocString ORDER_DIG = "dig";
 			public static LocString ORDER_MOP = "mop";
 			public static LocString ORDER_SWEEP = "sweep";
@@ -282,6 +283,130 @@ namespace STRINGS {
 			public static LocString OVERLAY_DECOR = "{0}{1} decor";
 			public static LocString DISEASE_CLEAR = "clean";
 			public static LocString DISEASE_ENTRY = "{0}, {1}";
+		}
+
+		public class SCANNER {
+			// Confirmation
+			public static LocString REFRESHED = "scanned";
+			public static LocString EMPTY = "no results";
+			public static LocString INVALID = "gone";
+
+			// Announcement format: {0} = name/label, {1} = distance, {2} = index-of-count
+			public static LocString INSTANCE_WITH_DISTANCE = "{0}, {1}, {2}";
+			// Announcement format: {0} = name/label, {1} = index-of-count
+			public static LocString INSTANCE_NO_DISTANCE = "{0}, {1}";
+			// {0} = tile count, {1} = item name
+			public static LocString CLUSTER_LABEL = "{0} {1}";
+			// {0} = order type, {1} = target name
+			public static LocString ORDER_LABEL = "{0} {1}";
+			// {0} = tile count, {1} = order type, {2} = target name
+			public static LocString ORDER_CLUSTER_LABEL = "{0} {1} {2}";
+			public static LocString INSTANCE_OF = "{0} of {1}";
+			public static LocString MIXED = "mixed";
+
+			// Direction tokens
+			public static LocString DIRECTION_UP = "up";
+			public static LocString DIRECTION_DOWN = "down";
+			public static LocString DIRECTION_LEFT = "left";
+			public static LocString DIRECTION_RIGHT = "right";
+
+			// Distance templates: {0} = tile count, {1} = direction word
+			public static LocString DISTANCE_VERTICAL = "{0} {1}";
+			public static LocString DISTANCE_HORIZONTAL = "{0} {1}";
+			// {0} = vertical distance, {1} = horizontal distance
+			public static LocString DISTANCE_BOTH = "{0} {1}";
+
+			// Categories
+			public class CATEGORIES {
+				public static LocString SOLIDS = "Solids";
+				public static LocString LIQUIDS = "Liquids";
+				public static LocString GASES = "Gases";
+				public static LocString BUILDINGS = "Buildings";
+				public static LocString NETWORKS = "Networks";
+				public static LocString AUTOMATION = "Automation";
+				public static LocString DEBRIS = "Debris";
+				public static LocString ZONES = "Zones";
+				public static LocString LIFE = "Life";
+			}
+
+			// Subcategories
+			public class SUBCATEGORIES {
+				public static LocString ALL = "all";
+
+				// Solids
+				public static LocString ORES = "Ores";
+				public static LocString STONE = "Stone";
+				public static LocString CONSUMABLES = "Consumables";
+				public static LocString ORGANICS = "Organics";
+				public static LocString ICE = "Ice";
+				public static LocString REFINED = "Refined";
+				public static LocString TILES = "Tiles";
+
+				// Liquids
+				public static LocString WATERS = "Waters";
+				public static LocString FUELS = "Fuels";
+				public static LocString MOLTEN = "Molten";
+				public static LocString MISC = "Misc";
+
+				// Gases
+				public static LocString SAFE = "Safe";
+				public static LocString UNSAFE = "Unsafe";
+
+				// Buildings
+				public static LocString OXYGEN = "Oxygen";
+				public static LocString GENERATORS = "Generators";
+				public static LocString FARMING = "Farming";
+				public static LocString PRODUCTION = "Production";
+				public static LocString STORAGE = "Storage";
+				public static LocString REFINING = "Refining";
+				public static LocString TEMPERATURE = "Temperature";
+				public static LocString WELLNESS = "Wellness";
+				public static LocString MORALE = "Morale";
+				public static LocString INFRASTRUCTURE = "Infrastructure";
+				public static LocString ROCKETRY = "Rocketry";
+				public static LocString GEYSERS = "Geysers";
+
+				// Networks
+				public static LocString POWER = "Power";
+				public static LocString LIQUID = "Liquid";
+				public static LocString GAS = "Gas";
+				public static LocString CONVEYOR = "Conveyor";
+				public static LocString TRANSPORT = "Transport";
+
+				// Automation
+				public static LocString SENSORS = "Sensors";
+				public static LocString GATES = "Gates";
+				public static LocString CONTROLS = "Controls";
+				public static LocString WIRES = "Wires";
+
+				// Debris
+				public static LocString MATERIALS = "Materials";
+				public static LocString FOOD = "Food";
+				public static LocString ITEMS = "Items";
+				public static LocString BOTTLES = "Bottles";
+
+				// Zones
+				public static LocString ORDERS = "Orders";
+				public static LocString ROOMS = "Rooms";
+				public static LocString BIOMES = "Biomes";
+
+				// Life
+				public static LocString DUPLICANTS = "Duplicants";
+				public static LocString TAME_CRITTERS = "Tame Critters";
+				public static LocString WILD_CRITTERS = "Wild Critters";
+				public static LocString WILD_PLANTS = "Wild Plants";
+				public static LocString FARM_PLANTS = "Farm Plants";
+			}
+
+			// Help entries
+			public class HELP {
+				public static LocString REFRESH = "Refresh scan";
+				public static LocString TELEPORT = "Jump to selected";
+				public static LocString CYCLE_CATEGORY = "Cycle category";
+				public static LocString CYCLE_SUBCATEGORY = "Cycle subcategory";
+				public static LocString CYCLE_ITEM = "Cycle item";
+				public static LocString CYCLE_INSTANCE = "Cycle instance";
+			}
 		}
 	}
 }
