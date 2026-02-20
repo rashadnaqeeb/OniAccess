@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Tiles;
+using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Speech;
 using OniAccess.Util;
 
@@ -139,6 +140,17 @@ namespace OniAccess.Tests {
 			results.Add(TooltipCaptureResetClearsState());
 			results.Add(TooltipCaptureGetLinesGroupsByBlock());
 			TooltipCapture.Reset();
+
+			// --- UnionFind (9 new) ---
+			results.Add(UnionFindSameSetAfterUnion());
+			results.Add(UnionFindDisjointSetsDistinct());
+			results.Add(UnionFindTransitiveUnion());
+			results.Add(UnionFindSelfUnionNoOp());
+			results.Add(UnionFindDuplicateUnionNoOp());
+			results.Add(UnionFindPathCompression());
+			results.Add(UnionFindResetReinitializes());
+			results.Add(UnionFindResetReallocatesOnSizeChange());
+			results.Add(UnionFindLargeChainMerge());
 
 			// --- SpeechPipeline (7 new) ---
 			results.Add(PipelineDisabledSkipsSpeech());
@@ -1349,6 +1361,119 @@ namespace OniAccess.Tests {
 				&& lines[1] == "21.8 C";
 			return Assert("TooltipCaptureGetLinesGroupsByBlock", ok,
 				lines == null ? "null" : $"count={lines.Count}: [{string.Join("|", lines)}]");
+		}
+
+		// ========================================
+		// UnionFind tests
+		// ========================================
+
+		private static (string, bool, string) UnionFindSameSetAfterUnion() {
+			var uf = new UnionFind(5);
+			uf.Union(1, 3);
+			bool ok = uf.Find(1) == uf.Find(3);
+			return Assert("UnionFindSameSetAfterUnion", ok,
+				$"Find(1)={uf.Find(1)}, Find(3)={uf.Find(3)}");
+		}
+
+		private static (string, bool, string) UnionFindDisjointSetsDistinct() {
+			var uf = new UnionFind(5);
+			uf.Union(0, 1);
+			uf.Union(2, 3);
+			bool ok = uf.Find(0) != uf.Find(2);
+			return Assert("UnionFindDisjointSetsDistinct", ok,
+				$"Find(0)={uf.Find(0)}, Find(2)={uf.Find(2)}");
+		}
+
+		private static (string, bool, string) UnionFindTransitiveUnion() {
+			var uf = new UnionFind(5);
+			uf.Union(0, 1);
+			uf.Union(1, 2);
+			bool ok = uf.Find(0) == uf.Find(2);
+			return Assert("UnionFindTransitiveUnion", ok,
+				$"Find(0)={uf.Find(0)}, Find(2)={uf.Find(2)}");
+		}
+
+		private static (string, bool, string) UnionFindSelfUnionNoOp() {
+			var uf = new UnionFind(3);
+			int rootBefore = uf.Find(1);
+			uf.Union(1, 1);
+			int rootAfter = uf.Find(1);
+			bool ok = rootBefore == rootAfter && rootAfter == 1;
+			return Assert("UnionFindSelfUnionNoOp", ok,
+				$"before={rootBefore}, after={rootAfter}");
+		}
+
+		private static (string, bool, string) UnionFindDuplicateUnionNoOp() {
+			var uf = new UnionFind(4);
+			uf.Union(0, 1);
+			int rootAfterFirst = uf.Find(0);
+			uf.Union(0, 1);
+			int rootAfterSecond = uf.Find(0);
+			bool ok = rootAfterFirst == rootAfterSecond
+				&& uf.Find(0) == uf.Find(1);
+			return Assert("UnionFindDuplicateUnionNoOp", ok,
+				$"first={rootAfterFirst}, second={rootAfterSecond}");
+		}
+
+		private static (string, bool, string) UnionFindPathCompression() {
+			// Build a chain: 0->1->2->3 via sequential unions
+			var uf = new UnionFind(4);
+			uf.Union(0, 1);
+			uf.Union(1, 2);
+			uf.Union(2, 3);
+			// All should resolve to the same root
+			int root = uf.Find(0);
+			// After Find with path compression, Find(0) should go
+			// directly to root without traversal
+			bool ok = uf.Find(0) == root
+				&& uf.Find(1) == root
+				&& uf.Find(2) == root
+				&& uf.Find(3) == root;
+			return Assert("UnionFindPathCompression", ok,
+				$"roots: 0={uf.Find(0)}, 1={uf.Find(1)}, 2={uf.Find(2)}, 3={uf.Find(3)}");
+		}
+
+		private static (string, bool, string) UnionFindResetReinitializes() {
+			var uf = new UnionFind(4);
+			uf.Union(0, 1);
+			uf.Union(2, 3);
+			uf.Reset(4);
+			// After reset, every element should be its own root
+			bool ok = uf.Find(0) == 0 && uf.Find(1) == 1
+				&& uf.Find(2) == 2 && uf.Find(3) == 3;
+			return Assert("UnionFindResetReinitializes", ok,
+				$"roots: 0={uf.Find(0)}, 1={uf.Find(1)}, 2={uf.Find(2)}, 3={uf.Find(3)}");
+		}
+
+		private static (string, bool, string) UnionFindResetReallocatesOnSizeChange() {
+			var uf = new UnionFind(3);
+			uf.Union(0, 1);
+			uf.Reset(5);
+			// Should work with the larger size
+			uf.Union(3, 4);
+			bool ok = uf.Find(3) == uf.Find(4)
+				&& uf.Find(0) == 0 && uf.Find(1) == 1;
+			return Assert("UnionFindResetReallocatesOnSizeChange", ok,
+				$"Find(3)={uf.Find(3)}, Find(4)={uf.Find(4)}, Find(0)={uf.Find(0)}");
+		}
+
+		private static (string, bool, string) UnionFindLargeChainMerge() {
+			int size = 1000;
+			var uf = new UnionFind(size);
+			// Union all elements into one set via chain
+			for (int i = 0; i < size - 1; i++)
+				uf.Union(i, i + 1);
+			// All should share the same root
+			int root = uf.Find(0);
+			bool ok = true;
+			for (int i = 1; i < size; i++) {
+				if (uf.Find(i) != root) {
+					ok = false;
+					return Assert("UnionFindLargeChainMerge", false,
+						$"element {i} has root {uf.Find(i)}, expected {root}");
+				}
+			}
+			return Assert("UnionFindLargeChainMerge", ok, "OK");
 		}
 
 		// ========================================
