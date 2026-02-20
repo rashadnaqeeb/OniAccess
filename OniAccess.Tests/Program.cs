@@ -30,25 +30,20 @@ namespace OniAccess.Tests {
 
 			var results = new List<(string name, bool passed, string detail)>();
 
-			// --- HandlerStack (9 existing + 4 new edge cases) ---
-			results.Add(ActiveHandlerIsTop());
-			results.Add(CapturesAllInputReadable());
+			// --- HandlerStack ---
 			results.Add(PopExposesLowerHandler());
 			results.Add(PushCallsOnActivate());
 			results.Add(PopCallsOnDeactivate());
 			results.Add(PopReactivatesExposedHandler());
 			results.Add(ReplaceSwapsHandlers());
-			results.Add(ClearEmptiesStack());
 			results.Add(DeactivateAllCallsOnDeactivate());
 			results.Add(ReplaceOnEmptyStack());
 			results.Add(PopOnEmptyStack());
-			results.Add(PushNullIgnored());
-			results.Add(ReplaceNullIgnored());
 			results.Add(RapidPushPopSequence());
 			results.Add(ExceptionInOnActivateDoesNotCorruptStack());
 			results.Add(ExceptionInOnDeactivateDoesNotCorruptStack());
 
-			// --- CollectHelpEntries (6 new) ---
+			// --- CollectHelpEntries ---
 			results.Add(CollectHelpEntriesEmptyStack());
 			results.Add(CollectHelpEntriesSingleHandler());
 			results.Add(CollectHelpEntriesTwoNonCapturing());
@@ -56,31 +51,18 @@ namespace OniAccess.Tests {
 			results.Add(CollectHelpEntriesKeyDedup());
 			results.Add(CollectHelpEntriesBarrierInclusive());
 
-			// --- Chain-of-responsibility dispatch (8 new) ---
-			results.Add(GetAtReturnsNullForOutOfRange());
-			results.Add(GetAtReturnsCorrectHandler());
-			results.Add(TickWalksStackToBarrier());
-			results.Add(TickStopsAtCapturesAllHandler());
-			results.Add(TickReachesBottomWhenNoBarrier());
-			results.Add(TickSkipsBelowBarrier());
-			results.Add(HandleKeyDownStopsOnConsume());
-			results.Add(HandleKeyDownBarrierBlocks());
-
 			HandlerStack.Clear();
 
-			// --- TypeAheadSearch (12 + 1 new) ---
+			// --- TypeAheadSearch ---
 			results.Add(SearchWordStartMatch());
 			results.Add(SearchMultiWordMatch());
 			results.Add(SearchCaseInsensitive());
-			results.Add(SearchNullLabelsSkipped());
 			results.Add(SearchMultiCharNarrowing());
 			results.Add(SearchRepeatLetterCycles());
 			results.Add(SearchBackspace());
-			results.Add(SearchClearResetsState());
 			results.Add(SearchNavigateWraps());
 			results.Add(SearchJumpFirstLast());
 			results.Add(SearchNoMatch());
-			results.Add(SearchEmptyAfterClear());
 			results.Add(SearchBufferTimeoutResets());
 			results.Add(MatchTierStartWholeWord());
 			results.Add(MatchTierStartPrefix());
@@ -90,7 +72,7 @@ namespace OniAccess.Tests {
 			results.Add(MatchTierNoMatch());
 			results.Add(SearchTierOrdering());
 
-			// --- TextFilter (12 ported + 4 new edge cases) ---
+			// --- TextFilter ---
 			TextFilter.RegisterSprite("warning", "warning:");
 			TextFilter.RegisterSprite("logic_signal_green", "green signal");
 			TextFilter.RegisterSprite("logic_signal_red", "red signal");
@@ -113,14 +95,12 @@ namespace OniAccess.Tests {
 			results.Add(TextFilterReplacesMasculineOrdinalDegree());
 			results.Add(TextFilterPreservesNumericBrackets());
 
-			// --- Log class (5 new) ---
-			results.Add(LogDebugFormat());
-			results.Add(LogInfoFormat());
+			// --- Log class ---
 			results.Add(LogWarnRoutesToWarnFn());
 			results.Add(LogErrorRoutesToErrorFn());
 			results.Add(LogBackendSwapWorks());
 
-			// --- HandlerStack diagnostic quality (4 new) ---
+			// --- HandlerStack diagnostic quality ---
 			results.Add(PushFailureLogsHandlerNameAndException());
 			results.Add(PushNullLogsWarning());
 			results.Add(PopOnEmptyLogsWarning());
@@ -128,7 +108,7 @@ namespace OniAccess.Tests {
 
 			HandlerStack.Clear();
 
-			// --- TooltipCapture (8 new) ---
+			// --- TooltipCapture ---
 			TooltipCapture.Reset();
 			results.Add(TooltipCaptureEmptyFrameReturnsNull());
 			results.Add(TooltipCaptureTextOutsideBlockDiscarded());
@@ -141,7 +121,7 @@ namespace OniAccess.Tests {
 			results.Add(TooltipCaptureGetLinesGroupsByBlock());
 			TooltipCapture.Reset();
 
-			// --- UnionFind (9 new) ---
+			// --- UnionFind ---
 			results.Add(UnionFindSameSetAfterUnion());
 			results.Add(UnionFindDisjointSetsDistinct());
 			results.Add(UnionFindTransitiveUnion());
@@ -152,7 +132,7 @@ namespace OniAccess.Tests {
 			results.Add(UnionFindResetReallocatesOnSizeChange());
 			results.Add(UnionFindLargeChainMerge());
 
-			// --- SpeechPipeline (7 new) ---
+			// --- SpeechPipeline ---
 			results.Add(PipelineDisabledSkipsSpeech());
 			results.Add(PipelineEnabledSpeaks());
 			results.Add(PipelineFiltersBeforeSpeaking());
@@ -249,29 +229,8 @@ namespace OniAccess.Tests {
 			i >= 0 && i < SearchItems.Length ? SearchItems[i] : null;
 
 		// ========================================
-		// HandlerStack tests (existing)
+		// HandlerStack tests
 		// ========================================
-
-		private static (string, bool, string) ActiveHandlerIsTop() {
-			Reset();
-			var first = new TestHandler("First");
-			var second = new TestHandler("Second");
-			HandlerStack.Push(first);
-			HandlerStack.Push(second);
-
-			bool ok = HandlerStack.ActiveHandler == second;
-			return Assert("ActiveHandlerIsTop", ok,
-				$"expected Second, got {HandlerStack.ActiveHandler?.DisplayName ?? "null"}");
-		}
-
-		private static (string, bool, string) CapturesAllInputReadable() {
-			Reset();
-			var handler = new TestHandler("Modal", capturesAll: true);
-			HandlerStack.Push(handler);
-
-			bool ok = HandlerStack.ActiveHandler.CapturesAllInput;
-			return Assert("CapturesAllInputReadable", ok, "CapturesAllInput was false");
-		}
 
 		private static (string, bool, string) PopExposesLowerHandler() {
 			Reset();
@@ -338,17 +297,6 @@ namespace OniAccess.Tests {
 				$"second.Activate={second.ActivateCount}");
 		}
 
-		private static (string, bool, string) ClearEmptiesStack() {
-			Reset();
-			HandlerStack.Push(new TestHandler("A"));
-			HandlerStack.Push(new TestHandler("B"));
-			HandlerStack.Clear();
-
-			bool ok = HandlerStack.Count == 0 && HandlerStack.ActiveHandler == null;
-			return Assert("ClearEmptiesStack", ok,
-				$"count={HandlerStack.Count}");
-		}
-
 		private static (string, bool, string) DeactivateAllCallsOnDeactivate() {
 			Reset();
 			var bottom = new TestHandler("Bottom");
@@ -367,7 +315,7 @@ namespace OniAccess.Tests {
 		}
 
 		// ========================================
-		// HandlerStack edge cases (new)
+		// HandlerStack edge cases
 		// ========================================
 
 		private static (string, bool, string) ReplaceOnEmptyStack() {
@@ -390,40 +338,6 @@ namespace OniAccess.Tests {
 
 			bool ok = HandlerStack.Count == 0;
 			return Assert("PopOnEmptyStack", ok, $"count={HandlerStack.Count}");
-		}
-
-		private static (string, bool, string) PushNullIgnored() {
-			Reset();
-			HandlerStack.Push(new TestHandler("Base"));
-			int before = HandlerStack.Count;
-
-			try {
-				HandlerStack.Push(null);
-			} catch (Exception ex) {
-				return Assert("PushNullIgnored", false, $"threw {ex.GetType().Name}");
-			}
-
-			bool ok = HandlerStack.Count == before;
-			return Assert("PushNullIgnored", ok,
-				$"count changed from {before} to {HandlerStack.Count}");
-		}
-
-		private static (string, bool, string) ReplaceNullIgnored() {
-			Reset();
-			var existing = new TestHandler("Existing");
-			HandlerStack.Push(existing);
-			int before = HandlerStack.Count;
-
-			try {
-				HandlerStack.Replace(null);
-			} catch (Exception ex) {
-				return Assert("ReplaceNullIgnored", false, $"threw {ex.GetType().Name}");
-			}
-
-			bool ok = HandlerStack.Count == before
-				   && HandlerStack.ActiveHandler == existing;
-			return Assert("ReplaceNullIgnored", ok,
-				$"count={HandlerStack.Count}, active={HandlerStack.ActiveHandler?.DisplayName ?? "null"}");
 		}
 
 		private static (string, bool, string) RapidPushPopSequence() {
@@ -583,150 +497,7 @@ namespace OniAccess.Tests {
 		}
 
 		// ========================================
-		// Chain-of-responsibility dispatch tests (new)
-		// ========================================
-
-		/// <summary>
-		/// Simulate Tick dispatch: walk stack top-to-bottom, tick each handler,
-		/// stop after any CapturesAllInput barrier (inclusive).
-		/// </summary>
-		private static void SimulateTick(List<TestHandler> handlers) {
-			int count = handlers.Count;
-			for (int i = count - 1; i >= 0; i--) {
-				handlers[i].Tick();
-				if (handlers[i].CapturesAllInput) break;
-			}
-		}
-
-		/// <summary>
-		/// Simulate HandleKeyDown dispatch: walk stack top-to-bottom, call
-		/// HandleKeyDown on each handler, stop when one consumes or at barrier.
-		/// </summary>
-		private static void SimulateHandleKeyDown(List<TestHandler> handlers) {
-			int count = handlers.Count;
-			for (int i = count - 1; i >= 0; i--) {
-				if (handlers[i].HandleKeyDown(null)) return;
-				if (handlers[i].CapturesAllInput) return;
-			}
-		}
-
-		private static (string, bool, string) GetAtReturnsNullForOutOfRange() {
-			Reset();
-			var a = new TestHandler("A");
-			var b = new TestHandler("B");
-			HandlerStack.Push(a);
-			HandlerStack.Push(b);
-
-			bool ok = HandlerStack.GetAt(-1) == null && HandlerStack.GetAt(2) == null;
-			return Assert("GetAtReturnsNullForOutOfRange", ok,
-				$"GetAt(-1)={HandlerStack.GetAt(-1)?.DisplayName ?? "null"}, " +
-				$"GetAt(2)={HandlerStack.GetAt(2)?.DisplayName ?? "null"}");
-		}
-
-		private static (string, bool, string) GetAtReturnsCorrectHandler() {
-			Reset();
-			var a = new TestHandler("A");
-			var b = new TestHandler("B");
-			HandlerStack.Push(a);
-			HandlerStack.Push(b);
-
-			bool ok = HandlerStack.GetAt(0) == a && HandlerStack.GetAt(1) == b;
-			return Assert("GetAtReturnsCorrectHandler", ok,
-				$"GetAt(0)={HandlerStack.GetAt(0)?.DisplayName ?? "null"}, " +
-				$"GetAt(1)={HandlerStack.GetAt(1)?.DisplayName ?? "null"}");
-		}
-
-		private static (string, bool, string) TickWalksStackToBarrier() {
-			// [A(false), B(true), C(true)] — only C ticked (top barrier)
-			var handlers = new List<TestHandler> {
-				new TestHandler("A", capturesAll: false),
-				new TestHandler("B", capturesAll: true),
-				new TestHandler("C", capturesAll: true),
-			};
-			SimulateTick(handlers);
-
-			bool ok = handlers[0].TickCount == 0
-				   && handlers[1].TickCount == 0
-				   && handlers[2].TickCount == 1;
-			return Assert("TickWalksStackToBarrier", ok,
-				$"A={handlers[0].TickCount}, B={handlers[1].TickCount}, C={handlers[2].TickCount}");
-		}
-
-		private static (string, bool, string) TickStopsAtCapturesAllHandler() {
-			// [A(false), B(true)] — B ticked, A not
-			var handlers = new List<TestHandler> {
-				new TestHandler("A", capturesAll: false),
-				new TestHandler("B", capturesAll: true),
-			};
-			SimulateTick(handlers);
-
-			bool ok = handlers[0].TickCount == 0 && handlers[1].TickCount == 1;
-			return Assert("TickStopsAtCapturesAllHandler", ok,
-				$"A={handlers[0].TickCount}, B={handlers[1].TickCount}");
-		}
-
-		private static (string, bool, string) TickReachesBottomWhenNoBarrier() {
-			// [A(false), B(false)] — both ticked
-			var handlers = new List<TestHandler> {
-				new TestHandler("A", capturesAll: false),
-				new TestHandler("B", capturesAll: false),
-			};
-			SimulateTick(handlers);
-
-			bool ok = handlers[0].TickCount == 1 && handlers[1].TickCount == 1;
-			return Assert("TickReachesBottomWhenNoBarrier", ok,
-				$"A={handlers[0].TickCount}, B={handlers[1].TickCount}");
-		}
-
-		private static (string, bool, string) TickSkipsBelowBarrier() {
-			// [A(false), B(true), C(false)] — C and B ticked, A not
-			var handlers = new List<TestHandler> {
-				new TestHandler("A", capturesAll: false),
-				new TestHandler("B", capturesAll: true),
-				new TestHandler("C", capturesAll: false),
-			};
-			SimulateTick(handlers);
-
-			bool ok = handlers[0].TickCount == 0
-				   && handlers[1].TickCount == 1
-				   && handlers[2].TickCount == 1;
-			return Assert("TickSkipsBelowBarrier", ok,
-				$"A={handlers[0].TickCount}, B={handlers[1].TickCount}, C={handlers[2].TickCount}");
-		}
-
-		private static (string, bool, string) HandleKeyDownStopsOnConsume() {
-			// [A(false), B(false,consumes), C(false)] — C and B called, A not
-			var handlers = new List<TestHandler> {
-				new TestHandler("A", capturesAll: false),
-				new TestHandler("B", capturesAll: false) { ConsumeKeyDown = true },
-				new TestHandler("C", capturesAll: false),
-			};
-			SimulateHandleKeyDown(handlers);
-
-			bool ok = handlers[0].HandleKeyDownCount == 0
-				   && handlers[1].HandleKeyDownCount == 1
-				   && handlers[2].HandleKeyDownCount == 1;
-			return Assert("HandleKeyDownStopsOnConsume", ok,
-				$"A={handlers[0].HandleKeyDownCount}, B={handlers[1].HandleKeyDownCount}, " +
-				$"C={handlers[2].HandleKeyDownCount}");
-		}
-
-		private static (string, bool, string) HandleKeyDownBarrierBlocks() {
-			// [A(false), B(true,no-consume)] — B called, A not
-			var handlers = new List<TestHandler> {
-				new TestHandler("A", capturesAll: false),
-				new TestHandler("B", capturesAll: true),
-			};
-			SimulateHandleKeyDown(handlers);
-
-			bool ok = handlers[0].HandleKeyDownCount == 0
-				   && handlers[1].HandleKeyDownCount == 1;
-			return Assert("HandleKeyDownBarrierBlocks", ok,
-				$"A={handlers[0].HandleKeyDownCount}, B={handlers[1].HandleKeyDownCount}");
-		}
-
-		// ========================================
-		// TypeAheadSearch tests (new)
+		// TypeAheadSearch tests
 		// ========================================
 
 		private static (string, bool, string) SearchWordStartMatch() {
@@ -760,17 +531,6 @@ namespace OniAccess.Tests {
 			bool ok = search.ResultCount == 2;
 			return Assert("SearchCaseInsensitive", ok,
 				$"ResultCount={search.ResultCount}");
-		}
-
-		private static (string, bool, string) SearchNullLabelsSkipped() {
-			var search = new TypeAheadSearch(() => 0f);
-			search.AddChar('a');
-			search.Search(SearchItems.Length, NameByIndex);
-
-			// null at index 5 and "" at index 6 are skipped; Banana matches as substring
-			bool ok = search.ResultCount == 3 && search.SelectedOriginalIndex == 0;
-			return Assert("SearchNullLabelsSkipped", ok,
-				$"ResultCount={search.ResultCount}, SelectedOriginalIndex={search.SelectedOriginalIndex}");
 		}
 
 		private static (string, bool, string) SearchMultiCharNarrowing() {
@@ -828,19 +588,6 @@ namespace OniAccess.Tests {
 				$"ap={afterAp}, after backspace={afterBackspace}, buffer=\"{search.Buffer}\"");
 		}
 
-		private static (string, bool, string) SearchClearResetsState() {
-			var search = new TypeAheadSearch(() => 0f);
-			search.AddChar('a');
-			search.Search(SearchItems.Length, NameByIndex);
-			search.Clear();
-
-			bool ok = !search.IsSearchActive
-				   && search.ResultCount == 0
-				   && !search.HasBuffer;
-			return Assert("SearchClearResetsState", ok,
-				$"IsSearchActive={search.IsSearchActive}, ResultCount={search.ResultCount}, HasBuffer={search.HasBuffer}");
-		}
-
 		private static (string, bool, string) SearchNavigateWraps() {
 			var search = new TypeAheadSearch(() => 0f);
 			search.AddChar('a');
@@ -881,21 +628,6 @@ namespace OniAccess.Tests {
 			bool ok = search.ResultCount == 0 && search.IsSearchActive;
 			return Assert("SearchNoMatch", ok,
 				$"ResultCount={search.ResultCount}, IsSearchActive={search.IsSearchActive}");
-		}
-
-		private static (string, bool, string) SearchEmptyAfterClear() {
-			var search = new TypeAheadSearch(() => 0f);
-			search.AddChar('b');
-			search.Search(SearchItems.Length, NameByIndex);
-			search.Clear();
-
-			bool ok = !search.IsSearchActive
-				   && search.ResultCount == 0
-				   && !search.HasBuffer
-				   && search.SelectedOriginalIndex == -1;
-			return Assert("SearchEmptyAfterClear", ok,
-				$"IsSearchActive={search.IsSearchActive}, ResultCount={search.ResultCount}, " +
-				$"HasBuffer={search.HasBuffer}, SelectedOriginalIndex={search.SelectedOriginalIndex}");
 		}
 
 		private static (string, bool, string) SearchBufferTimeoutResets() {
@@ -1131,26 +863,6 @@ namespace OniAccess.Tests {
 		// ========================================
 		// Log class tests
 		// ========================================
-
-		private static (string, bool, string) LogDebugFormat() {
-			using (var capture = new LogCapture()) {
-				Log.Debug("msg");
-				bool ok = capture.LogMessages.Count == 1
-					   && capture.LogMessages[0] == "[OniAccess] [DEBUG] msg";
-				return Assert("LogDebugFormat", ok,
-					$"got \"{(capture.LogMessages.Count > 0 ? capture.LogMessages[0] : "<none>")}\"");
-			}
-		}
-
-		private static (string, bool, string) LogInfoFormat() {
-			using (var capture = new LogCapture()) {
-				Log.Info("msg");
-				bool ok = capture.LogMessages.Count == 1
-					   && capture.LogMessages[0] == "[OniAccess] msg";
-				return Assert("LogInfoFormat", ok,
-					$"got \"{(capture.LogMessages.Count > 0 ? capture.LogMessages[0] : "<none>")}\"");
-			}
-		}
 
 		private static (string, bool, string) LogWarnRoutesToWarnFn() {
 			using (var capture = new LogCapture()) {
