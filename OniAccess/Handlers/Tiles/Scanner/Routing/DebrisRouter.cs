@@ -31,6 +31,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 				return true;
 			if (prefabId.HasTag(GameTags.Creature))
 				return true;
+			if (prefabId.HasTag(GameTags.Robot))
+				return true;
 			if (prefabId.HasTag(GameTags.GeyserFeature))
 				return true;
 			var uprootable = prefabId.GetComponent<Uprootable>();

@@ -85,6 +85,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				success = true;
 			} catch (System.Exception ex) {
 				Log.Error($"ScannerNavigator.Refresh: {ex}");
+				allEntries.Clear();
 			}
 
 			_snapshot = new ScannerSnapshot(allEntries, cursorCell);
@@ -452,6 +453,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ ScannerTaxonomy.Subcategories.Rooms, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROOMS },
 				{ ScannerTaxonomy.Subcategories.Biomes, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.BIOMES },
 				{ ScannerTaxonomy.Subcategories.Duplicants, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.DUPLICANTS },
+				{ ScannerTaxonomy.Subcategories.Robots, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROBOTS },
 				{ ScannerTaxonomy.Subcategories.TameCritters, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TAME_CRITTERS },
 				{ ScannerTaxonomy.Subcategories.WildCritters, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_CRITTERS },
 				{ ScannerTaxonomy.Subcategories.WildPlants, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_PLANTS },

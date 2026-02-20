@@ -392,6 +392,7 @@ namespace STRINGS {
 
 				// Life
 				public static LocString DUPLICANTS = "Duplicants";
+				public static LocString ROBOTS = "Robots";
 				public static LocString TAME_CRITTERS = "Tame Critters";
 				public static LocString WILD_CRITTERS = "Wild Critters";
 				public static LocString WILD_PLANTS = "Wild Plants";

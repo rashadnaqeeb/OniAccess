@@ -93,6 +93,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 			// Life
 			public const string Duplicants = "Duplicants";
+			public const string Robots = "Robots";
 			public const string TameCritters = "Tame Critters";
 			public const string WildCritters = "Wild Critters";
 			public const string WildPlants = "Wild Plants";
@@ -139,6 +140,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				}},
 				{ Categories.Life, new[] {
 					Subcategories.All, Subcategories.Duplicants,
+					Subcategories.Robots,
 					Subcategories.TameCritters, Subcategories.WildCritters,
 					Subcategories.WildPlants, Subcategories.FarmPlants,
 				}},

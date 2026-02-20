@@ -61,6 +61,9 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 				// Buildings > Temperature
 				{ ("Utilities", "temperature"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Temperature) },
 
+				// Buildings > Refining
+				{ ("Utilities", "oil"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Refining) },
+
 				// Buildings > Wellness
 				{ ("Plumbing", "washroom"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Wellness) },
 				{ ("Furniture", "beds"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Wellness) },

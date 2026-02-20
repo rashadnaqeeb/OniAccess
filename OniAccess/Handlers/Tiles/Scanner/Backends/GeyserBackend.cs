@@ -11,18 +11,23 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 		public IEnumerable<ScanEntry> Scan(int worldId) {
 			foreach (var geyser in Components.Geysers.GetItems(worldId)) {
 				var go = geyser.gameObject;
-				yield return MakeEntry(go);
+				int cell = Grid.PosToCell(go.transform.GetPosition());
+				if (!Grid.IsVisible(cell)) continue;
+				yield return MakeEntry(go, cell);
 			}
 
 			foreach (var vent in Components.GeothermalVents.GetItems(worldId)) {
 				var go = vent.gameObject;
-				yield return MakeEntry(go);
+				int cell = Grid.PosToCell(go.transform.GetPosition());
+				if (!Grid.IsVisible(cell)) continue;
+				yield return MakeEntry(go, cell);
 			}
 		}
 
 		public bool ValidateEntry(ScanEntry entry, int cursorCell) {
 			var go = (GameObject)entry.BackendData;
-			return go != null && !go.IsNullOrDestroyed();
+			if (go == null || go.IsNullOrDestroyed()) return false;
+			return Grid.IsVisible(entry.Cell);
 		}
 
 		public string FormatName(ScanEntry entry) {
@@ -30,10 +35,10 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 			return GetGeyserName(go) ?? entry.ItemName;
 		}
 
-		private ScanEntry MakeEntry(GameObject go) {
+		private ScanEntry MakeEntry(GameObject go, int cell) {
 			string name = GetGeyserName(go) ?? go.name;
 			return new ScanEntry {
-				Cell = Grid.PosToCell(go.transform.GetPosition()),
+				Cell = cell,
 				Backend = this,
 				BackendData = go,
 				Category = ScannerTaxonomy.Categories.Buildings,

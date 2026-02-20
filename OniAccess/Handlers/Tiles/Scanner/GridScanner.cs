@@ -278,6 +278,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		// --- Natural elements ---
 
 		private void ProcessElement(int cell) {
+			if (Grid.Objects[cell, (int)ObjectLayer.FoundationTile] != null) return;
+
 			Element elem = Grid.Element[cell];
 			if (elem.id == SimHashes.Vacuum) return;
 			if ((elem.state & Element.State.Unbreakable) != 0) return;
@@ -362,14 +364,12 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 		private void TrySameTypeOrder(
 				int cell, System.Func<int, string> detectFn, string orderLabel) {
+			if (_sameTypeKey[cell] != null) return;
+
 			string prefabId = detectFn(cell);
 			if (prefabId == null) return;
 
 			string key = orderLabel + ":" + prefabId;
-
-			// Always set the key and union so multi-cell buildings don't
-			// leave holes in the union-find topology. Dedup happens in
-			// ExtractSameTypeOrder instead.
 			_sameTypeKey[cell] = key;
 			UnionSameTypeNeighbors(cell);
 		}
@@ -440,6 +440,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 		// For domains where key 0 = absent. Union if both keys match and nonzero.
 		private static void UnionWithNeighbors(UnionFind uf, int[] keys, int cell) {
+			if (keys[cell] == 0) return;
+
 			int left = Grid.CellLeft(cell);
 			if (left != Grid.InvalidCell && keys[left] == keys[cell])
 				uf.Union(cell, left);

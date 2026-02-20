@@ -23,6 +23,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				yield return entry;
 			foreach (var entry in ScanDuplicants(worldId))
 				yield return entry;
+			foreach (var entry in ScanRobots(worldId))
+				yield return entry;
 			foreach (var entry in ScanCritters(worldId))
 				yield return entry;
 			foreach (var entry in ScanPlants(worldId))
@@ -31,7 +33,11 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 
 		public bool ValidateEntry(ScanEntry entry, int cursorCell) {
 			var go = (GameObject)entry.BackendData;
-			return go != null && !go.IsNullOrDestroyed();
+			if (go == null || go.IsNullOrDestroyed()) return false;
+			int cell = Grid.PosToCell(go.transform.GetPosition());
+			if (!Grid.IsVisible(cell)) return false;
+			entry.Cell = cell;
+			return true;
 		}
 
 		public string FormatName(ScanEntry entry) {
@@ -50,8 +56,11 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				if (category == null) continue;
 
 				var go = building.gameObject;
+				int cell = Grid.PosToCell(go.transform.GetPosition());
+				if (!Grid.IsVisible(cell)) continue;
+
 				yield return new ScanEntry {
-					Cell = Grid.PosToCell(go.transform.GetPosition()),
+					Cell = cell,
 					Backend = this,
 					BackendData = go,
 					Category = category,
@@ -69,8 +78,11 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 
 				string subcategory = DebrisRouter.GetSubcategory(prefabId);
 				var go = pickupable.gameObject;
+				int cell = Grid.PosToCell(go.transform.GetPosition());
+				if (!Grid.IsVisible(cell)) continue;
+
 				yield return new ScanEntry {
-					Cell = Grid.PosToCell(go.transform.GetPosition()),
+					Cell = cell,
 					Backend = this,
 					BackendData = go,
 					Category = ScannerTaxonomy.Categories.Debris,
@@ -83,8 +95,11 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 		private IEnumerable<ScanEntry> ScanDuplicants(int worldId) {
 			foreach (var identity in Components.LiveMinionIdentities.GetWorldItems(worldId)) {
 				var go = identity.gameObject;
+				int cell = Grid.PosToCell(go.transform.GetPosition());
+				if (!Grid.IsVisible(cell)) continue;
+
 				yield return new ScanEntry {
-					Cell = Grid.PosToCell(go.transform.GetPosition()),
+					Cell = cell,
 					Backend = this,
 					BackendData = go,
 					Category = ScannerTaxonomy.Categories.Life,
@@ -94,17 +109,40 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 			}
 		}
 
+		private IEnumerable<ScanEntry> ScanRobots(int worldId) {
+			foreach (var brain in Components.Brains.GetWorldItems(worldId)) {
+				var go = brain.gameObject;
+				if (!go.GetComponent<KPrefabID>().HasTag(GameTags.Robot)) continue;
+
+				int cell = Grid.PosToCell(go.transform.GetPosition());
+				if (!Grid.IsVisible(cell)) continue;
+
+				yield return new ScanEntry {
+					Cell = cell,
+					Backend = this,
+					BackendData = go,
+					Category = ScannerTaxonomy.Categories.Life,
+					Subcategory = ScannerTaxonomy.Subcategories.Robots,
+					ItemName = go.GetComponent<KSelectable>()?.GetName() ?? go.name,
+				};
+			}
+		}
+
 		private IEnumerable<ScanEntry> ScanCritters(int worldId) {
 			foreach (var brain in Components.Brains.GetWorldItems(worldId)) {
 				var go = brain.gameObject;
 				if (go.GetComponent<CreatureBrain>() == null) continue;
+				if (go.GetComponent<KPrefabID>().HasTag(GameTags.Robot)) continue;
+
+				int cell = Grid.PosToCell(go.transform.GetPosition());
+				if (!Grid.IsVisible(cell)) continue;
 
 				string subcategory = LifeRouter.IsWild(go)
 					? ScannerTaxonomy.Subcategories.WildCritters
 					: ScannerTaxonomy.Subcategories.TameCritters;
 
 				yield return new ScanEntry {
-					Cell = Grid.PosToCell(go.transform.GetPosition()),
+					Cell = cell,
 					Backend = this,
 					BackendData = go,
 					Category = ScannerTaxonomy.Categories.Life,
@@ -117,12 +155,15 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 		private IEnumerable<ScanEntry> ScanPlants(int worldId) {
 			foreach (var uprootable in Components.Uprootables.GetWorldItems(worldId)) {
 				var go = uprootable.gameObject;
+				int cell = Grid.PosToCell(go.transform.GetPosition());
+				if (!Grid.IsVisible(cell)) continue;
+
 				string subcategory = LifeRouter.IsFarmPlant(uprootable)
 					? ScannerTaxonomy.Subcategories.FarmPlants
 					: ScannerTaxonomy.Subcategories.WildPlants;
 
 				yield return new ScanEntry {
-					Cell = Grid.PosToCell(go.transform.GetPosition()),
+					Cell = cell,
 					Backend = this,
 					BackendData = go,
 					Category = ScannerTaxonomy.Categories.Life,
