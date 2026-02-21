@@ -77,6 +77,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 
 		private IEnumerable<ScanEntry> ScanDebris(int worldId) {
 			foreach (var pickupable in Components.Pickupables.GetWorldItems(worldId)) {
+				if (pickupable.storage != null) continue;
 				var prefabId = pickupable.GetComponent<KPrefabID>();
 				if (prefabId == null) continue;
 				if (DebrisRouter.ShouldExclude(prefabId)) continue;
