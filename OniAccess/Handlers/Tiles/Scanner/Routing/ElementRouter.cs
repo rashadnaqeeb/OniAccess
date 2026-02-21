@@ -75,11 +75,16 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 				: ScannerTaxonomy.Subcategories.Safe;
 		}
 
-		// The game lazily initializes customExposureRates on the first dupe
-		// exposure tick. If this runs before that, reflection returns null and
-		// all non-breathable gases default to Unsafe (the safer failure mode).
+		// The game lazily initializes customExposureRates inside
+		// InitializeCustomRates, so we invoke that first to ensure
+		// the dictionary exists before we read it.
 		private static float GetGasExposureRate(SimHashes id) {
 			if (_gasExposureRates == null) {
+				var initMethod = typeof(GasLiquidExposureMonitor).GetMethod(
+					"InitializeCustomRates",
+					BindingFlags.Static | BindingFlags.NonPublic);
+				initMethod?.Invoke(null, null);
+
 				var field = typeof(GasLiquidExposureMonitor).GetField(
 					"customExposureRates",
 					BindingFlags.Static | BindingFlags.NonPublic);
