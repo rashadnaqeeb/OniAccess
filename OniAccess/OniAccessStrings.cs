@@ -192,7 +192,8 @@ namespace STRINGS {
 			public static LocString PICKER_NAME = "tool menu";
 			public static LocString FILTER_NAME = "tool filter";
 			public static LocString CORNER_SET = "corner set";
-			public static LocString RECT_SUMMARY = "{0} by {1}, {2} valid, {3} invalid";
+			public static LocString RECT_SUMMARY = "{0}x{1}, {2} valid";
+			public static LocString RECT_SUMMARY_INVALID = "{0}x{1}, {2} valid, {3} invalid";
 			public static LocString SELECTED = "selected";
 			public static LocString NO_CHANGE = "no change";
 			public static LocString CANCELED = "canceled";

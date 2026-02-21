@@ -314,6 +314,14 @@ namespace OniAccess.Handlers.Tools {
 				return;
 			}
 
+			string summary = BuildConfirmSummary(out int total);
+			if (total == 0) {
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.NO_VALID_CELLS);
+				PlayNegativeSound();
+				DeactivateToolAndPop();
+				return;
+			}
+
 			DragToolPatches.SuppressConfirmSound = true;
 			try {
 				for (int i = 0; i < _rectangles.Count; i++) {
@@ -328,14 +336,6 @@ namespace OniAccess.Handlers.Tools {
 			} catch (Exception ex) {
 				Util.Log.Error($"ToolHandler.SubmitRectangles: {ex}");
 				DragToolPatches.SuppressConfirmSound = false;
-			}
-
-			string summary = BuildConfirmSummary(out int total);
-			if (total == 0) {
-				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.NO_VALID_CELLS);
-				PlayNegativeSound();
-				DeactivateToolAndPop();
-				return;
 			}
 
 			SpeechPipeline.SpeakInterrupt(summary);
@@ -518,7 +518,10 @@ namespace OniAccess.Handlers.Tools {
 				}
 			}
 
-			return string.Format((string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY, width, height, valid, invalid);
+			string format = invalid > 0
+				? (string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_INVALID
+				: (string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY;
+			return string.Format(format, width, height, valid, invalid);
 		}
 
 		private string BuildConfirmSummary(out int total) {
