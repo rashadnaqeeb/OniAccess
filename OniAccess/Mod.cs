@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using HarmonyLib;
 using OniAccess.Handlers;
+using OniAccess.Handlers.Tiles.Sections;
 using OniAccess.Input;
 using OniAccess.Speech;
 using OniAccess.Util;
@@ -36,6 +37,7 @@ namespace OniAccess {
 
 			SpeechEngine.Initialize();
 			TextFilter.InitializeDefaults();
+			StatusFilter.Initialize();
 
 			// Create persistent KeyPoller MonoBehaviour for unbound key detection
 			// (F12, arrows -- keys ONI doesn't generate KButtonEvents for)

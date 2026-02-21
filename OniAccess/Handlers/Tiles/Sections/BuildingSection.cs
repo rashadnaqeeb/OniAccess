@@ -173,17 +173,19 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		private static void ReadStatusItems(
-				KSelectable selectable, bool includeNeutral, List<string> tokens) {
+				KSelectable selectable, bool isPlant, List<string> tokens) {
 			var group = selectable.GetStatusItemGroup();
 			if (group == null) return;
+
+			var activeOverlay = OverlayScreen.Instance != null
+				? OverlayScreen.Instance.GetMode()
+				: OverlayModes.None.ID;
+
 			var enumerator = group.GetEnumerator();
 			try {
 				while (enumerator.MoveNext()) {
 					var entry = enumerator.Current;
-					var severity = entry.item.notificationType;
-					if (severity != NotificationType.Bad
-						&& severity != NotificationType.BadMinor
-						&& !(includeNeutral && severity == NotificationType.Neutral))
+					if (!StatusFilter.ShouldSpeak(entry.item, activeOverlay, isPlant))
 						continue;
 					string name = entry.GetName();
 					if (!string.IsNullOrEmpty(name))
