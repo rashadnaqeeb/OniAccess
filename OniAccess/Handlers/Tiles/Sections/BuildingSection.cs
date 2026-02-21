@@ -32,6 +32,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					if (selectable != null)
 						tokens.Add(GetBuildingName(backwallGo, selectable));
 				}
+
+				ReadPortCell(cell, buildingGo, foundationGo, tokens);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"BuildingSection.Read: {ex}");
 			}
@@ -62,6 +64,111 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (building != null && building.PlacementCells.Length > 1) {
 				int origin = Grid.PosToCell(building.transform.GetPosition());
 				ReadCellOfInterest(go, building, origin, cell, tokens);
+			}
+		}
+
+		/// <summary>
+		/// When the cursor is on a port cell that's outside the building's
+		/// footprint, the building won't be found on ObjectLayer.Building.
+		///
+		/// For power and conduit overlays the game registers the building
+		/// on port-specific object layers, so a direct lookup works.
+		///
+		/// For automation and radbolt overlays there is no port layer.
+		/// We scan nearby cells on the Building and FoundationTile layers
+		/// to find buildings whose ports resolve to the cursor cell.
+		/// </summary>
+		private static void ReadPortCell(
+				int cell, GameObject buildingGo, GameObject foundationGo,
+				List<string> tokens) {
+			if (OverlayScreen.Instance == null) return;
+			var activeMode = OverlayScreen.Instance.GetMode();
+
+			if (activeMode == OverlayModes.Logic.ID
+				|| activeMode == OverlayModes.Radiation.ID) {
+				ScanNearbyForPorts(cell, buildingGo, foundationGo,
+					activeMode, tokens);
+				return;
+			}
+
+			ObjectLayer portLayer;
+			if (activeMode == OverlayModes.Power.ID)
+				portLayer = ObjectLayer.WireConnectors;
+			else if (activeMode == OverlayModes.LiquidConduits.ID)
+				portLayer = ObjectLayer.LiquidConduitConnection;
+			else if (activeMode == OverlayModes.GasConduits.ID)
+				portLayer = ObjectLayer.GasConduitConnection;
+			else if (activeMode == OverlayModes.SolidConveyor.ID)
+				portLayer = ObjectLayer.SolidConduitConnection;
+			else
+				return;
+
+			var portGo = Grid.Objects[cell, (int)portLayer];
+			if (portGo == null) return;
+
+			// Already processed through building or foundation layers
+			if (portGo == buildingGo || portGo == foundationGo) return;
+
+			var building = portGo.GetComponent<Building>();
+			if (building == null) return;
+
+			int origin = Grid.PosToCell(building.transform.GetPosition());
+			int beforeCount = tokens.Count;
+			ReadOverlayDetails(portGo, building, origin, cell, tokens);
+
+			if (tokens.Count > beforeCount) {
+				var selectable = portGo.GetComponent<KSelectable>();
+				if (selectable != null)
+					tokens.Add(GetBuildingName(portGo, selectable));
+			}
+		}
+
+		private const int PortScanRadius = 5;
+
+		private static void ScanNearbyForPorts(
+				int cell, GameObject buildingGo, GameObject foundationGo,
+				HashedString activeMode, List<string> tokens) {
+			int cx = Grid.CellColumn(cell);
+			int cy = Grid.CellRow(cell);
+			var seen = new HashSet<GameObject>();
+			if (buildingGo != null) seen.Add(buildingGo);
+			if (foundationGo != null) seen.Add(foundationGo);
+
+			for (int dy = -PortScanRadius; dy <= PortScanRadius; dy++) {
+				for (int dx = -PortScanRadius; dx <= PortScanRadius; dx++) {
+					int nc = Grid.XYToCell(cx + dx, cy + dy);
+					if (!Grid.IsValidCell(nc)) continue;
+
+					CheckScanCell(nc, (int)ObjectLayer.Building,
+						seen, cell, activeMode, tokens);
+					CheckScanCell(nc, (int)ObjectLayer.FoundationTile,
+						seen, cell, activeMode, tokens);
+				}
+			}
+		}
+
+		private static void CheckScanCell(
+				int nearbyCell, int layer, HashSet<GameObject> seen,
+				int targetCell, HashedString activeMode,
+				List<string> tokens) {
+			var go = Grid.Objects[nearbyCell, layer];
+			if (go == null || !seen.Add(go)) return;
+
+			var building = go.GetComponent<Building>();
+			if (building == null) return;
+
+			int origin = Grid.PosToCell(building.transform.GetPosition());
+			int beforeCount = tokens.Count;
+
+			if (activeMode == OverlayModes.Logic.ID)
+				ReadAutomationPorts(building, origin, targetCell, tokens);
+			else
+				ReadRadboltPorts(building, origin, targetCell, tokens);
+
+			if (tokens.Count > beforeCount) {
+				var selectable = go.GetComponent<KSelectable>();
+				if (selectable != null)
+					tokens.Add(GetBuildingName(go, selectable));
 			}
 		}
 
@@ -148,53 +255,54 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var activeMode = OverlayScreen.Instance.GetMode();
 			var def = building.Def;
 			var orientation = building.Orientation;
+			var conduitType = OverlayModeToConduitType(activeMode);
 
 			// Collect all input labels matching this cell
 			var inputs = new List<string>();
 			if (def.InputConduitType != ConduitType.None
-				&& activeMode == ConduitTypeToOverlayMode(def.InputConduitType)) {
+				&& def.InputConduitType == conduitType) {
 				var rotated = Rotatable.GetRotatedCellOffset(
 					def.UtilityInputOffset, orientation);
 				if (Grid.OffsetCell(origin, rotated) == cell)
-					inputs.Add(ConduitInputLabel(def.InputConduitType));
+					inputs.Add(ConduitInputLabel(conduitType));
 			}
-			foreach (var sec in go.GetComponents<ISecondaryInput>()) {
-				var portInfo = (sec as ConduitSecondaryInput).portInfo;
-				if (activeMode != ConduitTypeToOverlayMode(portInfo.conduitType))
-					continue;
-				var rotated = Rotatable.GetRotatedCellOffset(
-					portInfo.offset, orientation);
-				if (Grid.OffsetCell(origin, rotated) == cell)
-					inputs.Add(ConduitInputLabel(portInfo.conduitType));
+			if (conduitType != ConduitType.None) {
+				foreach (var sec in go.GetComponents<ISecondaryInput>()) {
+					if (!sec.HasSecondaryConduitType(conduitType))
+						continue;
+					var offset = sec.GetSecondaryConduitOffset(conduitType);
+					var rotated = Rotatable.GetRotatedCellOffset(offset, orientation);
+					if (Grid.OffsetCell(origin, rotated) == cell)
+						inputs.Add(ConduitInputLabel(conduitType));
+				}
 			}
 
 			// Collect all output labels matching this cell
 			var outputs = new List<string>();
 			if (def.OutputConduitType != ConduitType.None
-				&& activeMode == ConduitTypeToOverlayMode(def.OutputConduitType)) {
+				&& def.OutputConduitType == conduitType) {
 				var rotated = Rotatable.GetRotatedCellOffset(
 					def.UtilityOutputOffset, orientation);
 				if (Grid.OffsetCell(origin, rotated) == cell)
-					outputs.Add(ConduitOutputLabel(def.OutputConduitType));
+					outputs.Add(ConduitOutputLabel(conduitType));
 			}
-			foreach (var sec in go.GetComponents<ISecondaryOutput>()) {
-				var portInfo = (sec as ConduitSecondaryOutput).portInfo;
-				if (activeMode != ConduitTypeToOverlayMode(portInfo.conduitType))
-					continue;
-				var rotated = Rotatable.GetRotatedCellOffset(
-					portInfo.offset, orientation);
-				if (Grid.OffsetCell(origin, rotated) == cell)
-					outputs.Add(ConduitOutputLabel(portInfo.conduitType));
+			if (conduitType != ConduitType.None) {
+				foreach (var sec in go.GetComponents<ISecondaryOutput>()) {
+					if (!sec.HasSecondaryConduitType(conduitType))
+						continue;
+					var offset = sec.GetSecondaryConduitOffset(conduitType);
+					var rotated = Rotatable.GetRotatedCellOffset(offset, orientation);
+					if (Grid.OffsetCell(origin, rotated) == cell)
+						outputs.Add(ConduitOutputLabel(conduitType));
+				}
 			}
 
 			// Count total inputs/outputs across all cells to decide numbering.
 			// Primary gives 1 port; each secondary component gives 1 more.
-			int totalInputs = (def.InputConduitType != ConduitType.None
-				&& activeMode == ConduitTypeToOverlayMode(def.InputConduitType) ? 1 : 0)
-				+ CountSecondaryPorts<ISecondaryInput>(go, activeMode);
-			int totalOutputs = (def.OutputConduitType != ConduitType.None
-				&& activeMode == ConduitTypeToOverlayMode(def.OutputConduitType) ? 1 : 0)
-				+ CountSecondaryPorts<ISecondaryOutput>(go, activeMode);
+			int totalInputs = (def.InputConduitType == conduitType ? 1 : 0)
+				+ CountSecondaryPorts<ISecondaryInput>(go, conduitType);
+			int totalOutputs = (def.OutputConduitType == conduitType ? 1 : 0)
+				+ CountSecondaryPorts<ISecondaryOutput>(go, conduitType);
 
 			AddNumberedLabels(inputs, totalInputs, tokens);
 			AddNumberedLabels(outputs, totalOutputs, tokens);
@@ -223,16 +331,15 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		private static int CountSecondaryPorts<T>(
-				GameObject go, HashedString activeMode) where T : class {
+				GameObject go, ConduitType conduitType) where T : class {
+			if (conduitType == ConduitType.None) return 0;
 			int count = 0;
 			foreach (var comp in go.GetComponents<T>()) {
-				ConduitType type;
-				if (comp is ISecondaryInput input)
-					type = (input as ConduitSecondaryInput).portInfo.conduitType;
-				else
-					type = ((comp as ISecondaryOutput) as ConduitSecondaryOutput)
-						.portInfo.conduitType;
-				if (activeMode == ConduitTypeToOverlayMode(type))
+				if (comp is ISecondaryInput input
+					&& input.HasSecondaryConduitType(conduitType))
+					count++;
+				else if (comp is ISecondaryOutput output
+					&& output.HasSecondaryConduitType(conduitType))
 					count++;
 			}
 			return count;
@@ -326,13 +433,11 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			}
 		}
 
-		private static HashedString ConduitTypeToOverlayMode(ConduitType type) {
-			switch (type) {
-				case ConduitType.Gas: return OverlayModes.GasConduits.ID;
-				case ConduitType.Liquid: return OverlayModes.LiquidConduits.ID;
-				case ConduitType.Solid: return OverlayModes.SolidConveyor.ID;
-				default: return OverlayModes.None.ID;
-			}
+		private static ConduitType OverlayModeToConduitType(HashedString mode) {
+			if (mode == OverlayModes.GasConduits.ID) return ConduitType.Gas;
+			if (mode == OverlayModes.LiquidConduits.ID) return ConduitType.Liquid;
+			if (mode == OverlayModes.SolidConveyor.ID) return ConduitType.Solid;
+			return ConduitType.None;
 		}
 
 		private static string ConduitInputLabel(ConduitType type) {
