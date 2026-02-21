@@ -293,6 +293,11 @@ namespace OniAccess.Handlers.Tools {
 		}
 
 		private void ConfirmOrCancel() {
+			if (_rectangles.Count == 0 && _pendingFirstCorner == Grid.InvalidCell) {
+				int cell = TileCursor.Instance.Cell;
+				_rectangles.Add(new RectCorners { Cell1 = cell, Cell2 = cell });
+			}
+
 			if (_rectangles.Count == 0) {
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.CANCELED);
 				PlayDeactivateSound();
@@ -552,7 +557,8 @@ namespace OniAccess.Handlers.Tools {
 			string format = _toolInfo != null
 				? _toolInfo.ConfirmFormat
 				: (string)STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG;
-			return string.Format(format, count, priority);
+			string noun = count == 1 ? "item" : "items";
+			return string.Format(format, count, priority, noun);
 		}
 
 		// ========================================
@@ -583,6 +589,12 @@ namespace OniAccess.Handlers.Tools {
 
 		private void DeactivateToolAndPop() {
 			Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			for (int i = HandlerStack.Count - 1; i >= 0; i--) {
+				if (HandlerStack.GetAt(i) is TileCursorHandler tch) {
+					tch.QueueNextOverlayAnnouncement();
+					break;
+				}
+			}
 			ToolMenu.Instance.ClearSelection();
 			SelectTool.Instance.Activate();
 			HandlerStack.Pop();

@@ -202,8 +202,8 @@ namespace STRINGS {
 			public static LocString CONFIRM_DISINFECT = "marked {0} for disinfection at priority {1}";
 			public static LocString CONFIRM_SWEEP = "marked {0} for sweeping at priority {1}";
 			public static LocString CONFIRM_DECONSTRUCT = "marked {0} for deconstruction at priority {1}";
-			public static LocString CONFIRM_CANCEL = "cancelled {0} orders";
-			public static LocString CONFIRM_PRIORITIZE = "updated {0} orders to priority {1}";
+			public static LocString CONFIRM_CANCEL = "cancelled {0} {2}";
+			public static LocString CONFIRM_PRIORITIZE = "updated {0} {2} to priority {1}";
 			public static LocString CONFIRM_HARVEST = "set harvest on {0} plants at priority {1}";
 			public static LocString CONFIRM_ATTACK = "marked {0} for attack at priority {1}";
 			public static LocString CONFIRM_CAPTURE = "marked {0} for capture at priority {1}";

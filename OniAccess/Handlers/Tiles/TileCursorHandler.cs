@@ -20,6 +20,9 @@ namespace OniAccess.Handlers.Tiles {
 		private GameStateMonitor _monitor;
 		private bool _hasActivated;
 		private bool _overlaySubscribed;
+		private bool _queueNextOverlay;
+
+		public void QueueNextOverlayAnnouncement() => _queueNextOverlay = true;
 
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.T),
@@ -110,10 +113,17 @@ namespace OniAccess.Handlers.Tiles {
 
 		private void OnOverlayChanged(HashedString newMode) {
 			TileCursor.Instance.ResetRoomName();
-			SpeechPipeline.SpeakInterrupt(_overlayRegistry.GetOverlayName(newMode));
+			if (_queueNextOverlay) {
+				_queueNextOverlay = false;
+				SpeechPipeline.SpeakQueued(_overlayRegistry.GetOverlayName(newMode));
+			} else {
+				SpeechPipeline.SpeakInterrupt(_overlayRegistry.GetOverlayName(newMode));
+			}
 		}
 
 		public override void Tick() {
+			_queueNextOverlay = false;
+
 			if (!_overlaySubscribed && OverlayScreen.Instance != null) {
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
 				_overlaySubscribed = true;
