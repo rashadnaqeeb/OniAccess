@@ -31,9 +31,11 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tool = PlayerController.Instance.ActiveTool as FilteredDragTool;
 			var tokens = new List<string>();
+			var seen = new HashSet<UnityEngine.GameObject>();
 			foreach (int layer in Layers) {
 				var go = Grid.Objects[cell, layer];
 				if (go == null) continue;
+				if (!seen.Add(go)) continue;
 
 				if (layer == (int)ObjectLayer.Pickupables) {
 					var pickupable = go.GetComponent<Pickupable>();
