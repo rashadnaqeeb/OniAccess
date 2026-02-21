@@ -92,7 +92,10 @@ namespace OniAccess.Handlers.Tiles {
 			if (lines == null || lines.Count == 0) return null;
 			if (lines.Count == 1) return lines[0];
 
-			var buildingNames = GetBuildingNames(cell);
+			var buildingNames = GetNonBackwallBuildingNames(cell);
+			var backwallName = GetBackwallName(cell);
+			if (backwallName != null && buildingNames.Count > 0)
+				buildingNames.Add(backwallName);
 
 			// Overlay blocks are drawn first. If the active overlay produced
 			// one, lines[0] is the overlay block. Guard against false
@@ -105,6 +108,15 @@ namespace OniAccess.Handlers.Tiles {
 			if (buildingNames.Count > 0) {
 				for (int i = 0; i < lines.Count; i++) {
 					if (MatchesAnyName(lines[i], buildingNames))
+						return lines[i];
+				}
+			}
+
+			// When only a backwall building exists, skip past its tooltip line
+			if (backwallName != null) {
+				for (int i = 0; i < lines.Count; i++) {
+					if (!lines[i].StartsWith(backwallName,
+							System.StringComparison.OrdinalIgnoreCase))
 						return lines[i];
 				}
 			}
@@ -137,12 +149,18 @@ namespace OniAccess.Handlers.Tiles {
 			return false;
 		}
 
-		private static List<string> GetBuildingNames(int cell) {
-			var names = new List<string>(3);
+		private static List<string> GetNonBackwallBuildingNames(int cell) {
+			var names = new List<string>(2);
 			AddBuildingName(cell, (int)ObjectLayer.Building, names);
 			AddBuildingName(cell, (int)ObjectLayer.FoundationTile, names);
-			AddBuildingName(cell, (int)ObjectLayer.Backwall, names);
 			return names;
+		}
+
+		private static string GetBackwallName(int cell) {
+			var go = Grid.Objects[cell, (int)ObjectLayer.Backwall];
+			if (go == null) return null;
+			string name = go.GetProperName();
+			return string.IsNullOrEmpty(name) ? null : name;
 		}
 
 		private static void AddBuildingName(
