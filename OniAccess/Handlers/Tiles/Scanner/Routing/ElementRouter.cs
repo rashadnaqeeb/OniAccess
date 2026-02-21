@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Reflection;
+using OniAccess.Util;
 
 namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 	/// <summary>
@@ -6,6 +8,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 	/// materialCategory/element identity. Three static methods, one per phase.
 	/// </summary>
 	public static class ElementRouter {
+		private static Dictionary<SimHashes, float> _gasExposureRates;
+
 		private static readonly Dictionary<Tag, string> _solidSubcategories =
 			new Dictionary<Tag, string> {
 				{ GameTags.Metal, ScannerTaxonomy.Subcategories.Ores },
@@ -57,12 +61,35 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 			return ScannerTaxonomy.Subcategories.Misc;
 		}
 
+		/// <summary>
+		/// Uses GasLiquidExposureMonitor.customExposureRates to classify gases.
+		/// Rates >= 1.0 are irritants (Unsafe). Unlisted gases default to 1.0
+		/// matching the game's default exposure rate.
+		/// </summary>
 		public static string GetGasSubcategory(Element element) {
 			if (element.HasTag(GameTags.Breathable))
 				return ScannerTaxonomy.Subcategories.Safe;
-			if (element.toxicity >= 1.0f)
-				return ScannerTaxonomy.Subcategories.Unsafe;
-			return ScannerTaxonomy.Subcategories.Safe;
+			float rate = GetGasExposureRate(element.id);
+			return rate >= 1.0f
+				? ScannerTaxonomy.Subcategories.Unsafe
+				: ScannerTaxonomy.Subcategories.Safe;
+		}
+
+		// The game lazily initializes customExposureRates on the first dupe
+		// exposure tick. If this runs before that, reflection returns null and
+		// all non-breathable gases default to Unsafe (the safer failure mode).
+		private static float GetGasExposureRate(SimHashes id) {
+			if (_gasExposureRates == null) {
+				var field = typeof(GasLiquidExposureMonitor).GetField(
+					"customExposureRates",
+					BindingFlags.Static | BindingFlags.NonPublic);
+				_gasExposureRates = field?.GetValue(null) as Dictionary<SimHashes, float>;
+				if (_gasExposureRates == null) {
+					Log.Warn("ElementRouter: could not read GasLiquidExposureMonitor.customExposureRates");
+					_gasExposureRates = new Dictionary<SimHashes, float>();
+				}
+			}
+			return _gasExposureRates.TryGetValue(id, out float rate) ? rate : 1.0f;
 		}
 	}
 }
