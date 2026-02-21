@@ -29,7 +29,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var power = new HashSet<string> {
 				"NeedPower", "NotEnoughPower", "PowerLoopDetected",
 				"NoWireConnected", "NoPowerConsumers", "WireDisconnected",
-				"GeneratorOffline", "PowerButtonOff", "Overloaded"
+				"GeneratorOffline", "PowerButtonOff", "Overloaded",
+				"ReactorRefuelDisabled"
 			};
 			overlayItems[OverlayModes.Power.ID] = power;
 
@@ -52,9 +53,22 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			overlayItems[OverlayModes.SolidConveyor.ID] = solid;
 
 			var logic = new HashSet<string> {
-				"NoLogicWireConnected", "LogicOverloaded"
+				"NoLogicWireConnected", "LogicOverloaded",
+				"LogicSwitchStatusActive", "LogicSwitchStatusInactive",
+				"LogicSensorStatusActive", "LogicSensorStatusInactive"
 			};
 			overlayItems[OverlayModes.Logic.ID] = logic;
+
+			var farming = new HashSet<string> {
+				"NeedPlant", "NeedSeed", "NoAvailableSeed",
+				"NeedEgg", "NoAvailableEgg", "NoFishableWaterBelow",
+				"TrapNeedsArming", "NoLureElementSelected",
+				"AwaitingSeedDelivery", "AwaitingBaitDelivery",
+				"AwaitingEggDelivery",
+				"CREATURE_REUSABLE_TRAP.READY",
+				"CREATURE_REUSABLE_TRAP.SPRUNG"
+			};
+			overlayItems[OverlayModes.Crop.ID] = farming;
 
 			var oxygen = new HashSet<string> {
 				"PressureOk", "UnderPressure"
@@ -69,8 +83,18 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			alwaysNeutrals = new HashSet<string> {
 				"UnderConstruction", "UnderConstructionNoWorker",
 				"PendingDeconstruction", "PendingDemolition",
-				"PendingSwitchToggle", "BuildingDisabled"
+				"PendingSwitchToggle", "PendingUpgrade",
+				"BuildingDisabled", "Expired",
+				"WaitingForRepairMaterials", "MissingRequirements"
 			};
+		}
+
+		/// <summary>
+		/// Returns true if the active overlay is a focused utility view
+		/// that should skip non-essential building layers like backwalls.
+		/// </summary>
+		public static bool IsOverlayFocused(HashedString activeOverlay) {
+			return overlayItems.ContainsKey(activeOverlay);
 		}
 
 		/// <summary>
@@ -81,30 +105,28 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			string id = item.Id;
 			var severity = item.notificationType;
 
-			// Our hand-picked neutrals always speak
-			if (severity == NotificationType.Neutral && alwaysNeutrals.Contains(id))
-				return true;
-
-			// Plants get all their neutrals (farm station info, growth, etc.)
-			if (severity == NotificationType.Neutral && isPlant)
-				return true;
-
-			// Other neutrals are suppressed
-			if (severity != NotificationType.Bad
-				&& severity != NotificationType.BadMinor)
-				return false;
-
-			// If an overlay is active and has its own item list,
-			// speak overlay items + default items (excluding other overlays' items)
+			// Overlays with their own list: only speak that overlay's items
+			// (plus plant neutrals in the farming overlay)
 			HashSet<string> activeSet;
 			if (overlayItems.TryGetValue(activeOverlay, out activeSet)) {
 				if (activeSet.Contains(id))
 					return true;
-				// Also include default items (not claimed by any overlay)
-				return !allOverlayItems.Contains(id);
+				if (severity == NotificationType.Neutral && isPlant
+					&& activeOverlay == OverlayModes.Crop.ID)
+					return true;
+				return false;
 			}
 
-			// No overlay (or an overlay without a custom list): speak default set
+			// Default view: hand-picked neutrals always speak
+			if (severity == NotificationType.Neutral && alwaysNeutrals.Contains(id))
+				return true;
+
+			// Other neutrals suppressed
+			if (severity != NotificationType.Bad
+				&& severity != NotificationType.BadMinor)
+				return false;
+
+			// Bad/BadMinor not claimed by any overlay
 			return !allOverlayItems.Contains(id);
 		}
 	}

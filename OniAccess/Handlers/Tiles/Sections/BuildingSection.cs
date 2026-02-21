@@ -27,7 +27,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					&& !ctx.Claimed.Contains(foundationGo))
 					ReadBuilding(foundationGo, cell, tokens);
 
-				if (backwallGo != null && !ctx.Claimed.Contains(backwallGo)) {
+				if (backwallGo != null && !ctx.Claimed.Contains(backwallGo)
+					&& !IsOverlayFocused()) {
 					var selectable = backwallGo.GetComponent<KSelectable>();
 					if (selectable != null)
 						tokens.Add(GetBuildingName(backwallGo, selectable));
@@ -458,6 +459,11 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				case ConduitType.Solid: return (string)STRINGS.ONIACCESS.GLANCE.SOLID_OUTPUT;
 				default: return (string)STRINGS.ONIACCESS.GLANCE.OUTPUT_PORT;
 			}
+		}
+
+		private static bool IsOverlayFocused() {
+			return OverlayScreen.Instance != null
+				&& StatusFilter.IsOverlayFocused(OverlayScreen.Instance.GetMode());
 		}
 
 		private static bool IsDecorOverlay() {
