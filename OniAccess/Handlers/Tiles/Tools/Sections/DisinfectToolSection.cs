@@ -15,15 +15,18 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
+			var seen = new HashSet<UnityEngine.GameObject>();
 			foreach (int layer in Layers)
-				ReadLayer(cell, layer, ctx, tokens);
+				ReadLayer(cell, layer, seen, ctx, tokens);
 			return tokens;
 		}
 
-		private static void ReadLayer(int cell, int layer, CellContext ctx,
+		private static void ReadLayer(int cell, int layer,
+			HashSet<UnityEngine.GameObject> seen, CellContext ctx,
 			List<string> tokens) {
 			var go = Grid.Objects[cell, layer];
 			if (go == null) return;
+			if (!seen.Add(go)) return;
 
 			if (layer == (int)ObjectLayer.Pickupables) {
 				var pickupable = go.GetComponent<Pickupable>();
