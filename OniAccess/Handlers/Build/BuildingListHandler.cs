@@ -106,13 +106,18 @@ namespace OniAccess.Handlers.Build {
 				_returnToHandler.SwitchBuilding(entry.Def);
 				HandlerStack.Pop();
 			} else {
+				// Replace before SelectBuilding: SelectBuilding triggers game
+				// events that push handlers onto the stack. If BuildingListHandler
+				// is still on top, those pushes land above it and Replace hits
+				// the wrong handler.
+				var handler = new BuildToolHandler(_category, entry.Def);
+				HandlerStack.Replace(handler);
 				if (!BuildMenuData.SelectBuilding(entry.Def, _category)) {
+					HandlerStack.Pop();
 					PlayNegativeSound();
 					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
 					return;
 				}
-				var handler = new BuildToolHandler(_category, entry.Def);
-				HandlerStack.Replace(handler);
 				SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(entry.Def));
 			}
 		}
