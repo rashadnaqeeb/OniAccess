@@ -451,7 +451,7 @@ namespace STRINGS {
 			public static LocString DESCRIPTION = "description";
 			public static LocString EFFECTS = "effects";
 			public static LocString REQUIREMENTS = "requirements";
-			public static LocString ROOM_TYPE = "room type";
+			public static LocString CATEGORY = "category";
 			public static LocString MATERIAL_SLOT = "{0}: {1}, {2}";
 			public static LocString MATERIAL_SLOT_INSUFFICIENT = "{0}: {1}, {2}, insufficient";
 			public static LocString EXTENT_FORMAT = "extends {0}";
@@ -462,6 +462,9 @@ namespace STRINGS {
 			public static LocString HELP_CANCEL_CONSTRUCTION = "Cancel construction at cursor";
 			public static LocString HELP_OPEN_BUILD_MENU = "Open build menu";
 			public static LocString MATERIAL_OR = " or ";
+			public static LocString ATTRIBUTES = "attributes";
+			public static LocString FACADE = "facade";
+			public static LocString FACADE_DEFAULT = "default";
 		}
 	}
 }

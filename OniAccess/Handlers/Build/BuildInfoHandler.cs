@@ -1,16 +1,32 @@
 using System.Collections.Generic;
+using Database;
+using Klei.AI;
 using OniAccess.Speech;
+using UnityEngine;
 
 namespace OniAccess.Handlers.Build {
 	/// <summary>
-	/// Modal info panel for a building being placed. Shows the building
-	/// description, operation requirements, operation effects, room type,
-	/// and one material selector item per recipe ingredient.
+	/// Modal info panel for a building being placed. Shows combined
+	/// description, attributes, operation requirements, operation effects,
+	/// room type, facade selector, and material selectors.
 	/// Enter on a material item opens MaterialPickerHandler.
 	/// </summary>
 	public class BuildInfoHandler : BaseMenuHandler {
 		private readonly BuildingDef _def;
 		private List<InfoItem> _items;
+
+		private static readonly HashSet<Tag> _hiddenRoomTags = new HashSet<Tag> {
+			RoomConstraints.ConstraintTags.Refrigerator,
+			RoomConstraints.ConstraintTags.FarmStationType,
+			RoomConstraints.ConstraintTags.LuxuryBedType,
+			RoomConstraints.ConstraintTags.MassageTable,
+			RoomConstraints.ConstraintTags.MessTable,
+			RoomConstraints.ConstraintTags.NatureReserve,
+			RoomConstraints.ConstraintTags.Park,
+			RoomConstraints.ConstraintTags.SpiceStation,
+			RoomConstraints.ConstraintTags.DeStressingBuilding,
+			RoomConstraints.ConstraintTags.MachineShopType,
+		};
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
@@ -78,53 +94,171 @@ namespace OniAccess.Handlers.Build {
 		private void RebuildItems() {
 			_items = new List<InfoItem>();
 
-			// Description
-			string desc = _def.Desc;
-			if (!string.IsNullOrEmpty(desc))
-				_items.Add(new InfoItem(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTION + ": " +
-					STRINGS.UI.StripLinkFormatting(desc), -1));
-
-			// Effect text
-			string effect = _def.Effect;
-			if (!string.IsNullOrEmpty(effect))
-				_items.Add(new InfoItem(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EFFECTS + ": " +
-					STRINGS.UI.StripLinkFormatting(effect), -1));
-
-			// Operation requirements and effects from descriptors
+			AddDescriptionItem();
+			AddAttributeItem();
 			AddDescriptorItems();
-
-			// Material selectors
+			AddRoomTypeItem();
+			AddFacadeItem();
 			AddMaterialItems();
+		}
+
+		private void AddDescriptionItem() {
+			string effect = _def.Effect;
+			string desc = _def.Desc;
+			string effectClean = string.IsNullOrEmpty(effect)
+				? null : STRINGS.UI.StripLinkFormatting(effect);
+			string descClean = string.IsNullOrEmpty(desc)
+				? null : STRINGS.UI.StripLinkFormatting(desc);
+
+			string combined;
+			if (effectClean != null && descClean != null)
+				combined = effectClean + " " + descClean;
+			else
+				combined = effectClean ?? descClean;
+
+			if (combined != null)
+				_items.Add(new InfoItem(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTION + ": " + combined, -1));
+		}
+
+		private void AddAttributeItem() {
+			try {
+				string label = BuildAttributeLabel();
+				if (label != null)
+					_items.Add(new InfoItem(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.ATTRIBUTES + ": " + label, -1));
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"BuildInfoHandler.AddAttributeItem: {ex.Message}");
+			}
+		}
+
+		private string BuildAttributeLabel() {
+			var baseAttrs = new Dictionary<Klei.AI.Attribute, float>();
+			var materialBonuses = new Dictionary<Klei.AI.Attribute, float>();
+
+			foreach (var attribute in _def.attributes) {
+				if (!baseAttrs.ContainsKey(attribute))
+					baseAttrs[attribute] = 0f;
+			}
+
+			foreach (var modifier in _def.attributeModifiers) {
+				var attr = Db.Get().BuildingAttributes.Get(modifier.AttributeId);
+				float value;
+				baseAttrs.TryGetValue(attr, out value);
+				value += modifier.Value;
+				baseAttrs[attr] = value;
+			}
+
+			var panel = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel;
+			if (panel.CurrentSelectedElement != null) {
+				Element element = ElementLoader.GetElement(panel.CurrentSelectedElement);
+				if (element != null) {
+					foreach (var modifier in element.attributeModifiers) {
+						var attr = Db.Get().BuildingAttributes.Get(modifier.AttributeId);
+						float value;
+						materialBonuses.TryGetValue(attr, out value);
+						value += modifier.Value;
+						materialBonuses[attr] = value;
+					}
+				} else {
+					var prefab = Assets.TryGetPrefab(panel.CurrentSelectedElement);
+					var prefabMods = prefab.GetComponent<PrefabAttributeModifiers>();
+					if (prefabMods != null) {
+						foreach (var descriptor in prefabMods.descriptors) {
+							var attr = Db.Get().BuildingAttributes.Get(descriptor.AttributeId);
+							float value;
+							materialBonuses.TryGetValue(attr, out value);
+							value += descriptor.Value;
+							materialBonuses[attr] = value;
+						}
+					}
+				}
+			}
+
+			if (baseAttrs.Count == 0)
+				return null;
+
+			var parts = new List<string>();
+			foreach (var pair in baseAttrs) {
+				float baseVal = pair.Value;
+				float matBonus = 0f;
+				string bonusText = "";
+				if (materialBonuses.TryGetValue(pair.Key, out matBonus)) {
+					matBonus = Mathf.Abs(baseVal * matBonus);
+					bonusText = "(+" + matBonus + ")";
+				}
+				parts.Add(pair.Key.Name + " " + (baseVal + matBonus) + bonusText);
+			}
+			return string.Join(", ", parts.ToArray());
+		}
+
+		private void AddFacadeItem() {
+			try {
+				if (_def.AvailableFacades == null || _def.AvailableFacades.Count == 0) return;
+
+				var facadePanel = PlanScreen.Instance.ProductInfoScreen.FacadeSelectionPanel;
+				string facadeId = facadePanel.SelectedFacade;
+				string name;
+				if (facadeId == "DEFAULT_FACADE" || facadeId == null) {
+					name = (string)STRINGS.ONIACCESS.BUILD_MENU.FACADE_DEFAULT;
+				} else {
+					var resource = Db.GetBuildingFacades().TryGet(facadeId);
+					name = resource != null ? resource.Name : facadeId;
+				}
+				_items.Add(new InfoItem(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.FACADE + ": " + name, -1));
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"BuildInfoHandler.AddFacadeItem: {ex.Message}");
+			}
 		}
 
 		private void AddDescriptorItems() {
 			try {
 				var allDescriptors = GameUtil.GetAllDescriptors(_def.BuildingComplete);
-				var requirements = GameUtil.GetRequirementDescriptors(allDescriptors);
-				if (requirements.Count > 0) {
-					foreach (var d in requirements) {
-						string text = STRINGS.UI.StripLinkFormatting(d.text).Trim();
-						if (!string.IsNullOrEmpty(text))
-							_items.Add(new InfoItem(
-								(string)STRINGS.ONIACCESS.BUILD_MENU.REQUIREMENTS + ": " +
-								text, -1));
-					}
-				}
-
-				var effects = GameUtil.GetEffectDescriptors(allDescriptors);
-				if (effects.Count > 0) {
-					foreach (var d in effects) {
-						string text = STRINGS.UI.StripLinkFormatting(d.text).Trim();
-						if (!string.IsNullOrEmpty(text))
-							_items.Add(new InfoItem(
-								(string)STRINGS.ONIACCESS.BUILD_MENU.EFFECTS + ": " +
-								text, -1));
-					}
-				}
+				AddMergedDescriptorItem(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.REQUIREMENTS,
+					GameUtil.GetRequirementDescriptors(allDescriptors));
+				AddMergedDescriptorItem(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EFFECTS,
+					GameUtil.GetEffectDescriptors(allDescriptors));
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"BuildInfoHandler.AddDescriptorItems: {ex.Message}");
+			}
+		}
+
+		private void AddMergedDescriptorItem(string prefix, List<Descriptor> descriptors) {
+			if (descriptors.Count == 0) return;
+
+			var texts = new List<string>();
+			foreach (var d in descriptors) {
+				string text = STRINGS.UI.StripLinkFormatting(d.text).Trim();
+				if (!string.IsNullOrEmpty(text))
+					texts.Add(text);
+			}
+			if (texts.Count == 0) return;
+
+			_items.Add(new InfoItem(
+				prefix + ": " + string.Join(", ", texts.ToArray()), -1));
+		}
+
+		private void AddRoomTypeItem() {
+			try {
+				var tags = _def.BuildingComplete.GetComponent<KPrefabID>().Tags;
+				var roomLabels = new List<string>();
+				foreach (var tag in tags) {
+					if (RoomConstraints.ConstraintTags.AllTags.Contains(tag)
+							&& !_hiddenRoomTags.Contains(tag)) {
+						string label = RoomConstraints.ConstraintTags.GetRoomConstraintLabelText(tag);
+						if (!string.IsNullOrEmpty(label))
+							roomLabels.Add(label);
+					}
+				}
+				if (roomLabels.Count > 0)
+					_items.Add(new InfoItem(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.CATEGORY + ": " +
+						string.Join(", ", roomLabels.ToArray()), -1));
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"BuildInfoHandler.AddRoomTypeItem: {ex.Message}");
 			}
 		}
 
@@ -145,7 +279,7 @@ namespace OniAccess.Handlers.Build {
 				Recipe.Ingredient ingredient, MaterialSelectionPanel panel, int index) {
 			string categoryName = GetIngredientCategoryName(ingredient.tag);
 			string selectedName = (string)STRINGS.ONIACCESS.STATES.NONE;
-			string quantity = "";
+			string quantity = GameUtil.GetFormattedMass(ingredient.amount);
 			bool insufficient = false;
 
 			try {
@@ -155,7 +289,6 @@ namespace OniAccess.Handlers.Build {
 					selectedName = tag.ProperName();
 					float available = ClusterManager.Instance.activeWorld.worldInventory
 						.GetAmount(tag, includeRelatedWorlds: true);
-					quantity = GameUtil.GetFormattedMass(available);
 					insufficient = available < ingredient.amount
 						&& !MaterialSelector.AllowInsufficientMaterialBuild();
 				}
