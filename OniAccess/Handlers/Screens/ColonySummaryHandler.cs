@@ -354,7 +354,10 @@ namespace OniAccess.Handlers.Screens {
 							.GetValue<UnityEngine.Vector2[]>();
 						if (points != null && points.Length > 0) {
 							float lastValue = points[points.Length - 1].y;
-							return $"{name}, {lastValue:N1}";
+							string unit = graph.axis_y.name;
+							if (!string.IsNullOrEmpty(unit))
+								return $"{name}, {lastValue:N0} {unit}";
+							return $"{name}, {lastValue:N0}";
 						}
 					}
 				}
