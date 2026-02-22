@@ -20,7 +20,6 @@ namespace OniAccess.Handlers.Build {
 		public static BuildToolHandler Instance { get; private set; }
 
 		private HashedString _category;
-		private int _buildingIndex;
 		internal BuildingDef _def;
 		private bool _isUtility;
 
@@ -65,9 +64,8 @@ namespace OniAccess.Handlers.Build {
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
 
-		public BuildToolHandler(HashedString category, int buildingIndex, BuildingDef def) {
+		public BuildToolHandler(HashedString category, BuildingDef def) {
 			_category = category;
-			_buildingIndex = buildingIndex;
 			_def = def;
 			_isUtility = BuildMenuData.IsUtilityBuilding(def);
 		}
@@ -471,12 +469,11 @@ namespace OniAccess.Handlers.Build {
 
 		private void ReturnToBuildingList() {
 			_suppressReactivation = true;
-			HandlerStack.Push(new BuildingListHandler(_category, _buildingIndex, this));
+			HandlerStack.Push(new BuildingListHandler(_category, _def, this));
 		}
 
-		internal void SwitchBuilding(BuildingDef newDef, int newIndex) {
+		internal void SwitchBuilding(BuildingDef newDef) {
 			_def = newDef;
-			_buildingIndex = newIndex;
 			_isUtility = BuildMenuData.IsUtilityBuilding(newDef);
 			_utilityStartCell = Grid.InvalidCell;
 

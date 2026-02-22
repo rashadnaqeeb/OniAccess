@@ -64,6 +64,8 @@ namespace STRINGS {
 			public static LocString CYCLE_COORD_MODE = "Cycle coordinate display";
 			public static LocString READ_TOOLTIP_SUMMARY = "Read first tooltip entry";
 			public static LocString READ_TOOLTIP = "Browse all tooltip entries";
+			public static LocString OPEN_GROUP = "Open group";
+			public static LocString GO_BACK = "Go back";
 
 			public class TOOLS_HELP {
 				public static LocString OPEN_TOOL_MENU = "Open tool menu";

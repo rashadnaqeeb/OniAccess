@@ -3,23 +3,26 @@ using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Build {
 	/// <summary>
-	/// Modal list of buildings in a category. Available buildings are sorted
-	/// to the top. Enter on a Complete building activates the build tool.
+	/// Two-level navigation: subcategory headers (level 0) and buildings
+	/// within each subcategory (level 1). Enter/Right drills into a
+	/// subcategory; Left returns. Up/Down at level 1 crosses subcategory
+	/// boundaries. Type-ahead always searches buildings (level 1).
 	/// </summary>
-	public class BuildingListHandler : BaseMenuHandler {
+	public class BuildingListHandler : NestedMenuHandler {
 		private readonly HashedString _category;
-		private readonly int _initialIndex;
+		private readonly BuildingDef _initialDef;
 		private readonly BuildToolHandler _returnToHandler;
-		private List<BuildMenuData.BuildingEntry> _buildings;
+		private List<BuildMenuData.SubcategoryGroup> _groups;
 		private string _categoryName;
 
-		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
-			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
-			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
-			new HelpEntry("Enter", STRINGS.ONIACCESS.HELP.SELECT_ITEM),
-			new HelpEntry("Escape", STRINGS.ONIACCESS.HELP.CLOSE),
-		}.AsReadOnly();
+		private static readonly IReadOnlyList<HelpEntry> _helpEntries;
+
+		static BuildingListHandler() {
+			var list = new List<HelpEntry>();
+			list.AddRange(NestedNavHelpEntries);
+			list.Add(new HelpEntry("Escape", STRINGS.ONIACCESS.HELP.CLOSE));
+			_helpEntries = list.AsReadOnly();
+		}
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
 
@@ -30,59 +33,60 @@ namespace OniAccess.Handlers.Build {
 		/// </summary>
 		public BuildingListHandler(HashedString category) {
 			_category = category;
-			_initialIndex = -1;
+			_initialDef = null;
 			_returnToHandler = null;
 		}
 
 		/// <summary>
 		/// Return from placement (Tab in BuildToolHandler). Cursor starts on
-		/// the building at initialIndex. On selection or Escape, control returns
-		/// to the existing BuildToolHandler.
+		/// the building matching initialDef. On selection or Escape, control
+		/// returns to the existing BuildToolHandler.
 		/// </summary>
-		public BuildingListHandler(HashedString category, int initialIndex, BuildToolHandler returnTo) {
+		public BuildingListHandler(HashedString category, BuildingDef initialDef, BuildToolHandler returnTo) {
 			_category = category;
-			_initialIndex = initialIndex;
+			_initialDef = initialDef;
 			_returnToHandler = returnTo;
 		}
 
-		public override int ItemCount => _buildings != null ? _buildings.Count : 0;
+		// ========================================
+		// NESTED MENU ABSTRACTS
+		// ========================================
 
-		public override string GetItemLabel(int index) {
-			if (_buildings == null || index < 0 || index >= _buildings.Count) return null;
-			return _buildings[index].Label;
+		protected override int MaxLevel => 1;
+		protected override int SearchLevel => 1;
+
+		protected override int GetItemCount(int level, int[] indices) {
+			if (_groups == null) return 0;
+			if (level == 0) return _groups.Count;
+			if (indices[0] < 0 || indices[0] >= _groups.Count) return 0;
+			return _groups[indices[0]].Buildings.Count;
 		}
 
-		public override void SpeakCurrentItem() {
-			if (_buildings != null && _currentIndex >= 0 && _currentIndex < _buildings.Count)
-				SpeechPipeline.SpeakInterrupt(_buildings[_currentIndex].Label);
+		protected override string GetItemLabel(int level, int[] indices) {
+			if (_groups == null) return null;
+			if (level == 0) {
+				if (indices[0] < 0 || indices[0] >= _groups.Count) return null;
+				return _groups[indices[0]].Name;
+			}
+			if (indices[0] < 0 || indices[0] >= _groups.Count) return null;
+			var buildings = _groups[indices[0]].Buildings;
+			if (indices[1] < 0 || indices[1] >= buildings.Count) return null;
+			return buildings[indices[1]].Label;
 		}
 
-		public override void OnActivate() {
-			PlayOpenSound();
-			_buildings = BuildMenuData.GetVisibleBuildings(_category);
-			_categoryName = GetCategoryName();
-			_currentIndex = 0;
-			_search.Clear();
-
-			if (_initialIndex >= 0 && _initialIndex < _buildings.Count)
-				_currentIndex = _initialIndex;
-
-			if (_buildings.Count > 0)
-				SpeechPipeline.SpeakInterrupt(_buildings[_currentIndex].Label);
-			else
-				SpeechPipeline.SpeakInterrupt(_categoryName);
+		protected override string GetParentLabel(int level, int[] indices) {
+			if (level < 1 || _groups == null) return null;
+			if (indices[0] < 0 || indices[0] >= _groups.Count) return null;
+			return _groups[indices[0]].Name;
 		}
 
-		public override void OnDeactivate() {
-			PlayCloseSound();
-			base.OnDeactivate();
-		}
+		protected override void ActivateLeafItem(int[] indices) {
+			if (_groups == null) return;
+			if (indices[0] < 0 || indices[0] >= _groups.Count) return;
+			var buildings = _groups[indices[0]].Buildings;
+			if (indices[1] < 0 || indices[1] >= buildings.Count) return;
 
-		protected override void ActivateCurrentItem() {
-			if (_buildings == null || _currentIndex < 0 || _currentIndex >= _buildings.Count)
-				return;
-
-			var entry = _buildings[_currentIndex];
+			var entry = buildings[indices[1]];
 			if (entry.State != PlanScreen.RequirementsState.Complete) {
 				PlayNegativeSound();
 				string reason = PlanScreen.GetTooltipForRequirementsState(entry.Def, entry.State);
@@ -99,20 +103,89 @@ namespace OniAccess.Handlers.Build {
 					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
 					return;
 				}
-				_returnToHandler.SwitchBuilding(entry.Def, _currentIndex);
+				_returnToHandler.SwitchBuilding(entry.Def);
 				HandlerStack.Pop();
 			} else {
-				var handler = new BuildToolHandler(_category, _currentIndex, entry.Def);
-				HandlerStack.Replace(handler);
 				if (!BuildMenuData.SelectBuilding(entry.Def, _category)) {
-					HandlerStack.Pop();
 					PlayNegativeSound();
 					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
 					return;
 				}
+				var handler = new BuildToolHandler(_category, entry.Def);
+				HandlerStack.Replace(handler);
 				SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(entry.Def));
 			}
 		}
+
+		// ========================================
+		// SEARCH
+		// ========================================
+
+		protected override int GetSearchItemCount(int[] indices) {
+			if (_groups == null) return 0;
+			int total = 0;
+			for (int g = 0; g < _groups.Count; g++)
+				total += _groups[g].Buildings.Count;
+			return total;
+		}
+
+		protected override string GetSearchItemLabel(int flatIndex) {
+			if (_groups == null) return null;
+			int remaining = flatIndex;
+			for (int g = 0; g < _groups.Count; g++) {
+				int count = _groups[g].Buildings.Count;
+				if (remaining < count)
+					return _groups[g].Buildings[remaining].Label;
+				remaining -= count;
+			}
+			return null;
+		}
+
+		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
+			if (_groups == null) return;
+			int remaining = flatIndex;
+			for (int g = 0; g < _groups.Count; g++) {
+				int count = _groups[g].Buildings.Count;
+				if (remaining < count) {
+					outIndices[0] = g;
+					outIndices[1] = remaining;
+					return;
+				}
+				remaining -= count;
+			}
+		}
+
+		// ========================================
+		// LIFECYCLE
+		// ========================================
+
+		public override void OnActivate() {
+			PlayOpenSound();
+			_groups = BuildMenuData.GetGroupedBuildings(_category);
+			_categoryName = GetCategoryName();
+
+			if (_initialDef != null && _restoreFlatIndex < 0)
+				FindDefFlatIndex(_initialDef);
+
+			// base.OnActivate resets indices to 0 and speaks DisplayName.
+			base.OnActivate();
+
+			if (_restoreFlatIndex >= 0) {
+				NestedSearchMoveTo(_restoreFlatIndex);
+				_restoreFlatIndex = -1;
+			} else if (_groups != null && _groups.Count > 0) {
+				SpeechPipeline.SpeakQueued(_groups[0].Name);
+			}
+		}
+
+		public override void OnDeactivate() {
+			PlayCloseSound();
+			base.OnDeactivate();
+		}
+
+		// ========================================
+		// ESCAPE
+		// ========================================
 
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (base.HandleKeyDown(e))
@@ -127,6 +200,27 @@ namespace OniAccess.Handlers.Build {
 				return true;
 			}
 			return false;
+		}
+
+		// ========================================
+		// PRIVATE HELPERS
+		// ========================================
+
+		private int _restoreFlatIndex = -1;
+
+		private void FindDefFlatIndex(BuildingDef def) {
+			if (_groups == null) return;
+			int flat = 0;
+			for (int g = 0; g < _groups.Count; g++) {
+				var buildings = _groups[g].Buildings;
+				for (int b = 0; b < buildings.Count; b++) {
+					if (buildings[b].Def == def) {
+						_restoreFlatIndex = flat;
+						return;
+					}
+					flat++;
+				}
+			}
 		}
 
 		private string GetCategoryName() {

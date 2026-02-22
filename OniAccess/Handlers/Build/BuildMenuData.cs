@@ -18,6 +18,11 @@ namespace OniAccess.Handlers.Build {
 			public string Label;
 		}
 
+		public struct SubcategoryGroup {
+			public string Name;
+			public List<BuildingEntry> Buildings;
+		}
+
 		/// <summary>
 		/// Returns visible categories from TUNING.BUILDINGS.PLANORDER.
 		/// Categories with hideIfNotResearched are hidden when no building
@@ -40,9 +45,8 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		/// <summary>
-		/// Returns buildings in a category. Complete (buildable) buildings
-		/// are sorted to the front since a sighted player visually skips
-		/// greyed-out icons but a blind player must arrow through the list.
+		/// Returns buildings in a category in game-definition order.
+		/// Unresearched buildings are hidden, matching the sighted UI.
 		/// </summary>
 		public static List<BuildingEntry> GetVisibleBuildings(HashedString category) {
 			var result = new List<BuildingEntry>();
@@ -64,17 +68,58 @@ namespace OniAccess.Handlers.Build {
 
 				var state = PlanScreen.Instance.GetBuildableState(def);
 				if (state == PlanScreen.RequirementsState.Invalid) continue;
+				if (state == PlanScreen.RequirementsState.Tech) continue;
 
 				string label = BuildLabel(def, state);
 				result.Add(new BuildingEntry { Def = def, State = state, Label = label });
 			}
 
-			result.Sort((a, b) => {
-				bool aComplete = a.State == PlanScreen.RequirementsState.Complete;
-				bool bComplete = b.State == PlanScreen.RequirementsState.Complete;
-				if (aComplete != bComplete) return aComplete ? -1 : 1;
-				return 0;
-			});
+			return result;
+		}
+
+		/// <summary>
+		/// Returns buildings grouped by subcategory. Each group has the
+		/// subcategory display name from STRINGS.UI.NEWBUILDCATEGORIES and
+		/// a list of visible buildings. Same filtering as GetVisibleBuildings.
+		/// </summary>
+		public static List<SubcategoryGroup> GetGroupedBuildings(HashedString category) {
+			var result = new List<SubcategoryGroup>();
+			PlanScreen.PlanInfo? found = null;
+			foreach (var planInfo in TUNING.BUILDINGS.PLANORDER) {
+				if (planInfo.category == category) {
+					found = planInfo;
+					break;
+				}
+			}
+			if (found == null) return result;
+
+			var planInfoVal = found.Value;
+			// Preserve game ordering: iterate buildingAndSubcategoryData in order,
+			// group buildings by their subcategory value.
+			var groupMap = new Dictionary<string, SubcategoryGroup>();
+			foreach (var kv in planInfoVal.buildingAndSubcategoryData) {
+				var def = Assets.GetBuildingDef(kv.Key);
+				if (def == null) continue;
+				if (!def.IsAvailable() || !def.ShouldShowInBuildMenu()
+					|| !Game.IsCorrectDlcActiveForCurrentSave(def)) continue;
+
+				var state = PlanScreen.Instance.GetBuildableState(def);
+				if (state == PlanScreen.RequirementsState.Invalid) continue;
+				if (state == PlanScreen.RequirementsState.Tech) continue;
+
+				string subcatKey = kv.Value;
+				if (!groupMap.TryGetValue(subcatKey, out var group)) {
+					group = new SubcategoryGroup {
+						Name = GetSubcategoryDisplayName(subcatKey),
+						Buildings = new List<BuildingEntry>()
+					};
+					groupMap[subcatKey] = group;
+					result.Add(group);
+				}
+				string label = BuildLabel(def, state);
+				group.Buildings.Add(new BuildingEntry { Def = def, State = state, Label = label });
+			}
+
 			return result;
 		}
 
@@ -171,6 +216,13 @@ namespace OniAccess.Handlers.Build {
 					return true;
 			}
 			return false;
+		}
+
+		private static string GetSubcategoryDisplayName(string subcategoryKey) {
+			StringEntry entry;
+			if (Strings.TryGet("STRINGS.UI.NEWBUILDCATEGORIES." + subcategoryKey.ToUpper() + ".BUILDMENUTITLE", out entry))
+				return entry.String;
+			return subcategoryKey;
 		}
 
 		private static string GetCategoryDisplayName(HashedString category) {

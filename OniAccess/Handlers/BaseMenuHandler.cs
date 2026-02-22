@@ -116,7 +116,7 @@ namespace OniAccess.Handlers {
 		/// <summary>
 		/// Move to next item with wrap-around. Skips invalid items.
 		/// </summary>
-		protected void NavigateNext() {
+		protected virtual void NavigateNext() {
 			if (ItemCount == 0) return;
 			int start = _currentIndex;
 			for (int i = 0; i < ItemCount; i++) {
@@ -135,7 +135,7 @@ namespace OniAccess.Handlers {
 		/// <summary>
 		/// Move to previous item with wrap-around. Skips invalid items.
 		/// </summary>
-		protected void NavigatePrev() {
+		protected virtual void NavigatePrev() {
 			if (ItemCount == 0) return;
 			int start = _currentIndex;
 			for (int i = 0; i < ItemCount; i++) {
@@ -154,7 +154,7 @@ namespace OniAccess.Handlers {
 		/// <summary>
 		/// Jump to first valid item.
 		/// </summary>
-		protected void NavigateFirst() {
+		protected virtual void NavigateFirst() {
 			if (ItemCount == 0) return;
 			for (int i = 0; i < ItemCount; i++) {
 				if (IsItemValid(i)) {
@@ -169,7 +169,7 @@ namespace OniAccess.Handlers {
 		/// <summary>
 		/// Jump to last valid item.
 		/// </summary>
-		protected void NavigateLast() {
+		protected virtual void NavigateLast() {
 			if (ItemCount == 0) return;
 			for (int i = ItemCount - 1; i >= 0; i--) {
 				if (IsItemValid(i)) {
@@ -300,13 +300,21 @@ namespace OniAccess.Handlers {
 				return;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
-				AdjustCurrentItem(-1, InputUtil.ShiftHeld());
+				HandleLeftRight(-1, InputUtil.ShiftHeld());
 				return;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)) {
-				AdjustCurrentItem(1, InputUtil.ShiftHeld());
+				HandleLeftRight(1, InputUtil.ShiftHeld());
 				return;
 			}
+		}
+
+		/// <summary>
+		/// Handle Left/Right arrow keys. Default delegates to AdjustCurrentItem.
+		/// Overridden by NestedMenuHandler for drill-down/go-back behavior.
+		/// </summary>
+		protected virtual void HandleLeftRight(int direction, bool isLargeStep) {
+			AdjustCurrentItem(direction, isLargeStep);
 		}
 
 		/// <summary>
