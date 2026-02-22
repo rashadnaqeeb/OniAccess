@@ -78,6 +78,8 @@ namespace OniAccess.Handlers.Build {
 			var item = _items[_currentIndex];
 			if (item.SelectorIndex >= 0) {
 				HandlerStack.Push(new MaterialPickerHandler(_def, item.SelectorIndex));
+			} else if (item.SelectorIndex == -2) {
+				HandlerStack.Push(new FacadePickerHandler(_def));
 			}
 		}
 
@@ -213,7 +215,7 @@ namespace OniAccess.Handlers.Build {
 					name = resource != null ? resource.Name : facadeId;
 				}
 				_items.Add(new InfoItem(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.FACADE + ": " + name, -1));
+					(string)STRINGS.ONIACCESS.BUILD_MENU.FACADE + ": " + name, -2));
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"BuildInfoHandler.AddFacadeItem: {ex.Message}");
 			}
