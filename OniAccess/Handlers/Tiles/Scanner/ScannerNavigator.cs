@@ -369,7 +369,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 		private static void PlayWrapSound() {
 			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
+				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click"));
 			} catch (System.Exception ex) {
 				Log.Error($"ScannerNavigator.PlayWrapSound: {ex.Message}");
 			}
