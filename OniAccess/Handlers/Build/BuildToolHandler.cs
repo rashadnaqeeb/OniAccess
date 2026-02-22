@@ -153,8 +153,8 @@ namespace OniAccess.Handlers.Build {
 			PlayerController.Instance.ActiveTool is PrebuildTool;
 
 		private string GetPrebuildError() {
-			var card = PrebuildTool.Instance?.GetComponent<PrebuildToolHoverTextCard>();
-			return card?.errorMessage;
+			var card = PrebuildTool.Instance.GetComponent<PrebuildToolHoverTextCard>();
+			return card.errorMessage;
 		}
 
 		// ========================================
