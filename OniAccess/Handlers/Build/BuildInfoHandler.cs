@@ -95,8 +95,9 @@ namespace OniAccess.Handlers.Build {
 			_items = new List<InfoItem>();
 
 			AddDescriptionItem();
-			AddAttributeItem();
+			var baseAttrs = AddBaseAttributeItem();
 			AddDescriptorItems();
+			AddMaterialEffectsItem(baseAttrs);
 			AddRoomTypeItem();
 			AddFacadeItem();
 			AddMaterialItems();
@@ -121,44 +122,50 @@ namespace OniAccess.Handlers.Build {
 					(string)STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTION + ": " + combined, -1));
 		}
 
-		private void AddAttributeItem() {
+		private Dictionary<Klei.AI.Attribute, float> AddBaseAttributeItem() {
+			var baseAttrs = new Dictionary<Klei.AI.Attribute, float>();
 			try {
-				string label = BuildAttributeLabel();
-				if (label != null)
+				foreach (var attribute in _def.attributes) {
+					if (!baseAttrs.ContainsKey(attribute))
+						baseAttrs[attribute] = 0f;
+				}
+
+				foreach (var modifier in _def.attributeModifiers) {
+					var attr = Db.Get().BuildingAttributes.Get(modifier.AttributeId);
+					float value;
+					baseAttrs.TryGetValue(attr, out value);
+					value += modifier.Value;
+					baseAttrs[attr] = value;
+				}
+
+				if (baseAttrs.Count > 0) {
+					var parts = new List<string>();
+					foreach (var pair in baseAttrs)
+						parts.Add(pair.Key.Name + " " + pair.Value);
 					_items.Add(new InfoItem(
-						(string)STRINGS.ONIACCESS.BUILD_MENU.ATTRIBUTES + ": " + label, -1));
+						(string)STRINGS.ONIACCESS.BUILD_MENU.ATTRIBUTES + ": " +
+						string.Join(", ", parts.ToArray()), -1));
+				}
 			} catch (System.Exception ex) {
-				Util.Log.Warn($"BuildInfoHandler.AddAttributeItem: {ex.Message}");
+				Util.Log.Warn($"BuildInfoHandler.AddBaseAttributeItem: {ex.Message}");
 			}
+			return baseAttrs;
 		}
 
-		private string BuildAttributeLabel() {
-			var baseAttrs = new Dictionary<Klei.AI.Attribute, float>();
-			var materialBonuses = new Dictionary<Klei.AI.Attribute, float>();
+		private void AddMaterialEffectsItem(Dictionary<Klei.AI.Attribute, float> baseAttrs) {
+			try {
+				var materialMods = new Dictionary<Klei.AI.Attribute, float>();
+				var panel = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel;
+				if (panel.CurrentSelectedElement == null) return;
 
-			foreach (var attribute in _def.attributes) {
-				if (!baseAttrs.ContainsKey(attribute))
-					baseAttrs[attribute] = 0f;
-			}
-
-			foreach (var modifier in _def.attributeModifiers) {
-				var attr = Db.Get().BuildingAttributes.Get(modifier.AttributeId);
-				float value;
-				baseAttrs.TryGetValue(attr, out value);
-				value += modifier.Value;
-				baseAttrs[attr] = value;
-			}
-
-			var panel = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel;
-			if (panel.CurrentSelectedElement != null) {
 				Element element = ElementLoader.GetElement(panel.CurrentSelectedElement);
 				if (element != null) {
 					foreach (var modifier in element.attributeModifiers) {
 						var attr = Db.Get().BuildingAttributes.Get(modifier.AttributeId);
 						float value;
-						materialBonuses.TryGetValue(attr, out value);
+						materialMods.TryGetValue(attr, out value);
 						value += modifier.Value;
-						materialBonuses[attr] = value;
+						materialMods[attr] = value;
 					}
 				} else {
 					var prefab = Assets.TryGetPrefab(panel.CurrentSelectedElement);
@@ -167,29 +174,29 @@ namespace OniAccess.Handlers.Build {
 						foreach (var descriptor in prefabMods.descriptors) {
 							var attr = Db.Get().BuildingAttributes.Get(descriptor.AttributeId);
 							float value;
-							materialBonuses.TryGetValue(attr, out value);
+							materialMods.TryGetValue(attr, out value);
 							value += descriptor.Value;
-							materialBonuses[attr] = value;
+							materialMods[attr] = value;
 						}
 					}
 				}
-			}
 
-			if (baseAttrs.Count == 0)
-				return null;
-
-			var parts = new List<string>();
-			foreach (var pair in baseAttrs) {
-				float baseVal = pair.Value;
-				float matBonus = 0f;
-				string bonusText = "";
-				if (materialBonuses.TryGetValue(pair.Key, out matBonus)) {
-					matBonus = Mathf.Abs(baseVal * matBonus);
-					bonusText = "(+" + matBonus + ")";
+				if (materialMods.Count > 0) {
+					var parts = new List<string>();
+					foreach (var pair in materialMods) {
+						float scaled = baseAttrs.ContainsKey(pair.Key)
+							? Mathf.Abs(baseAttrs[pair.Key] * pair.Value)
+							: pair.Value;
+						string sign = scaled >= 0 ? "+" : "";
+						parts.Add(pair.Key.Name + " " + sign + scaled);
+					}
+					_items.Add(new InfoItem(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_EFFECTS + ": " +
+						string.Join(", ", parts.ToArray()), -1));
 				}
-				parts.Add(pair.Key.Name + " " + (baseVal + matBonus) + bonusText);
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"BuildInfoHandler.AddMaterialEffectsItem: {ex.Message}");
 			}
-			return string.Join(", ", parts.ToArray());
 		}
 
 		private void AddFacadeItem() {

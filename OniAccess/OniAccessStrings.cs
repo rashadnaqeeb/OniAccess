@@ -463,6 +463,7 @@ namespace STRINGS {
 			public static LocString HELP_OPEN_BUILD_MENU = "Open build menu";
 			public static LocString MATERIAL_OR = " or ";
 			public static LocString ATTRIBUTES = "attributes";
+			public static LocString MATERIAL_EFFECTS = "material effects";
 			public static LocString FACADE = "facade";
 			public static LocString FACADE_DEFAULT = "default";
 		}
