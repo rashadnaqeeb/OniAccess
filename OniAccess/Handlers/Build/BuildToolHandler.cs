@@ -23,6 +23,8 @@ namespace OniAccess.Handlers.Build {
 		internal BuildingDef _def;
 		private bool _isUtility;
 
+		internal bool SuppressToolEvents { get; set; }
+
 		// Utility placement state
 		private int _utilityStartCell = Grid.InvalidCell;
 		internal bool UtilityStartSet => _utilityStartCell != Grid.InvalidCell;
@@ -75,18 +77,36 @@ namespace OniAccess.Handlers.Build {
 		public override void OnActivate() {
 			Instance = this;
 
+			if (Game.Instance != null) {
+				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
+			}
+		}
+
+		/// <summary>
+		/// Called by BuildingListHandler after SelectBuilding returns.
+		/// At this point the active tool is known (PrebuildTool or BuildTool).
+		/// </summary>
+		internal void AnnounceInitialState() {
+			string announcement = BuildMenuData.BuildNameAnnouncement(_def);
+			if (IsInPrebuildMode()) {
+				string error = GetPrebuildError();
+				if (!string.IsNullOrEmpty(error))
+					announcement += ", " + error;
+				SpeechPipeline.SpeakInterrupt(announcement);
+			} else {
+				SetupBuildMode();
+				SpeechPipeline.SpeakInterrupt(announcement);
+				SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(_def));
+			}
+		}
+
+		private void SetupBuildMode() {
 			if (TileCursor.Instance != null) {
 				var composer = ToolProfileRegistry.Instance.GetComposer(
 					_isUtility ? GetUtilityToolType() : typeof(BuildTool));
 				TileCursor.Instance.ActiveToolComposer = composer;
 			}
-
-			if (Game.Instance != null) {
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
-				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
-			}
-
-			SpeechPipeline.SpeakInterrupt(BuildMenuData.BuildNameAnnouncement(_def));
 		}
 
 		public override void OnDeactivate() {
@@ -102,6 +122,8 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		private void OnActiveToolChanged(object data) {
+			if (SuppressToolEvents) return;
+
 			if (data is SelectTool) {
 				if (_def != null && _def.OnePerWorld)
 					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
@@ -109,7 +131,30 @@ namespace OniAccess.Handlers.Build {
 					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.CANCELED);
 				PlayDeactivateSound();
 				QueueOverlayAndPop();
+				return;
 			}
+
+			if (data is BuildTool || data is UtilityBuildTool || data is WireBuildTool) {
+				SetupBuildMode();
+				SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(_def));
+				return;
+			}
+
+			if (data is PrebuildTool) {
+				if (TileCursor.Instance != null)
+					TileCursor.Instance.ActiveToolComposer = null;
+				string error = GetPrebuildError();
+				if (!string.IsNullOrEmpty(error))
+					SpeechPipeline.SpeakInterrupt(error);
+			}
+		}
+
+		private bool IsInPrebuildMode() =>
+			PlayerController.Instance.ActiveTool is PrebuildTool;
+
+		private string GetPrebuildError() {
+			var card = PrebuildTool.Instance?.GetComponent<PrebuildToolHoverTextCard>();
+			return card?.errorMessage;
 		}
 
 		// ========================================
@@ -121,7 +166,12 @@ namespace OniAccess.Handlers.Build {
 				if (InputUtil.ShiftHeld())
 					QuickCancel();
 				else if (!InputUtil.AnyModifierHeld()) {
-					if (_isUtility)
+					if (IsInPrebuildMode()) {
+						PlayNegativeSound();
+						string error = GetPrebuildError();
+						SpeechPipeline.SpeakInterrupt(
+							error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+					} else if (_isUtility)
 						UtilityPlacement();
 					else
 						RegularPlacement();
@@ -131,7 +181,14 @@ namespace OniAccess.Handlers.Build {
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)
 				&& !InputUtil.AnyModifierHeld()) {
-				Rotate();
+				if (IsInPrebuildMode()) {
+					PlayNegativeSound();
+					string error = GetPrebuildError();
+					SpeechPipeline.SpeakInterrupt(
+						error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+				} else {
+					Rotate();
+				}
 				return;
 			}
 

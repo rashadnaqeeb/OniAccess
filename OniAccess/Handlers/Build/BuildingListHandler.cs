@@ -83,15 +83,6 @@ namespace OniAccess.Handlers.Build {
 			if (indices[1] < 0 || indices[1] >= buildings.Count) return;
 
 			var entry = buildings[indices[1]];
-			if (entry.State != PlanScreen.RequirementsState.Complete) {
-				PlayNegativeSound();
-				string reason = PlanScreen.GetTooltipForRequirementsState(entry.Def, entry.State);
-				if (!string.IsNullOrEmpty(reason))
-					SpeechPipeline.SpeakInterrupt(reason);
-				else
-					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
-				return;
-			}
 
 			// Replace before SelectBuilding: SelectBuilding triggers game
 			// events that push handlers onto the stack. If BuildingListHandler
@@ -99,13 +90,16 @@ namespace OniAccess.Handlers.Build {
 			// the wrong handler.
 			var handler = new BuildToolHandler(_category, entry.Def);
 			HandlerStack.Replace(handler);
+			handler.SuppressToolEvents = true;
 			if (!BuildMenuData.SelectBuilding(entry.Def, _category)) {
+				handler.SuppressToolEvents = false;
 				HandlerStack.Pop();
 				PlayNegativeSound();
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
 				return;
 			}
-			SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(entry.Def));
+			handler.SuppressToolEvents = false;
+			handler.AnnounceInitialState();
 		}
 
 		// ========================================
