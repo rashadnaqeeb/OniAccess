@@ -233,12 +233,16 @@ namespace OniAccess.Handlers.Build {
 
 		private static string BuildLabel(BuildingDef def, PlanScreen.RequirementsState state) {
 			string name = def.Name;
+			string effect = STRINGS.UI.StripLinkFormatting(def.Effect);
+			string label = string.IsNullOrEmpty(effect) ? name : name + ", " + effect;
+
 			if (state == PlanScreen.RequirementsState.Complete)
-				return name;
+				return label;
 			string reason = PlanScreen.GetTooltipForRequirementsState(def, state);
 			if (string.IsNullOrEmpty(reason))
-				return name;
-			return name + ", " + reason;
+				return label;
+			reason = reason.Replace("• ", "").Replace("\n", ", ");
+			return label + ", " + reason;
 		}
 	}
 }
