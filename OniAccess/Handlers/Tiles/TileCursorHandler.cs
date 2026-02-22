@@ -25,6 +25,8 @@ namespace OniAccess.Handlers.Tiles {
 		public void QueueNextOverlayAnnouncement() => _queueNextOverlay = true;
 
 		private static readonly ConsumedKey[] _consumedKeys = {
+			new ConsumedKey(KKeyCode.Tab),
+			new ConsumedKey(KKeyCode.BackQuote),
 			new ConsumedKey(KKeyCode.T),
 			new ConsumedKey(KKeyCode.I),
 			new ConsumedKey(KKeyCode.I, Modifier.Shift),
@@ -51,6 +53,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrow keys", (string)STRINGS.ONIACCESS.HELP.MOVE_CURSOR),
+			new HelpEntry("Tab", "Open build menu"),
 			new HelpEntry("T", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_TOOL_MENU),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY),
 			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
@@ -122,8 +125,6 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void Tick() {
-			_queueNextOverlay = false;
-
 			if (!_overlaySubscribed && OverlayScreen.Instance != null) {
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
 				_overlaySubscribed = true;
@@ -135,6 +136,19 @@ namespace OniAccess.Handlers.Tiles {
 			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null)
 				SpeechPipeline.SpeakInterrupt(arrived);
+
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)
+				&& !InputUtil.AnyModifierHeld()) {
+				OpenBuildMenu();
+				return;
+			}
+
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.BackQuote)
+				&& !InputUtil.AnyModifierHeld()) {
+				if (SpeedControlScreen.Instance != null)
+					SpeedControlScreen.Instance.TogglePause();
+				return;
+			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.T)
 				&& !InputUtil.AnyModifierHeld()) {
@@ -229,12 +243,20 @@ namespace OniAccess.Handlers.Tiles {
 			HandlerStack.Push(new OniAccess.Handlers.Tools.ToolPickerHandler());
 		}
 
+		private void OpenBuildMenu() {
+			if (!(PlayerController.Instance.ActiveTool is SelectTool))
+				SelectTool.Instance.Activate();
+			HandlerStack.Push(new Build.BuildCategoryHandler());
+		}
+
 		private void OnActiveToolChanged(object data) {
 			var tool = data as InterfaceTool;
 			if (tool == null || tool is SelectTool) return;
+			if (tool is BuildTool || tool is UtilityBuildTool || tool is WireBuildTool) return;
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolHandler) return;
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolPickerHandler) return;
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolFilterHandler) return;
+			if (HandlerStack.ActiveHandler is Build.BuildToolHandler) return;
 			HandlerStack.Push(new OniAccess.Handlers.Tools.ToolHandler());
 		}
 

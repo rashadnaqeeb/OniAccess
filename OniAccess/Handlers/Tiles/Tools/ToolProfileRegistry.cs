@@ -52,6 +52,21 @@ namespace OniAccess.Handlers.Tiles.Tools {
 			registry.Register(typeof(EmptyPipeTool), MakeProfile("EmptyPipeTool", emptyPipe));
 			registry.Register(typeof(DisconnectTool), MakeProfile("DisconnectTool", disconnect));
 
+			var buildSection = new Sections.BuildToolSection();
+			var extentSection = new Sections.BuildExtentSection();
+			registry.Register(typeof(BuildTool), new ToolProfile("BuildTool",
+				new GlanceComposer(new List<ICellSection> {
+					buildSection, GlanceComposer.Building, GlanceComposer.Element, extentSection
+				}.AsReadOnly())));
+			registry.Register(typeof(UtilityBuildTool), new ToolProfile("UtilityBuildTool",
+				new GlanceComposer(new List<ICellSection> {
+					buildSection, GlanceComposer.Building, GlanceComposer.Element
+				}.AsReadOnly())));
+			registry.Register(typeof(WireBuildTool), new ToolProfile("WireBuildTool",
+				new GlanceComposer(new List<ICellSection> {
+					buildSection, GlanceComposer.Building, GlanceComposer.Element
+				}.AsReadOnly())));
+
 			Instance = registry;
 			return registry;
 		}

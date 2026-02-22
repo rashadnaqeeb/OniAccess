@@ -418,5 +418,46 @@ namespace STRINGS {
 				public static LocString CYCLE_INSTANCE = "Cycle instance";
 			}
 		}
+
+		public class BUILD_MENU {
+			public static LocString CATEGORY_LIST = "build menu";
+			public static LocString PLACEMENT = "{0}, {1}, {2}";
+			public static LocString PLACEMENT_NO_ORIENT = "{0}, {1}";
+			public static LocString PLACED = "placed";
+			public static LocString PLACED_NO_MATERIAL = "placed, no material available";
+			public static LocString NOT_ROTATABLE = "not rotatable";
+			public static LocString NOT_BUILDABLE = "not buildable";
+			public static LocString CANCELED = "canceled";
+			public static LocString CANCEL_CONSTRUCTION = "canceled";
+			public static LocString NO_CONSTRUCTION = "nothing to cancel";
+			public static LocString MUST_BE_STRAIGHT = "must be a straight line";
+			public static LocString INVALID_LINE = "invalid";
+			public static LocString LINE_CELLS = "{0} cells";
+			public static LocString START_SET = "start set";
+			public static LocString INFO_PANEL = "info";
+			public static LocString OBSTRUCTED = "obstructed";
+			public static LocString MATERIAL_ENTRY = "{0}, {1}";
+			public static LocString MATERIAL_INSUFFICIENT = "{0}, {1}, insufficient";
+			public static LocString EXTENT_LEFT = "{0} left";
+			public static LocString EXTENT_RIGHT = "{0} right";
+			public static LocString EXTENT_UP = "{0} up";
+			public static LocString EXTENT_DOWN = "{0} down";
+			public static LocString ORIENT_UP = "up";
+			public static LocString ORIENT_RIGHT = "right";
+			public static LocString ORIENT_DOWN = "down";
+			public static LocString ORIENT_LEFT = "left";
+			public static LocString DESCRIPTION = "description";
+			public static LocString EFFECTS = "effects";
+			public static LocString REQUIREMENTS = "requirements";
+			public static LocString ROOM_TYPE = "room type";
+			public static LocString MATERIAL_SLOT = "{0}: {1}, {2}";
+			public static LocString MATERIAL_SLOT_INSUFFICIENT = "{0}: {1}, {2}, insufficient";
+			public static LocString EXTENT_FORMAT = "extends {0}";
+			public static LocString HELP_PLACE = "Place building or set start";
+			public static LocString HELP_ROTATE = "Rotate building";
+			public static LocString HELP_BUILDING_LIST = "Return to building list";
+			public static LocString HELP_INFO = "Open info panel";
+			public static LocString HELP_CANCEL_CONSTRUCTION = "Cancel construction at cursor";
+		}
 	}
 }
