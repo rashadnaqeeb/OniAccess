@@ -461,14 +461,6 @@ namespace OniAccess.Handlers.Build {
 		// ========================================
 
 		private void ReturnToBuildingList() {
-			if (Game.Instance != null)
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
-			try {
-				SelectTool.Instance.Activate();
-			} catch (Exception ex) {
-				Util.Log.Error($"BuildToolHandler.ReturnToBuildingList: {ex}");
-			}
-
 			HandlerStack.Replace(new BuildingListHandler(_category, _def));
 		}
 

@@ -64,11 +64,14 @@ namespace OniAccess.Input {
 
 			// Walk the stack top-to-bottom, ticking each handler.
 			// Stop after any CapturesAllInput barrier (inclusive).
+			// Also stop if a Tick mutates the stack (Push/Pop/Replace),
+			// otherwise lower handlers see the same keypress in the same frame.
 			int count = HandlerStack.Count;
 			for (int i = count - 1; i >= 0; i--) {
 				var handler = HandlerStack.GetAt(i);
 				if (handler == null) break;
 				handler.Tick();
+				if (HandlerStack.Count != count || HandlerStack.GetAt(i) != handler) break;
 				if (handler.CapturesAllInput) break;
 			}
 		}
