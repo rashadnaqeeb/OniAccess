@@ -456,6 +456,7 @@ namespace STRINGS {
 			public static LocString MATERIAL_SLOT_INSUFFICIENT = "{0}: {1}, {2}, insufficient";
 			public static LocString EXTENT_FORMAT = "extends {0}";
 			public static LocString HELP_PLACE = "Place building or set start";
+			public static LocString HELP_PLACE_AND_EXIT = "Place building and exit";
 			public static LocString HELP_ROTATE = "Rotate building";
 			public static LocString HELP_BUILDING_LIST = "Return to building list";
 			public static LocString HELP_INFO = "Open info panel";

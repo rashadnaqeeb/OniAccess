@@ -33,6 +33,7 @@ namespace OniAccess.Handlers.Build {
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Space),
 			new ConsumedKey(KKeyCode.Space, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Return),
 			new ConsumedKey(KKeyCode.R),
 			new ConsumedKey(KKeyCode.Tab),
 			new ConsumedKey(KKeyCode.I),
@@ -54,6 +55,7 @@ namespace OniAccess.Handlers.Build {
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Space", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE),
+			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE_AND_EXIT),
 			new HelpEntry("R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO),
@@ -185,6 +187,20 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)
+				&& !InputUtil.AnyModifierHeld()) {
+				if (IsInPrebuildMode()) {
+					PlayNegativeSound();
+					string error = GetPrebuildError();
+					SpeechPipeline.SpeakInterrupt(
+						error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+				} else if (_isUtility)
+					UtilityPlaceAndExit();
+				else
+					RegularPlaceAndExit();
+				return;
+			}
+
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)
 				&& !InputUtil.AnyModifierHeld()) {
 				if (IsInPrebuildMode()) {
@@ -262,6 +278,30 @@ namespace OniAccess.Handlers.Build {
 			}
 		}
 
+		private void RegularPlaceAndExit() {
+			int cell = TileCursor.Instance.Cell;
+			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
+			var orientation = BuildMenuData.GetCurrentOrientation();
+			string failReason;
+			if (!_def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, out failReason)) {
+				PlayNegativeSound();
+				SpeechPipeline.SpeakInterrupt(failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
+				return;
+			}
+
+			bool hasMaterials = HasSufficientMaterials();
+			BuildTool.Instance.OnLeftClickDown(pos);
+			BuildTool.Instance.OnLeftClickUp(pos);
+			if (_def.OnePerWorld)
+				return;
+
+			string announcement = hasMaterials
+				? (string)STRINGS.ONIACCESS.BUILD_MENU.PLACED
+				: (string)STRINGS.ONIACCESS.BUILD_MENU.PLACED_NO_MATERIAL;
+			SpeechPipeline.SpeakInterrupt(announcement);
+			ExitBuildMode();
+		}
+
 		private bool HasSufficientMaterials() {
 			try {
 				var panel = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel;
@@ -329,6 +369,29 @@ namespace OniAccess.Handlers.Build {
 			SpeechPipeline.SpeakInterrupt(
 				string.Format((string)STRINGS.ONIACCESS.BUILD_MENU.LINE_CELLS, path.Count)
 				+ ", " + (string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
+		}
+
+		private void UtilityPlaceAndExit() {
+			int cell = TileCursor.Instance.Cell;
+			var pos = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
+			string failReason;
+			if (!_def.IsValidPlaceLocation(null, pos, Orientation.Neutral, out failReason)) {
+				PlayNegativeSound();
+				SpeechPipeline.SpeakInterrupt(
+					failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
+				return;
+			}
+
+			var path = new List<int> { cell };
+			var tool = GetActiveUtilityTool();
+			if (tool == null) {
+				Util.Log.Error("BuildToolHandler.UtilityPlaceAndExit: no active utility tool");
+				return;
+			}
+
+			SimulateUtilityDrag(path, tool);
+			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
+			ExitBuildMode();
 		}
 
 		private static List<int> BuildLinePath(int startCell, int endCell) {
@@ -568,6 +631,21 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.CANCELED);
+			PlayDeactivateSound();
+		}
+
+		private void ExitBuildMode() {
+			if (Game.Instance != null)
+				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+
+			QueueOverlayAndPop();
+
+			try {
+				SelectTool.Instance.Activate();
+			} catch (Exception ex) {
+				Util.Log.Error($"BuildToolHandler.ExitBuildMode: {ex}");
+			}
+
 			PlayDeactivateSound();
 		}
 
