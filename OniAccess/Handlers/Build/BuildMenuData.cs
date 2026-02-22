@@ -238,11 +238,41 @@ namespace OniAccess.Handlers.Build {
 
 			if (state == PlanScreen.RequirementsState.Complete)
 				return label;
+			if (state == PlanScreen.RequirementsState.Materials)
+				return label + ", " + FormatMissingMaterials(def);
 			string reason = PlanScreen.GetTooltipForRequirementsState(def, state);
 			if (string.IsNullOrEmpty(reason))
 				return label;
-			reason = reason.Replace("• ", "").Replace("\n", ", ");
 			return label + ", " + reason;
+		}
+
+		private static string FormatMissingMaterials(BuildingDef def) {
+			var ingredients = def.CraftRecipe.Ingredients;
+			bool allSameAmount = true;
+			float sharedAmount = ingredients.Count > 0 ? ingredients[0].amount : 0f;
+			for (int i = 1; i < ingredients.Count; i++) {
+				if (ingredients[i].amount != sharedAmount) {
+					allSameAmount = false;
+					break;
+				}
+			}
+
+			var sb = new System.Text.StringBuilder();
+			sb.Append((string)STRINGS.UI.PRODUCTINFO_MISSINGRESOURCES_HOVER);
+			sb.Append(": ");
+			for (int i = 0; i < ingredients.Count; i++) {
+				if (i > 0) sb.Append(", ");
+				sb.Append(ingredients[i].tag.ProperName());
+				if (!allSameAmount) {
+					sb.Append(' ');
+					sb.Append(GameUtil.GetFormattedMass(ingredients[i].amount));
+				}
+			}
+			if (allSameAmount && ingredients.Count > 0) {
+				sb.Append(' ');
+				sb.Append(GameUtil.GetFormattedMass(sharedAmount));
+			}
+			return sb.ToString();
 		}
 	}
 }
