@@ -434,6 +434,7 @@ namespace STRINGS {
 			public static LocString INVALID_LINE = "invalid";
 			public static LocString LINE_CELLS = "{0} cells";
 			public static LocString START_SET = "start set";
+			public static LocString START_CLEARED = "start cleared";
 			public static LocString INFO_PANEL = "info";
 			public static LocString OBSTRUCTED = "obstructed";
 			public static LocString MATERIAL_ENTRY = "{0}, {1}";

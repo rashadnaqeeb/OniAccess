@@ -163,8 +163,14 @@ namespace OniAccess.Handlers.Build {
 
 		public override void Tick() {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)) {
-				if (InputUtil.ShiftHeld())
-					QuickCancel();
+				if (InputUtil.ShiftHeld()) {
+					if (_isUtility && UtilityStartSet) {
+						_utilityStartCell = Grid.InvalidCell;
+						SpeechPipeline.SpeakInterrupt(
+							(string)STRINGS.ONIACCESS.BUILD_MENU.START_CLEARED);
+					} else
+						QuickCancel();
+				}
 				else if (!InputUtil.AnyModifierHeld()) {
 					if (IsInPrebuildMode()) {
 						PlayNegativeSound();
@@ -273,12 +279,18 @@ namespace OniAccess.Handlers.Build {
 		// UTILITY PLACEMENT
 		// ========================================
 
-		private static MethodInfo _checkValidPathPiece;
-
 		private void UtilityPlacement() {
 			int cell = TileCursor.Instance.Cell;
 
 			if (!UtilityStartSet) {
+				var pos = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
+				string failReason;
+				if (!_def.IsValidPlaceLocation(null, pos, Orientation.Neutral, out failReason)) {
+					PlayNegativeSound();
+					SpeechPipeline.SpeakInterrupt(
+						failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
+					return;
+				}
 				_utilityStartCell = cell;
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.START_SET);
 				return;
@@ -305,7 +317,7 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
-			if (!ValidateUtilityPath(path, tool)) {
+			if (!ValidateUtilityPath(path)) {
 				PlayNegativeSound();
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE);
@@ -340,31 +352,24 @@ namespace OniAccess.Handlers.Build {
 
 		/// <summary>
 		/// Checks whether every cell in a straight line from start to end is
-		/// valid for the active utility tool. Used by BuildToolSection for
-		/// live glance feedback.
+		/// a valid placement location. Uses the same IsValidPlaceLocation
+		/// check that the game's TryPlace uses, so the result matches what
+		/// will actually happen when the line is placed.
+		/// Used by BuildToolSection for live glance feedback.
 		/// </summary>
 		internal static bool IsUtilityLineValid(int startCell, int endCell) {
 			var handler = Instance;
 			if (handler == null) return true;
-			var tool = handler.GetActiveUtilityTool();
-			if (tool == null) return true;
 			var path = BuildLinePath(startCell, endCell);
-			return handler.ValidateUtilityPath(path, tool);
+			return handler.ValidateUtilityPath(path);
 		}
 
-		private bool ValidateUtilityPath(List<int> path, BaseUtilityBuildTool tool) {
-			if (_checkValidPathPiece == null)
-				_checkValidPathPiece = AccessTools.Method(
-					typeof(BaseUtilityBuildTool), "CheckValidPathPiece");
-
+		private bool ValidateUtilityPath(List<int> path) {
 			foreach (int cell in path) {
-				try {
-					bool valid = (bool)_checkValidPathPiece.Invoke(tool, new object[] { cell });
-					if (!valid) return false;
-				} catch (Exception ex) {
-					Util.Log.Error($"BuildToolHandler.ValidateUtilityPath: {ex}");
+				var pos = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
+				string failReason;
+				if (!_def.IsValidPlaceLocation(null, pos, Orientation.Neutral, out failReason))
 					return false;
-				}
 			}
 			return true;
 		}
