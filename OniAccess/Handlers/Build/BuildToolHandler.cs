@@ -540,7 +540,8 @@ namespace OniAccess.Handlers.Build {
 				announcement = string.Format((string)STRINGS.ONIACCESS.TOOLS.PRIORITY_BASIC, value);
 			}
 
-			ToolMenu.Instance.PriorityScreen.SetScreenPriority(setting, false);
+			PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel.PriorityScreen
+			.SetScreenPriority(setting, false);
 			PriorityScreen.PlayPriorityConfirmSound(setting);
 			SpeechPipeline.SpeakInterrupt(announcement);
 		}
