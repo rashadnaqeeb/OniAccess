@@ -11,7 +11,6 @@ namespace OniAccess.Handlers.Build {
 	public class BuildingListHandler : NestedMenuHandler {
 		private readonly HashedString _category;
 		private readonly BuildingDef _initialDef;
-		private readonly BuildToolHandler _returnToHandler;
 		private List<BuildMenuData.SubcategoryGroup> _groups;
 		private string _categoryName;
 
@@ -34,18 +33,15 @@ namespace OniAccess.Handlers.Build {
 		public BuildingListHandler(HashedString category) {
 			_category = category;
 			_initialDef = null;
-			_returnToHandler = null;
 		}
 
 		/// <summary>
 		/// Return from placement (Tab in BuildToolHandler). Cursor starts on
-		/// the building matching initialDef. On selection or Escape, control
-		/// returns to the existing BuildToolHandler.
+		/// the building matching initialDef.
 		/// </summary>
-		public BuildingListHandler(HashedString category, BuildingDef initialDef, BuildToolHandler returnTo) {
+		public BuildingListHandler(HashedString category, BuildingDef initialDef) {
 			_category = category;
 			_initialDef = initialDef;
-			_returnToHandler = returnTo;
 		}
 
 		// ========================================
@@ -97,29 +93,19 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
-			if (_returnToHandler != null) {
-				if (!BuildMenuData.SelectBuilding(entry.Def, _category)) {
-					PlayNegativeSound();
-					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
-					return;
-				}
-				_returnToHandler.SwitchBuilding(entry.Def);
+			// Replace before SelectBuilding: SelectBuilding triggers game
+			// events that push handlers onto the stack. If BuildingListHandler
+			// is still on top, those pushes land above it and Replace hits
+			// the wrong handler.
+			var handler = new BuildToolHandler(_category, entry.Def);
+			HandlerStack.Replace(handler);
+			if (!BuildMenuData.SelectBuilding(entry.Def, _category)) {
 				HandlerStack.Pop();
-			} else {
-				// Replace before SelectBuilding: SelectBuilding triggers game
-				// events that push handlers onto the stack. If BuildingListHandler
-				// is still on top, those pushes land above it and Replace hits
-				// the wrong handler.
-				var handler = new BuildToolHandler(_category, entry.Def);
-				HandlerStack.Replace(handler);
-				if (!BuildMenuData.SelectBuilding(entry.Def, _category)) {
-					HandlerStack.Pop();
-					PlayNegativeSound();
-					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
-					return;
-				}
-				SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(entry.Def));
+				PlayNegativeSound();
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+				return;
 			}
+			SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(entry.Def));
 		}
 
 		// ========================================
@@ -196,12 +182,8 @@ namespace OniAccess.Handlers.Build {
 			if (base.HandleKeyDown(e))
 				return true;
 			if (e.TryConsume(Action.Escape)) {
-				if (_returnToHandler != null) {
-					HandlerStack.Pop();
-				} else {
-					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLTIP.CLOSED);
-					HandlerStack.Pop();
-				}
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLTIP.CLOSED);
+				HandlerStack.Pop();
 				return true;
 			}
 			return false;

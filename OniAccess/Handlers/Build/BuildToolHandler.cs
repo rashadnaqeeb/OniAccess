@@ -28,8 +28,6 @@ namespace OniAccess.Handlers.Build {
 		internal bool UtilityStartSet => _utilityStartCell != Grid.InvalidCell;
 		internal int UtilityStartCell => _utilityStartCell;
 
-		private bool _suppressReactivation;
-
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Space),
 			new ConsumedKey(KKeyCode.Space, Modifier.Shift),
@@ -76,11 +74,6 @@ namespace OniAccess.Handlers.Build {
 
 		public override void OnActivate() {
 			Instance = this;
-
-			if (_suppressReactivation) {
-				_suppressReactivation = false;
-				return;
-			}
 
 			if (TileCursor.Instance != null) {
 				var composer = ToolProfileRegistry.Instance.GetComposer(
@@ -468,23 +461,15 @@ namespace OniAccess.Handlers.Build {
 		// ========================================
 
 		private void ReturnToBuildingList() {
-			_suppressReactivation = true;
-			HandlerStack.Push(new BuildingListHandler(_category, _def, this));
-		}
-
-		internal void SwitchBuilding(BuildingDef newDef) {
-			_def = newDef;
-			_isUtility = BuildMenuData.IsUtilityBuilding(newDef);
-			_utilityStartCell = Grid.InvalidCell;
-
-			if (TileCursor.Instance != null) {
-				var composer = ToolProfileRegistry.Instance.GetComposer(
-					_isUtility ? GetUtilityToolType() : typeof(BuildTool));
-				TileCursor.Instance.ActiveToolComposer = composer;
+			if (Game.Instance != null)
+				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			try {
+				SelectTool.Instance.Activate();
+			} catch (Exception ex) {
+				Util.Log.Error($"BuildToolHandler.ReturnToBuildingList: {ex}");
 			}
 
-			SpeechPipeline.SpeakInterrupt(BuildMenuData.BuildNameAnnouncement(newDef));
-			SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(newDef));
+			HandlerStack.Replace(new BuildingListHandler(_category, _def));
 		}
 
 		private void OpenInfoPanel() {
