@@ -52,8 +52,9 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 			bool sameRow = startRow == endRow;
 
 			int count;
+			bool invalid = false;
 			if (!sameCol && !sameRow) {
-				tokens.Insert(0, (string)STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE);
+				invalid = true;
 				int dx = System.Math.Abs(endCol - startCol);
 				int dy = System.Math.Abs(endRow - startRow);
 				count = System.Math.Max(dx, dy) + 1;
@@ -61,7 +62,12 @@ namespace OniAccess.Handlers.Tiles.Tools.Sections {
 				count = sameRow
 					? System.Math.Abs(endCol - startCol) + 1
 					: System.Math.Abs(endRow - startRow) + 1;
+				if (!BuildToolHandler.IsUtilityLineValid(startCell, cell))
+					invalid = true;
 			}
+
+			if (invalid)
+				tokens.Insert(0, (string)STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE);
 
 			tokens.Add(string.Format(
 				(string)STRINGS.ONIACCESS.BUILD_MENU.LINE_CELLS, count));

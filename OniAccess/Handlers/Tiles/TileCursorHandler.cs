@@ -20,9 +20,9 @@ namespace OniAccess.Handlers.Tiles {
 		private GameStateMonitor _monitor;
 		private bool _hasActivated;
 		private bool _overlaySubscribed;
-		private bool _queueNextOverlay;
+		private int _queueNextOverlayTtl;
 
-		public void QueueNextOverlayAnnouncement() => _queueNextOverlay = true;
+		public void QueueNextOverlayAnnouncement() => _queueNextOverlayTtl = 2;
 
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Tab),
@@ -53,7 +53,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrow keys", (string)STRINGS.ONIACCESS.HELP.MOVE_CURSOR),
-			new HelpEntry("Tab", "Open build menu"),
+			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_BUILD_MENU),
 			new HelpEntry("T", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_TOOL_MENU),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY),
 			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
@@ -116,8 +116,8 @@ namespace OniAccess.Handlers.Tiles {
 
 		private void OnOverlayChanged(HashedString newMode) {
 			TileCursor.Instance.ResetRoomName();
-			if (_queueNextOverlay) {
-				_queueNextOverlay = false;
+			if (_queueNextOverlayTtl > 0) {
+				_queueNextOverlayTtl = 0;
 				SpeechPipeline.SpeakQueued(_overlayRegistry.GetOverlayName(newMode));
 			} else {
 				SpeechPipeline.SpeakInterrupt(_overlayRegistry.GetOverlayName(newMode));
@@ -125,6 +125,9 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void Tick() {
+			if (_queueNextOverlayTtl > 0)
+				_queueNextOverlayTtl--;
+
 			if (!_overlaySubscribed && OverlayScreen.Instance != null) {
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
 				_overlaySubscribed = true;
@@ -145,8 +148,13 @@ namespace OniAccess.Handlers.Tiles {
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.BackQuote)
 				&& !InputUtil.AnyModifierHeld()) {
-				if (SpeedControlScreen.Instance != null)
-					SpeedControlScreen.Instance.TogglePause();
+				if (SpeedControlScreen.Instance != null) {
+					var scs = SpeedControlScreen.Instance;
+					int newSpeed = (scs.GetSpeed() + 1) % 3;
+					PlaySpeedChangeSound(newSpeed + 1);
+					scs.SetSpeed(scs.GetSpeed() + 1);
+					scs.OnSpeedChange();
+				}
 				return;
 			}
 
@@ -289,6 +297,15 @@ namespace OniAccess.Handlers.Tiles {
 				return;
 			}
 			HandlerStack.Push(new TooltipBrowserHandler(lines));
+		}
+
+		private static void PlaySpeedChangeSound(float speed) {
+			string sound = GlobalAssets.GetSound("Speed_Change");
+			if (sound != null) {
+				var instance = SoundEvent.BeginOneShot(sound, UnityEngine.Vector3.zero);
+				instance.setParameterByName("Speed", speed);
+				SoundEvent.EndOneShot(instance);
+			}
 		}
 	}
 }

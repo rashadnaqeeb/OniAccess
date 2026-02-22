@@ -458,6 +458,8 @@ namespace STRINGS {
 			public static LocString HELP_BUILDING_LIST = "Return to building list";
 			public static LocString HELP_INFO = "Open info panel";
 			public static LocString HELP_CANCEL_CONSTRUCTION = "Cancel construction at cursor";
+			public static LocString HELP_OPEN_BUILD_MENU = "Open build menu";
+			public static LocString MATERIAL_OR = " or ";
 		}
 	}
 }

@@ -199,8 +199,24 @@ namespace OniAccess.Handlers.Build {
 			BuildTool.Instance.OnLeftClickUp(pos);
 			// OnePerWorld buildings auto-dismiss the tool, triggering
 			// OnActiveToolChanged which announces "placed" and pops.
-			if (!_def.OnePerWorld)
-				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
+			if (!_def.OnePerWorld) {
+				if (!HasSufficientMaterials())
+					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED_NO_MATERIAL);
+				else
+					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
+			}
+		}
+
+		private bool HasSufficientMaterials() {
+			try {
+				var elements = PlanScreen.Instance.ProductInfoScreen
+					.materialSelectionPanel.GetSelectedElementAsList;
+				return _def.MaterialsAvailable(elements, ClusterManager.Instance.activeWorld)
+					|| DebugHandler.InstantBuildMode;
+			} catch (Exception ex) {
+				Util.Log.Warn($"BuildToolHandler.HasSufficientMaterials: {ex.Message}");
+				return true;
+			}
 		}
 
 		// ========================================
@@ -270,6 +286,20 @@ namespace OniAccess.Handlers.Build {
 					path.Add(Grid.XYToCell(startCol, y));
 			}
 			return path;
+		}
+
+		/// <summary>
+		/// Checks whether every cell in a straight line from start to end is
+		/// valid for the active utility tool. Used by BuildToolSection for
+		/// live glance feedback.
+		/// </summary>
+		internal static bool IsUtilityLineValid(int startCell, int endCell) {
+			var handler = Instance;
+			if (handler == null) return true;
+			var tool = handler.GetActiveUtilityTool();
+			if (tool == null) return true;
+			var path = BuildLinePath(startCell, endCell);
+			return handler.ValidateUtilityPath(path, tool);
 		}
 
 		private bool ValidateUtilityPath(List<int> path, BaseUtilityBuildTool tool) {

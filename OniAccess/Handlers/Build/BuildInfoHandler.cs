@@ -176,7 +176,7 @@ namespace OniAccess.Handlers.Build {
 			string[] parts = tag.ToString().Split('&');
 			string name = parts[0].ToTag().ProperName();
 			for (int i = 1; i < parts.Length; i++)
-				name += " or " + parts[i].ToTag().ProperName();
+				name += (string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_OR + parts[i].ToTag().ProperName();
 			return name;
 		}
 

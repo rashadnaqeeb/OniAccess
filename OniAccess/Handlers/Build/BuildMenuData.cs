@@ -59,7 +59,8 @@ namespace OniAccess.Handlers.Build {
 			foreach (var kv in planInfoVal.buildingAndSubcategoryData) {
 				var def = Assets.GetBuildingDef(kv.Key);
 				if (def == null) continue;
-				if (!def.IsAvailable() || !def.ShowInBuildMenu) continue;
+				if (!def.IsAvailable() || !def.ShouldShowInBuildMenu()
+					|| !Game.IsCorrectDlcActiveForCurrentSave(def)) continue;
 
 				var state = PlanScreen.Instance.GetBuildableState(def);
 				if (state == PlanScreen.RequirementsState.Invalid) continue;
@@ -167,7 +168,8 @@ namespace OniAccess.Handlers.Build {
 			foreach (var kv in planInfo.buildingAndSubcategoryData) {
 				var def = Assets.GetBuildingDef(kv.Key);
 				if (def == null) continue;
-				if (!def.IsAvailable() || !def.ShowInBuildMenu) continue;
+				if (!def.IsAvailable() || !def.ShouldShowInBuildMenu()
+					|| !Game.IsCorrectDlcActiveForCurrentSave(def)) continue;
 				var state = PlanScreen.Instance.GetBuildableState(def);
 				if (state != PlanScreen.RequirementsState.Tech)
 					return true;
