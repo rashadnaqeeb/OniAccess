@@ -96,7 +96,6 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			SpeechPipeline.SpeakInterrupt(BuildMenuData.BuildNameAnnouncement(_def));
-			SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(_def));
 		}
 
 		public override void OnDeactivate() {

@@ -110,6 +110,7 @@ namespace OniAccess.Handlers.Build {
 					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
 					return;
 				}
+				SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(entry.Def));
 			}
 		}
 
