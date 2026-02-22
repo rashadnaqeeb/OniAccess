@@ -421,8 +421,6 @@ namespace STRINGS {
 
 		public class BUILD_MENU {
 			public static LocString CATEGORY_LIST = "build menu";
-			public static LocString PLACEMENT = "{0}, {1}, {2}";
-			public static LocString PLACEMENT_NO_ORIENT = "{0}, {1}";
 			public static LocString PLACED = "placed";
 			public static LocString PLACED_NO_MATERIAL = "placed, no material available";
 			public static LocString NOT_ROTATABLE = "not rotatable";
@@ -442,6 +440,7 @@ namespace STRINGS {
 			public static LocString EXTENT_RIGHT = "{0} right";
 			public static LocString EXTENT_UP = "{0} up";
 			public static LocString EXTENT_DOWN = "{0} down";
+			public static LocString FACING = "facing {0}";
 			public static LocString ORIENT_UP = "up";
 			public static LocString ORIENT_RIGHT = "right";
 			public static LocString ORIENT_DOWN = "down";

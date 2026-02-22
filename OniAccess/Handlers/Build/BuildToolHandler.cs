@@ -50,7 +50,7 @@ namespace OniAccess.Handlers.Build {
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
-		public override string DisplayName => BuildMenuData.BuildPlacementAnnouncement(_def);
+		public override string DisplayName => BuildMenuData.BuildNameAnnouncement(_def);
 		public override bool CapturesAllInput => false;
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {

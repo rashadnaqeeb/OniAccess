@@ -143,28 +143,10 @@ namespace OniAccess.Handlers.Build {
 			string name = def.Name;
 			if (def.PermittedRotations != PermittedRotations.Unrotatable) {
 				string dir = GetOrientationName(GetCurrentOrientation());
-				return name + ", " + dir;
+				return name + ", " + string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.FACING, dir);
 			}
 			return name;
-		}
-
-		/// <summary>
-		/// Returns the full placement announcement:
-		/// "name, material mass, facing dir" (or without dir if unrotatable).
-		/// </summary>
-		public static string BuildPlacementAnnouncement(BuildingDef def) {
-			string name = def.Name;
-			string material = GetMaterialSummary(def);
-			if (material == null) material = "";
-
-			if (def.PermittedRotations != PermittedRotations.Unrotatable) {
-				var orientation = GetCurrentOrientation();
-				string dir = GetOrientationName(orientation);
-				return string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.PLACEMENT, name, material, dir);
-			}
-			return string.Format(
-				(string)STRINGS.ONIACCESS.BUILD_MENU.PLACEMENT_NO_ORIENT, name, material);
 		}
 
 		/// <summary>
