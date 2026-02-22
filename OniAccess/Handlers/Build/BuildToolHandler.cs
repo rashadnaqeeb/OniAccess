@@ -95,7 +95,8 @@ namespace OniAccess.Handlers.Build {
 				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
 			}
 
-			SpeechPipeline.SpeakInterrupt(DisplayName);
+			SpeechPipeline.SpeakInterrupt(BuildMenuData.BuildNameAnnouncement(_def));
+			SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(_def));
 		}
 
 		public override void OnDeactivate() {
@@ -195,12 +196,13 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
+			bool hasMaterials = HasSufficientMaterials();
 			BuildTool.Instance.OnLeftClickDown(pos);
 			BuildTool.Instance.OnLeftClickUp(pos);
 			// OnePerWorld buildings auto-dismiss the tool, triggering
 			// OnActiveToolChanged which announces "placed" and pops.
 			if (!_def.OnePerWorld) {
-				if (!HasSufficientMaterials())
+				if (!hasMaterials)
 					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED_NO_MATERIAL);
 				else
 					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
@@ -209,9 +211,10 @@ namespace OniAccess.Handlers.Build {
 
 		private bool HasSufficientMaterials() {
 			try {
-				var elements = PlanScreen.Instance.ProductInfoScreen
-					.materialSelectionPanel.GetSelectedElementAsList;
-				return _def.MaterialsAvailable(elements, ClusterManager.Instance.activeWorld)
+				var panel = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel;
+				if (panel.CurrentSelectedElement == null)
+					return true;
+				return _def.MaterialsAvailable(panel.GetSelectedElementAsList, ClusterManager.Instance.activeWorld)
 					|| DebugHandler.InstantBuildMode;
 			} catch (Exception ex) {
 				Util.Log.Warn($"BuildToolHandler.HasSufficientMaterials: {ex.Message}");
@@ -484,7 +487,8 @@ namespace OniAccess.Handlers.Build {
 				TileCursor.Instance.ActiveToolComposer = composer;
 			}
 
-			SpeechPipeline.SpeakInterrupt(BuildMenuData.BuildPlacementAnnouncement(newDef));
+			SpeechPipeline.SpeakInterrupt(BuildMenuData.BuildNameAnnouncement(newDef));
+			SpeechPipeline.SpeakQueued(BuildMenuData.GetMaterialSummary(newDef));
 		}
 
 		private void OpenInfoPanel() {

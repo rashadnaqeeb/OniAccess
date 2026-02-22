@@ -93,17 +93,23 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
-			if (!BuildMenuData.SelectBuilding(entry.Def, _category)) {
-				PlayNegativeSound();
-				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
-				return;
-			}
-
 			if (_returnToHandler != null) {
+				if (!BuildMenuData.SelectBuilding(entry.Def, _category)) {
+					PlayNegativeSound();
+					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+					return;
+				}
 				_returnToHandler.SwitchBuilding(entry.Def, _currentIndex);
 				HandlerStack.Pop();
 			} else {
-				HandlerStack.Replace(new BuildToolHandler(_category, _currentIndex, entry.Def));
+				var handler = new BuildToolHandler(_category, _currentIndex, entry.Def);
+				HandlerStack.Replace(handler);
+				if (!BuildMenuData.SelectBuilding(entry.Def, _category)) {
+					HandlerStack.Pop();
+					PlayNegativeSound();
+					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+					return;
+				}
 			}
 		}
 

@@ -121,9 +121,9 @@ namespace OniAccess.Handlers.Build {
 		/// </summary>
 		public static string GetMaterialSummary(BuildingDef def) {
 			try {
-				var elements = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel.GetSelectedElementAsList;
-				if (elements == null || elements.Count == 0) return null;
-				var firstTag = elements[0];
+				var panel = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel;
+				var firstTag = panel.CurrentSelectedElement;
+				if (firstTag == null) return null;
 				var element = ElementLoader.GetElement(firstTag);
 				string name = element != null ? element.name : firstTag.ProperName();
 				float mass = def.Mass != null && def.Mass.Length > 0 ? def.Mass[0] : 0f;
@@ -135,7 +135,21 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		/// <summary>
-		/// Returns the brief placement announcement:
+		/// Returns the building name and facing direction (no material).
+		/// Used for the immediate interrupt announcement; material is queued
+		/// separately so the selection panel has time to initialize.
+		/// </summary>
+		public static string BuildNameAnnouncement(BuildingDef def) {
+			string name = def.Name;
+			if (def.PermittedRotations != PermittedRotations.Unrotatable) {
+				string dir = GetOrientationName(GetCurrentOrientation());
+				return name + ", " + dir;
+			}
+			return name;
+		}
+
+		/// <summary>
+		/// Returns the full placement announcement:
 		/// "name, material mass, facing dir" (or without dir if unrotatable).
 		/// </summary>
 		public static string BuildPlacementAnnouncement(BuildingDef def) {
