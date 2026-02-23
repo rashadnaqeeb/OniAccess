@@ -313,14 +313,17 @@ namespace OniAccess.Handlers {
 		}
 
 		void ISearchable.SearchMoveTo(int index) {
-			NestedSearchMoveTo(index);
+			NestedSearchMoveTo(index, parentContext: false);
 		}
 
-		protected void NestedSearchMoveTo(int index) {
+		protected void NestedSearchMoveTo(int index, bool parentContext = true) {
 			MapSearchIndex(index, _indices);
 			_level = SearchLevel;
 			SyncCurrentIndex();
-			SpeakWithParentContext();
+			if (parentContext)
+				SpeakWithParentContext();
+			else
+				SpeakCurrentItem();
 		}
 
 		// ========================================
