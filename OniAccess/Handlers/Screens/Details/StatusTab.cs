@@ -75,14 +75,14 @@ namespace OniAccess.Handlers.Screens.Details {
 
 			foreach (var entry in statusItems) {
 				var captured = entry;
-				var text = Traverse.Create(captured)
-					.Field<LocText>("text").Value;
+				var entryTraverse = Traverse.Create(captured);
+				var text = entryTraverse.Field<LocText>("text").Value;
 				if (text == null) {
 					Util.Log.Warn("StatusTab: StatusItemEntry.text is null");
 					continue;
 				}
-				var button = Traverse.Create(captured)
-					.Field<KButton>("button").Value;
+				var button = entryTraverse.Field<KButton>("button").Value;
+				var widget = entryTraverse.Field<GameObject>("widget").Value;
 
 				bool isClickable = button != null && button.enabled;
 
@@ -90,7 +90,7 @@ namespace OniAccess.Handlers.Screens.Details {
 					Label = text.text,
 					Type = isClickable ? WidgetType.Button : WidgetType.Label,
 					Component = isClickable ? (Component)button : null,
-					GameObject = text.gameObject,
+					GameObject = widget ?? text.gameObject,
 					SpeechFunc = () => text.text
 				});
 			}
@@ -374,20 +374,58 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (headerLabel != null && !string.IsNullOrEmpty(headerLabel.text))
 				section.Header = headerLabel.text;
 
+			// Collect active LocText children. Indented descriptors (leading whitespace)
+			// are children of the preceding non-indented header descriptor.
+			var activeLabels = new List<LocText>();
 			for (int i = 0; i < descriptorPanel.transform.childCount; i++) {
 				var child = descriptorPanel.transform.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
-
 				var locText = child.GetComponent<LocText>();
-				if (locText == null) continue;
+				if (locText != null)
+					activeLabels.Add(locText);
+			}
 
-				var captured = locText;
-				section.Items.Add(new WidgetInfo {
-					Label = captured.text,
-					Type = WidgetType.Label,
-					GameObject = child.gameObject,
-					SpeechFunc = () => captured.text
-				});
+			int idx = 0;
+			while (idx < activeLabels.Count) {
+				var header = activeLabels[idx];
+				// Collect any indented children following this item
+				var children = new List<LocText>();
+				int next = idx + 1;
+				while (next < activeLabels.Count) {
+					string nextText = activeLabels[next].text;
+					if (string.IsNullOrEmpty(nextText) || nextText[0] != ' ')
+						break;
+					children.Add(activeLabels[next]);
+					next++;
+				}
+
+				if (children.Count == 0) {
+					var captured = header;
+					section.Items.Add(new WidgetInfo {
+						Label = captured.text,
+						Type = WidgetType.Label,
+						GameObject = captured.gameObject,
+						SpeechFunc = () => captured.text
+					});
+				} else {
+					var capturedHeader = header;
+					var capturedChildren = children.ToArray();
+					section.Items.Add(new WidgetInfo {
+						Label = capturedHeader.text,
+						Type = WidgetType.Label,
+						GameObject = capturedHeader.gameObject,
+						SpeechFunc = () => {
+							string text = capturedHeader.text;
+							foreach (var child in capturedChildren) {
+								string childText = child.text?.Trim();
+								if (!string.IsNullOrEmpty(childText))
+									text = $"{text} {childText}";
+							}
+							return text;
+						}
+					});
+				}
+				idx = next;
 			}
 
 			if (section.Items.Count > 0)
