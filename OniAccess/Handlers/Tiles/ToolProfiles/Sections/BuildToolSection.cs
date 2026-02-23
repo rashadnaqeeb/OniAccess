@@ -7,7 +7,7 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	/// start point is set, reports the cell count and "invalid" if the
 	/// proposed line contains bad cells.
 	/// </summary>
-	public class BuildToolSection : ICellSection {
+	public class BuildToolSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var handler = BuildToolHandler.Instance;
 			if (handler == null || !handler.UtilityStartSet)
@@ -57,7 +57,7 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	/// when placing wire reads existing wires, etc. No-op for regular
 	/// (non-utility) buildings.
 	/// </summary>
-	public class UtilityLayerSection : ICellSection {
+	public class UtilityLayerSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var handler = BuildToolHandler.Instance;
 			if (handler == null || handler._def == null)
@@ -87,7 +87,7 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	/// cursor cell. Lets the player check what priority their queued
 	/// buildings have while the build tool is active.
 	/// </summary>
-	public class BuildPrioritySection : ICellSection {
+	public class BuildPrioritySection: ICellSection {
 		private static readonly int[] _layers = {
 			(int)ObjectLayer.Building,
 			(int)ObjectLayer.FoundationTile,

@@ -16,7 +16,7 @@ namespace OniAccess.Handlers.Build {
 	/// Handles both regular buildings (single-cell placement via BuildTool)
 	/// and utility buildings (straight-line path via UtilityBuildTool/WireBuildTool).
 	/// </summary>
-	public class BuildToolHandler : BaseScreenHandler {
+	public class BuildToolHandler: BaseScreenHandler {
 		public static BuildToolHandler Instance { get; private set; }
 
 		private HashedString _category;
@@ -172,8 +172,7 @@ namespace OniAccess.Handlers.Build {
 							(string)STRINGS.ONIACCESS.BUILD_MENU.START_CLEARED);
 					} else
 						QuickCancel();
-				}
-				else if (!InputUtil.AnyModifierHeld()) {
+				} else if (!InputUtil.AnyModifierHeld()) {
 					if (IsInPrebuildMode()) {
 						PlayNegativeSound();
 						string error = GetPrebuildError();

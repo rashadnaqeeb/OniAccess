@@ -17,7 +17,7 @@ namespace OniAccess.Handlers.Screens {
 	/// The DetailsScreen is a persistent singleton that shows/hides rather than
 	/// activating/deactivating, so KScreen.Activate patches skip it.
 	/// </summary>
-	public class DetailsScreenHandler : NestedMenuHandler {
+	public class DetailsScreenHandler: NestedMenuHandler {
 		private readonly IDetailTab[] _tabs;
 		private readonly List<IDetailTab> _activeTabs = new List<IDetailTab>();
 		private readonly List<DetailSection> _sections = new List<DetailSection>();

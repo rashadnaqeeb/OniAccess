@@ -11,7 +11,7 @@ namespace OniAccess.Handlers.Build {
 	/// room type, facade selector, and material selectors.
 	/// Enter on a material item opens MaterialPickerHandler.
 	/// </summary>
-	public class BuildInfoHandler : BaseMenuHandler {
+	public class BuildInfoHandler: BaseMenuHandler {
 		private readonly BuildingDef _def;
 		private List<InfoItem> _items;
 

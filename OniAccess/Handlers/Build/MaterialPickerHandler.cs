@@ -7,7 +7,7 @@ namespace OniAccess.Handlers.Build {
 	/// Lists discovered materials with available quantities.
 	/// Enter selects the material and pops back to BuildInfoHandler.
 	/// </summary>
-	public class MaterialPickerHandler : BaseMenuHandler {
+	public class MaterialPickerHandler: BaseMenuHandler {
 		private readonly BuildingDef _def;
 		private readonly int _selectorIndex;
 		private List<MaterialEntry> _materials;

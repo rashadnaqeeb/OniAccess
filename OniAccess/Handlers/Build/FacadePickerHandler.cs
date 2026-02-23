@@ -8,7 +8,7 @@ namespace OniAccess.Handlers.Build {
 	/// Lists unlocked facades plus the default appearance.
 	/// Enter selects the facade and pops back to BuildInfoHandler.
 	/// </summary>
-	public class FacadePickerHandler : BaseMenuHandler {
+	public class FacadePickerHandler: BaseMenuHandler {
 		private readonly BuildingDef _def;
 		private List<FacadeEntry> _facades;
 

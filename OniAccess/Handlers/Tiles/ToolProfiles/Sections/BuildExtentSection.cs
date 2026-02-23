@@ -8,7 +8,7 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	/// but always appended so experienced players hear it last and can
 	/// interrupt before it plays.
 	/// </summary>
-	public class BuildExtentSection : ICellSection {
+	public class BuildExtentSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			string extent = BuildToolHandler.BuildExtentText(orientation);

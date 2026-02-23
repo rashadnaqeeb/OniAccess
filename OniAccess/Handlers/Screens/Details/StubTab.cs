@@ -7,7 +7,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// Placeholder tab that produces no widgets.
 	/// Used for tabs not yet implemented in the current phase.
 	/// </summary>
-	class StubTab : IDetailTab {
+	class StubTab: IDetailTab {
 		private readonly string _displayName;
 		private readonly string _gameTabId;
 		private readonly Func<GameObject, bool> _isAvailable;

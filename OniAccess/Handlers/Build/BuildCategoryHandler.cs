@@ -6,7 +6,7 @@ namespace OniAccess.Handlers.Build {
 	/// Modal list of build categories. Opened by Tab from the tile cursor.
 	/// Enter on a category opens the building list.
 	/// </summary>
-	public class BuildCategoryHandler : BaseMenuHandler {
+	public class BuildCategoryHandler: BaseMenuHandler {
 		private List<BuildMenuData.CategoryEntry> _categories;
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.BUILD_MENU.CATEGORY_LIST;

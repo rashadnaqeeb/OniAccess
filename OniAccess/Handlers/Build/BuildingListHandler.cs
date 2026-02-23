@@ -8,7 +8,7 @@ namespace OniAccess.Handlers.Build {
 	/// subcategory; Left returns. Up/Down at level 1 crosses subcategory
 	/// boundaries. Type-ahead always searches buildings (level 1).
 	/// </summary>
-	public class BuildingListHandler : NestedMenuHandler {
+	public class BuildingListHandler: NestedMenuHandler {
 		private readonly HashedString _category;
 		private readonly BuildingDef _initialDef;
 		private List<BuildMenuData.SubcategoryGroup> _groups;

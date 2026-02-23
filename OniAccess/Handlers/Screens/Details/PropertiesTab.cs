@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// Eight CollapsibleDetailContentPanel sections, each with a header and DetailLabel children.
 	/// All widgets use SpeechFunc for live text since the game updates labels every frame.
 	/// </summary>
-	class PropertiesTab : IDetailTab {
+	class PropertiesTab: IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.DETAILS.NAME;
 		public string GameTabId => "DETAILS";
 

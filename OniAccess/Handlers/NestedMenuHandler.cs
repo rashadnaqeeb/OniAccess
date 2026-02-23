@@ -11,7 +11,7 @@ namespace OniAccess.Handlers {
 	/// next parent, and vice versa. Type-ahead searches a configurable level
 	/// (SearchLevel) regardless of the current navigation level.
 	/// </summary>
-	public abstract class NestedMenuHandler : BaseMenuHandler, ISearchable {
+	public abstract class NestedMenuHandler: BaseMenuHandler, ISearchable {
 		private int _level;
 		private int[] _indices = new int[8];
 
