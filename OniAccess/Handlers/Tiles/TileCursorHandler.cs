@@ -48,6 +48,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.PageUp, Modifier.Alt),
 			new ConsumedKey(KKeyCode.PageDown, Modifier.Alt),
 			new ConsumedKey(KKeyCode.Q),
+			new ConsumedKey(KKeyCode.Return),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -55,6 +56,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Arrow keys", (string)STRINGS.ONIACCESS.HELP.MOVE_CURSOR),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_BUILD_MENU),
 			new HelpEntry("T", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_TOOL_MENU),
+			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.SELECT_ENTITY),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY),
 			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
 			new HelpEntry("K", (string)STRINGS.ONIACCESS.HELP.READ_COORDS),
@@ -139,6 +141,12 @@ namespace OniAccess.Handlers.Tiles {
 			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null)
 				SpeechPipeline.SpeakInterrupt(arrived);
+
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)
+				&& !InputUtil.AnyModifierHeld()) {
+				OpenEntityPicker();
+				return;
+			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)
 				&& !InputUtil.AnyModifierHeld()) {
@@ -255,6 +263,28 @@ namespace OniAccess.Handlers.Tiles {
 			if (!(PlayerController.Instance.ActiveTool is SelectTool))
 				SelectTool.Instance.Activate();
 			HandlerStack.Push(new Build.BuildCategoryHandler());
+		}
+
+		private void OpenEntityPicker() {
+			int cell = TileCursor.Instance.Cell;
+			if (!Grid.IsVisible(cell)) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+				return;
+			}
+			var selectables = EntityPickerHandler.CollectSelectables(cell);
+			if (selectables.Count == 0) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TILE_CURSOR.NOTHING_TO_SELECT);
+				return;
+			}
+			if (selectables.Count == 1) {
+				if (!(PlayerController.Instance.ActiveTool is SelectTool))
+					SelectTool.Instance.Activate();
+				SelectTool.Instance.Select(selectables[0]);
+				return;
+			}
+			HandlerStack.Push(new EntityPickerHandler(selectables));
 		}
 
 		private void OnActiveToolChanged(object data) {

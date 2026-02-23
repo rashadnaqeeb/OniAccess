@@ -41,6 +41,7 @@ namespace STRINGS {
 			public static LocString VIDEO = "Video";
 			public static LocString COLONY_VIEW = "Colony View";
 			public static LocString TOOLTIP_BROWSER = "Tooltip";
+			public static LocString ENTITY_PICKER = "object selection";
 		}
 
 		public class SUPPLY_CLOSET {
@@ -64,6 +65,7 @@ namespace STRINGS {
 			public static LocString CYCLE_COORD_MODE = "Cycle coordinate display";
 			public static LocString READ_TOOLTIP_SUMMARY = "Read first tooltip entry";
 			public static LocString READ_TOOLTIP = "Browse all tooltip entries";
+			public static LocString SELECT_ENTITY = "Select object at cursor";
 			public static LocString OPEN_GROUP = "Open group";
 			public static LocString GO_BACK = "Go back";
 
@@ -172,6 +174,8 @@ namespace STRINGS {
 			public static LocString COORD_PREPEND = "coordinates prepend";
 			public static LocString OVERLAY_NONE = "default view";
 			public static LocString NO_ROOM = "no room";
+			public static LocString NOTHING_TO_SELECT = "nothing to select";
+			public static LocString SELECT_OBJECT = "select an object";
 		}
 
 		public class VIDEO {
