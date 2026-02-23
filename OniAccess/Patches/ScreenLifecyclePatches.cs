@@ -1,6 +1,5 @@
 using HarmonyLib;
 using OniAccess.Handlers;
-using OniAccess.Toggle;
 using OniAccess.Util;
 using UnityEngine;
 
@@ -21,7 +20,7 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(KScreen), nameof(KScreen.Activate))]
 	internal static class KScreen_Activate_Patch {
 		private static void Postfix(KScreen __instance) {
-			if (!VanillaMode.IsEnabled) return;
+			if (!ModToggle.IsEnabled) return;
 			// Skip screens managed via Show patches -- their OnActivate calls Show(false)
 			// during prefab init, so this postfix would push a zombie handler.
 			if (ContextDetector.IsShowPatched(__instance.GetType())) return;
@@ -37,7 +36,7 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(KScreen), nameof(KScreen.Deactivate))]
 	internal static class KScreen_Deactivate_Patch {
 		private static void Prefix(KScreen __instance) {
-			if (!VanillaMode.IsEnabled) return;
+			if (!ModToggle.IsEnabled) return;
 			// Skip screens managed via Show patches -- lifecycle handled there.
 			if (ContextDetector.IsShowPatched(__instance.GetType())) return;
 			ContextDetector.OnScreenDeactivating(__instance);
@@ -73,7 +72,7 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(LockerMenuScreen), nameof(LockerMenuScreen.Show))]
 	internal static class LockerMenuScreen_Show_Patch {
 		private static void Postfix(LockerMenuScreen __instance, bool show) {
-			if (!VanillaMode.IsEnabled) return;
+			if (!ModToggle.IsEnabled) return;
 			if (show) {
 				ContextDetector.OnScreenActivated(__instance);
 			} else {
@@ -89,7 +88,7 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(KleiItemDropScreen), nameof(KleiItemDropScreen.Show))]
 	internal static class KleiItemDropScreen_Show_Patch {
 		private static void Postfix(KleiItemDropScreen __instance, bool show) {
-			if (!VanillaMode.IsEnabled) return;
+			if (!ModToggle.IsEnabled) return;
 			if (show) {
 				ContextDetector.OnScreenActivated(__instance);
 			} else {
@@ -105,7 +104,7 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(PauseScreen), "OnShow")]
 	internal static class PauseScreen_Show_Patch {
 		private static void Postfix(PauseScreen __instance, bool show) {
-			if (!VanillaMode.IsEnabled) return;
+			if (!ModToggle.IsEnabled) return;
 			if (show) {
 				ContextDetector.OnScreenActivated(__instance);
 			} else {
@@ -121,7 +120,7 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(VideoScreen), "OnShow")]
 	internal static class VideoScreen_OnShow_Patch {
 		private static void Postfix(VideoScreen __instance, bool show) {
-			if (!VanillaMode.IsEnabled) return;
+			if (!ModToggle.IsEnabled) return;
 			if (show) {
 				ContextDetector.OnScreenActivated(__instance);
 			} else {
@@ -138,7 +137,7 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(DetailsScreen), "OnShow")]
 	internal static class DetailsScreen_OnShow_Patch {
 		private static void Postfix(DetailsScreen __instance, bool show) {
-			if (!VanillaMode.IsEnabled) return;
+			if (!ModToggle.IsEnabled) return;
 			if (show) {
 				ContextDetector.OnScreenActivated(__instance);
 			} else {
@@ -155,7 +154,7 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(MinionSelectScreen), "OnSpawn")]
 	internal static class MinionSelectScreen_OnSpawn_Patch {
 		private static void Postfix(MinionSelectScreen __instance) {
-			if (!VanillaMode.IsEnabled) return;
+			if (!ModToggle.IsEnabled) return;
 			ContextDetector.OnScreenActivated(__instance);
 		}
 	}

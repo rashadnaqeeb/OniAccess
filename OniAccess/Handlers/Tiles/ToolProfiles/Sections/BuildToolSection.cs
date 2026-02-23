@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using OniAccess.Handlers.Build;
 
-namespace OniAccess.Handlers.Tiles.Tools.Sections {
+namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	/// <summary>
 	/// Utility line feedback for the build tool cursor. When a utility
 	/// start point is set, reports the cell count and "invalid" if the

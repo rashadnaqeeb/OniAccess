@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using OniAccess.Handlers.Tiles;
-using OniAccess.Handlers.Tiles.Tools;
+using OniAccess.Handlers.Tiles.ToolProfiles;
 using OniAccess.Input;
 using OniAccess.Speech;
 

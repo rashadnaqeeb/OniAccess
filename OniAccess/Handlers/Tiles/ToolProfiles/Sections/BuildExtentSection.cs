@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using OniAccess.Handlers.Build;
 
-namespace OniAccess.Handlers.Tiles.Tools.Sections {
+namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	/// <summary>
 	/// Appends building extent directions for buildings larger than 1x1.
 	/// E.g., "extends 1 left, 1 right, 1 up". Only changes on rotation,

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OniAccess.Handlers.Tiles.Tools {
+namespace OniAccess.Handlers.Tiles.ToolProfiles {
 	public sealed class ToolProfileRegistry {
 		public static ToolProfileRegistry Instance { get; private set; }
 

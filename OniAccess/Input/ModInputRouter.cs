@@ -1,5 +1,4 @@
 using OniAccess.Handlers;
-using OniAccess.Toggle;
 
 namespace OniAccess.Input {
 	/// <summary>
@@ -12,7 +11,7 @@ namespace OniAccess.Input {
 	/// blocks unconsumed non-passthrough keys from reaching the game. If no handler
 	/// consumes and no barrier exists, the key reaches the game.
 	///
-	/// When VanillaMode is off, all events pass through untouched.
+	/// When ModToggle is off, all events pass through untouched.
 	/// </summary>
 	public class ModInputRouter: IInputHandler {
 		public static ModInputRouter Instance { get; private set; }
@@ -25,7 +24,7 @@ namespace OniAccess.Input {
 		}
 
 		public void OnKeyDown(KButtonEvent e) {
-			if (e.Consumed || !VanillaMode.IsEnabled) return;
+			if (e.Consumed || !ModToggle.IsEnabled) return;
 
 			int count = HandlerStack.Count;
 			for (int i = count - 1; i >= 0; i--) {
@@ -44,7 +43,7 @@ namespace OniAccess.Input {
 		}
 
 		public void OnKeyUp(KButtonEvent e) {
-			if (e.Consumed || !VanillaMode.IsEnabled) return;
+			if (e.Consumed || !ModToggle.IsEnabled) return;
 
 			int count = HandlerStack.Count;
 			for (int i = count - 1; i >= 0; i--) {

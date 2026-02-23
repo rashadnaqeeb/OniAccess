@@ -81,7 +81,7 @@ namespace OniAccess.Handlers.Tiles {
 			if (!_hasActivated) {
 				_hasActivated = true;
 				_overlayRegistry = Overlays.OverlayProfileRegistry.Build();
-				Tools.ToolProfileRegistry.Build();
+				ToolProfiles.ToolProfileRegistry.Build();
 				TileCursor.Create(_overlayRegistry);
 				_scanner = new ScannerNavigator();
 				_monitor = new GameStateMonitor();

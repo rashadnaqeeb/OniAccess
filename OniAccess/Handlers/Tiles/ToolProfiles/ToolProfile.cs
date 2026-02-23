@@ -1,4 +1,4 @@
-namespace OniAccess.Handlers.Tiles.Tools {
+namespace OniAccess.Handlers.Tiles.ToolProfiles {
 	/// <summary>
 	/// Pairs a tool's name with the GlanceComposer
 	/// that produces cell speech while that tool is active.

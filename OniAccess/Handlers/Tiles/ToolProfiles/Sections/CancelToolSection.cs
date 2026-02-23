@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OniAccess.Handlers.Tiles.Tools.Sections {
+namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	public class CancelToolSection: ICellSection {
 		private static readonly int[] Layers = {
 			(int)ObjectLayer.Building,

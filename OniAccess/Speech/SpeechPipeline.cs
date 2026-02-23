@@ -10,7 +10,7 @@ namespace OniAccess.Speech {
 	public static class SpeechPipeline {
 		/// <summary>
 		/// When false, all speech methods return immediately without speaking.
-		/// Controlled by VanillaMode.
+		/// Controlled by ModToggle.
 		/// </summary>
 		private static bool _enabled = true;
 
@@ -38,7 +38,7 @@ namespace OniAccess.Speech {
 
 		/// <summary>
 		/// Enable or disable the speech pipeline.
-		/// Called by VanillaMode when the mod is toggled on/off.
+		/// Called by ModToggle when the mod is toggled on/off.
 		/// </summary>
 		internal static void SetEnabled(bool enabled) {
 			_enabled = enabled;

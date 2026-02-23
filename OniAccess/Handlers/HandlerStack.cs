@@ -131,7 +131,7 @@ namespace OniAccess.Handlers {
 
 		/// <summary>
 		/// Deactivate all handlers top-to-bottom and clear the stack.
-		/// Used by VanillaMode toggle OFF.
+		/// Used by ModToggle toggle OFF.
 		/// </summary>
 		public static void DeactivateAll() {
 			for (int i = _stack.Count - 1; i >= 0; i--) {

@@ -1,12 +1,11 @@
 using OniAccess.Handlers;
-using OniAccess.Toggle;
 
 namespace OniAccess.Input {
 	/// <summary>
 	/// MonoBehaviour that drives the per-frame Tick() on the active handler.
 	///
 	/// Also handles the Ctrl+Shift+F12 toggle key, which must work even when
-	/// the mod is off (the only key active in VanillaMode OFF state).
+	/// the mod is off (the only key active in ModToggle OFF state).
 	///
 	/// All UnityEngine.Input references are fully qualified per Phase 1 decision:
 	/// bare Input resolves to the OniAccess.Input namespace, not UnityEngine.Input.
@@ -25,12 +24,12 @@ namespace OniAccess.Input {
 			// This is the only key that works when mod is disabled.
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
 				&& InputUtil.CtrlHeld() && InputUtil.ShiftHeld()) {
-				VanillaMode.Toggle();
+				ModToggle.Toggle();
 				return; // Don't process F12 further this frame
 			}
 
 			// When mod is off, don't process anything else
-			if (!VanillaMode.IsEnabled) return;
+			if (!ModToggle.IsEnabled) return;
 
 			// One-time: MainMenu.Activate fires before Harmony patches, so our
 			// KScreen.Activate postfix misses it. Find it on first frame.

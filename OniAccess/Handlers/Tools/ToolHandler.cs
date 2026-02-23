@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using OniAccess.Handlers.Tiles;
-using OniAccess.Handlers.Tiles.Tools;
+using OniAccess.Handlers.Tiles.ToolProfiles;
 using OniAccess.Input;
 using OniAccess.Patches;
 using OniAccess.Speech;

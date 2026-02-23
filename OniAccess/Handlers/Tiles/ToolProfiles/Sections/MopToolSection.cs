@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OniAccess.Handlers.Tiles.Tools.Sections {
+namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	public class MopToolSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var mopGo = Grid.Objects[cell, (int)ObjectLayer.MopPlacer];

@@ -1,7 +1,7 @@
 using OniAccess.Handlers;
 using OniAccess.Speech;
 
-namespace OniAccess.Toggle {
+namespace OniAccess {
 	/// <summary>
 	/// Mod on/off toggle with full handler-stack integration.
 	///
@@ -13,7 +13,7 @@ namespace OniAccess.Toggle {
 	/// - No background work when off -- full stop.
 	/// - Only Ctrl+Shift+F12 remains active when mod is off (handled by KeyPoller directly).
 	/// </summary>
-	public static class VanillaMode {
+	public static class ModToggle {
 		/// <summary>
 		/// Whether the mod is currently enabled. Starts ON.
 		/// When false, ModInputRouter passes all keys through and KeyPoller

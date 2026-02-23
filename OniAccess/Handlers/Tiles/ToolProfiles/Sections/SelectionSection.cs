@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OniAccess.Handlers.Tiles.Tools.Sections {
+namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	public class SelectionSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var handler = OniAccess.Handlers.Tools.ToolHandler.Instance;
