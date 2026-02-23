@@ -53,7 +53,7 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected override int MaxLevel => 1;
-		protected override int SearchLevel => 1;
+		protected override int SearchLevel => Level;
 
 		protected override int GetItemCount(int level, int[] indices) {
 			if (level == 0) return _sections.Count;
@@ -81,6 +81,7 @@ namespace OniAccess.Handlers.Screens {
 		protected override void ActivateLeafItem(int[] indices) { }
 
 		protected override int GetSearchItemCount(int[] indices) {
+			if (Level == 0) return _sections.Count;
 			int total = 0;
 			for (int s = 0; s < _sections.Count; s++)
 				total += _sections[s].Items.Count;
@@ -88,6 +89,10 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		protected override string GetSearchItemLabel(int flatIndex) {
+			if (Level == 0) {
+				if (flatIndex < 0 || flatIndex >= _sections.Count) return null;
+				return _sections[flatIndex].Header;
+			}
 			int remaining = flatIndex;
 			for (int s = 0; s < _sections.Count; s++) {
 				int count = _sections[s].Items.Count;
@@ -99,6 +104,10 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
+			if (Level == 0) {
+				outIndices[0] = flatIndex;
+				return;
+			}
 			int remaining = flatIndex;
 			for (int s = 0; s < _sections.Count; s++) {
 				int count = _sections[s].Items.Count;
