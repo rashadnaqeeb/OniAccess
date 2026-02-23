@@ -15,6 +15,13 @@ namespace OniAccess.Handlers.Screens.Details {
 		string DisplayName { get; }
 
 		/// <summary>
+		/// Game's DetailTabHeader tab ID (e.g., "SIMPLEINFO", "DETAILS").
+		/// Null for side screen tabs which use a separate tab header.
+		/// When non-null, the handler switches the game's visual tab to match.
+		/// </summary>
+		string GameTabId { get; }
+
+		/// <summary>
 		/// Whether this tab applies to the given entity.
 		/// Unavailable tabs are silently skipped during Tab/Shift+Tab cycling.
 		/// </summary>

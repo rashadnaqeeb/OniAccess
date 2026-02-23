@@ -12,6 +12,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// </summary>
 	class PropertiesTab : IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.DETAILS.NAME;
+		public string GameTabId => "DETAILS";
 
 		public bool IsAvailable(GameObject target) => true;
 
@@ -28,10 +29,9 @@ namespace OniAccess.Handlers.Screens.Details {
 				return;
 			}
 
-			// Ensure the panel has been populated for this target.
-			// Only call SetTarget when the panel is active to avoid interfering
-			// with the game's tab lifecycle (inactive panels get SetTarget(null)
-			// from DetailTabHeader.ChangeTab).
+			// The handler switches the game's visual tab before calling Populate,
+			// so the panel is already active with SetTarget called by the game.
+			// Guard against edge cases where the panel hasn't been refreshed yet.
 			if (panel.gameObject.activeSelf)
 				panel.SetTarget(target);
 
@@ -49,6 +49,7 @@ namespace OniAccess.Handlers.Screens.Details {
 
 				AddSectionWidgets(section, widgets);
 			}
+
 		}
 
 		private static void AddSectionWidgets(

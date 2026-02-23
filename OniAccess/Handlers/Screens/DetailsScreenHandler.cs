@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HarmonyLib;
 using UnityEngine;
 
 using OniAccess.Handlers.Screens.Details;
@@ -48,6 +49,7 @@ namespace OniAccess.Handlers.Screens {
 				? DetailsScreen.Instance.target : null;
 			RebuildActiveTabs(_lastTarget);
 			_tabIndex = 0;
+			SwitchGameTab();
 			base.OnActivate();
 		}
 
@@ -66,6 +68,7 @@ namespace OniAccess.Handlers.Screens {
 
 					// Reset tab to first available (typically Status/Properties)
 					_tabIndex = 0;
+					SwitchGameTab();
 
 					DiscoverWidgets(_screen);
 					_currentIndex = 0;
@@ -129,6 +132,7 @@ namespace OniAccess.Handlers.Screens {
 				? _tabIndex <= oldIndex
 				: _tabIndex >= oldIndex;
 
+			SwitchGameTab();
 			DiscoverWidgets(_screen);
 
 			// Restore cursor: find prevGO in new list
@@ -159,33 +163,73 @@ namespace OniAccess.Handlers.Screens {
 			_activeTabs.Clear();
 			if (target == null) return;
 
-			foreach (var tab in _tabs) {
-				if (tab.IsAvailable(target))
-					_activeTabs.Add(tab);
+			// Query the game's tab toggle visibility for info tabs.
+			// The game has already called RefreshTabDisplayForTarget by the
+			// time we run, so toggle.activeSelf reflects the real state.
+			Dictionary<string, MultiToggle> gameTabs = null;
+			var ds = DetailsScreen.Instance;
+			if (ds != null) {
+				var tabHeader = Traverse.Create(ds)
+					.Field<DetailTabHeader>("tabHeader").Value;
+				if (tabHeader != null)
+					gameTabs = Traverse.Create(tabHeader)
+						.Field<Dictionary<string, MultiToggle>>("tabs").Value;
 			}
+
+			foreach (var tab in _tabs) {
+				if (tab.GameTabId != null && gameTabs != null) {
+					// Info tab: use the game's toggle visibility
+					if (gameTabs.TryGetValue(tab.GameTabId, out var toggle)
+							&& !toggle.gameObject.activeSelf)
+						continue;
+				} else if (!tab.IsAvailable(target)) {
+					// Side screen tab: use local predicate as fallback
+					continue;
+				}
+				_activeTabs.Add(tab);
+			}
+		}
+
+		/// <summary>
+		/// Switch the game's visual tab to match our logical tab.
+		/// Info tabs use DetailTabHeader.ChangeTab; side screen tabs (null GameTabId)
+		/// will use sidescreenTabHeader when implemented.
+		/// </summary>
+		private void SwitchGameTab() {
+			if (_tabIndex < 0 || _tabIndex >= _activeTabs.Count) return;
+
+			var gameTabId = _activeTabs[_tabIndex].GameTabId;
+			if (gameTabId == null) return;
+
+			var ds = DetailsScreen.Instance;
+			if (ds == null) return;
+
+			var tabHeader = Traverse.Create(ds)
+				.Field<DetailTabHeader>("tabHeader").Value;
+			if (tabHeader == null) return;
+
+			Traverse.Create(tabHeader).Method("ChangeTab", gameTabId).GetValue();
 		}
 
 		private static IDetailTab[] BuildTabs() {
 			return new IDetailTab[] {
-				// Main info tabs (match game's DetailTabHeader order)
+				// Main info tabs (match game's DetailTabHeader order).
+				// Availability is determined by the game's tab toggle visibility,
+				// not hardcoded predicates — see RebuildActiveTabs.
 				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.SIMPLEINFO.NAME),
+					(string)STRINGS.UI.DETAILTABS.SIMPLEINFO.NAME, "SIMPLEINFO"),
 				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.PERSONALITY.NAME,
-					t => t.GetComponent<MinionIdentity>() != null),
+					(string)STRINGS.UI.DETAILTABS.PERSONALITY.NAME, "PERSONALITY"),
 				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.BUILDING_CHORES.NAME,
-					t => t.GetComponent<Chore>() == null
-						&& t.GetComponent<MinionIdentity>() == null
-						&& t.GetComponent<BuildingComplete>() != null),
+					(string)STRINGS.UI.DETAILTABS.BUILDING_CHORES.NAME, "BUILDINGCHORES"),
 				new PropertiesTab(),
 
-				// Side screen tabs
+				// Side screen tabs (null gameTabId — use sidescreenTabHeader when implemented).
+				// TODO: query SidescreenTab.IsVisible instead of hardcoded predicates.
 				new StubTab(
 					(string)STRINGS.UI.DETAILTABS.CONFIGURATION.NAME),
 				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.BUILDING_CHORES.NAME,
-					t => t.GetComponent<MinionIdentity>() != null),
+					(string)STRINGS.UI.DETAILTABS.BUILDING_CHORES.NAME),
 				new StubTab(
 					(string)STRINGS.UI.DETAILTABS.MATERIAL.NAME),
 				new StubTab(
