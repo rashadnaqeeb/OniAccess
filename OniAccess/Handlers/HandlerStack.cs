@@ -155,6 +155,28 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
+		/// Remove a BaseScreenHandler whose Screen matches the given KScreen,
+		/// regardless of stack position. Called by OnScreenDeactivating when
+		/// the handler is buried under other handlers (not on top).
+		/// Calls OnDeactivate on the removed handler.
+		/// </summary>
+		public static bool RemoveByScreen(KScreen screen) {
+			for (int i = _stack.Count - 1; i >= 0; i--) {
+				if (_stack[i] is BaseScreenHandler sh && sh.Screen == screen) {
+					_stack.RemoveAt(i);
+					try {
+						sh.OnDeactivate();
+					} catch (System.Exception ex) {
+						Util.Log.Warn($"HandlerStack.RemoveByScreen: OnDeactivate failed for {sh.DisplayName}: {ex.Message}");
+					}
+					Util.Log.Debug($"HandlerStack.RemoveByScreen: removed {sh.DisplayName} at index {i}");
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
 		/// Remove BaseScreenHandlers whose KScreen has been destroyed or hidden
 		/// without firing Deactivate. Walks the entire stack, not just the top,
 		/// so stale handlers buried under non-capturing handlers are cleaned up.

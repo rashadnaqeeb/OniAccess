@@ -97,20 +97,26 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
-		/// Called from Harmony prefix on KScreen.Deactivate.
-		/// Pops the handler only if the active handler is a ScreenHandler whose Screen
-		/// property matches the deactivating screen. This prevents popping the wrong handler
-		/// when structural screens deactivate.
+		/// Called from Harmony prefix/postfix on screen deactivation.
+		/// Pops the handler if it's on top, otherwise searches the stack and removes
+		/// it from wherever it is. This handles both normal dismissal (handler on top)
+		/// and buried handlers (e.g., a dialog was pushed on top before the screen closed).
 		/// </summary>
 		public static void OnScreenDeactivating(KScreen screen) {
 			if (screen == null) return;
 
 			var active = HandlerStack.ActiveHandler;
 
-			// Match BaseScreenHandler subclasses by Screen property
+			// Fast path: handler is on top — use Pop for proper reactivation
 			if (active is BaseScreenHandler screenHandler && screenHandler.Screen == screen) {
 				HandlerStack.Pop();
 				Util.Log.Debug($"Screen deactivating: {screen.GetType().Name} -> popped handler");
+				return;
+			}
+
+			// Handler may be buried under other handlers — remove by screen reference
+			if (HandlerStack.RemoveByScreen(screen)) {
+				Util.Log.Debug($"Screen deactivating: {screen.GetType().Name} -> removed buried handler");
 				return;
 			}
 
