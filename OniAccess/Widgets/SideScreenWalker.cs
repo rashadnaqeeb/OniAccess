@@ -12,6 +12,11 @@ namespace OniAccess.Widgets {
 	/// All SpeechFuncs read live component state via GetParsedText().
 	/// </summary>
 	public static class SideScreenWalker {
+		public class RadioMember {
+			public string Label;
+			public KToggle Toggle;
+		}
+
 		/// <summary>
 		/// Walk the ContentContainer of a SideScreenContent (or its
 		/// root transform if ContentContainer is null/inactive).
@@ -23,6 +28,7 @@ namespace OniAccess.Widgets {
 				? screen.ContentContainer.transform
 				: screen.transform;
 			WalkTransform(root, items);
+			CollapseRadioToggles(items, screen.GetTitle());
 		}
 
 		private static void WalkTransform(Transform parent, List<WidgetInfo> items) {
@@ -364,6 +370,81 @@ namespace OniAccess.Widgets {
 			if (name.IndexOf("Drag", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
 			if (name.IndexOf("Resize", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
 			return false;
+		}
+
+		// ========================================
+		// RADIO GROUP COLLAPSE
+		// ========================================
+
+		/// <summary>
+		/// Detect consecutive KToggle widgets sharing the same parent where
+		/// exactly one is isOn (radio-style mutual exclusion). Replace with a
+		/// single Dropdown widget that cycles between members.
+		/// </summary>
+		private static void CollapseRadioToggles(List<WidgetInfo> items, string screenTitle) {
+			// Group consecutive KToggle items by parent transform
+			var groups = new List<(Transform parent, int start, int count)>();
+			int i = 0;
+			while (i < items.Count) {
+				var w = items[i];
+				if (w.Type != WidgetType.Toggle || !(w.Component is KToggle))
+				{ i++; continue; }
+
+				var parent = w.GameObject.transform.parent;
+				int start = i;
+				int count = 1;
+				while (i + count < items.Count
+					&& items[i + count].Type == WidgetType.Toggle
+					&& items[i + count].Component is KToggle
+					&& items[i + count].GameObject.transform.parent == parent)
+					count++;
+
+				if (count >= 2)
+					groups.Add((parent, start, count));
+				i += count;
+			}
+
+			// Process groups in reverse to preserve indices
+			for (int g = groups.Count - 1; g >= 0; g--) {
+				var (parent, start, count) = groups[g];
+
+				// Verify exactly one isOn (confirms mutual exclusivity)
+				int onCount = 0;
+				for (int j = start; j < start + count; j++) {
+					if (((KToggle)items[j].Component).isOn)
+						onCount++;
+				}
+				if (onCount != 1) continue;
+
+				// Build member list
+				var members = new List<RadioMember>();
+				for (int j = start; j < start + count; j++) {
+					members.Add(new RadioMember {
+						Label = items[j].Label,
+						Toggle = (KToggle)items[j].Component
+					});
+				}
+
+				string groupLabel = screenTitle ?? items[start].Label;
+				var radioMembers = members;
+				items[start] = new WidgetInfo {
+					Label = groupLabel,
+					Component = members[0].Toggle,
+					Type = WidgetType.Dropdown,
+					GameObject = parent.gameObject,
+					Tag = radioMembers,
+					SpeechFunc = () => {
+						for (int k = 0; k < radioMembers.Count; k++) {
+							if (radioMembers[k].Toggle != null && radioMembers[k].Toggle.isOn)
+								return $"{groupLabel}, {radioMembers[k].Label}";
+						}
+						return groupLabel;
+					}
+				};
+
+				// Remove the collapsed items
+				items.RemoveRange(start + 1, count - 1);
+			}
 		}
 	}
 }

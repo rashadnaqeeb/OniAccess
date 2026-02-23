@@ -129,6 +129,9 @@ namespace OniAccess.Handlers.Screens {
 				case WidgetType.Slider:
 					SpeakCurrentItem();
 					break;
+				case WidgetType.Dropdown:
+					CycleRadioGroup(w, 1);
+					break;
 				case WidgetType.TextInput: {
 						KInputTextField field = null;
 						var knum = w.Component as KNumberInputField;
@@ -243,6 +246,10 @@ namespace OniAccess.Handlers.Screens {
 					AdjustSlider(w, direction, stepLevel);
 					return;
 				}
+				if (w != null && w.Type == WidgetType.Dropdown) {
+					CycleRadioGroup(w, direction);
+					return;
+				}
 			}
 			base.HandleLeftRight(direction, stepLevel);
 		}
@@ -279,6 +286,29 @@ namespace OniAccess.Handlers.Screens {
 				PlaySliderSound("Slider_Boundary_High");
 			else if (slider.value != oldValue)
 				PlaySliderSound("Slider_Move");
+
+			RebuildSections();
+			var fresh = GetWidgetAt(null);
+			if (fresh != null)
+				SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
+		}
+
+		private void CycleRadioGroup(WidgetInfo w, int direction) {
+			var members = w.Tag as List<SideScreenWalker.RadioMember>;
+			if (members == null || members.Count == 0) return;
+
+			int activeIndex = -1;
+			for (int i = 0; i < members.Count; i++) {
+				if (members[i].Toggle != null && members[i].Toggle.isOn) {
+					activeIndex = i;
+					break;
+				}
+			}
+			if (activeIndex < 0) return;
+
+			int newIndex = ((activeIndex + direction) % members.Count + members.Count)
+				% members.Count;
+			members[newIndex].Toggle.Click();
 
 			RebuildSections();
 			var fresh = GetWidgetAt(null);
