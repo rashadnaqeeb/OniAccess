@@ -66,7 +66,7 @@ namespace OniAccess.Widgets {
 			var ktoggle = go.GetComponent<KToggle>();
 			if (ktoggle != null) {
 				var captured = ktoggle;
-				var labelLt = FindChildLocText(t, null);
+				var labelLt = FindChildLocText(t, null) ?? FindSiblingLocText(t);
 				items.Add(new WidgetInfo {
 					Label = ReadLocText(labelLt, t.name),
 					Type = WidgetType.Toggle,
@@ -83,9 +83,11 @@ namespace OniAccess.Widgets {
 				return true;
 			}
 
-			// MultiToggle
+			// MultiToggle — skip if a sibling KToggle owns this row's checkbox
 			var multiToggle = go.GetComponent<MultiToggle>();
 			if (multiToggle != null) {
+				if (HasSiblingKToggle(t))
+					return true;
 				var captured = multiToggle;
 				var labelLt = FindChildLocText(t, null);
 				items.Add(new WidgetInfo {
@@ -174,6 +176,28 @@ namespace OniAccess.Widgets {
 				}
 			}
 
+			return false;
+		}
+
+		// ========================================
+		// SIBLING CHECKS
+		// ========================================
+
+		/// <summary>
+		/// Returns true if any sibling (or sibling descendant) of the given
+		/// transform has a KToggle. Used to suppress MultiToggle expand arrows
+		/// when a KToggle checkbox already represents the row.
+		/// </summary>
+		private static bool HasSiblingKToggle(Transform t) {
+			if (t.parent == null) return false;
+			var parent = t.parent;
+			for (int i = 0; i < parent.childCount; i++) {
+				var sibling = parent.GetChild(i);
+				if (sibling == t) continue;
+				if (!sibling.gameObject.activeSelf) continue;
+				if (sibling.GetComponentInChildren<KToggle>() != null)
+					return true;
+			}
 			return false;
 		}
 

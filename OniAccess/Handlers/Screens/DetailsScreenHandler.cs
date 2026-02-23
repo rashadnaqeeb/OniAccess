@@ -101,23 +101,28 @@ namespace OniAccess.Handlers.Screens {
 						var btn = w.Component as KButton;
 						if (btn != null) {
 							WidgetOps.ClickButton(btn);
+							RebuildSections();
 							return;
 						}
 						var mt = w.Component as MultiToggle;
-						if (mt != null)
+						if (mt != null) {
 							WidgetOps.ClickMultiToggle(mt);
+							RebuildSections();
+						}
 						break;
 					}
 				case WidgetType.Toggle: {
 						var toggle = w.Component as KToggle;
 						if (toggle != null) {
 							toggle.Click();
+							RebuildSections();
 							SpeakCurrentItem();
 							return;
 						}
 						var mt = w.Component as MultiToggle;
 						if (mt != null) {
 							WidgetOps.ClickMultiToggle(mt);
+							RebuildSections();
 							SpeakCurrentItem();
 						}
 						break;
@@ -267,7 +272,10 @@ namespace OniAccess.Handlers.Screens {
 			else if (slider.value != oldValue)
 				PlaySliderSound("Slider_Move");
 
-			SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(w));
+			RebuildSections();
+			var fresh = GetWidgetAt(null);
+			if (fresh != null)
+				SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
 		}
 
 		private static void PlaySliderSound(string soundName) {
@@ -286,6 +294,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_textEdit.IsEditing) {
 				if (e.TryConsume(Action.Escape)) {
 					_textEdit.Cancel();
+					RebuildSections();
 					return true;
 				}
 				return false;
@@ -354,8 +363,10 @@ namespace OniAccess.Handlers.Screens {
 
 		public override void Tick() {
 			if (_textEdit.IsEditing) {
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return))
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
 					_textEdit.Confirm();
+					RebuildSections();
+				}
 				return;
 			}
 
