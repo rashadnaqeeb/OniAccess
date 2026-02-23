@@ -132,7 +132,8 @@ namespace OniAccess.Patches {
 	/// <summary>
 	/// DetailsScreen.OnPrefabInit() calls Show(false) during init, so
 	/// KScreen.Activate/Deactivate patches do not fire for user-visible show/hide.
-	/// Patch OnShow(bool) directly to push/pop the handler via ContextDetector.
+	/// Patch OnShow(bool) directly to push the handler via ContextDetector.
+	/// Handler removal is handled by OnCmpDisable (see below).
 	/// </summary>
 	[HarmonyPatch(typeof(DetailsScreen), "OnShow")]
 	internal static class DetailsScreen_OnShow_Patch {
@@ -140,9 +141,22 @@ namespace OniAccess.Patches {
 			if (!ModToggle.IsEnabled) return;
 			if (show) {
 				ContextDetector.OnScreenActivated(__instance);
-			} else {
-				ContextDetector.OnScreenDeactivating(__instance);
 			}
+		}
+	}
+
+	/// <summary>
+	/// RootMenu.CloseSubMenus() hides the DetailsScreen via gameObject.SetActive(false)
+	/// when the player deselects (Escape, clicking empty space). This bypasses Show(false)
+	/// entirely, so the OnShow patch above never fires for removal.
+	/// OnCmpDisable fires for both SetActive(false) and Show(false) (which calls
+	/// SetActive internally), so it catches all hiding paths.
+	/// </summary>
+	[HarmonyPatch(typeof(DetailsScreen), "OnCmpDisable")]
+	internal static class DetailsScreen_OnCmpDisable_Patch {
+		private static void Postfix(DetailsScreen __instance) {
+			if (!ModToggle.IsEnabled) return;
+			ContextDetector.OnScreenDeactivating(__instance);
 		}
 	}
 
