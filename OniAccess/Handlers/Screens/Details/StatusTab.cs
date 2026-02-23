@@ -162,10 +162,11 @@ namespace OniAccess.Handlers.Screens.Details {
 		private static void AddStorageGroup(DetailCollapsableLabel group, DetailSection section) {
 			var captured = group;
 			var widget = new WidgetInfo {
-				Label = $"{captured.nameLabel.text}, {captured.valueLabel.text}",
+				Label = $"{captured.nameLabel.GetParsedText()}, {captured.valueLabel.GetParsedText()}",
 				Type = WidgetType.Label,
 				GameObject = captured.gameObject,
-				SpeechFunc = () => $"{captured.nameLabel.text}, {captured.valueLabel.text}"
+				SpeechFunc = () =>
+					$"{captured.nameLabel.GetParsedText()}, {captured.valueLabel.GetParsedText()}"
 			};
 
 			if (captured.IsExpanded) {
@@ -174,7 +175,7 @@ namespace OniAccess.Handlers.Screens.Details {
 					if (!row.inUse) continue;
 					var childLabel = row.label;
 					children.Add(new WidgetInfo {
-						Label = childLabel.label.text,
+						Label = childLabel.label.GetParsedText(),
 						Type = WidgetType.Button,
 						Component = childLabel.button,
 						GameObject = childLabel.gameObject,
@@ -189,11 +190,13 @@ namespace OniAccess.Handlers.Screens.Details {
 		}
 
 		private static string BuildStorageItemText(DetailLabelWithButton item) {
-			string text = item.label.text;
-			if (!string.IsNullOrEmpty(item.label2.text))
-				text = $"{text}, {item.label2.text}";
-			if (!string.IsNullOrEmpty(item.label3.text))
-				text = $"{text}, {item.label3.text}";
+			string text = item.label.GetParsedText();
+			string t2 = item.label2.GetParsedText();
+			string t3 = item.label3.GetParsedText();
+			if (!string.IsNullOrEmpty(t2))
+				text = $"{text}, {t2}";
+			if (!string.IsNullOrEmpty(t3))
+				text = $"{text}, {t3}";
 			return text;
 		}
 
@@ -523,19 +526,23 @@ namespace OniAccess.Handlers.Screens.Details {
 			var capturedDesc = descLabel;
 
 			section.Items.Add(new WidgetInfo {
-				Label = capturedName.text,
+				Label = capturedName.GetParsedText(),
 				Type = WidgetType.Label,
 				GameObject = go,
 				SpeechFunc = () => {
-					string text = capturedName.text;
+					string text = capturedName.GetParsedText();
 					if (capturedValue != null
-							&& capturedValue.gameObject.activeSelf
-							&& !string.IsNullOrEmpty(capturedValue.text))
-						text = $"{text}, {capturedValue.text}";
+							&& capturedValue.gameObject.activeSelf) {
+						string val = capturedValue.GetParsedText();
+						if (!string.IsNullOrEmpty(val))
+							text = $"{text}, {val}";
+					}
 					if (capturedDesc != null
-							&& capturedDesc.gameObject.activeSelf
-							&& !string.IsNullOrEmpty(capturedDesc.text))
-						text = $"{text}, {capturedDesc.text}";
+							&& capturedDesc.gameObject.activeSelf) {
+						string desc = capturedDesc.GetParsedText();
+						if (!string.IsNullOrEmpty(desc))
+							text = $"{text}, {desc}";
+					}
 					return text;
 				}
 			});
