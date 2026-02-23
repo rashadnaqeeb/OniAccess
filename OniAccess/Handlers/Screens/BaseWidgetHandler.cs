@@ -299,90 +299,16 @@ namespace OniAccess.Handlers.Screens {
 		// WIDGET VALIDITY
 		// ========================================
 
-		/// <summary>
-		/// Check whether a widget is still valid (not destroyed, active in hierarchy,
-		/// and interactable where applicable).
-		/// </summary>
-		protected virtual bool IsWidgetValid(WidgetInfo widget) {
-			if (widget == null) return false;
-			if (widget.GameObject != null && !widget.GameObject.activeInHierarchy) return false;
+		protected virtual bool IsWidgetValid(WidgetInfo widget) => WidgetOps.IsValid(widget);
 
-			switch (widget.Type) {
-				case WidgetType.Label:
-					return true;
-				case WidgetType.Button: {
-						var btn = widget.Component as KButton;
-						if (btn != null) return btn.isInteractable;
-						if (widget.Component is MultiToggle) return true;
-						break;
-					}
-				case WidgetType.Toggle: {
-						var toggle = widget.Component as KToggle;
-						if (toggle != null) return toggle.IsInteractable();
-						if (widget.Component is MultiToggle) return true;
-						break;
-					}
-				case WidgetType.Slider: {
-						var slider = widget.Component as KSlider;
-						if (slider != null) return slider.interactable;
-						break;
-					}
-			}
-
-			return widget.Component != null || widget.GameObject != null;
-		}
-
-		/// <summary>
-		/// Extract a button's label from its child LocText, or return a fallback.
-		/// </summary>
-		protected string GetButtonLabel(KButton button, string fallback = null) {
-			var locText = button.GetComponentInChildren<LocText>();
-			if (locText != null && !string.IsNullOrEmpty(locText.text))
-				return locText.text;
-			return fallback;
-		}
+		protected static string GetButtonLabel(KButton button, string fallback = null)
+			=> WidgetOps.GetButtonLabel(button, fallback);
 
 		// ========================================
 		// WIDGET SPEECH
 		// ========================================
 
-		/// <summary>
-		/// Build speech text for a widget: "label, value" for sliders/toggles/dropdowns,
-		/// just "label" for buttons/labels.
-		/// </summary>
-		protected virtual string GetWidgetSpeechText(WidgetInfo widget) {
-			if (widget.SpeechFunc != null) {
-				string result = widget.SpeechFunc();
-				if (result != null) return result;
-			}
-
-			switch (widget.Type) {
-				case WidgetType.Toggle: {
-						var toggle = widget.Component as KToggle;
-						if (toggle != null) {
-							string state = toggle.isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-							return $"{widget.Label}, {state}";
-						}
-						var mt = widget.Component as MultiToggle;
-						if (mt != null) {
-							string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-							return $"{widget.Label}, {state}";
-						}
-						return widget.Label;
-					}
-				case WidgetType.Slider: {
-						var slider = widget.Component as KSlider;
-						if (slider != null) {
-							return $"{widget.Label}, {FormatSliderValue(slider)}";
-						}
-						return widget.Label;
-					}
-				case WidgetType.Dropdown:
-					return widget.Label;
-				default:
-					return widget.Label;
-			}
-		}
+		protected virtual string GetWidgetSpeechText(WidgetInfo widget) => WidgetOps.GetSpeechText(widget);
 
 		/// <summary>
 		/// Speak the currently focused widget via SpeakInterrupt.
@@ -418,60 +344,16 @@ namespace OniAccess.Handlers.Screens {
 		// TOOLTIP TEXT
 		// ========================================
 
-		protected virtual string GetTooltipText(WidgetInfo widget) {
-			if (widget.SuppressTooltip) return null;
-			if (widget.GameObject == null) return null;
+		protected virtual string GetTooltipText(WidgetInfo widget) => WidgetOps.GetTooltipText(widget);
 
-			var tooltip = widget.GameObject.GetComponent<ToolTip>();
-			if (tooltip == null)
-				tooltip = widget.GameObject.GetComponentInChildren<ToolTip>();
-			if (tooltip == null) return null;
-
-			return ReadAllTooltipText(tooltip);
-		}
-
-		/// <summary>
-		/// Rebuild a ToolTip's dynamic content and return all multiString
-		/// entries joined with ", ".
-		/// </summary>
-		protected static string ReadAllTooltipText(ToolTip tooltip) {
-			tooltip.RebuildDynamicTooltip();
-
-			if (tooltip.multiStringCount == 0) return null;
-
-			if (tooltip.multiStringCount == 1) {
-				string single = tooltip.GetMultiString(0);
-				return string.IsNullOrEmpty(single) ? null : single;
-			}
-
-			var sb = new System.Text.StringBuilder();
-			for (int i = 0; i < tooltip.multiStringCount; i++) {
-				string entry = tooltip.GetMultiString(i);
-				if (string.IsNullOrEmpty(entry)) continue;
-				if (sb.Length > 0) sb.Append(", ");
-				sb.Append(entry);
-			}
-			return sb.Length == 0 ? null : sb.ToString();
-		}
+		protected static string ReadAllTooltipText(ToolTip tooltip) => WidgetOps.ReadAllTooltipText(tooltip);
 
 		// ========================================
 		// UTILITY METHODS
 		// ========================================
 
-		protected static void ClickButton(KButton button) {
-			button.PlayPointerDownSound();
-			button.SignalClick(KKeyCode.Mouse0);
-		}
-
-		protected static void ClickMultiToggle(MultiToggle toggle) {
-			var eventData = new UnityEngine.EventSystems.PointerEventData(
-				UnityEngine.EventSystems.EventSystem.current) {
-				button = UnityEngine.EventSystems.PointerEventData.InputButton.Left,
-				clickCount = 1
-			};
-			toggle.OnPointerDown(eventData);
-			toggle.OnPointerClick(eventData);
-		}
+		protected static void ClickButton(KButton button) => WidgetOps.ClickButton(button);
+		protected static void ClickMultiToggle(MultiToggle toggle) => WidgetOps.ClickMultiToggle(toggle);
 
 		private void PlaySliderSound(string soundName) {
 			try {
@@ -481,16 +363,6 @@ namespace OniAccess.Handlers.Screens {
 			}
 		}
 
-		protected virtual string FormatSliderValue(KSlider slider) {
-			if (slider.wholeNumbers) {
-				return ((int)slider.value).ToString();
-			}
-
-			if (slider.minValue >= 0f && slider.maxValue <= 100f) {
-				return GameUtil.GetFormattedPercent(slider.value);
-			}
-
-			return slider.value.ToString("F1");
-		}
+		protected virtual string FormatSliderValue(KSlider slider) => WidgetOps.FormatSliderValue(slider);
 	}
 }

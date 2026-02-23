@@ -69,7 +69,7 @@ namespace OniAccess.Handlers.Screens {
 			if (indices[0] < 0 || indices[0] >= _sections.Count) return null;
 			var items = _sections[indices[0]].Items;
 			if (indices[1] < 0 || indices[1] >= items.Count) return null;
-			return GetWidgetSpeechText(items[indices[1]]);
+			return WidgetOps.GetSpeechText(items[indices[1]]);
 		}
 
 		protected override string GetParentLabel(int level, int[] indices) {
@@ -97,7 +97,7 @@ namespace OniAccess.Handlers.Screens {
 			for (int s = 0; s < _sections.Count; s++) {
 				int count = _sections[s].Items.Count;
 				if (remaining < count)
-					return GetWidgetSpeechText(_sections[s].Items[remaining]);
+					return WidgetOps.GetSpeechText(_sections[s].Items[remaining]);
 				remaining -= count;
 			}
 			return null;
@@ -137,8 +137,8 @@ namespace OniAccess.Handlers.Screens {
 			if (iIdx < 0 || iIdx >= items.Count) return;
 
 			var w = items[iIdx];
-			string text = GetWidgetSpeechText(w);
-			string tip = GetTooltipText(w);
+			string text = WidgetOps.GetSpeechText(w);
+			string tip = WidgetOps.GetTooltipText(w);
 			if (tip != null) text = $"{text}, {tip}";
 			if (!string.IsNullOrEmpty(text))
 				SpeechPipeline.SpeakInterrupt(text);
@@ -305,50 +305,6 @@ namespace OniAccess.Handlers.Screens {
 		private void SpeakFirstSection() {
 			if (_sections.Count > 0 && !string.IsNullOrEmpty(_sections[0].Header))
 				SpeechPipeline.SpeakQueued(_sections[0].Header);
-		}
-
-		// ========================================
-		// WIDGET SPEECH HELPERS (ported from BaseWidgetHandler)
-		// ========================================
-
-		private static string GetWidgetSpeechText(WidgetInfo widget) {
-			if (widget.SpeechFunc != null) {
-				string result = widget.SpeechFunc();
-				if (result != null) return result;
-			}
-			return widget.Label;
-		}
-
-		private static string GetTooltipText(WidgetInfo widget) {
-			if (widget.SuppressTooltip) return null;
-			if (widget.GameObject == null) return null;
-
-			var tooltip = widget.GameObject.GetComponent<ToolTip>();
-			if (tooltip == null)
-				tooltip = widget.GameObject.GetComponentInChildren<ToolTip>();
-			if (tooltip == null) return null;
-
-			return ReadAllTooltipText(tooltip);
-		}
-
-		private static string ReadAllTooltipText(ToolTip tooltip) {
-			tooltip.RebuildDynamicTooltip();
-
-			if (tooltip.multiStringCount == 0) return null;
-
-			if (tooltip.multiStringCount == 1) {
-				string single = tooltip.GetMultiString(0);
-				return string.IsNullOrEmpty(single) ? null : single;
-			}
-
-			var sb = new System.Text.StringBuilder();
-			for (int i = 0; i < tooltip.multiStringCount; i++) {
-				string entry = tooltip.GetMultiString(i);
-				if (string.IsNullOrEmpty(entry)) continue;
-				if (sb.Length > 0) sb.Append(", ");
-				sb.Append(entry);
-			}
-			return sb.Length == 0 ? null : sb.ToString();
 		}
 
 		// ========================================
