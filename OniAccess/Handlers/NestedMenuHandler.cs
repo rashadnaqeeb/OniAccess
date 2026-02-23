@@ -249,7 +249,7 @@ namespace OniAccess.Handlers {
 		// LEFT/RIGHT: DRILL DOWN / GO BACK
 		// ========================================
 
-		protected override void HandleLeftRight(int direction, bool isLargeStep) {
+		protected override void HandleLeftRight(int direction, int stepLevel) {
 			if (direction > 0 && _level < MaxLevel && CanDrillDown()) {
 				DrillDown();
 			} else if (direction < 0 && _level > 0) {

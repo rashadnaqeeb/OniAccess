@@ -236,27 +236,27 @@ namespace OniAccess.Handlers.Screens {
 		// LEFT/RIGHT: SLIDER ADJUSTMENT AT LEAF LEVEL
 		// ========================================
 
-		protected override void HandleLeftRight(int direction, bool isLargeStep) {
+		protected override void HandleLeftRight(int direction, int stepLevel) {
 			if (Level > 0) {
 				var w = GetWidgetAt(null);
 				if (w != null && w.Type == WidgetType.Slider) {
-					AdjustSlider(w, direction, isLargeStep);
+					AdjustSlider(w, direction, stepLevel);
 					return;
 				}
 			}
-			base.HandleLeftRight(direction, isLargeStep);
+			base.HandleLeftRight(direction, stepLevel);
 		}
 
-		private void AdjustSlider(WidgetInfo w, int direction, bool isLargeStep) {
+		private void AdjustSlider(WidgetInfo w, int direction, int stepLevel) {
 			var slider = w.Component as KSlider;
 			if (slider == null) return;
 
 			float step;
 			if (slider.wholeNumbers) {
-				step = isLargeStep ? 10f : 1f;
+				step = Input.InputUtil.StepForLevel(stepLevel);
 			} else {
 				float range = slider.maxValue - slider.minValue;
-				step = isLargeStep ? range * 0.1f : range * 0.01f;
+				step = range * Input.InputUtil.FractionForLevel(stepLevel);
 			}
 
 			float oldValue = slider.value;

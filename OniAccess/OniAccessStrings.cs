@@ -56,8 +56,10 @@ namespace STRINGS {
 			public static LocString NAVIGATE_ITEMS = "Navigate items";
 			public static LocString JUMP_FIRST_LAST = "Jump to first or last";
 			public static LocString SELECT_ITEM = "Activate selected item";
-			public static LocString ADJUST_VALUE = "Adjust value";
-			public static LocString ADJUST_VALUE_LARGE = "Adjust value, large step";
+			public static LocString ADJUST_VALUE = "Adjust value by 1 or 1 percent";
+			public static LocString ADJUST_VALUE_LARGE = "Adjust value by 10 or 10 percent";
+			public static LocString ADJUST_VALUE_LARGER = "Adjust value by 100 or 25 percent";
+			public static LocString ADJUST_VALUE_LARGEST = "Adjust value by 1000 or 50 percent";
 			public static LocString TYPE_SEARCH = "Type-ahead search";
 			public static LocString SWITCH_PANEL = "Switch panel";
 			public static LocString SWITCH_DUPE_SLOT = "Switch duplicant slot";

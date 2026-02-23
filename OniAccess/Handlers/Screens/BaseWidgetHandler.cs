@@ -20,7 +20,7 @@ namespace OniAccess.Handlers.Screens {
 	/// Per locked decisions:
 	/// - Enter activates (ClickButton for KButton, KToggle.Click)
 	/// - Left/Right adjust sliders and cycle dropdowns
-	/// - Shift+Left/Right for large step adjustment
+	/// - Shift/Ctrl/Ctrl+Shift+Left/Right for progressively larger step adjustment
 	/// - Tab/Shift+Tab for tabbed screens (virtual stubs)
 	/// - Widget readout: label and value only, no type announcement
 	/// - TextInput: Enter to begin editing, Enter to confirm, Escape to cancel
@@ -248,7 +248,7 @@ namespace OniAccess.Handlers.Screens {
 		/// - Slider: step by wholeNumbers-aware increment, speak new value
 		/// - Dropdown: delegate to CycleDropdown virtual method
 		/// </summary>
-		protected override void AdjustCurrentItem(int direction, bool isLargeStep) {
+		protected override void AdjustCurrentItem(int direction, int stepLevel) {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 			if (!IsWidgetValid(widget)) return;
@@ -260,10 +260,10 @@ namespace OniAccess.Handlers.Screens {
 
 						float step;
 						if (slider.wholeNumbers) {
-							step = isLargeStep ? 10f : 1f;
+							step = InputUtil.StepForLevel(stepLevel);
 						} else {
 							float range = slider.maxValue - slider.minValue;
-							step = isLargeStep ? range * 0.1f : range * 0.01f;
+							step = range * InputUtil.FractionForLevel(stepLevel);
 						}
 
 						float oldValue = slider.value;

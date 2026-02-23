@@ -64,7 +64,7 @@ namespace OniAccess.Handlers {
 		/// <summary>
 		/// Adjust the currently focused item's value (Left/Right). No-op default.
 		/// </summary>
-		protected virtual void AdjustCurrentItem(int direction, bool isLargeStep) { }
+		protected virtual void AdjustCurrentItem(int direction, int stepLevel) { }
 
 		/// <summary>
 		/// Navigate to next tab section. No-op default for non-tabbed screens.
@@ -96,6 +96,8 @@ namespace OniAccess.Handlers {
 			new HelpEntry("Enter", STRINGS.ONIACCESS.HELP.SELECT_ITEM),
 			new HelpEntry("Left/Right", STRINGS.ONIACCESS.HELP.ADJUST_VALUE),
 			new HelpEntry("Shift+Left/Right", STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGE),
+			new HelpEntry("Ctrl+Left/Right", STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGER),
+			new HelpEntry("Ctrl+Shift+Left/Right", STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGEST),
 		};
 
 		/// <summary>
@@ -300,11 +302,11 @@ namespace OniAccess.Handlers {
 				return;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
-				HandleLeftRight(-1, InputUtil.ShiftHeld());
+				HandleLeftRight(-1, InputUtil.GetStepLevel());
 				return;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)) {
-				HandleLeftRight(1, InputUtil.ShiftHeld());
+				HandleLeftRight(1, InputUtil.GetStepLevel());
 				return;
 			}
 		}
@@ -313,8 +315,8 @@ namespace OniAccess.Handlers {
 		/// Handle Left/Right arrow keys. Default delegates to AdjustCurrentItem.
 		/// Overridden by NestedMenuHandler for drill-down/go-back behavior.
 		/// </summary>
-		protected virtual void HandleLeftRight(int direction, bool isLargeStep) {
-			AdjustCurrentItem(direction, isLargeStep);
+		protected virtual void HandleLeftRight(int direction, int stepLevel) {
+			AdjustCurrentItem(direction, stepLevel);
 		}
 
 		/// <summary>
