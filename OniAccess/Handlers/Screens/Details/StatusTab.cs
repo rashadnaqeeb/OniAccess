@@ -226,15 +226,17 @@ namespace OniAccess.Handlers.Screens.Details {
 				var captured = line;
 				var checkRef = captured.go.GetComponent<HierarchyReferences>();
 				section.Items.Add(new WidgetInfo {
-					Label = captured.locText.GetParsedText(),
+					Label = captured.label_text_func(DetailsScreen.Instance.target),
 					Type = WidgetType.Label,
 					GameObject = captured.go,
 					SpeechFunc = () => {
+						var t = DetailsScreen.Instance?.target;
+						if (t == null) return null;
 						bool met = checkRef.GetReference("Check").gameObject.activeSelf;
 						string prefix = met
 							? (string)STRINGS.ONIACCESS.STATES.CONDITION_MET
 							: (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
-						return $"{prefix}, {captured.locText.GetParsedText()}";
+						return $"{prefix}, {captured.label_text_func(t)}";
 					}
 				});
 			}
