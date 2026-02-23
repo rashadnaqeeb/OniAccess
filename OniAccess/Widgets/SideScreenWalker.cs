@@ -57,7 +57,7 @@ namespace OniAccess.Widgets {
 					GameObject = go,
 					SpeechFunc = () => {
 						string lbl = ReadLocText(labelLt, captured.transform.name);
-						return $"{lbl}, {WidgetOps.FormatSliderValue(captured)}";
+						return $"{lbl}, {WidgetOps.FormatSliderValue(captured)}, {(string)STRINGS.ONIACCESS.STATES.SLIDER}";
 					}
 				});
 				return true;
@@ -125,9 +125,10 @@ namespace OniAccess.Widgets {
 							? captured.field.text : "";
 						string units = unitsLt != null
 							? unitsLt.GetParsedText() : null;
+						string ifl = (string)STRINGS.ONIACCESS.STATES.INPUT_FIELD;
 						if (!string.IsNullOrEmpty(units))
-							return $"{lbl}, {val} {units}";
-						return $"{lbl}, {val}";
+							return $"{lbl}, {val} {units}, {ifl}";
+						return $"{lbl}, {val}, {ifl}";
 					}
 				});
 				return true;
@@ -147,7 +148,7 @@ namespace OniAccess.Widgets {
 						string lbl = ReadLocText(labelLt, captured.transform.name);
 						string val = captured.field != null
 							? captured.field.text : "";
-						return $"{lbl}, {val}";
+						return $"{lbl}, {val}, {(string)STRINGS.ONIACCESS.STATES.INPUT_FIELD}";
 					}
 				});
 				return true;
