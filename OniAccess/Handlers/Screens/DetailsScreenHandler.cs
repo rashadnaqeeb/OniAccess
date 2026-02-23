@@ -24,6 +24,7 @@ namespace OniAccess.Handlers.Screens {
 		private int _tabIndex;
 		private GameObject _lastTarget;
 		private bool _tabSwitching;
+		private bool _pendingFirstSection;
 
 		public override string DisplayName {
 			get {
@@ -235,10 +236,10 @@ namespace OniAccess.Handlers.Screens {
 			RebuildActiveTabs(_lastTarget);
 			_tabIndex = 0;
 			SwitchGameTab();
-			RebuildSections();
+			_pendingFirstSection = true;
+			_tabSwitching = true;
 			base.OnActivate();
-
-			SpeakFirstSection();
+			_tabSwitching = false;
 		}
 
 		// ========================================
@@ -251,6 +252,7 @@ namespace OniAccess.Handlers.Screens {
 
 			if (currentTarget != _lastTarget) {
 				_lastTarget = currentTarget;
+				_pendingFirstSection = false;
 				if (currentTarget != null) {
 					RebuildActiveTabs(currentTarget);
 					_tabIndex = 0;
@@ -258,6 +260,13 @@ namespace OniAccess.Handlers.Screens {
 					RebuildSections();
 					ResetNavigation();
 
+					SpeechPipeline.SpeakInterrupt(DisplayName);
+					SpeakFirstSection();
+				}
+			} else if (_pendingFirstSection) {
+				RebuildSections();
+				if (_sections.Count > 0) {
+					_pendingFirstSection = false;
 					SpeechPipeline.SpeakInterrupt(DisplayName);
 					SpeakFirstSection();
 				}
