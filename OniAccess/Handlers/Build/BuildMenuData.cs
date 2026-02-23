@@ -23,6 +23,12 @@ namespace OniAccess.Handlers.Build {
 			public List<BuildingEntry> Buildings;
 		}
 
+		public struct CategoryGroup {
+			public HashedString Category;
+			public string DisplayName;
+			public List<SubcategoryGroup> Subcategories;
+		}
+
 		/// <summary>
 		/// Returns visible categories from TUNING.BUILDINGS.PLANORDER.
 		/// Categories with hideIfNotResearched are hidden when no building
@@ -120,6 +126,30 @@ namespace OniAccess.Handlers.Build {
 				group.Buildings.Add(new BuildingEntry { Def = def, State = state, Label = label });
 			}
 
+			return result;
+		}
+
+		/// <summary>
+		/// Returns the full 3-level build tree: categories → subcategories → buildings.
+		/// Same visibility filters as GetVisibleCategories and GetGroupedBuildings.
+		/// Categories with no visible buildings are excluded.
+		/// </summary>
+		public static List<CategoryGroup> GetFullBuildTree() {
+			var result = new List<CategoryGroup>();
+			foreach (var planInfo in TUNING.BUILDINGS.PLANORDER) {
+				if (!Game.IsCorrectDlcActiveForCurrentSave(planInfo))
+					continue;
+				if (planInfo.hideIfNotResearched && !HasAnyResearchedBuilding(planInfo))
+					continue;
+				var subcategories = GetGroupedBuildings(planInfo.category);
+				if (subcategories.Count == 0) continue;
+				string name = GetCategoryDisplayName(planInfo.category);
+				result.Add(new CategoryGroup {
+					Category = planInfo.category,
+					DisplayName = name,
+					Subcategories = subcategories
+				});
+			}
 			return result;
 		}
 

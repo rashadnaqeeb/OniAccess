@@ -20,6 +20,8 @@ namespace OniAccess.Handlers {
 		protected int Level => _level;
 
 		protected int GetIndex(int level) => _indices[level];
+		protected void SetIndex(int level, int value) => _indices[level] = value;
+		protected void SetLevel(int level) { _level = level; }
 
 		// ========================================
 		// ABSTRACT: LEVEL-AWARE MEMBERS

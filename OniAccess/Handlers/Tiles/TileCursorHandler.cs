@@ -262,7 +262,7 @@ namespace OniAccess.Handlers.Tiles {
 		private void OpenBuildMenu() {
 			if (!(PlayerController.Instance.ActiveTool is SelectTool))
 				SelectTool.Instance.Activate();
-			HandlerStack.Push(new Build.BuildCategoryHandler());
+			HandlerStack.Push(new Build.BuildMenuHandler());
 		}
 
 		private void OpenEntityPicker() {

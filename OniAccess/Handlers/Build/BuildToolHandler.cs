@@ -86,7 +86,7 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		/// <summary>
-		/// Called by BuildingListHandler after SelectBuilding returns.
+		/// Called by BuildMenuHandler after SelectBuilding returns.
 		/// At this point the active tool is known (PrebuildTool or BuildTool).
 		/// </summary>
 		internal void AnnounceInitialState() {
@@ -585,7 +585,7 @@ namespace OniAccess.Handlers.Build {
 		// ========================================
 
 		private void ReturnToBuildingList() {
-			HandlerStack.Replace(new BuildingListHandler(_category, _def));
+			HandlerStack.Replace(new BuildMenuHandler(_category, _def));
 		}
 
 		private void OpenInfoPanel() {
