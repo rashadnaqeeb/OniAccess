@@ -67,6 +67,18 @@ namespace OniAccess.Widgets {
 		}
 
 		/// <summary>
+		/// Append tooltip text to speech text, skipping the tooltip if it
+		/// duplicates an existing comma-separated segment of the speech.
+		/// </summary>
+		public static string AppendTooltip(string speech, string tooltip) {
+			if (tooltip == null) return speech;
+			foreach (string segment in speech.Split(new[] { ", " }, System.StringSplitOptions.None)) {
+				if (segment == tooltip) return speech;
+			}
+			return $"{speech}, {tooltip}";
+		}
+
+		/// <summary>
 		/// Rebuild a ToolTip's dynamic content and return all multiString
 		/// entries joined with ", ".
 		/// </summary>

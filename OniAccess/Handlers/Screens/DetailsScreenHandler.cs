@@ -200,8 +200,7 @@ namespace OniAccess.Handlers.Screens {
 			if (w == null) return;
 
 			string text = WidgetOps.GetSpeechText(w);
-			string tip = WidgetOps.GetTooltipText(w);
-			if (tip != null) text = $"{text}, {tip}";
+			text = WidgetOps.AppendTooltip(text, WidgetOps.GetTooltipText(w));
 			if (!string.IsNullOrEmpty(parentContext))
 				text = parentContext + ", " + text;
 			if (!string.IsNullOrEmpty(text))

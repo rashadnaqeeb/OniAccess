@@ -133,8 +133,7 @@ namespace OniAccess.Handlers.Screens {
 				if (_widgets.Count > 0) {
 					var w = _widgets[_currentIndex];
 					string text = GetWidgetSpeechText(w);
-					string tip = GetTooltipText(w);
-					if (tip != null) text = $"{text}, {tip}";
+					text = WidgetOps.AppendTooltip(text, GetTooltipText(w));
 					Speech.SpeechPipeline.SpeakQueued(text);
 				}
 			}
@@ -147,8 +146,7 @@ namespace OniAccess.Handlers.Screens {
 				if (ready && _widgets.Count > 0) {
 					var w = _widgets[0];
 					string text = GetWidgetSpeechText(w);
-					string tip = GetTooltipText(w);
-					if (tip != null) text = $"{text}, {tip}";
+					text = WidgetOps.AppendTooltip(text, GetTooltipText(w));
 					Speech.SpeechPipeline.SpeakQueued(text);
 				} else if (_retryCount < MaxDiscoveryRetries) {
 					_retryCount++;
@@ -319,8 +317,7 @@ namespace OniAccess.Handlers.Screens {
 				var w = _widgets[_currentIndex];
 				if (!IsWidgetValid(w)) return;
 				string text = GetWidgetSpeechText(w);
-				string tip = GetTooltipText(w);
-				if (tip != null) text = $"{text}, {tip}";
+				text = WidgetOps.AppendTooltip(text, GetTooltipText(w));
 				Speech.SpeechPipeline.SpeakInterrupt(text);
 			}
 		}
@@ -334,8 +331,7 @@ namespace OniAccess.Handlers.Screens {
 				var w = _widgets[_currentIndex];
 				if (!IsWidgetValid(w)) return;
 				string text = GetWidgetSpeechText(w);
-				string tip = GetTooltipText(w);
-				if (tip != null) text = $"{text}, {tip}";
+				text = WidgetOps.AppendTooltip(text, GetTooltipText(w));
 				Speech.SpeechPipeline.SpeakQueued(text);
 			}
 		}
