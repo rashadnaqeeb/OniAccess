@@ -27,7 +27,7 @@ namespace OniAccess.Handlers.Tiles {
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Tab),
 			new ConsumedKey(KKeyCode.BackQuote),
-			new ConsumedKey(KKeyCode.T),
+			new ConsumedKey(KKeyCode.LeftBracket),
 			new ConsumedKey(KKeyCode.I),
 			new ConsumedKey(KKeyCode.I, Modifier.Shift),
 			new ConsumedKey(KKeyCode.K),
@@ -55,7 +55,7 @@ namespace OniAccess.Handlers.Tiles {
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrow keys", (string)STRINGS.ONIACCESS.HELP.MOVE_CURSOR),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_BUILD_MENU),
-			new HelpEntry("T", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_TOOL_MENU),
+			new HelpEntry("[", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_TOOL_MENU),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.SELECT_ENTITY),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY),
 			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
@@ -166,7 +166,7 @@ namespace OniAccess.Handlers.Tiles {
 				return;
 			}
 
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.T)
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftBracket)
 				&& !InputUtil.AnyModifierHeld()) {
 				OpenToolPicker();
 				return;
