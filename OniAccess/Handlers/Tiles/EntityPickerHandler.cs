@@ -51,10 +51,12 @@ namespace OniAccess.Handlers.Tiles {
 			if (_currentIndex < 0 || _currentIndex >= _selectables.Count)
 				return;
 			var entity = _selectables[_currentIndex];
+			// Pop before Select: Select() synchronously triggers DetailsScreen.OnShow
+			// which pushes DetailsScreenHandler. If we pop after, we'd pop that instead.
+			HandlerStack.Pop();
 			if (!(PlayerController.Instance.ActiveTool is SelectTool))
 				SelectTool.Instance.Activate();
 			SelectTool.Instance.Select(entity);
-			HandlerStack.Pop();
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {
