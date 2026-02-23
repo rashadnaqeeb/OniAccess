@@ -48,7 +48,8 @@ namespace OniAccess.Widgets {
 			var slider = go.GetComponent<KSlider>();
 			if (slider != null) {
 				var captured = slider;
-				var labelLt = FindChildLocText(t, null) ?? FindSiblingLocText(t);
+				var labelLt = FindChildLocText(t, null)
+					?? FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
 				items.Add(new WidgetInfo {
 					Label = ReadLocText(labelLt, t.name),
 					Type = WidgetType.Slider,
@@ -66,7 +67,8 @@ namespace OniAccess.Widgets {
 			var ktoggle = go.GetComponent<KToggle>();
 			if (ktoggle != null) {
 				var captured = ktoggle;
-				var labelLt = FindChildLocText(t, null) ?? FindSiblingLocText(t);
+				var labelLt = FindChildLocText(t, null)
+					?? FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
 				items.Add(new WidgetInfo {
 					Label = ReadLocText(labelLt, t.name),
 					Type = WidgetType.Toggle,
@@ -90,7 +92,8 @@ namespace OniAccess.Widgets {
 				if (IsRedundantMultiToggle(t))
 					return true;
 				var captured = multiToggle;
-				var labelLt = FindChildLocText(t, null) ?? FindSiblingLocText(t);
+				var labelLt = FindChildLocText(t, null)
+					?? FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
 				items.Add(new WidgetInfo {
 					Label = ReadLocText(labelLt, t.name),
 					Type = WidgetType.Toggle,
@@ -108,8 +111,9 @@ namespace OniAccess.Widgets {
 			var knum = go.GetComponent<KNumberInputField>();
 			if (knum != null) {
 				var captured = knum;
-				var labelLt = FindSiblingLocText(t);
-				var unitsLt = FindFollowingSiblingLocText(t);
+				var labelLt = FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
+				var unitsLt = FindFollowingSiblingLocText(t)
+					?? FindFollowingSiblingLocText(t.parent);
 				items.Add(new WidgetInfo {
 					Label = ReadLocText(labelLt, t.name),
 					Type = WidgetType.TextInput,
@@ -133,7 +137,7 @@ namespace OniAccess.Widgets {
 			var kinput = go.GetComponent<KInputField>();
 			if (kinput != null) {
 				var captured = kinput;
-				var labelLt = FindSiblingLocText(t);
+				var labelLt = FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
 				items.Add(new WidgetInfo {
 					Label = ReadLocText(labelLt, t.name),
 					Type = WidgetType.TextInput,
