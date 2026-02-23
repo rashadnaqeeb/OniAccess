@@ -403,10 +403,8 @@ namespace OniAccess.Handlers.Screens {
 				// Availability is determined by the game's tab toggle visibility,
 				// not hardcoded predicates — see RebuildActiveTabs.
 				new StatusTab(),
-				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.PERSONALITY.NAME, "PERSONALITY"),
-				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.BUILDING_CHORES.NAME, "BUILDINGCHORES"),
+				new PersonalityTab(),
+				new ChoresTab(),
 				new PropertiesTab(),
 
 				// Side screen tabs (null gameTabId — use sidescreenTabHeader when implemented).

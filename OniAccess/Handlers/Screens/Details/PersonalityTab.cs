@@ -4,37 +4,33 @@ using UnityEngine;
 
 namespace OniAccess.Handlers.Screens.Details {
 	/// <summary>
-	/// Reads the AdditionalDetailsPanel (Properties tab) into structured sections.
-	/// Eight CollapsibleDetailContentPanel sections, each with a header and DetailLabel children.
-	/// All widgets use SpeechFunc for live text since the game updates labels every frame.
+	/// Reads the MinionPersonalityPanel (Bio tab) into structured sections.
+	/// Six CollapsibleDetailContentPanel sections (bio, traits, attributes,
+	/// resume, amenities, equipment), all populated via SetLabel/Commit.
+	/// Same reading strategy as PropertiesTab via CollapsiblePanelReader.
 	/// </summary>
-	class PropertiesTab: IDetailTab {
-		public string DisplayName => (string)STRINGS.UI.DETAILTABS.DETAILS.NAME;
-		public string GameTabId => "DETAILS";
+	class PersonalityTab : IDetailTab {
+		public string DisplayName => (string)STRINGS.UI.DETAILTABS.PERSONALITY.NAME;
+		public string GameTabId => "PERSONALITY";
 
 		public bool IsAvailable(GameObject target) => true;
 
 		private static readonly string[] SectionFields = {
-			"detailsPanel",
-			"immuneSystemPanel",
-			"diseaseSourcePanel",
-			"currentGermsPanel",
-			"overviewPanel",
-			"generatorsPanel",
-			"consumersPanel",
-			"batteriesPanel",
+			"bioPanel",
+			"traitsPanel",
+			"attributesPanel",
+			"resumePanel",
+			"amenitiesPanel",
+			"equipmentPanel",
 		};
 
 		public void Populate(GameObject target, List<DetailSection> sections) {
 			var panel = FindPanel();
 			if (panel == null) {
-				Util.Log.Warn("PropertiesTab.Populate: AdditionalDetailsPanel not found");
+				Util.Log.Warn("PersonalityTab.Populate: MinionPersonalityPanel not found");
 				return;
 			}
 
-			// The handler switches the game's visual tab before calling Populate,
-			// so the panel is already active with SetTarget called by the game.
-			// Guard against edge cases where the panel hasn't been refreshed yet.
 			if (panel.gameObject.activeSelf)
 				panel.SetTarget(target);
 
@@ -44,7 +40,7 @@ namespace OniAccess.Handlers.Screens.Details {
 					gameSection = Traverse.Create(panel)
 						.Field<CollapsibleDetailContentPanel>(fieldName).Value;
 				} catch (System.Exception ex) {
-					Util.Log.Warn($"PropertiesTab: field '{fieldName}' read failed: {ex.Message}");
+					Util.Log.Warn($"PersonalityTab: field '{fieldName}' read failed: {ex.Message}");
 					continue;
 				}
 
@@ -56,7 +52,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			}
 		}
 
-		private static AdditionalDetailsPanel FindPanel() {
+		private static MinionPersonalityPanel FindPanel() {
 			var ds = DetailsScreen.Instance;
 			if (ds == null) return null;
 
@@ -66,11 +62,10 @@ namespace OniAccess.Handlers.Screens.Details {
 
 			var tabPanels = Traverse.Create(tabHeader)
 				.Field<Dictionary<string, TargetPanel>>("tabPanels").Value;
-			if (tabPanels == null || !tabPanels.TryGetValue("DETAILS", out var panel))
+			if (tabPanels == null || !tabPanels.TryGetValue("PERSONALITY", out var panel))
 				return null;
 
-			return panel as AdditionalDetailsPanel;
+			return panel as MinionPersonalityPanel;
 		}
-
 	}
 }

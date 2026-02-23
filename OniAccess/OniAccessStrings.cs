@@ -428,6 +428,10 @@ namespace STRINGS {
 			}
 		}
 
+		public class DETAILS {
+			public static LocString NO_ERRANDS = "No errands";
+		}
+
 		public class BUILD_MENU {
 			public static LocString CATEGORY_LIST = "build menu";
 			public static LocString PLACED = "placed";
