@@ -77,6 +77,13 @@ namespace OniAccess.Handlers {
 				return;
 			}
 
+			// Clean up stale handlers before pushing. This runs in a Harmony
+			// postfix, so stale handlers from the previous game may still be
+			// on the stack (KeyPoller.Update hasn't run yet this frame).
+			// Without this, the old handler's OnDeactivate can destroy
+			// singletons (e.g. TileCursor) that the new handler just created.
+			HandlerStack.RemoveStaleHandlers();
+
 			// Guard: don't push a duplicate handler for the same screen instance
 			var active = HandlerStack.ActiveHandler;
 			if (active is BaseScreenHandler sh && sh.Screen == screen) {
