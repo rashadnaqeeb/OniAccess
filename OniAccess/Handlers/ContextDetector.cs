@@ -239,6 +239,11 @@ namespace OniAccess.Handlers {
 			// Hud (KScreen -- game world HUD, tile cursor navigation)
 			Register<Hud>(screen => new Tiles.TileCursorHandler(screen));
 
+			// DetailsScreen (entity inspection panel -- show/hide lifecycle)
+			// Show patch pushes/pops via ContextDetector since OnPrefabInit calls Show(false)
+			Register<DetailsScreen>(screen => new DetailsScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(DetailsScreen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 

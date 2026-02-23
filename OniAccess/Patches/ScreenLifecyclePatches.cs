@@ -131,6 +131,23 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
+	/// DetailsScreen.OnPrefabInit() calls Show(false) during init, so
+	/// KScreen.Activate/Deactivate patches do not fire for user-visible show/hide.
+	/// Patch OnShow(bool) directly to push/pop the handler via ContextDetector.
+	/// </summary>
+	[HarmonyPatch(typeof(DetailsScreen), "OnShow")]
+	internal static class DetailsScreen_OnShow_Patch {
+		private static void Postfix(DetailsScreen __instance, bool show) {
+			if (!VanillaMode.IsEnabled) return;
+			if (show) {
+				ContextDetector.OnScreenActivated(__instance);
+			} else {
+				ContextDetector.OnScreenDeactivating(__instance);
+			}
+		}
+	}
+
+	/// <summary>
 	/// MinionSelectScreen.OnSpawn() does not call base.OnSpawn(), so
 	/// KScreen.Activate() is never invoked and our generic KScreen_Activate_Patch
 	/// never fires. Patch OnSpawn directly to trigger handler activation.

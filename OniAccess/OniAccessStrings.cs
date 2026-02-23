@@ -42,6 +42,7 @@ namespace STRINGS {
 			public static LocString COLONY_VIEW = "Colony View";
 			public static LocString TOOLTIP_BROWSER = "Tooltip";
 			public static LocString ENTITY_PICKER = "object selection";
+			public static LocString DETAILS_SCREEN = "Entity details";
 		}
 
 		public class SUPPLY_CLOSET {
