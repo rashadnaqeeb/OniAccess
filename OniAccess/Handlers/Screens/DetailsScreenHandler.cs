@@ -309,11 +309,7 @@ namespace OniAccess.Handlers.Screens {
 			int newIndex = ((activeIndex + direction) % members.Count + members.Count)
 				% members.Count;
 			members[newIndex].Toggle.Click();
-
-			RebuildSections();
-			var fresh = GetWidgetAt(null);
-			if (fresh != null)
-				SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
+			_pendingActivationSpeech = true;
 		}
 
 		private static void PlaySliderSound(string soundName) {

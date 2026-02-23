@@ -28,7 +28,7 @@ namespace OniAccess.Widgets {
 				? screen.ContentContainer.transform
 				: screen.transform;
 			WalkTransform(root, items);
-			CollapseRadioToggles(items, screen.GetTitle());
+			CollapseRadioToggles(items, screen.GetTitle(), screen.transform);
 		}
 
 		private static void WalkTransform(Transform parent, List<WidgetInfo> items) {
@@ -381,7 +381,8 @@ namespace OniAccess.Widgets {
 		/// exactly one is isOn (radio-style mutual exclusion). Replace with a
 		/// single Dropdown widget that cycles between members.
 		/// </summary>
-		private static void CollapseRadioToggles(List<WidgetInfo> items, string screenTitle) {
+		private static void CollapseRadioToggles(
+				List<WidgetInfo> items, string screenTitle, Transform screenRoot) {
 			// Group consecutive KToggle items by parent transform
 			var groups = new List<(Transform parent, int start, int count)>();
 			int i = 0;
@@ -402,6 +403,13 @@ namespace OniAccess.Widgets {
 				if (count >= 2)
 					groups.Add((parent, start, count));
 				i += count;
+			}
+
+			// Collect GameObjects already represented in items (for orphan detection)
+			var emittedObjects = new HashSet<GameObject>();
+			foreach (var item in items) {
+				if (item.GameObject != null)
+					emittedObjects.Add(item.GameObject);
 			}
 
 			// Process groups in reverse to preserve indices
@@ -425,6 +433,9 @@ namespace OniAccess.Widgets {
 					});
 				}
 
+				// Search the full screen tree for an orphan description LocText
+				var descriptionLt = FindOrphanDescription(screenRoot, emittedObjects);
+
 				string groupLabel = screenTitle ?? items[start].Label;
 				var radioMembers = members;
 				items[start] = new WidgetInfo {
@@ -434,17 +445,60 @@ namespace OniAccess.Widgets {
 					GameObject = parent.gameObject,
 					Tag = radioMembers,
 					SpeechFunc = () => {
+						string selected = null;
 						for (int k = 0; k < radioMembers.Count; k++) {
-							if (radioMembers[k].Toggle != null && radioMembers[k].Toggle.isOn)
-								return $"{groupLabel}, {radioMembers[k].Label}";
+							if (radioMembers[k].Toggle != null && radioMembers[k].Toggle.isOn) {
+								selected = radioMembers[k].Label;
+								break;
+							}
 						}
-						return groupLabel;
+						string speech = selected != null
+							? $"{groupLabel}, {selected}" : groupLabel;
+						if (descriptionLt != null) {
+							string desc = descriptionLt.GetParsedText();
+							if (!string.IsNullOrEmpty(desc))
+								speech += ", " + desc;
+						}
+						return speech;
 					}
 				};
 
 				// Remove the collapsed items
 				items.RemoveRange(start + 1, count - 1);
 			}
+		}
+
+		/// <summary>
+		/// Search the screen's full transform tree for a LocText that wasn't
+		/// emitted as a widget item — a candidate description label. Skips
+		/// LocTexts that are children of interactive widgets (those are labels,
+		/// not descriptions).
+		/// </summary>
+		private static LocText FindOrphanDescription(
+				Transform root, HashSet<GameObject> emittedObjects) {
+			var allLocTexts = root.GetComponentsInChildren<LocText>(false);
+			foreach (var lt in allLocTexts) {
+				if (emittedObjects.Contains(lt.gameObject)) continue;
+
+				string text = lt.GetParsedText();
+				if (string.IsNullOrEmpty(text)) continue;
+
+				// Skip LocTexts inside interactive widgets (they're labels)
+				if (lt.GetComponentInParent<KToggle>() != null) continue;
+				if (lt.GetComponentInParent<KButton>() != null) continue;
+				if (lt.GetComponentInParent<KSlider>() != null) continue;
+				if (lt.GetComponentInParent<MultiToggle>() != null) continue;
+
+				// Skip the screen title (GetTitle() reads from a LocText too)
+				var ssc = root.GetComponent<SideScreenContent>();
+				if (ssc != null) {
+					string title = ssc.GetTitle();
+					if (text == title) continue;
+				}
+
+				return lt;
+			}
+			return null;
 		}
 	}
 }
