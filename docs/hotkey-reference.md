@@ -214,6 +214,7 @@ These are only relevant if debug mode is active, but listed for completeness to 
 | Cycle coordinate mode | Shift+K | tile | Cycles Off -> Append -> Prepend -> Off. Attaches coordinates to glance announcements |
 | Read tooltip summary | I | tile | Overwrites Disinfect tool hotkey (tools are activated through the mod's tool menu). Speaks first block of hover tooltip |
 | Browse hover tooltip | Shift+I | tile | Opens tooltip browser with full hover tooltip broken into navigable sections |
+| User menu (entity actions) | ] | details screen | Overwrites Building Utility 3 (context-dependent action that appears in the user menu itself). Opens action overlay on details screen |
 
 Further hotkeys assigned per-phase as features are built.
 
