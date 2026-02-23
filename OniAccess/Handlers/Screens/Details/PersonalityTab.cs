@@ -15,6 +15,8 @@ namespace OniAccess.Handlers.Screens.Details {
 
 		public bool IsAvailable(GameObject target) => true;
 
+		public void OnTabSelected() { }
+
 		private static readonly string[] SectionFields = {
 			"bioPanel",
 			"traitsPanel",

@@ -26,6 +26,14 @@ namespace OniAccess.Handlers.Screens.Details {
 		bool IsAvailable(GameObject target);
 
 		/// <summary>
+		/// Called when this tab is selected (tab switch or initial activation).
+		/// Side screen tabs click their game-side MultiToggle so the game shows
+		/// the correct tab body. Game tabs (GameTabId != null) leave this as a
+		/// no-op since SwitchGameTab handles them via DetailTabHeader.ChangeTab.
+		/// </summary>
+		void OnTabSelected();
+
+		/// <summary>
 		/// Read the tab's live UI into structured sections.
 		/// Called on target change, tab switch, and before keypress processing.
 		/// The handler owns the list and clears it before calling.

@@ -21,6 +21,8 @@ namespace OniAccess.Handlers.Screens.Details {
 
 		public bool IsAvailable(GameObject target) => true;
 
+		public void OnTabSelected() { }
+
 		public void Populate(GameObject target, List<DetailSection> sections) {
 			var panel = FindPanel();
 			if (panel == null) {

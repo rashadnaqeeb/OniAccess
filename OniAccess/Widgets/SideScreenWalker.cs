@@ -1,0 +1,277 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace OniAccess.Widgets {
+	/// <summary>
+	/// Recursively walks a SideScreenContent's widget hierarchy and emits
+	/// WidgetInfo items. Priority order per node: KSlider, KToggle,
+	/// MultiToggle, KNumberInputField, KInputField, KButton, LocText.
+	/// When an interactive component is found on a node, that node is
+	/// consumed and its children are not walked further.
+	/// Inactive GameObjects and mouse-only controls are skipped.
+	/// All SpeechFuncs read live component state via GetParsedText().
+	/// </summary>
+	public static class SideScreenWalker {
+		/// <summary>
+		/// Walk the ContentContainer of a SideScreenContent (or its
+		/// root transform if ContentContainer is null/inactive).
+		/// Appends discovered widgets to <paramref name="items"/>.
+		/// </summary>
+		public static void Walk(SideScreenContent screen, List<WidgetInfo> items) {
+			var root = screen.ContentContainer != null
+				&& screen.ContentContainer.activeInHierarchy
+				? screen.ContentContainer.transform
+				: screen.transform;
+			WalkTransform(root, items);
+		}
+
+		private static void WalkTransform(Transform parent, List<WidgetInfo> items) {
+			for (int i = 0; i < parent.childCount; i++) {
+				var child = parent.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				if (IsSkipped(child.gameObject.name)) continue;
+
+				if (TryAddWidget(child, items))
+					continue;
+				WalkTransform(child, items);
+			}
+		}
+
+		/// <summary>
+		/// Try to emit a widget for the given transform. Returns true if a
+		/// component was found (caller should not recurse into children).
+		/// </summary>
+		private static bool TryAddWidget(Transform t, List<WidgetInfo> items) {
+			var go = t.gameObject;
+
+			// KSlider (catches NonLinearSlider which extends KSlider)
+			var slider = go.GetComponent<KSlider>();
+			if (slider != null) {
+				var captured = slider;
+				var labelLt = FindChildLocText(t, null);
+				items.Add(new WidgetInfo {
+					Label = ReadLocText(labelLt, t.name),
+					Type = WidgetType.Slider,
+					Component = captured,
+					GameObject = go,
+					SpeechFunc = () => {
+						string lbl = ReadLocText(labelLt, captured.transform.name);
+						return $"{lbl}, {WidgetOps.FormatSliderValue(captured)}";
+					}
+				});
+				return true;
+			}
+
+			// KToggle
+			var ktoggle = go.GetComponent<KToggle>();
+			if (ktoggle != null) {
+				var captured = ktoggle;
+				var labelLt = FindChildLocText(t, null);
+				items.Add(new WidgetInfo {
+					Label = ReadLocText(labelLt, t.name),
+					Type = WidgetType.Toggle,
+					Component = captured,
+					GameObject = go,
+					SpeechFunc = () => {
+						string lbl = ReadLocText(labelLt, captured.transform.name);
+						string state = captured.isOn
+							? (string)STRINGS.ONIACCESS.STATES.ON
+							: (string)STRINGS.ONIACCESS.STATES.OFF;
+						return $"{lbl}, {state}";
+					}
+				});
+				return true;
+			}
+
+			// MultiToggle
+			var multiToggle = go.GetComponent<MultiToggle>();
+			if (multiToggle != null) {
+				var captured = multiToggle;
+				var labelLt = FindChildLocText(t, null);
+				items.Add(new WidgetInfo {
+					Label = ReadLocText(labelLt, t.name),
+					Type = WidgetType.Toggle,
+					Component = captured,
+					GameObject = go,
+					SpeechFunc = () => {
+						string lbl = ReadLocText(labelLt, captured.transform.name);
+						string state = captured.CurrentState == 1
+							? (string)STRINGS.ONIACCESS.STATES.ON
+							: (string)STRINGS.ONIACCESS.STATES.OFF;
+						return $"{lbl}, {state}";
+					}
+				});
+				return true;
+			}
+
+			// KNumberInputField (extends KInputField — check first)
+			var knum = go.GetComponent<KNumberInputField>();
+			if (knum != null) {
+				var captured = knum;
+				var labelLt = FindSiblingLocText(t);
+				items.Add(new WidgetInfo {
+					Label = ReadLocText(labelLt, t.name),
+					Type = WidgetType.TextInput,
+					Component = captured,
+					GameObject = go,
+					SpeechFunc = () => {
+						string lbl = ReadLocText(labelLt, captured.transform.name);
+						string val = captured.field != null
+							? captured.field.text : "";
+						return $"{lbl}, {val}";
+					}
+				});
+				return true;
+			}
+
+			// KInputField (AlarmSideScreen text input — Category B)
+			var kinput = go.GetComponent<KInputField>();
+			if (kinput != null) {
+				var captured = kinput;
+				var labelLt = FindSiblingLocText(t);
+				items.Add(new WidgetInfo {
+					Label = ReadLocText(labelLt, t.name),
+					Type = WidgetType.TextInput,
+					Component = captured,
+					GameObject = go,
+					SpeechFunc = () => {
+						string lbl = ReadLocText(labelLt, captured.transform.name);
+						string val = captured.field != null
+							? captured.field.text : "";
+						return $"{lbl}, {val}";
+					}
+				});
+				return true;
+			}
+
+			// KButton (skip if inside an already-handled parent widget type)
+			var kbutton = go.GetComponent<KButton>();
+			if (kbutton != null) {
+				var captured = kbutton;
+				items.Add(new WidgetInfo {
+					Label = GetButtonLabel(captured, t.name),
+					Type = WidgetType.Button,
+					Component = captured,
+					GameObject = go,
+					SpeechFunc = () => GetButtonLabel(captured, captured.transform.name)
+				});
+				return true;
+			}
+
+			// LocText (standalone label — not inside any interactive widget)
+			var locText = go.GetComponent<LocText>();
+			if (locText != null) {
+				var captured = locText;
+				string text = captured.GetParsedText();
+				if (!string.IsNullOrEmpty(text)) {
+					items.Add(new WidgetInfo {
+						Label = text,
+						Type = WidgetType.Label,
+						GameObject = go,
+						SpeechFunc = () => captured.GetParsedText()
+					});
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		// ========================================
+		// LABEL RESOLUTION
+		// ========================================
+
+		/// <summary>
+		/// Find the first active child LocText on the given transform.
+		/// Skips the excluded component's GameObject if provided.
+		/// Returns the LocText reference (for live reading), or null.
+		/// </summary>
+		private static LocText FindChildLocText(Transform t, Component exclude) {
+			for (int i = 0; i < t.childCount; i++) {
+				var child = t.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				if (exclude != null && child.gameObject == exclude.gameObject) continue;
+				var lt = child.GetComponent<LocText>();
+				if (lt != null) {
+					string text = lt.GetParsedText();
+					if (!string.IsNullOrEmpty(text))
+						return lt;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Find a sibling LocText for text input fields. Searches preceding
+		/// siblings first (closest label), then following siblings.
+		/// </summary>
+		private static LocText FindSiblingLocText(Transform t) {
+			if (t.parent == null) return null;
+			var parent = t.parent;
+			int myIndex = t.GetSiblingIndex();
+
+			for (int i = myIndex - 1; i >= 0; i--) {
+				var sibling = parent.GetChild(i);
+				if (!sibling.gameObject.activeSelf) continue;
+				var lt = sibling.GetComponent<LocText>();
+				if (lt == null) lt = sibling.GetComponentInChildren<LocText>();
+				if (lt != null) {
+					string text = lt.GetParsedText();
+					if (!string.IsNullOrEmpty(text))
+						return lt;
+				}
+			}
+
+			for (int i = myIndex + 1; i < parent.childCount; i++) {
+				var sibling = parent.GetChild(i);
+				if (!sibling.gameObject.activeSelf) continue;
+				var lt = sibling.GetComponent<LocText>();
+				if (lt == null) lt = sibling.GetComponentInChildren<LocText>();
+				if (lt != null) {
+					string text = lt.GetParsedText();
+					if (!string.IsNullOrEmpty(text))
+						return lt;
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Read a LocText reference, falling back to a name-based label.
+		/// </summary>
+		private static string ReadLocText(LocText lt, string fallback) {
+			if (lt != null) {
+				string text = lt.GetParsedText();
+				if (!string.IsNullOrEmpty(text))
+					return text;
+			}
+			return fallback;
+		}
+
+		/// <summary>
+		/// Read a KButton's label from its child LocText using GetParsedText().
+		/// </summary>
+		private static string GetButtonLabel(KButton button, string fallback) {
+			var lt = button.GetComponentInChildren<LocText>();
+			if (lt != null) {
+				string text = lt.GetParsedText();
+				if (!string.IsNullOrEmpty(text))
+					return text;
+			}
+			return fallback;
+		}
+
+		/// <summary>
+		/// Filter out mouse-only UI elements that are irrelevant for
+		/// keyboard navigation.
+		/// </summary>
+		private static bool IsSkipped(string name) {
+			if (name.IndexOf("Scrollbar", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
+			if (name.IndexOf("ScrollRect", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
+			if (name.IndexOf("Drag", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
+			if (name.IndexOf("Resize", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
+			return false;
+		}
+	}
+}

@@ -21,6 +21,7 @@ namespace OniAccess.Handlers.Screens {
 		private readonly IDetailTab[] _tabs;
 		private readonly List<IDetailTab> _activeTabs = new List<IDetailTab>();
 		private readonly List<DetailSection> _sections = new List<DetailSection>();
+		private readonly Input.TextEditHelper _textEdit = new Input.TextEditHelper();
 		private int _tabIndex;
 		private GameObject _lastTarget;
 		private bool _tabSwitching;
@@ -95,12 +96,52 @@ namespace OniAccess.Handlers.Screens {
 			var w = GetWidgetAt(indices);
 			if (w == null) return;
 
-			if (w.Type == WidgetType.Button) {
-				var btn = w.Component as KButton;
-				if (btn != null) {
-					WidgetOps.ClickButton(btn);
-					return;
-				}
+			switch (w.Type) {
+				case WidgetType.Button: {
+						var btn = w.Component as KButton;
+						if (btn != null) {
+							WidgetOps.ClickButton(btn);
+							return;
+						}
+						var mt = w.Component as MultiToggle;
+						if (mt != null)
+							WidgetOps.ClickMultiToggle(mt);
+						break;
+					}
+				case WidgetType.Toggle: {
+						var toggle = w.Component as KToggle;
+						if (toggle != null) {
+							toggle.Click();
+							SpeakCurrentItem();
+							return;
+						}
+						var mt = w.Component as MultiToggle;
+						if (mt != null) {
+							WidgetOps.ClickMultiToggle(mt);
+							SpeakCurrentItem();
+						}
+						break;
+					}
+				case WidgetType.Slider:
+					SpeakCurrentItem();
+					break;
+				case WidgetType.TextInput: {
+						KInputTextField field = null;
+						var knum = w.Component as KNumberInputField;
+						if (knum != null)
+							field = knum.field;
+						else {
+							var kinput = w.Component as KInputField;
+							if (kinput != null) field = kinput.field;
+						}
+						if (field != null) {
+							if (!_textEdit.IsEditing)
+								_textEdit.Begin(field);
+							else
+								_textEdit.Confirm();
+						}
+						break;
+					}
 			}
 		}
 
@@ -188,6 +229,71 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		// ========================================
+		// LEFT/RIGHT: SLIDER ADJUSTMENT AT LEAF LEVEL
+		// ========================================
+
+		protected override void HandleLeftRight(int direction, bool isLargeStep) {
+			if (Level > 0) {
+				var w = GetWidgetAt(null);
+				if (w != null && w.Type == WidgetType.Slider) {
+					AdjustSlider(w, direction, isLargeStep);
+					return;
+				}
+			}
+			base.HandleLeftRight(direction, isLargeStep);
+		}
+
+		private void AdjustSlider(WidgetInfo w, int direction, bool isLargeStep) {
+			var slider = w.Component as KSlider;
+			if (slider == null) return;
+
+			float step;
+			if (slider.wholeNumbers) {
+				step = isLargeStep ? 10f : 1f;
+			} else {
+				float range = slider.maxValue - slider.minValue;
+				step = isLargeStep ? range * 0.1f : range * 0.01f;
+			}
+
+			float oldValue = slider.value;
+			slider.value = Mathf.Clamp(
+				slider.value + step * direction,
+				slider.minValue, slider.maxValue);
+
+			if (slider.value <= slider.minValue && direction < 0)
+				PlaySliderSound("Slider_Boundary_Low");
+			else if (slider.value >= slider.maxValue && direction > 0)
+				PlaySliderSound("Slider_Boundary_High");
+			else if (slider.value != oldValue)
+				PlaySliderSound("Slider_Move");
+
+			SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(w));
+		}
+
+		private static void PlaySliderSound(string soundName) {
+			try {
+				KFMOD.PlayUISound(GlobalAssets.GetSound(soundName));
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"DetailsScreenHandler.PlaySliderSound({soundName}): {ex.Message}");
+			}
+		}
+
+		// ========================================
+		// KEY INTERCEPTION: TEXT EDITING
+		// ========================================
+
+		public override bool HandleKeyDown(KButtonEvent e) {
+			if (_textEdit.IsEditing) {
+				if (e.TryConsume(Action.Escape)) {
+					_textEdit.Cancel();
+					return true;
+				}
+				return false;
+			}
+			return base.HandleKeyDown(e);
+		}
+
+		// ========================================
 		// SPEECH
 		// ========================================
 
@@ -247,6 +353,12 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		public override void Tick() {
+			if (_textEdit.IsEditing) {
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return))
+					_textEdit.Confirm();
+				return;
+			}
+
 			var currentTarget = DetailsScreen.Instance != null
 				? DetailsScreen.Instance.target : null;
 
@@ -360,9 +472,14 @@ namespace OniAccess.Handlers.Screens {
 
 		/// <summary>
 		/// Switch the game's visual tab to match our logical tab.
+		/// For main tabs (non-null GameTabId), calls the game's ChangeTab.
+		/// For all tabs, calls OnTabSelected() for tab-specific activation
+		/// (side screen tabs click their game MultiToggle here).
 		/// </summary>
 		private void SwitchGameTab() {
 			if (_tabIndex < 0 || _tabIndex >= _activeTabs.Count) return;
+
+			_activeTabs[_tabIndex].OnTabSelected();
 
 			var gameTabId = _activeTabs[_tabIndex].GameTabId;
 			if (gameTabId == null) return;
@@ -416,12 +533,9 @@ namespace OniAccess.Handlers.Screens {
 				new ChoresTab(),
 				new PropertiesTab(),
 
-				// Side screen tabs (null gameTabId — use sidescreenTabHeader when implemented).
-				// TODO: query SidescreenTab.IsVisible instead of hardcoded predicates.
-				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.CONFIGURATION.NAME),
-				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.BUILDING_CHORES.NAME),
+				// Side screen tabs (null gameTabId — availability via SidescreenTab.IsVisible).
+				new ConfigSideTab(),
+				new ErrandsSideTab(),
 				new StubTab(
 					(string)STRINGS.UI.DETAILTABS.MATERIAL.NAME),
 				new StubTab(
