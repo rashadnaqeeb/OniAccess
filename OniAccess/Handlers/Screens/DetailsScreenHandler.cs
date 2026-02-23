@@ -26,6 +26,7 @@ namespace OniAccess.Handlers.Screens {
 		private GameObject _lastTarget;
 		private bool _tabSwitching;
 		private bool _pendingFirstSection;
+		private bool _pendingActivationSpeech;
 
 		public override string DisplayName {
 			get {
@@ -115,15 +116,13 @@ namespace OniAccess.Handlers.Screens {
 						var toggle = w.Component as KToggle;
 						if (toggle != null) {
 							toggle.Click();
-							RebuildSections();
-							SpeakCurrentItem();
+							_pendingActivationSpeech = true;
 							return;
 						}
 						var mt = w.Component as MultiToggle;
 						if (mt != null) {
 							WidgetOps.ClickMultiToggle(mt);
-							RebuildSections();
-							SpeakCurrentItem();
+							_pendingActivationSpeech = true;
 						}
 						break;
 					}
@@ -377,6 +376,12 @@ namespace OniAccess.Handlers.Screens {
 					RebuildSections();
 				}
 				return;
+			}
+
+		if (_pendingActivationSpeech) {
+				_pendingActivationSpeech = false;
+				RebuildSections();
+				SpeakCurrentItem();
 			}
 
 			var currentTarget = DetailsScreen.Instance != null

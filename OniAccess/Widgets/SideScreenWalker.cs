@@ -231,12 +231,11 @@ namespace OniAccess.Widgets {
 				var sibling = parent.GetChild(i);
 				if (sibling == t) continue;
 				if (!sibling.gameObject.activeSelf) continue;
-				var sgo = sibling.gameObject;
-				if (sgo.GetComponent<KSlider>() != null) return true;
-				if (sgo.GetComponent<KToggle>() != null) return true;
-				if (sgo.GetComponent<MultiToggle>() != null) return true;
-				if (sgo.GetComponent<KNumberInputField>() != null) return true;
-				if (sgo.GetComponent<KInputField>() != null) return true;
+				if (sibling.GetComponentInChildren<KSlider>() != null) return true;
+				if (sibling.GetComponentInChildren<KToggle>() != null) return true;
+				if (sibling.GetComponentInChildren<MultiToggle>() != null) return true;
+				if (sibling.GetComponentInChildren<KNumberInputField>() != null) return true;
+				if (sibling.GetComponentInChildren<KInputField>() != null) return true;
 			}
 			return false;
 		}
