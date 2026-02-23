@@ -23,33 +23,40 @@ namespace OniAccess.Handlers.Screens.Details {
 				return;
 			}
 
-			List<HierarchyReferences> choreEntries;
-			int activeChoreCount;
+			// TargetPanel.SetTarget guards with selectedTarget != target, so
+			// it's a no-op when the target hasn't changed. Call Refresh directly
+			// to force the panel to repopulate its pooled chore entries.
+			Traverse.Create(panel).Method("Refresh").GetValue();
 
+			// The game's activeChoreEntries counter resets to 0 at the end of
+			// every Refresh(), so we can't use it. Walk choreGroup's
+			// EntriesContainer children and check activeSelf instead — the game
+			// deactivates excess pooled entries before resetting the counter.
+			HierarchyReferences choreGroup;
 			try {
-				choreEntries = Traverse.Create(panel)
-					.Field<List<HierarchyReferences>>("choreEntries").Value;
+				choreGroup = Traverse.Create(panel)
+					.Field<HierarchyReferences>("choreGroup").Value;
 			} catch (System.Exception ex) {
-				Util.Log.Warn($"ChoresTab: choreEntries read failed: {ex.Message}");
+				Util.Log.Warn($"ChoresTab: choreGroup read failed: {ex.Message}");
 				return;
 			}
-
-			try {
-				activeChoreCount = Traverse.Create(panel)
-					.Field<int>("activeChoreEntries").Value;
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"ChoresTab: activeChoreEntries read failed: {ex.Message}");
-				return;
-			}
-
-			if (choreEntries == null || activeChoreCount == 0) {
+			if (choreGroup == null) {
 				AddNoErrandsSection(sections);
 				return;
 			}
 
-			for (int i = 0; i < activeChoreCount && i < choreEntries.Count; i++) {
-				var entry = choreEntries[i];
-				if (!entry.gameObject.activeSelf) continue;
+			var container = choreGroup.GetReference<RectTransform>("EntriesContainer");
+			if (container == null) {
+				AddNoErrandsSection(sections);
+				return;
+			}
+
+			for (int i = 0; i < container.childCount; i++) {
+				var choreChild = container.GetChild(i);
+				if (!choreChild.gameObject.activeSelf) continue;
+
+				var entry = choreChild.GetComponent<HierarchyReferences>();
+				if (entry == null) continue;
 
 				var section = new DetailSection();
 
