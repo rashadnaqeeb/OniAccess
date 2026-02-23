@@ -29,8 +29,7 @@ namespace OniAccess.Widgets {
 						}
 						var mt = widget.Component as MultiToggle;
 						if (mt != null) {
-							string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-							return $"{widget.Label}, {state}";
+							return $"{widget.Label}, {GetMultiToggleState(mt)}";
 						}
 						return widget.Label;
 					}
@@ -61,6 +60,8 @@ namespace OniAccess.Widgets {
 			var tooltip = widget.GameObject.GetComponent<ToolTip>();
 			if (tooltip == null)
 				tooltip = widget.GameObject.GetComponentInChildren<ToolTip>();
+			if (tooltip == null)
+				tooltip = widget.GameObject.GetComponentInParent<ToolTip>();
 			if (tooltip == null) return null;
 
 			return ReadAllTooltipText(tooltip);
@@ -137,6 +138,24 @@ namespace OniAccess.Widgets {
 			}
 
 			return widget.Component != null || widget.GameObject != null;
+		}
+
+		// ========================================
+		// MULTI-TOGGLE STATE
+		// ========================================
+
+		/// <summary>
+		/// Map a MultiToggle's CurrentState to a speech string.
+		/// State 0 = off, last state = on, anything between = mixed.
+		/// Handles both 2-state (on/off) and 3-state (off/mixed/on) toggles.
+		/// </summary>
+		public static string GetMultiToggleState(MultiToggle mt) {
+			int last = mt.states != null ? mt.states.Length - 1 : 1;
+			if (mt.CurrentState <= 0)
+				return (string)STRINGS.ONIACCESS.STATES.OFF;
+			if (mt.CurrentState >= last)
+				return (string)STRINGS.ONIACCESS.STATES.ON;
+			return (string)STRINGS.ONIACCESS.STATES.MIXED;
 		}
 
 		// ========================================

@@ -265,6 +265,15 @@ namespace OniAccess.Handlers.Screens {
 				slider.value + step * direction,
 				slider.minValue, slider.maxValue);
 
+			// KSlider events only fire on mouse/keyboard input, not programmatic
+			// value changes. Invoke onMove so side screens (e.g., CapacityControl)
+			// sync related widgets like text fields.
+			try {
+				Traverse.Create(slider).Field<System.Action>("onMove").Value?.Invoke();
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"AdjustSlider: onMove invoke failed: {ex.Message}");
+			}
+
 			if (slider.value <= slider.minValue && direction < 0)
 				PlaySliderSound("Slider_Boundary_Low");
 			else if (slider.value >= slider.maxValue && direction > 0)

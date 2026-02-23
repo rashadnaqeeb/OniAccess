@@ -48,7 +48,7 @@ namespace OniAccess.Widgets {
 			var slider = go.GetComponent<KSlider>();
 			if (slider != null) {
 				var captured = slider;
-				var labelLt = FindChildLocText(t, null);
+				var labelLt = FindChildLocText(t, null) ?? FindSiblingLocText(t);
 				items.Add(new WidgetInfo {
 					Label = ReadLocText(labelLt, t.name),
 					Type = WidgetType.Slider,
@@ -83,13 +83,14 @@ namespace OniAccess.Widgets {
 				return true;
 			}
 
-			// MultiToggle — skip if a sibling KToggle owns this row's checkbox
+			// MultiToggle — skip if a sibling KToggle or preceding MultiToggle
+			// already represents this row's toggle (suppresses expand arrows).
 			var multiToggle = go.GetComponent<MultiToggle>();
 			if (multiToggle != null) {
-				if (HasSiblingKToggle(t))
+				if (IsRedundantMultiToggle(t))
 					return true;
 				var captured = multiToggle;
-				var labelLt = FindChildLocText(t, null);
+				var labelLt = FindChildLocText(t, null) ?? FindSiblingLocText(t);
 				items.Add(new WidgetInfo {
 					Label = ReadLocText(labelLt, t.name),
 					Type = WidgetType.Toggle,
@@ -97,10 +98,7 @@ namespace OniAccess.Widgets {
 					GameObject = go,
 					SpeechFunc = () => {
 						string lbl = ReadLocText(labelLt, captured.transform.name);
-						string state = captured.CurrentState == 1
-							? (string)STRINGS.ONIACCESS.STATES.ON
-							: (string)STRINGS.ONIACCESS.STATES.OFF;
-						return $"{lbl}, {state}";
+						return $"{lbl}, {WidgetOps.GetMultiToggleState(captured)}";
 					}
 				});
 				return true;
@@ -111,6 +109,7 @@ namespace OniAccess.Widgets {
 			if (knum != null) {
 				var captured = knum;
 				var labelLt = FindSiblingLocText(t);
+				var unitsLt = FindFollowingSiblingLocText(t);
 				items.Add(new WidgetInfo {
 					Label = ReadLocText(labelLt, t.name),
 					Type = WidgetType.TextInput,
@@ -120,6 +119,10 @@ namespace OniAccess.Widgets {
 						string lbl = ReadLocText(labelLt, captured.transform.name);
 						string val = captured.field != null
 							? captured.field.text : "";
+						string units = unitsLt != null
+							? unitsLt.GetParsedText() : null;
+						if (!string.IsNullOrEmpty(units))
+							return $"{lbl}, {val} {units}";
 						return $"{lbl}, {val}";
 					}
 				});
@@ -160,9 +163,12 @@ namespace OniAccess.Widgets {
 				return true;
 			}
 
-			// LocText (standalone label — not inside any interactive widget)
+			// LocText (standalone label — not inside any interactive widget).
+			// Skip if a sibling interactive widget will claim this as its label.
 			var locText = go.GetComponent<LocText>();
 			if (locText != null) {
+				if (HasSiblingInteractive(t))
+					return false;
 				var captured = locText;
 				string text = captured.GetParsedText();
 				if (!string.IsNullOrEmpty(text)) {
@@ -184,19 +190,53 @@ namespace OniAccess.Widgets {
 		// ========================================
 
 		/// <summary>
-		/// Returns true if any sibling (or sibling descendant) of the given
-		/// transform has a KToggle. Used to suppress MultiToggle expand arrows
-		/// when a KToggle checkbox already represents the row.
+		/// Returns true if this MultiToggle is redundant: either a sibling
+		/// KToggle already owns the row's checkbox, or a preceding sibling
+		/// MultiToggle already represents the row's toggle (the second
+		/// MultiToggle in a row is typically an expand/collapse arrow).
 		/// </summary>
-		private static bool HasSiblingKToggle(Transform t) {
+		private static bool IsRedundantMultiToggle(Transform t) {
 			if (t.parent == null) return false;
 			var parent = t.parent;
+			int myIndex = t.GetSiblingIndex();
+
 			for (int i = 0; i < parent.childCount; i++) {
 				var sibling = parent.GetChild(i);
 				if (sibling == t) continue;
 				if (!sibling.gameObject.activeSelf) continue;
 				if (sibling.GetComponentInChildren<KToggle>() != null)
 					return true;
+			}
+
+			for (int i = 0; i < myIndex; i++) {
+				var sibling = parent.GetChild(i);
+				if (!sibling.gameObject.activeSelf) continue;
+				if (sibling.GetComponent<MultiToggle>() != null)
+					return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Returns true if any sibling (or sibling descendant) has an
+		/// interactive component that would claim a LocText as its label
+		/// via FindSiblingLocText. Used to suppress standalone LocText
+		/// emission when the text is already a widget's label.
+		/// </summary>
+		private static bool HasSiblingInteractive(Transform t) {
+			if (t.parent == null) return false;
+			var parent = t.parent;
+			for (int i = 0; i < parent.childCount; i++) {
+				var sibling = parent.GetChild(i);
+				if (sibling == t) continue;
+				if (!sibling.gameObject.activeSelf) continue;
+				var sgo = sibling.gameObject;
+				if (sgo.GetComponent<KSlider>() != null) return true;
+				if (sgo.GetComponent<KToggle>() != null) return true;
+				if (sgo.GetComponent<MultiToggle>() != null) return true;
+				if (sgo.GetComponent<KNumberInputField>() != null) return true;
+				if (sgo.GetComponent<KInputField>() != null) return true;
 			}
 			return false;
 		}
@@ -245,6 +285,30 @@ namespace OniAccess.Widgets {
 						return lt;
 				}
 			}
+
+			for (int i = myIndex + 1; i < parent.childCount; i++) {
+				var sibling = parent.GetChild(i);
+				if (!sibling.gameObject.activeSelf) continue;
+				var lt = sibling.GetComponent<LocText>();
+				if (lt == null) lt = sibling.GetComponentInChildren<LocText>();
+				if (lt != null) {
+					string text = lt.GetParsedText();
+					if (!string.IsNullOrEmpty(text))
+						return lt;
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Find the first LocText among following siblings only. Used to
+		/// capture a units suffix (e.g., "kg") for number input fields.
+		/// </summary>
+		private static LocText FindFollowingSiblingLocText(Transform t) {
+			if (t.parent == null) return null;
+			var parent = t.parent;
+			int myIndex = t.GetSiblingIndex();
 
 			for (int i = myIndex + 1; i < parent.childCount; i++) {
 				var sibling = parent.GetChild(i);

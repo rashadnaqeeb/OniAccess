@@ -118,6 +118,7 @@ namespace STRINGS {
 			public static LocString FORBIDDEN = "not present";
 			public static LocString ON = "on";
 			public static LocString OFF = "off";
+			public static LocString MIXED = "mixed";
 			public static LocString ENABLED = "enabled";
 			public static LocString DISABLED = "disabled";
 			public static LocString ANY = "Any";
