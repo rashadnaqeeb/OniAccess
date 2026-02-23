@@ -50,7 +50,7 @@ namespace OniAccess.Handlers {
 			return _entries[index].ToString();
 		}
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_currentIndex >= 0 && _currentIndex < _entries.Count)
 				Speech.SpeechPipeline.SpeakInterrupt(_entries[_currentIndex].ToString());
 		}

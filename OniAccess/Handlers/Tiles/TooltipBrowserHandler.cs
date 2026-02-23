@@ -27,7 +27,7 @@ namespace OniAccess.Handlers.Tiles {
 			return _lines[index];
 		}
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_currentIndex >= 0 && _currentIndex < _lines.Count)
 				SpeechPipeline.SpeakInterrupt(
 					TextFilter.FilterForSpeech(_lines[_currentIndex]));

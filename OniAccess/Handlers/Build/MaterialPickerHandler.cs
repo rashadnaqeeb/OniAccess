@@ -35,7 +35,7 @@ namespace OniAccess.Handlers.Build {
 			return _materials[index].Label;
 		}
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_materials != null && _currentIndex >= 0 && _currentIndex < _materials.Count)
 				SpeechPipeline.SpeakInterrupt(_materials[_currentIndex].Label);
 		}

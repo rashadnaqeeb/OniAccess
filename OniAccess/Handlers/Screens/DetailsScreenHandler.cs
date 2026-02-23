@@ -190,9 +190,9 @@ namespace OniAccess.Handlers.Screens {
 		// SPEECH
 		// ========================================
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			if (Level == 0) {
-				base.SpeakCurrentItem();
+				base.SpeakCurrentItem(parentContext);
 				return;
 			}
 
@@ -202,6 +202,8 @@ namespace OniAccess.Handlers.Screens {
 			string text = WidgetOps.GetSpeechText(w);
 			string tip = WidgetOps.GetTooltipText(w);
 			if (tip != null) text = $"{text}, {tip}";
+			if (!string.IsNullOrEmpty(parentContext))
+				text = parentContext + ", " + text;
 			if (!string.IsNullOrEmpty(text))
 				SpeechPipeline.SpeakInterrupt(text);
 		}

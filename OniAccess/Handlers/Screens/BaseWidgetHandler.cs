@@ -63,7 +63,7 @@ namespace OniAccess.Handlers.Screens {
 			return _widgets[index].Label;
 		}
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			SpeakCurrentWidget();
 		}
 

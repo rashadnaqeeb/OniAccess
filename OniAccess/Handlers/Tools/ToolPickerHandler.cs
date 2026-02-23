@@ -30,7 +30,7 @@ namespace OniAccess.Handlers.Tools {
 			return ToolHandler.AllTools[index].Label;
 		}
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_currentIndex >= 0 && _currentIndex < ToolHandler.AllTools.Count)
 				SpeechPipeline.SpeakInterrupt(ToolHandler.AllTools[_currentIndex].Label);
 		}

@@ -34,7 +34,7 @@ namespace OniAccess.Handlers.Build {
 			return _facades[index].Label;
 		}
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_facades != null && _currentIndex >= 0 && _currentIndex < _facades.Count)
 				SpeechPipeline.SpeakInterrupt(_facades[_currentIndex].Label);
 		}

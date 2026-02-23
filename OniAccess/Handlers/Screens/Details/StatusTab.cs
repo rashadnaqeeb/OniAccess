@@ -226,7 +226,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				var captured = line;
 				var checkRef = captured.go.GetComponent<HierarchyReferences>();
 				section.Items.Add(new WidgetInfo {
-					Label = captured.locText.text,
+					Label = captured.locText.GetParsedText(),
 					Type = WidgetType.Label,
 					GameObject = captured.go,
 					SpeechFunc = () => {
@@ -234,7 +234,7 @@ namespace OniAccess.Handlers.Screens.Details {
 						string prefix = met
 							? (string)STRINGS.ONIACCESS.STATES.CONDITION_MET
 							: (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
-						return $"{prefix}, {captured.locText.text}";
+						return $"{prefix}, {captured.locText.GetParsedText()}";
 					}
 				});
 			}
@@ -249,10 +249,10 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (!line.go.activeSelf) continue;
 				var captured = line;
 				section.Items.Add(new WidgetInfo {
-					Label = captured.locText.text,
+					Label = captured.locText.GetParsedText(),
 					Type = WidgetType.Label,
 					GameObject = captured.go,
-					SpeechFunc = () => captured.locText.text
+					SpeechFunc = () => captured.locText.GetParsedText()
 				});
 			}
 		}
@@ -263,10 +263,10 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (!line.go.activeSelf) continue;
 				var captured = line;
 				section.Items.Add(new WidgetInfo {
-					Label = captured.locText.text,
+					Label = captured.locText.GetParsedText(),
 					Type = WidgetType.Label,
 					GameObject = captured.go,
-					SpeechFunc = () => captured.locText.text
+					SpeechFunc = () => captured.locText.GetParsedText()
 				});
 			}
 		}

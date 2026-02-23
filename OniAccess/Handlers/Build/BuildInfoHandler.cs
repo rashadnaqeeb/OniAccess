@@ -49,7 +49,7 @@ namespace OniAccess.Handlers.Build {
 			return _items[index].Label;
 		}
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_items != null && _currentIndex >= 0 && _currentIndex < _items.Count)
 				SpeechPipeline.SpeakInterrupt(_items[_currentIndex].Label);
 		}

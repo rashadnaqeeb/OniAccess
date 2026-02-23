@@ -45,7 +45,7 @@ namespace OniAccess.Handlers.Tools {
 			return _filterNames[index];
 		}
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_filterNames != null && _currentIndex >= 0 && _currentIndex < _filterNames.Count)
 				SpeechPipeline.SpeakInterrupt(_filterNames[_currentIndex]);
 		}

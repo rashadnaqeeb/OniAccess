@@ -44,7 +44,7 @@ namespace OniAccess.Handlers {
 		/// <summary>
 		/// Speak the currently focused item via SpeakInterrupt.
 		/// </summary>
-		public abstract void SpeakCurrentItem();
+		public abstract void SpeakCurrentItem(string parentContext = null);
 
 		// ========================================
 		// VIRTUAL HOOKS

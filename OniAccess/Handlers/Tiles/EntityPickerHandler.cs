@@ -27,7 +27,7 @@ namespace OniAccess.Handlers.Tiles {
 			return _selectables[index].GetName();
 		}
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_currentIndex >= 0 && _currentIndex < _selectables.Count)
 				SpeechPipeline.SpeakInterrupt(_selectables[_currentIndex].GetName());
 		}

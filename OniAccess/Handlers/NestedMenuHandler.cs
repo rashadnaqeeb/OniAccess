@@ -86,7 +86,7 @@ namespace OniAccess.Handlers {
 			return label;
 		}
 
-		public override void SpeakCurrentItem() {
+		public override void SpeakCurrentItem(string parentContext = null) {
 			// Base class methods (NavigateNext/Prev/First/Last) update
 			// _currentIndex directly before calling SpeakCurrentItem.
 			// Sync _indices so label lookup reads the correct position.
@@ -94,8 +94,10 @@ namespace OniAccess.Handlers {
 			int count = GetItemCount(_level, _indices);
 			if (count == 0) return;
 			string label = GetItemLabel(_level, _indices);
-			if (!string.IsNullOrEmpty(label))
-				SpeechPipeline.SpeakInterrupt(label);
+			if (string.IsNullOrEmpty(label)) return;
+			if (!string.IsNullOrEmpty(parentContext))
+				label = parentContext + ", " + label;
+			SpeechPipeline.SpeakInterrupt(label);
 		}
 
 		// ========================================
@@ -337,11 +339,7 @@ namespace OniAccess.Handlers {
 
 		private void SpeakWithParentContext() {
 			string parentLabel = GetParentLabel(_level, _indices);
-			string itemLabel = GetItemLabel(_level, _indices);
-			if (!string.IsNullOrEmpty(parentLabel) && !string.IsNullOrEmpty(itemLabel))
-				SpeechPipeline.SpeakInterrupt(parentLabel + ", " + itemLabel);
-			else if (!string.IsNullOrEmpty(itemLabel))
-				SpeechPipeline.SpeakInterrupt(itemLabel);
+			SpeakCurrentItem(parentLabel);
 		}
 
 		/// <summary>
