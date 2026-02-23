@@ -118,9 +118,22 @@ namespace OniAccess.Handlers.Screens.Details {
 			var content = storagePanel.Content;
 			if (content == null) return;
 
+			// Collapsable groups place their content rows as siblings in the same
+			// parent container. Collect those GameObjects so we skip them during
+			// the flat iteration and avoid duplicating items already captured as
+			// children of the collapsable group.
+			var groupRows = new HashSet<GameObject>();
+			for (int i = 0; i < content.childCount; i++) {
+				var collapsable = content.GetChild(i).GetComponent<DetailCollapsableLabel>();
+				if (collapsable == null) continue;
+				foreach (var row in collapsable.contentRows)
+					groupRows.Add(row.label.gameObject);
+			}
+
 			for (int i = 0; i < content.childCount; i++) {
 				var child = content.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
+				if (groupRows.Contains(child.gameObject)) continue;
 
 				var collapsable = child.GetComponent<DetailCollapsableLabel>();
 				if (collapsable != null) {
