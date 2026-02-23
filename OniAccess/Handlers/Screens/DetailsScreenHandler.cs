@@ -385,8 +385,13 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		private void SpeakFirstSection() {
-			if (_sections.Count > 0 && !string.IsNullOrEmpty(_sections[0].Header))
-				SpeechPipeline.SpeakQueued(_sections[0].Header);
+			if (_sections.Count == 0 || string.IsNullOrEmpty(_sections[0].Header))
+				return;
+			string header = _sections[0].Header;
+			if (_tabIndex >= 0 && _tabIndex < _activeTabs.Count
+				&& header == _activeTabs[_tabIndex].DisplayName)
+				return;
+			SpeechPipeline.SpeakQueued(header);
 		}
 
 		// ========================================
