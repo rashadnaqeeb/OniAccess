@@ -48,5 +48,11 @@ namespace OniAccess.Widgets {
 		/// When set, GetWidgetSpeechText uses this instead of the WidgetType switch.
 		/// </summary>
 		public System.Func<string> SpeechFunc { get; set; }
+
+		/// <summary>
+		/// When true, tooltip text is not appended to speech output.
+		/// Used for section headers where the tooltip duplicates the label.
+		/// </summary>
+		public bool SuppressTooltip { get; set; }
 	}
 }

@@ -16,10 +16,15 @@ namespace OniAccess.Handlers.Screens.Details {
 
 		public bool IsAvailable(GameObject target) => true;
 
-		private static readonly string[] PanelFieldNames = {
-			"detailsPanel", "immuneSystemPanel", "diseaseSourcePanel",
-			"currentGermsPanel", "overviewPanel", "generatorsPanel",
-			"consumersPanel", "batteriesPanel"
+		private static readonly (string field, bool header)[] Sections = {
+			("detailsPanel", false),
+			("immuneSystemPanel", true),
+			("diseaseSourcePanel", true),
+			("currentGermsPanel", false),
+			("overviewPanel", true),
+			("generatorsPanel", true),
+			("consumersPanel", true),
+			("batteriesPanel", true),
 		};
 
 		public void Populate(GameObject target, List<WidgetInfo> widgets) {
@@ -35,7 +40,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (panel.gameObject.activeSelf)
 				panel.SetTarget(target);
 
-			foreach (var fieldName in PanelFieldNames) {
+			foreach (var (fieldName, includeHeader) in Sections) {
 				CollapsibleDetailContentPanel section;
 				try {
 					section = Traverse.Create(panel)
@@ -47,21 +52,25 @@ namespace OniAccess.Handlers.Screens.Details {
 
 				if (section == null || !section.gameObject.activeSelf) continue;
 
-				AddSectionWidgets(section, widgets);
+				AddSectionWidgets(section, widgets, includeHeader);
 			}
 
 		}
 
 		private static void AddSectionWidgets(
-				CollapsibleDetailContentPanel section, List<WidgetInfo> widgets) {
-			var headerLabel = section.HeaderLabel;
-			if (headerLabel != null && !string.IsNullOrEmpty(headerLabel.text)) {
-				widgets.Add(new WidgetInfo {
-					Label = headerLabel.text,
-					Type = WidgetType.Label,
-					GameObject = section.gameObject,
-					SpeechFunc = () => headerLabel.text
-				});
+				CollapsibleDetailContentPanel section, List<WidgetInfo> widgets,
+				bool includeHeader = false) {
+			if (includeHeader) {
+				var headerLabel = section.HeaderLabel;
+				if (headerLabel != null && !string.IsNullOrEmpty(headerLabel.text)) {
+					widgets.Add(new WidgetInfo {
+						Label = headerLabel.text,
+						Type = WidgetType.Label,
+						GameObject = section.gameObject,
+						SpeechFunc = () => headerLabel.text,
+						SuppressTooltip = true,
+					});
+				}
 			}
 
 			var content = section.Content;

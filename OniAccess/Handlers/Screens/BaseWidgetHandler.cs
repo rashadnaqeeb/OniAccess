@@ -419,6 +419,7 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected virtual string GetTooltipText(WidgetInfo widget) {
+			if (widget.SuppressTooltip) return null;
 			if (widget.GameObject == null) return null;
 
 			var tooltip = widget.GameObject.GetComponent<ToolTip>();
