@@ -169,22 +169,24 @@ namespace OniAccess.Handlers.Screens.Details {
 					$"{captured.nameLabel.GetParsedText()}, {captured.valueLabel.GetParsedText()}"
 			};
 
-			if (captured.IsExpanded) {
-				var children = new List<WidgetInfo>();
-				foreach (var row in captured.contentRows) {
-					if (!row.inUse) continue;
-					var childLabel = row.label;
-					children.Add(new WidgetInfo {
-						Label = childLabel.label.GetParsedText(),
-						Type = WidgetType.Button,
-						Component = childLabel.button,
-						GameObject = childLabel.gameObject,
-						SpeechFunc = () => BuildStorageItemText(childLabel)
-					});
-				}
-				if (children.Count > 0)
-					widget.Children = children;
+			// The game only populates contentRows when the user clicks to expand.
+			// Trigger the expand callback to populate rows from live storage data.
+			captured.ManualTriggerOnExpanded();
+
+			var children = new List<WidgetInfo>();
+			foreach (var row in captured.contentRows) {
+				if (!row.inUse) continue;
+				var childLabel = row.label;
+				children.Add(new WidgetInfo {
+					Label = childLabel.label.GetParsedText(),
+					Type = WidgetType.Button,
+					Component = childLabel.button,
+					GameObject = childLabel.gameObject,
+					SpeechFunc = () => BuildStorageItemText(childLabel)
+				});
 			}
+			if (children.Count > 0)
+				widget.Children = children;
 
 			section.Items.Add(widget);
 		}
