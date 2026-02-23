@@ -180,11 +180,7 @@ namespace OniAccess.Handlers.Screens.Details {
 
 		private static void AddNoErrandsSection(List<DetailSection> sections) {
 			var section = new DetailSection();
-			section.Items.Add(new WidgetInfo {
-				Label = (string)STRINGS.ONIACCESS.DETAILS.NO_ERRANDS,
-				Type = WidgetType.Label,
-				SpeechFunc = () => (string)STRINGS.ONIACCESS.DETAILS.NO_ERRANDS
-			});
+			section.Header = (string)STRINGS.ONIACCESS.DETAILS.NO_ERRANDS;
 			sections.Add(section);
 		}
 
