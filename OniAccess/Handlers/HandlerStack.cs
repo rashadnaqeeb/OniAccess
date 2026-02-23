@@ -165,6 +165,10 @@ namespace OniAccess.Handlers {
 				if (!(_stack[i] is BaseScreenHandler sh)) continue;
 				if (System.Object.ReferenceEquals(sh.Screen, null)) continue;
 				if (sh.Screen != null && sh.Screen.gameObject.activeInHierarchy) continue;
+				// Show-patched screens manage lifecycle via Show patches. If inactive
+				// via SetActive(false) rather than Show(false), it's a temporary hide
+				// (e.g., PauseScreen hides itself during save confirmation dialogs).
+				if (sh.Screen != null && ContextDetector.IsShowPatched(sh.Screen.GetType())) continue;
 
 				_stack.RemoveAt(i);
 				try {
