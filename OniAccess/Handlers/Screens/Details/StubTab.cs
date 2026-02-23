@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-using OniAccess.Widgets;
-
 namespace OniAccess.Handlers.Screens.Details {
 	/// <summary>
 	/// Placeholder tab that produces no widgets.
@@ -34,6 +32,6 @@ namespace OniAccess.Handlers.Screens.Details {
 		public bool IsAvailable(GameObject target) =>
 			_isAvailable == null || _isAvailable(target);
 
-		public void Populate(GameObject target, List<WidgetInfo> widgets) { }
+		public void Populate(GameObject target, List<DetailSection> sections) { }
 	}
 }

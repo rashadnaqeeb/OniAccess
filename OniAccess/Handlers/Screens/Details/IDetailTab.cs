@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using OniAccess.Widgets;
-
 namespace OniAccess.Handlers.Screens.Details {
 	/// <summary>
 	/// Contract for tab readers in the details screen handler.
-	/// Each implementation knows how to read one tab's UI into a widget list.
+	/// Each implementation knows how to read one tab's UI into structured sections.
 	/// </summary>
 	interface IDetailTab {
 		/// <summary>
@@ -28,10 +26,10 @@ namespace OniAccess.Handlers.Screens.Details {
 		bool IsAvailable(GameObject target);
 
 		/// <summary>
-		/// Read the tab's live UI into the widget list.
+		/// Read the tab's live UI into structured sections.
 		/// Called on target change, tab switch, and before keypress processing.
 		/// The handler owns the list and clears it before calling.
 		/// </summary>
-		void Populate(GameObject target, List<WidgetInfo> widgets);
+		void Populate(GameObject target, List<DetailSection> sections);
 	}
 }

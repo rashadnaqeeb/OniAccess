@@ -3,26 +3,31 @@ using HarmonyLib;
 using UnityEngine;
 
 using OniAccess.Handlers.Screens.Details;
+using OniAccess.Speech;
 using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for the DetailsScreen (entity inspection panel).
-	/// Manages tab cycling across informational and side screen tabs,
-	/// delegating widget population to IDetailTab readers.
+	/// Two-level nested navigation: section headers (level 0) and items within
+	/// each section (level 1). Manages tab cycling across informational and
+	/// side screen tabs, delegating section population to IDetailTab readers.
 	///
 	/// Lifecycle: Show-patch on DetailsScreen.OnShow(bool).
 	/// The DetailsScreen is a persistent singleton that shows/hides rather than
 	/// activating/deactivating, so KScreen.Activate patches skip it.
 	/// </summary>
-	public class DetailsScreenHandler : BaseWidgetHandler {
+	public class DetailsScreenHandler : NestedMenuHandler {
 		private readonly IDetailTab[] _tabs;
 		private readonly List<IDetailTab> _activeTabs = new List<IDetailTab>();
+		private readonly List<DetailSection> _sections = new List<DetailSection>();
 		private int _tabIndex;
 		private GameObject _lastTarget;
+		private bool _tabSwitching;
 
 		public override string DisplayName {
 			get {
+				if (_tabSwitching) return null;
 				var ds = DetailsScreen.Instance;
 				if (ds == null || ds.target == null)
 					return STRINGS.ONIACCESS.HANDLERS.DETAILS_SCREEN;
@@ -37,20 +42,113 @@ namespace OniAccess.Handlers.Screens {
 
 		public DetailsScreenHandler(KScreen screen) : base(screen) {
 			_tabs = BuildTabs();
-			HelpEntries = BuildHelpEntries(
-				new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
+			var list = new List<HelpEntry>();
+			list.AddRange(NestedNavHelpEntries);
+			list.Add(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
+			HelpEntries = list.AsReadOnly();
 		}
 
+		// ========================================
+		// NESTED MENU ABSTRACTS
+		// ========================================
+
+		protected override int MaxLevel => 1;
+		protected override int SearchLevel => 1;
+
+		protected override int GetItemCount(int level, int[] indices) {
+			if (level == 0) return _sections.Count;
+			if (indices[0] < 0 || indices[0] >= _sections.Count) return 0;
+			return _sections[indices[0]].Items.Count;
+		}
+
+		protected override string GetItemLabel(int level, int[] indices) {
+			if (level == 0) {
+				if (indices[0] < 0 || indices[0] >= _sections.Count) return null;
+				return _sections[indices[0]].Header;
+			}
+			if (indices[0] < 0 || indices[0] >= _sections.Count) return null;
+			var items = _sections[indices[0]].Items;
+			if (indices[1] < 0 || indices[1] >= items.Count) return null;
+			return GetWidgetSpeechText(items[indices[1]]);
+		}
+
+		protected override string GetParentLabel(int level, int[] indices) {
+			if (level < 1) return null;
+			if (indices[0] < 0 || indices[0] >= _sections.Count) return null;
+			return _sections[indices[0]].Header;
+		}
+
+		protected override void ActivateLeafItem(int[] indices) { }
+
+		protected override int GetSearchItemCount(int[] indices) {
+			int total = 0;
+			for (int s = 0; s < _sections.Count; s++)
+				total += _sections[s].Items.Count;
+			return total;
+		}
+
+		protected override string GetSearchItemLabel(int flatIndex) {
+			int remaining = flatIndex;
+			for (int s = 0; s < _sections.Count; s++) {
+				int count = _sections[s].Items.Count;
+				if (remaining < count)
+					return GetWidgetSpeechText(_sections[s].Items[remaining]);
+				remaining -= count;
+			}
+			return null;
+		}
+
+		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
+			int remaining = flatIndex;
+			for (int s = 0; s < _sections.Count; s++) {
+				int count = _sections[s].Items.Count;
+				if (remaining < count) {
+					outIndices[0] = s;
+					outIndices[1] = remaining;
+					return;
+				}
+				remaining -= count;
+			}
+		}
+
+		// ========================================
+		// SPEECH
+		// ========================================
+
+		public override void SpeakCurrentItem() {
+			if (Level == 0) {
+				base.SpeakCurrentItem();
+				return;
+			}
+
+			int sIdx = GetIndex(0);
+			int iIdx = GetIndex(1);
+			if (sIdx < 0 || sIdx >= _sections.Count) return;
+			var items = _sections[sIdx].Items;
+			if (iIdx < 0 || iIdx >= items.Count) return;
+
+			var w = items[iIdx];
+			string text = GetWidgetSpeechText(w);
+			string tip = GetTooltipText(w);
+			if (tip != null) text = $"{text}, {tip}";
+			if (!string.IsNullOrEmpty(text))
+				SpeechPipeline.SpeakInterrupt(text);
+		}
+
+		// ========================================
+		// LIFECYCLE
+		// ========================================
+
 		public override void OnActivate() {
-			// Set _lastTarget before base.OnActivate to prevent double-speak:
-			// base.OnActivate -> SpeakInterrupt(DisplayName) -> DiscoverWidgets
-			// Then Tick()'s target-change check sees no change on the first frame.
 			_lastTarget = DetailsScreen.Instance != null
 				? DetailsScreen.Instance.target : null;
 			RebuildActiveTabs(_lastTarget);
 			_tabIndex = 0;
 			SwitchGameTab();
+			RebuildSections();
 			base.OnActivate();
+
+			SpeakFirstSection();
 		}
 
 		// ========================================
@@ -65,43 +163,17 @@ namespace OniAccess.Handlers.Screens {
 				_lastTarget = currentTarget;
 				if (currentTarget != null) {
 					RebuildActiveTabs(currentTarget);
-
-					// Reset tab to first available (typically Status/Properties)
 					_tabIndex = 0;
 					SwitchGameTab();
+					RebuildSections();
+					ResetNavigation();
 
-					DiscoverWidgets(_screen);
-					_currentIndex = 0;
-
-					Speech.SpeechPipeline.SpeakInterrupt(DisplayName);
-					if (_widgets.Count > 0)
-						Speech.SpeechPipeline.SpeakQueued(
-							GetWidgetSpeechText(_widgets[0]));
+					SpeechPipeline.SpeakInterrupt(DisplayName);
+					SpeakFirstSection();
 				}
 			}
 
 			base.Tick();
-		}
-
-		// ========================================
-		// WIDGET DISCOVERY
-		// ========================================
-
-		public override bool DiscoverWidgets(KScreen screen) {
-			_widgets.Clear();
-			var ds = DetailsScreen.Instance;
-			if (ds == null || ds.target == null) return true;
-			if (_tabIndex < 0 || _tabIndex >= _activeTabs.Count) return true;
-
-			try {
-				_activeTabs[_tabIndex].Populate(ds.target, _widgets);
-			} catch (System.Exception ex) {
-				Util.Log.Error(
-					$"DetailsScreenHandler: tab '{_activeTabs[_tabIndex].DisplayName}' " +
-					$"Populate failed: {ex}");
-			}
-
-			return true;
 		}
 
 		// ========================================
@@ -120,11 +192,6 @@ namespace OniAccess.Handlers.Screens {
 			if (_activeTabs.Count <= 1) return;
 
 			int oldIndex = _tabIndex;
-
-			// Save cursor GO for stability
-			GameObject prevGO = (_currentIndex >= 0 && _currentIndex < _widgets.Count)
-				? _widgets[_currentIndex].GameObject : null;
-
 			_tabIndex = ((_tabIndex + direction) % _activeTabs.Count + _activeTabs.Count)
 				% _activeTabs.Count;
 
@@ -133,26 +200,33 @@ namespace OniAccess.Handlers.Screens {
 				: _tabIndex >= oldIndex;
 
 			SwitchGameTab();
-			DiscoverWidgets(_screen);
-
-			// Restore cursor: find prevGO in new list
-			_currentIndex = 0;
-			if (prevGO != null) {
-				for (int i = 0; i < _widgets.Count; i++) {
-					if (_widgets[i].GameObject == prevGO) {
-						_currentIndex = i;
-						break;
-					}
-				}
-			}
+			RebuildSections();
+			ResetNavigation();
 
 			if (wrapped) PlayWrapSound();
 			else PlayHoverSound();
 
-			Speech.SpeechPipeline.SpeakInterrupt(_activeTabs[_tabIndex].DisplayName);
-			if (_widgets.Count > 0)
-				Speech.SpeechPipeline.SpeakQueued(
-					GetWidgetSpeechText(_widgets[_currentIndex]));
+			SpeechPipeline.SpeakInterrupt(_activeTabs[_tabIndex].DisplayName);
+			SpeakFirstSection();
+		}
+
+		// ========================================
+		// SECTION MANAGEMENT
+		// ========================================
+
+		private void RebuildSections() {
+			_sections.Clear();
+			var ds = DetailsScreen.Instance;
+			if (ds == null || ds.target == null) return;
+			if (_tabIndex < 0 || _tabIndex >= _activeTabs.Count) return;
+
+			try {
+				_activeTabs[_tabIndex].Populate(ds.target, _sections);
+			} catch (System.Exception ex) {
+				Util.Log.Error(
+					$"DetailsScreenHandler: tab '{_activeTabs[_tabIndex].DisplayName}' " +
+					$"Populate failed: {ex}");
+			}
 		}
 
 		// ========================================
@@ -163,9 +237,6 @@ namespace OniAccess.Handlers.Screens {
 			_activeTabs.Clear();
 			if (target == null) return;
 
-			// Query the game's tab toggle visibility for info tabs.
-			// The game has already called RefreshTabDisplayForTarget by the
-			// time we run, so toggle.activeSelf reflects the real state.
 			Dictionary<string, MultiToggle> gameTabs = null;
 			var ds = DetailsScreen.Instance;
 			if (ds != null) {
@@ -178,12 +249,10 @@ namespace OniAccess.Handlers.Screens {
 
 			foreach (var tab in _tabs) {
 				if (tab.GameTabId != null && gameTabs != null) {
-					// Info tab: use the game's toggle visibility
 					if (gameTabs.TryGetValue(tab.GameTabId, out var toggle)
 							&& !toggle.gameObject.activeSelf)
 						continue;
 				} else if (!tab.IsAvailable(target)) {
-					// Side screen tab: use local predicate as fallback
 					continue;
 				}
 				_activeTabs.Add(tab);
@@ -192,8 +261,6 @@ namespace OniAccess.Handlers.Screens {
 
 		/// <summary>
 		/// Switch the game's visual tab to match our logical tab.
-		/// Info tabs use DetailTabHeader.ChangeTab; side screen tabs (null GameTabId)
-		/// will use sidescreenTabHeader when implemented.
 		/// </summary>
 		private void SwitchGameTab() {
 			if (_tabIndex < 0 || _tabIndex >= _activeTabs.Count) return;
@@ -210,6 +277,74 @@ namespace OniAccess.Handlers.Screens {
 
 			Traverse.Create(tabHeader).Method("ChangeTab", gameTabId).GetValue();
 		}
+
+		// ========================================
+		// PRIVATE HELPERS
+		// ========================================
+
+		/// <summary>
+		/// Reset NestedMenuHandler's private navigation state by cycling
+		/// through OnDeactivate/OnActivate. Suppresses speech during reset.
+		/// </summary>
+		private void ResetNavigation() {
+			_tabSwitching = true;
+			base.OnDeactivate();
+			base.OnActivate();
+			_tabSwitching = false;
+		}
+
+		private void SpeakFirstSection() {
+			if (_sections.Count > 0 && !string.IsNullOrEmpty(_sections[0].Header))
+				SpeechPipeline.SpeakQueued(_sections[0].Header);
+		}
+
+		// ========================================
+		// WIDGET SPEECH HELPERS (ported from BaseWidgetHandler)
+		// ========================================
+
+		private static string GetWidgetSpeechText(WidgetInfo widget) {
+			if (widget.SpeechFunc != null) {
+				string result = widget.SpeechFunc();
+				if (result != null) return result;
+			}
+			return widget.Label;
+		}
+
+		private static string GetTooltipText(WidgetInfo widget) {
+			if (widget.SuppressTooltip) return null;
+			if (widget.GameObject == null) return null;
+
+			var tooltip = widget.GameObject.GetComponent<ToolTip>();
+			if (tooltip == null)
+				tooltip = widget.GameObject.GetComponentInChildren<ToolTip>();
+			if (tooltip == null) return null;
+
+			return ReadAllTooltipText(tooltip);
+		}
+
+		private static string ReadAllTooltipText(ToolTip tooltip) {
+			tooltip.RebuildDynamicTooltip();
+
+			if (tooltip.multiStringCount == 0) return null;
+
+			if (tooltip.multiStringCount == 1) {
+				string single = tooltip.GetMultiString(0);
+				return string.IsNullOrEmpty(single) ? null : single;
+			}
+
+			var sb = new System.Text.StringBuilder();
+			for (int i = 0; i < tooltip.multiStringCount; i++) {
+				string entry = tooltip.GetMultiString(i);
+				if (string.IsNullOrEmpty(entry)) continue;
+				if (sb.Length > 0) sb.Append(", ");
+				sb.Append(entry);
+			}
+			return sb.Length == 0 ? null : sb.ToString();
+		}
+
+		// ========================================
+		// TAB CONFIGURATION
+		// ========================================
 
 		private static IDetailTab[] BuildTabs() {
 			return new IDetailTab[] {

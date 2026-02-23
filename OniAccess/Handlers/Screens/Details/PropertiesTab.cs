@@ -6,7 +6,7 @@ using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Details {
 	/// <summary>
-	/// Reads the AdditionalDetailsPanel (Properties tab) into a flat widget list.
+	/// Reads the AdditionalDetailsPanel (Properties tab) into structured sections.
 	/// Eight CollapsibleDetailContentPanel sections, each with a header and DetailLabel children.
 	/// All widgets use SpeechFunc for live text since the game updates labels every frame.
 	/// </summary>
@@ -16,18 +16,18 @@ namespace OniAccess.Handlers.Screens.Details {
 
 		public bool IsAvailable(GameObject target) => true;
 
-		private static readonly (string field, bool header)[] Sections = {
-			("detailsPanel", false),
-			("immuneSystemPanel", true),
-			("diseaseSourcePanel", true),
-			("currentGermsPanel", false),
-			("overviewPanel", true),
-			("generatorsPanel", true),
-			("consumersPanel", true),
-			("batteriesPanel", true),
+		private static readonly string[] SectionFields = {
+			"detailsPanel",
+			"immuneSystemPanel",
+			"diseaseSourcePanel",
+			"currentGermsPanel",
+			"overviewPanel",
+			"generatorsPanel",
+			"consumersPanel",
+			"batteriesPanel",
 		};
 
-		public void Populate(GameObject target, List<WidgetInfo> widgets) {
+		public void Populate(GameObject target, List<DetailSection> sections) {
 			var panel = FindPanel();
 			if (panel == null) {
 				Util.Log.Warn("PropertiesTab.Populate: AdditionalDetailsPanel not found");
@@ -40,41 +40,33 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (panel.gameObject.activeSelf)
 				panel.SetTarget(target);
 
-			foreach (var (fieldName, includeHeader) in Sections) {
-				CollapsibleDetailContentPanel section;
+			foreach (var fieldName in SectionFields) {
+				CollapsibleDetailContentPanel gameSection;
 				try {
-					section = Traverse.Create(panel)
+					gameSection = Traverse.Create(panel)
 						.Field<CollapsibleDetailContentPanel>(fieldName).Value;
 				} catch (System.Exception ex) {
 					Util.Log.Warn($"PropertiesTab: field '{fieldName}' read failed: {ex.Message}");
 					continue;
 				}
 
-				if (section == null || !section.gameObject.activeSelf) continue;
+				if (gameSection == null || !gameSection.gameObject.activeSelf) continue;
 
-				AddSectionWidgets(section, widgets, includeHeader);
+				var section = BuildSection(gameSection);
+				if (section.Items.Count > 0)
+					sections.Add(section);
 			}
-
 		}
 
-		private static void AddSectionWidgets(
-				CollapsibleDetailContentPanel section, List<WidgetInfo> widgets,
-				bool includeHeader = false) {
-			if (includeHeader) {
-				var headerLabel = section.HeaderLabel;
-				if (headerLabel != null && !string.IsNullOrEmpty(headerLabel.text)) {
-					widgets.Add(new WidgetInfo {
-						Label = headerLabel.text,
-						Type = WidgetType.Label,
-						GameObject = section.gameObject,
-						SpeechFunc = () => headerLabel.text,
-						SuppressTooltip = true,
-					});
-				}
-			}
+		private static DetailSection BuildSection(CollapsibleDetailContentPanel gameSection) {
+			var section = new DetailSection();
 
-			var content = section.Content;
-			if (content == null) return;
+			var headerLabel = gameSection.HeaderLabel;
+			if (headerLabel != null && !string.IsNullOrEmpty(headerLabel.text))
+				section.Header = headerLabel.text;
+
+			var content = gameSection.Content;
+			if (content == null) return section;
 
 			for (int i = 0; i < content.childCount; i++) {
 				var child = content.GetChild(i);
@@ -84,13 +76,15 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (detailLabel == null) continue;
 
 				var captured = detailLabel;
-				widgets.Add(new WidgetInfo {
+				section.Items.Add(new WidgetInfo {
 					Label = captured.label.text,
 					Type = WidgetType.Label,
 					GameObject = child.gameObject,
 					SpeechFunc = () => captured.label.text
 				});
 			}
+
+			return section;
 		}
 
 		private static AdditionalDetailsPanel FindPanel() {
