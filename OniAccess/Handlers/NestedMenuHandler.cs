@@ -139,23 +139,27 @@ namespace OniAccess.Handlers {
 				PlayHoverSound();
 				SpeakCurrentItem();
 			} else {
-				// Cross into next parent
+				// Cross into next parent that has children at this level
 				int parentCount = GetItemCount(_level - 1, _indices);
-				int nextParent = _indices[_level - 1] + 1;
-				if (nextParent >= parentCount) {
-					// Wrap to first parent
-					_indices[_level - 1] = 0;
-					_indices[_level] = 0;
-					SyncCurrentIndex();
-					PlayWrapSound();
-					SpeakWithParentContext();
-				} else {
-					_indices[_level - 1] = nextParent;
-					_indices[_level] = 0;
-					SyncCurrentIndex();
-					PlayHoverSound();
-					SpeakWithParentContext();
+				int startParent = _indices[_level - 1];
+
+				for (int step = 1; step <= parentCount; step++) {
+					int candidate = (startParent + step) % parentCount;
+					_indices[_level - 1] = candidate;
+					int childCount = GetItemCount(_level, _indices);
+					if (childCount > 0) {
+						_indices[_level] = 0;
+						SyncCurrentIndex();
+						bool wrapped = candidate <= startParent;
+						if (wrapped) PlayWrapSound();
+						else PlayHoverSound();
+						SpeakWithParentContext();
+						return;
+					}
 				}
+
+				// No parent with children found — restore position
+				_indices[_level - 1] = startParent;
 			}
 		}
 
@@ -173,25 +177,27 @@ namespace OniAccess.Handlers {
 				PlayHoverSound();
 				SpeakCurrentItem();
 			} else {
-				// Cross into previous parent
-				int prevParent = _indices[_level - 1] - 1;
-				if (prevParent < 0) {
-					// Wrap to last parent, last item
-					int parentCount = GetItemCount(_level - 1, _indices);
-					_indices[_level - 1] = parentCount - 1;
-					int lastCount = GetItemCount(_level, _indices);
-					_indices[_level] = lastCount > 0 ? lastCount - 1 : 0;
-					SyncCurrentIndex();
-					PlayWrapSound();
-					SpeakWithParentContext();
-				} else {
-					_indices[_level - 1] = prevParent;
-					int newCount = GetItemCount(_level, _indices);
-					_indices[_level] = newCount > 0 ? newCount - 1 : 0;
-					SyncCurrentIndex();
-					PlayHoverSound();
-					SpeakWithParentContext();
+				// Cross into previous parent that has children at this level
+				int parentCount = GetItemCount(_level - 1, _indices);
+				int startParent = _indices[_level - 1];
+
+				for (int step = 1; step <= parentCount; step++) {
+					int candidate = (startParent - step + parentCount) % parentCount;
+					_indices[_level - 1] = candidate;
+					int childCount = GetItemCount(_level, _indices);
+					if (childCount > 0) {
+						_indices[_level] = childCount - 1;
+						SyncCurrentIndex();
+						bool wrapped = candidate >= startParent;
+						if (wrapped) PlayWrapSound();
+						else PlayHoverSound();
+						SpeakWithParentContext();
+						return;
+					}
 				}
+
+				// No parent with children found — restore position
+				_indices[_level - 1] = startParent;
 			}
 		}
 
@@ -202,11 +208,18 @@ namespace OniAccess.Handlers {
 				return;
 			}
 
-			_indices[_level - 1] = 0;
-			_indices[_level] = 0;
-			SyncCurrentIndex();
-			PlayHoverSound();
-			SpeakWithParentContext();
+			int parentCount = GetItemCount(_level - 1, _indices);
+			for (int i = 0; i < parentCount; i++) {
+				_indices[_level - 1] = i;
+				int childCount = GetItemCount(_level, _indices);
+				if (childCount > 0) {
+					_indices[_level] = 0;
+					SyncCurrentIndex();
+					PlayHoverSound();
+					SpeakWithParentContext();
+					return;
+				}
+			}
 		}
 
 		protected override void NavigateLast() {
@@ -217,12 +230,17 @@ namespace OniAccess.Handlers {
 			}
 
 			int parentCount = GetItemCount(_level - 1, _indices);
-			_indices[_level - 1] = parentCount > 0 ? parentCount - 1 : 0;
-			int childCount = GetItemCount(_level, _indices);
-			_indices[_level] = childCount > 0 ? childCount - 1 : 0;
-			SyncCurrentIndex();
-			PlayHoverSound();
-			SpeakWithParentContext();
+			for (int i = parentCount - 1; i >= 0; i--) {
+				_indices[_level - 1] = i;
+				int childCount = GetItemCount(_level, _indices);
+				if (childCount > 0) {
+					_indices[_level] = childCount - 1;
+					SyncCurrentIndex();
+					PlayHoverSound();
+					SpeakWithParentContext();
+					return;
+				}
+			}
 		}
 
 		// ========================================
