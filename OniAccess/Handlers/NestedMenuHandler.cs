@@ -228,7 +228,7 @@ namespace OniAccess.Handlers {
 		// ========================================
 
 		protected override void HandleLeftRight(int direction, bool isLargeStep) {
-			if (direction > 0 && _level < MaxLevel) {
+			if (direction > 0 && _level < MaxLevel && CanDrillDown()) {
 				DrillDown();
 			} else if (direction < 0 && _level > 0) {
 				GoBack();
@@ -241,10 +241,17 @@ namespace OniAccess.Handlers {
 
 		protected override void ActivateCurrentItem() {
 			if (ItemCount == 0) return;
-			if (_level < MaxLevel)
+			if (_level < MaxLevel && CanDrillDown())
 				DrillDown();
 			else
 				ActivateLeafItem(_indices);
+		}
+
+		/// <summary>
+		/// Whether the current item has children at the next level.
+		/// </summary>
+		private bool CanDrillDown() {
+			return GetItemCount(_level + 1, _indices) > 0;
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {

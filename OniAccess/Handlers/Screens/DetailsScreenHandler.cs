@@ -52,13 +52,16 @@ namespace OniAccess.Handlers.Screens {
 		// NESTED MENU ABSTRACTS
 		// ========================================
 
-		protected override int MaxLevel => 1;
+		protected override int MaxLevel => 2;
 		protected override int SearchLevel => Level;
 
 		protected override int GetItemCount(int level, int[] indices) {
 			if (level == 0) return _sections.Count;
 			if (indices[0] < 0 || indices[0] >= _sections.Count) return 0;
-			return _sections[indices[0]].Items.Count;
+			var items = _sections[indices[0]].Items;
+			if (level == 1) return items.Count;
+			if (indices[1] < 0 || indices[1] >= items.Count) return 0;
+			return items[indices[1]].Children?.Count ?? 0;
 		}
 
 		protected override string GetItemLabel(int level, int[] indices) {
@@ -68,24 +71,54 @@ namespace OniAccess.Handlers.Screens {
 			}
 			if (indices[0] < 0 || indices[0] >= _sections.Count) return null;
 			var items = _sections[indices[0]].Items;
+			if (level == 1) {
+				if (indices[1] < 0 || indices[1] >= items.Count) return null;
+				return WidgetOps.GetSpeechText(items[indices[1]]);
+			}
 			if (indices[1] < 0 || indices[1] >= items.Count) return null;
-			return WidgetOps.GetSpeechText(items[indices[1]]);
+			var children = items[indices[1]].Children;
+			if (children == null || indices[2] < 0 || indices[2] >= children.Count) return null;
+			return WidgetOps.GetSpeechText(children[indices[2]]);
 		}
 
 		protected override string GetParentLabel(int level, int[] indices) {
 			if (level < 1) return null;
 			if (indices[0] < 0 || indices[0] >= _sections.Count) return null;
-			return _sections[indices[0]].Header;
+			if (level == 1) return _sections[indices[0]].Header;
+			var items = _sections[indices[0]].Items;
+			if (indices[1] < 0 || indices[1] >= items.Count) return null;
+			return WidgetOps.GetSpeechText(items[indices[1]]);
 		}
 
-		protected override void ActivateLeafItem(int[] indices) { }
+		protected override void ActivateLeafItem(int[] indices) {
+			var w = GetWidgetAt(indices);
+			if (w == null) return;
+
+			if (w.Type == WidgetType.Button) {
+				var btn = w.Component as KButton;
+				if (btn != null) {
+					WidgetOps.ClickButton(btn);
+					return;
+				}
+			}
+		}
 
 		protected override int GetSearchItemCount(int[] indices) {
 			if (Level == 0) return _sections.Count;
-			int total = 0;
-			for (int s = 0; s < _sections.Count; s++)
-				total += _sections[s].Items.Count;
-			return total;
+			if (Level == 1) {
+				int total = 0;
+				for (int s = 0; s < _sections.Count; s++)
+					total += _sections[s].Items.Count;
+				return total;
+			}
+			// Level 2: flat count of all children in current section
+			int sIdx = indices[0];
+			if (sIdx < 0 || sIdx >= _sections.Count) return 0;
+			var sectionItems = _sections[sIdx].Items;
+			int childTotal = 0;
+			for (int i = 0; i < sectionItems.Count; i++)
+				childTotal += sectionItems[i].Children?.Count ?? 0;
+			return childTotal;
 		}
 
 		protected override string GetSearchItemLabel(int flatIndex) {
@@ -93,12 +126,27 @@ namespace OniAccess.Handlers.Screens {
 				if (flatIndex < 0 || flatIndex >= _sections.Count) return null;
 				return _sections[flatIndex].Header;
 			}
-			int remaining = flatIndex;
-			for (int s = 0; s < _sections.Count; s++) {
-				int count = _sections[s].Items.Count;
-				if (remaining < count)
-					return WidgetOps.GetSpeechText(_sections[s].Items[remaining]);
-				remaining -= count;
+			if (Level == 1) {
+				int remaining = flatIndex;
+				for (int s = 0; s < _sections.Count; s++) {
+					int count = _sections[s].Items.Count;
+					if (remaining < count)
+						return WidgetOps.GetSpeechText(_sections[s].Items[remaining]);
+					remaining -= count;
+				}
+				return null;
+			}
+			// Level 2: search within current section's children
+			int sIdx = GetIndex(0);
+			if (sIdx < 0 || sIdx >= _sections.Count) return null;
+			var items = _sections[sIdx].Items;
+			int rem = flatIndex;
+			for (int i = 0; i < items.Count; i++) {
+				var children = items[i].Children;
+				int cc = children?.Count ?? 0;
+				if (rem < cc)
+					return WidgetOps.GetSpeechText(children[rem]);
+				rem -= cc;
 			}
 			return null;
 		}
@@ -108,15 +156,33 @@ namespace OniAccess.Handlers.Screens {
 				outIndices[0] = flatIndex;
 				return;
 			}
-			int remaining = flatIndex;
-			for (int s = 0; s < _sections.Count; s++) {
-				int count = _sections[s].Items.Count;
-				if (remaining < count) {
-					outIndices[0] = s;
-					outIndices[1] = remaining;
+			if (Level == 1) {
+				int remaining = flatIndex;
+				for (int s = 0; s < _sections.Count; s++) {
+					int count = _sections[s].Items.Count;
+					if (remaining < count) {
+						outIndices[0] = s;
+						outIndices[1] = remaining;
+						return;
+					}
+					remaining -= count;
+				}
+				return;
+			}
+			// Level 2
+			int sIdx = outIndices[0];
+			if (sIdx < 0 || sIdx >= _sections.Count) return;
+			var items = _sections[sIdx].Items;
+			int rem = flatIndex;
+			for (int i = 0; i < items.Count; i++) {
+				var children = items[i].Children;
+				int cc = children?.Count ?? 0;
+				if (rem < cc) {
+					outIndices[1] = i;
+					outIndices[2] = rem;
 					return;
 				}
-				remaining -= count;
+				rem -= cc;
 			}
 		}
 
@@ -130,18 +196,32 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			int sIdx = GetIndex(0);
-			int iIdx = GetIndex(1);
-			if (sIdx < 0 || sIdx >= _sections.Count) return;
-			var items = _sections[sIdx].Items;
-			if (iIdx < 0 || iIdx >= items.Count) return;
+			var w = GetWidgetAt(null);
+			if (w == null) return;
 
-			var w = items[iIdx];
 			string text = WidgetOps.GetSpeechText(w);
 			string tip = WidgetOps.GetTooltipText(w);
 			if (tip != null) text = $"{text}, {tip}";
 			if (!string.IsNullOrEmpty(text))
 				SpeechPipeline.SpeakInterrupt(text);
+		}
+
+		/// <summary>
+		/// Get the WidgetInfo at the given indices, or at the current indices if null.
+		/// </summary>
+		private WidgetInfo GetWidgetAt(int[] indices) {
+			int sIdx = indices != null ? indices[0] : GetIndex(0);
+			int iIdx = indices != null ? indices[1] : GetIndex(1);
+			if (sIdx < 0 || sIdx >= _sections.Count) return null;
+			var items = _sections[sIdx].Items;
+			if (iIdx < 0 || iIdx >= items.Count) return null;
+
+			if (Level <= 1) return items[iIdx];
+
+			int cIdx = indices != null ? indices[2] : GetIndex(2);
+			var children = items[iIdx].Children;
+			if (children == null || cIdx < 0 || cIdx >= children.Count) return null;
+			return children[cIdx];
 		}
 
 		// ========================================
@@ -316,8 +396,7 @@ namespace OniAccess.Handlers.Screens {
 				// Main info tabs (match game's DetailTabHeader order).
 				// Availability is determined by the game's tab toggle visibility,
 				// not hardcoded predicates — see RebuildActiveTabs.
-				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.SIMPLEINFO.NAME, "SIMPLEINFO"),
+				new StatusTab(),
 				new StubTab(
 					(string)STRINGS.UI.DETAILTABS.PERSONALITY.NAME, "PERSONALITY"),
 				new StubTab(

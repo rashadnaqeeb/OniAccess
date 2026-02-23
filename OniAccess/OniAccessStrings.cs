@@ -122,6 +122,8 @@ namespace STRINGS {
 			public static LocString DISABLED = "disabled";
 			public static LocString ANY = "Any";
 			public static LocString NONE = "None";
+			public static LocString CONDITION_MET = "met";
+			public static LocString CONDITION_NOT_MET = "not met";
 		}
 
 		public class BUTTONS {

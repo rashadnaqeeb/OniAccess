@@ -54,5 +54,11 @@ namespace OniAccess.Widgets {
 		/// Used for section headers where the tooltip duplicates the label.
 		/// </summary>
 		public bool SuppressTooltip { get; set; }
+
+		/// <summary>
+		/// Optional child widgets for drillable items (e.g., storage groups).
+		/// When non-null and non-empty, the handler can drill into level N+1.
+		/// </summary>
+		public System.Collections.Generic.List<WidgetInfo> Children { get; set; }
 	}
 }
