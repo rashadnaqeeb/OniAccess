@@ -454,12 +454,14 @@ namespace OniAccess.Handlers.Screens {
 					SpeechPipeline.SpeakInterrupt(DisplayName);
 					SpeakFirstSection();
 				}
+				return false;
 			} else if (_pendingFirstSection) {
 				RebuildSections();
 				if (_sections.Count > 0) {
 					_pendingFirstSection = false;
 					SpeechPipeline.SpeakInterrupt(DisplayName);
 					SpeakFirstSection();
+					return false;
 				}
 			}
 

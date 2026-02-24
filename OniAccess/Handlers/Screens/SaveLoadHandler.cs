@@ -553,6 +553,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_pendingViewTransition && IsColonyViewRootActive()) {
 				TransitionToSaveView();
 				_pendingViewTransition = false;
+				return false;
 			}
 
 			// Stale widget detection: after delete or dialog rebuild, the current
@@ -568,6 +569,7 @@ namespace OniAccess.Handlers.Screens {
 						Speech.SpeechPipeline.SpeakInterrupt(
 							GetWidgetSpeechText(_widgets[_currentIndex]));
 					}
+					return false;
 				}
 			}
 
