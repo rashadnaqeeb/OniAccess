@@ -297,18 +297,16 @@ namespace OniAccess.Handlers.Screens {
 			var members = w.Tag as List<SideScreenWalker.RadioMember>;
 			if (members == null || members.Count == 0) return;
 
-			int activeIndex = -1;
-			for (int i = 0; i < members.Count; i++) {
-				if (members[i].Toggle != null && SideScreenWalker.IsToggleActive(members[i].Toggle)) {
-					activeIndex = i;
-					break;
-				}
-			}
+			int activeIndex = FindActiveRadioIndex(members);
 			if (activeIndex < 0) return;
 
 			int newIndex = ((activeIndex + direction) % members.Count + members.Count)
 				% members.Count;
-			members[newIndex].Toggle.Click();
+			var target = members[newIndex];
+			if (target.Toggle != null)
+				target.Toggle.Click();
+			else
+				WidgetOps.ClickMultiToggle(target.MultiToggleRef);
 			_pendingActivationSpeech = true;
 		}
 
@@ -318,6 +316,35 @@ namespace OniAccess.Handlers.Screens {
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"DetailsScreenHandler.PlaySliderSound({soundName}): {ex.Message}");
 			}
+		}
+
+		/// <summary>
+		/// Find which RadioMember is currently active. KToggle members use
+		/// IsToggleActive. MultiToggle members with a NotificationType tag
+		/// match against the AlarmSideScreen's targetAlarm (MultiToggle.CurrentState
+		/// is unreliable — the default notificationType enum value is 0 which
+		/// doesn't map to any valid type, leaving all toggles at state 1).
+		/// </summary>
+		private static int FindActiveRadioIndex(List<SideScreenWalker.RadioMember> members) {
+			for (int i = 0; i < members.Count; i++) {
+				if (members[i].Toggle != null && SideScreenWalker.IsToggleActive(members[i].Toggle))
+					return i;
+			}
+			// AlarmSideScreen path: match by NotificationType tag.
+			// Default notificationType is 0 which isn't a valid type —
+			// fall back to index 0 (Bad, the first option).
+			if (members[0].Tag is NotificationType) {
+				var alarm = members[0].MultiToggleRef.GetComponentInParent<AlarmSideScreen>();
+				if (alarm != null) {
+					var activeType = alarm.targetAlarm.notificationType;
+					for (int i = 0; i < members.Count; i++) {
+						if (members[i].Tag is NotificationType nt && nt == activeType)
+							return i;
+					}
+					return 0;
+				}
+			}
+			return -1;
 		}
 
 		// ========================================

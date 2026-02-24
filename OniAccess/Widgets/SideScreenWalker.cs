@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,8 @@ namespace OniAccess.Widgets {
 		public class RadioMember {
 			public string Label;
 			public KToggle Toggle;
+			public MultiToggle MultiToggleRef;
+			public object Tag;
 		}
 
 		/// <summary>
@@ -60,6 +63,10 @@ namespace OniAccess.Widgets {
 				var lt = item.GameObject?.GetComponent<LocText>();
 				return lt != null && claimedLabels.Contains(lt);
 			});
+
+			var alarm = screen as AlarmSideScreen;
+			if (alarm != null)
+				CollapseAlarmTypeButtons(alarm, items, claimedLabels);
 
 			CollapseRadioToggles(items, screen.GetTitle(), screen.transform, claimedLabels);
 			LogOrphanLocTexts(screen, items, claimedLabels);
@@ -869,6 +876,99 @@ namespace OniAccess.Widgets {
 				// Remove the collapsed items
 				items.RemoveRange(start + 1, count - 1);
 			}
+		}
+
+		// ========================================
+		// ALARM SIDE SCREEN OVERRIDE
+		// ========================================
+
+		/// <summary>
+		/// AlarmSideScreen has 3 icon-only MultiToggle buttons for notification
+		/// type (Bad, Neutral, DuplicantThreatening). The generic walker only
+		/// emits the first one (IsRedundantMultiToggle kills siblings). This
+		/// method replaces that single item with a Dropdown built from the
+		/// screen's toggles_by_type dictionary, using tooltip text as labels.
+		/// </summary>
+		private static void CollapseAlarmTypeButtons(
+				AlarmSideScreen alarm, List<WidgetInfo> items,
+				HashSet<LocText> claimedLabels) {
+			Dictionary<NotificationType, MultiToggle> togglesByType;
+			try {
+				togglesByType = Traverse.Create(alarm)
+					.Field<Dictionary<NotificationType, MultiToggle>>("toggles_by_type").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"CollapseAlarmTypeButtons: toggles_by_type read failed: {ex.Message}");
+				return;
+			}
+			if (togglesByType == null || togglesByType.Count == 0) return;
+
+			// Find the existing MultiToggle item from the type buttons
+			var typeToggles = new HashSet<MultiToggle>();
+			foreach (var kv in togglesByType)
+				typeToggles.Add(kv.Value);
+
+			int insertIndex = -1;
+			for (int i = items.Count - 1; i >= 0; i--) {
+				var mt = items[i].Component as MultiToggle;
+				if (mt != null && typeToggles.Contains(mt)) {
+					if (insertIndex < 0) insertIndex = i;
+					items.RemoveAt(i);
+				}
+			}
+			if (insertIndex < 0) insertIndex = items.Count;
+
+			// Build RadioMember list in the game's validTypes order
+			var validTypes = new[] {
+				NotificationType.Bad,
+				NotificationType.Neutral,
+				NotificationType.DuplicantThreatening
+			};
+			var members = new List<RadioMember>();
+			foreach (var type in validTypes) {
+				if (!togglesByType.TryGetValue(type, out var mt)) continue;
+				var tooltip = mt.GetComponent<ToolTip>();
+				string label = tooltip != null
+					? WidgetOps.ReadAllTooltipText(tooltip) : type.ToString();
+				if (!HasVisibleContent(label)) label = type.ToString();
+				members.Add(new RadioMember {
+					Label = label,
+					MultiToggleRef = mt,
+					Tag = type
+				});
+			}
+			if (members.Count == 0) return;
+
+			// Claim the "Type:" label LocText so it doesn't appear as a
+			// standalone label alongside the Dropdown
+			var buttonsParent = members[0].MultiToggleRef.transform.parent;
+			if (buttonsParent != null && buttonsParent.parent != null) {
+				var typeLt = FindSiblingLocText(buttonsParent);
+				if (typeLt != null) claimedLabels.Add(typeLt);
+			}
+
+			string groupLabel = (string)STRINGS.UI.UISIDESCREENS.LOGICALARMSIDESCREEN.TOOLTIPS.TYPE;
+			var radioMembers = members;
+			var capturedAlarm = alarm;
+			items.Insert(insertIndex, new WidgetInfo {
+				Label = groupLabel,
+				Component = members[0].MultiToggleRef,
+				Type = WidgetType.Dropdown,
+				SuppressTooltip = true,
+				GameObject = buttonsParent != null ? buttonsParent.gameObject
+					: members[0].MultiToggleRef.gameObject,
+				Tag = radioMembers,
+				SpeechFunc = () => {
+					string selected = radioMembers[0].Label;
+					var activeType = capturedAlarm.targetAlarm.notificationType;
+					for (int k = 0; k < radioMembers.Count; k++) {
+						if (radioMembers[k].Tag is NotificationType nt && nt == activeType) {
+							selected = radioMembers[k].Label;
+							break;
+						}
+					}
+					return $"{groupLabel}, {selected}";
+				}
+			});
 		}
 
 		/// <summary>
