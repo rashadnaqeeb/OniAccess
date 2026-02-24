@@ -18,6 +18,13 @@ namespace OniAccess.Handlers {
 	/// </summary>
 	public static class HandlerStack {
 		private static readonly List<IAccessHandler> _stack = new List<IAccessHandler>();
+		private static readonly List<int> _pushFrames = new List<int>();
+
+		/// <summary>
+		/// Frame counter source. Defaults to UnityEngine.Time.frameCount.
+		/// Tests replace this to avoid native Unity calls.
+		/// </summary>
+		internal static System.Func<int> FrameSource = () => UnityEngine.Time.frameCount;
 
 		/// <summary>
 		/// The currently active handler (top of stack), or null if stack is empty.
@@ -58,6 +65,7 @@ namespace OniAccess.Handlers {
 				return;
 			}
 			_stack.Add(handler);
+			_pushFrames.Add(FrameSource());
 			Util.Log.Debug($"HandlerStack.Push: {handler.DisplayName} (depth={_stack.Count})");
 		}
 
@@ -73,6 +81,8 @@ namespace OniAccess.Handlers {
 
 			var removed = _stack[_stack.Count - 1];
 			_stack.RemoveAt(_stack.Count - 1);
+			if (_pushFrames.Count > _stack.Count)
+				_pushFrames.RemoveAt(_stack.Count);
 			try {
 				removed.OnDeactivate();
 			} catch (System.Exception ex) {
@@ -110,6 +120,8 @@ namespace OniAccess.Handlers {
 			if (_stack.Count > 0) {
 				var removed = _stack[_stack.Count - 1];
 				_stack.RemoveAt(_stack.Count - 1);
+				if (_pushFrames.Count > _stack.Count)
+					_pushFrames.RemoveAt(_stack.Count);
 				try {
 					removed.OnDeactivate();
 				} catch (System.Exception ex) {
@@ -126,6 +138,7 @@ namespace OniAccess.Handlers {
 				return;
 			}
 			_stack.Add(handler);
+			_pushFrames.Add(FrameSource());
 			Util.Log.Debug($"HandlerStack.Replace: activated {handler.DisplayName} (depth={_stack.Count})");
 		}
 
@@ -143,6 +156,7 @@ namespace OniAccess.Handlers {
 				Util.Log.Debug($"HandlerStack.DeactivateAll: deactivated {_stack[i].DisplayName}");
 			}
 			_stack.Clear();
+			_pushFrames.Clear();
 		}
 
 		/// <summary>
@@ -151,6 +165,7 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		public static void Clear() {
 			_stack.Clear();
+			_pushFrames.Clear();
 			Util.Log.Debug("HandlerStack.Clear: stack cleared without callbacks");
 		}
 
@@ -164,6 +179,8 @@ namespace OniAccess.Handlers {
 			for (int i = _stack.Count - 1; i >= 0; i--) {
 				if (_stack[i] is BaseScreenHandler sh && sh.Screen == screen) {
 					_stack.RemoveAt(i);
+					if (i < _pushFrames.Count)
+						_pushFrames.RemoveAt(i);
 					try {
 						sh.OnDeactivate();
 					} catch (System.Exception ex) {
@@ -191,8 +208,13 @@ namespace OniAccess.Handlers {
 				// via SetActive(false) rather than Show(false), it's a temporary hide
 				// (e.g., PauseScreen hides itself during save confirmation dialogs).
 				if (sh.Screen != null && ContextDetector.IsShowPatched(sh.Screen.GetType())) continue;
+				// Grace period: skip handlers pushed this frame or last frame.
+				// Screens may be transiently inactive during modal transitions.
+				if (i < _pushFrames.Count && FrameSource() - _pushFrames[i] <= 1) continue;
 
 				_stack.RemoveAt(i);
+				if (i < _pushFrames.Count)
+					_pushFrames.RemoveAt(i);
 				try {
 					sh.OnDeactivate();
 				} catch (System.Exception ex) {

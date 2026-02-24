@@ -172,4 +172,21 @@ namespace OniAccess.Patches {
 			ContextDetector.OnScreenActivated(__instance);
 		}
 	}
+
+	/// <summary>
+	/// RetiredColonyInfoScreen reuses its instance via Show(true) on subsequent opens,
+	/// so KScreen.Activate never fires again. Patch Show(bool) to push/pop the handler.
+	/// The duplicate guard in OnScreenActivated prevents double-pushing when both
+	/// Activate and Show(true) fire on first open.
+	/// </summary>
+	[HarmonyPatch(typeof(RetiredColonyInfoScreen), nameof(RetiredColonyInfoScreen.Show))]
+	internal static class RetiredColonyInfoScreen_Show_Patch {
+		private static void Postfix(KScreen __instance, bool show) {
+			if (!ModToggle.IsEnabled) return;
+			if (show)
+				ContextDetector.OnScreenActivated(__instance);
+			else
+				ContextDetector.OnScreenDeactivating(__instance);
+		}
+	}
 }
