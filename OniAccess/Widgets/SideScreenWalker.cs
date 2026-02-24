@@ -86,7 +86,7 @@ namespace OniAccess.Widgets {
 					?? FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
 				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
-				if (string.IsNullOrWhiteSpace(label)) {
+				if (!HasVisibleContent(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KSlider) parent={t.parent?.name}");
 					return true;
 				}
@@ -111,7 +111,7 @@ namespace OniAccess.Widgets {
 					?? FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
 				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
-				if (string.IsNullOrWhiteSpace(label)) {
+				if (!HasVisibleContent(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KToggle) parent={t.parent?.name}");
 					return true;
 				}
@@ -147,7 +147,7 @@ namespace OniAccess.Widgets {
 				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
 				Util.Log.Debug($"  label search: child={childLt?.GetParsedText() ?? "null"} sib={sibLt?.GetParsedText() ?? "null"} parentSib={parentSibLt?.GetParsedText() ?? "null"} => '{label}'");
-				if (string.IsNullOrWhiteSpace(label)) {
+				if (!HasVisibleContent(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (MultiToggle) parent={t.parent?.name}");
 					return true;
 				}
@@ -171,7 +171,7 @@ namespace OniAccess.Widgets {
 				var labelLt = FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
 				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
-				if (string.IsNullOrWhiteSpace(label)) {
+				if (!HasVisibleContent(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KNumberInputField) parent={t.parent?.name}");
 					return true;
 				}
@@ -205,7 +205,7 @@ namespace OniAccess.Widgets {
 				var labelLt = FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
 				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
-				if (string.IsNullOrWhiteSpace(label)) {
+				if (!HasVisibleContent(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KInputField) parent={t.parent?.name}");
 					return true;
 				}
@@ -229,7 +229,7 @@ namespace OniAccess.Widgets {
 			if (kbutton != null) {
 				var captured = kbutton;
 				string label = GetButtonLabel(captured, t.name);
-				if (string.IsNullOrWhiteSpace(label)) {
+				if (!HasVisibleContent(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KButton) parent={t.parent?.name}");
 					return true;
 				}
@@ -249,7 +249,7 @@ namespace OniAccess.Widgets {
 			if (locText != null) {
 				var captured = locText;
 				string text = captured.GetParsedText();
-				if (!string.IsNullOrEmpty(text)) {
+				if (HasVisibleContent(text)) {
 					items.Add(new WidgetInfo {
 						Label = text,
 						Type = WidgetType.Label,
@@ -296,6 +296,26 @@ namespace OniAccess.Widgets {
 			return false;
 		}
 
+		/// <summary>
+		/// Returns true if the string contains at least one character that
+		/// would produce visible output in speech or on screen. Rejects
+		/// null, empty, whitespace-only, and strings made entirely of
+		/// Unicode format/zero-width characters (U+200B, U+FEFF, etc.)
+		/// that TextMeshPro inserts.
+		/// </summary>
+		private static bool HasVisibleContent(string text) {
+			if (string.IsNullOrEmpty(text)) return false;
+			for (int i = 0; i < text.Length; i++) {
+				char c = text[i];
+				if (char.IsWhiteSpace(c)) continue;
+				var cat = char.GetUnicodeCategory(c);
+				if (cat == System.Globalization.UnicodeCategory.Format) continue;
+				if (cat == System.Globalization.UnicodeCategory.OtherNotAssigned) continue;
+				return true;
+			}
+			return false;
+		}
+
 		// ========================================
 		// LABEL RESOLUTION
 		// ========================================
@@ -311,11 +331,8 @@ namespace OniAccess.Widgets {
 				if (!child.gameObject.activeSelf) continue;
 				if (exclude != null && child.gameObject == exclude.gameObject) continue;
 				var lt = child.GetComponent<LocText>();
-				if (lt != null) {
-					string text = lt.GetParsedText();
-					if (!string.IsNullOrEmpty(text))
-						return lt;
-				}
+				if (lt != null && HasVisibleContent(lt.GetParsedText()))
+					return lt;
 			}
 			return null;
 		}
@@ -332,28 +349,30 @@ namespace OniAccess.Widgets {
 			for (int i = myIndex - 1; i >= 0; i--) {
 				var sibling = parent.GetChild(i);
 				if (!sibling.gameObject.activeSelf) continue;
-				var lt = sibling.GetComponent<LocText>();
-				if (lt == null) lt = sibling.GetComponentInChildren<LocText>();
-				if (lt != null) {
-					string text = lt.GetParsedText();
-					if (!string.IsNullOrEmpty(text))
-						return lt;
-				}
+				var lt = FindDirectOrSafeChildLocText(sibling);
+				if (lt != null && HasVisibleContent(lt.GetParsedText()))
+					return lt;
 			}
 
 			for (int i = myIndex + 1; i < parent.childCount; i++) {
 				var sibling = parent.GetChild(i);
 				if (!sibling.gameObject.activeSelf) continue;
-				var lt = sibling.GetComponent<LocText>();
-				if (lt == null) lt = sibling.GetComponentInChildren<LocText>();
-				if (lt != null) {
-					string text = lt.GetParsedText();
-					if (!string.IsNullOrEmpty(text))
-						return lt;
-				}
+				var lt = FindDirectOrSafeChildLocText(sibling);
+				if (lt != null && HasVisibleContent(lt.GetParsedText()))
+					return lt;
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// Get the LocText directly on a sibling transform. Does not search
+		/// children — a LocText nested inside a container (StateIndicator,
+		/// input field internals, etc.) belongs to that container, not to
+		/// the widget searching for a label.
+		/// </summary>
+		private static LocText FindDirectOrSafeChildLocText(Transform sibling) {
+			return sibling.GetComponent<LocText>();
 		}
 
 		/// <summary>
@@ -369,17 +388,13 @@ namespace OniAccess.Widgets {
 				var sibling = parent.GetChild(i);
 				if (!sibling.gameObject.activeSelf) continue;
 				if (HasInteractiveDescendant(sibling)) break;
-				var lt = sibling.GetComponent<LocText>();
-				if (lt == null) lt = sibling.GetComponentInChildren<LocText>();
-				if (lt != null) {
-					string text = lt.GetParsedText();
-					if (!string.IsNullOrEmpty(text)) {
-						// If the next active sibling contains a widget, this
-						// LocText is a label for that widget, not a units suffix
-						if (NextActiveSiblingHasWidget(parent, i))
-							return null;
-						return lt;
-					}
+				var lt = FindDirectOrSafeChildLocText(sibling);
+				if (lt != null && HasVisibleContent(lt.GetParsedText())) {
+					// If the next active sibling contains a widget, this
+					// LocText is a label for that widget, not a units suffix
+					if (NextActiveSiblingHasWidget(parent, i))
+						return null;
+					return lt;
 				}
 			}
 
@@ -415,7 +430,7 @@ namespace OniAccess.Widgets {
 		private static string ReadLocText(LocText lt, string fallback) {
 			if (lt != null) {
 				string text = lt.GetParsedText();
-				if (!string.IsNullOrEmpty(text))
+				if (HasVisibleContent(text))
 					return text;
 			}
 			return fallback;
@@ -444,6 +459,10 @@ namespace OniAccess.Widgets {
 			if (name.IndexOf("Resize", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
 			if (name.StartsWith("increment", System.StringComparison.OrdinalIgnoreCase)) return true;
 			if (name.StartsWith("decrement", System.StringComparison.OrdinalIgnoreCase)) return true;
+			// ThresholdSwitchSideScreen uses abbreviated names for its
+			// mouse-only +/- step buttons: "Inc Major", "Inc Minor", etc.
+			if (name.StartsWith("Inc ", System.StringComparison.OrdinalIgnoreCase)) return true;
+			if (name.StartsWith("Dec ", System.StringComparison.OrdinalIgnoreCase)) return true;
 			return false;
 		}
 
