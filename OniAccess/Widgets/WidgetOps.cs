@@ -45,6 +45,7 @@ namespace OniAccess.Widgets {
 		/// </summary>
 		public static string AppendTooltip(string speech, string tooltip) {
 			if (tooltip == null) return speech;
+			if (string.IsNullOrEmpty(speech)) return tooltip;
 			foreach (string segment in speech.Split(new[] { ", " }, System.StringSplitOptions.None)) {
 				if (segment == tooltip) return speech;
 			}
@@ -129,7 +130,8 @@ namespace OniAccess.Widgets {
 			}
 
 			if (slider.minValue >= 0f && slider.maxValue <= 100f) {
-				return GameUtil.GetFormattedPercent(slider.value);
+				float percent = slider.maxValue <= 1f ? slider.value * 100f : slider.value;
+				return GameUtil.GetFormattedPercent(percent);
 			}
 
 			return slider.value.ToString("F1");
