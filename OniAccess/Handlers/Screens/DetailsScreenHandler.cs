@@ -596,7 +596,8 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			string header = _sections[0].Header;
 			bool headerIsTabName = _tabIndex >= 0 && _tabIndex < _activeTabs.Count
-				&& header == _activeTabs[_tabIndex].DisplayName;
+				&& string.Equals(header, _activeTabs[_tabIndex].DisplayName,
+					System.StringComparison.OrdinalIgnoreCase);
 
 			if (Level > 0) {
 				var items = _sections[0].Items;
