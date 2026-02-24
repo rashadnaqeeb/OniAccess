@@ -57,9 +57,19 @@ namespace OniAccess.Handlers.Screens.Details {
 			}
 
 			foreach (var r in sideScreens) {
-				if (r.tab != tabType) continue;
+				string name = r.screenPrefab != null
+					? r.screenPrefab.GetType().Name : "null";
+				if (r.tab != tabType) {
+					if (r.screenInstance != null && r.screenInstance.gameObject.activeSelf)
+						Util.Log.Debug($"GetActiveScreens: {name} skipped (tab={r.tab}, want={tabType})");
+					continue;
+				}
 				if (r.screenInstance == null) continue;
-				if (!r.screenInstance.gameObject.activeSelf) continue;
+				if (!r.screenInstance.gameObject.activeSelf) {
+					Util.Log.Debug($"GetActiveScreens: {name} skipped (inactive)");
+					continue;
+				}
+				Util.Log.Debug($"GetActiveScreens: {name} yielded (tab={tabType})");
 				yield return r.screenInstance;
 			}
 		}

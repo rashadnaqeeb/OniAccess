@@ -28,14 +28,34 @@ namespace OniAccess.Widgets {
 				? screen.ContentContainer.transform
 				: screen.transform;
 			WalkTransform(root, items);
+
+			// Pick up widgets outside ContentContainer (e.g., AutomatableSideScreen)
+			if (root != screen.transform) {
+				var screenT = screen.transform;
+				for (int i = 0; i < screenT.childCount; i++) {
+					var child = screenT.GetChild(i);
+					if (child == root.transform) continue;
+					if (!child.gameObject.activeSelf) continue;
+					if (IsSkipped(child.gameObject.name)) continue;
+					if (IsChrome(child)) continue;
+					if (TryAddWidget(child, items))
+						continue;
+					WalkTransform(child, items);
+				}
+			}
+
 			CollapseRadioToggles(items, screen.GetTitle(), screen.transform);
+			LogOrphanLocTexts(screen, items);
 		}
 
 		private static void WalkTransform(Transform parent, List<WidgetInfo> items) {
 			for (int i = 0; i < parent.childCount; i++) {
 				var child = parent.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
-				if (IsSkipped(child.gameObject.name)) continue;
+				if (IsSkipped(child.gameObject.name)) {
+					Util.Log.Debug($"WalkerSkip '{child.gameObject.name}' parent='{parent.name}'");
+					continue;
+				}
 
 				if (TryAddWidget(child, items))
 					continue;
@@ -95,11 +115,16 @@ namespace OniAccess.Widgets {
 			// already represents this row's toggle (suppresses expand arrows).
 			var multiToggle = go.GetComponent<MultiToggle>();
 			if (multiToggle != null) {
-				if (IsRedundantMultiToggle(t))
+				bool redundant = IsRedundantMultiToggle(t);
+				Util.Log.Debug($"WalkerTrace MultiToggle '{t.name}' parent='{t.parent?.name}' redundant={redundant}");
+				if (redundant)
 					return true;
 				var captured = multiToggle;
-				var labelLt = FindChildLocText(t, null)
-					?? FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
+				var childLt = FindChildLocText(t, null);
+				var sibLt = FindSiblingLocText(t);
+				var parentSibLt = FindSiblingLocText(t.parent);
+				var labelLt = childLt ?? sibLt ?? parentSibLt;
+				Util.Log.Debug($"  label search: child={childLt?.GetParsedText() ?? "null"} sib={sibLt?.GetParsedText() ?? "null"} parentSib={parentSibLt?.GetParsedText() ?? "null"} => '{ReadLocText(labelLt, t.name)}'");
 				items.Add(new WidgetInfo {
 					Label = ReadLocText(labelLt, t.name),
 					Type = WidgetType.Toggle,
@@ -366,9 +391,20 @@ namespace OniAccess.Widgets {
 		/// </summary>
 		private static bool IsSkipped(string name) {
 			if (name.IndexOf("Scrollbar", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
-			if (name.IndexOf("ScrollRect", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
 			if (name.IndexOf("Drag", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
 			if (name.IndexOf("Resize", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
+			return false;
+		}
+
+		/// <summary>
+		/// Filter out screen-level chrome when walking outside ContentContainer.
+		/// Skips title bars and close buttons that shouldn't be navigable widgets.
+		/// </summary>
+		private static bool IsChrome(Transform t) {
+			string name = t.gameObject.name;
+			if (name.IndexOf("Title", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
+			if (name.IndexOf("Header", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
+			if (name.IndexOf("CloseButton", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
 			return false;
 		}
 
@@ -499,6 +535,49 @@ namespace OniAccess.Widgets {
 				return lt;
 			}
 			return null;
+		}
+
+		/// <summary>
+		/// Debug: log all LocTexts on the screen that weren't emitted as
+		/// widget items. Temporary — remove after audit is complete.
+		/// </summary>
+		private static void LogOrphanLocTexts(SideScreenContent screen, List<WidgetInfo> items) {
+			var emitted = new HashSet<GameObject>();
+			foreach (var item in items) {
+				if (item.GameObject != null)
+					emitted.Add(item.GameObject);
+			}
+
+			string screenName = screen.GetType().Name;
+			string title = screen.GetTitle();
+			var allLocTexts = screen.transform.GetComponentsInChildren<LocText>(false);
+			bool any = false;
+			foreach (var lt in allLocTexts) {
+				if (emitted.Contains(lt.gameObject)) continue;
+				string text = lt.GetParsedText();
+				if (string.IsNullOrEmpty(text)) continue;
+				if (text == title) continue;
+
+				string parentWidget = null;
+				if (lt.GetComponentInParent<KToggle>() != null) parentWidget = "KToggle";
+				else if (lt.GetComponentInParent<KButton>() != null) parentWidget = "KButton";
+				else if (lt.GetComponentInParent<KSlider>() != null) parentWidget = "KSlider";
+				else if (lt.GetComponentInParent<MultiToggle>() != null) parentWidget = "MultiToggle";
+
+				string path = lt.transform.name;
+				var p = lt.transform.parent;
+				for (int i = 0; i < 3 && p != null && p != screen.transform; i++) {
+					path = p.name + "/" + path;
+					p = p.parent;
+				}
+
+				string truncated = text.Length > 80 ? text.Substring(0, 80) + "..." : text;
+				string inside = parentWidget != null ? $" [inside {parentWidget}]" : " [ORPHAN]";
+				Util.Log.Debug($"OrphanAudit [{screenName}] {path}{inside}: {truncated}");
+				any = true;
+			}
+			if (!any)
+				Util.Log.Debug($"OrphanAudit [{screenName}]: no orphan LocTexts");
 		}
 	}
 }
