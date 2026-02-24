@@ -307,6 +307,137 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		// ========================================
+		// LEVEL 2 GROUP JUMPING
+		// ========================================
+
+		protected override void JumpNextGroup() {
+			if (Level < 2) {
+				base.JumpNextGroup();
+				return;
+			}
+
+			int cat = GetIndex(0);
+			int sub = GetIndex(1);
+
+			// Check immediate next subcategory (may cross category boundary)
+			if (FindNextSubcategory(cat, sub, out int nc, out int ns)) {
+				SetIndex(0, nc);
+				SetIndex(1, ns);
+				SetIndex(2, 0);
+				SyncAfterManualSet();
+				if (nc < cat || (nc == cat && ns <= sub)) PlayWrapSound();
+				else PlayHoverSound();
+				if (nc == cat)
+					SpeakWithSubcategoryContext();
+				else
+					SpeakWithCategoryContext();
+				return;
+			}
+		}
+
+		protected override void JumpPrevGroup() {
+			if (Level < 2) {
+				base.JumpPrevGroup();
+				return;
+			}
+
+			int cat = GetIndex(0);
+			int sub = GetIndex(1);
+
+			// Check immediate previous subcategory (may cross category boundary)
+			if (FindPrevSubcategory(cat, sub, out int nc, out int ns)) {
+				SetIndex(0, nc);
+				SetIndex(1, ns);
+				SetIndex(2, 0);
+				SyncAfterManualSet();
+				if (nc > cat || (nc == cat && ns >= sub)) PlayWrapSound();
+				else PlayHoverSound();
+				if (nc == cat)
+					SpeakWithSubcategoryContext();
+				else
+					SpeakWithCategoryContext();
+				return;
+			}
+		}
+
+		private bool FindNextSubcategory(int cat, int sub, out int outCat, out int outSub) {
+			outCat = cat;
+			outSub = sub;
+
+			// Scan forward from current position
+			int c = cat;
+			int s = sub + 1;
+			while (true) {
+				if (c >= _tree.Count) break;
+				var subs = _tree[c].Subcategories;
+				if (s < subs.Count) {
+					if (subs[s].Buildings.Count > 0) {
+						outCat = c;
+						outSub = s;
+						return true;
+					}
+					s++;
+				} else {
+					c++;
+					s = 0;
+				}
+			}
+
+			// Wrap: scan from the beginning
+			for (int wc = 0; wc < _tree.Count; wc++) {
+				var subs = _tree[wc].Subcategories;
+				for (int ws = 0; ws < subs.Count; ws++) {
+					if (subs[ws].Buildings.Count > 0) {
+						outCat = wc;
+						outSub = ws;
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		private bool FindPrevSubcategory(int cat, int sub, out int outCat, out int outSub) {
+			outCat = cat;
+			outSub = sub;
+
+			// Scan backward from current position
+			int c = cat;
+			int s = sub - 1;
+			while (true) {
+				if (c < 0) break;
+				if (s >= 0) {
+					var subs = _tree[c].Subcategories;
+					if (subs[s].Buildings.Count > 0) {
+						outCat = c;
+						outSub = s;
+						return true;
+					}
+					s--;
+				} else {
+					c--;
+					if (c >= 0)
+						s = _tree[c].Subcategories.Count - 1;
+				}
+			}
+
+			// Wrap: scan from the end
+			for (int wc = _tree.Count - 1; wc >= 0; wc--) {
+				var subs = _tree[wc].Subcategories;
+				for (int ws = subs.Count - 1; ws >= 0; ws--) {
+					if (subs[ws].Buildings.Count > 0) {
+						outCat = wc;
+						outSub = ws;
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		// ========================================
 		// SEARCH
 		// ========================================
 

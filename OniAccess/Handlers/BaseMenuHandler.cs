@@ -76,6 +76,16 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		protected virtual void NavigateTabBackward() { }
 
+		/// <summary>
+		/// Jump to the next parent group. No-op default.
+		/// </summary>
+		protected virtual void JumpNextGroup() { }
+
+		/// <summary>
+		/// Jump to the previous parent group. No-op default.
+		/// </summary>
+		protected virtual void JumpPrevGroup() { }
+
 		// ========================================
 		// COMPOSABLE HELP ENTRY LISTS
 		// ========================================
@@ -275,11 +285,13 @@ namespace OniAccess.Handlers {
 				return;
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
-				NavigateNext();
+				if (ctrlHeld) JumpNextGroup();
+				else NavigateNext();
 				return;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
-				NavigatePrev();
+				if (ctrlHeld) JumpPrevGroup();
+				else NavigatePrev();
 				return;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home)) {

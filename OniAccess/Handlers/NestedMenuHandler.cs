@@ -141,30 +141,7 @@ namespace OniAccess.Handlers {
 				PlayHoverSound();
 				SpeakCurrentItem();
 			} else {
-				// Cross into next parent that has children at this level
-				int parentCount = GetItemCount(_level - 1, _indices);
-				int startParent = _indices[_level - 1];
-
-				for (int step = 1; step <= parentCount; step++) {
-					int candidate = (startParent + step) % parentCount;
-					_indices[_level - 1] = candidate;
-					int childCount = GetItemCount(_level, _indices);
-					if (childCount > 0) {
-						_indices[_level] = 0;
-						SyncCurrentIndex();
-						bool wrapped = candidate <= startParent;
-						if (wrapped) PlayWrapSound();
-						else PlayHoverSound();
-						if (candidate == startParent)
-							SpeakCurrentItem();
-						else
-							SpeakWithParentContext();
-						return;
-					}
-				}
-
-				// No parent with children found — restore position
-				_indices[_level - 1] = startParent;
+				JumpToNextParent(landOnLast: false);
 			}
 		}
 
@@ -182,30 +159,7 @@ namespace OniAccess.Handlers {
 				PlayHoverSound();
 				SpeakCurrentItem();
 			} else {
-				// Cross into previous parent that has children at this level
-				int parentCount = GetItemCount(_level - 1, _indices);
-				int startParent = _indices[_level - 1];
-
-				for (int step = 1; step <= parentCount; step++) {
-					int candidate = (startParent - step + parentCount) % parentCount;
-					_indices[_level - 1] = candidate;
-					int childCount = GetItemCount(_level, _indices);
-					if (childCount > 0) {
-						_indices[_level] = childCount - 1;
-						SyncCurrentIndex();
-						bool wrapped = candidate >= startParent;
-						if (wrapped) PlayWrapSound();
-						else PlayHoverSound();
-						if (candidate == startParent)
-							SpeakCurrentItem();
-						else
-							SpeakWithParentContext();
-						return;
-					}
-				}
-
-				// No parent with children found — restore position
-				_indices[_level - 1] = startParent;
+				JumpToPrevParent(landOnLast: true);
 			}
 		}
 
@@ -339,10 +293,97 @@ namespace OniAccess.Handlers {
 		protected static readonly List<HelpEntry> NestedNavHelpEntries = new List<HelpEntry> {
 			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
 			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
+			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.HELP.JUMP_GROUP),
 			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
 			new HelpEntry("Enter/Right", STRINGS.ONIACCESS.HELP.OPEN_GROUP),
 			new HelpEntry("Left", STRINGS.ONIACCESS.HELP.GO_BACK),
 		};
+
+		// ========================================
+		// GROUP JUMPING
+		// ========================================
+
+		protected override void JumpNextGroup() {
+			if (_level == 0) { NavigateNext(); return; }
+			JumpToNextParent(landOnLast: false);
+		}
+
+		protected override void JumpPrevGroup() {
+			if (_level == 0) { NavigatePrev(); return; }
+			JumpToPrevParent(landOnLast: false);
+		}
+
+		private bool JumpToNextParent(bool landOnLast) {
+			int parentCount = GetItemCount(_level - 1, _indices);
+			if (parentCount == 0) return false;
+			int startParent = _indices[_level - 1];
+
+			int next = (startParent + 1) % parentCount;
+			_indices[_level - 1] = next;
+			int childCount = GetItemCount(_level, _indices);
+			if (childCount > 0) {
+				_indices[_level] = landOnLast ? childCount - 1 : 0;
+				SyncCurrentIndex();
+				if (next <= startParent) PlayWrapSound();
+				else PlayHoverSound();
+				if (next == startParent) SpeakCurrentItem();
+				else SpeakWithParentContext();
+				return true;
+			}
+
+			// Neighbor empty — wrap to first populated parent
+			for (int i = 0; i < parentCount; i++) {
+				_indices[_level - 1] = i;
+				childCount = GetItemCount(_level, _indices);
+				if (childCount > 0) {
+					_indices[_level] = landOnLast ? childCount - 1 : 0;
+					SyncCurrentIndex();
+					PlayWrapSound();
+					if (i == startParent) SpeakCurrentItem();
+					else SpeakWithParentContext();
+					return true;
+				}
+			}
+
+			_indices[_level - 1] = startParent;
+			return false;
+		}
+
+		private bool JumpToPrevParent(bool landOnLast) {
+			int parentCount = GetItemCount(_level - 1, _indices);
+			if (parentCount == 0) return false;
+			int startParent = _indices[_level - 1];
+
+			int prev = (startParent - 1 + parentCount) % parentCount;
+			_indices[_level - 1] = prev;
+			int childCount = GetItemCount(_level, _indices);
+			if (childCount > 0) {
+				_indices[_level] = landOnLast ? childCount - 1 : 0;
+				SyncCurrentIndex();
+				if (prev >= startParent) PlayWrapSound();
+				else PlayHoverSound();
+				if (prev == startParent) SpeakCurrentItem();
+				else SpeakWithParentContext();
+				return true;
+			}
+
+			// Neighbor empty — wrap to last populated parent
+			for (int i = parentCount - 1; i >= 0; i--) {
+				_indices[_level - 1] = i;
+				childCount = GetItemCount(_level, _indices);
+				if (childCount > 0) {
+					_indices[_level] = landOnLast ? childCount - 1 : 0;
+					SyncCurrentIndex();
+					PlayWrapSound();
+					if (i == startParent) SpeakCurrentItem();
+					else SpeakWithParentContext();
+					return true;
+				}
+			}
+
+			_indices[_level - 1] = startParent;
+			return false;
+		}
 
 		// ========================================
 		// PRIVATE HELPERS

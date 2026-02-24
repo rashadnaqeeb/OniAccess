@@ -71,6 +71,7 @@ namespace STRINGS {
 			public static LocString SELECT_ENTITY = "Select object at cursor";
 			public static LocString OPEN_GROUP = "Open group";
 			public static LocString GO_BACK = "Go back";
+			public static LocString JUMP_GROUP = "Jump to next or previous group";
 
 			public class TOOLS_HELP {
 				public static LocString OPEN_TOOL_MENU = "Open tool menu";
