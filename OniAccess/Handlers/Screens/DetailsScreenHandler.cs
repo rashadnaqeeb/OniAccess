@@ -18,6 +18,10 @@ namespace OniAccess.Handlers.Screens {
 	/// activating/deactivating, so KScreen.Activate patches skip it.
 	/// </summary>
 	public class DetailsScreenHandler: NestedMenuHandler {
+		protected override int StartLevel =>
+			_tabIndex >= 0 && _tabIndex < _activeTabs.Count
+				? _activeTabs[_tabIndex].StartLevel : 0;
+
 		private readonly IDetailTab[] _tabs;
 		private readonly List<IDetailTab> _activeTabs = new List<IDetailTab>();
 		private readonly List<DetailSection> _sections = new List<DetailSection>();
@@ -591,10 +595,20 @@ namespace OniAccess.Handlers.Screens {
 			if (_sections.Count == 0 || string.IsNullOrEmpty(_sections[0].Header))
 				return;
 			string header = _sections[0].Header;
-			if (_tabIndex >= 0 && _tabIndex < _activeTabs.Count
-				&& header == _activeTabs[_tabIndex].DisplayName)
-				return;
-			SpeechPipeline.SpeakQueued(header);
+			bool headerIsTabName = _tabIndex >= 0 && _tabIndex < _activeTabs.Count
+				&& header == _activeTabs[_tabIndex].DisplayName;
+
+			if (Level > 0) {
+				var items = _sections[0].Items;
+				if (items.Count == 0) return;
+				string item = WidgetOps.GetSpeechText(items[0]);
+				if (string.IsNullOrWhiteSpace(item)) return;
+				string label = headerIsTabName ? item : header + ", " + item;
+				SpeechPipeline.SpeakQueued(label);
+			} else {
+				if (!headerIsTabName)
+					SpeechPipeline.SpeakQueued(header);
+			}
 		}
 
 		// ========================================

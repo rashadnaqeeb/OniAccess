@@ -12,6 +12,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// </summary>
 	class ConfigSideTab : IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.CONFIGURATION.NAME;
+		public int StartLevel => 1;
 		public string GameTabId => null;
 
 		public bool IsAvailable(GameObject target) {

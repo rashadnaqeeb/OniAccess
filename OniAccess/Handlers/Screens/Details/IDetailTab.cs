@@ -13,6 +13,12 @@ namespace OniAccess.Handlers.Screens.Details {
 		string DisplayName { get; }
 
 		/// <summary>
+		/// Navigation level to start at when this tab is selected.
+		/// 0 = root level, 1 = drilled into first child level.
+		/// </summary>
+		int StartLevel { get; }
+
+		/// <summary>
 		/// Game's DetailTabHeader tab ID (e.g., "SIMPLEINFO", "DETAILS").
 		/// Null for side screen tabs which use a separate tab header.
 		/// When non-null, the handler switches the game's visual tab to match.

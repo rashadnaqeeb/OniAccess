@@ -27,6 +27,7 @@ namespace OniAccess.Handlers.Screens.Details {
 		}
 
 		public string DisplayName => _displayName;
+		public int StartLevel => 0;
 		public string GameTabId => _gameTabId;
 
 		public bool IsAvailable(GameObject target) =>

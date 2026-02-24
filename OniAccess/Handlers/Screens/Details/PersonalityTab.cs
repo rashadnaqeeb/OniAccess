@@ -11,6 +11,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// </summary>
 	class PersonalityTab : IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.PERSONALITY.NAME;
+		public int StartLevel => 0;
 		public string GameTabId => "PERSONALITY";
 
 		public bool IsAvailable(GameObject target) => true;

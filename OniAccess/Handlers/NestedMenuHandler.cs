@@ -18,6 +18,7 @@ namespace OniAccess.Handlers {
 		protected NestedMenuHandler(KScreen screen = null) : base(screen) { }
 
 		protected int Level => _level;
+		protected virtual int StartLevel => 0;
 
 		protected int GetIndex(int level) => _indices[level];
 		protected void SetIndex(int level, int value) => _indices[level] = value;
@@ -107,7 +108,7 @@ namespace OniAccess.Handlers {
 		// ========================================
 
 		public override void OnActivate() {
-			_level = 0;
+			_level = StartLevel;
 			for (int i = 0; i < _indices.Length; i++)
 				_indices[i] = 0;
 			base.OnActivate();

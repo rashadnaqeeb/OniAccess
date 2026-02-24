@@ -10,6 +10,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// </summary>
 	class PropertiesTab: IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.DETAILS.NAME;
+		public int StartLevel => 0;
 		public string GameTabId => "DETAILS";
 
 		public bool IsAvailable(GameObject target) => true;

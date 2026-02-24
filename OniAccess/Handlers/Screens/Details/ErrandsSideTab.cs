@@ -10,6 +10,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// </summary>
 	class ErrandsSideTab : IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.BUILDING_CHORES.NAME;
+		public int StartLevel => 0;
 		public string GameTabId => null;
 
 		public bool IsAvailable(GameObject target) {
