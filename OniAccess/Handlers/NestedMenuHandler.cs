@@ -96,7 +96,7 @@ namespace OniAccess.Handlers {
 			int count = GetItemCount(_level, _indices);
 			if (count == 0) return;
 			string label = GetItemLabel(_level, _indices);
-			if (string.IsNullOrEmpty(label)) return;
+			if (string.IsNullOrWhiteSpace(label)) return;
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
 			SpeechPipeline.SpeakInterrupt(label);

@@ -16,8 +16,8 @@ namespace OniAccess.Widgets {
 		/// </summary>
 		public static string GetSpeechText(WidgetInfo widget) {
 			if (widget.SpeechFunc != null) {
-				string result = widget.SpeechFunc();
-				if (result != null) return result;
+				string result = widget.SpeechFunc()?.Trim();
+				if (!string.IsNullOrEmpty(result)) return result;
 			}
 
 			switch (widget.Type) {

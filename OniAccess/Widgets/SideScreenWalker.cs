@@ -76,8 +76,13 @@ namespace OniAccess.Widgets {
 				var captured = slider;
 				var labelLt = FindChildLocText(t, null)
 					?? FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
+				string label = ReadLocText(labelLt, t.name);
+				if (string.IsNullOrWhiteSpace(label)) {
+					Util.Log.Warn($"Walker: blank label for {t.name} (KSlider) parent={t.parent?.name}");
+					return true;
+				}
 				items.Add(new WidgetInfo {
-					Label = ReadLocText(labelLt, t.name),
+					Label = label,
 					Type = WidgetType.Slider,
 					Component = captured,
 					GameObject = go,
@@ -95,8 +100,13 @@ namespace OniAccess.Widgets {
 				var captured = ktoggle;
 				var labelLt = FindChildLocText(t, null)
 					?? FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
+				string label = ReadLocText(labelLt, t.name);
+				if (string.IsNullOrWhiteSpace(label)) {
+					Util.Log.Warn($"Walker: blank label for {t.name} (KToggle) parent={t.parent?.name}");
+					return true;
+				}
 				items.Add(new WidgetInfo {
-					Label = ReadLocText(labelLt, t.name),
+					Label = label,
 					Type = WidgetType.Toggle,
 					Component = captured,
 					GameObject = go,
@@ -124,9 +134,14 @@ namespace OniAccess.Widgets {
 				var sibLt = FindSiblingLocText(t);
 				var parentSibLt = FindSiblingLocText(t.parent);
 				var labelLt = childLt ?? sibLt ?? parentSibLt;
-				Util.Log.Debug($"  label search: child={childLt?.GetParsedText() ?? "null"} sib={sibLt?.GetParsedText() ?? "null"} parentSib={parentSibLt?.GetParsedText() ?? "null"} => '{ReadLocText(labelLt, t.name)}'");
+				string label = ReadLocText(labelLt, t.name);
+				Util.Log.Debug($"  label search: child={childLt?.GetParsedText() ?? "null"} sib={sibLt?.GetParsedText() ?? "null"} parentSib={parentSibLt?.GetParsedText() ?? "null"} => '{label}'");
+				if (string.IsNullOrWhiteSpace(label)) {
+					Util.Log.Warn($"Walker: blank label for {t.name} (MultiToggle) parent={t.parent?.name}");
+					return true;
+				}
 				items.Add(new WidgetInfo {
-					Label = ReadLocText(labelLt, t.name),
+					Label = label,
 					Type = WidgetType.Toggle,
 					Component = captured,
 					GameObject = go,
@@ -143,10 +158,15 @@ namespace OniAccess.Widgets {
 			if (knum != null) {
 				var captured = knum;
 				var labelLt = FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
+				string label = ReadLocText(labelLt, t.name);
+				if (string.IsNullOrWhiteSpace(label)) {
+					Util.Log.Warn($"Walker: blank label for {t.name} (KNumberInputField) parent={t.parent?.name}");
+					return true;
+				}
 				var unitsLt = FindFollowingSiblingLocText(t)
 					?? FindFollowingSiblingLocText(t.parent);
 				items.Add(new WidgetInfo {
-					Label = ReadLocText(labelLt, t.name),
+					Label = label,
 					Type = WidgetType.TextInput,
 					Component = captured,
 					GameObject = go,
@@ -170,8 +190,13 @@ namespace OniAccess.Widgets {
 			if (kinput != null) {
 				var captured = kinput;
 				var labelLt = FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
+				string label = ReadLocText(labelLt, t.name);
+				if (string.IsNullOrWhiteSpace(label)) {
+					Util.Log.Warn($"Walker: blank label for {t.name} (KInputField) parent={t.parent?.name}");
+					return true;
+				}
 				items.Add(new WidgetInfo {
-					Label = ReadLocText(labelLt, t.name),
+					Label = label,
 					Type = WidgetType.TextInput,
 					Component = captured,
 					GameObject = go,
@@ -189,8 +214,13 @@ namespace OniAccess.Widgets {
 			var kbutton = go.GetComponent<KButton>();
 			if (kbutton != null) {
 				var captured = kbutton;
+				string label = GetButtonLabel(captured, t.name);
+				if (string.IsNullOrWhiteSpace(label)) {
+					Util.Log.Warn($"Walker: blank label for {t.name} (KButton) parent={t.parent?.name}");
+					return true;
+				}
 				items.Add(new WidgetInfo {
-					Label = GetButtonLabel(captured, t.name),
+					Label = label,
 					Type = WidgetType.Button,
 					Component = captured,
 					GameObject = go,
@@ -348,6 +378,11 @@ namespace OniAccess.Widgets {
 			for (int i = myIndex + 1; i < parent.childCount; i++) {
 				var sibling = parent.GetChild(i);
 				if (!sibling.gameObject.activeSelf) continue;
+				if (sibling.GetComponentInChildren<KSlider>() != null) break;
+				if (sibling.GetComponentInChildren<KToggle>() != null) break;
+				if (sibling.GetComponentInChildren<MultiToggle>() != null) break;
+				if (sibling.GetComponentInChildren<KNumberInputField>() != null) break;
+				if (sibling.GetComponentInChildren<KInputField>() != null) break;
 				var lt = sibling.GetComponent<LocText>();
 				if (lt == null) lt = sibling.GetComponentInChildren<LocText>();
 				if (lt != null) {
@@ -393,6 +428,8 @@ namespace OniAccess.Widgets {
 			if (name.IndexOf("Scrollbar", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
 			if (name.IndexOf("Drag", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
 			if (name.IndexOf("Resize", System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
+			if (name.StartsWith("increment", System.StringComparison.OrdinalIgnoreCase)) return true;
+			if (name.StartsWith("decrement", System.StringComparison.OrdinalIgnoreCase)) return true;
 			return false;
 		}
 
