@@ -368,21 +368,45 @@ namespace OniAccess.Widgets {
 			for (int i = myIndex + 1; i < parent.childCount; i++) {
 				var sibling = parent.GetChild(i);
 				if (!sibling.gameObject.activeSelf) continue;
-				if (sibling.GetComponentInChildren<KSlider>() != null) break;
-				if (sibling.GetComponentInChildren<KToggle>() != null) break;
-				if (sibling.GetComponentInChildren<MultiToggle>() != null) break;
-				if (sibling.GetComponentInChildren<KNumberInputField>() != null) break;
-				if (sibling.GetComponentInChildren<KInputField>() != null) break;
+				if (HasInteractiveDescendant(sibling)) break;
 				var lt = sibling.GetComponent<LocText>();
 				if (lt == null) lt = sibling.GetComponentInChildren<LocText>();
 				if (lt != null) {
 					string text = lt.GetParsedText();
-					if (!string.IsNullOrEmpty(text))
+					if (!string.IsNullOrEmpty(text)) {
+						// If the next active sibling contains a widget, this
+						// LocText is a label for that widget, not a units suffix
+						if (NextActiveSiblingHasWidget(parent, i))
+							return null;
 						return lt;
+					}
 				}
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// Returns true if the next active sibling after <paramref name="afterIndex"/>
+		/// contains an interactive widget. Used to distinguish units suffixes
+		/// from widget labels in FindFollowingSiblingLocText.
+		/// </summary>
+		private static bool NextActiveSiblingHasWidget(Transform parent, int afterIndex) {
+			for (int i = afterIndex + 1; i < parent.childCount; i++) {
+				var sibling = parent.GetChild(i);
+				if (!sibling.gameObject.activeSelf) continue;
+				return HasInteractiveDescendant(sibling);
+			}
+			return false;
+		}
+
+		private static bool HasInteractiveDescendant(Transform t) {
+			if (t.GetComponentInChildren<KSlider>() != null) return true;
+			if (t.GetComponentInChildren<KToggle>() != null) return true;
+			if (t.GetComponentInChildren<MultiToggle>() != null) return true;
+			if (t.GetComponentInChildren<KNumberInputField>() != null) return true;
+			if (t.GetComponentInChildren<KInputField>() != null) return true;
+			return false;
 		}
 
 		/// <summary>
