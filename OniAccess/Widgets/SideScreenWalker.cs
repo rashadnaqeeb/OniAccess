@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace OniAccess.Widgets {
 	/// <summary>
@@ -65,6 +67,8 @@ namespace OniAccess.Widgets {
 					continue;
 				}
 
+				if (TryAddCategoryContainer(child, items, claimedLabels))
+					continue;
 				if (TryAddWidget(child, items, claimedLabels))
 					continue;
 				WalkTransform(child, items, claimedLabels);
@@ -77,6 +81,48 @@ namespace OniAccess.Widgets {
 		/// </summary>
 		private static bool TryAddWidget(Transform t, List<WidgetInfo> items, HashSet<LocText> claimedLabels) {
 			var go = t.gameObject;
+
+			// ReceptacleToggle: compound widget (title + amount + selection toggle).
+			// Must be checked first — contains child MultiToggle/LocText that would
+			// otherwise be matched individually.
+			var receptacleToggle = go.GetComponent<ReceptacleToggle>();
+			if (receptacleToggle != null && receptacleToggle.toggle != null) {
+				var captured = receptacleToggle;
+				if (captured.title != null) claimedLabels.Add(captured.title);
+				if (captured.amount != null) claimedLabels.Add(captured.amount);
+
+				string label = captured.title != null
+					? captured.title.GetParsedText() : t.name;
+				if (!HasVisibleContent(label)) {
+					Util.Log.Warn($"Walker: blank label for {t.name} (ReceptacleToggle)");
+					return true;
+				}
+
+				items.Add(new WidgetInfo {
+					Label = label,
+					Type = WidgetType.Toggle,
+					Component = captured.toggle,
+					GameObject = go,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string name = captured.title != null
+							? captured.title.GetParsedText() : captured.transform.name;
+						string count = captured.amount != null
+							? captured.amount.GetParsedText() : null;
+						string speech = name;
+						if (!string.IsNullOrEmpty(count))
+							speech += $", {count} {(string)STRINGS.ONIACCESS.STATES.AVAILABLE}";
+						int state = captured.toggle.CurrentState;
+						if (state == 1 || state == 3)
+							speech += $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
+						string desc = GetReceptacleDescription(captured);
+						if (desc != null)
+							speech += $", {desc}";
+						return speech;
+					}
+				});
+				return true;
+			}
 
 			// KSlider (catches NonLinearSlider which extends KSlider)
 			var slider = go.GetComponent<KSlider>();
@@ -261,6 +307,96 @@ namespace OniAccess.Widgets {
 			}
 
 			return false;
+		}
+
+		// ========================================
+		// RECEPTACLE HELPERS
+		// ========================================
+
+		/// <summary>
+		/// Detect a ReceptacleSideScreen category container: HierarchyReferences
+		/// with "HeaderLabel" and "GridLayout" whose grid children have
+		/// ReceptacleToggle. Emits a single drillable parent WidgetInfo with
+		/// Children for the seed rows inside.
+		/// </summary>
+		private static bool TryAddCategoryContainer(Transform t, List<WidgetInfo> items, HashSet<LocText> claimedLabels) {
+			var href = t.GetComponent<HierarchyReferences>();
+			if (href == null) return false;
+			if (!href.HasReference("HeaderLabel") || !href.HasReference("GridLayout"))
+				return false;
+
+			var grid = href.GetReference<GridLayoutGroup>("GridLayout");
+			if (grid == null) return false;
+
+			// Verify at least one grid child has ReceptacleToggle
+			bool hasReceptacle = false;
+			var gridT = grid.transform;
+			for (int i = 0; i < gridT.childCount; i++) {
+				var child = gridT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				if (child.GetComponent<ReceptacleToggle>() != null) {
+					hasReceptacle = true;
+					break;
+				}
+			}
+			if (!hasReceptacle) return false;
+
+			// Build child widget list from grid contents
+			var children = new List<WidgetInfo>();
+			for (int i = 0; i < gridT.childCount; i++) {
+				var child = gridT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				TryAddWidget(child, children, claimedLabels);
+			}
+
+			var headerLt = href.GetReference<LocText>("HeaderLabel");
+			if (headerLt != null) claimedLabels.Add(headerLt);
+
+			var capturedHeader = headerLt;
+			var capturedGrid = gridT;
+			items.Add(new WidgetInfo {
+				Label = headerLt != null ? headerLt.GetParsedText() : t.name,
+				Type = WidgetType.Label,
+				GameObject = t.gameObject,
+				SuppressTooltip = true,
+				Children = children,
+				SpeechFunc = () => {
+					string header = capturedHeader != null
+						? capturedHeader.GetParsedText() : t.name;
+					int activeCount = 0;
+					for (int i = 0; i < capturedGrid.childCount; i++) {
+						if (capturedGrid.GetChild(i).gameObject.activeSelf)
+							activeCount++;
+					}
+					string countText = string.Format(
+						(string)STRINGS.ONIACCESS.RECEPTACLE.SEED_COUNT, activeCount);
+					return $"{header}, {countText}";
+				}
+			});
+			return true;
+		}
+
+		/// <summary>
+		/// Extract the description from a ReceptacleToggle's tooltip.
+		/// The tooltip format is "{name}\n\n{description}". Returns just
+		/// the description with rich text tags stripped, or null.
+		/// </summary>
+		private static string GetReceptacleDescription(ReceptacleToggle rt) {
+			var tooltip = rt.GetComponent<ToolTip>();
+			if (tooltip == null) return null;
+
+			string text = WidgetOps.ReadAllTooltipText(tooltip);
+			if (string.IsNullOrEmpty(text)) return null;
+
+			string[] parts = text.Split(new[] { "\n\n" }, System.StringSplitOptions.None);
+			if (parts.Length < 2) return null;
+
+			// Skip the first segment (seed name), take the description
+			string desc = parts[1];
+			// Strip Unity rich text tags
+			desc = Regex.Replace(desc, "<[^>]+>", "");
+			desc = desc.Trim();
+			return string.IsNullOrEmpty(desc) ? null : desc;
 		}
 
 		// ========================================

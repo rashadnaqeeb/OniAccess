@@ -129,6 +129,11 @@ namespace STRINGS {
 			public static LocString CONDITION_NOT_MET = "not met";
 			public static LocString INPUT_FIELD = "input field";
 			public static LocString SLIDER = "slider";
+			public static LocString AVAILABLE = "available";
+		}
+
+		public class RECEPTACLE {
+			public static LocString SEED_COUNT = "{0} seeds";
 		}
 
 		public class BUTTONS {

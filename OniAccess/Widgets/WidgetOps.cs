@@ -146,11 +146,24 @@ namespace OniAccess.Widgets {
 
 		/// <summary>
 		/// Map a MultiToggle's CurrentState to a speech string.
-		/// State 0 = off, last state = on, anything between = mixed.
-		/// Handles both 2-state (on/off) and 3-state (off/mixed/on) toggles.
+		/// 4-state toggles (ReceptacleSideScreen, mutation panel):
+		///   0=Inactive, 1=Active(selected), 2=Disabled, 3=DisabledActive
+		/// 2/3-state toggles: 0=off, last=on, middle=mixed.
 		/// </summary>
 		public static string GetMultiToggleState(MultiToggle mt) {
-			int last = mt.states != null ? mt.states.Length - 1 : 1;
+			int stateCount = mt.states != null ? mt.states.Length : 2;
+
+			if (stateCount == 4) {
+				bool selected = mt.CurrentState == 1 || mt.CurrentState == 3;
+				bool disabled = mt.CurrentState == 2 || mt.CurrentState == 3;
+				if (selected && disabled)
+					return $"{(string)STRINGS.ONIACCESS.STATES.SELECTED}, {(string)STRINGS.ONIACCESS.STATES.DISABLED}";
+				if (selected) return (string)STRINGS.ONIACCESS.STATES.SELECTED;
+				if (disabled) return (string)STRINGS.ONIACCESS.STATES.DISABLED;
+				return (string)STRINGS.ONIACCESS.STATES.OFF;
+			}
+
+			int last = stateCount - 1;
 			if (mt.CurrentState <= 0)
 				return (string)STRINGS.ONIACCESS.STATES.OFF;
 			if (mt.CurrentState >= last)
