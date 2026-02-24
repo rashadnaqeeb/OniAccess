@@ -797,8 +797,7 @@ namespace OniAccess.Widgets {
 			int i = 0;
 			while (i < items.Count) {
 				var w = items[i];
-				if (w.Type != WidgetType.Toggle || !(w.Component is KToggle))
-				{ i++; continue; }
+				if (w.Type != WidgetType.Toggle || !(w.Component is KToggle)) { i++; continue; }
 
 				var parent = w.GameObject.transform.parent;
 				int start = i;

@@ -11,7 +11,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// requirements, stress, fertility, process conditions, world panels, etc.
 	/// All widgets use SpeechFunc for live text — the game updates labels every frame.
 	/// </summary>
-	class StatusTab : IDetailTab {
+	class StatusTab: IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.SIMPLEINFO.NAME;
 		public int StartLevel => 0;
 		public string GameTabId => "SIMPLEINFO";
@@ -266,8 +266,8 @@ namespace OniAccess.Handlers.Screens.Details {
 				sections.Add(section);
 		}
 
-	private static void AddVitalLines(
-				IEnumerable<MinionVitalsPanel.AmountLine> lines, DetailSection section) {
+		private static void AddVitalLines(
+					IEnumerable<MinionVitalsPanel.AmountLine> lines, DetailSection section) {
 			foreach (var line in lines) {
 				if (!line.go.activeSelf) continue;
 				var captured = line;

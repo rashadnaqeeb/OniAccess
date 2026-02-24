@@ -8,7 +8,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// Reads active Errands side screens (dupe task list) into sections.
 	/// Mirrors ConfigSideTab for the SidescreenTabTypes.Errands tab.
 	/// </summary>
-	class ErrandsSideTab : IDetailTab {
+	class ErrandsSideTab: IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.BUILDING_CHORES.NAME;
 		public int StartLevel => 0;
 		public string GameTabId => null;

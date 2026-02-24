@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// resume, amenities, equipment), all populated via SetLabel/Commit.
 	/// Same reading strategy as PropertiesTab via CollapsiblePanelReader.
 	/// </summary>
-	class PersonalityTab : IDetailTab {
+	class PersonalityTab: IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.PERSONALITY.NAME;
 		public int StartLevel => 0;
 		public string GameTabId => "PERSONALITY";

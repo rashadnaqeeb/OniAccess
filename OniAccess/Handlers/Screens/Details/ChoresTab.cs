@@ -15,7 +15,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// chores, the header includes the fetch target name (e.g., "Cook Supply:
 	/// Gristle Berry" instead of just "Cook Supply").
 	/// </summary>
-	class ChoresTab : IDetailTab {
+	class ChoresTab: IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.BUILDING_CHORES.NAME;
 		public int StartLevel => 0;
 		public string GameTabId => "BUILDINGCHORES";

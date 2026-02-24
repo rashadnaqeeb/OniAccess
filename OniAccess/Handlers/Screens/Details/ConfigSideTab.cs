@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Screens.Details {
 	/// Each active SideScreenContent becomes one section whose header is
 	/// the screen's GetTitle() and whose items are discovered by SideScreenWalker.
 	/// </summary>
-	class ConfigSideTab : IDetailTab {
+	class ConfigSideTab: IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.CONFIGURATION.NAME;
 		public int StartLevel => 1;
 		public string GameTabId => null;
