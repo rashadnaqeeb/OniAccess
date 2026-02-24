@@ -163,7 +163,7 @@ namespace OniAccess.Handlers.Build {
 		// KEY HANDLING
 		// ========================================
 
-		public override void Tick() {
+		public override bool Tick() {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)) {
 				if (InputUtil.ShiftHeld()) {
 					if (_isUtility && UtilityStartSet) {
@@ -183,7 +183,7 @@ namespace OniAccess.Handlers.Build {
 					else
 						RegularPlacement();
 				}
-				return;
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)
@@ -197,7 +197,7 @@ namespace OniAccess.Handlers.Build {
 					UtilityPlaceAndExit();
 				else
 					RegularPlaceAndExit();
-				return;
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)
@@ -210,29 +210,30 @@ namespace OniAccess.Handlers.Build {
 				} else {
 					Rotate();
 				}
-				return;
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)
 				&& !InputUtil.AnyModifierHeld()) {
 				ReturnToBuildingList();
-				return;
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)
 				&& !InputUtil.AnyModifierHeld()) {
 				OpenInfoPanel();
-				return;
+				return true;
 			}
 
 			if (!InputUtil.AnyModifierHeld()) {
 				for (int i = 0; i <= 9; i++) {
 					if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Alpha0 + i)) {
 						SetPriority(i);
-						return;
+						return true;
 					}
 				}
 			}
+			return false;
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {

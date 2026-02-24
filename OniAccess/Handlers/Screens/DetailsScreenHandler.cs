@@ -422,13 +422,14 @@ namespace OniAccess.Handlers.Screens {
 		// TICK: TARGET CHANGE DETECTION
 		// ========================================
 
-		public override void Tick() {
+		public override bool Tick() {
 			if (_textEdit.IsEditing) {
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
 					_textEdit.Confirm();
 					RebuildSections();
+					return true;
 				}
-				return;
+				return false;
 			}
 
 			if (_pendingActivationSpeech) {
@@ -462,7 +463,7 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
-			base.Tick();
+			return base.Tick();
 		}
 
 		// ========================================

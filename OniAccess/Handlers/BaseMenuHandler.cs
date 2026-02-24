@@ -275,52 +275,53 @@ namespace OniAccess.Handlers {
 		/// Per-frame key detection for navigation and type-ahead search.
 		/// Subclasses should call base.Tick() to get navigation handling.
 		/// </summary>
-		public override void Tick() {
-			base.Tick();
+		public override bool Tick() {
+			if (base.Tick()) return true;
 
 			bool ctrlHeld = InputUtil.CtrlHeld();
 			bool altHeld = InputUtil.AltHeld();
 
 			if (TryRouteToSearch(ctrlHeld, altHeld))
-				return;
+				return true;
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
 				if (ctrlHeld) JumpNextGroup();
 				else NavigateNext();
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
 				if (ctrlHeld) JumpPrevGroup();
 				else NavigatePrev();
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home)) {
 				NavigateFirst();
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)) {
 				NavigateLast();
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
 				ActivateCurrentItem();
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)) {
 				if (InputUtil.ShiftHeld())
 					NavigateTabBackward();
 				else
 					NavigateTabForward();
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
 				HandleLeftRight(-1, InputUtil.GetStepLevel());
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)) {
 				HandleLeftRight(1, InputUtil.GetStepLevel());
-				return;
+				return true;
 			}
+			return false;
 		}
 
 		/// <summary>

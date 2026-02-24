@@ -64,12 +64,12 @@ namespace OniAccess.Handlers {
 				Speech.SpeechPipeline.SpeakQueued(STRINGS.ONIACCESS.SPEECH.NO_COMMANDS);
 		}
 
-		public override void Tick() {
+		public override bool Tick() {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)) {
 				Close();
-				return;
+				return true;
 			}
-			base.Tick();
+			return base.Tick();
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {

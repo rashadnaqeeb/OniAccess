@@ -15,8 +15,7 @@ namespace OniAccess.Handlers {
 		public System.Collections.Generic.IReadOnlyList<ConsumedKey> ConsumedKeys { get; }
 			= System.Array.Empty<ConsumedKey>();
 
-		public void Tick() {
-		}
+		public bool Tick() => false;
 
 		public bool HandleKeyDown(KButtonEvent e) => false;
 

@@ -126,9 +126,9 @@ namespace OniAccess.Handlers.Screens {
 		/// When a sub-screen is open (LockerNavigator visible), suppress input
 		/// so we don't intercept keys meant for the sub-screen.
 		/// </summary>
-		public override void Tick() {
-			if (IsSubScreenOpen()) return;
-			base.Tick();
+		public override bool Tick() {
+			if (IsSubScreenOpen()) return false;
+			return base.Tick();
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {

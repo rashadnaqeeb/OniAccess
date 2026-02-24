@@ -956,7 +956,7 @@ namespace OniAccess.Handlers.Screens {
 		// TICK: DEFERRED ANNOUNCE
 		// ========================================
 
-		public override void Tick() {
+		public override bool Tick() {
 			// Colony name not yet populated by BaseNaming.OnSpawn — re-announce
 			if (_pendingColonyNameAnnounce && _currentIndex == 0 && _widgets.Count > 0) {
 				var w = _widgets[0];
@@ -974,10 +974,10 @@ namespace OniAccess.Handlers.Screens {
 				var action = _pendingAnnounce;
 				_pendingAnnounce = null;
 				action();
-				return;
+				return false;
 			}
 
-			base.Tick();
+			return base.Tick();
 		}
 	}
 }

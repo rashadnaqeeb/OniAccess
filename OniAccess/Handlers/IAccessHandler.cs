@@ -46,8 +46,9 @@ namespace OniAccess.Handlers {
 		/// Called once per frame by KeyPoller during top-to-bottom stack walk.
 		/// All key detection and mod logic happens here via UnityEngine.Input.GetKeyDown().
 		/// The walk stops after any CapturesAllInput barrier (inclusive).
+		/// Returns true if input was consumed (stops the walk).
 		/// </summary>
-		void Tick();
+		bool Tick();
 
 		/// <summary>
 		/// Process a key down event from ONI's KButtonEvent system during

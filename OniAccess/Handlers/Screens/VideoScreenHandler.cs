@@ -84,7 +84,7 @@ namespace OniAccess.Handlers.Screens {
 			return true;
 		}
 
-		public override void Tick() {
+		public override bool Tick() {
 			if (!_announcedPlaying) {
 				_announcedPlaying = true;
 				Speech.SpeechPipeline.SpeakQueued((string)STRINGS.ONIACCESS.VIDEO.PLAYING);
@@ -112,7 +112,7 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
-			base.Tick();
+			return base.Tick();
 		}
 	}
 }

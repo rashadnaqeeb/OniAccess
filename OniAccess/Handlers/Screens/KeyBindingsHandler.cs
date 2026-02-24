@@ -159,7 +159,7 @@ namespace OniAccess.Handlers.Screens {
 		// TICK: REBIND MODE + KEY DETECTION
 		// ========================================
 
-		public override void Tick() {
+		public override bool Tick() {
 			bool isWaiting = _waitingField?.GetValue<bool>() ?? false;
 
 			// Detect transitions in/out of rebind mode
@@ -170,7 +170,7 @@ namespace OniAccess.Handlers.Screens {
 					(string)STRINGS.ONIACCESS.KEY_BINDINGS.PRESS_KEY_FOR, actionName);
 				Speech.SpeechPipeline.SpeakInterrupt(msg);
 				_wasWaiting = true;
-				return;
+				return false;
 			}
 
 			if (!isWaiting && _wasWaiting) {
@@ -181,13 +181,13 @@ namespace OniAccess.Handlers.Screens {
 					_currentIndex = _widgets.Count > 0 ? _widgets.Count - 1 : 0;
 				if (_widgets.Count > 0)
 					SpeakCurrentWidget();
-				return;
+				return false;
 			}
 
 			// While waiting for keypress, suppress ALL mod input
-			if (isWaiting) return;
+			if (isWaiting) return false;
 
-			base.Tick();
+			return base.Tick();
 		}
 
 		// ========================================

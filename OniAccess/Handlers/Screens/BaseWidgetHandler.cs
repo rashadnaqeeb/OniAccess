@@ -112,13 +112,14 @@ namespace OniAccess.Handlers.Screens {
 		// TICK
 		// ========================================
 
-		public override void Tick() {
+		public override bool Tick() {
 			if (_textEdit != null && _textEdit.IsEditing) {
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
 					_textEdit.Confirm();
 					QueueCurrentWidget();
+					return true;
 				}
-				return;
+				return false;
 			}
 
 			// Deferred first-widget announcement: rediscover to pick up widgets
@@ -163,11 +164,11 @@ namespace OniAccess.Handlers.Screens {
 				int idx = System.Math.Min(_currentIndex, _widgets.Count - 1);
 				if (!IsWidgetValid(_widgets[idx])) {
 					_pendingRediscovery = true;
-					return;
+					return false;
 				}
 			}
 
-			base.Tick();
+			return base.Tick();
 		}
 
 		// ========================================

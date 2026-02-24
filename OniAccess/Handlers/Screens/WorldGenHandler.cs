@@ -48,13 +48,13 @@ namespace OniAccess.Handlers.Screens {
 		/// Called each frame by KeyPoller.
 		/// Polls world generation progress and speaks at 25% intervals.
 		/// </summary>
-		public override void Tick() {
+		public override bool Tick() {
 			float now = UnityEngine.Time.time;
-			if (now - _lastPollTime < PollInterval) return;
+			if (now - _lastPollTime < PollInterval) return false;
 			_lastPollTime = now;
 
 			float percent = GetCurrentPercent();
-			if (percent < 0f) return;
+			if (percent < 0f) return false;
 
 			int rounded = UnityEngine.Mathf.RoundToInt(percent * 100f);
 
@@ -67,6 +67,7 @@ namespace OniAccess.Handlers.Screens {
 				}
 				_lastSpokenPercent = rounded;
 			}
+			return false;
 		}
 
 		/// <summary>

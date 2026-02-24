@@ -128,7 +128,7 @@ namespace OniAccess.Handlers.Screens {
 			return true;
 		}
 
-		public override void Tick() {
+		public override bool Tick() {
 			// Re-discover widgets (buttons appear/disappear via coroutines)
 			int prevCount = _widgets.Count;
 			DiscoverWidgets(_screen);
@@ -203,7 +203,7 @@ namespace OniAccess.Handlers.Screens {
 				Log.Error($"KleiItemDropHandler: accept button detection failed: {ex.Message}");
 			}
 
-			base.Tick();
+			return base.Tick();
 		}
 
 		/// <summary>

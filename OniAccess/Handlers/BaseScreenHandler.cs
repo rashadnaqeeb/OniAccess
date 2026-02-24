@@ -77,8 +77,7 @@ namespace OniAccess.Handlers {
 		/// Per-frame key detection. F12 help is handled centrally by KeyPoller.
 		/// Subclasses override for screen-specific key handling.
 		/// </summary>
-		public virtual void Tick() {
-		}
+		public virtual bool Tick() => false;
 
 		/// <summary>
 		/// Handle Escape interception from ONI's KButtonEvent system.

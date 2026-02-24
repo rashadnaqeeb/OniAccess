@@ -190,7 +190,7 @@ namespace OniAccess.Tests {
 				HelpEntries = helpEntries ?? new List<HelpEntry>().AsReadOnly();
 			}
 
-			public void Tick() => TickCount++;
+			public bool Tick() { TickCount++; return false; }
 			public bool HandleKeyDown(KButtonEvent e) { HandleKeyDownCount++; return ConsumeKeyDown; }
 			public void OnActivate() => ActivateCount++;
 			public void OnDeactivate() => DeactivateCount++;
@@ -207,7 +207,7 @@ namespace OniAccess.Tests {
 			public bool ThrowOnActivate { get; set; }
 			public bool ThrowOnDeactivate { get; set; }
 
-			public void Tick() { }
+			public bool Tick() => false;
 			public bool HandleKeyDown(KButtonEvent e) => false;
 
 			public void OnActivate() {

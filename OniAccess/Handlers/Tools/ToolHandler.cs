@@ -185,30 +185,30 @@ namespace OniAccess.Handlers.Tools {
 		// KEY HANDLING
 		// ========================================
 
-		public override void Tick() {
+		public override bool Tick() {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)
 				&& !InputUtil.AnyModifierHeld()) {
 				SetCorner();
-				return;
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)
 				&& !InputUtil.AnyModifierHeld()) {
 				ConfirmOrCancel();
-				return;
+				return true;
 			}
 
 			if ((UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Delete)
 				|| UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backspace))
 				&& !InputUtil.AnyModifierHeld()) {
 				ClearRectAtCursor();
-				return;
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F)
 				&& !InputUtil.AnyModifierHeld()) {
 				OpenFilterMenu();
-				return;
+				return true;
 			}
 
 			if (!InputUtil.AnyModifierHeld()) {
@@ -216,7 +216,7 @@ namespace OniAccess.Handlers.Tools {
 					if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Alpha0 + i)) {
 						if (_toolInfo != null && _toolInfo.SupportsPriority)
 							SetPriority(i);
-						return;
+						return true;
 					}
 				}
 			}
@@ -224,21 +224,22 @@ namespace OniAccess.Handlers.Tools {
 			if (InputUtil.CtrlHeld() && !InputUtil.ShiftHeld() && !InputUtil.AltHeld()) {
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
 					JumpToSelectionBoundary(Tiles.Direction.Up);
-					return;
+					return true;
 				}
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
 					JumpToSelectionBoundary(Tiles.Direction.Down);
-					return;
+					return true;
 				}
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
 					JumpToSelectionBoundary(Tiles.Direction.Left);
-					return;
+					return true;
 				}
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)) {
 					JumpToSelectionBoundary(Tiles.Direction.Right);
-					return;
+					return true;
 				}
 			}
+			return false;
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {

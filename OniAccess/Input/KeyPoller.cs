@@ -69,7 +69,7 @@ namespace OniAccess.Input {
 			for (int i = count - 1; i >= 0; i--) {
 				var handler = HandlerStack.GetAt(i);
 				if (handler == null) break;
-				handler.Tick();
+				if (handler.Tick()) break;
 				if (HandlerStack.Count != count || HandlerStack.GetAt(i) != handler) break;
 				if (handler.CapturesAllInput) break;
 			}

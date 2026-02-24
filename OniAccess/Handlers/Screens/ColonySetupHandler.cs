@@ -1267,7 +1267,7 @@ namespace OniAccess.Handlers.Screens {
 		/// Handle Left/Right cluster cycling before base navigation.
 		/// Text edit mode (Return to confirm, Escape to cancel) is handled by base.
 		/// </summary>
-		public override void Tick() {
+		public override bool Tick() {
 			// Deferred cluster refresh: traits needed one frame to populate
 			// after Left/Right cycling or shuffle fired OnAsteroidClicked.
 			// Re-discover widgets and speak the current cluster.
@@ -1278,7 +1278,7 @@ namespace OniAccess.Handlers.Screens {
 				_currentIndex = UnityEngine.Mathf.Clamp(savedIndex, 0,
 					_widgets.Count > 0 ? _widgets.Count - 1 : 0);
 				SpeakCurrentWidget();
-				return;
+				return false;
 			}
 
 			// Left/Right cluster cycling when on the cluster selector (index 0)
@@ -1295,7 +1295,7 @@ namespace OniAccess.Handlers.Screens {
 					SelectClusterSilent(_clusterKeys[_clusterIndex]);
 					_speakClusterNameOnly = true;
 					_pendingClusterRefresh = true;
-					return;
+					return true;
 				}
 
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
@@ -1305,11 +1305,11 @@ namespace OniAccess.Handlers.Screens {
 					SelectClusterSilent(_clusterKeys[_clusterIndex]);
 					_speakClusterNameOnly = true;
 					_pendingClusterRefresh = true;
-					return;
+					return true;
 				}
 			}
 
-			base.Tick();
+			return base.Tick();
 		}
 
 		/// <summary>

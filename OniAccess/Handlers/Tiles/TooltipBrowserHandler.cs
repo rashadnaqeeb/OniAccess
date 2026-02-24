@@ -47,12 +47,12 @@ namespace OniAccess.Handlers.Tiles {
 			base.OnDeactivate();
 		}
 
-		public override void Tick() {
+		public override bool Tick() {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)) {
 				Close();
-				return;
+				return true;
 			}
-			base.Tick();
+			return base.Tick();
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {

@@ -126,7 +126,7 @@ namespace OniAccess.Handlers.Tiles {
 			}
 		}
 
-		public override void Tick() {
+		public override bool Tick() {
 			if (_queueNextOverlayTtl > 0)
 				_queueNextOverlayTtl--;
 
@@ -145,13 +145,13 @@ namespace OniAccess.Handlers.Tiles {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)
 				&& !InputUtil.AnyModifierHeld()) {
 				OpenEntityPicker();
-				return;
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)
 				&& !InputUtil.AnyModifierHeld()) {
 				OpenBuildMenu();
-				return;
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.BackQuote)
@@ -163,65 +163,65 @@ namespace OniAccess.Handlers.Tiles {
 					scs.SetSpeed(scs.GetSpeed() + 1);
 					scs.OnSpeedChange();
 				}
-				return;
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftBracket)
 				&& !InputUtil.AnyModifierHeld()) {
 				OpenToolPicker();
-				return;
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
 				&& !InputUtil.AnyModifierHeld()) {
 				SpeakMove(Direction.Up);
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)
 				&& !InputUtil.AnyModifierHeld()) {
 				SpeakMove(Direction.Down);
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)
 				&& !InputUtil.AnyModifierHeld()) {
 				SpeakMove(Direction.Left);
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)
 				&& !InputUtil.AnyModifierHeld()) {
 				SpeakMove(Direction.Right);
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.K)) {
 				if (InputUtil.ShiftHeld())
 					SpeechPipeline.SpeakInterrupt(TileCursor.Instance.CycleMode());
 				else
 					SpeechPipeline.SpeakInterrupt(TileCursor.Instance.ReadCoordinates());
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)) {
 				if (InputUtil.ShiftHeld())
 					OpenTooltipBrowser();
 				else
 					ReadTooltipSummary();
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)
 				&& !InputUtil.AnyModifierHeld()) {
 				_monitor.SpeakCycleStatus();
-				return;
+				return true;
 			}
 
 			// Scanner keybinds
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)
 				&& !InputUtil.AnyModifierHeld()) {
 				_scanner.Refresh();
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home)
 				&& !InputUtil.AnyModifierHeld()) {
 				_scanner.Teleport();
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.PageUp)) {
 				if (InputUtil.CtrlHeld())
@@ -232,7 +232,7 @@ namespace OniAccess.Handlers.Tiles {
 					_scanner.CycleInstance(-1);
 				else
 					_scanner.CycleItem(-1);
-				return;
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.PageDown)) {
 				if (InputUtil.CtrlHeld())
@@ -243,8 +243,9 @@ namespace OniAccess.Handlers.Tiles {
 					_scanner.CycleInstance(1);
 				else
 					_scanner.CycleItem(1);
-				return;
+				return true;
 			}
+			return false;
 		}
 
 		private void SpeakMove(Direction direction) {

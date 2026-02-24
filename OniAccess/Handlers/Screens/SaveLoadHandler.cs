@@ -549,7 +549,7 @@ namespace OniAccess.Handlers.Screens {
 		/// <summary>
 		/// Check for pending view transition and stale widgets each frame.
 		/// </summary>
-		public override void Tick() {
+		public override bool Tick() {
 			if (_pendingViewTransition && IsColonyViewRootActive()) {
 				TransitionToSaveView();
 				_pendingViewTransition = false;
@@ -571,7 +571,7 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
-			base.Tick();
+			return base.Tick();
 		}
 
 		/// <summary>
