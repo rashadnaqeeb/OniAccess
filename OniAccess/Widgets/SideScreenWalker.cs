@@ -26,6 +26,13 @@ namespace OniAccess.Widgets {
 		/// </summary>
 		public static void Walk(SideScreenContent screen, List<WidgetInfo> items) {
 			var claimedLabels = new HashSet<LocText>();
+
+			var pixelPack = screen as PixelPackSideScreen;
+			if (pixelPack != null) {
+				WalkPixelPackScreen(pixelPack, items, claimedLabels);
+				return;
+			}
+
 			var root = screen.ContentContainer != null
 				&& screen.ContentContainer.activeInHierarchy
 				? screen.ContentContainer.transform
@@ -56,6 +63,146 @@ namespace OniAccess.Widgets {
 
 			CollapseRadioToggles(items, screen.GetTitle(), screen.transform, claimedLabels);
 			LogOrphanLocTexts(screen, items, claimedLabels);
+		}
+
+		private static void WalkPixelPackScreen(
+				PixelPackSideScreen pixelPack, List<WidgetInfo> items,
+				HashSet<LocText> claimedLabels) {
+			// Palette group (drillable)
+			var swatchContainer = pixelPack.colorSwatchContainer.transform;
+			var paletteChildren = new List<WidgetInfo>();
+			for (int i = 0; i < swatchContainer.childCount; i++) {
+				var child = swatchContainer.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				var swatchGO = child.gameObject;
+				var capturedGO = swatchGO;
+				var img = swatchGO.GetComponent<Image>();
+				if (img == null) continue;
+				string label = ColorNameUtil.GetColorName(img.color) ?? capturedGO.name;
+				paletteChildren.Add(new WidgetInfo {
+					Label = label,
+					Type = WidgetType.Button,
+					Component = swatchGO.GetComponent<KButton>(),
+					GameObject = capturedGO,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string name = ColorNameUtil.GetColorName(capturedGO.GetComponent<Image>().color)
+							?? capturedGO.name;
+						var href = capturedGO.GetComponent<HierarchyReferences>();
+						var selectedRef = href.GetReference("selected");
+						bool isSelected = selectedRef != null && selectedRef.gameObject.activeSelf;
+						var usedImage = href.GetReference("used").GetComponentInChildren<Image>();
+						bool inUse = usedImage != null && usedImage.gameObject.activeSelf;
+						string speech = name;
+						if (isSelected)
+							speech += $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
+						if (inUse)
+							speech += $", {(string)STRINGS.ONIACCESS.PIXEL_PACK.IN_USE}";
+						return speech;
+					}
+				});
+			}
+			var capturedContainer = swatchContainer;
+			items.Add(new WidgetInfo {
+				Label = (string)STRINGS.ONIACCESS.PIXEL_PACK.PALETTE,
+				Type = WidgetType.Label,
+				GameObject = pixelPack.colorSwatchContainer,
+				SuppressTooltip = true,
+				Children = paletteChildren,
+				SpeechFunc = () => {
+					int count = 0;
+					for (int i = 0; i < capturedContainer.childCount; i++) {
+						if (capturedContainer.GetChild(i).gameObject.activeSelf) count++;
+					}
+					string countText = string.Format(
+						(string)STRINGS.ONIACCESS.PIXEL_PACK.PALETTE_COUNT, count);
+					return $"{(string)STRINGS.ONIACCESS.PIXEL_PACK.PALETTE}, {countText}";
+				}
+			});
+
+			// Active colors group (drillable)
+			var activeChildren = new List<WidgetInfo>();
+			for (int i = 0; i < pixelPack.activeColors.Count; i++) {
+				var slotGO = pixelPack.activeColors[i];
+				var capturedSlot = slotGO;
+				int slotIndex = i + 1;
+				string slotLabel = string.Format(
+					(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex);
+				activeChildren.Add(new WidgetInfo {
+					Label = slotLabel,
+					Type = WidgetType.Button,
+					Component = slotGO.GetComponent<KButton>(),
+					GameObject = slotGO,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string colorName = ColorNameUtil.GetColorName(
+							capturedSlot.GetComponent<Image>().color) ?? capturedSlot.name;
+						return string.Format(
+							(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex)
+							+ ", " + colorName;
+					}
+				});
+			}
+			items.Add(new WidgetInfo {
+				Label = (string)STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS,
+				Type = WidgetType.Label,
+				GameObject = pixelPack.activeColorsContainer,
+				SuppressTooltip = true,
+				Children = activeChildren,
+				SpeechFunc = () => (string)STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS
+			});
+
+			// Standby colors group (drillable)
+			var standbyChildren = new List<WidgetInfo>();
+			for (int i = 0; i < pixelPack.standbyColors.Count; i++) {
+				var slotGO = pixelPack.standbyColors[i];
+				var capturedSlot = slotGO;
+				int slotIndex = i + 1;
+				string slotLabel = string.Format(
+					(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex);
+				standbyChildren.Add(new WidgetInfo {
+					Label = slotLabel,
+					Type = WidgetType.Button,
+					Component = slotGO.GetComponent<KButton>(),
+					GameObject = slotGO,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string colorName = ColorNameUtil.GetColorName(
+							capturedSlot.GetComponent<Image>().color) ?? capturedSlot.name;
+						return string.Format(
+							(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex)
+							+ ", " + colorName;
+					}
+				});
+			}
+			items.Add(new WidgetInfo {
+				Label = (string)STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS,
+				Type = WidgetType.Label,
+				GameObject = pixelPack.standbyColorsContainer,
+				SuppressTooltip = true,
+				Children = standbyChildren,
+				SpeechFunc = () => (string)STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS
+			});
+
+			// Action buttons (these have LocText labels)
+			var buttons = new[] {
+				pixelPack.copyActiveToStandbyButton,
+				pixelPack.copyStandbyToActiveButton,
+				pixelPack.swapColorsButton
+			};
+			foreach (var btn in buttons) {
+				if (btn == null || !btn.gameObject.activeSelf) continue;
+				var captured = btn;
+				string label = GetButtonLabel(captured, captured.transform.name);
+				if (!HasVisibleContent(label)) continue;
+				items.Add(new WidgetInfo {
+					Label = label,
+					Type = WidgetType.Button,
+					Component = captured,
+					GameObject = captured.gameObject,
+					SpeechFunc = () => GetButtonLabel(captured, captured.transform.name)
+				});
+			}
 		}
 
 		private static void WalkTransform(Transform parent, List<WidgetInfo> items, HashSet<LocText> claimedLabels) {

@@ -7,6 +7,8 @@ using OniAccess.Handlers.Tiles;
 using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Speech;
 using OniAccess.Util;
+using OniAccess.Widgets;
+using UnityEngine;
 
 namespace OniAccess.Tests {
 	class Program {
@@ -141,6 +143,11 @@ namespace OniAccess.Tests {
 			results.Add(PipelineAllowsSameTextAfterWindow());
 			results.Add(PipelineAllowsDifferentTextImmediately());
 			results.Add(PipelineNullAndEmptySkipped());
+
+			// --- ColorNameUtil ---
+			results.Add(ColorNameUtilAllPaletteColorsMapped());
+			results.Add(ColorNameUtilNoDuplicateNames());
+			results.Add(ColorNameUtilUnknownColorReturnsNull());
 
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
@@ -1278,6 +1285,95 @@ namespace OniAccess.Tests {
 			SpeechPipeline.SpeakInterrupt("world");
 			bool ok = spoken.Count == 2;
 			return Assert("PipelineAllowsDifferentTextImmediately", ok, $"spoken={spoken.Count}");
+		}
+
+		private static Color[] _paletteColors;
+		private static Color[] PaletteColors => _paletteColors ?? (_paletteColors = new Color[] {
+			new Color(0.4862745f, 0.4862745f, 0.4862745f),
+			new Color(0f, 0f, 84f / 85f),
+			new Color(0f, 0f, 0.7372549f),
+			new Color(4f / 15f, 8f / 51f, 0.7372549f),
+			new Color(0.5803922f, 0f, 44f / 85f),
+			new Color(56f / 85f, 0f, 0.1254902f),
+			new Color(56f / 85f, 0.0627451f, 0f),
+			new Color(8f / 15f, 4f / 51f, 0f),
+			new Color(16f / 51f, 16f / 85f, 0f),
+			new Color(0f, 0.47058824f, 0f),
+			new Color(0f, 0.40784314f, 0f),
+			new Color(0f, 0.34509805f, 0f),
+			new Color(0f, 0.2509804f, 0.34509805f),
+			new Color(0f, 0f, 0f),
+			new Color(0.7372549f, 0.7372549f, 0.7372549f),
+			new Color(0f, 0.47058824f, 0.972549f),
+			new Color(0f, 0.34509805f, 0.972549f),
+			new Color(0.40784314f, 4f / 15f, 84f / 85f),
+			new Color(72f / 85f, 0f, 0.8f),
+			new Color(76f / 85f, 0f, 0.34509805f),
+			new Color(0.972549f, 0.21960784f, 0f),
+			new Color(76f / 85f, 0.36078432f, 0.0627451f),
+			new Color(0.6745098f, 0.4862745f, 0f),
+			new Color(0f, 0.72156864f, 0f),
+			new Color(0f, 56f / 85f, 0f),
+			new Color(0f, 56f / 85f, 4f / 15f),
+			new Color(0f, 8f / 15f, 8f / 15f),
+			new Color(0f, 0f, 0f),
+			new Color(0.972549f, 0.972549f, 0.972549f),
+			new Color(0.23529412f, 0.7372549f, 84f / 85f),
+			new Color(0.40784314f, 8f / 15f, 84f / 85f),
+			new Color(0.59607846f, 0.47058824f, 0.972549f),
+			new Color(0.972549f, 0.47058824f, 0.972549f),
+			new Color(0.972549f, 0.34509805f, 0.59607846f),
+			new Color(0.972549f, 0.47058824f, 0.34509805f),
+			new Color(84f / 85f, 32f / 51f, 4f / 15f),
+			new Color(0.972549f, 0.72156864f, 0f),
+			new Color(0.72156864f, 0.972549f, 8f / 85f),
+			new Color(0.34509805f, 72f / 85f, 28f / 85f),
+			new Color(0.34509805f, 0.972549f, 0.59607846f),
+			new Color(0f, 0.9098039f, 72f / 85f),
+			new Color(0.47058824f, 0.47058824f, 0.47058824f),
+			new Color(84f / 85f, 84f / 85f, 84f / 85f),
+			new Color(0.6431373f, 76f / 85f, 84f / 85f),
+			new Color(0.72156864f, 0.72156864f, 0.972549f),
+			new Color(72f / 85f, 0.72156864f, 0.972549f),
+			new Color(0.972549f, 0.72156864f, 0.972549f),
+			new Color(0.972549f, 0.72156864f, 64f / 85f),
+			new Color(0.9411765f, 0.8156863f, 0.6901961f),
+			new Color(84f / 85f, 0.8784314f, 56f / 85f),
+			new Color(0.972549f, 72f / 85f, 0.47058824f),
+			new Color(72f / 85f, 0.972549f, 0.47058824f),
+			new Color(0.72156864f, 0.972549f, 0.72156864f),
+		});
+
+		private static (string, bool, string) ColorNameUtilAllPaletteColorsMapped() {
+			for (int i = 0; i < PaletteColors.Length; i++) {
+				string name = ColorNameUtil.GetColorName(PaletteColors[i]);
+				if (string.IsNullOrEmpty(name))
+					return Assert("ColorNameUtilAllPaletteColorsMapped", false,
+						$"index {i} returned null/empty");
+			}
+			return Assert("ColorNameUtilAllPaletteColorsMapped", true, null);
+		}
+
+		private static (string, bool, string) ColorNameUtilNoDuplicateNames() {
+			var seen = new Dictionary<string, int>();
+			for (int i = 0; i < PaletteColors.Length; i++) {
+				string name = ColorNameUtil.GetColorName(PaletteColors[i]);
+				if (name == null) continue;
+				if (seen.ContainsKey(name)) {
+					// Allow duplicate for the two black entries (indices 13 and 27)
+					if (PaletteColors[i] == PaletteColors[seen[name]]) continue;
+					return Assert("ColorNameUtilNoDuplicateNames", false,
+						$"'{name}' at indices {seen[name]} and {i}");
+				}
+				seen[name] = i;
+			}
+			return Assert("ColorNameUtilNoDuplicateNames", true, null);
+		}
+
+		private static (string, bool, string) ColorNameUtilUnknownColorReturnsNull() {
+			string result = ColorNameUtil.GetColorName(new Color(0.123f, 0.456f, 0.789f));
+			return Assert("ColorNameUtilUnknownColorReturnsNull", result == null,
+				$"expected null, got '{result}'");
 		}
 
 		private static (string, bool, string) PipelineNullAndEmptySkipped() {

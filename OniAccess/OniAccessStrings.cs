@@ -438,6 +438,70 @@ namespace STRINGS {
 			}
 		}
 
+		public class COLORS {
+			public static LocString DARK_GRAY = "dark gray";
+			public static LocString BLUE = "blue";
+			public static LocString DARK_BLUE = "dark blue";
+			public static LocString INDIGO = "indigo";
+			public static LocString PURPLE = "purple";
+			public static LocString MAROON = "maroon";
+			public static LocString DARK_RED = "dark red";
+			public static LocString BROWN = "brown";
+			public static LocString DARK_OLIVE = "dark olive";
+			public static LocString DARK_GREEN = "dark green";
+			public static LocString FOREST_GREEN = "forest green";
+			public static LocString DEEP_GREEN = "deep green";
+			public static LocString DARK_TEAL = "dark teal";
+			public static LocString BLACK = "black";
+			public static LocString GRAY = "gray";
+			public static LocString DODGER_BLUE = "dodger blue";
+			public static LocString ROYAL_BLUE = "royal blue";
+			public static LocString BLUE_VIOLET = "blue violet";
+			public static LocString MAGENTA = "magenta";
+			public static LocString CRIMSON = "crimson";
+			public static LocString RED_ORANGE = "red orange";
+			public static LocString ORANGE = "orange";
+			public static LocString DARK_GOLD = "dark gold";
+			public static LocString GREEN = "green";
+			public static LocString MEDIUM_GREEN = "medium green";
+			public static LocString SEA_GREEN = "sea green";
+			public static LocString TEAL = "teal";
+			public static LocString WHITE = "white";
+			public static LocString SKY_BLUE = "sky blue";
+			public static LocString CORNFLOWER = "cornflower";
+			public static LocString VIOLET = "violet";
+			public static LocString ORCHID = "orchid";
+			public static LocString HOT_PINK = "hot pink";
+			public static LocString SALMON = "salmon";
+			public static LocString TANGERINE = "tangerine";
+			public static LocString GOLD = "gold";
+			public static LocString CHARTREUSE = "chartreuse";
+			public static LocString BRIGHT_GREEN = "bright green";
+			public static LocString SPRING_GREEN = "spring green";
+			public static LocString CYAN = "cyan";
+			public static LocString MEDIUM_GRAY = "medium gray";
+			public static LocString OFF_WHITE = "off-white";
+			public static LocString LIGHT_BLUE = "light blue";
+			public static LocString LAVENDER = "lavender";
+			public static LocString LIGHT_PURPLE = "light purple";
+			public static LocString LIGHT_PINK = "light pink";
+			public static LocString LIGHT_ROSE = "light rose";
+			public static LocString BEIGE = "beige";
+			public static LocString CREAM = "cream";
+			public static LocString LIGHT_GOLD = "light gold";
+			public static LocString LIGHT_LIME = "light lime";
+			public static LocString PALE_GREEN = "pale green";
+		}
+
+		public class PIXEL_PACK {
+			public static LocString PALETTE = "color palette";
+			public static LocString ACTIVE_COLORS = "active colors";
+			public static LocString STANDBY_COLORS = "standby colors";
+			public static LocString PIXEL_SLOT = "pixel {0}";
+			public static LocString IN_USE = "in use";
+			public static LocString PALETTE_COUNT = "{0} colors";
+		}
+
 		public class DETAILS {
 			public static LocString NO_ERRANDS = "No errands";
 		}
