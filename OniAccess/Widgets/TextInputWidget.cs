@@ -3,7 +3,7 @@ namespace OniAccess.Widgets {
 	/// A text input widget (KInputTextField, KNumberInputField, KInputField).
 	/// Resolves the underlying input field for text editing.
 	/// </summary>
-	public class TextInputWidget : Widget {
+	public class TextInputWidget: Widget {
 		/// <summary>
 		/// Resolve the KInputTextField from the component, handling
 		/// KNumberInputField.field and KInputField.field indirection.

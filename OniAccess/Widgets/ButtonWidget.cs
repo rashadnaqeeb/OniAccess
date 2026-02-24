@@ -2,7 +2,7 @@ namespace OniAccess.Widgets {
 	/// <summary>
 	/// A clickable button widget (KButton or MultiToggle used as button).
 	/// </summary>
-	public class ButtonWidget : Widget {
+	public class ButtonWidget: Widget {
 		public override bool IsValid() {
 			if (GameObject != null && !GameObject.activeInHierarchy) return false;
 			var btn = Component as KButton;

@@ -3,7 +3,7 @@ namespace OniAccess.Widgets {
 	/// A slider widget (KSlider). Speaks formatted value, validates
 	/// interactability, adjusts value with step math and boundary clamping.
 	/// </summary>
-	public class SliderWidget : Widget {
+	public class SliderWidget: Widget {
 		public override string GetSpeechText() {
 			if (SpeechFunc != null) {
 				string result = SpeechFunc()?.Trim();

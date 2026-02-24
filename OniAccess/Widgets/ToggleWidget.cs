@@ -3,7 +3,7 @@ namespace OniAccess.Widgets {
 	/// A toggle widget (KToggle, MultiToggle used as toggle).
 	/// Speaks on/off state, validates interactability, clicks on activation.
 	/// </summary>
-	public class ToggleWidget : Widget {
+	public class ToggleWidget: Widget {
 		public override string GetSpeechText() {
 			if (SpeechFunc != null) {
 				string result = SpeechFunc()?.Trim();
