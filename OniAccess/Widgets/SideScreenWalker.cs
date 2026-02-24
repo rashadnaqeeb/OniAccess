@@ -23,11 +23,12 @@ namespace OniAccess.Widgets {
 		/// Appends discovered widgets to <paramref name="items"/>.
 		/// </summary>
 		public static void Walk(SideScreenContent screen, List<WidgetInfo> items) {
+			var claimedLabels = new HashSet<LocText>();
 			var root = screen.ContentContainer != null
 				&& screen.ContentContainer.activeInHierarchy
 				? screen.ContentContainer.transform
 				: screen.transform;
-			WalkTransform(root, items);
+			WalkTransform(root, items, claimedLabels);
 
 			// Pick up widgets outside ContentContainer (e.g., AutomatableSideScreen)
 			if (root != screen.transform) {
@@ -38,17 +39,24 @@ namespace OniAccess.Widgets {
 					if (!child.gameObject.activeSelf) continue;
 					if (IsSkipped(child.gameObject.name)) continue;
 					if (IsChrome(child)) continue;
-					if (TryAddWidget(child, items))
+					if (TryAddWidget(child, items, claimedLabels))
 						continue;
-					WalkTransform(child, items);
+					WalkTransform(child, items, claimedLabels);
 				}
 			}
 
-			CollapseRadioToggles(items, screen.GetTitle(), screen.transform);
-			LogOrphanLocTexts(screen, items);
+			// Remove LocTexts that were claimed as labels by interactive widgets
+			items.RemoveAll(item => {
+				if (item.Type != WidgetType.Label) return false;
+				var lt = item.GameObject?.GetComponent<LocText>();
+				return lt != null && claimedLabels.Contains(lt);
+			});
+
+			CollapseRadioToggles(items, screen.GetTitle(), screen.transform, claimedLabels);
+			LogOrphanLocTexts(screen, items, claimedLabels);
 		}
 
-		private static void WalkTransform(Transform parent, List<WidgetInfo> items) {
+		private static void WalkTransform(Transform parent, List<WidgetInfo> items, HashSet<LocText> claimedLabels) {
 			for (int i = 0; i < parent.childCount; i++) {
 				var child = parent.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
@@ -57,9 +65,9 @@ namespace OniAccess.Widgets {
 					continue;
 				}
 
-				if (TryAddWidget(child, items))
+				if (TryAddWidget(child, items, claimedLabels))
 					continue;
-				WalkTransform(child, items);
+				WalkTransform(child, items, claimedLabels);
 			}
 		}
 
@@ -67,7 +75,7 @@ namespace OniAccess.Widgets {
 		/// Try to emit a widget for the given transform. Returns true if a
 		/// component was found (caller should not recurse into children).
 		/// </summary>
-		private static bool TryAddWidget(Transform t, List<WidgetInfo> items) {
+		private static bool TryAddWidget(Transform t, List<WidgetInfo> items, HashSet<LocText> claimedLabels) {
 			var go = t.gameObject;
 
 			// KSlider (catches NonLinearSlider which extends KSlider)
@@ -76,6 +84,7 @@ namespace OniAccess.Widgets {
 				var captured = slider;
 				var labelLt = FindChildLocText(t, null)
 					?? FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
+				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
 				if (string.IsNullOrWhiteSpace(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KSlider) parent={t.parent?.name}");
@@ -100,6 +109,7 @@ namespace OniAccess.Widgets {
 				var captured = ktoggle;
 				var labelLt = FindChildLocText(t, null)
 					?? FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
+				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
 				if (string.IsNullOrWhiteSpace(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KToggle) parent={t.parent?.name}");
@@ -134,6 +144,7 @@ namespace OniAccess.Widgets {
 				var sibLt = FindSiblingLocText(t);
 				var parentSibLt = FindSiblingLocText(t.parent);
 				var labelLt = childLt ?? sibLt ?? parentSibLt;
+				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
 				Util.Log.Debug($"  label search: child={childLt?.GetParsedText() ?? "null"} sib={sibLt?.GetParsedText() ?? "null"} parentSib={parentSibLt?.GetParsedText() ?? "null"} => '{label}'");
 				if (string.IsNullOrWhiteSpace(label)) {
@@ -158,6 +169,7 @@ namespace OniAccess.Widgets {
 			if (knum != null) {
 				var captured = knum;
 				var labelLt = FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
+				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
 				if (string.IsNullOrWhiteSpace(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KNumberInputField) parent={t.parent?.name}");
@@ -165,6 +177,7 @@ namespace OniAccess.Widgets {
 				}
 				var unitsLt = FindFollowingSiblingLocText(t)
 					?? FindFollowingSiblingLocText(t.parent);
+				if (unitsLt != null) claimedLabels.Add(unitsLt);
 				items.Add(new WidgetInfo {
 					Label = label,
 					Type = WidgetType.TextInput,
@@ -190,6 +203,7 @@ namespace OniAccess.Widgets {
 			if (kinput != null) {
 				var captured = kinput;
 				var labelLt = FindSiblingLocText(t) ?? FindSiblingLocText(t.parent);
+				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
 				if (string.IsNullOrWhiteSpace(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KInputField) parent={t.parent?.name}");
@@ -229,12 +243,10 @@ namespace OniAccess.Widgets {
 				return true;
 			}
 
-			// LocText (standalone label — not inside any interactive widget).
-			// Skip if a sibling interactive widget will claim this as its label.
+			// LocText (standalone label — emit all non-empty; claimed labels
+			// are removed post-walk via claimedLabels set).
 			var locText = go.GetComponent<LocText>();
 			if (locText != null) {
-				if (HasSiblingInteractive(t))
-					return false;
 				var captured = locText;
 				string text = captured.GetParsedText();
 				if (!string.IsNullOrEmpty(text)) {
@@ -281,28 +293,6 @@ namespace OniAccess.Widgets {
 					return true;
 			}
 
-			return false;
-		}
-
-		/// <summary>
-		/// Returns true if any sibling (or sibling descendant) has an
-		/// interactive component that would claim a LocText as its label
-		/// via FindSiblingLocText. Used to suppress standalone LocText
-		/// emission when the text is already a widget's label.
-		/// </summary>
-		private static bool HasSiblingInteractive(Transform t) {
-			if (t.parent == null) return false;
-			var parent = t.parent;
-			for (int i = 0; i < parent.childCount; i++) {
-				var sibling = parent.GetChild(i);
-				if (sibling == t) continue;
-				if (!sibling.gameObject.activeSelf) continue;
-				if (sibling.GetComponentInChildren<KSlider>() != null) return true;
-				if (sibling.GetComponentInChildren<KToggle>() != null) return true;
-				if (sibling.GetComponentInChildren<MultiToggle>() != null) return true;
-				if (sibling.GetComponentInChildren<KNumberInputField>() != null) return true;
-				if (sibling.GetComponentInChildren<KInputField>() != null) return true;
-			}
 			return false;
 		}
 
@@ -455,7 +445,8 @@ namespace OniAccess.Widgets {
 		/// single Dropdown widget that cycles between members.
 		/// </summary>
 		private static void CollapseRadioToggles(
-				List<WidgetInfo> items, string screenTitle, Transform screenRoot) {
+				List<WidgetInfo> items, string screenTitle, Transform screenRoot,
+				HashSet<LocText> claimedLabels) {
 			// Group consecutive KToggle items by parent transform
 			var groups = new List<(Transform parent, int start, int count)>();
 			int i = 0;
@@ -507,7 +498,7 @@ namespace OniAccess.Widgets {
 				}
 
 				// Search the full screen tree for an orphan description LocText
-				var descriptionLt = FindOrphanDescription(screenRoot, emittedObjects);
+				var descriptionLt = FindOrphanDescription(screenRoot, emittedObjects, claimedLabels);
 
 				string groupLabel = screenTitle ?? items[start].Label;
 				var radioMembers = members;
@@ -548,10 +539,12 @@ namespace OniAccess.Widgets {
 		/// not descriptions).
 		/// </summary>
 		private static LocText FindOrphanDescription(
-				Transform root, HashSet<GameObject> emittedObjects) {
+				Transform root, HashSet<GameObject> emittedObjects,
+				HashSet<LocText> claimedLabels) {
 			var allLocTexts = root.GetComponentsInChildren<LocText>(false);
 			foreach (var lt in allLocTexts) {
 				if (emittedObjects.Contains(lt.gameObject)) continue;
+				if (claimedLabels.Contains(lt)) continue;
 
 				string text = lt.GetParsedText();
 				if (string.IsNullOrEmpty(text)) continue;
@@ -578,7 +571,7 @@ namespace OniAccess.Widgets {
 		/// Debug: log all LocTexts on the screen that weren't emitted as
 		/// widget items. Temporary — remove after audit is complete.
 		/// </summary>
-		private static void LogOrphanLocTexts(SideScreenContent screen, List<WidgetInfo> items) {
+		private static void LogOrphanLocTexts(SideScreenContent screen, List<WidgetInfo> items, HashSet<LocText> claimedLabels) {
 			var emitted = new HashSet<GameObject>();
 			foreach (var item in items) {
 				if (item.GameObject != null)
@@ -609,7 +602,10 @@ namespace OniAccess.Widgets {
 				}
 
 				string truncated = text.Length > 80 ? text.Substring(0, 80) + "..." : text;
-				string inside = parentWidget != null ? $" [inside {parentWidget}]" : " [ORPHAN]";
+				string inside;
+				if (parentWidget != null) inside = $" [inside {parentWidget}]";
+				else if (claimedLabels.Contains(lt)) inside = " [claimed label]";
+				else inside = " [ORPHAN]";
 				Util.Log.Debug($"OrphanAudit [{screenName}] {path}{inside}: {truncated}");
 				any = true;
 			}
