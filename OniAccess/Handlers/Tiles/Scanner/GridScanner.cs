@@ -331,10 +331,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				var go = Grid.Objects[cell, (int)net.BridgeLayer];
 				if (go == null) continue;
 
-				if (net.BridgeLayerShared) {
-					var building = go.GetComponent<Building>();
-					if (building == null || !building.Def.isUtility) continue;
-				}
+				var building = go.GetComponent<Building>();
+				if (building == null || !building.Def.isUtility) continue;
 
 				if (_seenBridges.Contains(go.GetInstanceID())) continue;
 				_seenBridges.Add(go.GetInstanceID());
