@@ -299,7 +299,7 @@ namespace OniAccess.Handlers.Screens {
 
 			int activeIndex = -1;
 			for (int i = 0; i < members.Count; i++) {
-				if (members[i].Toggle != null && members[i].Toggle.isOn) {
+				if (members[i].Toggle != null && SideScreenWalker.IsToggleActive(members[i].Toggle)) {
 					activeIndex = i;
 					break;
 				}

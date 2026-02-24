@@ -24,7 +24,7 @@ namespace OniAccess.Widgets {
 				case WidgetType.Toggle: {
 						var toggle = widget.Component as KToggle;
 						if (toggle != null) {
-							string state = toggle.isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
+							string state = SideScreenWalker.IsToggleActive(toggle) ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 							return $"{widget.Label}, {state}";
 						}
 						var mt = widget.Component as MultiToggle;

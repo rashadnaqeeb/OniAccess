@@ -218,7 +218,7 @@ namespace OniAccess.Handlers.Screens {
 						var toggle = widget.Component as KToggle;
 						if (toggle != null) {
 							toggle.Click();
-							string state = toggle.isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
+							string state = Widgets.SideScreenWalker.IsToggleActive(toggle) ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
 							Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
 						} else {
 							var mt = widget.Component as MultiToggle;

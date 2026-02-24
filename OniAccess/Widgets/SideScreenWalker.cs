@@ -122,7 +122,7 @@ namespace OniAccess.Widgets {
 					GameObject = go,
 					SpeechFunc = () => {
 						string lbl = ReadLocText(labelLt, captured.transform.name);
-						string state = captured.isOn
+						string state = IsToggleActive(captured)
 							? (string)STRINGS.ONIACCESS.STATES.ON
 							: (string)STRINGS.ONIACCESS.STATES.OFF;
 						return $"{lbl}, {state}";
@@ -415,6 +415,19 @@ namespace OniAccess.Widgets {
 			return false;
 		}
 
+		/// <summary>
+		/// Returns true if the KToggle is in the "active/selected" state.
+		/// Prefers ImageToggleState.GetIsActive() which reflects the true
+		/// visual state. Some screens (ThresholdSwitchSideScreen) use isOn
+		/// inversely — the visually active toggle has isOn=false.
+		/// Falls back to KToggle.isOn when no ImageToggleState is present.
+		/// </summary>
+		internal static bool IsToggleActive(KToggle toggle) {
+			var its = toggle.GetComponent<ImageToggleState>();
+			if (its != null) return its.GetIsActive();
+			return toggle.isOn;
+		}
+
 		private static bool HasInteractiveDescendant(Transform t) {
 			if (t.GetComponentInChildren<KSlider>() != null) return true;
 			if (t.GetComponentInChildren<KToggle>() != null) return true;
@@ -523,10 +536,10 @@ namespace OniAccess.Widgets {
 			for (int g = groups.Count - 1; g >= 0; g--) {
 				var (parent, start, count) = groups[g];
 
-				// Verify exactly one isOn (confirms mutual exclusivity)
+				// Verify exactly one active (confirms mutual exclusivity)
 				int onCount = 0;
 				for (int j = start; j < start + count; j++) {
-					if (((KToggle)items[j].Component).isOn)
+					if (IsToggleActive((KToggle)items[j].Component))
 						onCount++;
 				}
 				if (onCount != 1) continue;
@@ -554,7 +567,7 @@ namespace OniAccess.Widgets {
 					SpeechFunc = () => {
 						string selected = null;
 						for (int k = 0; k < radioMembers.Count; k++) {
-							if (radioMembers[k].Toggle != null && radioMembers[k].Toggle.isOn) {
+							if (radioMembers[k].Toggle != null && IsToggleActive(radioMembers[k].Toggle)) {
 								selected = radioMembers[k].Label;
 								break;
 							}
