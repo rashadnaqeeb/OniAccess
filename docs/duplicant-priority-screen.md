@@ -315,6 +315,125 @@ There is a SECOND priority-related screen: `CrewJobsScreen` extending `CrewListS
 - Closes all sub-panels (GroupSelectorWidget, GroupSelectorHeaderWidget, SelectablePanel)
 - Hides the options panel
 
+## Programmatic Cell Access
+
+### Reading Priority from a Cell
+
+The `OptionSelector` widget does **not** store the priority value. It is a stateless click handler. To read priority programmatically:
+
+```csharp
+// Get the duplicant's ChoreConsumer (or IPersonalPriorityManager)
+IAssignableIdentity identity = row.GetIdentity();
+MinionIdentity minion = identity as MinionIdentity;
+ChoreConsumer consumer = minion.GetComponent<ChoreConsumer>();
+int priority = consumer.GetPersonalPriority(choreGroup);  // returns 0-5
+```
+
+For the default row, priority is read from `Immigration.Instance` (implements `IPersonalPriorityManager`).
+For stored minions, use `StoredMinionIdentity` which also implements `IPersonalPriorityManager`.
+
+### Invoking Priority Changes Programmatically
+
+The `OptionSelector` dispatches clicks through an `OnChangePriority(object id, int delta)` callback. To change priority:
+
+```csharp
+// Option 1: call the OptionSelector's callback directly
+OptionSelector selector = widget.GetComponent<OptionSelector>();
+selector.OnChangePriority(widget, 1);   // increment
+selector.OnChangePriority(widget, -1);  // decrement
+```
+
+The callback is wired in `PrioritizationGroupTableColumn` to delegate to `JobsTableScreen`'s handler, which calls `ChoreConsumer.SetPersonalPriority()` with wrapping (mod 6).
+
+### Row Up/Down Buttons
+
+The rightmost column (`PrioritizeRowTableColumn`) has two child buttons accessed via `HierarchyReferences`:
+
+- `"UpButton"` — `KButton`, calls `onChangePriority(widget, +1)` (clamped, no wrap)
+- `"DownButton"` — `KButton`, calls `onChangePriority(widget, -1)` (clamped, no wrap)
+
+### OptionSelector Widget Hierarchy
+
+Each priority cell is an `OptionSelector` prefab (`Assets.UIPrefabs.TableScreenWidgets.PriorityGroupSelector`). Child elements accessed via `HierarchyReferences` on the `selectedItem` KImage:
+
+| Reference | Type | Purpose |
+|-----------|------|---------|
+| `"BG"` | KImage | Background sprite (arrow direction icon) |
+| `"FG"` | KImage | Foreground sprite overlay |
+| `"Fill"` | KImage | Color fill based on duplicant's skill level for the job |
+| `"Outline"` | KImage | Outline, disabled when trait prevents the job |
+
+The `selectedItem` field is a `KImage` with an attached `KButton` that dispatches left-click (+1) and right-click (-1) via `OnClick(KKeyCode)`.
+
+## Column Header "Set All" Dropdown
+
+Each column header has a priority button that opens a dropdown to set all duplicants' priority for that job.
+
+### Structure
+
+The dropdown is **not** the `GroupSelectorHeaderWidget` component. `JobsTableScreen.InitializeHeader()` builds it manually:
+
+1. A `KButton` labeled "PrioritizeButton" in the header widget
+2. Clicking opens an `itemsPanel` (`RectTransform`, toggled active/inactive) with a `GridLayoutGroup`
+3. The panel contains 6 dynamically created buttons, one per priority level (0–5)
+4. Each button shows the priority's arrow sprite icon
+
+### Selection Behavior
+
+Clicking a priority button in the dropdown calls `ChangeColumnPriority(widget_go, new_priority)`, which sets every duplicant's priority for that chore group to the selected level.
+
+### Closing
+
+The panel uses a `SelectablePanel` component that auto-closes via `OnDeselect()` when focus leaves. Also closed explicitly in `OnCmpDisable()`.
+
+## Settings Panel
+
+### Fields
+
+```csharp
+[SerializeField] private KImage optionsPanel;
+[SerializeField] private KButton resetSettingsButton;
+[SerializeField] private KButton toggleAdvancedModeButton;
+private KButton settingsButton;  // set dynamically in ConfigureOptionsPanel()
+```
+
+### Reaching the Settings Button from a Handler
+
+`settingsButton` is **private** and assigned dynamically in `ConfigureOptionsPanel()`:
+
+```csharp
+private void ConfigureOptionsPanel()
+{
+    HierarchyReferences component = header_row.GetComponent<HierarchyReferences>();
+    settingsButton = component.GetReference<KButton>("OptionsButton");
+    settingsButton.ClearOnClick();
+    settingsButton.onClick += OnSettingsButtonClicked;
+}
+```
+
+`header_row` is a **protected** field on `TableScreen`, so an external handler can reach the button via the Unity hierarchy without reflection:
+
+```csharp
+screen.header_row.GetComponent<HierarchyReferences>().GetReference<KButton>("OptionsButton")
+```
+
+This is more robust than reflecting `settingsButton` since the field is re-fetched from the hierarchy on every `RefreshRows()` anyway.
+
+### Opening/Closing
+
+- **Toggle**: `settingsButton.onClick` calls `OnSettingsButtonClicked()`, which activates `optionsPanel.gameObject` and selects it
+- **Closing**: `optionsPanel.gameObject.SetActive(false)` in `OnCmpDisable()`
+
+### Reset Priorities (`OnResetSettingsClicked`)
+
+Behavior depends on advanced mode:
+- **If `advancedPersonalPriorities` is true**: calls `Immigration.Instance.ResetPersonalPriorities()` and applies database defaults to all duplicants
+- **If false**: sets all duplicant priorities to 3 (Standard) for every prioritizable chore group
+
+### Advanced Mode Toggle (`OnAdvancedModeToggleClicked`)
+
+Toggles `Game.Instance.advancedPersonalPriorities` and updates a visual indicator on the button. This controls whether chore selection uses implicit priority hierarchy or explicit (proximity-based) ordering.
+
 ## Key Source Files
 
 | File | Purpose |
@@ -363,3 +482,17 @@ Screen title:
 Settings:
 - `UI.JOBSSCREEN.TOGGLE_ADVANCED_MODE` = "Enable Proximity"
 - `UI.JOBSSCREEN.RESET_SETTINGS` = "Reset Priorities"
+
+## TableScreen Internals
+
+### columns Dictionary
+
+`TableScreen.columns` is **protected** `Dictionary<string, TableColumn>`. No public accessor exists. External handlers must use reflection or access via a Harmony patch / subclass. However, `TableColumn.widgets_by_row` is **public**, so once you have a column reference you can freely read cell widgets.
+
+### Row Ordering
+
+`all_sortable_rows` **reflects the current visual sort order** after `SortRows()` runs. The method clears the list, re-sorts per world group using `active_sort_method` (reversing if `sort_is_reversed`), then rebuilds `all_sortable_rows` in sorted order and calls `SetSiblingIndex()` on each row to match. When no sort is active, rows are grouped by world in insertion order.
+
+### Column Ordering
+
+`columns` is a plain `Dictionary<string, TableColumn>`. On .NET Framework 4.7.2 / Mono, `Dictionary` preserves insertion order when no removals occur, and `columns` is only ever added to (via `RegisterColumn`). Columns are registered in `OnActivate()` in left-to-right visual order. So iterating `columns.Values` matches visual order in practice, though this is an implementation detail, not a contractual guarantee.
