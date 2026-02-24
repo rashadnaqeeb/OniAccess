@@ -181,7 +181,12 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(2, 0);
 						SyncAfterManualSet();
 						PlayWrapSound();
-						SpeakWithCategoryContext();
+						if (c == cat && s == sub)
+							SpeakCurrentItem();
+						else if (c == cat)
+							SpeakWithSubcategoryContext();
+						else
+							SpeakWithCategoryContext();
 						return;
 					}
 				}
@@ -245,7 +250,12 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(2, wrapSubs[s].Buildings.Count - 1);
 						SyncAfterManualSet();
 						PlayWrapSound();
-						SpeakWithCategoryContext();
+						if (c == cat && s == sub)
+							SpeakCurrentItem();
+						else if (c == cat)
+							SpeakWithSubcategoryContext();
+						else
+							SpeakWithCategoryContext();
 						return;
 					}
 				}

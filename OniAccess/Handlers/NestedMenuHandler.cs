@@ -155,7 +155,10 @@ namespace OniAccess.Handlers {
 						bool wrapped = candidate <= startParent;
 						if (wrapped) PlayWrapSound();
 						else PlayHoverSound();
-						SpeakWithParentContext();
+						if (candidate == startParent)
+							SpeakCurrentItem();
+						else
+							SpeakWithParentContext();
 						return;
 					}
 				}
@@ -193,7 +196,10 @@ namespace OniAccess.Handlers {
 						bool wrapped = candidate >= startParent;
 						if (wrapped) PlayWrapSound();
 						else PlayHoverSound();
-						SpeakWithParentContext();
+						if (candidate == startParent)
+							SpeakCurrentItem();
+						else
+							SpeakWithParentContext();
 						return;
 					}
 				}
@@ -346,11 +352,24 @@ namespace OniAccess.Handlers {
 			_level++;
 			_indices[_level] = 0;
 			_search.Clear();
-			SyncCurrentIndex();
+			int levelBefore = _level;
+			SkipSingleItemLevels();
 
 			int count = GetItemCount(_level, _indices);
-			if (count > 0)
-				SpeakCurrentItem();
+			if (count > 0) {
+				if (_level > levelBefore)
+					SpeakWithParentContext();
+				else
+					SpeakCurrentItem();
+			}
+		}
+
+		protected void SkipSingleItemLevels() {
+			while (_level < MaxLevel && GetItemCount(_level, _indices) == 1) {
+				_level++;
+				_indices[_level] = 0;
+			}
+			SyncCurrentIndex();
 		}
 
 		private void GoBack() {
@@ -360,7 +379,7 @@ namespace OniAccess.Handlers {
 			SpeakCurrentItem();
 		}
 
-		private void SpeakWithParentContext() {
+		protected void SpeakWithParentContext() {
 			string parentLabel = GetParentLabel(_level, _indices);
 			SpeakCurrentItem(parentLabel);
 		}
