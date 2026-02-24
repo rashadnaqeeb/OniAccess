@@ -449,25 +449,16 @@ namespace OniAccess.Handlers.Screens {
 					SwitchGameTab();
 					RebuildSections();
 					ResetNavigation();
-					SkipSingleItemLevels();
 
 					SpeechPipeline.SpeakInterrupt(DisplayName);
-					if (Level > 0)
-						SpeakWithParentContext();
-					else
-						SpeakFirstSection();
+					SpeakFirstSection();
 				}
 			} else if (_pendingFirstSection) {
 				RebuildSections();
 				if (_sections.Count > 0) {
 					_pendingFirstSection = false;
-					ResetNavigation();
-					SkipSingleItemLevels();
 					SpeechPipeline.SpeakInterrupt(DisplayName);
-					if (Level > 0)
-						SpeakWithParentContext();
-					else
-						SpeakFirstSection();
+					SpeakFirstSection();
 				}
 			}
 
@@ -500,16 +491,12 @@ namespace OniAccess.Handlers.Screens {
 			SwitchGameTab();
 			RebuildSections();
 			ResetNavigation();
-			SkipSingleItemLevels();
 
 			if (wrapped) PlayWrapSound();
 			else PlayHoverSound();
 
 			SpeechPipeline.SpeakInterrupt(_activeTabs[_tabIndex].DisplayName);
-			if (Level > 0)
-				SpeakWithParentContext();
-			else
-				SpeakFirstSection();
+			SpeakFirstSection();
 		}
 
 		// ========================================

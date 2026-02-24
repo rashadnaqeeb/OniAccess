@@ -393,24 +393,11 @@ namespace OniAccess.Handlers {
 			_level++;
 			_indices[_level] = 0;
 			_search.Clear();
-			int levelBefore = _level;
-			SkipSingleItemLevels();
+			SyncCurrentIndex();
 
 			int count = GetItemCount(_level, _indices);
-			if (count > 0) {
-				if (_level > levelBefore)
-					SpeakWithParentContext();
-				else
-					SpeakCurrentItem();
-			}
-		}
-
-		protected void SkipSingleItemLevels() {
-			while (_level < MaxLevel && GetItemCount(_level, _indices) == 1) {
-				_level++;
-				_indices[_level] = 0;
-			}
-			SyncCurrentIndex();
+			if (count > 0)
+				SpeakCurrentItem();
 		}
 
 		private void GoBack() {
@@ -420,7 +407,7 @@ namespace OniAccess.Handlers {
 			SpeakCurrentItem();
 		}
 
-		protected void SpeakWithParentContext() {
+		private void SpeakWithParentContext() {
 			string parentLabel = GetParentLabel(_level, _indices);
 			SpeakCurrentItem(parentLabel);
 		}
