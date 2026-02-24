@@ -258,6 +258,12 @@ namespace OniAccess.Handlers.Tools {
 		private void SetCorner() {
 			int cell = TileCursor.Instance.Cell;
 
+			if (!Grid.IsVisible(cell)) {
+				PlayNegativeSound();
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+				return;
+			}
+
 			if (_pendingFirstCorner == Grid.InvalidCell) {
 				_pendingFirstCorner = cell;
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.CORNER_SET);
@@ -295,6 +301,11 @@ namespace OniAccess.Handlers.Tools {
 		private void ConfirmOrCancel() {
 			if (_rectangles.Count == 0 && _pendingFirstCorner == Grid.InvalidCell) {
 				int cell = TileCursor.Instance.Cell;
+				if (!Grid.IsVisible(cell)) {
+					PlayNegativeSound();
+					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+					return;
+				}
 				_rectangles.Add(new RectCorners { Cell1 = cell, Cell2 = cell });
 			}
 

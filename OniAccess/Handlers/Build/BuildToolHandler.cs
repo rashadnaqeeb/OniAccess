@@ -255,6 +255,11 @@ namespace OniAccess.Handlers.Build {
 
 		private void RegularPlacement() {
 			int cell = TileCursor.Instance.Cell;
+			if (!Grid.IsVisible(cell)) {
+				PlayNegativeSound();
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+				return;
+			}
 			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			string failReason;
@@ -279,6 +284,11 @@ namespace OniAccess.Handlers.Build {
 
 		private void RegularPlaceAndExit() {
 			int cell = TileCursor.Instance.Cell;
+			if (!Grid.IsVisible(cell)) {
+				PlayNegativeSound();
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+				return;
+			}
 			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			string failReason;
@@ -320,6 +330,12 @@ namespace OniAccess.Handlers.Build {
 
 		private void UtilityPlacement() {
 			int cell = TileCursor.Instance.Cell;
+
+			if (!Grid.IsVisible(cell)) {
+				PlayNegativeSound();
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+				return;
+			}
 
 			if (!UtilityStartSet) {
 				var pos = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
@@ -372,6 +388,11 @@ namespace OniAccess.Handlers.Build {
 
 		private void UtilityPlaceAndExit() {
 			int cell = TileCursor.Instance.Cell;
+			if (!Grid.IsVisible(cell)) {
+				PlayNegativeSound();
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+				return;
+			}
 			var pos = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
 			string failReason;
 			if (!_def.IsValidPlaceLocation(null, pos, Orientation.Neutral, out failReason)) {
