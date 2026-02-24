@@ -224,8 +224,8 @@ namespace OniAccess.Handlers.Screens {
 							var mt = widget.Component as MultiToggle;
 							if (mt != null) {
 								ClickMultiToggle(mt);
-								string state = mt.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-								Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
+								Speech.SpeechPipeline.SpeakInterrupt(
+									$"{widget.Label}, {WidgetOps.GetMultiToggleState(mt)}");
 							}
 						}
 						break;

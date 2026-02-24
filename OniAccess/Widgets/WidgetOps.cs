@@ -211,8 +211,11 @@ namespace OniAccess.Widgets {
 		/// </summary>
 		public static string GetButtonLabel(KButton button, string fallback = null) {
 			var locText = button.GetComponentInChildren<LocText>();
-			if (locText != null && !string.IsNullOrEmpty(locText.text))
-				return locText.text;
+			if (locText != null) {
+				string parsed = locText.GetParsedText();
+				if (!string.IsNullOrEmpty(parsed)) return parsed;
+				if (!string.IsNullOrEmpty(locText.text)) return locText.text;
+			}
 			return fallback;
 		}
 	}

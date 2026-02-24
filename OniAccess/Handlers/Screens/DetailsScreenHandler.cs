@@ -431,7 +431,7 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-		if (_pendingActivationSpeech) {
+			if (_pendingActivationSpeech) {
 				_pendingActivationSpeech = false;
 				RebuildSections();
 				SpeakCurrentItem();

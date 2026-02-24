@@ -19,14 +19,19 @@ namespace OniAccess.Widgets {
 
 				string label = fallbackLabel;
 				var locText = button.GetComponentInChildren<LocText>();
-				if (locText != null && !string.IsNullOrEmpty(locText.text))
-					label = locText.text;
+				if (locText != null) {
+					string parsed = locText.GetParsedText();
+					if (!string.IsNullOrEmpty(parsed)) label = parsed;
+					else if (!string.IsNullOrEmpty(locText.text)) label = locText.text;
+				}
 
+				var captured = button;
 				widgets.Add(new WidgetInfo {
 					Label = label,
-					Component = button,
+					Component = captured,
 					Type = WidgetType.Button,
-					GameObject = button.gameObject
+					GameObject = captured.gameObject,
+					SpeechFunc = () => WidgetOps.GetButtonLabel(captured, fallbackLabel)
 				});
 			} catch (System.Exception ex) {
 				Util.Log.Error($"WidgetDiscoveryUtil.TryAddButtonField({fieldName}): {ex.Message}");

@@ -69,7 +69,6 @@ namespace OniAccess.Widgets {
 				CollapseAlarmTypeButtons(alarm, items, claimedLabels);
 
 			CollapseRadioToggles(items, screen.GetTitle(), screen.transform, claimedLabels);
-			LogOrphanLocTexts(screen, items, claimedLabels);
 		}
 
 		private static void WalkPixelPackScreen(
@@ -1006,50 +1005,5 @@ namespace OniAccess.Widgets {
 			return null;
 		}
 
-		/// <summary>
-		/// Debug: log all LocTexts on the screen that weren't emitted as
-		/// widget items. Temporary — remove after audit is complete.
-		/// </summary>
-		private static void LogOrphanLocTexts(SideScreenContent screen, List<WidgetInfo> items, HashSet<LocText> claimedLabels) {
-			var emitted = new HashSet<GameObject>();
-			foreach (var item in items) {
-				if (item.GameObject != null)
-					emitted.Add(item.GameObject);
-			}
-
-			string screenName = screen.GetType().Name;
-			string title = screen.GetTitle();
-			var allLocTexts = screen.transform.GetComponentsInChildren<LocText>(false);
-			bool any = false;
-			foreach (var lt in allLocTexts) {
-				if (emitted.Contains(lt.gameObject)) continue;
-				string text = lt.GetParsedText();
-				if (string.IsNullOrEmpty(text)) continue;
-				if (text == title) continue;
-
-				string parentWidget = null;
-				if (lt.GetComponentInParent<KToggle>() != null) parentWidget = "KToggle";
-				else if (lt.GetComponentInParent<KButton>() != null) parentWidget = "KButton";
-				else if (lt.GetComponentInParent<KSlider>() != null) parentWidget = "KSlider";
-				else if (lt.GetComponentInParent<MultiToggle>() != null) parentWidget = "MultiToggle";
-
-				string path = lt.transform.name;
-				var p = lt.transform.parent;
-				for (int i = 0; i < 3 && p != null && p != screen.transform; i++) {
-					path = p.name + "/" + path;
-					p = p.parent;
-				}
-
-				string truncated = text.Length > 80 ? text.Substring(0, 80) + "..." : text;
-				string inside;
-				if (parentWidget != null) inside = $" [inside {parentWidget}]";
-				else if (claimedLabels.Contains(lt)) inside = " [claimed label]";
-				else inside = " [ORPHAN]";
-				Util.Log.Debug($"OrphanAudit [{screenName}] {path}{inside}: {truncated}");
-				any = true;
-			}
-			if (!any)
-				Util.Log.Debug($"OrphanAudit [{screenName}]: no orphan LocTexts");
-		}
 	}
 }
