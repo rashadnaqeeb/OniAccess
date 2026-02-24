@@ -351,8 +351,6 @@ namespace OniAccess.Handlers {
 
 		public int SearchItemCount => ItemCount;
 
-		public int SearchCurrentIndex => _currentIndex;
-
 		public string GetSearchLabel(int index) {
 			if (index < 0 || index >= ItemCount) return null;
 			return Speech.TextFilter.FilterForSpeech(GetItemLabel(index));

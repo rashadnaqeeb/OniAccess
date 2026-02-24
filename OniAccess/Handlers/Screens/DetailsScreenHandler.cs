@@ -28,13 +28,13 @@ namespace OniAccess.Handlers.Screens {
 		private readonly Input.TextEditHelper _textEdit = new Input.TextEditHelper();
 		private int _tabIndex;
 		private GameObject _lastTarget;
-		private bool _tabSwitching;
+		private bool _suppressDisplayName;
 		private bool _pendingFirstSection;
 		private bool _pendingActivationSpeech;
 
 		public override string DisplayName {
 			get {
-				if (_tabSwitching) return null;
+				if (_suppressDisplayName) return null;
 				var ds = DetailsScreen.Instance;
 				if (ds == null || ds.target == null)
 					return STRINGS.ONIACCESS.HANDLERS.DETAILS_SCREEN;
@@ -98,7 +98,7 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		protected override void ActivateLeafItem(int[] indices) {
-			var w = GetWidgetAt(indices);
+			var w = GetWidgetAt(indices[0], indices[1], indices[2]);
 			if (w == null) return;
 
 			switch (w.Type) {
@@ -245,7 +245,7 @@ namespace OniAccess.Handlers.Screens {
 
 		protected override void HandleLeftRight(int direction, int stepLevel) {
 			if (Level > 0) {
-				var w = GetWidgetAt(null);
+				var w = GetCurrentWidget();
 				if (w != null && w.Type == WidgetType.Slider) {
 					AdjustSlider(w, direction, stepLevel);
 					return;
@@ -292,7 +292,7 @@ namespace OniAccess.Handlers.Screens {
 				PlaySliderSound("Slider_Move");
 
 			RebuildSections();
-			var fresh = GetWidgetAt(null);
+			var fresh = GetCurrentWidget();
 			if (fresh != null)
 				SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
 		}
@@ -377,7 +377,7 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			var w = GetWidgetAt(null);
+			var w = GetCurrentWidget();
 			if (w == null) return;
 
 			string text = WidgetOps.GetSpeechText(w);
@@ -388,19 +388,15 @@ namespace OniAccess.Handlers.Screens {
 				SpeechPipeline.SpeakInterrupt(text);
 		}
 
-		/// <summary>
-		/// Get the WidgetInfo at the given indices, or at the current indices if null.
-		/// </summary>
-		private WidgetInfo GetWidgetAt(int[] indices) {
-			int sIdx = indices != null ? indices[0] : GetIndex(0);
-			int iIdx = indices != null ? indices[1] : GetIndex(1);
+		private WidgetInfo GetCurrentWidget() {
+			return GetWidgetAt(GetIndex(0), GetIndex(1), GetIndex(2));
+		}
+
+		private WidgetInfo GetWidgetAt(int sIdx, int iIdx, int cIdx) {
 			if (sIdx < 0 || sIdx >= _sections.Count) return null;
 			var items = _sections[sIdx].Items;
 			if (iIdx < 0 || iIdx >= items.Count) return null;
-
 			if (Level <= 1) return items[iIdx];
-
-			int cIdx = indices != null ? indices[2] : GetIndex(2);
 			var children = items[iIdx].Children;
 			if (children == null || cIdx < 0 || cIdx >= children.Count) return null;
 			return children[cIdx];
@@ -417,9 +413,9 @@ namespace OniAccess.Handlers.Screens {
 			_tabIndex = 0;
 			SwitchGameTab();
 			_pendingFirstSection = true;
-			_tabSwitching = true;
+			_suppressDisplayName = true;
 			base.OnActivate();
-			_tabSwitching = false;
+			_suppressDisplayName = false;
 		}
 
 		// ========================================
@@ -580,15 +576,8 @@ namespace OniAccess.Handlers.Screens {
 		// PRIVATE HELPERS
 		// ========================================
 
-		/// <summary>
-		/// Reset NestedMenuHandler's private navigation state by cycling
-		/// through OnDeactivate/OnActivate. Suppresses speech during reset.
-		/// </summary>
 		private void ResetNavigation() {
-			_tabSwitching = true;
-			base.OnDeactivate();
-			base.OnActivate();
-			_tabSwitching = false;
+			ResetState();
 		}
 
 		private void SpeakFirstSection() {

@@ -22,7 +22,6 @@ namespace OniAccess.Handlers {
 
 		protected int GetIndex(int level) => _indices[level];
 		protected void SetIndex(int level, int value) => _indices[level] = value;
-		protected void SetLevel(int level) { _level = level; }
 
 		// ========================================
 		// ABSTRACT: LEVEL-AWARE MEMBERS
@@ -259,14 +258,6 @@ namespace OniAccess.Handlers {
 
 		int ISearchable.SearchItemCount => GetSearchItemCount(_indices);
 
-		int ISearchable.SearchCurrentIndex {
-			get {
-				if (_level == SearchLevel)
-					return _indices[_level];
-				return 0;
-			}
-		}
-
 		string ISearchable.GetSearchLabel(int index) {
 			string label = GetSearchItemLabel(index);
 			if (label == null) return null;
@@ -332,14 +323,16 @@ namespace OniAccess.Handlers {
 				return true;
 			}
 
-			// Neighbor empty — wrap to first populated parent
-			for (int i = 0; i < parentCount; i++) {
+			// Neighbor empty — scan forward for next populated parent
+			for (int step = 2; step < parentCount; step++) {
+				int i = (startParent + step) % parentCount;
 				_indices[_level - 1] = i;
 				childCount = GetItemCount(_level, _indices);
 				if (childCount > 0) {
 					_indices[_level] = landOnLast ? childCount - 1 : 0;
 					SyncCurrentIndex();
-					PlayWrapSound();
+					if (i <= startParent) PlayWrapSound();
+					else PlayHoverSound();
 					if (i == startParent) SpeakCurrentItem();
 					else SpeakWithParentContext();
 					return true;
@@ -368,14 +361,16 @@ namespace OniAccess.Handlers {
 				return true;
 			}
 
-			// Neighbor empty — wrap to last populated parent
-			for (int i = parentCount - 1; i >= 0; i--) {
+			// Neighbor empty — scan backward for next populated parent
+			for (int step = 2; step < parentCount; step++) {
+				int i = (startParent - step + parentCount) % parentCount;
 				_indices[_level - 1] = i;
 				childCount = GetItemCount(_level, _indices);
 				if (childCount > 0) {
 					_indices[_level] = landOnLast ? childCount - 1 : 0;
 					SyncCurrentIndex();
-					PlayWrapSound();
+					if (i >= startParent) PlayWrapSound();
+					else PlayHoverSound();
 					if (i == startParent) SpeakCurrentItem();
 					else SpeakWithParentContext();
 					return true;
@@ -408,6 +403,14 @@ namespace OniAccess.Handlers {
 			SpeakCurrentItem();
 		}
 
+		protected void ResetState() {
+			_level = StartLevel;
+			for (int i = 0; i < _indices.Length; i++)
+				_indices[i] = 0;
+			_currentIndex = 0;
+			_search.Clear();
+		}
+
 		private void SpeakWithParentContext() {
 			string parentLabel = GetParentLabel(_level, _indices);
 			SpeakCurrentItem(parentLabel);
@@ -416,7 +419,7 @@ namespace OniAccess.Handlers {
 		/// <summary>
 		/// Copy _indices[_level] to _currentIndex for base class compatibility.
 		/// </summary>
-		private void SyncCurrentIndex() {
+		protected void SyncCurrentIndex() {
 			_currentIndex = _indices[_level];
 		}
 

@@ -11,11 +11,6 @@ namespace OniAccess.Handlers {
 		int SearchItemCount { get; }
 
 		/// <summary>
-		/// Current cursor position (reserved for future use).
-		/// </summary>
-		int SearchCurrentIndex { get; }
-
-		/// <summary>
 		/// Searchable label for the item at the given index.
 		/// Return null to skip an item in search results.
 		/// </summary>
