@@ -54,10 +54,9 @@ namespace OniAccess.Handlers.Screens {
 
 					var modToggle = toggle;
 					string modLabel = label;
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ToggleWidget {
 						Label = label,
 						Component = toggle,
-						Type = WidgetType.Toggle,
 						GameObject = child.gameObject,
 						SpeechFunc = () => {
 							string state = modToggle.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
@@ -72,10 +71,9 @@ namespace OniAccess.Handlers.Screens {
 							var manageText = manageBtn.GetComponentInChildren<LocText>();
 							string manageLabel = manageText != null ? manageText.text : (string)STRINGS.ONIACCESS.BUTTONS.MANAGE;
 							var btn = manageBtn;
-							_widgets.Add(new WidgetInfo {
+							_widgets.Add(new ButtonWidget {
 								Label = manageLabel,
 								Component = manageBtn,
-								Type = WidgetType.Button,
 								GameObject = manageBtn.gameObject,
 								SpeechFunc = () => {
 									var lt = btn.GetComponentInChildren<LocText>();
@@ -118,7 +116,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
-			if (widget.Type == WidgetType.Toggle) {
+			if (widget is ToggleWidget) {
 				var multiToggle = widget.Component as MultiToggle;
 				if (multiToggle != null) {
 					string label = widget.Label;
@@ -128,7 +126,7 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
-			if (widget.Type == WidgetType.Button) {
+			if (widget is ButtonWidget) {
 				var kb = widget.Component as KButton;
 				if (kb != null) {
 					string fieldName = GetButtonFieldName(kb);

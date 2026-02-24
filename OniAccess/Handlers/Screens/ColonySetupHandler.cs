@@ -272,10 +272,9 @@ namespace OniAccess.Handlers.Screens {
 					? $"{name}, {Speech.TextFilter.FilterForSpeech(hoverDesc)}"
 					: name;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = multiToggle,
-					Type = WidgetType.Button,
 					GameObject = multiToggle.gameObject
 				});
 			}
@@ -294,10 +293,9 @@ namespace OniAccess.Handlers.Screens {
 				string name = STRINGS.UI.FRONTEND.MODESELECTSCREEN.SURVIVAL_TITLE;
 				string desc = STRINGS.UI.FRONTEND.MODESELECTSCREEN.SURVIVAL_DESC;
 				string label = $"{name}, {Speech.TextFilter.FilterForSpeech(desc)}";
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = survivalToggle,
-					Type = WidgetType.Button,
 					GameObject = survivalToggle.gameObject
 				});
 			}
@@ -307,10 +305,9 @@ namespace OniAccess.Handlers.Screens {
 				string name = STRINGS.UI.FRONTEND.MODESELECTSCREEN.NOSWEAT_TITLE;
 				string desc = STRINGS.UI.FRONTEND.MODESELECTSCREEN.NOSWEAT_DESC;
 				string label = $"{name}, {Speech.TextFilter.FilterForSpeech(desc)}";
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = nosweatToggle,
-					Type = WidgetType.Button,
 					GameObject = nosweatToggle.gameObject
 				});
 			}
@@ -336,10 +333,8 @@ namespace OniAccess.Handlers.Screens {
 
 			_clusterIndex = UnityEngine.Mathf.Clamp(_clusterIndex, 0, _clusterKeys.Count - 1);
 			string clusterLabel = BuildClusterSelectorLabel(_clusterKeys[_clusterIndex]);
-			_widgets.Add(new WidgetInfo {
+			_widgets.Add(new LabelWidget {
 				Label = clusterLabel,
-				Component = null,
-				Type = WidgetType.Label,
 				GameObject = null,
 				Tag = "cluster_selector",
 				SpeechFunc = () => {
@@ -361,10 +356,9 @@ namespace OniAccess.Handlers.Screens {
 					.GetValue<KInputTextField>();
 				if (coordinate != null && coordinate.gameObject.activeInHierarchy) {
 					string currentValue = coordinate.text ?? "";
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new TextInputWidget {
 						Label = $"{((string)STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.COORDINATE).TrimEnd(':')}, {currentValue}",
 						Component = coordinate,
-						Type = WidgetType.TextInput,
 						GameObject = coordinate.gameObject,
 						SpeechFunc = () => $"{((string)STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.COORDINATE).TrimEnd(':')}, {coordinate.text}"
 					});
@@ -474,9 +468,8 @@ namespace OniAccess.Handlers.Screens {
 			if (startWorld != null) {
 				string desc = startWorld.GetProperDescription();
 				if (!string.IsNullOrEmpty(desc)) {
-					_widgets.Add(new WidgetInfo {
-						Label = $"{STRINGS.UI.FRONTEND.SCENARIOS_MENU.SCENARIO_DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(desc)}",
-						Type = WidgetType.Label
+					_widgets.Add(new LabelWidget {
+						Label = $"{STRINGS.UI.FRONTEND.SCENARIOS_MENU.SCENARIO_DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(desc)}"
 					});
 				}
 			}
@@ -490,9 +483,8 @@ namespace OniAccess.Handlers.Screens {
 			string diffLabel = $"{STRINGS.ONIACCESS.INFO.DIFFICULTY}: {Speech.TextFilter.FilterForSpeech(diffName)}";
 			if (!string.IsNullOrEmpty(diffTooltip))
 				diffLabel += $", {Speech.TextFilter.FilterForSpeech(diffTooltip)}";
-			_widgets.Add(new WidgetInfo {
-				Label = diffLabel,
-				Type = WidgetType.Label
+			_widgets.Add(new LabelWidget {
+				Label = diffLabel
 			});
 
 			if (hasPlanetoids) {
@@ -525,16 +517,14 @@ namespace OniAccess.Handlers.Screens {
 
 				if (nearbyNames.Count > 0) {
 					string header = STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.HEADER_ASTEROID_NEARBY;
-					_widgets.Add(new WidgetInfo {
-						Label = $"{header}: {string.Join(", ", nearbyNames)}",
-						Type = WidgetType.Label
+					_widgets.Add(new LabelWidget {
+						Label = $"{header}: {string.Join(", ", nearbyNames)}"
 					});
 				}
 				if (distantNames.Count > 0) {
 					string header = STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.HEADER_ASTEROID_DISTANT;
-					_widgets.Add(new WidgetInfo {
-						Label = $"{header}: {string.Join(", ", distantNames)}",
-						Type = WidgetType.Label
+					_widgets.Add(new LabelWidget {
+						Label = $"{header}: {string.Join(", ", distantNames)}"
 					});
 				}
 
@@ -547,17 +537,15 @@ namespace OniAccess.Handlers.Screens {
 					// World name header
 					string wName = world.GetProperName();
 					if (string.IsNullOrEmpty(wName)) continue;
-					_widgets.Add(new WidgetInfo {
-						Label = Speech.TextFilter.FilterForSpeech(wName),
-						Type = WidgetType.Label
+					_widgets.Add(new LabelWidget {
+						Label = Speech.TextFilter.FilterForSpeech(wName)
 					});
 
 					// World description
 					string wDesc = world.GetProperDescription();
 					if (!string.IsNullOrEmpty(wDesc)) {
-						_widgets.Add(new WidgetInfo {
-							Label = $"{STRINGS.UI.FRONTEND.SCENARIOS_MENU.SCENARIO_DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(wDesc)}",
-							Type = WidgetType.Label
+						_widgets.Add(new LabelWidget {
+							Label = $"{STRINGS.UI.FRONTEND.SCENARIOS_MENU.SCENARIO_DESCRIPTION}: {Speech.TextFilter.FilterForSpeech(wDesc)}"
 						});
 					}
 
@@ -573,9 +561,8 @@ namespace OniAccess.Handlers.Screens {
 						string tooltip = trait.tooltip?.Trim() ?? "";
 						if (!string.IsNullOrEmpty(tooltip))
 							traitLabel += $", {Speech.TextFilter.FilterForSpeech(tooltip)}";
-						_widgets.Add(new WidgetInfo {
-							Label = traitLabel,
-							Type = WidgetType.Label
+						_widgets.Add(new LabelWidget {
+							Label = traitLabel
 						});
 						hasTraits = true;
 					}
@@ -586,17 +573,15 @@ namespace OniAccess.Handlers.Screens {
 						string label = Speech.TextFilter.FilterForSpeech(noTraits);
 						if (!string.IsNullOrEmpty(noTraitsDesc))
 							label += $", {Speech.TextFilter.FilterForSpeech(noTraitsDesc)}";
-						_widgets.Add(new WidgetInfo {
-							Label = label,
-							Type = WidgetType.Label
+						_widgets.Add(new LabelWidget {
+							Label = label
 						});
 					}
 				}
 			} else {
 				// Single world,just show traits directly
-				_widgets.Add(new WidgetInfo {
-					Label = $"{STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.TRAITS_HEADER}:",
-					Type = WidgetType.Label
+				_widgets.Add(new LabelWidget {
+					Label = $"{STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.TRAITS_HEADER}:"
 				});
 
 				var traitDescriptors = belt.GetTraitDescriptors();
@@ -605,9 +590,8 @@ namespace OniAccess.Handlers.Screens {
 					string text = trait.text?.Trim() ?? "";
 					if (string.IsNullOrEmpty(text)) continue;
 					if (text.StartsWith("<i>")) {
-						_widgets.Add(new WidgetInfo {
-							Label = Speech.TextFilter.FilterForSpeech(text),
-							Type = WidgetType.Label
+						_widgets.Add(new LabelWidget {
+							Label = Speech.TextFilter.FilterForSpeech(text)
 						});
 						hasTraits = true;
 						continue;
@@ -618,18 +602,16 @@ namespace OniAccess.Handlers.Screens {
 					string tooltip = trait.tooltip?.Trim() ?? "";
 					if (!string.IsNullOrEmpty(tooltip))
 						traitLabel += $", {Speech.TextFilter.FilterForSpeech(tooltip)}";
-					_widgets.Add(new WidgetInfo {
-						Label = traitLabel,
-						Type = WidgetType.Label
+					_widgets.Add(new LabelWidget {
+						Label = traitLabel
 					});
 					hasTraits = true;
 				}
 
 				if (!hasTraits) {
 					string noTraits = STRINGS.WORLD_TRAITS.NO_TRAITS.NAME;
-					_widgets.Add(new WidgetInfo {
-						Label = Speech.TextFilter.FilterForSpeech(noTraits),
-						Type = WidgetType.Label
+					_widgets.Add(new LabelWidget {
+						Label = Speech.TextFilter.FilterForSpeech(noTraits)
 					});
 				}
 			}
@@ -670,10 +652,9 @@ namespace OniAccess.Handlers.Screens {
 					string label = !string.IsNullOrEmpty(value)
 						? $"{name}, {value}"
 						: name;
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new DropdownWidget {
 						Label = label,
 						Component = widget,
-						Type = WidgetType.Dropdown,
 						GameObject = widget.gameObject,
 						SpeechFunc = () => BuildSettingDropdownSpeech(widget, name)
 					});
@@ -692,10 +673,9 @@ namespace OniAccess.Handlers.Screens {
 						if (string.IsNullOrEmpty(name)) name = (string)STRINGS.ONIACCESS.INFO.SETTING;
 					}
 					string state = (toggle != null && toggle.CurrentState == 1) ? (string)STRINGS.ONIACCESS.STATES.ENABLED : (string)STRINGS.ONIACCESS.STATES.DISABLED;
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ToggleWidget {
 						Label = $"{name}, {state}",
 						Component = widget,
-						Type = WidgetType.Toggle,
 						GameObject = widget.gameObject,
 						SpeechFunc = () => {
 							var t = Traverse.Create(toggleWidget);
@@ -712,10 +692,9 @@ namespace OniAccess.Handlers.Screens {
 					var inputField = wt.Field("Input").GetValue<KInputTextField>();
 					string name = labelText != null ? labelText.text : (string)STRINGS.ONIACCESS.PANELS.SEED;
 					string value = inputField != null ? inputField.text : "";
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ButtonWidget { // Enter randomizes seed
 						Label = $"{name}, {value}",
 						Component = widget,
-						Type = WidgetType.Button, // Enter randomizes seed
 						GameObject = widget.gameObject,
 						SpeechFunc = () => {
 							var s = Traverse.Create(seedWidget);
@@ -801,10 +780,9 @@ namespace OniAccess.Handlers.Screens {
 					} catch (System.Exception ex) { Util.Log.Error($"ColonySetupHandler.DiscoverStoryWidgets(desc): {ex.Message}"); }
 
 					var capturedStoryId = storyId;
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ToggleWidget {
 						Label = label,
 						Component = checkbox,
-						Type = WidgetType.Toggle,
 						GameObject = checkbox.gameObject,
 						Tag = storyId,
 						SpeechFunc = () => BuildStoryTraitSpeech(capturedStoryId, label)
@@ -887,9 +865,8 @@ namespace OniAccess.Handlers.Screens {
 
 				// Emit section header
 				if (!string.IsNullOrEmpty(sectionName)) {
-					_widgets.Add(new WidgetInfo {
-						Label = sectionName,
-						Type = WidgetType.Label
+					_widgets.Add(new LabelWidget {
+						Label = sectionName
 					});
 				}
 
@@ -922,10 +899,9 @@ namespace OniAccess.Handlers.Screens {
 						var mixToggle = toggle;
 						var mixGO = widget.gameObject;
 						string mixLabel = name;
-						_widgets.Add(new WidgetInfo {
+						_widgets.Add(new ToggleWidget {
 							Label = $"{name}, {state}",
 							Component = toggle,
-							Type = WidgetType.Toggle,
 							GameObject = mixGO,
 							SpeechFunc = () => {
 								string n = "";
@@ -972,10 +948,9 @@ namespace OniAccess.Handlers.Screens {
 							? $"{name}, {value}"
 							: name;
 
-						_widgets.Add(new WidgetInfo {
+						_widgets.Add(new DropdownWidget {
 							Label = label,
 							Component = widget,
-							Type = WidgetType.Dropdown,
 							GameObject = widget.gameObject,
 							SpeechFunc = () => BuildSettingDropdownSpeech(widget, name)
 						});
@@ -1085,7 +1060,7 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			// Story trait toggle: invoke checkbox onClick, then speak new state
-			if (_inCustomize && _currentSubTab == SubTabStoryTraits && widget.Type == WidgetType.Toggle
+			if (_inCustomize && _currentSubTab == SubTabStoryTraits && widget is ToggleWidget
 				&& widget.Component is MultiToggle storyCheckbox) {
 				storyCheckbox.onClick?.Invoke();
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(widget));
@@ -1094,7 +1069,7 @@ namespace OniAccess.Handlers.Screens {
 
 			// Mixing DLC toggle: invoke MultiToggle onClick, then announce new state
 			// ChangeState() runs async (next Update), so compute new state from old
-			if (_inCustomize && _currentSubTab == SubTabMixing && widget.Type == WidgetType.Toggle
+			if (_inCustomize && _currentSubTab == SubTabMixing && widget is ToggleWidget
 				&& widget.Component is MultiToggle mixingToggle) {
 				string newState = mixingToggle.CurrentState == 1 ? (string)STRINGS.ONIACCESS.STATES.DISABLED : (string)STRINGS.ONIACCESS.STATES.ENABLED;
 				mixingToggle.onClick?.Invoke();
@@ -1195,7 +1170,7 @@ namespace OniAccess.Handlers.Screens {
 		/// CustomGameSettingListWidget has CycleLeft/CycleRight KButtons.
 		/// We invoke the appropriate cycle direction.
 		/// </summary>
-		protected override void CycleDropdown(WidgetInfo widget, int direction) {
+		protected override void CycleDropdown(Widget widget, int direction) {
 			if (!(widget.Component is CustomGameSettingWidget settingWidget)) return;
 
 			var wt = Traverse.Create(settingWidget);

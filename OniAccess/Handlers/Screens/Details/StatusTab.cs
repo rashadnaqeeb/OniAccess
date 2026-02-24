@@ -89,13 +89,19 @@ namespace OniAccess.Handlers.Screens.Details {
 
 				bool isClickable = button != null && button.enabled;
 
-				section.Items.Add(new WidgetInfo {
-					Label = text.text,
-					Type = isClickable ? WidgetType.Button : WidgetType.Label,
-					Component = isClickable ? (Component)button : null,
-					GameObject = widget ?? text.gameObject,
-					SpeechFunc = () => text.text
-				});
+				Widget w = isClickable
+					? (Widget)new ButtonWidget {
+						Label = text.text,
+						Component = button,
+						GameObject = widget ?? text.gameObject,
+						SpeechFunc = () => text.text
+					}
+					: new LabelWidget {
+						Label = text.text,
+						GameObject = widget ?? text.gameObject,
+						SpeechFunc = () => text.text
+					};
+				section.Items.Add(w);
 			}
 
 			if (section.Items.Count > 0)
@@ -151,9 +157,8 @@ namespace OniAccess.Handlers.Screens.Details {
 				var plain = child.GetComponent<DetailLabel>();
 				if (plain != null) {
 					var captured = plain;
-					section.Items.Add(new WidgetInfo {
+					section.Items.Add(new LabelWidget {
 						Label = captured.label.text,
-						Type = WidgetType.Label,
 						GameObject = child.gameObject,
 						SpeechFunc = () => captured.label.text
 					});
@@ -166,9 +171,8 @@ namespace OniAccess.Handlers.Screens.Details {
 
 		private static void AddStorageItem(DetailLabelWithButton item, DetailSection section) {
 			var captured = item;
-			section.Items.Add(new WidgetInfo {
+			section.Items.Add(new ButtonWidget {
 				Label = captured.label.text,
-				Type = WidgetType.Button,
 				Component = captured.button,
 				GameObject = captured.gameObject,
 				SpeechFunc = () => BuildStorageItemText(captured)
@@ -177,9 +181,8 @@ namespace OniAccess.Handlers.Screens.Details {
 
 		private static void AddStorageGroup(DetailCollapsableLabel group, DetailSection section) {
 			var captured = group;
-			var widget = new WidgetInfo {
+			var widget = new LabelWidget {
 				Label = $"{captured.nameLabel.GetParsedText()}, {captured.valueLabel.GetParsedText()}",
-				Type = WidgetType.Label,
 				GameObject = captured.gameObject,
 				SpeechFunc = () =>
 					$"{captured.nameLabel.GetParsedText()}, {captured.valueLabel.GetParsedText()}"
@@ -189,13 +192,12 @@ namespace OniAccess.Handlers.Screens.Details {
 			// Trigger the expand callback to populate rows from live storage data.
 			captured.ManualTriggerOnExpanded();
 
-			var children = new List<WidgetInfo>();
+			var children = new List<Widget>();
 			foreach (var row in captured.contentRows) {
 				if (!row.inUse) continue;
 				var childLabel = row.label;
-				children.Add(new WidgetInfo {
+				children.Add(new ButtonWidget {
 					Label = childLabel.label.GetParsedText(),
-					Type = WidgetType.Button,
 					Component = childLabel.button,
 					GameObject = childLabel.gameObject,
 					SpeechFunc = () => BuildStorageItemText(childLabel)
@@ -246,9 +248,8 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (!line.go.activeSelf) continue;
 				var captured = line;
 				var checkRef = captured.go.GetComponent<HierarchyReferences>();
-				section.Items.Add(new WidgetInfo {
+				section.Items.Add(new LabelWidget {
 					Label = captured.label_text_func(DetailsScreen.Instance.target),
-					Type = WidgetType.Label,
 					GameObject = captured.go,
 					SpeechFunc = () => {
 						var t = DetailsScreen.Instance?.target;
@@ -271,9 +272,8 @@ namespace OniAccess.Handlers.Screens.Details {
 			foreach (var line in lines) {
 				if (!line.go.activeSelf) continue;
 				var captured = line;
-				section.Items.Add(new WidgetInfo {
+				section.Items.Add(new LabelWidget {
 					Label = captured.locText.GetParsedText(),
-					Type = WidgetType.Label,
 					GameObject = captured.go,
 					SpeechFunc = () => captured.locText.GetParsedText()
 				});
@@ -285,9 +285,8 @@ namespace OniAccess.Handlers.Screens.Details {
 			foreach (var line in lines) {
 				if (!line.go.activeSelf) continue;
 				var captured = line;
-				section.Items.Add(new WidgetInfo {
+				section.Items.Add(new LabelWidget {
 					Label = captured.locText.GetParsedText(),
-					Type = WidgetType.Label,
 					GameObject = captured.go,
 					SpeechFunc = () => captured.locText.GetParsedText()
 				});
@@ -333,9 +332,8 @@ namespace OniAccess.Handlers.Screens.Details {
 				var withButton = child.GetComponent<DetailLabelWithButton>();
 				if (withButton != null) {
 					var captured = withButton;
-					section.Items.Add(new WidgetInfo {
+					section.Items.Add(new ButtonWidget {
 						Label = captured.label.text,
-						Type = WidgetType.Button,
 						Component = captured.button,
 						GameObject = child.gameObject,
 						SpeechFunc = () => BuildStorageItemText(captured)
@@ -346,9 +344,8 @@ namespace OniAccess.Handlers.Screens.Details {
 				var detailLabel = child.GetComponent<DetailLabel>();
 				if (detailLabel != null) {
 					var captured = detailLabel;
-					section.Items.Add(new WidgetInfo {
+					section.Items.Add(new LabelWidget {
 						Label = captured.label.text,
-						Type = WidgetType.Label,
 						GameObject = child.gameObject,
 						SpeechFunc = () => captured.label.text
 					});
@@ -419,18 +416,16 @@ namespace OniAccess.Handlers.Screens.Details {
 
 				if (children.Count == 0) {
 					var captured = header;
-					section.Items.Add(new WidgetInfo {
+					section.Items.Add(new LabelWidget {
 						Label = captured.text,
-						Type = WidgetType.Label,
 						GameObject = captured.gameObject,
 						SpeechFunc = () => captured.text
 					});
 				} else {
 					var capturedHeader = header;
 					var capturedChildren = children.ToArray();
-					section.Items.Add(new WidgetInfo {
+					section.Items.Add(new LabelWidget {
 						Label = capturedHeader.text,
-						Type = WidgetType.Label,
 						GameObject = capturedHeader.gameObject,
 						SpeechFunc = () => {
 							string text = capturedHeader.text;
@@ -502,9 +497,8 @@ namespace OniAccess.Handlers.Screens.Details {
 					if (labelText == null) continue;
 
 					var captured = labelText;
-					currentSection.Items.Add(new WidgetInfo {
+					currentSection.Items.Add(new LabelWidget {
 						Label = captured.text,
-						Type = WidgetType.Label,
 						GameObject = child.gameObject,
 						SpeechFunc = () => captured.text
 					});
@@ -553,9 +547,8 @@ namespace OniAccess.Handlers.Screens.Details {
 				var detailLabel = child.GetComponent<DetailLabel>();
 				if (detailLabel != null) {
 					var captured = detailLabel;
-					section.Items.Add(new WidgetInfo {
+					section.Items.Add(new LabelWidget {
 						Label = captured.label.text,
-						Type = WidgetType.Label,
 						GameObject = child.gameObject,
 						SpeechFunc = () => captured.label.text
 					});
@@ -581,9 +574,8 @@ namespace OniAccess.Handlers.Screens.Details {
 			var capturedValue = valueLabel;
 			var capturedDesc = descLabel;
 
-			section.Items.Add(new WidgetInfo {
+			section.Items.Add(new LabelWidget {
 				Label = capturedName.GetParsedText(),
-				Type = WidgetType.Label,
 				GameObject = go,
 				SpeechFunc = () => {
 					string text = capturedName.GetParsedText();

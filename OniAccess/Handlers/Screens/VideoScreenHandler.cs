@@ -62,10 +62,8 @@ namespace OniAccess.Handlers.Screens {
 							parts.Add(lt.text);
 					}
 					if (parts.Count > 0) {
-						_widgets.Add(new WidgetInfo {
+						_widgets.Add(new LabelWidget {
 							Label = string.Join(". ", parts.ToArray()),
-							Component = null,
-							Type = WidgetType.Label,
 							GameObject = overlayContainer.gameObject
 						});
 					}

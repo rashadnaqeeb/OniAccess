@@ -89,9 +89,8 @@ namespace OniAccess.Handlers.Screens.Details {
 						if (row == null) continue;
 
 						var capturedRow = row;
-						section.Items.Add(new WidgetInfo {
+						section.Items.Add(new ButtonWidget {
 							Label = capturedRow.label.text,
-							Type = WidgetType.Button,
 							Component = capturedRow.button,
 							GameObject = capturedRow.gameObject,
 							SpeechFunc = () => capturedRow.label.text

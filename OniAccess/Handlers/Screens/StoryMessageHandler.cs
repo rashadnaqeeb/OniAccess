@@ -57,20 +57,17 @@ namespace OniAccess.Handlers.Screens {
 				combined = body;
 
 			if (!string.IsNullOrEmpty(combined)) {
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = combined,
-					Component = null,
-					Type = WidgetType.Label,
 					GameObject = screen.gameObject
 				});
 			}
 
 			var button = traverse.Field("button").GetValue<KButton>();
 			if (button != null) {
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = GetButtonLabel(button, (string)STRINGS.UI.CONFIRMDIALOG.OK),
 					Component = button,
-					Type = WidgetType.Button,
 					GameObject = button.gameObject
 				});
 			}

@@ -75,10 +75,9 @@ namespace OniAccess.Handlers.Screens {
 					if (cg == null || cg.alpha > 0.5f) {
 						if (_acceptButton != null) {
 							string label = GetButtonLabel(_acceptButton, (string)STRINGS.ONIACCESS.BUTTONS.ACCEPT);
-							_widgets.Add(new WidgetInfo {
+							_widgets.Add(new ButtonWidget {
 								Label = label,
 								Component = _acceptButton,
-								Type = WidgetType.Button,
 								GameObject = _acceptButton.gameObject
 							});
 						}
@@ -98,10 +97,9 @@ namespace OniAccess.Handlers.Screens {
 					}
 					if (visible) {
 						string label = GetButtonLabel(_acknowledgeButton, (string)STRINGS.UI.CONFIRMDIALOG.OK);
-						_widgets.Add(new WidgetInfo {
+						_widgets.Add(new ButtonWidget {
 							Label = label,
 							Component = _acknowledgeButton,
-							Type = WidgetType.Button,
 							GameObject = _acknowledgeButton.gameObject
 						});
 					}
@@ -116,10 +114,9 @@ namespace OniAccess.Handlers.Screens {
 				var locText = _closeButton.GetComponentInChildren<LocText>();
 				if (locText != null && !string.IsNullOrEmpty(locText.text))
 					label = locText.text;
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = _closeButton,
-					Type = WidgetType.Button,
 					GameObject = _closeButton.gameObject
 				});
 			}
@@ -209,7 +206,7 @@ namespace OniAccess.Handlers.Screens {
 		/// <summary>
 		/// Base check + CanvasGroup alpha > 0.5 check on widget or parent.
 		/// </summary>
-		protected override bool IsWidgetValid(WidgetInfo widget) {
+		protected override bool IsWidgetValid(Widget widget) {
 			if (widget == null || widget.GameObject == null) return false;
 			if (!widget.GameObject.activeInHierarchy) return false;
 

@@ -70,10 +70,8 @@ namespace OniAccess.Handlers.Screens {
 
 			// Add message as a Label widget (readable, not clickable)
 			if (!string.IsNullOrEmpty(messageText)) {
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = messageText,
-					Component = null,
-					Type = WidgetType.Label,
 					GameObject = screen.gameObject
 				});
 			}
@@ -100,10 +98,9 @@ namespace OniAccess.Handlers.Screens {
 					string label = GetButtonLabel(kb, null);
 					if (string.IsNullOrEmpty(label)) continue;
 
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ButtonWidget {
 						Label = label,
 						Component = kb,
-						Type = WidgetType.Button,
 						GameObject = kb.gameObject
 					});
 				}
@@ -131,10 +128,9 @@ namespace OniAccess.Handlers.Screens {
 				string label = GetButtonLabel(kb, fallback);
 				if (string.IsNullOrEmpty(label)) return false;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = kb,
-					Type = WidgetType.Button,
 					GameObject = go
 				});
 				return true;

@@ -11,38 +11,10 @@ namespace OniAccess.Widgets {
 		// ========================================
 
 		/// <summary>
-		/// Build speech text for a widget: "label, value" for sliders/toggles,
-		/// just "label" for buttons/labels. Checks SpeechFunc first.
+		/// Build speech text for a widget by delegating to its virtual GetSpeechText().
 		/// </summary>
-		public static string GetSpeechText(WidgetInfo widget) {
-			if (widget.SpeechFunc != null) {
-				string result = widget.SpeechFunc()?.Trim();
-				if (!string.IsNullOrEmpty(result)) return result;
-			}
-
-			switch (widget.Type) {
-				case WidgetType.Toggle: {
-						var toggle = widget.Component as KToggle;
-						if (toggle != null) {
-							string state = SideScreenWalker.IsToggleActive(toggle) ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-							return $"{widget.Label}, {state}";
-						}
-						var mt = widget.Component as MultiToggle;
-						if (mt != null) {
-							return $"{widget.Label}, {GetMultiToggleState(mt)}";
-						}
-						return widget.Label;
-					}
-				case WidgetType.Slider: {
-						var slider = widget.Component as KSlider;
-						if (slider != null) {
-							return $"{widget.Label}, {FormatSliderValue(slider)}";
-						}
-						return widget.Label;
-					}
-				default:
-					return widget.Label;
-			}
+		public static string GetSpeechText(Widget widget) {
+			return widget.GetSpeechText();
 		}
 
 		// ========================================
@@ -53,7 +25,7 @@ namespace OniAccess.Widgets {
 		/// Look up tooltip text for a widget via its GameObject's ToolTip component.
 		/// Returns null if suppressed, missing, or empty.
 		/// </summary>
-		public static string GetTooltipText(WidgetInfo widget) {
+		public static string GetTooltipText(Widget widget) {
 			if (widget.SuppressTooltip) return null;
 			if (widget.GameObject == null) return null;
 
@@ -111,33 +83,9 @@ namespace OniAccess.Widgets {
 		/// Check whether a widget is still valid (not destroyed, active in hierarchy,
 		/// and interactable where applicable).
 		/// </summary>
-		public static bool IsValid(WidgetInfo widget) {
+		public static bool IsValid(Widget widget) {
 			if (widget == null) return false;
-			if (widget.GameObject != null && !widget.GameObject.activeInHierarchy) return false;
-
-			switch (widget.Type) {
-				case WidgetType.Label:
-					return true;
-				case WidgetType.Button: {
-						var btn = widget.Component as KButton;
-						if (btn != null) return btn.isInteractable;
-						if (widget.Component is MultiToggle) return true;
-						break;
-					}
-				case WidgetType.Toggle: {
-						var toggle = widget.Component as KToggle;
-						if (toggle != null) return toggle.IsInteractable();
-						if (widget.Component is MultiToggle) return true;
-						break;
-					}
-				case WidgetType.Slider: {
-						var slider = widget.Component as KSlider;
-						if (slider != null) return slider.interactable;
-						break;
-					}
-			}
-
-			return widget.Component != null || widget.GameObject != null;
+			return widget.IsValid();
 		}
 
 		// ========================================

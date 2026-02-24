@@ -55,10 +55,9 @@ namespace OniAccess.Handlers.Screens {
 					.GetValue<string>();
 				if (string.IsNullOrEmpty(label)) continue;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = kbutton,
-					Type = WidgetType.Button,
 					GameObject = buttonObjects[i]
 				});
 			}

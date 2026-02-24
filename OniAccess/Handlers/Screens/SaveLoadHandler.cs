@@ -106,13 +106,19 @@ namespace OniAccess.Handlers.Screens {
 				if (kbutton == null)
 					kbutton = entry.GetComponent<KButton>();
 
-				_widgets.Add(new WidgetInfo {
-					Label = label,
-					Component = kbutton,
-					Type = kbutton != null ? WidgetType.Button : WidgetType.Label,
-					GameObject = entry.gameObject,
-					Tag = "colony_entry"
-				});
+				Widget w = kbutton != null
+					? (Widget)new ButtonWidget {
+						Label = label,
+						Component = kbutton,
+						GameObject = entry.gameObject,
+						Tag = "colony_entry"
+					}
+					: new LabelWidget {
+						Label = label,
+						GameObject = entry.gameObject,
+						Tag = "colony_entry"
+					};
+				_widgets.Add(w);
 			}
 
 			// Load More button at bottom of list
@@ -138,10 +144,9 @@ namespace OniAccess.Handlers.Screens {
 					label = fallbackLabel;
 				if (string.IsNullOrEmpty(label)) return;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = button,
-					Type = WidgetType.Button,
 					GameObject = button.gameObject
 				});
 			} catch (System.Exception ex) {
@@ -214,9 +219,8 @@ namespace OniAccess.Handlers.Screens {
 					?? component.gameObject.GetComponent<LocText>();
 				if (locText == null || string.IsNullOrEmpty(locText.text)) return;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = locText.text.Trim(),
-					Type = WidgetType.Label,
 					GameObject = component.gameObject
 				});
 			} catch (System.Exception ex) {
@@ -239,10 +243,9 @@ namespace OniAccess.Handlers.Screens {
 				var locText = kb.GetComponentInChildren<LocText>();
 				if (locText == null || string.IsNullOrEmpty(locText.text)) continue;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = locText.text,
 					Component = kb,
-					Type = WidgetType.Button,
 					GameObject = kb.gameObject
 				});
 			}
@@ -303,13 +306,19 @@ namespace OniAccess.Handlers.Screens {
 				// Row button used to drill into detail view
 				KButton rowButton = child.GetComponent<KButton>();
 
-				_widgets.Add(new WidgetInfo {
-					Label = label,
-					Component = rowButton,
-					Type = rowButton != null ? WidgetType.Button : WidgetType.Label,
-					GameObject = entry.gameObject,
-					Tag = rowButton
-				});
+				Widget w = rowButton != null
+					? (Widget)new ButtonWidget {
+						Label = label,
+						Component = rowButton,
+						GameObject = entry.gameObject,
+						Tag = rowButton
+					}
+					: new LabelWidget {
+						Label = label,
+						GameObject = entry.gameObject,
+						Tag = rowButton
+					};
+				_widgets.Add(w);
 			}
 		}
 
@@ -373,9 +382,8 @@ namespace OniAccess.Handlers.Screens {
 						if (locText != null && !string.IsNullOrEmpty(locText.text))
 							autoText = locText.text.Trim();
 						if (!string.IsNullOrEmpty(autoText)) {
-							_widgets.Add(new WidgetInfo {
+							_widgets.Add(new LabelWidget {
 								Label = autoText,
-								Type = WidgetType.Label,
 								GameObject = autoRef.gameObject
 							});
 						}
@@ -399,10 +407,9 @@ namespace OniAccess.Handlers.Screens {
 							if (string.IsNullOrEmpty(label))
 								label = (string)STRINGS.UI.FRONTEND.LOADSCREEN.TITLE;
 
-							_widgets.Add(new WidgetInfo {
+							_widgets.Add(new ButtonWidget {
 								Label = label,
 								Component = loadButton,
-								Type = WidgetType.Button,
 								GameObject = lbRef.gameObject
 							});
 						}
@@ -420,10 +427,9 @@ namespace OniAccess.Handlers.Screens {
 						var delButton = delRef.gameObject.GetComponent<KButton>();
 						if (delButton != null && delRef.gameObject.activeInHierarchy
 							&& delButton.isInteractable) {
-							_widgets.Add(new WidgetInfo {
+							_widgets.Add(new ButtonWidget {
 								Label = STRINGS.ONIACCESS.SAVE_LOAD.DELETE,
 								Component = delButton,
-								Type = WidgetType.Button,
 								GameObject = delRef.gameObject
 							});
 						}
@@ -491,10 +497,9 @@ namespace OniAccess.Handlers.Screens {
 				var locText = kb.GetComponentInChildren<LocText>();
 				if (locText == null || string.IsNullOrEmpty(locText.text)) continue;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = locText.text,
 					Component = kb,
-					Type = WidgetType.Button,
 					GameObject = kb.gameObject
 				});
 			}
@@ -516,7 +521,7 @@ namespace OniAccess.Handlers.Screens {
 
 			switch (_viewLevel) {
 				case ViewLevel.ColonyList:
-					if (widget.Type == WidgetType.Button
+					if (widget is ButtonWidget
 						&& widget.Tag is string tag && tag == "colony_entry") {
 						var kbutton = widget.Component as KButton;
 						if (kbutton != null)

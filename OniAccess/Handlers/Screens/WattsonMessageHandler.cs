@@ -27,20 +27,17 @@ namespace OniAccess.Handlers.Screens {
 
 			string text = ReadWelcomeText();
 			if (!string.IsNullOrEmpty(text)) {
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = text,
-					Component = null,
-					Type = WidgetType.Label,
 					GameObject = screen.gameObject
 				});
 			}
 
 			var button = Traverse.Create(screen).Field("button").GetValue<KButton>();
 			if (button != null) {
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = GetButtonLabel(button, (string)STRINGS.UI.CONFIRMDIALOG.OK),
 					Component = button,
-					Type = WidgetType.Button,
 					GameObject = button.gameObject
 				});
 			}

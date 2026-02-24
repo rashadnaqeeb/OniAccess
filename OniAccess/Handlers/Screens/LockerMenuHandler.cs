@@ -69,10 +69,9 @@ namespace OniAccess.Handlers.Screens {
 						: claimLabel;
 				}
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = multiToggle,
-					Type = WidgetType.Button,
 					GameObject = multiToggle.gameObject,
 					Tag = description,
 					SpeechFunc = speechFunc
@@ -100,7 +99,7 @@ namespace OniAccess.Handlers.Screens {
 		/// <summary>
 		/// Return description from Tag for tooltip.
 		/// </summary>
-		protected override string GetTooltipText(WidgetInfo widget) {
+		protected override string GetTooltipText(Widget widget) {
 			if (widget.Tag is string description && !string.IsNullOrEmpty(description))
 				return description;
 			return null;

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace OniAccess.Widgets {
 	/// <summary>
 	/// Recursively walks a SideScreenContent's widget hierarchy and emits
-	/// WidgetInfo items. Priority order per node: KSlider, KToggle,
+	/// Widget items. Priority order per node: KSlider, KToggle,
 	/// MultiToggle, KNumberInputField, KInputField, KButton, LocText.
 	/// When an interactive component is found on a node, that node is
 	/// consumed and its children are not walked further.
@@ -27,7 +27,7 @@ namespace OniAccess.Widgets {
 		/// root transform if ContentContainer is null/inactive).
 		/// Appends discovered widgets to <paramref name="items"/>.
 		/// </summary>
-		public static void Walk(SideScreenContent screen, List<WidgetInfo> items) {
+		public static void Walk(SideScreenContent screen, List<Widget> items) {
 			var claimedLabels = new HashSet<LocText>();
 
 			var pixelPack = screen as PixelPackSideScreen;
@@ -59,7 +59,7 @@ namespace OniAccess.Widgets {
 
 			// Remove LocTexts that were claimed as labels by interactive widgets
 			items.RemoveAll(item => {
-				if (item.Type != WidgetType.Label) return false;
+				if (!(item is LabelWidget)) return false;
 				var lt = item.GameObject?.GetComponent<LocText>();
 				return lt != null && claimedLabels.Contains(lt);
 			});
@@ -72,11 +72,11 @@ namespace OniAccess.Widgets {
 		}
 
 		private static void WalkPixelPackScreen(
-				PixelPackSideScreen pixelPack, List<WidgetInfo> items,
+				PixelPackSideScreen pixelPack, List<Widget> items,
 				HashSet<LocText> claimedLabels) {
 			// Palette group (drillable)
 			var swatchContainer = pixelPack.colorSwatchContainer.transform;
-			var paletteChildren = new List<WidgetInfo>();
+			var paletteChildren = new List<Widget>();
 			for (int i = 0; i < swatchContainer.childCount; i++) {
 				var child = swatchContainer.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
@@ -85,9 +85,8 @@ namespace OniAccess.Widgets {
 				var img = swatchGO.GetComponent<Image>();
 				if (img == null) continue;
 				string label = ColorNameUtil.GetColorName(img.color) ?? capturedGO.name;
-				paletteChildren.Add(new WidgetInfo {
+				paletteChildren.Add(new ButtonWidget {
 					Label = label,
-					Type = WidgetType.Button,
 					Component = swatchGO.GetComponent<KButton>(),
 					GameObject = capturedGO,
 					SuppressTooltip = true,
@@ -109,9 +108,8 @@ namespace OniAccess.Widgets {
 				});
 			}
 			var capturedContainer = swatchContainer;
-			items.Add(new WidgetInfo {
+			items.Add(new LabelWidget {
 				Label = (string)STRINGS.ONIACCESS.PIXEL_PACK.PALETTE,
-				Type = WidgetType.Label,
 				GameObject = pixelPack.colorSwatchContainer,
 				SuppressTooltip = true,
 				Children = paletteChildren,
@@ -127,16 +125,15 @@ namespace OniAccess.Widgets {
 			});
 
 			// Active colors group (drillable)
-			var activeChildren = new List<WidgetInfo>();
+			var activeChildren = new List<Widget>();
 			for (int i = 0; i < pixelPack.activeColors.Count; i++) {
 				var slotGO = pixelPack.activeColors[i];
 				var capturedSlot = slotGO;
 				int slotIndex = i + 1;
 				string slotLabel = string.Format(
 					(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex);
-				activeChildren.Add(new WidgetInfo {
+				activeChildren.Add(new ButtonWidget {
 					Label = slotLabel,
-					Type = WidgetType.Button,
 					Component = slotGO.GetComponent<KButton>(),
 					GameObject = slotGO,
 					SuppressTooltip = true,
@@ -149,9 +146,8 @@ namespace OniAccess.Widgets {
 					}
 				});
 			}
-			items.Add(new WidgetInfo {
+			items.Add(new LabelWidget {
 				Label = (string)STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS,
-				Type = WidgetType.Label,
 				GameObject = pixelPack.activeColorsContainer,
 				SuppressTooltip = true,
 				Children = activeChildren,
@@ -159,16 +155,15 @@ namespace OniAccess.Widgets {
 			});
 
 			// Standby colors group (drillable)
-			var standbyChildren = new List<WidgetInfo>();
+			var standbyChildren = new List<Widget>();
 			for (int i = 0; i < pixelPack.standbyColors.Count; i++) {
 				var slotGO = pixelPack.standbyColors[i];
 				var capturedSlot = slotGO;
 				int slotIndex = i + 1;
 				string slotLabel = string.Format(
 					(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex);
-				standbyChildren.Add(new WidgetInfo {
+				standbyChildren.Add(new ButtonWidget {
 					Label = slotLabel,
-					Type = WidgetType.Button,
 					Component = slotGO.GetComponent<KButton>(),
 					GameObject = slotGO,
 					SuppressTooltip = true,
@@ -181,9 +176,8 @@ namespace OniAccess.Widgets {
 					}
 				});
 			}
-			items.Add(new WidgetInfo {
+			items.Add(new LabelWidget {
 				Label = (string)STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS,
-				Type = WidgetType.Label,
 				GameObject = pixelPack.standbyColorsContainer,
 				SuppressTooltip = true,
 				Children = standbyChildren,
@@ -201,9 +195,8 @@ namespace OniAccess.Widgets {
 				var captured = btn;
 				string label = GetButtonLabel(captured, captured.transform.name);
 				if (!HasVisibleContent(label)) continue;
-				items.Add(new WidgetInfo {
+				items.Add(new ButtonWidget {
 					Label = label,
-					Type = WidgetType.Button,
 					Component = captured,
 					GameObject = captured.gameObject,
 					SpeechFunc = () => GetButtonLabel(captured, captured.transform.name)
@@ -211,7 +204,7 @@ namespace OniAccess.Widgets {
 			}
 		}
 
-		private static void WalkTransform(Transform parent, List<WidgetInfo> items, HashSet<LocText> claimedLabels) {
+		private static void WalkTransform(Transform parent, List<Widget> items, HashSet<LocText> claimedLabels) {
 			for (int i = 0; i < parent.childCount; i++) {
 				var child = parent.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
@@ -232,7 +225,7 @@ namespace OniAccess.Widgets {
 		/// Try to emit a widget for the given transform. Returns true if a
 		/// component was found (caller should not recurse into children).
 		/// </summary>
-		private static bool TryAddWidget(Transform t, List<WidgetInfo> items, HashSet<LocText> claimedLabels) {
+		private static bool TryAddWidget(Transform t, List<Widget> items, HashSet<LocText> claimedLabels) {
 			var go = t.gameObject;
 
 			// ReceptacleToggle: compound widget (title + amount + selection toggle).
@@ -251,9 +244,8 @@ namespace OniAccess.Widgets {
 					return true;
 				}
 
-				items.Add(new WidgetInfo {
+				items.Add(new ToggleWidget {
 					Label = label,
-					Type = WidgetType.Toggle,
 					Component = captured.toggle,
 					GameObject = go,
 					SuppressTooltip = true,
@@ -289,9 +281,8 @@ namespace OniAccess.Widgets {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KSlider) parent={t.parent?.name}");
 					return true;
 				}
-				items.Add(new WidgetInfo {
+				items.Add(new SliderWidget {
 					Label = label,
-					Type = WidgetType.Slider,
 					Component = captured,
 					GameObject = go,
 					SpeechFunc = () => {
@@ -314,9 +305,8 @@ namespace OniAccess.Widgets {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KToggle) parent={t.parent?.name}");
 					return true;
 				}
-				items.Add(new WidgetInfo {
+				items.Add(new ToggleWidget {
 					Label = label,
-					Type = WidgetType.Toggle,
 					Component = captured,
 					GameObject = go,
 					SpeechFunc = () => {
@@ -350,9 +340,8 @@ namespace OniAccess.Widgets {
 					Util.Log.Warn($"Walker: blank label for {t.name} (MultiToggle) parent={t.parent?.name}");
 					return true;
 				}
-				items.Add(new WidgetInfo {
+				items.Add(new ToggleWidget {
 					Label = label,
-					Type = WidgetType.Toggle,
 					Component = captured,
 					GameObject = go,
 					SpeechFunc = () => {
@@ -377,9 +366,8 @@ namespace OniAccess.Widgets {
 				var unitsLt = FindFollowingSiblingLocText(t)
 					?? FindFollowingSiblingLocText(t.parent);
 				if (unitsLt != null) claimedLabels.Add(unitsLt);
-				items.Add(new WidgetInfo {
+				items.Add(new TextInputWidget {
 					Label = label,
-					Type = WidgetType.TextInput,
 					Component = captured,
 					GameObject = go,
 					SpeechFunc = () => {
@@ -408,9 +396,8 @@ namespace OniAccess.Widgets {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KInputField) parent={t.parent?.name}");
 					return true;
 				}
-				items.Add(new WidgetInfo {
+				items.Add(new TextInputWidget {
 					Label = label,
-					Type = WidgetType.TextInput,
 					Component = captured,
 					GameObject = go,
 					SpeechFunc = () => {
@@ -432,9 +419,8 @@ namespace OniAccess.Widgets {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KButton) parent={t.parent?.name}");
 					return true;
 				}
-				items.Add(new WidgetInfo {
+				items.Add(new ButtonWidget {
 					Label = label,
-					Type = WidgetType.Button,
 					Component = captured,
 					GameObject = go,
 					SpeechFunc = () => GetButtonLabel(captured, captured.transform.name)
@@ -449,9 +435,8 @@ namespace OniAccess.Widgets {
 				var captured = locText;
 				string text = captured.GetParsedText();
 				if (HasVisibleContent(text)) {
-					items.Add(new WidgetInfo {
+					items.Add(new LabelWidget {
 						Label = text,
-						Type = WidgetType.Label,
 						GameObject = go,
 						SpeechFunc = () => captured.GetParsedText()
 					});
@@ -469,10 +454,10 @@ namespace OniAccess.Widgets {
 		/// <summary>
 		/// Detect a ReceptacleSideScreen category container: HierarchyReferences
 		/// with "HeaderLabel" and "GridLayout" whose grid children have
-		/// ReceptacleToggle. Emits a single drillable parent WidgetInfo with
+		/// ReceptacleToggle. Emits a single drillable parent Widget with
 		/// Children for the seed rows inside.
 		/// </summary>
-		private static bool TryAddCategoryContainer(Transform t, List<WidgetInfo> items, HashSet<LocText> claimedLabels) {
+		private static bool TryAddCategoryContainer(Transform t, List<Widget> items, HashSet<LocText> claimedLabels) {
 			var href = t.GetComponent<HierarchyReferences>();
 			if (href == null) return false;
 			if (!href.HasReference("HeaderLabel") || !href.HasReference("GridLayout"))
@@ -495,7 +480,7 @@ namespace OniAccess.Widgets {
 			if (!hasReceptacle) return false;
 
 			// Build child widget list from grid contents
-			var children = new List<WidgetInfo>();
+			var children = new List<Widget>();
 			for (int i = 0; i < gridT.childCount; i++) {
 				var child = gridT.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
@@ -507,9 +492,8 @@ namespace OniAccess.Widgets {
 
 			var capturedHeader = headerLt;
 			var capturedGrid = gridT;
-			items.Add(new WidgetInfo {
+			items.Add(new LabelWidget {
 				Label = headerLt != null ? headerLt.GetParsedText() : t.name,
-				Type = WidgetType.Label,
 				GameObject = t.gameObject,
 				SuppressTooltip = true,
 				Children = children,
@@ -790,20 +774,20 @@ namespace OniAccess.Widgets {
 		/// single Dropdown widget that cycles between members.
 		/// </summary>
 		private static void CollapseRadioToggles(
-				List<WidgetInfo> items, string screenTitle, Transform screenRoot,
+				List<Widget> items, string screenTitle, Transform screenRoot,
 				HashSet<LocText> claimedLabels) {
 			// Group consecutive KToggle items by parent transform
 			var groups = new List<(Transform parent, int start, int count)>();
 			int i = 0;
 			while (i < items.Count) {
 				var w = items[i];
-				if (w.Type != WidgetType.Toggle || !(w.Component is KToggle)) { i++; continue; }
+				if (!(w is ToggleWidget) || !(w.Component is KToggle)) { i++; continue; }
 
 				var parent = w.GameObject.transform.parent;
 				int start = i;
 				int count = 1;
 				while (i + count < items.Count
-					&& items[i + count].Type == WidgetType.Toggle
+					&& items[i + count] is ToggleWidget
 					&& items[i + count].Component is KToggle
 					&& items[i + count].GameObject.transform.parent == parent)
 					count++;
@@ -846,10 +830,9 @@ namespace OniAccess.Widgets {
 
 				string groupLabel = screenTitle ?? items[start].Label;
 				var radioMembers = members;
-				items[start] = new WidgetInfo {
+				items[start] = new DropdownWidget {
 					Label = groupLabel,
 					Component = members[0].Toggle,
-					Type = WidgetType.Dropdown,
 					GameObject = parent.gameObject,
 					Tag = radioMembers,
 					SpeechFunc = () => {
@@ -888,7 +871,7 @@ namespace OniAccess.Widgets {
 		/// screen's toggles_by_type dictionary, using tooltip text as labels.
 		/// </summary>
 		private static void CollapseAlarmTypeButtons(
-				AlarmSideScreen alarm, List<WidgetInfo> items,
+				AlarmSideScreen alarm, List<Widget> items,
 				HashSet<LocText> claimedLabels) {
 			Dictionary<NotificationType, MultiToggle> togglesByType;
 			try {
@@ -947,10 +930,9 @@ namespace OniAccess.Widgets {
 			string groupLabel = (string)STRINGS.UI.UISIDESCREENS.LOGICALARMSIDESCREEN.TOOLTIPS.TYPE;
 			var radioMembers = members;
 			var capturedAlarm = alarm;
-			items.Insert(insertIndex, new WidgetInfo {
+			items.Insert(insertIndex, new DropdownWidget {
 				Label = groupLabel,
 				Component = members[0].MultiToggleRef,
-				Type = WidgetType.Dropdown,
 				SuppressTooltip = true,
 				GameObject = buttonsParent != null ? buttonsParent.gameObject
 					: members[0].MultiToggleRef.gameObject,

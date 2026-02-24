@@ -51,18 +51,16 @@ namespace OniAccess.Handlers.Screens.Details {
 
 				if (children.Count == 0) {
 					var captured = header;
-					section.Items.Add(new WidgetInfo {
+					section.Items.Add(new LabelWidget {
 						Label = captured.label.text,
-						Type = WidgetType.Label,
 						GameObject = captured.gameObject,
 						SpeechFunc = () => captured.label.text
 					});
 				} else {
 					var capturedHeader = header;
 					var capturedChildren = children.ToArray();
-					section.Items.Add(new WidgetInfo {
+					section.Items.Add(new LabelWidget {
 						Label = capturedHeader.label.text,
-						Type = WidgetType.Label,
 						GameObject = capturedHeader.gameObject,
 						SpeechFunc = () => {
 							string text = capturedHeader.label.text;

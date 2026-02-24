@@ -127,10 +127,9 @@ namespace OniAccess.Handlers.Screens {
 						var inputField = bnt.Field("inputField").GetValue<KInputTextField>();
 						if (inputField != null) {
 							var colonyField = inputField;
-							_widgets.Add(new WidgetInfo {
+							_widgets.Add(new TextInputWidget {
 								Label = $"{STRINGS.ONIACCESS.PANELS.COLONY_NAME}, {inputField.text}",
 								Component = inputField,
-								Type = WidgetType.TextInput,
 								GameObject = inputField.gameObject,
 								Tag = "colony_name",
 								SpeechFunc = () => {
@@ -145,10 +144,9 @@ namespace OniAccess.Handlers.Screens {
 							// Shuffle colony name button
 							var shuffleBtn = bnt.Field("shuffleBaseNameButton").GetValue<KButton>();
 							if (shuffleBtn != null && shuffleBtn.gameObject.activeInHierarchy) {
-								_widgets.Add(new WidgetInfo {
+								_widgets.Add(new ButtonWidget {
 									Label = GetButtonLabel(shuffleBtn, (string)STRINGS.ONIACCESS.PANELS.SHUFFLE_NAME),
 									Component = shuffleBtn,
-									Type = WidgetType.Button,
 									GameObject = shuffleBtn.gameObject,
 									Tag = "colony_shuffle"
 								});
@@ -164,10 +162,9 @@ namespace OniAccess.Handlers.Screens {
 			// Verify containers exist before offering this option
 			_containers = screen.GetComponentsInChildren<CharacterContainer>(true);
 			if (_containers != null && _containers.Length > 0) {
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = STRINGS.ONIACCESS.PANELS.SELECT_DUPLICANTS,
 					Component = null,
-					Type = WidgetType.Button,
 					GameObject = screen.gameObject,
 					Tag = "enter_dupe_mode"
 				});
@@ -179,10 +176,9 @@ namespace OniAccess.Handlers.Screens {
 					.GetValue<KButton>();
 				if (proceedButton != null && proceedButton.gameObject.activeInHierarchy) {
 					string label = GetButtonLabel(proceedButton, (string)STRINGS.UI.IMMIGRANTSCREEN.EMBARK);
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ButtonWidget {
 						Label = label,
 						Component = proceedButton,
-						Type = WidgetType.Button,
 						GameObject = proceedButton.gameObject
 					});
 				}
@@ -198,10 +194,9 @@ namespace OniAccess.Handlers.Screens {
 					if (backButton != null && backButton.gameObject.activeInHierarchy
 						&& backButton.isInteractable) {
 						string label = GetButtonLabel(backButton, (string)STRINGS.UI.SANDBOXTOOLS.FILTERS.BACK);
-						_widgets.Add(new WidgetInfo {
+						_widgets.Add(new ButtonWidget {
 							Label = label,
 							Component = backButton,
-							Type = WidgetType.Button,
 							GameObject = backButton.gameObject
 						});
 					}
@@ -305,20 +300,16 @@ namespace OniAccess.Handlers.Screens {
 				// Name label
 				var locText = titleBarTraverse.Field("titleText").GetValue<LocText>();
 				if (locText != null && !string.IsNullOrEmpty(locText.text)) {
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new LabelWidget {
 						Label = locText.text,
-						Component = null,
-						Type = WidgetType.Label,
 						GameObject = locText.gameObject
 					});
 
 					// Bionic model type label (standard dupes get no label — it's the default)
 					var nameStats = traverse.Field("stats").GetValue<MinionStartingStats>();
 					if (nameStats != null && nameStats.personality.model == GameTags.Minions.Models.Bionic) {
-						_widgets.Add(new WidgetInfo {
+						_widgets.Add(new LabelWidget {
 							Label = (string)STRINGS.DUPLICANTS.MODEL.BIONIC.NAME,
-							Component = null,
-							Type = WidgetType.Label,
 							GameObject = locText.gameObject,
 							Tag = "model_type"
 						});
@@ -328,10 +319,9 @@ namespace OniAccess.Handlers.Screens {
 				// Rename button (editNameButton)
 				var editBtn = titleBarTraverse.Field("editNameButton").GetValue<KButton>();
 				if (editBtn != null && editBtn.gameObject.activeInHierarchy) {
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ButtonWidget {
 						Label = STRINGS.ONIACCESS.PANELS.RENAME,
 						Component = editBtn,
-						Type = WidgetType.Button,
 						GameObject = editBtn.gameObject,
 						Tag = "dupe_rename"
 					});
@@ -340,10 +330,9 @@ namespace OniAccess.Handlers.Screens {
 				// Shuffle name button (randomNameButton)
 				var randomBtn = titleBarTraverse.Field("randomNameButton").GetValue<KButton>();
 				if (randomBtn != null) {
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ButtonWidget {
 						Label = STRINGS.ONIACCESS.PANELS.SHUFFLE_NAME,
 						Component = randomBtn,
-						Type = WidgetType.Button,
 						GameObject = randomBtn.gameObject,
 						Tag = "dupe_shuffle_name"
 					});
@@ -376,10 +365,8 @@ namespace OniAccess.Handlers.Screens {
 					}
 
 					if (parts.Count > 0) {
-						_widgets.Add(new WidgetInfo {
+						_widgets.Add(new LabelWidget {
 							Label = $"{STRINGS.ONIACCESS.INFO.INTEREST}: {string.Join(", ", parts)}",
-							Component = null,
-							Type = WidgetType.Label,
 							GameObject = entryGo,
 							Tag = "interest"
 						});
@@ -431,10 +418,8 @@ namespace OniAccess.Handlers.Screens {
 						label = $"{prefix}: {name}, {flat}";
 					}
 
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new LabelWidget {
 						Label = label,
-						Component = null,
-						Type = WidgetType.Label,
 						GameObject = container.gameObject
 					});
 				}
@@ -465,10 +450,8 @@ namespace OniAccess.Handlers.Screens {
 						}
 					}
 
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new LabelWidget {
 						Label = label,
-						Component = null,
-						Type = WidgetType.Label,
 						GameObject = lt.gameObject
 					});
 				}
@@ -482,10 +465,8 @@ namespace OniAccess.Handlers.Screens {
 				var descLocText = traverse.Field("description")
 					.GetValue<LocText>();
 				if (descLocText != null && !string.IsNullOrEmpty(descLocText.text)) {
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new LabelWidget {
 						Label = descLocText.text.Trim(),
-						Component = null,
-						Type = WidgetType.Label,
 						GameObject = descLocText.gameObject
 					});
 				}
@@ -520,10 +501,8 @@ namespace OniAccess.Handlers.Screens {
 						}
 					}
 
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new LabelWidget {
 						Label = label,
-						Component = null,
-						Type = WidgetType.Label,
 						GameObject = go
 					});
 				}
@@ -537,10 +516,9 @@ namespace OniAccess.Handlers.Screens {
 				var dropdown = traverse.Field("archetypeDropDown")
 					.GetValue<DropDown>();
 				if (dropdown != null && dropdown.gameObject.activeInHierarchy) {
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new DropdownWidget {
 						Label = GetInterestFilterLabel(container),
 						Component = dropdown,
-						Type = WidgetType.Dropdown,
 						GameObject = dropdown.gameObject,
 						Tag = "interest_filter",
 						SpeechFunc = () => GetInterestFilterLabel(_containers[_currentSlot] as CharacterContainer)
@@ -568,7 +546,7 @@ namespace OniAccess.Handlers.Screens {
 			}
 		}
 
-		protected override void CycleDropdown(WidgetInfo widget, int direction) {
+		protected override void CycleDropdown(Widget widget, int direction) {
 			if (!(widget.Tag is string tag)) return;
 			if (tag == "model_filter") {
 				CycleModelDropdown(direction);
@@ -624,10 +602,9 @@ namespace OniAccess.Handlers.Screens {
 					.GetValue<KButton>();
 				if (reshuffleButton != null && reshuffleButton.gameObject.activeInHierarchy
 					&& reshuffleButton.isInteractable) {
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ButtonWidget {
 						Label = (string)STRINGS.UI.IMMIGRANTSCREEN.SHUFFLE,
 						Component = reshuffleButton,
-						Type = WidgetType.Button,
 						GameObject = reshuffleButton.gameObject,
 						Tag = "reroll"
 					});
@@ -646,7 +623,7 @@ namespace OniAccess.Handlers.Screens {
 		/// GameObject is inactive — the game hides randomNameButton by default
 		/// but we can still click it programmatically.
 		/// </summary>
-		protected override bool IsWidgetValid(WidgetInfo widget) {
+		protected override bool IsWidgetValid(Widget widget) {
 			if (widget.Tag is string tag && tag == "dupe_shuffle_name")
 				return widget.Component != null;
 			return base.IsWidgetValid(widget);
@@ -657,7 +634,7 @@ namespace OniAccess.Handlers.Screens {
 		/// their label, or where the auto-discovered tooltip is wrong
 		/// (e.g., enter_dupe_mode picks up editNameButton's tooltip).
 		/// </summary>
-		protected override string GetTooltipText(WidgetInfo widget) {
+		protected override string GetTooltipText(Widget widget) {
 			if (widget.Tag is string tag) {
 				switch (tag) {
 					// These already have tooltip content in their Label
@@ -674,7 +651,7 @@ namespace OniAccess.Handlers.Screens {
 			}
 			// In dupe mode, traits/expectations/attributes/description are all
 			// label-only widgets with no tag — suppress tooltip for plain labels
-			if (_inDupeMode && widget.Type == WidgetType.Label) return null;
+			if (_inDupeMode && widget is LabelWidget) return null;
 			return base.GetTooltipText(widget);
 		}
 
@@ -842,10 +819,9 @@ namespace OniAccess.Handlers.Screens {
 			try {
 				var dropdown = traverse.Field("modelDropDown").GetValue<DropDown>();
 				if (dropdown != null && dropdown.transform.parent.gameObject.activeInHierarchy) {
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new DropdownWidget {
 						Label = GetModelFilterLabel(),
 						Component = dropdown,
-						Type = WidgetType.Dropdown,
 						GameObject = dropdown.gameObject,
 						Tag = "model_filter",
 						SpeechFunc = () => GetModelFilterLabel()

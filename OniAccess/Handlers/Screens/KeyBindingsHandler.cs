@@ -121,10 +121,9 @@ namespace OniAccess.Handlers.Screens {
 
 				var keyRef = keyLocText;
 				string bindingLabel = actionName;
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = actionName,
 					Component = rebindButton,
-					Type = WidgetType.Button,
 					GameObject = row.gameObject,
 					Tag = keyLocText,
 					SpeechFunc = () => {
@@ -138,10 +137,9 @@ namespace OniAccess.Handlers.Screens {
 
 			// Add reset button as final widget
 			if (_resetButton != null && _resetButton.gameObject.activeInHierarchy) {
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = (string)STRINGS.ONIACCESS.KEY_BINDINGS.RESET_ALL,
 					Component = _resetButton,
-					Type = WidgetType.Button,
 					GameObject = _resetButton.gameObject
 				});
 			}

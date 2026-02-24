@@ -101,59 +101,36 @@ namespace OniAccess.Handlers.Screens {
 			var w = GetWidgetAt(indices[0], indices[1], indices[2]);
 			if (w == null) return;
 
-			switch (w.Type) {
-				case WidgetType.Button: {
-						var btn = w.Component as KButton;
-						if (btn != null) {
-							WidgetOps.ClickButton(btn);
-							RebuildSections();
-							return;
-						}
-						var mt = w.Component as MultiToggle;
-						if (mt != null) {
-							WidgetOps.ClickMultiToggle(mt);
-							RebuildSections();
-						}
-						break;
-					}
-				case WidgetType.Toggle: {
-						var toggle = w.Component as KToggle;
-						if (toggle != null) {
-							toggle.Click();
-							_pendingActivationSpeech = true;
-							return;
-						}
-						var mt = w.Component as MultiToggle;
-						if (mt != null) {
-							WidgetOps.ClickMultiToggle(mt);
-							_pendingActivationSpeech = true;
-						}
-						break;
-					}
-				case WidgetType.Slider:
-					SpeakCurrentItem();
-					break;
-				case WidgetType.Dropdown:
-					CycleRadioGroup(w, 1);
-					break;
-				case WidgetType.TextInput: {
-						KInputTextField field = null;
-						var knum = w.Component as KNumberInputField;
-						if (knum != null)
-							field = knum.field;
-						else {
-							var kinput = w.Component as KInputField;
-							if (kinput != null) field = kinput.field;
-						}
-						if (field != null) {
-							if (!_textEdit.IsEditing)
-								_textEdit.Begin(field);
-							else
-								_textEdit.Confirm();
-						}
-						break;
-					}
+			if (w is ButtonWidget bw) {
+				bw.Activate();
+				RebuildSections();
+				return;
 			}
+
+			if (w is ToggleWidget) {
+				w.Activate();
+				_pendingActivationSpeech = true;
+				return;
+			}
+
+			if (w is SliderWidget) {
+				SpeakCurrentItem();
+				return;
+			}
+
+			if (w is TextInputWidget tiw) {
+				var textField = tiw.GetTextField();
+				if (textField != null) {
+					if (!_textEdit.IsEditing)
+						_textEdit.Begin(textField);
+					else
+						_textEdit.Confirm();
+				}
+				return;
+			}
+
+			if (w is DropdownWidget)
+				CycleRadioGroup(w, 1);
 		}
 
 		protected override int GetSearchItemCount(int[] indices) {
@@ -246,11 +223,11 @@ namespace OniAccess.Handlers.Screens {
 		protected override void HandleLeftRight(int direction, int stepLevel) {
 			if (Level > 0) {
 				var w = GetCurrentWidget();
-				if (w != null && w.Type == WidgetType.Slider) {
+				if (w is SliderWidget) {
 					AdjustSlider(w, direction, stepLevel);
 					return;
 				}
-				if (w != null && w.Type == WidgetType.Dropdown) {
+				if (w is DropdownWidget) {
 					CycleRadioGroup(w, direction);
 					return;
 				}
@@ -258,46 +235,33 @@ namespace OniAccess.Handlers.Screens {
 			base.HandleLeftRight(direction, stepLevel);
 		}
 
-		private void AdjustSlider(WidgetInfo w, int direction, int stepLevel) {
-			var slider = w.Component as KSlider;
-			if (slider == null) return;
-
-			float step;
-			if (slider.wholeNumbers) {
-				step = Input.InputUtil.StepForLevel(stepLevel);
-			} else {
-				float range = slider.maxValue - slider.minValue;
-				step = range * Input.InputUtil.FractionForLevel(stepLevel);
-			}
-
-			float oldValue = slider.value;
-			slider.value = Mathf.Clamp(
-				slider.value + step * direction,
-				slider.minValue, slider.maxValue);
+		private void AdjustSlider(Widget w, int direction, int stepLevel) {
+			var sw = (SliderWidget)w;
+			bool changed = sw.Adjust(direction, stepLevel);
 
 			// KSlider events only fire on mouse/keyboard input, not programmatic
 			// value changes. Invoke onMove so side screens (e.g., CapacityControl)
 			// sync related widgets like text fields.
-			try {
-				Traverse.Create(slider).Field<System.Action>("onMove").Value?.Invoke();
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"AdjustSlider: onMove invoke failed: {ex.Message}");
+			var slider = w.Component as KSlider;
+			if (changed && slider != null) {
+				try {
+					Traverse.Create(slider).Field<System.Action>("onMove").Value?.Invoke();
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"AdjustSlider: onMove invoke failed: {ex.Message}");
+				}
 			}
 
-			if (slider.value <= slider.minValue && direction < 0)
-				PlaySliderSound("Slider_Boundary_Low");
-			else if (slider.value >= slider.maxValue && direction > 0)
-				PlaySliderSound("Slider_Boundary_High");
-			else if (slider.value != oldValue)
-				PlaySliderSound("Slider_Move");
+			PlaySliderSound(sw.GetBoundarySound(direction));
 
-			RebuildSections();
-			var fresh = GetCurrentWidget();
-			if (fresh != null)
-				SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
+			if (changed) {
+				RebuildSections();
+				var fresh = GetCurrentWidget();
+				if (fresh != null)
+					SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
+			}
 		}
 
-		private void CycleRadioGroup(WidgetInfo w, int direction) {
+		private void CycleRadioGroup(Widget w, int direction) {
 			var members = w.Tag as List<SideScreenWalker.RadioMember>;
 			if (members == null || members.Count == 0) return;
 
@@ -388,11 +352,11 @@ namespace OniAccess.Handlers.Screens {
 				SpeechPipeline.SpeakInterrupt(text);
 		}
 
-		private WidgetInfo GetCurrentWidget() {
+		private Widget GetCurrentWidget() {
 			return GetWidgetAt(GetIndex(0), GetIndex(1), GetIndex(2));
 		}
 
-		private WidgetInfo GetWidgetAt(int sIdx, int iIdx, int cIdx) {
+		private Widget GetWidgetAt(int sIdx, int iIdx, int cIdx) {
 			if (sIdx < 0 || sIdx >= _sections.Count) return null;
 			var items = _sections[sIdx].Items;
 			if (iIdx < 0 || iIdx >= items.Count) return null;

@@ -130,10 +130,9 @@ namespace OniAccess.Handlers.Screens {
 					string label = ReadColonyEntryLabel(child);
 					if (string.IsNullOrEmpty(label)) continue;
 
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ButtonWidget {
 						Label = label,
 						Component = kbutton,
-						Type = WidgetType.Button,
 						GameObject = kbutton.gameObject
 					});
 				}
@@ -200,10 +199,8 @@ namespace OniAccess.Handlers.Screens {
 				if (child.GetComponent<HierarchyReferences>() == null) continue;
 
 				var dupGO = child.gameObject;
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = "",
-					Component = null,
-					Type = WidgetType.Label,
 					GameObject = dupGO,
 					SpeechFunc = () => ReadDuplicantEntry(dupGO.transform)
 				});
@@ -267,10 +264,8 @@ namespace OniAccess.Handlers.Screens {
 				if (child.GetComponent<HierarchyReferences>() == null) continue;
 
 				var bldgGO = child.gameObject;
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = "",
-					Component = null,
-					Type = WidgetType.Label,
 					GameObject = bldgGO,
 					SpeechFunc = () => ReadBuildingEntry(bldgGO.transform)
 				});
@@ -318,10 +313,8 @@ namespace OniAccess.Handlers.Screens {
 
 					var statGO = kvp.Value;
 					string statKey = kvp.Key;
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new LabelWidget {
 						Label = statKey,
-						Component = null,
-						Type = WidgetType.Label,
 						GameObject = statGO,
 						SpeechFunc = () => ReadStatEntry(statGO, statKey)
 					});
@@ -402,19 +395,15 @@ namespace OniAccess.Handlers.Screens {
 
 				if (!addedVictoryHeader && victoryGOs.Contains(child.gameObject)) {
 					addedVictoryHeader = true;
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new LabelWidget {
 						Label = STRINGS.ONIACCESS.PANELS.VICTORY_CONDITIONS,
-						Component = null,
-						Type = WidgetType.Label,
 						GameObject = screen.gameObject
 					});
 				}
 
 				var achGO = child.gameObject;
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = (string)STRINGS.ONIACCESS.INFO.ACHIEVEMENT,
-					Component = null,
-					Type = WidgetType.Label,
 					GameObject = achGO,
 					SpeechFunc = () => ReadAchievementText(achGO.transform)
 				});
@@ -450,7 +439,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
-			if (!_inColonyDetail && widget.Type == WidgetType.Button) {
+			if (!_inColonyDetail && widget is ButtonWidget) {
 				// Colony entries have HierarchyReferences with "ColonyNameLabel"
 				var hierRef = widget.GameObject != null
 					? widget.GameObject.GetComponent<HierarchyReferences>() : null;

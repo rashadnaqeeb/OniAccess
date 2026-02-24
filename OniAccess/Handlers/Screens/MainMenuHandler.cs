@@ -65,10 +65,9 @@ namespace OniAccess.Handlers.Screens {
 				&& resumeButton.isInteractable) {
 				var resumeLabel = resumeButton.GetComponentInChildren<LocText>();
 				string resumeText = resumeLabel != null ? resumeLabel.text : (string)STRINGS.UI.FRONTEND.MAINMENU.RESUMEGAME;
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = resumeText,
 					Component = resumeButton,
-					Type = WidgetType.Button,
 					GameObject = resumeButton.gameObject
 				});
 			}
@@ -94,10 +93,9 @@ namespace OniAccess.Handlers.Screens {
 				var locText = kbutton.GetComponentInChildren<LocText>();
 				if (locText == null || string.IsNullOrEmpty(locText.text)) continue;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = locText.text,
 					Component = kbutton,
-					Type = WidgetType.Button,
 					GameObject = kbutton.gameObject
 				});
 			}
@@ -120,10 +118,8 @@ namespace OniAccess.Handlers.Screens {
 				string name = DlcManager.GetDlcTitleNoFormatting(dlcId);
 				string status = GetDlcStatus(dlcId);
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = $"{name}, {status}",
-					Component = null,
-					Type = WidgetType.Label,
 					GameObject = hierRef.gameObject,
 					Tag = DlcFieldNames[i]
 				});
@@ -173,10 +169,9 @@ namespace OniAccess.Handlers.Screens {
 					? $"{header}. {body}"
 					: header;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = label,
 					Component = box,
-					Type = WidgetType.Label,
 					GameObject = box.gameObject
 				});
 			}

@@ -62,10 +62,9 @@ namespace OniAccess.Handlers.Screens {
 
 					bool isSelected = selectedButtonName != null && go.name == selectedButtonName;
 					string widgetLabel = label;
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ButtonWidget {
 						Label = widgetLabel,
 						Component = kbutton,
-						Type = WidgetType.Button,
 						GameObject = go,
 						Tag = isSelected,
 						SpeechFunc = isSelected

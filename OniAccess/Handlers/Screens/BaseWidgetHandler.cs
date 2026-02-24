@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Screens {
 	/// interaction, speech, and lifecycle management.
 	///
 	/// Provides the bridge between BaseMenuHandler's abstract list navigation and
-	/// concrete WidgetInfo-based screen handlers. Implements ItemCount, GetItemLabel,
+	/// concrete Widget-based screen handlers. Implements ItemCount, GetItemLabel,
 	/// SpeakCurrentItem, IsItemValid by delegating to the _widgets list.
 	///
 	/// Concrete screen handlers extend this and implement only:
@@ -28,7 +28,7 @@ namespace OniAccess.Handlers.Screens {
 	///   ActivateCurrentItem for that widget)
 	/// </summary>
 	public abstract class BaseWidgetHandler: BaseMenuHandler {
-		protected readonly List<WidgetInfo> _widgets = new List<WidgetInfo>();
+		protected readonly List<Widget> _widgets = new List<Widget>();
 		private TextEditHelper _textEdit;
 		protected TextEditHelper TextEdit => _textEdit ??= new TextEditHelper();
 		protected bool IsTextEditing => _textEdit != null && _textEdit.IsEditing;
@@ -193,7 +193,7 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		/// <summary>
-		/// Activate the currently focused widget. Dispatches by WidgetType:
+		/// Activate the currently focused widget. Dispatches by Widget subclass:
 		/// - Button: ClickButton (triggers onClick + plays button sound)
 		/// - Toggle: Click() then speak new state
 		/// - TextInput: Begin/Confirm via TextEdit (Enter toggles editing)
@@ -203,49 +203,31 @@ namespace OniAccess.Handlers.Screens {
 			var widget = _widgets[_currentIndex];
 			if (!IsWidgetValid(widget)) return;
 
-			switch (widget.Type) {
-				case WidgetType.Button: {
-						var kbutton = widget.Component as KButton;
-						if (kbutton != null) {
-							ClickButton(kbutton);
-						} else {
-							var mt = widget.Component as MultiToggle;
-							if (mt != null)
-								ClickMultiToggle(mt);
-						}
-						break;
-					}
-				case WidgetType.Toggle: {
-						var toggle = widget.Component as KToggle;
-						if (toggle != null) {
-							toggle.Click();
-							string state = Widgets.SideScreenWalker.IsToggleActive(toggle) ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-							Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
-						} else {
-							var mt = widget.Component as MultiToggle;
-							if (mt != null) {
-								ClickMultiToggle(mt);
-								Speech.SpeechPipeline.SpeakInterrupt(
-									$"{widget.Label}, {WidgetOps.GetMultiToggleState(mt)}");
-							}
-						}
-						break;
-					}
-				case WidgetType.TextInput: {
-						var textField = widget.Component as KInputTextField;
-						if (textField != null) {
-							if (!TextEdit.IsEditing)
-								TextEdit.Begin(textField);
-							else
-								TextEdit.Confirm();
-						}
-						break;
-					}
+			if (widget is ButtonWidget bw) {
+				bw.Activate();
+				return;
+			}
+
+			if (widget is ToggleWidget tw) {
+				tw.Activate();
+				Speech.SpeechPipeline.SpeakInterrupt(tw.GetSpeechText());
+				return;
+			}
+
+			if (widget is TextInputWidget tiw) {
+				var textField = tiw.GetTextField();
+				if (textField != null) {
+					if (!TextEdit.IsEditing)
+						TextEdit.Begin(textField);
+					else
+						TextEdit.Confirm();
+				}
+				return;
 			}
 		}
 
 		/// <summary>
-		/// Adjust the currently focused widget's value. Dispatches by WidgetType:
+		/// Adjust the currently focused widget's value. Dispatches by Widget subclass:
 		/// - Slider: step by wholeNumbers-aware increment, speak new value
 		/// - Dropdown: delegate to CycleDropdown virtual method
 		/// </summary>
@@ -254,51 +236,32 @@ namespace OniAccess.Handlers.Screens {
 			var widget = _widgets[_currentIndex];
 			if (!IsWidgetValid(widget)) return;
 
-			switch (widget.Type) {
-				case WidgetType.Slider: {
-						var slider = widget.Component as KSlider;
-						if (slider == null) return;
+			if (widget is SliderWidget sw) {
+				bool changed = sw.Adjust(direction, stepLevel);
+				PlaySliderSound(sw.GetBoundarySound(direction));
+				if (changed) {
+					var slider = widget.Component as KSlider;
+					if (slider != null)
+						Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {FormatSliderValue(slider)}");
+				}
+				return;
+			}
 
-						float step;
-						if (slider.wholeNumbers) {
-							step = InputUtil.StepForLevel(stepLevel);
-						} else {
-							float range = slider.maxValue - slider.minValue;
-							step = range * InputUtil.FractionForLevel(stepLevel);
-						}
-
-						float oldValue = slider.value;
-						slider.value = UnityEngine.Mathf.Clamp(
-							slider.value + step * direction,
-							slider.minValue, slider.maxValue);
-
-						if (slider.value <= slider.minValue && direction < 0)
-							PlaySliderSound("Slider_Boundary_Low");
-						else if (slider.value >= slider.maxValue && direction > 0)
-							PlaySliderSound("Slider_Boundary_High");
-						else if (slider.value != oldValue)
-							PlaySliderSound("Slider_Move");
-
-						Speech.SpeechPipeline.SpeakInterrupt(
-							$"{widget.Label}, {FormatSliderValue(slider)}");
-						break;
-					}
-				case WidgetType.Dropdown:
-					CycleDropdown(widget, direction);
-					break;
+			if (widget is DropdownWidget) {
+				CycleDropdown(widget, direction);
 			}
 		}
 
 		/// <summary>
 		/// Cycle a dropdown widget's value. No-op default.
 		/// </summary>
-		protected virtual void CycleDropdown(WidgetInfo widget, int direction) { }
+		protected virtual void CycleDropdown(Widget widget, int direction) { }
 
 		// ========================================
 		// WIDGET VALIDITY
 		// ========================================
 
-		protected virtual bool IsWidgetValid(WidgetInfo widget) => WidgetOps.IsValid(widget);
+		protected virtual bool IsWidgetValid(Widget widget) => WidgetOps.IsValid(widget);
 
 		protected static string GetButtonLabel(KButton button, string fallback = null)
 			=> WidgetOps.GetButtonLabel(button, fallback);
@@ -307,7 +270,7 @@ namespace OniAccess.Handlers.Screens {
 		// WIDGET SPEECH
 		// ========================================
 
-		protected virtual string GetWidgetSpeechText(WidgetInfo widget) => WidgetOps.GetSpeechText(widget);
+		protected virtual string GetWidgetSpeechText(Widget widget) => WidgetOps.GetSpeechText(widget);
 
 		/// <summary>
 		/// Speak the currently focused widget via SpeakInterrupt.
@@ -341,7 +304,7 @@ namespace OniAccess.Handlers.Screens {
 		// TOOLTIP TEXT
 		// ========================================
 
-		protected virtual string GetTooltipText(WidgetInfo widget) => WidgetOps.GetTooltipText(widget);
+		protected virtual string GetTooltipText(Widget widget) => WidgetOps.GetTooltipText(widget);
 
 		protected static string ReadAllTooltipText(ToolTip tooltip) => WidgetOps.ReadAllTooltipText(tooltip);
 

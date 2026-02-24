@@ -40,12 +40,17 @@ namespace OniAccess.Handlers.Screens {
 						if (string.IsNullOrEmpty(label)) continue;
 
 						var kbutton = child.GetComponent<KButton>();
-						_widgets.Add(new WidgetInfo {
-							Label = label,
-							Component = kbutton,
-							Type = kbutton != null ? WidgetType.Button : WidgetType.Label,
-							GameObject = child.gameObject
-						});
+						Widget w = kbutton != null
+							? (Widget)new ButtonWidget {
+								Label = label,
+								Component = kbutton,
+								GameObject = child.gameObject
+							}
+							: new LabelWidget {
+								Label = label,
+								GameObject = child.gameObject
+							};
+						_widgets.Add(w);
 					}
 				}
 			} catch (System.Exception ex) {

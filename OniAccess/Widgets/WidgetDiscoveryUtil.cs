@@ -11,7 +11,7 @@ namespace OniAccess.Widgets {
 		/// Reads the button's LocText for a label, falling back to fallbackLabel.
 		/// Silently skips if the field doesn't exist or the button is inactive.
 		/// </summary>
-		public static void TryAddButtonField(KScreen screen, string fieldName, string fallbackLabel, List<WidgetInfo> widgets) {
+		public static void TryAddButtonField(KScreen screen, string fieldName, string fallbackLabel, List<Widget> widgets) {
 			try {
 				var button = Traverse.Create(screen).Field(fieldName)
 					.GetValue<KButton>();
@@ -26,10 +26,9 @@ namespace OniAccess.Widgets {
 				}
 
 				var captured = button;
-				widgets.Add(new WidgetInfo {
+				widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = captured,
-					Type = WidgetType.Button,
 					GameObject = captured.gameObject,
 					SpeechFunc = () => WidgetOps.GetButtonLabel(captured, fallbackLabel)
 				});

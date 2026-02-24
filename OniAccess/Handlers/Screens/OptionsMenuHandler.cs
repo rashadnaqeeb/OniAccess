@@ -105,10 +105,9 @@ namespace OniAccess.Handlers.Screens {
 					.GetValue<string>();
 				if (string.IsNullOrEmpty(label)) continue;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = kbutton,
-					Type = WidgetType.Button,
 					GameObject = buttonObjects[i]
 				});
 			}
@@ -188,10 +187,9 @@ namespace OniAccess.Handlers.Screens {
 				hierToggleButtons.Add(kbutton);
 				var hierRefForSpeech = hr;
 				string toggleLabel = label;
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ToggleWidget {
 					Label = label,
 					Component = kbutton,
-					Type = WidgetType.Toggle,
 					GameObject = hr.gameObject,
 					Tag = hr,
 					SpeechFunc = () => {
@@ -245,10 +243,9 @@ namespace OniAccess.Handlers.Screens {
 				}
 				if (label == null) continue;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new SliderWidget {
 					Label = label,
 					Component = slider,
-					Type = WidgetType.Slider,
 					GameObject = slider.gameObject
 				});
 			}
@@ -264,10 +261,9 @@ namespace OniAccess.Handlers.Screens {
 				string label = FindWidgetLabel(toggle.gameObject);
 				if (string.IsNullOrEmpty(label)) continue;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ToggleWidget {
 					Label = label,
 					Component = toggle,
-					Type = WidgetType.Toggle,
 					GameObject = toggle.gameObject
 				});
 			}
@@ -286,10 +282,9 @@ namespace OniAccess.Handlers.Screens {
 					label = LabelFromGameObjectName(mt.gameObject.name);
 				if (label == null) continue;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ToggleWidget {
 					Label = label,
 					Component = mt,
-					Type = WidgetType.Toggle,
 					GameObject = mt.gameObject
 				});
 			}
@@ -310,10 +305,9 @@ namespace OniAccess.Handlers.Screens {
 
 				var dropdownRef = dd;
 				string ddLabel = label;
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new DropdownWidget {
 					Label = label,
 					Component = dd,
-					Type = WidgetType.Dropdown,
 					GameObject = dd.gameObject,
 					SpeechFunc = () => {
 						if (dropdownRef.options.Count > 0)
@@ -345,10 +339,9 @@ namespace OniAccess.Handlers.Screens {
 				string label = CleanLabel(GetButtonLabel(kb));
 				if (string.IsNullOrEmpty(label)) continue;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = kb,
-					Type = WidgetType.Button,
 					GameObject = kb.gameObject
 				});
 			}
@@ -370,10 +363,8 @@ namespace OniAccess.Handlers.Screens {
 				if (string.IsNullOrEmpty(text) || text.Length < 25) continue;
 				if (lt.GetComponentInParent<KButton>() != null) continue;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = text,
-					Component = null,
-					Type = WidgetType.Label,
 					GameObject = lt.gameObject
 				});
 				Log.Debug($"    + Description label: '{text.Substring(0, System.Math.Min(50, text.Length))}...'");
@@ -412,10 +403,8 @@ namespace OniAccess.Handlers.Screens {
 					? $"{teamName}: {members}"
 					: teamName;
 
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new LabelWidget {
 					Label = label,
-					Component = null,
-					Type = WidgetType.Label,
 					GameObject = teamHeader.gameObject
 				});
 				Log.Debug($"    + Credits team: '{teamName}' ({teamHeader.childCount} members)");
@@ -425,10 +414,9 @@ namespace OniAccess.Handlers.Screens {
 			var closeButton = traverse.Field("CloseButton").GetValue<KButton>();
 			if (closeButton != null) {
 				string label = CleanLabel(GetButtonLabel(closeButton)) ?? (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP;
-				_widgets.Add(new WidgetInfo {
+				_widgets.Add(new ButtonWidget {
 					Label = label,
 					Component = closeButton,
-					Type = WidgetType.Button,
 					GameObject = closeButton.gameObject
 				});
 				Log.Debug($"    + Credits close button");
@@ -442,27 +430,23 @@ namespace OniAccess.Handlers.Screens {
 		/// HierarchyReferences toggle (KButton), and Dropdown support.
 		/// Base rejects Toggle widgets whose Component isn't KToggle.
 		/// </summary>
-		protected override bool IsWidgetValid(WidgetInfo widget) {
+		protected override bool IsWidgetValid(Widget widget) {
 			if (widget == null || widget.GameObject == null) return false;
 			if (!widget.GameObject.activeInHierarchy) return false;
 
-			switch (widget.Type) {
-				case WidgetType.Toggle: {
-						// HierRef toggle (Component is KButton)
-						var kb = widget.Component as KButton;
-						if (kb != null) return kb.isInteractable;
-						// KToggle and MultiToggle handled by base
-						return base.IsWidgetValid(widget);
-					}
-				case WidgetType.Dropdown: {
-						if (widget.Tag is RadioGroupInfo)
-							return true;
-						var dd = widget.Component as Dropdown;
-						return dd != null && dd.interactable;
-					}
-				default:
-					return base.IsWidgetValid(widget);
+			if (widget is DropdownWidget) {
+				if (widget.Tag is RadioGroupInfo)
+					return true;
+				var dd = widget.Component as Dropdown;
+				return dd != null && dd.interactable;
 			}
+
+			// HierRef toggles use KButton as Component; base ToggleWidget.IsValid()
+			// only knows KToggle/MultiToggle, so handle KButton interactability here.
+			if (widget is ToggleWidget && widget.Component is KButton kb)
+				return kb.isInteractable;
+
+			return base.IsWidgetValid(widget);
 		}
 
 		/// <summary>
@@ -473,7 +457,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
 			var widget = _widgets[_currentIndex];
 
-			if (widget.Type == WidgetType.Toggle && widget.Tag is HierarchyReferences hr) {
+			if (widget is ToggleWidget && widget.Tag is HierarchyReferences hr) {
 				var kbutton = widget.Component as KButton;
 				if (kbutton != null)
 					ClickButton(kbutton);
@@ -490,7 +474,7 @@ namespace OniAccess.Handlers.Screens {
 		/// <summary>
 		/// Cycle a Unity Dropdown or radio group's selected value and speak the new selection.
 		/// </summary>
-		protected override void CycleDropdown(WidgetInfo widget, int direction) {
+		protected override void CycleDropdown(Widget widget, int direction) {
 			// Radio group: click the next/prev member's button
 			if (widget.Tag is RadioGroupInfo radio) {
 				int count = radio.Members.Count;
@@ -520,7 +504,7 @@ namespace OniAccess.Handlers.Screens {
 		/// For radio groups, read the tooltip from the currently selected member
 		/// rather than the parent container.
 		/// </summary>
-		protected override string GetTooltipText(WidgetInfo widget) {
+		protected override string GetTooltipText(Widget widget) {
 			if (widget.Tag is RadioGroupInfo radio) {
 				var member = radio.Members[radio.CurrentIndex];
 				var go = member.HierRef.gameObject;
@@ -544,7 +528,7 @@ namespace OniAccess.Handlers.Screens {
 			// Group HierRef toggle widgets by parent transform
 			var groups = new Dictionary<UnityEngine.Transform, List<int>>();
 			for (int i = 0; i < _widgets.Count; i++) {
-				if (_widgets[i].Type == WidgetType.Toggle && _widgets[i].Tag is HierarchyReferences) {
+				if (_widgets[i] is ToggleWidget && _widgets[i].Tag is HierarchyReferences) {
 					var parent = _widgets[i].GameObject.transform.parent;
 					if (!groups.ContainsKey(parent))
 						groups[parent] = new List<int>();
@@ -598,10 +582,9 @@ namespace OniAccess.Handlers.Screens {
 				int firstIdx = kvp.Value[0];
 				string radioLabel = groupLabel ?? _widgets[firstIdx].Label;
 				var radioInfo = new RadioGroupInfo { Members = members, CurrentIndex = activeIndex };
-				_widgets[firstIdx] = new WidgetInfo {
+				_widgets[firstIdx] = new DropdownWidget {
 					Label = radioLabel,
 					Component = members[activeIndex].Button,
-					Type = WidgetType.Dropdown,
 					GameObject = kvp.Key.gameObject,
 					Tag = radioInfo,
 					SpeechFunc = () => {

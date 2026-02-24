@@ -44,10 +44,9 @@ namespace OniAccess.Handlers.Screens {
 			try {
 				var inputField = st.Field("inputField").GetValue<KInputTextField>();
 				if (inputField != null) {
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new TextInputWidget {
 						Label = inputField.text,
 						Component = inputField,
-						Type = WidgetType.TextInput,
 						GameObject = inputField.gameObject,
 						Tag = "filename",
 						SpeechFunc = () => $"{(string)STRINGS.UI.FRONTEND.SAVESCREEN.SAVENAMETITLE}, {inputField.text}"
@@ -61,10 +60,9 @@ namespace OniAccess.Handlers.Screens {
 			try {
 				var confirmBtn = st.Field("confirmButton").GetValue<KButton>();
 				if (confirmBtn != null && confirmBtn.gameObject.activeInHierarchy) {
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ButtonWidget {
 						Label = GetButtonLabel(confirmBtn, (string)STRINGS.UI.CONFIRMDIALOG.OK),
 						Component = confirmBtn,
-						Type = WidgetType.Button,
 						GameObject = confirmBtn.gameObject
 					});
 				}
@@ -76,10 +74,9 @@ namespace OniAccess.Handlers.Screens {
 			try {
 				var cancelBtn = st.Field("cancelButton").GetValue<KButton>();
 				if (cancelBtn != null && cancelBtn.gameObject.activeInHierarchy) {
-					_widgets.Add(new WidgetInfo {
+					_widgets.Add(new ButtonWidget {
 						Label = GetButtonLabel(cancelBtn, (string)STRINGS.UI.FRONTEND.NEWGAMESETTINGS.BUTTONS.CANCEL),
 						Component = cancelBtn,
-						Type = WidgetType.Button,
 						GameObject = cancelBtn.gameObject
 					});
 				}
