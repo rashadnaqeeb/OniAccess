@@ -21,6 +21,7 @@ namespace OniAccess.Handlers.Tiles {
 		private bool _hasActivated;
 		private bool _overlaySubscribed;
 		private int _queueNextOverlayTtl;
+		private HashedString _lastOverlayMode;
 
 		public void QueueNextOverlayAnnouncement() => _queueNextOverlayTtl = 2;
 
@@ -98,6 +99,7 @@ namespace OniAccess.Handlers.Tiles {
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
 			if (OverlayScreen.Instance != null) {
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
+				_lastOverlayMode = OverlayScreen.Instance.mode;
 				_overlaySubscribed = true;
 			} else {
 				_overlaySubscribed = false;
@@ -118,6 +120,10 @@ namespace OniAccess.Handlers.Tiles {
 
 		private void OnOverlayChanged(HashedString newMode) {
 			TileCursor.Instance.ResetRoomName();
+			// Skip redundant announcements when the game resets the overlay to None
+			// (e.g., ManagementMenu.ToggleScreen resets overlay before opening a screen).
+			if (newMode == _lastOverlayMode) return;
+			_lastOverlayMode = newMode;
 			if (_queueNextOverlayTtl > 0) {
 				_queueNextOverlayTtl = 0;
 				SpeechPipeline.SpeakQueued(_overlayRegistry.GetOverlayName(newMode));
