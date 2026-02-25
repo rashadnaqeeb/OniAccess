@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using OniAccess.Handlers;
+using OniAccess.Handlers.Build;
 using OniAccess.Handlers.Tiles;
 using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Speech;
@@ -98,6 +99,8 @@ namespace OniAccess.Tests {
 			results.Add(TextFilterSpriteNameCaseInsensitive());
 			results.Add(TextFilterReplacesMasculineOrdinalDegree());
 			results.Add(TextFilterPreservesNumericBrackets());
+			results.Add(TextFilterStripsControlChars());
+			results.Add(TextFilterCombinedMarkup());
 
 			// --- Log class ---
 			results.Add(LogWarnRoutesToWarnFn());
@@ -144,6 +147,10 @@ namespace OniAccess.Tests {
 			results.Add(PipelineAllowsSameTextAfterWindow());
 			results.Add(PipelineAllowsDifferentTextImmediately());
 			results.Add(PipelineNullAndEmptySkipped());
+			results.Add(PipelineInterruptFlagIsTrue());
+			results.Add(PipelineQueuedSpeaksWithoutInterrupt());
+			results.Add(PipelineQueuedNotDeduplicated());
+			results.Add(PipelineInterruptDedupeDoesNotAffectQueued());
 
 			// --- ColorNameUtil ---
 			results.Add(ColorNameUtilAllPaletteColorsMapped());
@@ -161,6 +168,26 @@ namespace OniAccess.Tests {
 			results.Add(WrapSkipEmptyBackwardWrap());
 			results.Add(WrapSkipEmptyAllEmptyReturnsCurrent());
 			results.Add(WrapSkipEmptySingleNonEmpty());
+
+			// --- ScannerTaxonomy ---
+			results.Add(TaxonomyAllCategoriesHaveSubcategories());
+			results.Add(TaxonomySortIndicesRoundTrip());
+
+			// --- GlanceComposer ---
+			results.Add(ComposerThrowingSectionDoesNotAbortOthers());
+			results.Add(ComposerAllEmptyReturnsNull());
+
+			// --- AnnouncementFormatter ---
+			results.Add(FormatDistanceSameCellReturnsEmpty());
+			results.Add(FormatDistanceVerticalOnly());
+			results.Add(FormatDistanceHorizontalOnly());
+			results.Add(FormatDistanceBothAxes());
+			results.Add(FormatClusterSingleDelegatesToEntity());
+			results.Add(FormatClusterMultiIncludesCount());
+
+			// --- BuildMenuData ---
+			results.Add(OrientationNameCoversAllKnownValues());
+			results.Add(OrientationNameDefaultReturnsUp());
 
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
@@ -855,6 +882,19 @@ namespace OniAccess.Tests {
 			return Assert("TextFilterPreservesNumericBrackets", ok, $"got \"{result}\"");
 		}
 
+		private static (string, bool, string) TextFilterStripsControlChars() {
+			string result = TextFilter.FilterForSpeech("Hello\x00World");
+			bool ok = result == "HelloWorld";
+			return Assert("TextFilterStripsControlChars", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TextFilterCombinedMarkup() {
+			string result = TextFilter.FilterForSpeech(
+				"<sprite name=warning><b><color=red>Overheat [45%]</color></b> {Hotkey}Ctrl+X");
+			bool ok = result == "warning: Overheat 45%";
+			return Assert("TextFilterCombinedMarkup", ok, $"got \"{result}\"");
+		}
+
 		// ========================================
 		// LogCapture helper
 		// ========================================
@@ -1530,6 +1570,250 @@ namespace OniAccess.Tests {
 			SpeechPipeline.SpeakInterrupt("");
 			bool ok = spoken.Count == 0;
 			return Assert("PipelineNullAndEmptySkipped", ok, $"spoken={spoken.Count}");
+		}
+
+		private static (string, bool, string) PipelineInterruptFlagIsTrue() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakInterrupt("hello");
+			bool ok = spoken.Count == 1 && spoken[0].interrupt == true;
+			return Assert("PipelineInterruptFlagIsTrue", ok,
+				$"spoken={spoken.Count}" + (spoken.Count > 0 ? $", interrupt={spoken[0].interrupt}" : ""));
+		}
+
+		private static (string, bool, string) PipelineQueuedSpeaksWithoutInterrupt() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakQueued("hello");
+			bool ok = spoken.Count == 1 && spoken[0].text == "hello" && spoken[0].interrupt == false;
+			return Assert("PipelineQueuedSpeaksWithoutInterrupt", ok,
+				$"spoken={spoken.Count}" + (spoken.Count > 0 ? $", text=\"{spoken[0].text}\", interrupt={spoken[0].interrupt}" : ""));
+		}
+
+		private static (string, bool, string) PipelineQueuedNotDeduplicated() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakQueued("hello");
+			SpeechPipeline.SpeakQueued("hello");
+			bool ok = spoken.Count == 2;
+			return Assert("PipelineQueuedNotDeduplicated", ok, $"spoken={spoken.Count}");
+		}
+
+		private static (string, bool, string) PipelineInterruptDedupeDoesNotAffectQueued() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakInterrupt("hello");
+			SpeechPipeline.SpeakQueued("hello");
+			bool ok = spoken.Count == 2
+				&& spoken[0].interrupt == true
+				&& spoken[1].interrupt == false;
+			return Assert("PipelineInterruptDedupeDoesNotAffectQueued", ok,
+				$"spoken={spoken.Count}" + (spoken.Count >= 2 ? $", [0].interrupt={spoken[0].interrupt}, [1].interrupt={spoken[1].interrupt}" : ""));
+		}
+
+		// ========================================
+		// ScannerTaxonomy tests
+		// ========================================
+
+		private static (string, bool, string) TaxonomyAllCategoriesHaveSubcategories() {
+			var missing = new List<string>();
+			foreach (string cat in ScannerTaxonomy.CategoryOrder) {
+				if (!ScannerTaxonomy.SubcategoryOrder.ContainsKey(cat))
+					missing.Add(cat);
+			}
+			// Also check reverse: every SubcategoryOrder key is in CategoryOrder
+			var catSet = new HashSet<string>(ScannerTaxonomy.CategoryOrder);
+			foreach (string key in ScannerTaxonomy.SubcategoryOrder.Keys) {
+				if (!catSet.Contains(key))
+					missing.Add($"SubcategoryOrder has orphan: {key}");
+			}
+			bool ok = missing.Count == 0;
+			return Assert("TaxonomyAllCategoriesHaveSubcategories", ok,
+				ok ? "all synced" : $"missing: {string.Join(", ", missing)}");
+		}
+
+		private static (string, bool, string) TaxonomySortIndicesRoundTrip() {
+			var failures = new List<string>();
+			for (int i = 0; i < ScannerTaxonomy.CategoryOrder.Length; i++) {
+				string cat = ScannerTaxonomy.CategoryOrder[i];
+				int idx = ScannerTaxonomy.CategorySortIndex(cat);
+				if (idx != i)
+					failures.Add($"CategorySortIndex({cat})={idx}, expected {i}");
+				if (!ScannerTaxonomy.SubcategoryOrder.TryGetValue(cat, out string[] subs))
+					continue;
+				for (int j = 0; j < subs.Length; j++) {
+					int subIdx = ScannerTaxonomy.SubcategorySortIndex(cat, subs[j]);
+					if (subIdx != j)
+						failures.Add($"SubcategorySortIndex({cat},{subs[j]})={subIdx}, expected {j}");
+				}
+			}
+			// Unknown category returns int.MaxValue
+			int unknown = ScannerTaxonomy.CategorySortIndex("Nonexistent");
+			if (unknown != int.MaxValue)
+				failures.Add($"Unknown category returned {unknown}, expected int.MaxValue");
+			bool ok = failures.Count == 0;
+			return Assert("TaxonomySortIndicesRoundTrip", ok,
+				ok ? "all correct" : string.Join("; ", failures));
+		}
+
+		// ========================================
+		// GlanceComposer tests
+		// ========================================
+
+		private class StubSection : ICellSection {
+			private readonly string[] _tokens;
+			public StubSection(params string[] tokens) { _tokens = tokens; }
+			public IEnumerable<string> Read(int cell, CellContext ctx) => _tokens;
+		}
+
+		private class ThrowingSection : ICellSection {
+			public IEnumerable<string> Read(int cell, CellContext ctx) {
+				throw new InvalidOperationException("section exploded");
+			}
+		}
+
+		private static (string, bool, string) ComposerThrowingSectionDoesNotAbortOthers() {
+			var sections = new List<ICellSection> {
+				new StubSection("alpha"),
+				new ThrowingSection(),
+				new StubSection("beta"),
+			};
+			var composer = new GlanceComposer(sections.AsReadOnly());
+			string result = composer.Compose(0);
+			bool ok = result == "alpha, beta";
+			return Assert("ComposerThrowingSectionDoesNotAbortOthers", ok,
+				$"got \"{result}\"");
+		}
+
+		private static (string, bool, string) ComposerAllEmptyReturnsNull() {
+			var sections = new List<ICellSection> {
+				new StubSection("", null),
+				new StubSection(),
+			};
+			var composer = new GlanceComposer(sections.AsReadOnly());
+			string result = composer.Compose(0);
+			bool ok = result == null;
+			return Assert("ComposerAllEmptyReturnsNull", ok,
+				$"got {(result == null ? "null" : $"\"{result}\"")}");
+		}
+
+		// ========================================
+		// AnnouncementFormatter tests
+		// ========================================
+
+		private static void SetupGrid(int width) {
+			Grid.WidthInCells = width;
+		}
+
+		private static (string, bool, string) FormatDistanceSameCellReturnsEmpty() {
+			SetupGrid(100);
+			string result = AnnouncementFormatter.FormatDistance(505, 505);
+			bool ok = result == "";
+			return Assert("FormatDistanceSameCellReturnsEmpty", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) FormatDistanceVerticalOnly() {
+			SetupGrid(100);
+			// cell 505 = row 5, col 5; cell 805 = row 8, col 5 -> 3 up
+			string result = AnnouncementFormatter.FormatDistance(505, 805);
+			bool ok = result.Contains("3") && result.Contains("up")
+				&& !result.Contains("left") && !result.Contains("right");
+			return Assert("FormatDistanceVerticalOnly", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) FormatDistanceHorizontalOnly() {
+			SetupGrid(100);
+			// cell 505 = row 5, col 5; cell 502 = row 5, col 2 -> 3 left
+			string result = AnnouncementFormatter.FormatDistance(505, 502);
+			bool ok = result.Contains("3") && result.Contains("left")
+				&& !result.Contains("up") && !result.Contains("down");
+			return Assert("FormatDistanceHorizontalOnly", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) FormatDistanceBothAxes() {
+			SetupGrid(100);
+			// cell 505 = row 5, col 5; cell 208 = row 2, col 8 -> 3 down, 3 right
+			string result = AnnouncementFormatter.FormatDistance(505, 208);
+			bool ok = result.Contains("3") && result.Contains("down")
+				&& result.Contains("right");
+			return Assert("FormatDistanceBothAxes", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) FormatClusterSingleDelegatesToEntity() {
+			SetupGrid(100);
+			string cluster = AnnouncementFormatter.FormatClusterInstance(
+				1, "Iron", 505, 505, 1, 5);
+			string entity = AnnouncementFormatter.FormatEntityInstance(
+				"Iron", 505, 505, 1, 5);
+			bool ok = cluster == entity;
+			return Assert("FormatClusterSingleDelegatesToEntity", ok,
+				$"cluster=\"{cluster}\", entity=\"{entity}\"");
+		}
+
+		private static (string, bool, string) FormatClusterMultiIncludesCount() {
+			SetupGrid(100);
+			string single = AnnouncementFormatter.FormatClusterInstance(
+				1, "Iron", 505, 505, 1, 5);
+			string multi = AnnouncementFormatter.FormatClusterInstance(
+				7, "Iron", 505, 505, 1, 5);
+			bool ok = multi.Contains("7") && !single.Contains("7");
+			return Assert("FormatClusterMultiIncludesCount", ok,
+				$"single=\"{single}\", multi=\"{multi}\"");
+		}
+
+		// ========================================
+		// BuildMenuData.GetOrientationName tests
+		// ========================================
+
+		private static (string, bool, string) OrientationNameCoversAllKnownValues() {
+			var failures = new List<string>();
+			string neutral = BuildMenuData.GetOrientationName(Orientation.Neutral);
+			string r90 = BuildMenuData.GetOrientationName(Orientation.R90);
+			string r180 = BuildMenuData.GetOrientationName(Orientation.R180);
+			string r270 = BuildMenuData.GetOrientationName(Orientation.R270);
+			string flipH = BuildMenuData.GetOrientationName(Orientation.FlipH);
+			string flipV = BuildMenuData.GetOrientationName(Orientation.FlipV);
+
+			if (neutral != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP)
+				failures.Add($"Neutral=\"{neutral}\"");
+			if (r90 != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT)
+				failures.Add($"R90=\"{r90}\"");
+			if (r180 != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN)
+				failures.Add($"R180=\"{r180}\"");
+			if (r270 != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT)
+				failures.Add($"R270=\"{r270}\"");
+			if (flipH != r270)
+				failures.Add($"FlipH=\"{flipH}\" != R270=\"{r270}\"");
+			if (flipV != r180)
+				failures.Add($"FlipV=\"{flipV}\" != R180=\"{r180}\"");
+
+			bool ok = failures.Count == 0;
+			return Assert("OrientationNameCoversAllKnownValues", ok,
+				ok ? "all correct" : string.Join("; ", failures));
+		}
+
+		private static (string, bool, string) OrientationNameDefaultReturnsUp() {
+			string result = BuildMenuData.GetOrientationName((Orientation)99);
+			string expected = (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP;
+			bool ok = result == expected;
+			return Assert("OrientationNameDefaultReturnsUp", ok,
+				$"got \"{result}\", expected \"{expected}\"");
 		}
 	}
 }
