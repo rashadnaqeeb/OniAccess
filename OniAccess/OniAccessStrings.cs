@@ -521,13 +521,14 @@ namespace STRINGS {
 			public static LocString STORED = "Stored";
 			public static LocString SKILL = "skill {0}";
 			public static LocString DISABLED_TRAIT = "Disabled, {0}";
-			public static LocString SORT_ASCENDING = "sorted ascending";
-			public static LocString SORT_DESCENDING = "sorted descending";
+			public static LocString SORT_ASCENDING = "sorted low to high";
+			public static LocString SORT_DESCENDING = "sorted high to low";
 			public static LocString SORT_CLEARED = "sort cleared";
 			public static LocString ROW_INCREASED = "row increased";
 			public static LocString ROW_DECREASED = "row decreased";
 			public static LocString COLUMN_INCREASED = "column increased";
 			public static LocString COLUMN_DECREASED = "column decreased";
+			public static LocString COLUMN_SET = "column set to {0}";
 			public static LocString PROXIMITY_ON = "Proximity, on";
 			public static LocString PROXIMITY_OFF = "Proximity, off";
 			public static LocString AFFECTED_ERRANDS = "Affected errands: {0}";
@@ -536,6 +537,7 @@ namespace STRINGS {
 			public static LocString ACTIVATE_OR_SORT = "Activate toolbar item or cycle sort";
 			public static LocString ADJUST_ROW = "Adjust all priorities in row";
 			public static LocString ADJUST_COLUMN = "Adjust all priorities in column";
+			public static LocString SET_COLUMN = "Set all priorities in column";
 		}
 
 		public class BUILD_MENU {

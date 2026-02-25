@@ -130,12 +130,15 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
-	/// JobsTableScreen extends ShowOptimizedKScreen, which hides via canvas alpha
-	/// in Show(false) without calling Deactivate. ManagementMenu toggles it via Show().
+	/// TableScreen subclasses (JobsTableScreen, ConsumablesTableScreen) extend
+	/// ShowOptimizedKScreen, which hides via canvas alpha in Show(false) without
+	/// calling Deactivate. ManagementMenu toggles them via Show(). Show is declared
+	/// on ShowOptimizedKScreen (not overridden by subclasses), so we patch
+	/// TableScreen.OnShow and let ContextDetector filter by registration.
 	/// </summary>
-	[HarmonyPatch(typeof(JobsTableScreen), nameof(JobsTableScreen.Show))]
-	internal static class JobsTableScreen_Show_Patch {
-		private static void Postfix(JobsTableScreen __instance, bool show) {
+	[HarmonyPatch(typeof(TableScreen), "OnShow")]
+	internal static class TableScreen_OnShow_Patch {
+		private static void Postfix(TableScreen __instance, bool show) {
 			if (!ModToggle.IsEnabled) return;
 			if (show) {
 				ContextDetector.OnScreenActivated(__instance);

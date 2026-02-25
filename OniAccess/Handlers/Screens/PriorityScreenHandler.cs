@@ -50,6 +50,7 @@ namespace OniAccess.Handlers.Screens {
 			new HelpEntry("Enter", STRINGS.ONIACCESS.PRIORITY_SCREEN.ACTIVATE_OR_SORT),
 			new HelpEntry("Ctrl+Left/Right", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_ROW),
 			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_COLUMN),
+			new HelpEntry("Shift+0-5", STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_COLUMN),
 		};
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
@@ -266,9 +267,10 @@ namespace OniAccess.Handlers.Screens {
 			switch (row.Kind) {
 				case RowKind.Toolbar:
 					if (_col == 0) return STRINGS.UI.JOBSSCREEN.RESET_SETTINGS;
-					if (_col == 1) return Game.Instance.advancedPersonalPriorities
+					if (_col == 1) return (Game.Instance.advancedPersonalPriorities
 						? (string)STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_ON
-						: (string)STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_OFF;
+						: (string)STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_OFF)
+						+ ", " + STRINGS.UI.JOBSSCREEN.TOGGLE_ADVANCED_MODE_TOOLTIP;
 					return "";
 
 				case RowKind.ColumnHeader:
@@ -483,6 +485,23 @@ namespace OniAccess.Handlers.Screens {
 			SpeechPipeline.SpeakInterrupt(announcement);
 		}
 
+		void SetColumnPriority(int value) {
+			if (_col < 0 || _col >= _choreGroups.Count) return;
+			var group = _choreGroups[_col];
+
+			foreach (var row in _rows) {
+				if (row.Kind != RowKind.Minion && row.Kind != RowKind.NewDuplicants) continue;
+				var manager = GetPriorityManager(row);
+				if (manager.IsChoreGroupDisabled(group)) continue;
+				manager.SetPersonalPriority(group, value);
+			}
+
+			_lastSpokenRow = -1;
+			_lastSpokenCol = -1;
+			SpeechPipeline.SpeakInterrupt(
+				_choreGroups[_col].Name + ", " + string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_SET, GetPriorityName(value)));
+		}
+
 		void AdjustColumn(int delta) {
 			if (_col < 0 || _col >= _choreGroups.Count) return;
 			var group = _choreGroups[_col];
@@ -531,13 +550,13 @@ namespace OniAccess.Handlers.Screens {
 
 			if (_sortColumn != _col) {
 				_sortColumn = _col;
-				_sortAscending = true;
-				SpeechPipeline.SpeakInterrupt(
-					_choreGroups[_col].Name + ", " + STRINGS.ONIACCESS.PRIORITY_SCREEN.SORT_ASCENDING);
-			} else if (_sortAscending) {
 				_sortAscending = false;
 				SpeechPipeline.SpeakInterrupt(
 					_choreGroups[_col].Name + ", " + STRINGS.ONIACCESS.PRIORITY_SCREEN.SORT_DESCENDING);
+			} else if (!_sortAscending) {
+				_sortAscending = true;
+				SpeechPipeline.SpeakInterrupt(
+					_choreGroups[_col].Name + ", " + STRINGS.ONIACCESS.PRIORITY_SCREEN.SORT_ASCENDING);
 			} else {
 				_sortColumn = -1;
 				SpeechPipeline.SpeakInterrupt(
@@ -555,12 +574,16 @@ namespace OniAccess.Handlers.Screens {
 			if (base.Tick()) return true;
 
 			bool ctrlHeld = InputUtil.CtrlHeld();
+			bool shiftHeld = InputUtil.ShiftHeld();
 
-			// Number keys 0-5 for priority setting
+			// Number keys: Shift+0-5 sets entire column, plain 0-5 sets cell
 			if (!ctrlHeld) {
 				for (int n = 0; n <= 5; n++) {
 					if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Alpha0 + n)) {
-						SetCellPriority(n);
+						if (shiftHeld)
+							SetColumnPriority(n);
+						else
+							SetCellPriority(n);
 						return true;
 					}
 				}
