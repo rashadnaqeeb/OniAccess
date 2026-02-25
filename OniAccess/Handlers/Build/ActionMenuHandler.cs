@@ -1,21 +1,24 @@
 using System.Collections.Generic;
+using OniAccess.Handlers.Tools;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Build {
 	/// <summary>
-	/// Three-level navigation: categories (level 0), subcategories (level 1),
-	/// and buildings (level 2). Enter/Right drills down; Left goes back.
-	/// Up/Down at level 2 crosses both subcategory and category boundaries.
-	/// Type-ahead always searches buildings (level 2).
+	/// Unified action menu combining build categories and tools.
+	/// Three-level navigation for buildings: categories (level 0),
+	/// subcategories (level 1), buildings (level 2).
+	/// Tools appear as a virtual category at level 0, with individual
+	/// tools at level 1 (leaf). Type-ahead searches both buildings and tools.
 	/// </summary>
-	public class BuildMenuHandler: NestedMenuHandler {
+	public class ActionMenuHandler: NestedMenuHandler {
 		private readonly HashedString _initialCategory;
 		private readonly BuildingDef _initialDef;
 		private List<BuildMenuData.CategoryGroup> _tree;
+		private int _toolsCategoryIndex;
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries;
 
-		static BuildMenuHandler() {
+		static ActionMenuHandler() {
 			var list = new List<HelpEntry>();
 			list.AddRange(NestedNavHelpEntries);
 			list.Add(new HelpEntry("Escape", STRINGS.ONIACCESS.HELP.CLOSE));
@@ -24,12 +27,12 @@ namespace OniAccess.Handlers.Build {
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
 
-		public override string DisplayName => (string)STRINGS.ONIACCESS.BUILD_MENU.CATEGORY_LIST;
+		public override string DisplayName => (string)STRINGS.ONIACCESS.BUILD_MENU.ACTION_MENU;
 
 		/// <summary>
 		/// Open fresh from the tile cursor.
 		/// </summary>
-		public BuildMenuHandler() {
+		public ActionMenuHandler() {
 			_initialCategory = HashedString.Invalid;
 			_initialDef = null;
 		}
@@ -38,10 +41,12 @@ namespace OniAccess.Handlers.Build {
 		/// Return from placement (Tab in BuildToolHandler). Cursor starts on
 		/// the building matching initialDef within the given category.
 		/// </summary>
-		public BuildMenuHandler(HashedString category, BuildingDef initialDef) {
+		public ActionMenuHandler(HashedString category, BuildingDef initialDef) {
 			_initialCategory = category;
 			_initialDef = initialDef;
 		}
+
+		private bool IsToolsCategory(int catIndex) => catIndex == _toolsCategoryIndex;
 
 		// ========================================
 		// NESTED MENU ABSTRACTS
@@ -52,8 +57,15 @@ namespace OniAccess.Handlers.Build {
 
 		protected override int GetItemCount(int level, int[] indices) {
 			if (_tree == null) return 0;
-			if (level == 0) return _tree.Count;
-			if (indices[0] < 0 || indices[0] >= _tree.Count) return 0;
+			if (level == 0) return _tree.Count + 1;
+			if (indices[0] < 0 || indices[0] > _toolsCategoryIndex) return 0;
+
+			if (IsToolsCategory(indices[0])) {
+				if (level == 1) return ToolHandler.AllTools.Count;
+				return 0;
+			}
+
+			if (indices[0] >= _tree.Count) return 0;
 			var subs = _tree[indices[0]].Subcategories;
 			if (level == 1) return subs.Count;
 			if (indices[1] < 0 || indices[1] >= subs.Count) return 0;
@@ -63,10 +75,24 @@ namespace OniAccess.Handlers.Build {
 		protected override string GetItemLabel(int level, int[] indices) {
 			if (_tree == null) return null;
 			if (level == 0) {
-				if (indices[0] < 0 || indices[0] >= _tree.Count) return null;
+				if (indices[0] < 0 || indices[0] > _toolsCategoryIndex) return null;
+				if (IsToolsCategory(indices[0]))
+					return (string)STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY;
 				return _tree[indices[0]].DisplayName;
 			}
-			if (indices[0] < 0 || indices[0] >= _tree.Count) return null;
+
+			if (indices[0] < 0 || indices[0] > _toolsCategoryIndex) return null;
+
+			if (IsToolsCategory(indices[0])) {
+				if (level == 1) {
+					var tools = ToolHandler.AllTools;
+					if (indices[1] < 0 || indices[1] >= tools.Count) return null;
+					return tools[indices[1]].Label;
+				}
+				return null;
+			}
+
+			if (indices[0] >= _tree.Count) return null;
 			var subs = _tree[indices[0]].Subcategories;
 			if (level == 1) {
 				if (indices[1] < 0 || indices[1] >= subs.Count) return null;
@@ -80,6 +106,13 @@ namespace OniAccess.Handlers.Build {
 
 		protected override string GetParentLabel(int level, int[] indices) {
 			if (_tree == null) return null;
+
+			if (IsToolsCategory(indices[0])) {
+				if (level == 1)
+					return (string)STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY;
+				return null;
+			}
+
 			if (level == 1) {
 				if (indices[0] < 0 || indices[0] >= _tree.Count) return null;
 				return _tree[indices[0]].DisplayName;
@@ -95,6 +128,12 @@ namespace OniAccess.Handlers.Build {
 
 		protected override void ActivateLeafItem(int[] indices) {
 			if (_tree == null) return;
+
+			if (IsToolsCategory(indices[0])) {
+				ActivateToolItem(indices[1]);
+				return;
+			}
+
 			if (indices[0] < 0 || indices[0] >= _tree.Count) return;
 			var subs = _tree[indices[0]].Subcategories;
 			if (indices[1] < 0 || indices[1] >= subs.Count) return;
@@ -116,6 +155,19 @@ namespace OniAccess.Handlers.Build {
 			}
 			handler.SuppressToolEvents = false;
 			handler.AnnounceInitialState();
+		}
+
+		private void ActivateToolItem(int toolIndex) {
+			var tools = ToolHandler.AllTools;
+			if (toolIndex < 0 || toolIndex >= tools.Count) return;
+
+			var tool = tools[toolIndex];
+			if (tool.RequiresModeFirst) {
+				HandlerStack.Replace(new ToolFilterHandler(tool));
+			} else {
+				ToolPickerHandler.ActivateTool(tool);
+				HandlerStack.Replace(new ToolHandler());
+			}
 		}
 
 		// ========================================
@@ -441,7 +493,7 @@ namespace OniAccess.Handlers.Build {
 		// SEARCH
 		// ========================================
 
-		protected override int GetSearchItemCount(int[] indices) {
+		private int GetBuildingSearchCount() {
 			if (_tree == null) return 0;
 			int total = 0;
 			for (int c = 0; c < _tree.Count; c++) {
@@ -450,6 +502,10 @@ namespace OniAccess.Handlers.Build {
 					total += subs[s].Buildings.Count;
 			}
 			return total;
+		}
+
+		protected override int GetSearchItemCount(int[] indices) {
+			return GetBuildingSearchCount() + ToolHandler.AllTools.Count;
 		}
 
 		protected override string GetSearchItemLabel(int flatIndex) {
@@ -464,6 +520,10 @@ namespace OniAccess.Handlers.Build {
 					remaining -= count;
 				}
 			}
+			// Tools region
+			var tools = ToolHandler.AllTools;
+			if (remaining < tools.Count)
+				return tools[remaining].Label;
 			return null;
 		}
 
@@ -483,6 +543,16 @@ namespace OniAccess.Handlers.Build {
 					remaining -= count;
 				}
 			}
+			// Tools region
+			outIndices[0] = _toolsCategoryIndex;
+			outIndices[1] = remaining;
+			outIndices[2] = 0;
+		}
+
+		protected override int GetSearchTargetLevel(int flatIndex, int[] mappedIndices) {
+			if (IsToolsCategory(mappedIndices[0]))
+				return 1;
+			return SearchLevel;
 		}
 
 		// ========================================
@@ -492,6 +562,7 @@ namespace OniAccess.Handlers.Build {
 		public override void OnActivate() {
 			PlayOpenSound();
 			_tree = BuildMenuData.GetFullBuildTree();
+			_toolsCategoryIndex = _tree != null ? _tree.Count : 0;
 
 			if (_initialDef != null && _restoreFlatIndex < 0)
 				FindDefFlatIndex(_initialDef, _initialCategory);
@@ -583,7 +654,7 @@ namespace OniAccess.Handlers.Build {
 			try {
 				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
 			} catch (System.Exception ex) {
-				Util.Log.Error($"BuildMenuHandler.PlayNegativeSound: {ex.Message}");
+				Util.Log.Error($"ActionMenuHandler.PlayNegativeSound: {ex.Message}");
 			}
 		}
 	}

@@ -74,6 +74,13 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		protected abstract string GetParentLabel(int level, int[] indices);
 
+		/// <summary>
+		/// Returns the level to set when search lands on flatIndex.
+		/// Defaults to SearchLevel. Override when some items are leaves
+		/// at a shallower level (e.g., tools at level 1 in a 3-level menu).
+		/// </summary>
+		protected virtual int GetSearchTargetLevel(int flatIndex, int[] mappedIndices) => SearchLevel;
+
 		// ========================================
 		// BASE CLASS BRIDGES
 		// ========================================
@@ -262,7 +269,7 @@ namespace OniAccess.Handlers {
 
 		protected void NestedSearchMoveTo(int index, bool parentContext = true) {
 			MapSearchIndex(index, _indices);
-			_level = SearchLevel;
+			_level = GetSearchTargetLevel(index, _indices);
 			SyncCurrentIndex();
 			if (parentContext)
 				SpeakWithParentContext();

@@ -607,7 +607,7 @@ namespace OniAccess.Handlers.Build {
 		// ========================================
 
 		private void ReturnToBuildingList() {
-			HandlerStack.Replace(new BuildMenuHandler(_category, _def));
+			HandlerStack.Replace(new ActionMenuHandler(_category, _def));
 		}
 
 		private void OpenInfoPanel() {

@@ -76,7 +76,7 @@ namespace STRINGS {
 			public static LocString JUMP_GROUP = "Jump to next or previous group";
 
 			public class TOOLS_HELP {
-				public static LocString OPEN_TOOL_MENU = "Open tool menu";
+
 				public static LocString SET_CORNER = "Set rectangle corner";
 				public static LocString CLEAR_RECT = "Clear rectangle at cursor";
 				public static LocString CONFIRM_TOOL = "Apply tool at cursor and dismiss";
@@ -543,7 +543,8 @@ namespace STRINGS {
 		}
 
 		public class BUILD_MENU {
-			public static LocString CATEGORY_LIST = "build menu";
+			public static LocString ACTION_MENU = "action menu";
+			public static LocString TOOLS_CATEGORY = "Tools";
 			public static LocString PLACED = "placed";
 			public static LocString PLACED_NO_MATERIAL = "placed, no material available";
 			public static LocString NOT_ROTATABLE = "not rotatable";
@@ -582,7 +583,7 @@ namespace STRINGS {
 			public static LocString HELP_BUILDING_LIST = "Return to building list";
 			public static LocString HELP_INFO = "Open info panel";
 			public static LocString HELP_CANCEL_CONSTRUCTION = "Cancel construction at cursor";
-			public static LocString HELP_OPEN_BUILD_MENU = "Open build menu";
+			public static LocString HELP_OPEN_ACTION_MENU = "Open action menu";
 			public static LocString MATERIAL_OR = " or ";
 			public static LocString ATTRIBUTES = "attributes";
 			public static LocString MATERIAL_EFFECTS = "material effects";
