@@ -383,9 +383,13 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			// Each direct child of entryContainer is a team header
+			// Each direct child of entryContainer is a team header.
+			// Skip inactive children — the prefab has template entries
+			// ("Name Name Name", "Team Name") that must be excluded.
 			for (int i = 0; i < entryContainer.childCount; i++) {
 				var teamHeader = entryContainer.GetChild(i);
+				if (!teamHeader.gameObject.activeInHierarchy) continue;
+
 				var headerLt = teamHeader.GetComponent<LocText>();
 				string teamName = headerLt != null ? headerLt.text : null;
 				if (string.IsNullOrEmpty(teamName)) continue;
