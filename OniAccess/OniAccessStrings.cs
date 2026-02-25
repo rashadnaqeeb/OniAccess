@@ -516,7 +516,7 @@ namespace STRINGS {
 		}
 
 		public class PRIORITY_SCREEN {
-			public static LocString HANDLER_NAME = "Priorities";
+			public static LocString HANDLER_NAME = "Priorities table";
 			public static LocString TOOLBAR = "Toolbar";
 			public static LocString STORED = "Stored";
 			public static LocString SKILL = "skill {0}";

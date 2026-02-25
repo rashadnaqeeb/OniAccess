@@ -81,6 +81,7 @@ namespace OniAccess.Handlers.Screens {
 			_lastSpokenCol = -1;
 
 			base.OnActivate();
+			SpeechPipeline.SpeakQueued(BuildCellParts(forceFullContext: true));
 		}
 
 		// ========================================
