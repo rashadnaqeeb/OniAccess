@@ -106,7 +106,7 @@ namespace OniAccess.Handlers.Screens {
 
 			if (w is ButtonWidget bw) {
 				bw.Activate();
-				RebuildSections();
+				_pendingActivationSpeech = true;
 				return;
 			}
 
