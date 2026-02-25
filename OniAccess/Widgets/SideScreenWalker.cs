@@ -214,6 +214,8 @@ namespace OniAccess.Widgets {
 
 				if (TryAddCategoryContainer(child, items, claimedLabels))
 					continue;
+				if (TryAddSelectionCategoryContainer(child, items, claimedLabels))
+					continue;
 				if (TryAddWidget(child, items, claimedLabels))
 					continue;
 				WalkTransform(child, items, claimedLabels);
@@ -250,9 +252,9 @@ namespace OniAccess.Widgets {
 					SuppressTooltip = true,
 					SpeechFunc = () => {
 						string name = captured.title != null
-							? captured.title.GetParsedText() : captured.transform.name;
+							? captured.title.text : captured.transform.name;
 						string count = captured.amount != null
-							? captured.amount.GetParsedText() : null;
+							? captured.amount.text : null;
 						string speech = name;
 						if (!string.IsNullOrEmpty(count))
 							speech += $", {count} {(string)STRINGS.ONIACCESS.STATES.AVAILABLE}";
@@ -262,6 +264,42 @@ namespace OniAccess.Widgets {
 						string desc = GetReceptacleDescription(captured);
 						if (desc != null)
 							speech += $", {desc}";
+						return speech;
+					}
+				});
+				return true;
+			}
+
+			// SingleItemSelectionRow: compound widget (labelText + button + selected state).
+			// Must be checked before KButton — the row contains a child KButton that
+			// would otherwise be matched individually.
+			var selectionRow = go.GetComponent<SingleItemSelectionRow>();
+			if (selectionRow != null) {
+				var captured = selectionRow;
+				LocText labelLt;
+				try {
+					labelLt = Traverse.Create(captured).Field<LocText>("labelText").Value;
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"Walker: SingleItemSelectionRow labelText read failed: {ex.Message}");
+					return true;
+				}
+				if (labelLt != null) claimedLabels.Add(labelLt);
+				string label = labelLt != null ? labelLt.GetParsedText() : t.name;
+				if (!HasVisibleContent(label)) {
+					Util.Log.Warn($"Walker: blank label for {t.name} (SingleItemSelectionRow)");
+					return true;
+				}
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = captured.button,
+					GameObject = go,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string name = labelLt != null
+							? labelLt.GetParsedText() : captured.transform.name;
+						string speech = name;
+						if (captured.IsSelected)
+							speech += $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
 						return speech;
 					}
 				});
@@ -526,7 +564,69 @@ namespace OniAccess.Widgets {
 							activeCount++;
 					}
 					string countText = string.Format(
-						(string)STRINGS.ONIACCESS.RECEPTACLE.SEED_COUNT, activeCount);
+						(string)STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT, activeCount);
+					return $"{header}, {countText}";
+				}
+			});
+			return true;
+		}
+
+		/// <summary>
+		/// Detect a SingleItemSelectionSideScreenBase category container:
+		/// HierarchyReferences with "Label" + "Entries" refs whose entries
+		/// children have SingleItemSelectionRow. Emits a drillable parent
+		/// Widget with Children for the item rows inside.
+		/// </summary>
+		private static bool TryAddSelectionCategoryContainer(Transform t, List<Widget> items, HashSet<LocText> claimedLabels) {
+			var href = t.GetComponent<HierarchyReferences>();
+			if (href == null) return false;
+			if (!href.HasReference("Label") || !href.HasReference("Entries"))
+				return false;
+
+			var entriesRef = href.GetReference("Entries");
+			if (entriesRef == null) return false;
+			var entriesT = entriesRef.transform;
+
+			// Verify at least one entries child has SingleItemSelectionRow
+			bool hasSelectionRow = false;
+			for (int i = 0; i < entriesT.childCount; i++) {
+				var child = entriesT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				if (child.GetComponent<SingleItemSelectionRow>() != null) {
+					hasSelectionRow = true;
+					break;
+				}
+			}
+			if (!hasSelectionRow) return false;
+
+			// Build child widget list from entries contents
+			var children = new List<Widget>();
+			for (int i = 0; i < entriesT.childCount; i++) {
+				var child = entriesT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				TryAddWidget(child, children, claimedLabels);
+			}
+
+			var headerLt = href.GetReference<LocText>("Label");
+			if (headerLt != null) claimedLabels.Add(headerLt);
+
+			var capturedHeader = headerLt;
+			var capturedEntries = entriesT;
+			items.Add(new LabelWidget {
+				Label = headerLt != null ? headerLt.GetParsedText() : t.name,
+				GameObject = t.gameObject,
+				SuppressTooltip = true,
+				Children = children,
+				SpeechFunc = () => {
+					string header = capturedHeader != null
+						? capturedHeader.GetParsedText() : t.name;
+					int activeCount = 0;
+					for (int i = 0; i < capturedEntries.childCount; i++) {
+						if (capturedEntries.GetChild(i).gameObject.activeSelf)
+							activeCount++;
+					}
+					string countText = string.Format(
+						(string)STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT, activeCount);
 					return $"{header}, {countText}";
 				}
 			});

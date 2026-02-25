@@ -135,7 +135,7 @@ namespace STRINGS {
 		}
 
 		public class RECEPTACLE {
-			public static LocString SEED_COUNT = "{0} seeds";
+			public static LocString ITEM_COUNT = "{0} items";
 		}
 
 		public class BUTTONS {
