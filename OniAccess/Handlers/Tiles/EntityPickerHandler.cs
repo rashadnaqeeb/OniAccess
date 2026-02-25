@@ -106,7 +106,14 @@ namespace OniAccess.Handlers.Tiles {
 			}
 
 			entries.Recycle();
+			result.Sort((a, b) => EntitySortKey(a).CompareTo(EntitySortKey(b)));
 			return result;
+		}
+
+		private static int EntitySortKey(KSelectable ks) {
+			if (ks.GetComponent<Building>() != null) return 0;
+			if (ks.GetComponent<CellSelectionObject>() != null) return 2;
+			return 1;
 		}
 
 		private static void PlaySound(string name) {
