@@ -680,8 +680,7 @@ namespace OniAccess.Handlers.Screens {
 				new ConfigSideTab(),
 				new ErrandsSideTab(),
 				new MaterialTab(),
-				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.COSMETICS.NAME),
+				new BlueprintTab(),
 			};
 		}
 	}
