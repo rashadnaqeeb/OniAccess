@@ -82,7 +82,6 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 			alwaysNeutrals = new HashSet<string> {
 				"UnderConstruction", "UnderConstructionNoWorker",
-				"PendingDeconstruction", "PendingDemolition",
 				"PendingSwitchToggle", "PendingUpgrade",
 				"BuildingDisabled", "Expired",
 				"WaitingForRepairMaterials", "MissingRequirements"

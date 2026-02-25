@@ -67,13 +67,15 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		private static void CollectDeconstructOrder(int cell, List<string> parts) {
-			CollectDeconstructOnLayer(cell, (int)ObjectLayer.Building, parts);
-			CollectDeconstructOnLayer(cell, (int)ObjectLayer.FoundationTile, parts);
+			var buildingGo = Grid.Objects[cell, (int)ObjectLayer.Building];
+			var foundationGo = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
+			CollectDeconstructOnLayer(buildingGo, parts);
+			if (foundationGo != null && foundationGo != buildingGo)
+				CollectDeconstructOnLayer(foundationGo, parts);
 		}
 
 		private static void CollectDeconstructOnLayer(
-				int cell, int layer, List<string> parts) {
-			var go = Grid.Objects[cell, layer];
+				GameObject go, List<string> parts) {
 			if (go == null) return;
 			var deconstructable = go.GetComponent<Deconstructable>();
 			if (deconstructable == null) return;
