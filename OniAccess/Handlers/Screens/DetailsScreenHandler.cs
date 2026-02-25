@@ -32,6 +32,7 @@ namespace OniAccess.Handlers.Screens {
 		private GameObject _lastTarget;
 		private bool _suppressDisplayName;
 		private bool _pendingFirstSection;
+		private bool _pendingTabSpeech;
 		private bool _pendingActivationSpeech;
 
 		public override string DisplayName {
@@ -420,12 +421,20 @@ namespace OniAccess.Handlers.Screens {
 				SpeakCurrentItem();
 			}
 
+			if (_pendingTabSpeech) {
+				_pendingTabSpeech = false;
+				RebuildSections();
+				ResetNavigation();
+				SpeakFirstSection();
+			}
+
 			var currentTarget = DetailsScreen.Instance != null
 				? DetailsScreen.Instance.target : null;
 
 			if (currentTarget != _lastTarget) {
 				_lastTarget = currentTarget;
 				_pendingFirstSection = false;
+				_pendingTabSpeech = false;
 				if (currentTarget != null) {
 					RebuildActiveTabs(currentTarget);
 					_tabIndex = 0;
@@ -486,14 +495,19 @@ namespace OniAccess.Handlers.Screens {
 				: _tabIndex >= oldIndex;
 
 			SwitchGameTab();
-			RebuildSections();
-			ResetNavigation();
 
 			if (wrapped) PlayWrapSound();
 			else PlayHoverSound();
 
 			SpeechPipeline.SpeakInterrupt(_activeTabs[_tabIndex].DisplayName);
-			SpeakFirstSection();
+
+			if (_activeTabs[_tabIndex].GameTabId == null) {
+				_pendingTabSpeech = true;
+			} else {
+				RebuildSections();
+				ResetNavigation();
+				SpeakFirstSection();
+			}
 		}
 
 		private void AdvanceSection(int direction) {
@@ -509,14 +523,19 @@ namespace OniAccess.Handlers.Screens {
 				: _sectionIndex >= oldSection;
 
 			SwitchGameTab();
-			RebuildSections();
-			ResetNavigation();
 
 			if (wrapped) PlayWrapSound();
 			else PlayHoverSound();
 
 			SpeechPipeline.SpeakInterrupt(_activeTabs[_tabIndex].DisplayName);
-			SpeakFirstSection();
+
+			if (_activeTabs[_tabIndex].GameTabId == null) {
+				_pendingTabSpeech = true;
+			} else {
+				RebuildSections();
+				ResetNavigation();
+				SpeakFirstSection();
+			}
 		}
 
 		// ========================================
@@ -660,8 +679,7 @@ namespace OniAccess.Handlers.Screens {
 				// Side screen tabs (null gameTabId — availability via SidescreenTab.IsVisible).
 				new ConfigSideTab(),
 				new ErrandsSideTab(),
-				new StubTab(
-					(string)STRINGS.UI.DETAILTABS.MATERIAL.NAME),
+				new MaterialTab(),
 				new StubTab(
 					(string)STRINGS.UI.DETAILTABS.COSMETICS.NAME),
 			};
