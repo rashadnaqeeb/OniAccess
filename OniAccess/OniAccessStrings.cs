@@ -532,9 +532,10 @@ namespace STRINGS {
 			public static LocString PROXIMITY_ON = "Proximity, on";
 			public static LocString PROXIMITY_OFF = "Proximity, off";
 			public static LocString AFFECTED_ERRANDS = "Affected errands: {0}";
-			public static LocString NAVIGATE_COLUMNS = "Navigate columns";
-			public static LocString SET_PRIORITY = "Set priority";
-			public static LocString ACTIVATE_OR_SORT = "Activate toolbar item or cycle sort";
+			public static LocString NAVIGATE_TABLE = "Navigate rows and columns";
+			public static LocString JUMP_FIRST_LAST_ROW = "Jump to first or last row";
+			public static LocString SET_PRIORITY = "Set priority of current cell";
+			public static LocString SORT_COLUMN = "Sort by column on header row";
 			public static LocString ADJUST_ROW = "Adjust all priorities in row";
 			public static LocString ADJUST_COLUMN = "Adjust all priorities in column";
 			public static LocString SET_COLUMN = "Set all priorities in column";

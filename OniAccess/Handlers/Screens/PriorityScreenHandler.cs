@@ -43,14 +43,13 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		static readonly List<HelpEntry> _helpEntries = new List<HelpEntry> {
-			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-			new HelpEntry("Left/Right", STRINGS.ONIACCESS.PRIORITY_SCREEN.NAVIGATE_COLUMNS),
-			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
+			new HelpEntry("Arrows", STRINGS.ONIACCESS.PRIORITY_SCREEN.NAVIGATE_TABLE),
+			new HelpEntry("Home/End", STRINGS.ONIACCESS.PRIORITY_SCREEN.JUMP_FIRST_LAST_ROW),
 			new HelpEntry("0-5", STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_PRIORITY),
-			new HelpEntry("Enter", STRINGS.ONIACCESS.PRIORITY_SCREEN.ACTIVATE_OR_SORT),
+			new HelpEntry("Shift+0-5", STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_COLUMN),
+			new HelpEntry("Enter", STRINGS.ONIACCESS.PRIORITY_SCREEN.SORT_COLUMN),
 			new HelpEntry("Ctrl+Left/Right", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_ROW),
 			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_COLUMN),
-			new HelpEntry("Shift+0-5", STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_COLUMN),
 		};
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
