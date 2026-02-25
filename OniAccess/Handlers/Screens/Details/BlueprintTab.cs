@@ -59,8 +59,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				return;
 			}
 
-			AddInfoSection(nameLabel, descriptionLabel, sections);
-			AddFacadeGridSection(selectionPanel, sections);
+			AddBuildingSection(nameLabel, descriptionLabel, selectionPanel, sections);
 		}
 
 		// =============================================
@@ -73,6 +72,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			KButton editButton;
 			FacadeSelectionPanel selectionPanel;
 			Dictionary<ClothingOutfitUtility.OutfitType, GameObject> outfitCategories;
+			ClothingOutfitUtility.OutfitType selectedCategory;
 			try {
 				var t = Traverse.Create(panel);
 				nameLabel = t.Field<LocText>("nameLabel").Value;
@@ -80,22 +80,25 @@ namespace OniAccess.Handlers.Screens.Details {
 				selectionPanel = t.Field<FacadeSelectionPanel>("selectionPanel").Value;
 				outfitCategories = t.Field<Dictionary<ClothingOutfitUtility.OutfitType, GameObject>>(
 					"outfitCategories").Value;
+				selectedCategory = t.Field<ClothingOutfitUtility.OutfitType>(
+					"selectedOutfitCategory").Value;
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"BlueprintTab: dupe field access failed: {ex.Message}");
 				return;
 			}
 
-			AddDupeInfoSection(nameLabel, editButton, sections);
-			AddCategorySection(outfitCategories, sections);
-			AddFacadeGridSection(selectionPanel, sections);
+			AddDupeInfoSection(nameLabel, editButton, outfitCategories, sections);
+			AddFacadeGridSection(selectionPanel, sections,
+				GetCategoryName(selectedCategory));
 		}
 
 		// =============================================
 		// SHARED SECTIONS
 		// =============================================
 
-		private static void AddInfoSection(
+		private static void AddBuildingSection(
 				LocText nameLabel, LocText descriptionLabel,
+				FacadeSelectionPanel selectionPanel,
 				List<DetailSection> sections) {
 			var section = new DetailSection();
 			section.Header = (string)STRINGS.UI.DETAILTABS.COSMETICS.NAME;
@@ -121,12 +124,15 @@ namespace OniAccess.Handlers.Screens.Details {
 				}
 			}
 
+			AddFacadeToggles(selectionPanel, section);
+
 			if (section.Items.Count > 0)
 				sections.Add(section);
 		}
 
 		private static void AddDupeInfoSection(
 				LocText nameLabel, KButton editButton,
+				Dictionary<ClothingOutfitUtility.OutfitType, GameObject> outfitCategories,
 				List<DetailSection> sections) {
 			var section = new DetailSection();
 			section.Header = (string)STRINGS.UI.DETAILTABS.COSMETICS.NAME;
@@ -152,52 +158,57 @@ namespace OniAccess.Handlers.Screens.Details {
 				});
 			}
 
+			AddCategoryToggles(outfitCategories, section);
+
 			if (section.Items.Count > 0)
 				sections.Add(section);
 		}
 
-		private static void AddCategorySection(
+		private static void AddCategoryToggles(
 				Dictionary<ClothingOutfitUtility.OutfitType, GameObject> outfitCategories,
-				List<DetailSection> sections) {
-			if (outfitCategories == null || outfitCategories.Count == 0) return;
-
-			var section = new DetailSection();
-			section.Header = (string)STRINGS.UI.DETAILTABS.COSMETICS.NAME;
+				DetailSection section) {
+			if (outfitCategories == null) return;
 
 			foreach (var kvp in outfitCategories) {
+				var catType = kvp.Key;
 				var catGO = kvp.Value;
 				if (catGO == null || !catGO.activeSelf) continue;
 
-				var hierRefs = catGO.GetComponent<HierarchyReferences>();
 				var multiToggle = catGO.GetComponent<MultiToggle>();
 				if (multiToggle == null) continue;
 
-				LocText labelText = null;
-				if (hierRefs != null)
-					labelText = hierRefs.GetReference<LocText>("Label");
-
+				string catName = GetCategoryName(catType);
 				var capturedToggle = multiToggle;
-				var capturedLabel = labelText;
+				var capturedName = catName;
 				section.Items.Add(new ToggleWidget {
 					Component = capturedToggle,
 					GameObject = catGO,
-					Label = capturedLabel != null ? capturedLabel.text : "",
+					Label = capturedName,
 					SpeechFunc = () => {
-						string name = capturedLabel != null ? capturedLabel.text : "";
 						bool selected = capturedToggle.CurrentState == 1;
 						return selected
-							? $"{name}, {(string)STRINGS.ONIACCESS.STATES.SELECTED}"
-							: name;
+							? $"{capturedName}, {(string)STRINGS.ONIACCESS.STATES.SELECTED}"
+							: capturedName;
 					}
 				});
 			}
+		}
+
+		private static void AddFacadeGridSection(
+				FacadeSelectionPanel selectionPanel, List<DetailSection> sections,
+				string header) {
+			if (selectionPanel == null) return;
+
+			var section = new DetailSection();
+			section.Header = header;
+			AddFacadeToggles(selectionPanel, section);
 
 			if (section.Items.Count > 0)
 				sections.Add(section);
 		}
 
-		private static void AddFacadeGridSection(
-				FacadeSelectionPanel selectionPanel, List<DetailSection> sections) {
+		private static void AddFacadeToggles(
+				FacadeSelectionPanel selectionPanel, DetailSection section) {
 			if (selectionPanel == null) return;
 
 			System.Collections.IDictionary toggles;
@@ -211,9 +222,6 @@ namespace OniAccess.Handlers.Screens.Details {
 			}
 
 			if (toggles == null || toggles.Count == 0) return;
-
-			var section = new DetailSection();
-			section.Header = (string)STRINGS.UI.DETAILTABS.COSMETICS.NAME;
 
 			foreach (System.Collections.DictionaryEntry entry in toggles) {
 				var facadeId = (string)entry.Key;
@@ -249,9 +257,19 @@ namespace OniAccess.Handlers.Screens.Details {
 					}
 				});
 			}
+		}
 
-			if (section.Items.Count > 0)
-				sections.Add(section);
+		private static string GetCategoryName(ClothingOutfitUtility.OutfitType type) {
+			switch (type) {
+				case ClothingOutfitUtility.OutfitType.Clothing:
+					return (string)STRINGS.UI.UISIDESCREENS.BLUEPRINT_TAB.SUBCATEGORY_OUTFIT;
+				case ClothingOutfitUtility.OutfitType.AtmoSuit:
+					return (string)STRINGS.UI.UISIDESCREENS.BLUEPRINT_TAB.SUBCATEGORY_ATMOSUIT;
+				case ClothingOutfitUtility.OutfitType.JetSuit:
+					return (string)STRINGS.UI.UISIDESCREENS.BLUEPRINT_TAB.SUBCATEGORY_JETSUIT;
+				default:
+					return type.ToString();
+			}
 		}
 
 		private static string ReadToggleName(GameObject toggleGO) {
