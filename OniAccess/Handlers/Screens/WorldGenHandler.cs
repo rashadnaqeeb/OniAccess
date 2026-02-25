@@ -58,13 +58,14 @@ namespace OniAccess.Handlers.Screens {
 
 			int rounded = UnityEngine.Mathf.RoundToInt(percent * 100f);
 
-			// Speak at 25% intervals
+			if (percent >= 1f) {
+				Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.WORLD_GEN.COMPLETE);
+				_lastSpokenPercent = 100;
+				return false;
+			}
+
 			if (rounded >= _lastSpokenPercent + SpeechInterval) {
-				if (percent >= 1f) {
-					Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.WORLD_GEN.COMPLETE);
-				} else {
-					Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.WORLD_GEN.PERCENT, rounded));
-				}
+				Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.WORLD_GEN.PERCENT, rounded));
 				_lastSpokenPercent = rounded;
 			}
 			return false;
