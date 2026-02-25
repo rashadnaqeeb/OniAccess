@@ -88,8 +88,6 @@ namespace STRINGS {
 		}
 
 		public class PANELS {
-			public static LocString CLUSTERS = "Clusters";
-			public static LocString ACTIONS = "Actions";
 			public static LocString SEED = "World seed";
 			public static LocString ACHIEVEMENTS = "Achievements";
 			public static LocString VICTORY_CONDITIONS = "Victory conditions";
