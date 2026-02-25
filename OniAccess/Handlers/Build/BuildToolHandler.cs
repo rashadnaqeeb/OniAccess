@@ -86,7 +86,7 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		/// <summary>
-		/// Called by BuildMenuHandler after SelectBuilding returns.
+		/// Called by ActionMenuHandler after SelectBuilding returns.
 		/// At this point the active tool is known (PrebuildTool or BuildTool).
 		/// </summary>
 		internal void AnnounceInitialState() {
