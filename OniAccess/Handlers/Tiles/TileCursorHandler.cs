@@ -69,6 +69,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM),
 			new HelpEntry("Alt+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE),
 			new HelpEntry("Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS),
+			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;

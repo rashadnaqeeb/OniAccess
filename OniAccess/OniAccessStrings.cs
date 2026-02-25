@@ -67,8 +67,9 @@ namespace STRINGS {
 			public static LocString MOVE_CURSOR = "Move tile cursor";
 			public static LocString READ_COORDS = "Read coordinates";
 			public static LocString CYCLE_COORD_MODE = "Cycle coordinate display";
-			public static LocString READ_TOOLTIP_SUMMARY = "Read first tooltip entry";
-			public static LocString READ_TOOLTIP = "Browse all tooltip entries";
+			public static LocString READ_TOOLTIP_SUMMARY = "Read tooltip summary at cursor";
+			public static LocString READ_TOOLTIP = "Browse all tooltips at cursor";
+			public static LocString CYCLE_GAME_SPEED = "Cycle game speed";
 			public static LocString SELECT_ENTITY = "Select object at cursor";
 			public static LocString OPEN_GROUP = "Open group";
 			public static LocString GO_BACK = "Go back";
@@ -78,7 +79,7 @@ namespace STRINGS {
 				public static LocString OPEN_TOOL_MENU = "Open tool menu";
 				public static LocString SET_CORNER = "Set rectangle corner";
 				public static LocString CLEAR_RECT = "Clear rectangle at cursor";
-				public static LocString CONFIRM_TOOL = "Confirm and apply tool";
+				public static LocString CONFIRM_TOOL = "Apply tool at cursor and dismiss";
 				public static LocString CANCEL_TOOL = "Cancel tool";
 				public static LocString SET_PRIORITY = "Set priority";
 				public static LocString OPEN_FILTER = "Change filter";
@@ -436,12 +437,12 @@ namespace STRINGS {
 
 			// Help entries
 			public class HELP {
-				public static LocString REFRESH = "Refresh scan";
-				public static LocString TELEPORT = "Jump to selected";
-				public static LocString CYCLE_CATEGORY = "Cycle category";
-				public static LocString CYCLE_SUBCATEGORY = "Cycle subcategory";
-				public static LocString CYCLE_ITEM = "Cycle item";
-				public static LocString CYCLE_INSTANCE = "Cycle instance";
+				public static LocString REFRESH = "Refresh scanner";
+				public static LocString TELEPORT = "Jump to selected scanner entry";
+				public static LocString CYCLE_CATEGORY = "Scanner: cycle category";
+				public static LocString CYCLE_SUBCATEGORY = "Scanner: cycle subcategory";
+				public static LocString CYCLE_ITEM = "Scanner: cycle item";
+				public static LocString CYCLE_INSTANCE = "Scanner: cycle instance";
 			}
 		}
 
