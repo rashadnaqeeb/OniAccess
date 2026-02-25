@@ -24,9 +24,11 @@ namespace OniAccess.Handlers.Screens {
 
 		private readonly IDetailTab[] _tabs;
 		private readonly List<IDetailTab> _activeTabs = new List<IDetailTab>();
+		private readonly List<int> _sectionStarts = new List<int>();
 		private readonly List<DetailSection> _sections = new List<DetailSection>();
 		private readonly Input.TextEditHelper _textEdit = new Input.TextEditHelper();
 		private int _tabIndex;
+		private int _sectionIndex;
 		private GameObject _lastTarget;
 		private bool _suppressDisplayName;
 		private bool _pendingFirstSection;
@@ -52,6 +54,7 @@ namespace OniAccess.Handlers.Screens {
 			var list = new List<HelpEntry>();
 			list.AddRange(NestedNavHelpEntries);
 			list.Add(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
+			list.Add(new HelpEntry("Ctrl+Tab/Ctrl+Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_SECTION));
 			HelpEntries = list.AsReadOnly();
 		}
 
@@ -429,6 +432,11 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab) && Input.InputUtil.CtrlHeld()) {
+				AdvanceSection(Input.InputUtil.ShiftHeld() ? -1 : 1);
+				return true;
+			}
+
 			return base.Tick();
 		}
 
@@ -445,15 +453,45 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		private void AdvanceTab(int direction) {
-			if (_activeTabs.Count <= 1) return;
+			if (_sectionStarts.Count == 0) return;
+
+			int start = _sectionStarts[_sectionIndex];
+			int end = _sectionIndex + 1 < _sectionStarts.Count
+				? _sectionStarts[_sectionIndex + 1] : _activeTabs.Count;
+			int sectionSize = end - start;
+			if (sectionSize <= 1) return;
 
 			int oldIndex = _tabIndex;
-			_tabIndex = ((_tabIndex + direction) % _activeTabs.Count + _activeTabs.Count)
-				% _activeTabs.Count;
+			int offset = ((_tabIndex - start + direction) % sectionSize + sectionSize)
+				% sectionSize;
+			_tabIndex = start + offset;
 
 			bool wrapped = direction > 0
 				? _tabIndex <= oldIndex
 				: _tabIndex >= oldIndex;
+
+			SwitchGameTab();
+			RebuildSections();
+			ResetNavigation();
+
+			if (wrapped) PlayWrapSound();
+			else PlayHoverSound();
+
+			SpeechPipeline.SpeakInterrupt(_activeTabs[_tabIndex].DisplayName);
+			SpeakFirstSection();
+		}
+
+		private void AdvanceSection(int direction) {
+			if (_sectionStarts.Count <= 1) return;
+
+			int oldSection = _sectionIndex;
+			_sectionIndex = ((_sectionIndex + direction) % _sectionStarts.Count
+				+ _sectionStarts.Count) % _sectionStarts.Count;
+			_tabIndex = _sectionStarts[_sectionIndex];
+
+			bool wrapped = direction > 0
+				? _sectionIndex <= oldSection
+				: _sectionIndex >= oldSection;
 
 			SwitchGameTab();
 			RebuildSections();
@@ -513,6 +551,17 @@ namespace OniAccess.Handlers.Screens {
 				}
 				_activeTabs.Add(tab);
 			}
+
+			_sectionStarts.Clear();
+			_sectionIndex = 0;
+			bool? lastWasSideScreen = null;
+			for (int i = 0; i < _activeTabs.Count; i++) {
+				bool isSideScreen = _activeTabs[i].GameTabId == null;
+				if (lastWasSideScreen != isSideScreen) {
+					_sectionStarts.Add(i);
+					lastWasSideScreen = isSideScreen;
+				}
+			}
 		}
 
 		/// <summary>
@@ -548,7 +597,18 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		private void SpeakFirstSection() {
-			if (_sections.Count == 0 || string.IsNullOrEmpty(_sections[0].Header))
+			if (_sections.Count == 0) {
+				if (_tabIndex >= 0 && _tabIndex < _activeTabs.Count) {
+					if (_activeTabs[_tabIndex] is ConfigSideTab)
+						SpeechPipeline.SpeakQueued(
+							(string)STRINGS.UI.UISIDESCREENS.NOCONFIG.LABEL);
+					else if (_activeTabs[_tabIndex] is ErrandsSideTab)
+						SpeechPipeline.SpeakQueued(
+							(string)STRINGS.ONIACCESS.DETAILS.NO_ERRANDS);
+				}
+				return;
+			}
+			if (string.IsNullOrEmpty(_sections[0].Header))
 				return;
 			string header = _sections[0].Header;
 			bool headerIsTabName = _tabIndex >= 0 && _tabIndex < _activeTabs.Count

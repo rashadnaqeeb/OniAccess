@@ -62,6 +62,7 @@ namespace STRINGS {
 			public static LocString ADJUST_VALUE_LARGEST = "Adjust value by 1000 or 50 percent";
 			public static LocString TYPE_SEARCH = "Type-ahead search";
 			public static LocString SWITCH_PANEL = "Switch panel";
+			public static LocString SWITCH_SECTION = "Switch section";
 			public static LocString SWITCH_DUPE_SLOT = "Switch duplicant slot";
 			public static LocString MOVE_CURSOR = "Move tile cursor";
 			public static LocString READ_COORDS = "Read coordinates";
