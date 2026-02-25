@@ -36,10 +36,10 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				return false;
 
 			int bestCell = room.cavity.cells[0];
-			int bestDist = CellDistance(cursorCell, bestCell);
+			int bestDist = GridUtil.CellDistance(cursorCell, bestCell);
 			var cells = room.cavity.cells;
 			for (int i = 1; i < cells.Count; i++) {
-				int dist = CellDistance(cursorCell, cells[i]);
+				int dist = GridUtil.CellDistance(cursorCell, cells[i]);
 				if (dist < bestDist) {
 					bestDist = dist;
 					bestCell = cells[i];
@@ -54,12 +54,5 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 			return room.roomType.Name;
 		}
 
-		private static int CellDistance(int a, int b) {
-			int dr = Grid.CellRow(a) - Grid.CellRow(b);
-			int dc = Grid.CellColumn(a) - Grid.CellColumn(b);
-			if (dr < 0) dr = -dr;
-			if (dc < 0) dc = -dc;
-			return dr + dc;
-		}
 	}
 }

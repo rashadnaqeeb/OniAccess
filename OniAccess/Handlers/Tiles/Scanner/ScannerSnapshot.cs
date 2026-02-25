@@ -85,16 +85,16 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 					foreach (var itemKvp in subKvp.Value) {
 						var instances = itemKvp.Value;
 						instances.Sort((a, b) =>
-							CellDistance(cursorCell, a.Cell)
-								.CompareTo(CellDistance(cursorCell, b.Cell)));
+							GridUtil.CellDistance(cursorCell, a.Cell)
+								.CompareTo(GridUtil.CellDistance(cursorCell, b.Cell)));
 						items.Add(new ScannerItem {
 							ItemName = itemKvp.Key,
 							Instances = instances,
 						});
 					}
 					items.Sort((a, b) =>
-						CellDistance(cursorCell, a.Instances[0].Cell)
-							.CompareTo(CellDistance(cursorCell, b.Instances[0].Cell)));
+						GridUtil.CellDistance(cursorCell, a.Instances[0].Cell)
+							.CompareTo(GridUtil.CellDistance(cursorCell, b.Instances[0].Cell)));
 
 					namedSubcats.Add(new ScannerSubcategory {
 						Name = subKvp.Key,
@@ -111,8 +111,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				foreach (var sub in namedSubcats)
 					allItems.AddRange(sub.Items);
 				allItems.Sort((a, b) =>
-					CellDistance(cursorCell, a.Instances[0].Cell)
-						.CompareTo(CellDistance(cursorCell, b.Instances[0].Cell)));
+					GridUtil.CellDistance(cursorCell, a.Instances[0].Cell)
+						.CompareTo(GridUtil.CellDistance(cursorCell, b.Instances[0].Cell)));
 
 				var subcats = new List<ScannerSubcategory>(namedSubcats.Count + 1) {
 					new ScannerSubcategory {
@@ -149,12 +149,5 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			}
 		}
 
-		private static int CellDistance(int a, int b) {
-			int dr = Grid.CellRow(a) - Grid.CellRow(b);
-			int dc = Grid.CellColumn(a) - Grid.CellColumn(b);
-			if (dr < 0) dr = -dr;
-			if (dc < 0) dc = -dc;
-			return dr + dc;
-		}
 	}
 }
