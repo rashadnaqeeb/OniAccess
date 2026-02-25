@@ -160,7 +160,7 @@ namespace OniAccess.Handlers.Tiles {
 					var scs = SpeedControlScreen.Instance;
 					int newSpeed = (scs.GetSpeed() + 1) % 3;
 					PlaySpeedChangeSound(newSpeed + 1);
-					scs.SetSpeed(scs.GetSpeed() + 1);
+					scs.SetSpeed(newSpeed);
 					scs.OnSpeedChange();
 				}
 				return true;

@@ -572,7 +572,9 @@ namespace OniAccess.Handlers.Tools {
 			string format = _toolInfo != null
 				? _toolInfo.ConfirmFormat
 				: (string)STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG;
-			string noun = count == 1 ? "item" : "items";
+			string noun = count == 1
+				? (string)STRINGS.ONIACCESS.TOOLS.ITEM_SINGULAR
+				: (string)STRINGS.ONIACCESS.TOOLS.ITEM_PLURAL;
 			return string.Format(format, count, priority, noun);
 		}
 
@@ -737,12 +739,12 @@ namespace OniAccess.Handlers.Tools {
 
 		private static int CountDigTargets(int cell) {
 			if (!Grid.Solid[cell] || Grid.Foundation[cell]) return 0;
-			if (Grid.Objects[cell, 7] != null) return 0;
+			if (Grid.Objects[cell, (int)ObjectLayer.DigPlacer] != null) return 0;
 			return 1;
 		}
 
 		private static int CountMopTargets(int cell) {
-			if (Grid.Objects[cell, 8] != null) return 0;
+			if (Grid.Objects[cell, (int)ObjectLayer.MopPlacer] != null) return 0;
 			if (Grid.Solid[cell]) return 0;
 			if (!Grid.Element[cell].IsLiquid) return 0;
 			int below = Grid.CellBelow(cell);
@@ -751,7 +753,7 @@ namespace OniAccess.Handlers.Tools {
 		}
 
 		private static int CountSweepTargets(int cell) {
-			var go = Grid.Objects[cell, 3];
+			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 			if (go == null) return 0;
 			var pickupable = go.GetComponent<Pickupable>();
 			if (pickupable == null) return 0;

@@ -211,6 +211,8 @@ namespace STRINGS {
 		public class TOOLS {
 			public static LocString PICKER_NAME = "tool menu";
 			public static LocString FILTER_NAME = "tool filter";
+			public static LocString ITEM_SINGULAR = "item";
+			public static LocString ITEM_PLURAL = "items";
 			public static LocString CORNER_SET = "corner set";
 			public static LocString RECT_SUMMARY = "{0}x{1}, {2} valid";
 			public static LocString RECT_SUMMARY_INVALID = "{0}x{1}, {2} valid, {3} invalid";

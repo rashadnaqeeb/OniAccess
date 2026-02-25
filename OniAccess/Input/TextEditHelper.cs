@@ -45,6 +45,7 @@ namespace OniAccess.Input {
 				field.DeactivateInputField();
 				Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED}, {field.text}");
 			} else {
+				Util.Log.Warn("TextEditHelper.Cancel: field accessor returned null");
 				Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED);
 			}
 		}

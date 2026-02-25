@@ -209,7 +209,6 @@ namespace OniAccess.Widgets {
 				var child = parent.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
 				if (IsSkipped(child.gameObject.name)) {
-					Util.Log.Debug($"WalkerSkip '{child.gameObject.name}' parent='{parent.name}'");
 					continue;
 				}
 
@@ -325,7 +324,6 @@ namespace OniAccess.Widgets {
 			var multiToggle = go.GetComponent<MultiToggle>();
 			if (multiToggle != null) {
 				bool redundant = IsRedundantMultiToggle(t);
-				Util.Log.Debug($"WalkerTrace MultiToggle '{t.name}' parent='{t.parent?.name}' redundant={redundant}");
 				if (redundant)
 					return true;
 				var captured = multiToggle;
@@ -335,7 +333,6 @@ namespace OniAccess.Widgets {
 				var labelLt = childLt ?? sibLt ?? parentSibLt;
 				if (labelLt != null) claimedLabels.Add(labelLt);
 				string label = ReadLocText(labelLt, t.name);
-				Util.Log.Debug($"  label search: child={childLt?.GetParsedText() ?? "null"} sib={sibLt?.GetParsedText() ?? "null"} parentSib={parentSibLt?.GetParsedText() ?? "null"} => '{label}'");
 				if (!HasVisibleContent(label)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (MultiToggle) parent={t.parent?.name}");
 					return true;

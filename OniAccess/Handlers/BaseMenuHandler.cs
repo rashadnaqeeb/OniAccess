@@ -134,6 +134,7 @@ namespace OniAccess.Handlers {
 			for (int i = 0; i < ItemCount; i++) {
 				int candidate = (start + 1 + i) % ItemCount;
 				if (IsItemValid(candidate)) {
+					if (candidate == start) return;
 					bool wrapped = candidate <= _currentIndex;
 					_currentIndex = candidate;
 					if (wrapped) PlayWrapSound();
@@ -153,6 +154,7 @@ namespace OniAccess.Handlers {
 			for (int i = 0; i < ItemCount; i++) {
 				int candidate = (start - 1 - i + ItemCount) % ItemCount;
 				if (IsItemValid(candidate)) {
+					if (candidate == start) return;
 					bool wrapped = candidate >= _currentIndex;
 					_currentIndex = candidate;
 					if (wrapped) PlayWrapSound();

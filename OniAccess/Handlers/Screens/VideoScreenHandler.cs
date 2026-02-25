@@ -97,7 +97,7 @@ namespace OniAccess.Handlers.Screens {
 						DiscoverWidgets(_screen);
 						_currentIndex = 0;
 						if (_widgets.Count > 0) {
-							Speech.SpeechPipeline.SpeakQueued(_widgets[0].Label);
+							Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
 						}
 					}
 				} catch (System.Exception ex) {
