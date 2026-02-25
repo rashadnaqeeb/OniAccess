@@ -65,6 +65,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			section.Items.Add(new ButtonWidget {
 				Component = kbutton,
 				GameObject = entry.gameObject,
+				SuppressTooltip = true,
 				SpeechFunc = () => BuildEntrySpeech(entry)
 			});
 			sections.Add(section);
@@ -108,6 +109,7 @@ namespace OniAccess.Handlers.Screens.Details {
 					section.Items.Add(new ButtonWidget {
 						Component = kbutton,
 						GameObject = entry.gameObject,
+						SuppressTooltip = true,
 						SpeechFunc = () => BuildEntrySpeech(capturedEntry)
 					});
 				}
@@ -118,18 +120,43 @@ namespace OniAccess.Handlers.Screens.Details {
 		}
 
 		private static string BuildEntrySpeech(MinionTodoChoreEntry entry) {
-			string label = entry.label.GetParsedText();
-			string sub = entry.subLabel.GetParsedText();
-			string priority = entry.priorityLabel.GetParsedText();
+			string label = StripNulls(entry.label.GetParsedText());
+			string sub = StripNulls(entry.subLabel.GetParsedText());
+			string priority = StripNulls(entry.priorityLabel.GetParsedText());
 			string more = entry.moreLabel.text;
 
 			var sb = new System.Text.StringBuilder();
 			AppendNonEmpty(sb, label);
-			if (sub != label)
+			if (!string.IsNullOrEmpty(sub) && !label.EndsWith(sub))
 				AppendNonEmpty(sb, sub);
 			AppendNonEmpty(sb, priority);
 			AppendNonEmpty(sb, more);
+			if (sb.Length > 0) sb.Append('.');
+
+			string tooltip = GetPriorityTooltip(entry);
+			if (tooltip != null) {
+				sb.Append(' ');
+				sb.Append(tooltip);
+			}
 			return sb.ToString();
+		}
+
+		private static string GetPriorityTooltip(MinionTodoChoreEntry entry) {
+			var tt = entry.GetComponent<ToolTip>();
+			if (tt == null) return null;
+			string text = WidgetOps.ReadAllTooltipText(tt);
+			if (string.IsNullOrEmpty(text)) return null;
+
+			text = Speech.TextFilter.FilterForSpeech(text);
+			int idx = text.IndexOf("Total Priority:");
+			if (idx < 0) return null;
+			return text.Substring(idx);
+		}
+
+		private static string StripNulls(string text) {
+			if (string.IsNullOrEmpty(text)) return "";
+			text = text.Replace("\0", "").Trim();
+			return text;
 		}
 
 		private static void AppendNonEmpty(System.Text.StringBuilder sb, string text) {
