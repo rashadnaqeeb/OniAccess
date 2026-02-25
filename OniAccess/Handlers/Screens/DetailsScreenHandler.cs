@@ -41,6 +41,16 @@ namespace OniAccess.Handlers.Screens {
 				if (ds == null || ds.target == null)
 					return STRINGS.ONIACCESS.HANDLERS.DETAILS_SCREEN;
 				string entityName = ds.target.GetProperName();
+				var resume = ds.target.GetComponent<MinionResume>();
+				if (resume != null) {
+					string hatName = null;
+					if (resume.CurrentHat != null)
+						foreach (var skill in Db.Get().Skills.resources)
+							if (skill.hat == resume.CurrentHat) { hatName = skill.Name; break; }
+					entityName = hatName != null
+						? $"{entityName}, {hatName}, {resume.GetSkillsSubtitle()}"
+						: $"{entityName}, {resume.GetSkillsSubtitle()}";
+				}
 				if (_tabIndex >= 0 && _tabIndex < _activeTabs.Count)
 					return $"{entityName}, {_activeTabs[_tabIndex].DisplayName}";
 				return entityName;
