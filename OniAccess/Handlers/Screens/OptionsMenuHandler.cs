@@ -42,11 +42,21 @@ namespace OniAccess.Handlers.Screens {
 		/// Labels that are generic button text, not meaningful toggle descriptions.
 		/// Used to reject HierRef Label ref text that's bleeding through from Done/Close buttons.
 		/// </summary>
-		private static readonly HashSet<string> _ambiguousLabels = new HashSet<string>(
-			StringComparer.OrdinalIgnoreCase)
-		{
-			"Done", "Close", "OK", "Cancel", "Apply", "Back", "Yes", "No"
-		};
+		private static HashSet<string> _ambiguousLabels;
+
+		private static HashSet<string> GetAmbiguousLabels() {
+			if (_ambiguousLabels == null) {
+				_ambiguousLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+					(string)STRINGS.UI.CONFIRMDIALOG.OK,
+					(string)STRINGS.UI.CONFIRMDIALOG.CANCEL,
+					(string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP,
+					(string)STRINGS.UI.FRONTEND.OPTIONS_SCREEN.BACK,
+					(string)STRINGS.UI.FRONTEND.NEWGAMESETTINGS.BUTTONS.CANCEL,
+					"Apply", "Yes", "No"
+				};
+			}
+			return _ambiguousLabels;
+		}
 
 		/// <summary>
 		/// Represents a group of HierRef radio toggles collapsed into a single cycleable widget.
@@ -173,11 +183,11 @@ namespace OniAccess.Handlers.Screens {
 						label = CleanLabel(locText.text);
 				}
 				// Reject ambiguous labels (e.g. "Done" bleeding from close button)
-				if (label != null && _ambiguousLabels.Contains(label))
+				if (label != null && GetAmbiguousLabels().Contains(label))
 					label = null;
 				if (label == null) {
 					label = FindWidgetLabel(hr.gameObject);
-					if (label != null && _ambiguousLabels.Contains(label))
+					if (label != null && GetAmbiguousLabels().Contains(label))
 						label = null;
 				}
 				if (label == null)
@@ -675,7 +685,7 @@ namespace OniAccess.Handlers.Screens {
 				var lt = sibling.GetComponent<LocText>();
 				if (lt != null) {
 					string cleaned = CleanLabel(lt.text);
-					if (cleaned != null && !_ambiguousLabels.Contains(cleaned))
+					if (cleaned != null && !GetAmbiguousLabels().Contains(cleaned))
 						return cleaned;
 				}
 			}
@@ -684,7 +694,7 @@ namespace OniAccess.Handlers.Screens {
 			var parentLt = parent.GetComponent<LocText>();
 			if (parentLt != null) {
 				string cleaned = CleanLabel(parentLt.text);
-				if (cleaned != null && !_ambiguousLabels.Contains(cleaned))
+				if (cleaned != null && !GetAmbiguousLabels().Contains(cleaned))
 					return cleaned;
 			}
 
@@ -697,7 +707,7 @@ namespace OniAccess.Handlers.Screens {
 					var lt = sibling.GetComponent<LocText>();
 					if (lt != null) {
 						string cleaned = CleanLabel(lt.text);
-						if (cleaned != null && !_ambiguousLabels.Contains(cleaned))
+						if (cleaned != null && !GetAmbiguousLabels().Contains(cleaned))
 							return cleaned;
 					}
 				}
@@ -723,7 +733,7 @@ namespace OniAccess.Handlers.Screens {
 				var lt = sibling.GetComponent<LocText>() ?? sibling.GetComponentInChildren<LocText>();
 				if (lt != null && !string.IsNullOrEmpty(lt.text)) {
 					string cleaned = CleanLabel(lt.text);
-					if (cleaned != null && !_ambiguousLabels.Contains(cleaned))
+					if (cleaned != null && !GetAmbiguousLabels().Contains(cleaned))
 						return lt;
 				}
 			}
@@ -735,7 +745,7 @@ namespace OniAccess.Handlers.Screens {
 				var lt = sibling.GetComponent<LocText>() ?? sibling.GetComponentInChildren<LocText>();
 				if (lt != null && !string.IsNullOrEmpty(lt.text)) {
 					string cleaned = CleanLabel(lt.text);
-					if (cleaned != null && !_ambiguousLabels.Contains(cleaned))
+					if (cleaned != null && !GetAmbiguousLabels().Contains(cleaned))
 						return lt;
 				}
 			}

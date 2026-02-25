@@ -335,6 +335,9 @@ namespace STRINGS {
 			public static LocString INSTANCE_OF = "{0} of {1}";
 			public static LocString MIXED = "mixed";
 
+			// Must match the suffix used by STRINGS.SUBWORLDS.*.NAME (e.g., "Forest Biome")
+			public static LocString BIOME_SUFFIX = " Biome";
+
 			// Direction tokens
 			public static LocString DIRECTION_UP = "up";
 			public static LocString DIRECTION_DOWN = "down";

@@ -29,8 +29,9 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 					continue;
 				if (subWorld.nameKey == null) continue;
 				string localized = Strings.Get(subWorld.nameKey);
-				if (localized != null && localized.EndsWith(" Biome"))
-					localized = localized.Substring(0, localized.Length - 6);
+				string biomeSuffix = (string)STRINGS.ONIACCESS.SCANNER.BIOME_SUFFIX;
+				if (localized != null && localized.EndsWith(biomeSuffix))
+					localized = localized.Substring(0, localized.Length - biomeSuffix.Length);
 				_names[subWorld.zoneType] = localized ?? InsertSpaces(subWorld.zoneType.ToString());
 			}
 		}
