@@ -285,6 +285,7 @@ namespace OniAccess.Widgets {
 					Component = captured,
 					GameObject = go,
 					SpeechFunc = () => {
+						if (labelLt != null) labelLt.ForceMeshUpdate();
 						string lbl = ReadLocText(labelLt, captured.transform.name);
 						return $"{lbl}, {WidgetOps.FormatSliderValue(captured)}, {(string)STRINGS.ONIACCESS.STATES.SLIDER}";
 					}
