@@ -36,6 +36,19 @@ namespace OniAccess.Widgets {
 				return;
 			}
 
+			var commandModule = screen as CommandModuleSideScreen;
+			if (commandModule != null) {
+				WalkConditionContainer(commandModule.conditionListContainer, items, claimedLabels);
+				WalkCommandModuleExtras(commandModule, items, claimedLabels);
+				return;
+			}
+
+			var conditionList = screen as ConditionListSideScreen;
+			if (conditionList != null) {
+				WalkConditionContainer(conditionList.rowContainer, items, claimedLabels);
+				return;
+			}
+
 			var root = screen.ContentContainer != null
 				&& screen.ContentContainer.activeInHierarchy
 				? screen.ContentContainer.transform
@@ -208,20 +221,51 @@ namespace OniAccess.Widgets {
 			}
 		}
 
+		private static void WalkConditionContainer(
+				GameObject container, List<Widget> items,
+				HashSet<LocText> claimedLabels) {
+			if (container == null) return;
+			var containerT = container.transform;
+			for (int i = 0; i < containerT.childCount; i++) {
+				var child = containerT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				TryAddConditionRow(child, items, claimedLabels);
+			}
+		}
+
+		private static void WalkCommandModuleExtras(
+				CommandModuleSideScreen screen, List<Widget> items,
+				HashSet<LocText> claimedLabels) {
+			var dest = screen.destinationButton;
+			if (dest == null || !dest.gameObject.activeSelf) return;
+			var captured = dest;
+			var childLt = FindChildLocText(dest.transform, null);
+			if (childLt != null) claimedLabels.Add(childLt);
+			string label = childLt != null
+				? childLt.GetParsedText() : dest.transform.name;
+			if (!HasVisibleContent(label)) return;
+			items.Add(new ToggleWidget {
+				Label = label,
+				Component = captured,
+				GameObject = captured.gameObject,
+				SpeechFunc = () => {
+					string lbl = childLt != null
+						? childLt.GetParsedText()
+						: captured.transform.name;
+					return $"{lbl}, {WidgetOps.GetMultiToggleState(captured)}";
+				}
+			});
+		}
+
 		private static void WalkTransform(Transform parent, List<Widget> items, HashSet<LocText> claimedLabels) {
 			for (int i = 0; i < parent.childCount; i++) {
 				var child = parent.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
-				if (IsSkipped(child.gameObject.name)) {
-					continue;
-				}
-
-				if (TryAddCategoryContainer(child, items, claimedLabels))
-					continue;
-				if (TryAddSelectionCategoryContainer(child, items, claimedLabels))
-					continue;
-				if (TryAddWidget(child, items, claimedLabels))
-					continue;
+				if (IsSkipped(child.gameObject.name)) continue;
+				if (TryAddConditionRow(child, items, claimedLabels)) continue;
+				if (TryAddCategoryContainer(child, items, claimedLabels)) continue;
+				if (TryAddSelectionCategoryContainer(child, items, claimedLabels)) continue;
+				if (TryAddWidget(child, items, claimedLabels)) continue;
 				WalkTransform(child, items, claimedLabels);
 			}
 		}
@@ -507,6 +551,49 @@ namespace OniAccess.Widgets {
 			}
 
 			return false;
+		}
+
+		// ========================================
+		// CONDITION ROW HELPERS
+		// ========================================
+
+		/// <summary>
+		/// Detect a launch condition row (CommandModuleSideScreen prefabCondition):
+		/// HierarchyReferences with "Label" (LocText) and "Check" (Image, active = ready).
+		/// Emits a single Label widget with check/uncheck status prepended.
+		/// </summary>
+		private static bool TryAddConditionRow(Transform t, List<Widget> items, HashSet<LocText> claimedLabels) {
+			var href = t.GetComponent<HierarchyReferences>();
+			if (href == null) return false;
+			if (!href.HasReference("Label") || !href.HasReference("Check"))
+				return false;
+
+			var labelLt = href.GetReference<LocText>("Label");
+			if (labelLt == null) return false;
+
+			var checkImage = href.GetReference<Image>("Check");
+			if (checkImage == null) return false;
+
+			if (labelLt != null) claimedLabels.Add(labelLt);
+
+			var capturedLabel = labelLt;
+			var capturedCheck = checkImage;
+			string label = capturedLabel.GetParsedText();
+			if (!HasVisibleContent(label)) return true;
+
+			items.Add(new LabelWidget {
+				Label = label,
+				GameObject = t.gameObject,
+				SpeechFunc = () => {
+					string text = capturedLabel.GetParsedText();
+					bool ready = capturedCheck.gameObject.activeSelf;
+					string status = ready
+						? (string)STRINGS.ONIACCESS.STATES.CONDITION_MET
+						: (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+					return $"{status}, {text}";
+				}
+			});
+			return true;
 		}
 
 		// ========================================
