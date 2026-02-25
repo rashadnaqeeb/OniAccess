@@ -407,17 +407,39 @@ namespace OniAccess.Widgets {
 				return true;
 			}
 
-			// KButton (skip if inside an already-handled parent widget type)
+			// KButton — check for PlayerControlledToggleSideScreen first,
+			// where a KButton acts as an on/off toggle with animation only.
 			var kbutton = go.GetComponent<KButton>();
 			if (kbutton != null) {
 				var captured = kbutton;
-				string label = GetButtonLabel(captured, t.name);
-				if (!HasVisibleContent(label)) {
+				var toggleScreen = go.GetComponentInParent<PlayerControlledToggleSideScreen>();
+				if (toggleScreen != null && toggleScreen.target != null) {
+					var capturedTarget = toggleScreen.target;
+					string label = GetButtonLabel(captured, t.name);
+					items.Add(new ToggleWidget {
+						Label = label,
+						Component = captured,
+						GameObject = go,
+						SpeechFunc = () => {
+							string l = GetButtonLabel(captured, captured.transform.name);
+							bool on = capturedTarget.ToggleRequested
+								? !capturedTarget.ToggledOn()
+								: capturedTarget.ToggledOn();
+							string state = on
+								? (string)STRINGS.ONIACCESS.STATES.ON
+								: (string)STRINGS.ONIACCESS.STATES.OFF;
+							return $"{l}, {state}";
+						}
+					});
+					return true;
+				}
+				string label2 = GetButtonLabel(captured, t.name);
+				if (!HasVisibleContent(label2)) {
 					Util.Log.Warn($"Walker: blank label for {t.name} (KButton) parent={t.parent?.name}");
 					return true;
 				}
 				items.Add(new ButtonWidget {
-					Label = label,
+					Label = label2,
 					Component = captured,
 					GameObject = go,
 					SpeechFunc = () => GetButtonLabel(captured, captured.transform.name)
@@ -721,6 +743,8 @@ namespace OniAccess.Widgets {
 
 		/// <summary>
 		/// Read a KButton's label from its child LocText using GetParsedText().
+		/// Falls back to the enclosing SideScreenContent title when the
+		/// button has no text (e.g., animated icon-only buttons).
 		/// </summary>
 		private static string GetButtonLabel(KButton button, string fallback) {
 			var lt = button.GetComponentInChildren<LocText>();
@@ -728,6 +752,12 @@ namespace OniAccess.Widgets {
 				string text = lt.GetParsedText();
 				if (!string.IsNullOrEmpty(text))
 					return text;
+			}
+			var screen = button.GetComponentInParent<SideScreenContent>();
+			if (screen != null) {
+				string title = screen.GetTitle();
+				if (!string.IsNullOrEmpty(title))
+					return title;
 			}
 			return fallback;
 		}

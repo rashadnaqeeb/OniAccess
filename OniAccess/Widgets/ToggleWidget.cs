@@ -46,6 +46,11 @@ namespace OniAccess.Widgets {
 				WidgetOps.ClickMultiToggle(mt);
 				return true;
 			}
+			var btn = Component as KButton;
+			if (btn != null) {
+				WidgetOps.ClickButton(btn);
+				return true;
+			}
 			return false;
 		}
 	}
