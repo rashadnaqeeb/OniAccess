@@ -150,6 +150,18 @@ namespace OniAccess.Tests {
 			results.Add(ColorNameUtilNoDuplicateNames());
 			results.Add(ColorNameUtilUnknownColorReturnsNull());
 
+			// --- ScannerSnapshot ---
+			results.Add(RemoveInstanceKeepsStructure());
+			results.Add(RemoveLastInstancePrunesBothSubcategories());
+			results.Add(PruneEmptySubcategory());
+			results.Add(FullCascadePrunesCategory());
+
+			// --- WrapSkipEmpty ---
+			results.Add(WrapSkipEmptyForwardWrap());
+			results.Add(WrapSkipEmptyBackwardWrap());
+			results.Add(WrapSkipEmptyAllEmptyReturnsCurrent());
+			results.Add(WrapSkipEmptySingleNonEmpty());
+
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
 				if (ok) {
@@ -407,10 +419,12 @@ namespace OniAccess.Tests {
 
 			// Thrower is removed, bottom is reactivated despite the throw.
 			bool ok = HandlerStack.Count == 1
-				   && HandlerStack.ActiveHandler == bottom;
+				   && HandlerStack.ActiveHandler == bottom
+				   && bottom.ActivateCount == 2;
 			return Assert("ExceptionInOnDeactivateDoesNotCorruptStack", ok,
 				$"count={HandlerStack.Count}, " +
-				$"active={HandlerStack.ActiveHandler?.DisplayName ?? "null"}");
+				$"active={HandlerStack.ActiveHandler?.DisplayName ?? "null"}, " +
+				$"activateCount={bottom.ActivateCount}");
 		}
 
 		// ========================================
@@ -574,9 +588,10 @@ namespace OniAccess.Tests {
 			search.Search(SearchItems.Length, NameByIndex);
 			int secondIdx = search.SelectedOriginalIndex; // Blue Cheese(3)
 
-			bool ok = firstIdx == 2 && secondIdx == 3;
+			bool ok = firstIdx == 2 && secondIdx == 3
+				   && search.Buffer == "b";
 			return Assert("SearchRepeatLetterCycles", ok,
-				$"first={firstIdx}, second={secondIdx}");
+				$"first={firstIdx}, second={secondIdx}, buffer=\"{search.Buffer}\"");
 		}
 
 		private static (string, bool, string) SearchBackspace() {
@@ -1375,6 +1390,133 @@ namespace OniAccess.Tests {
 			string result = ColorNameUtil.GetColorName(new Color(0.123f, 0.456f, 0.789f));
 			return Assert("ColorNameUtilUnknownColorReturnsNull", result == null,
 				$"expected null, got '{result}'");
+		}
+
+		// ========================================
+		// ScannerSnapshot tests
+		// ========================================
+
+		private static (ScannerSnapshot snapshot, ScannerItem item, ScanEntry e1, ScanEntry e2)
+				BuildTwoInstanceSnapshot() {
+			var snapshot = new ScannerSnapshot(new List<ScanEntry>(), 0);
+			var e1 = new ScanEntry { Cell = 1, Category = "Cat", Subcategory = "Sub", ItemName = "Item" };
+			var e2 = new ScanEntry { Cell = 2, Category = "Cat", Subcategory = "Sub", ItemName = "Item" };
+			var item = new ScannerItem { ItemName = "Item", Instances = new List<ScanEntry> { e1, e2 } };
+			var allSub = new ScannerSubcategory { Name = "All", Items = new List<ScannerItem> { item } };
+			var namedSub = new ScannerSubcategory { Name = "Sub", Items = new List<ScannerItem> { item } };
+			var cat = new ScannerCategory {
+				Name = "Cat",
+				Subcategories = new List<ScannerSubcategory> { allSub, namedSub }
+			};
+			snapshot.Categories.Add(cat);
+			return (snapshot, item, e1, e2);
+		}
+
+		private static (string, bool, string) RemoveInstanceKeepsStructure() {
+			var (snapshot, item, e1, _) = BuildTwoInstanceSnapshot();
+			snapshot.RemoveInstance(item, e1);
+			bool ok = item.Instances.Count == 1
+				   && snapshot.CategoryCount == 1
+				   && snapshot.GetCategory(0).Subcategories.Count == 2;
+			return Assert("RemoveInstanceKeepsStructure", ok,
+				$"instances={item.Instances.Count}, cats={snapshot.CategoryCount}, " +
+				$"subs={snapshot.GetCategory(0).Subcategories.Count}");
+		}
+
+		private static (string, bool, string) RemoveLastInstancePrunesBothSubcategories() {
+			var (snapshot, item, e1, e2) = BuildTwoInstanceSnapshot();
+			snapshot.RemoveInstance(item, e1);
+			snapshot.RemoveInstance(item, e2);
+			bool ok = snapshot.CategoryCount == 0;
+			return Assert("RemoveLastInstancePrunesBothSubcategories", ok,
+				$"cats={snapshot.CategoryCount}");
+		}
+
+		private static (string, bool, string) PruneEmptySubcategory() {
+			var snapshot = new ScannerSnapshot(new List<ScanEntry>(), 0);
+			var e1 = new ScanEntry { Cell = 1, Category = "Cat", Subcategory = "SubA", ItemName = "ItemA" };
+			var itemA = new ScannerItem { ItemName = "ItemA", Instances = new List<ScanEntry> { e1 } };
+			var e2 = new ScanEntry { Cell = 2, Category = "Cat", Subcategory = "SubB", ItemName = "ItemB" };
+			var itemB = new ScannerItem { ItemName = "ItemB", Instances = new List<ScanEntry> { e2 } };
+			var allSub = new ScannerSubcategory { Name = "All", Items = new List<ScannerItem> { itemA, itemB } };
+			var subA = new ScannerSubcategory { Name = "SubA", Items = new List<ScannerItem> { itemA } };
+			var subB = new ScannerSubcategory { Name = "SubB", Items = new List<ScannerItem> { itemB } };
+			var cat = new ScannerCategory {
+				Name = "Cat",
+				Subcategories = new List<ScannerSubcategory> { allSub, subA, subB }
+			};
+			snapshot.Categories.Add(cat);
+
+			snapshot.RemoveInstance(itemA, e1);
+			bool ok = snapshot.CategoryCount == 1
+				   && cat.Subcategories.Count == 2
+				   && cat.Subcategories[0].Name == "All"
+				   && cat.Subcategories[0].Items.Count == 1
+				   && cat.Subcategories[1].Name == "SubB";
+			return Assert("PruneEmptySubcategory", ok,
+				$"cats={snapshot.CategoryCount}, subs={cat.Subcategories.Count}, " +
+				$"allItems={cat.Subcategories[0].Items.Count}");
+		}
+
+		private static (string, bool, string) FullCascadePrunesCategory() {
+			var snapshot = new ScannerSnapshot(new List<ScanEntry>(), 0);
+			var e1 = new ScanEntry { Cell = 1, Category = "Cat", Subcategory = "Sub", ItemName = "Item" };
+			var item = new ScannerItem { ItemName = "Item", Instances = new List<ScanEntry> { e1 } };
+			var allSub = new ScannerSubcategory { Name = "All", Items = new List<ScannerItem> { item } };
+			var namedSub = new ScannerSubcategory { Name = "Sub", Items = new List<ScannerItem> { item } };
+			var cat = new ScannerCategory {
+				Name = "Cat",
+				Subcategories = new List<ScannerSubcategory> { allSub, namedSub }
+			};
+			snapshot.Categories.Add(cat);
+
+			snapshot.RemoveInstance(item, e1);
+			bool ok = snapshot.CategoryCount == 0;
+			return Assert("FullCascadePrunesCategory", ok,
+				$"cats={snapshot.CategoryCount}");
+		}
+
+		// ========================================
+		// WrapSkipEmpty tests
+		// ========================================
+
+		private static int InvokeWrapSkipEmpty(int current, int direction,
+				List<string> list, Func<string, bool> isNonEmpty) {
+			var method = typeof(ScannerNavigator).GetMethod("WrapSkipEmpty",
+				BindingFlags.NonPublic | BindingFlags.Static);
+			var generic = method.MakeGenericMethod(typeof(string));
+			return (int)generic.Invoke(null, new object[] { current, direction, list, isNonEmpty });
+		}
+
+		private static (string, bool, string) WrapSkipEmptyForwardWrap() {
+			var list = new List<string> { "a", "", "", "b", "" };
+			int result = InvokeWrapSkipEmpty(3, 1, list, s => s.Length > 0);
+			bool ok = result == 0;
+			return Assert("WrapSkipEmptyForwardWrap", ok, $"result={result}");
+		}
+
+		private static (string, bool, string) WrapSkipEmptyBackwardWrap() {
+			var list = new List<string> { "a", "", "", "b", "" };
+			int result = InvokeWrapSkipEmpty(0, -1, list, s => s.Length > 0);
+			bool ok = result == 3;
+			return Assert("WrapSkipEmptyBackwardWrap", ok, $"result={result}");
+		}
+
+		private static (string, bool, string) WrapSkipEmptyAllEmptyReturnsCurrent() {
+			var list = new List<string> { "", "", "" };
+			int result = InvokeWrapSkipEmpty(1, 1, list, s => s.Length > 0);
+			bool ok = result == 1;
+			return Assert("WrapSkipEmptyAllEmptyReturnsCurrent", ok, $"result={result}");
+		}
+
+		private static (string, bool, string) WrapSkipEmptySingleNonEmpty() {
+			var list = new List<string> { "", "x", "", "" };
+			int fwd = InvokeWrapSkipEmpty(0, 1, list, s => s.Length > 0);
+			int bwd = InvokeWrapSkipEmpty(2, -1, list, s => s.Length > 0);
+			int self = InvokeWrapSkipEmpty(1, 1, list, s => s.Length > 0);
+			bool ok = fwd == 1 && bwd == 1 && self == 1;
+			return Assert("WrapSkipEmptySingleNonEmpty", ok,
+				$"fwd={fwd}, bwd={bwd}, self={self}");
 		}
 
 		private static (string, bool, string) PipelineNullAndEmptySkipped() {
