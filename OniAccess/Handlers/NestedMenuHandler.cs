@@ -237,15 +237,7 @@ namespace OniAccess.Handlers {
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {
-			if (base.HandleKeyDown(e))
-				return true;
-
-			if (_level > 0 && e.TryConsume(Action.Escape)) {
-				GoBack();
-				return true;
-			}
-
-			return false;
+			return base.HandleKeyDown(e);
 		}
 
 		// ========================================
