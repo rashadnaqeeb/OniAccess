@@ -68,6 +68,10 @@ namespace OniAccess.Widgets {
 			if (alarm != null)
 				CollapseAlarmTypeButtons(alarm, items, claimedLabels);
 
+			var fewOption = screen as FewOptionSideScreen;
+			if (fewOption != null)
+				CollapseFewOptionRows(fewOption, items, claimedLabels);
+
 			CollapseRadioToggles(items, screen.GetTitle(), screen.transform, claimedLabels);
 		}
 
@@ -1075,6 +1079,98 @@ namespace OniAccess.Widgets {
 						}
 					}
 					return $"{groupLabel}, {selected}";
+				}
+			});
+		}
+
+		/// <summary>
+		/// FewOptionSideScreen spawns MultiToggle rows as siblings in a
+		/// container. IsRedundantMultiToggle kills all but the first.
+		/// Replace all row items with a single Dropdown built from the
+		/// screen's rows dictionary, using LocText labels and tooltip
+		/// descriptions.
+		/// </summary>
+		private static void CollapseFewOptionRows(
+				FewOptionSideScreen fewOption, List<Widget> items,
+				HashSet<LocText> claimedLabels) {
+			var rows = fewOption.rows;
+			if (rows == null || rows.Count == 0) return;
+
+			FewOptionSideScreen.IFewOptionSideScreen target;
+			try {
+				target = Traverse.Create(fewOption)
+					.Field<FewOptionSideScreen.IFewOptionSideScreen>("targetFewOptions").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"CollapseFewOptionRows: targetFewOptions read failed: {ex.Message}");
+				return;
+			}
+			if (target == null) return;
+
+			// Remove any items the walker already emitted for the row GameObjects
+			var rowObjects = new HashSet<GameObject>();
+			foreach (var kv in rows)
+				rowObjects.Add(kv.Value);
+			int insertIndex = -1;
+			for (int i = items.Count - 1; i >= 0; i--) {
+				if (items[i].GameObject != null && rowObjects.Contains(items[i].GameObject)) {
+					insertIndex = i;
+					items.RemoveAt(i);
+				}
+			}
+			if (insertIndex < 0) insertIndex = items.Count;
+			if (insertIndex > items.Count) insertIndex = items.Count;
+
+			// Build RadioMember list from the rows
+			var members = new List<RadioMember>();
+			foreach (var kv in rows) {
+				var go = kv.Value;
+				var href = go.GetComponent<HierarchyReferences>();
+				LocText labelLt = href != null ? href.GetReference<LocText>("label") : null;
+				string label = labelLt != null ? labelLt.GetParsedText() : kv.Key.ToString();
+				if (labelLt != null) claimedLabels.Add(labelLt);
+				members.Add(new RadioMember {
+					Label = label,
+					MultiToggleRef = go.GetComponent<MultiToggle>(),
+					Tag = kv.Key
+				});
+			}
+			if (members.Count == 0) return;
+
+			string groupLabel = fewOption.GetTitle();
+			if (string.IsNullOrEmpty(groupLabel))
+				groupLabel = members[0].Label;
+			var radioMembers = members;
+			var capturedTarget = target;
+			var capturedRows = rows;
+			items.Insert(insertIndex, new DropdownWidget {
+				Label = groupLabel,
+				Component = members[0].MultiToggleRef,
+				SuppressTooltip = true,
+				GameObject = fewOption.rowContainer != null
+					? fewOption.rowContainer.gameObject
+					: members[0].MultiToggleRef.gameObject,
+				Tag = radioMembers,
+				SpeechFunc = () => {
+					var selectedTag = capturedTarget.GetSelectedOption();
+					string selected = null;
+					for (int k = 0; k < radioMembers.Count; k++) {
+						if (radioMembers[k].Tag is Tag t && t == selectedTag) {
+							selected = radioMembers[k].Label;
+							break;
+						}
+					}
+					if (selected == null) selected = radioMembers[0].Label;
+					string speech = $"{groupLabel}, {selected}";
+					// Read tooltip from the selected row for description
+					if (capturedRows.TryGetValue(selectedTag, out var rowGO)) {
+						var tooltip = rowGO.GetComponent<ToolTip>();
+						if (tooltip != null) {
+							string desc = WidgetOps.ReadAllTooltipText(tooltip);
+							if (!string.IsNullOrEmpty(desc))
+								speech += ", " + desc;
+						}
+					}
+					return speech;
 				}
 			});
 		}

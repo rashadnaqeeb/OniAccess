@@ -291,10 +291,11 @@ namespace OniAccess.Handlers.Screens {
 
 		/// <summary>
 		/// Find which RadioMember is currently active. KToggle members use
-		/// IsToggleActive. MultiToggle members with a NotificationType tag
-		/// match against the AlarmSideScreen's targetAlarm (MultiToggle.CurrentState
-		/// is unreliable — the default notificationType enum value is 0 which
-		/// doesn't map to any valid type, leaving all toggles at state 1).
+		/// IsToggleActive. MultiToggle members use CurrentState (state 1 =
+		/// selected) unless they carry a NotificationType tag, where
+		/// AlarmSideScreen's targetAlarm is matched instead (the alarm's
+		/// default notificationType enum value is 0 which doesn't map to
+		/// any valid type, leaving all toggles at state 1).
 		/// </summary>
 		private static int FindActiveRadioIndex(List<SideScreenWalker.RadioMember> members) {
 			for (int i = 0; i < members.Count; i++) {
@@ -302,8 +303,6 @@ namespace OniAccess.Handlers.Screens {
 					return i;
 			}
 			// AlarmSideScreen path: match by NotificationType tag.
-			// Default notificationType is 0 which isn't a valid type —
-			// fall back to index 0 (Bad, the first option).
 			if (members[0].Tag is NotificationType) {
 				var alarm = members[0].MultiToggleRef.GetComponentInParent<AlarmSideScreen>();
 				if (alarm != null) {
@@ -314,6 +313,12 @@ namespace OniAccess.Handlers.Screens {
 					}
 					return 0;
 				}
+			}
+			// Generic MultiToggle path (FewOptionSideScreen, etc.):
+			// state 1 = selected, state 0 = not selected.
+			for (int i = 0; i < members.Count; i++) {
+				if (members[i].MultiToggleRef != null && members[i].MultiToggleRef.CurrentState == 1)
+					return i;
 			}
 			return -1;
 		}
