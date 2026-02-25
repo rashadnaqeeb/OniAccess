@@ -60,13 +60,14 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (entry == null || !entry.gameObject.activeSelf) return;
 
 			var kbutton = entry.GetComponentInChildren<KButton>();
+			string speech = BuildEntrySpeech(entry);
 			var section = new DetailSection();
 			section.Header = (string)STRINGS.ONIACCESS.DETAILS.CURRENT_TASK;
 			section.Items.Add(new ButtonWidget {
 				Component = kbutton,
 				GameObject = entry.gameObject,
 				SuppressTooltip = true,
-				SpeechFunc = () => BuildEntrySpeech(entry)
+				SpeechFunc = () => speech
 			});
 			sections.Add(section);
 		}
@@ -97,6 +98,11 @@ namespace OniAccess.Handlers.Screens.Details {
 				var section = new DetailSection();
 				section.Header = header;
 
+					// Snapshot speech text at populate time. The game continuously
+				// re-sorts MinionTodoChoreEntry objects via Apply(), recycling
+				// them with new chore data even while paused. Live reads cause
+				// navigation to land on different items between frames.
+				// Snapshots refresh on tab switch, target change, or activation.
 				for (int i = 0; i < container.childCount; i++) {
 					var child = container.GetChild(i);
 					if (!child.gameObject.activeSelf) continue;
@@ -105,12 +111,12 @@ namespace OniAccess.Handlers.Screens.Details {
 					if (entry == null) continue;
 
 					var kbutton = entry.GetComponentInChildren<KButton>();
-					var capturedEntry = entry;
+					string speech = BuildEntrySpeech(entry);
 					section.Items.Add(new ButtonWidget {
 						Component = kbutton,
 						GameObject = entry.gameObject,
 						SuppressTooltip = true,
-						SpeechFunc = () => BuildEntrySpeech(capturedEntry)
+						SpeechFunc = () => speech
 					});
 				}
 
