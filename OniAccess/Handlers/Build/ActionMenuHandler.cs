@@ -4,17 +4,18 @@ using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Build {
 	/// <summary>
-	/// Unified action menu combining build categories and tools.
-	/// Three-level navigation for buildings: categories (level 0),
-	/// subcategories (level 1), buildings (level 2).
-	/// Tools appear as a virtual category at level 0, with individual
-	/// tools at level 1 (leaf). Type-ahead searches both buildings and tools.
+	/// Unified action menu combining tools and build categories.
+	/// Tools appear first at level 0 index 0 with individual tools at
+	/// level 1 (leaf). Build categories follow at indices 1+, with
+	/// subcategories (level 1) and buildings (level 2).
+	/// Type-ahead searches both tools and buildings.
 	/// </summary>
 	public class ActionMenuHandler: NestedMenuHandler {
 		private readonly HashedString _initialCategory;
 		private readonly BuildingDef _initialDef;
 		private List<BuildMenuData.CategoryGroup> _tree;
-		private int _toolsCategoryIndex;
+
+		private const int ToolsCategoryIndex = 0;
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries;
 
@@ -46,7 +47,13 @@ namespace OniAccess.Handlers.Build {
 			_initialDef = initialDef;
 		}
 
-		private bool IsToolsCategory(int catIndex) => catIndex == _toolsCategoryIndex;
+		private static bool IsToolsCategory(int catIndex) => catIndex == ToolsCategoryIndex;
+
+		/// <summary>
+		/// Convert level-0 category index to _tree index.
+		/// Build categories occupy indices 1..N, mapping to _tree[0..N-1].
+		/// </summary>
+		private static int TreeIndex(int catIndex) => catIndex - 1;
 
 		// ========================================
 		// NESTED MENU ABSTRACTS
@@ -58,15 +65,15 @@ namespace OniAccess.Handlers.Build {
 		protected override int GetItemCount(int level, int[] indices) {
 			if (_tree == null) return 0;
 			if (level == 0) return _tree.Count + 1;
-			if (indices[0] < 0 || indices[0] > _toolsCategoryIndex) return 0;
 
 			if (IsToolsCategory(indices[0])) {
 				if (level == 1) return ToolHandler.AllTools.Count;
 				return 0;
 			}
 
-			if (indices[0] >= _tree.Count) return 0;
-			var subs = _tree[indices[0]].Subcategories;
+			int ti = TreeIndex(indices[0]);
+			if (ti < 0 || ti >= _tree.Count) return 0;
+			var subs = _tree[ti].Subcategories;
 			if (level == 1) return subs.Count;
 			if (indices[1] < 0 || indices[1] >= subs.Count) return 0;
 			return subs[indices[1]].Buildings.Count;
@@ -75,13 +82,12 @@ namespace OniAccess.Handlers.Build {
 		protected override string GetItemLabel(int level, int[] indices) {
 			if (_tree == null) return null;
 			if (level == 0) {
-				if (indices[0] < 0 || indices[0] > _toolsCategoryIndex) return null;
 				if (IsToolsCategory(indices[0]))
 					return (string)STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY;
-				return _tree[indices[0]].DisplayName;
+				int ti = TreeIndex(indices[0]);
+				if (ti < 0 || ti >= _tree.Count) return null;
+				return _tree[ti].DisplayName;
 			}
-
-			if (indices[0] < 0 || indices[0] > _toolsCategoryIndex) return null;
 
 			if (IsToolsCategory(indices[0])) {
 				if (level == 1) {
@@ -92,8 +98,9 @@ namespace OniAccess.Handlers.Build {
 				return null;
 			}
 
-			if (indices[0] >= _tree.Count) return null;
-			var subs = _tree[indices[0]].Subcategories;
+			int treeIdx = TreeIndex(indices[0]);
+			if (treeIdx < 0 || treeIdx >= _tree.Count) return null;
+			var subs = _tree[treeIdx].Subcategories;
 			if (level == 1) {
 				if (indices[1] < 0 || indices[1] >= subs.Count) return null;
 				return subs[indices[1]].Name;
@@ -113,13 +120,14 @@ namespace OniAccess.Handlers.Build {
 				return null;
 			}
 
+			int ti = TreeIndex(indices[0]);
 			if (level == 1) {
-				if (indices[0] < 0 || indices[0] >= _tree.Count) return null;
-				return _tree[indices[0]].DisplayName;
+				if (ti < 0 || ti >= _tree.Count) return null;
+				return _tree[ti].DisplayName;
 			}
 			if (level == 2) {
-				if (indices[0] < 0 || indices[0] >= _tree.Count) return null;
-				var subs = _tree[indices[0]].Subcategories;
+				if (ti < 0 || ti >= _tree.Count) return null;
+				var subs = _tree[ti].Subcategories;
 				if (indices[1] < 0 || indices[1] >= subs.Count) return null;
 				return subs[indices[1]].Name;
 			}
@@ -134,14 +142,15 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
-			if (indices[0] < 0 || indices[0] >= _tree.Count) return;
-			var subs = _tree[indices[0]].Subcategories;
+			int ti = TreeIndex(indices[0]);
+			if (ti < 0 || ti >= _tree.Count) return;
+			var subs = _tree[ti].Subcategories;
 			if (indices[1] < 0 || indices[1] >= subs.Count) return;
 			var buildings = subs[indices[1]].Buildings;
 			if (indices[2] < 0 || indices[2] >= buildings.Count) return;
 
 			var entry = buildings[indices[2]];
-			var category = _tree[indices[0]].Category;
+			var category = _tree[ti].Category;
 
 			var handler = new BuildToolHandler(category, entry.Def);
 			HandlerStack.Replace(handler);
@@ -181,10 +190,11 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			int cat = GetIndex(0);
+			int ti = TreeIndex(cat);
 			int sub = GetIndex(1);
 			int bld = GetIndex(2);
 
-			var subs = _tree[cat].Subcategories;
+			var subs = _tree[ti].Subcategories;
 			int bldCount = subs[sub].Buildings.Count;
 
 			if (bld + 1 < bldCount) {
@@ -208,11 +218,11 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			// Try next categories
-			for (int c = cat + 1; c < _tree.Count; c++) {
+			for (int c = ti + 1; c < _tree.Count; c++) {
 				var nextSubs = _tree[c].Subcategories;
 				for (int s = 0; s < nextSubs.Count; s++) {
 					if (nextSubs[s].Buildings.Count > 0) {
-						SetIndex(0, c);
+						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, 0);
 						SyncCurrentIndex();
@@ -228,14 +238,14 @@ namespace OniAccess.Handlers.Build {
 				var wrapSubs = _tree[c].Subcategories;
 				for (int s = 0; s < wrapSubs.Count; s++) {
 					if (wrapSubs[s].Buildings.Count > 0) {
-						SetIndex(0, c);
+						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, 0);
 						SyncCurrentIndex();
 						PlayWrapSound();
-						if (c == cat && s == sub)
+						if (c == ti && s == sub)
 							SpeakCurrentItem();
-						else if (c == cat)
+						else if (c == ti)
 							SpeakWithSubcategoryContext();
 						else
 							SpeakWithCategoryContext();
@@ -252,6 +262,7 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			int cat = GetIndex(0);
+			int ti = TreeIndex(cat);
 			int sub = GetIndex(1);
 			int bld = GetIndex(2);
 
@@ -264,7 +275,7 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			// Try previous subcategory in current category
-			var subs = _tree[cat].Subcategories;
+			var subs = _tree[ti].Subcategories;
 			for (int s = sub - 1; s >= 0; s--) {
 				if (subs[s].Buildings.Count > 0) {
 					SetIndex(1, s);
@@ -277,11 +288,11 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			// Try previous categories
-			for (int c = cat - 1; c >= 0; c--) {
+			for (int c = ti - 1; c >= 0; c--) {
 				var prevSubs = _tree[c].Subcategories;
 				for (int s = prevSubs.Count - 1; s >= 0; s--) {
 					if (prevSubs[s].Buildings.Count > 0) {
-						SetIndex(0, c);
+						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, prevSubs[s].Buildings.Count - 1);
 						SyncCurrentIndex();
@@ -297,14 +308,14 @@ namespace OniAccess.Handlers.Build {
 				var wrapSubs = _tree[c].Subcategories;
 				for (int s = wrapSubs.Count - 1; s >= 0; s--) {
 					if (wrapSubs[s].Buildings.Count > 0) {
-						SetIndex(0, c);
+						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, wrapSubs[s].Buildings.Count - 1);
 						SyncCurrentIndex();
 						PlayWrapSound();
-						if (c == cat && s == sub)
+						if (c == ti && s == sub)
 							SpeakCurrentItem();
-						else if (c == cat)
+						else if (c == ti)
 							SpeakWithSubcategoryContext();
 						else
 							SpeakWithCategoryContext();
@@ -324,7 +335,7 @@ namespace OniAccess.Handlers.Build {
 				var subs = _tree[c].Subcategories;
 				for (int s = 0; s < subs.Count; s++) {
 					if (subs[s].Buildings.Count > 0) {
-						SetIndex(0, c);
+						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, 0);
 						SyncCurrentIndex();
@@ -346,7 +357,7 @@ namespace OniAccess.Handlers.Build {
 				var subs = _tree[c].Subcategories;
 				for (int s = subs.Count - 1; s >= 0; s--) {
 					if (subs[s].Buildings.Count > 0) {
-						SetIndex(0, c);
+						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, subs[s].Buildings.Count - 1);
 						SyncCurrentIndex();
@@ -368,18 +379,17 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
-			int cat = GetIndex(0);
+			int ti = TreeIndex(GetIndex(0));
 			int sub = GetIndex(1);
 
-			// Check immediate next subcategory (may cross category boundary)
-			if (FindNextSubcategory(cat, sub, out int nc, out int ns)) {
-				SetIndex(0, nc);
+			if (FindNextSubcategory(ti, sub, out int nc, out int ns)) {
+				SetIndex(0, nc + 1);
 				SetIndex(1, ns);
 				SetIndex(2, 0);
 				SyncCurrentIndex();
-				if (nc < cat || (nc == cat && ns <= sub)) PlayWrapSound();
+				if (nc < ti || (nc == ti && ns <= sub)) PlayWrapSound();
 				else PlayHoverSound();
-				if (nc == cat)
+				if (nc == ti)
 					SpeakWithSubcategoryContext();
 				else
 					SpeakWithCategoryContext();
@@ -393,18 +403,17 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
-			int cat = GetIndex(0);
+			int ti = TreeIndex(GetIndex(0));
 			int sub = GetIndex(1);
 
-			// Check immediate previous subcategory (may cross category boundary)
-			if (FindPrevSubcategory(cat, sub, out int nc, out int ns)) {
-				SetIndex(0, nc);
+			if (FindPrevSubcategory(ti, sub, out int nc, out int ns)) {
+				SetIndex(0, nc + 1);
 				SetIndex(1, ns);
 				SetIndex(2, 0);
 				SyncCurrentIndex();
-				if (nc > cat || (nc == cat && ns >= sub)) PlayWrapSound();
+				if (nc > ti || (nc == ti && ns >= sub)) PlayWrapSound();
 				else PlayHoverSound();
-				if (nc == cat)
+				if (nc == ti)
 					SpeakWithSubcategoryContext();
 				else
 					SpeakWithCategoryContext();
@@ -412,11 +421,14 @@ namespace OniAccess.Handlers.Build {
 			}
 		}
 
+		/// <summary>
+		/// Find next non-empty subcategory scanning _tree indices.
+		/// outCat/outSub are _tree indices (not level-0 indices).
+		/// </summary>
 		private bool FindNextSubcategory(int cat, int sub, out int outCat, out int outSub) {
 			outCat = cat;
 			outSub = sub;
 
-			// Scan forward from current position
 			int c = cat;
 			int s = sub + 1;
 			while (true) {
@@ -435,7 +447,6 @@ namespace OniAccess.Handlers.Build {
 				}
 			}
 
-			// Wrap: scan from the beginning
 			for (int wc = 0; wc < _tree.Count; wc++) {
 				var subs = _tree[wc].Subcategories;
 				for (int ws = 0; ws < subs.Count; ws++) {
@@ -450,11 +461,14 @@ namespace OniAccess.Handlers.Build {
 			return false;
 		}
 
+		/// <summary>
+		/// Find previous non-empty subcategory scanning _tree indices.
+		/// outCat/outSub are _tree indices (not level-0 indices).
+		/// </summary>
 		private bool FindPrevSubcategory(int cat, int sub, out int outCat, out int outSub) {
 			outCat = cat;
 			outSub = sub;
 
-			// Scan backward from current position
 			int c = cat;
 			int s = sub - 1;
 			while (true) {
@@ -474,7 +488,6 @@ namespace OniAccess.Handlers.Build {
 				}
 			}
 
-			// Wrap: scan from the end
 			for (int wc = _tree.Count - 1; wc >= 0; wc--) {
 				var subs = _tree[wc].Subcategories;
 				for (int ws = subs.Count - 1; ws >= 0; ws--) {
@@ -505,12 +518,18 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		protected override int GetSearchItemCount(int[] indices) {
-			return GetBuildingSearchCount() + ToolHandler.AllTools.Count;
+			return ToolHandler.AllTools.Count + GetBuildingSearchCount();
 		}
 
 		protected override string GetSearchItemLabel(int flatIndex) {
+			// Tools first
+			var tools = ToolHandler.AllTools;
+			if (flatIndex < tools.Count)
+				return tools[flatIndex].Label;
+
+			// Then buildings
 			if (_tree == null) return null;
-			int remaining = flatIndex;
+			int remaining = flatIndex - tools.Count;
 			for (int c = 0; c < _tree.Count; c++) {
 				var subs = _tree[c].Subcategories;
 				for (int s = 0; s < subs.Count; s++) {
@@ -520,22 +539,28 @@ namespace OniAccess.Handlers.Build {
 					remaining -= count;
 				}
 			}
-			// Tools region
-			var tools = ToolHandler.AllTools;
-			if (remaining < tools.Count)
-				return tools[remaining].Label;
 			return null;
 		}
 
 		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
+			// Tools first
+			var tools = ToolHandler.AllTools;
+			if (flatIndex < tools.Count) {
+				outIndices[0] = ToolsCategoryIndex;
+				outIndices[1] = flatIndex;
+				outIndices[2] = 0;
+				return;
+			}
+
+			// Then buildings
 			if (_tree == null) return;
-			int remaining = flatIndex;
+			int remaining = flatIndex - tools.Count;
 			for (int c = 0; c < _tree.Count; c++) {
 				var subs = _tree[c].Subcategories;
 				for (int s = 0; s < subs.Count; s++) {
 					int count = subs[s].Buildings.Count;
 					if (remaining < count) {
-						outIndices[0] = c;
+						outIndices[0] = c + 1;
 						outIndices[1] = s;
 						outIndices[2] = remaining;
 						return;
@@ -543,10 +568,6 @@ namespace OniAccess.Handlers.Build {
 					remaining -= count;
 				}
 			}
-			// Tools region
-			outIndices[0] = _toolsCategoryIndex;
-			outIndices[1] = remaining;
-			outIndices[2] = 0;
 		}
 
 		protected override int GetSearchTargetLevel(int flatIndex, int[] mappedIndices) {
@@ -562,7 +583,6 @@ namespace OniAccess.Handlers.Build {
 		public override void OnActivate() {
 			PlayOpenSound();
 			_tree = BuildMenuData.GetFullBuildTree();
-			_toolsCategoryIndex = _tree != null ? _tree.Count : 0;
 
 			if (_initialDef != null && _restoreFlatIndex < 0)
 				FindDefFlatIndex(_initialDef, _initialCategory);
@@ -572,8 +592,9 @@ namespace OniAccess.Handlers.Build {
 			if (_restoreFlatIndex >= 0) {
 				NestedSearchMoveTo(_restoreFlatIndex);
 				_restoreFlatIndex = -1;
-			} else if (_tree != null && _tree.Count > 0) {
-				SpeechPipeline.SpeakQueued(_tree[0].DisplayName);
+			} else {
+				SpeechPipeline.SpeakQueued(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY);
 			}
 		}
 
@@ -605,9 +626,8 @@ namespace OniAccess.Handlers.Build {
 
 		private void FindDefFlatIndex(BuildingDef def, HashedString category) {
 			if (_tree == null) return;
-			int flat = 0;
+			int flat = ToolHandler.AllTools.Count;
 			for (int c = 0; c < _tree.Count; c++) {
-				// When returning from placement, prefer the exact category
 				bool categoryMatch = category.IsValid && _tree[c].Category == category;
 				var subs = _tree[c].Subcategories;
 				for (int s = 0; s < subs.Count; s++) {
@@ -621,24 +641,23 @@ namespace OniAccess.Handlers.Build {
 					}
 				}
 			}
-			// If exact category not found, try any category
 			if (category.IsValid) {
 				FindDefFlatIndex(def, HashedString.Invalid);
 			}
 		}
 
 		private void SpeakWithSubcategoryContext() {
-			int cat = GetIndex(0);
+			int ti = TreeIndex(GetIndex(0));
 			int sub = GetIndex(1);
-			string subName = _tree[cat].Subcategories[sub].Name;
+			string subName = _tree[ti].Subcategories[sub].Name;
 			SpeakCurrentItem(subName);
 		}
 
 		private void SpeakWithCategoryContext() {
-			int cat = GetIndex(0);
+			int ti = TreeIndex(GetIndex(0));
 			int sub = GetIndex(1);
-			string catName = _tree[cat].DisplayName;
-			string subName = _tree[cat].Subcategories[sub].Name;
+			string catName = _tree[ti].DisplayName;
+			string subName = _tree[ti].Subcategories[sub].Name;
 			SpeakCurrentItem(catName + ", " + subName);
 		}
 
