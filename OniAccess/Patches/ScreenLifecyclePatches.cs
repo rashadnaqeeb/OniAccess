@@ -130,6 +130,22 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
+	/// JobsTableScreen extends ShowOptimizedKScreen, which hides via canvas alpha
+	/// in Show(false) without calling Deactivate. ManagementMenu toggles it via Show().
+	/// </summary>
+	[HarmonyPatch(typeof(JobsTableScreen), nameof(JobsTableScreen.Show))]
+	internal static class JobsTableScreen_Show_Patch {
+		private static void Postfix(JobsTableScreen __instance, bool show) {
+			if (!ModToggle.IsEnabled) return;
+			if (show) {
+				ContextDetector.OnScreenActivated(__instance);
+			} else {
+				ContextDetector.OnScreenDeactivating(__instance);
+			}
+		}
+	}
+
+	/// <summary>
 	/// DetailsScreen.OnPrefabInit() calls Show(false) during init, so
 	/// KScreen.Activate/Deactivate patches do not fire for user-visible show/hide.
 	/// Patch OnShow(bool) directly to push the handler via ContextDetector.

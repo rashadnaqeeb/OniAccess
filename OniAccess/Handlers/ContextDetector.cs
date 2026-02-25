@@ -257,6 +257,11 @@ namespace OniAccess.Handlers {
 			Register<DetailsScreen>(screen => new DetailsScreenHandler(screen));
 			_showPatchedTypes.Add(typeof(DetailsScreen));
 
+			// JobsTableScreen (duplicant priority management -- 2D grid)
+			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
+			Register<JobsTableScreen>(screen => new PriorityScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(JobsTableScreen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 
