@@ -185,24 +185,11 @@ namespace OniAccess.Handlers.Screens {
 				if (label == null) continue;
 
 				hierToggleButtons.Add(kbutton);
-				var hierRefForSpeech = hr;
-				string toggleLabel = label;
-				_widgets.Add(new ToggleWidget {
+				_widgets.Add(new HierRefToggleWidget {
 					Label = label,
 					Component = kbutton,
 					GameObject = hr.gameObject,
-					Tag = hr,
-					SpeechFunc = () => {
-						string ckRef = hierRefForSpeech.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
-						var ckGo = hierRefForSpeech.GetReference(ckRef);
-						if (ckGo == null) {
-							Log.Warn("OptionsMenuHandler: checkmark ref '" + ckRef + "' is null for " + toggleLabel);
-							return toggleLabel;
-						}
-						bool on = ckGo.gameObject.activeSelf;
-						string st = on ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-						return $"{toggleLabel}, {st}";
-					}
+					HierRef = hr
 				});
 			}
 
@@ -430,9 +417,8 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// Validate widget for navigation. Extends base with MultiToggle,
-		/// HierarchyReferences toggle (KButton), and Dropdown support.
-		/// Base rejects Toggle widgets whose Component isn't KToggle.
+		/// Validate widget for navigation. Extends base with Dropdown support
+		/// (RadioGroupInfo and Unity Dropdown interactability).
 		/// </summary>
 		protected override bool IsWidgetValid(Widget widget) {
 			if (widget == null || widget.GameObject == null) return false;
@@ -445,35 +431,9 @@ namespace OniAccess.Handlers.Screens {
 				return dd != null && dd.interactable;
 			}
 
-			// HierRef toggles use KButton as Component; base ToggleWidget.IsValid()
-			// only knows KToggle/MultiToggle, so handle KButton interactability here.
-			if (widget is ToggleWidget && widget.Component is KButton kb)
-				return kb.isInteractable;
-
 			return base.IsWidgetValid(widget);
 		}
 
-		/// <summary>
-		/// Activate the current widget. Extends base for HierarchyReferences toggles
-		/// (KButton + CheckMark visibility pattern used by some options screen toggles).
-		/// </summary>
-		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
-
-			if (widget is ToggleWidget && widget.Tag is HierarchyReferences hr) {
-				var kbutton = widget.Component as KButton;
-				if (kbutton != null)
-					ClickButton(kbutton);
-				string checkRef = hr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
-				bool isOn = hr.GetReference(checkRef)?.gameObject.activeSelf ?? false;
-				string state = isOn ? (string)STRINGS.ONIACCESS.STATES.ON : (string)STRINGS.ONIACCESS.STATES.OFF;
-				Speech.SpeechPipeline.SpeakInterrupt($"{widget.Label}, {state}");
-				return;
-			}
-
-			base.ActivateCurrentItem();
-		}
 
 		/// <summary>
 		/// Cycle a Unity Dropdown or radio group's selected value and speak the new selection.
@@ -532,7 +492,7 @@ namespace OniAccess.Handlers.Screens {
 			// Group HierRef toggle widgets by parent transform
 			var groups = new Dictionary<UnityEngine.Transform, List<int>>();
 			for (int i = 0; i < _widgets.Count; i++) {
-				if (_widgets[i] is ToggleWidget && _widgets[i].Tag is HierarchyReferences) {
+				if (_widgets[i] is HierRefToggleWidget) {
 					var parent = _widgets[i].GameObject.transform.parent;
 					if (!groups.ContainsKey(parent))
 						groups[parent] = new List<int>();
@@ -563,8 +523,8 @@ namespace OniAccess.Handlers.Screens {
 				var members = new List<RadioMember>();
 				int activeIndex = 0;
 				for (int j = 0; j < kvp.Value.Count; j++) {
-					var w = _widgets[kvp.Value[j]];
-					var hr = (HierarchyReferences)w.Tag;
+					var w = (HierRefToggleWidget)_widgets[kvp.Value[j]];
+					var hr = w.HierRef;
 					string checkRef = hr.HasReference("CheckMark") ? "CheckMark" : "Checkmark";
 					bool isOn = hr.GetReference(checkRef)?.gameObject.activeSelf ?? false;
 					if (isOn) activeIndex = j;
