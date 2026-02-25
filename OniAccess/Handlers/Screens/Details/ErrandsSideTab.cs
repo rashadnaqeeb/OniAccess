@@ -1,16 +1,13 @@
 using System.Collections.Generic;
+using HarmonyLib;
 using UnityEngine;
 
 using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Details {
-	/// <summary>
-	/// Reads active Errands side screens (dupe task list) into sections.
-	/// Mirrors ConfigSideTab for the SidescreenTabTypes.Errands tab.
-	/// </summary>
 	class ErrandsSideTab: IDetailTab {
 		public string DisplayName => (string)STRINGS.UI.DETAILTABS.BUILDING_CHORES.NAME;
-		public int StartLevel => 0;
+		public int StartLevel => 1;
 		public string GameTabId => null;
 
 		public bool IsAvailable(GameObject target) {
@@ -30,14 +27,115 @@ namespace OniAccess.Handlers.Screens.Details {
 			var ds = DetailsScreen.Instance;
 			if (ds == null) return;
 
-			foreach (var screen in ConfigSideTab.GetActiveScreens(
+			MinionTodoSideScreen screen = null;
+			foreach (var s in ConfigSideTab.GetActiveScreens(
 					ds, DetailsScreen.SidescreenTabTypes.Errands)) {
+				screen = s as MinionTodoSideScreen;
+				if (screen != null) break;
+			}
+			if (screen == null) return;
+
+			AddScheduleSection(screen, sections);
+			AddCurrentTaskSection(screen, sections);
+			AddPriorityGroupSections(screen, sections);
+		}
+
+		private static void AddScheduleSection(
+				MinionTodoSideScreen screen, List<DetailSection> sections) {
+			string shiftText = screen.currentShiftLabel.text;
+			if (string.IsNullOrEmpty(shiftText)) return;
+
+			var section = new DetailSection();
+			section.Header = (string)STRINGS.ONIACCESS.DETAILS.SCHEDULE;
+			section.Items.Add(new LabelWidget {
+				Label = shiftText,
+				SpeechFunc = () => screen.currentShiftLabel.text
+			});
+			sections.Add(section);
+		}
+
+		private static void AddCurrentTaskSection(
+				MinionTodoSideScreen screen, List<DetailSection> sections) {
+			var entry = screen.currentTask;
+			if (entry == null || !entry.gameObject.activeSelf) return;
+
+			var kbutton = entry.GetComponentInChildren<KButton>();
+			var section = new DetailSection();
+			section.Header = (string)STRINGS.ONIACCESS.DETAILS.CURRENT_TASK;
+			section.Items.Add(new ButtonWidget {
+				Component = kbutton,
+				GameObject = entry.gameObject,
+				SpeechFunc = () => BuildEntrySpeech(entry)
+			});
+			sections.Add(section);
+		}
+
+		private static void AddPriorityGroupSections(
+				MinionTodoSideScreen screen, List<DetailSection> sections) {
+			List<Tuple<PriorityScreen.PriorityClass, int, HierarchyReferences>> groups;
+			try {
+				groups = Traverse.Create(screen)
+					.Field<List<Tuple<PriorityScreen.PriorityClass, int, HierarchyReferences>>>(
+						"priorityGroups").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"ErrandsSideTab: priorityGroups read failed: {ex.Message}");
+				return;
+			}
+			if (groups == null) return;
+
+			foreach (var group in groups) {
+				var refs = group.third;
+				if (!refs.gameObject.activeSelf) continue;
+
+				var container = refs.GetReference<RectTransform>("EntriesContainer");
+				if (container == null || container.childCount == 0) continue;
+
+				var title = refs.GetReference<LocText>("Title");
+				string header = title != null ? title.text : "";
+
 				var section = new DetailSection();
-				section.Header = screen.GetTitle();
-				SideScreenWalker.Walk(screen, section.Items);
+				section.Header = header;
+
+				for (int i = 0; i < container.childCount; i++) {
+					var child = container.GetChild(i);
+					if (!child.gameObject.activeSelf) continue;
+
+					var entry = child.GetComponent<MinionTodoChoreEntry>();
+					if (entry == null) continue;
+
+					var kbutton = entry.GetComponentInChildren<KButton>();
+					var capturedEntry = entry;
+					section.Items.Add(new ButtonWidget {
+						Component = kbutton,
+						GameObject = entry.gameObject,
+						SpeechFunc = () => BuildEntrySpeech(capturedEntry)
+					});
+				}
+
 				if (section.Items.Count > 0)
 					sections.Add(section);
 			}
+		}
+
+		private static string BuildEntrySpeech(MinionTodoChoreEntry entry) {
+			string label = entry.label.GetParsedText();
+			string sub = entry.subLabel.GetParsedText();
+			string priority = entry.priorityLabel.GetParsedText();
+			string more = entry.moreLabel.text;
+
+			var sb = new System.Text.StringBuilder();
+			AppendNonEmpty(sb, label);
+			if (sub != label)
+				AppendNonEmpty(sb, sub);
+			AppendNonEmpty(sb, priority);
+			AppendNonEmpty(sb, more);
+			return sb.ToString();
+		}
+
+		private static void AppendNonEmpty(System.Text.StringBuilder sb, string text) {
+			if (string.IsNullOrEmpty(text)) return;
+			if (sb.Length > 0) sb.Append(", ");
+			sb.Append(text);
 		}
 	}
 }

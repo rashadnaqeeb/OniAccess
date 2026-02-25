@@ -87,6 +87,11 @@ namespace OniAccess.Speech {
 		public static string FilterForSpeech(string text) {
 			if (string.IsNullOrEmpty(text)) return "";
 
+			// Strip control characters (null bytes, etc.) that can truncate
+			// speech output. TMP's GetParsedText() emits \x00 for empty fields.
+			text = StripControlChars(text);
+			if (text.Length == 0) return "";
+
 			// Replace masculine ordinal indicator (º, U+00BA) with degree sign (°, U+00B0).
 			// Screen readers mispronounce º; ONI uses it in temperature strings.
 			text = text.Replace('\u00BA', '\u00B0');
@@ -132,6 +137,25 @@ namespace OniAccess.Speech {
 
 			// 9. Trim
 			return text.Trim();
+		}
+
+		private static string StripControlChars(string text) {
+			int i = 0;
+			for (; i < text.Length; i++) {
+				char c = text[i];
+				if (c < 0x20 && c != '\n' && c != '\r' && c != '\t')
+					break;
+			}
+			if (i == text.Length) return text;
+
+			var sb = new System.Text.StringBuilder(text.Length);
+			if (i > 0) sb.Append(text, 0, i);
+			for (; i < text.Length; i++) {
+				char c = text[i];
+				if (c >= 0x20 || c == '\n' || c == '\r' || c == '\t')
+					sb.Append(c);
+			}
+			return sb.ToString();
 		}
 	}
 }

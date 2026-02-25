@@ -511,6 +511,8 @@ namespace STRINGS {
 
 		public class DETAILS {
 			public static LocString NO_ERRANDS = "No errands";
+			public static LocString SCHEDULE = "Schedule";
+			public static LocString CURRENT_TASK = "Current task";
 		}
 
 		public class BUILD_MENU {
