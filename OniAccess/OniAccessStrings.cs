@@ -282,7 +282,6 @@ namespace STRINGS {
 			public static LocString INPUT_PORT = "input";
 			public static LocString OUTPUT_PORT = "output";
 
-			public static LocString ORDER_PREFIX = "pending {0}";
 			public static LocString ORDER_BUILD = "build";
 			public static LocString ORDER_DIG = "dig";
 			public static LocString ORDER_MOP = "mop";

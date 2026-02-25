@@ -25,10 +25,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (parts.Count == 0)
 				return parts;
 
-			string combined = string.Join(", ", parts.ToArray());
-			return new[] {
-				string.Format((string)STRINGS.ONIACCESS.GLANCE.ORDER_PREFIX, combined)
-			};
+			return new[] { string.Join(", ", parts.ToArray()) };
 		}
 
 		private static void CollectDigOrder(int cell, List<string> parts) {
