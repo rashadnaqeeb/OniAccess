@@ -111,9 +111,11 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private static int EntitySortKey(KSelectable ks) {
-			if (ks.GetComponent<Building>() != null) return 0;
-			if (ks.GetComponent<CellSelectionObject>() != null) return 2;
-			return 1;
+			var building = ks.GetComponent<Building>();
+			if (building != null)
+				return building.Def.ObjectLayer == ObjectLayer.Building ? 0 : 1;
+			if (ks.GetComponent<CellSelectionObject>() != null) return 3;
+			return 2;
 		}
 
 		private static void PlaySound(string name) {
