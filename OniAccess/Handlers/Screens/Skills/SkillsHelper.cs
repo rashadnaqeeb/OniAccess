@@ -401,14 +401,15 @@ namespace OniAccess.Handlers.Screens.Skills {
 		// ========================================
 
 		internal static string GetCurrentHatName(MinionResume resume) {
-			string targetHat = resume.TargetHat;
-			if (string.IsNullOrEmpty(targetHat)) return null;
-			// Find the skill that grants this hat
+			string hatId = string.IsNullOrEmpty(resume.TargetHat)
+				? resume.CurrentHat
+				: resume.TargetHat;
+			if (string.IsNullOrEmpty(hatId)) return null;
 			foreach (var skill in Db.Get().Skills.resources) {
-				if (skill.hat == targetHat)
+				if (skill.hat == hatId)
 					return skill.Name;
 			}
-			return targetHat;
+			return hatId;
 		}
 
 		internal static List<HatEntry> GetAvailableHats(MinionResume resume) {

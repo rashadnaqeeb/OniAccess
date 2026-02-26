@@ -193,25 +193,6 @@ namespace OniAccess.Handlers.Screens.Skills {
 		}
 
 		// ========================================
-		// Speech
-		// ========================================
-
-		public override void SpeakCurrentItem(string parentContext = null) {
-			string label;
-			if (Level == 0) {
-				label = GetCategoryName(GetIndex(0));
-			} else if (Level == 1) {
-				label = GetLevel1Label(GetIndex(0), GetIndex(1));
-			} else {
-				label = GetLevel2Label(GetIndex(0), GetIndex(1), GetIndex(2));
-			}
-			if (string.IsNullOrEmpty(label)) return;
-			if (!string.IsNullOrEmpty(parentContext))
-				label = parentContext + ", " + label;
-			SpeechPipeline.SpeakInterrupt(label);
-		}
-
-		// ========================================
 		// Categories
 		// ========================================
 
