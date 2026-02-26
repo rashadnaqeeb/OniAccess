@@ -513,15 +513,21 @@ namespace STRINGS {
 			public static LocString CURRENT_TASK = "Current task";
 		}
 
+		public class TABLE {
+			public static LocString SORT_ASCENDING = "sorted low to high";
+			public static LocString SORT_DESCENDING = "sorted high to low";
+			public static LocString SORT_CLEARED = "sort cleared";
+			public static LocString NAVIGATE_TABLE = "Navigate rows and columns";
+			public static LocString JUMP_FIRST_LAST = "Jump to first or last row";
+			public static LocString SORT_COLUMN = "Sort by column on header row";
+		}
+
 		public class PRIORITY_SCREEN {
 			public static LocString HANDLER_NAME = "Priorities table";
 			public static LocString TOOLBAR = "Toolbar";
 			public static LocString STORED = "Stored";
 			public static LocString SKILL = "skill {0}";
 			public static LocString DISABLED_TRAIT = "Disabled, {0}";
-			public static LocString SORT_ASCENDING = "sorted low to high";
-			public static LocString SORT_DESCENDING = "sorted high to low";
-			public static LocString SORT_CLEARED = "sort cleared";
 			public static LocString ROW_INCREASED = "row increased";
 			public static LocString ROW_DECREASED = "row decreased";
 			public static LocString COLUMN_INCREASED = "column increased";
@@ -530,10 +536,7 @@ namespace STRINGS {
 			public static LocString PROXIMITY_ON = "Proximity, on";
 			public static LocString PROXIMITY_OFF = "Proximity, off";
 			public static LocString AFFECTED_ERRANDS = "Affected errands: {0}";
-			public static LocString NAVIGATE_TABLE = "Navigate rows and columns";
-			public static LocString JUMP_FIRST_LAST_ROW = "Jump to first or last row";
 			public static LocString SET_PRIORITY = "Set priority of current cell";
-			public static LocString SORT_COLUMN = "Sort by column on header row";
 			public static LocString ADJUST_ROW = "Adjust all priorities in row";
 			public static LocString ADJUST_COLUMN = "Adjust all priorities in column";
 			public static LocString SET_COLUMN = "Set all priorities in column";
