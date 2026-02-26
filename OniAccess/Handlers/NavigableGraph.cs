@@ -16,6 +16,7 @@ namespace OniAccess.Handlers {
 	public class NavigableGraph<T> where T : class {
 		private readonly Func<T, IReadOnlyList<T>> _getParents;
 		private readonly Func<T, IReadOnlyList<T>> _getChildren;
+		private readonly Func<IReadOnlyList<T>> _getRoots;
 
 		private T _current;
 		private IReadOnlyList<T> _siblings;
@@ -25,9 +26,11 @@ namespace OniAccess.Handlers {
 
 		public NavigableGraph(
 			Func<T, IReadOnlyList<T>> getParents,
-			Func<T, IReadOnlyList<T>> getChildren) {
+			Func<T, IReadOnlyList<T>> getChildren,
+			Func<IReadOnlyList<T>> getRoots = null) {
 			_getParents = getParents;
 			_getChildren = getChildren;
+			_getRoots = getRoots;
 		}
 
 		/// <summary>
@@ -69,12 +72,23 @@ namespace OniAccess.Handlers {
 		/// <summary>
 		/// Move to the first parent. Sets siblings to the parents
 		/// of the node we came from.
-		/// Returns the new current node, or null if no parents.
+		/// Returns the new current node, or null if at root.
+		/// When at root and getRoots was provided, establishes root
+		/// sibling context for Left/Right cycling.
 		/// </summary>
 		public T NavigateUp() {
 			if (_current == null) return null;
 			var parents = _getParents(_current);
-			if (parents == null || parents.Count == 0) return null;
+			if (parents == null || parents.Count == 0) {
+				if (_getRoots != null) {
+					var roots = _getRoots();
+					if (roots != null && roots.Count > 0) {
+						_siblings = roots;
+						_siblingIndex = IndexOf(roots, _current);
+					}
+				}
+				return null;
+			}
 
 			_siblings = parents;
 			_siblingIndex = 0;

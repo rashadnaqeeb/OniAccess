@@ -19,6 +19,7 @@ namespace OniAccess.Handlers {
 	public abstract class BaseMenuHandler: BaseScreenHandler, ISearchable {
 		protected int _currentIndex;
 		protected readonly TypeAheadSearch _search = new TypeAheadSearch();
+		private int _searchSuppressFrame = -1;
 
 		protected BaseMenuHandler(KScreen screen = null) : base(screen) { }
 
@@ -230,6 +231,11 @@ namespace OniAccess.Handlers {
 		/// Returns true if the search consumed the key.
 		/// </summary>
 		protected bool TryRouteToSearch(bool ctrlHeld, bool altHeld) {
+			// Skip type-ahead on the frame we activated to avoid consuming
+			// the hotkey that opened the screen (e.g., R for Research)
+			if (UnityEngine.Time.frameCount == _searchSuppressFrame)
+				return false;
+
 			// A-Z (no modifiers) — start or continue search
 			if (!ctrlHeld && !altHeld) {
 				for (var k = UnityEngine.KeyCode.A; k <= UnityEngine.KeyCode.Z; k++) {
@@ -252,12 +258,21 @@ namespace OniAccess.Handlers {
 		// ========================================
 
 		/// <summary>
+		/// Suppress type-ahead search for the current frame.
+		/// Prevents the hotkey that opened this handler from triggering search.
+		/// </summary>
+		protected void SuppressSearchThisFrame() {
+			_searchSuppressFrame = UnityEngine.Time.frameCount;
+		}
+
+		/// <summary>
 		/// Speaks DisplayName (via BaseScreenHandler), resets cursor and search.
 		/// </summary>
 		public override void OnActivate() {
 			base.OnActivate();
 			_currentIndex = 0;
 			_search.Clear();
+			SuppressSearchThisFrame();
 		}
 
 		/// <summary>

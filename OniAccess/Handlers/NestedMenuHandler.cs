@@ -408,6 +408,7 @@ namespace OniAccess.Handlers {
 				_indices[i] = 0;
 			_currentIndex = 0;
 			_search.Clear();
+			SuppressSearchThisFrame();
 		}
 
 		private void SpeakWithParentContext() {
