@@ -193,6 +193,21 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
+	/// ResearchScreen is toggled by ManagementMenu via Show(bool), same pattern as
+	/// TableScreen. Patch OnShow to push/pop the handler via ContextDetector.
+	/// </summary>
+	[HarmonyPatch(typeof(ResearchScreen), "OnShow")]
+	internal static class ResearchScreen_OnShow_Patch {
+		private static void Postfix(ResearchScreen __instance, bool show) {
+			if (!ModToggle.IsEnabled) return;
+			if (show)
+				ContextDetector.OnScreenActivated(__instance);
+			else
+				ContextDetector.OnScreenDeactivating(__instance);
+		}
+	}
+
+	/// <summary>
 	/// RetiredColonyInfoScreen reuses its instance via Show(true) on subsequent opens,
 	/// so KScreen.Activate never fires again. Patch Show(bool) to push/pop the handler.
 	/// The duplicate guard in OnScreenActivated prevents double-pushing when both

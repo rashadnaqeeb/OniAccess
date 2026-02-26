@@ -1,0 +1,207 @@
+using System.Collections.Generic;
+
+using OniAccess.Speech;
+
+namespace OniAccess.Handlers.Screens.Research {
+	/// <summary>
+	/// Shared helpers for building tech speech labels. Used by all three
+	/// research tabs. All data is read live from game singletons on every call.
+	/// </summary>
+	internal static class ResearchHelper {
+		/// <summary>
+		/// Build a full spoken label for a tech in Browse or Tree context.
+		/// Format: "Name, state. cost. unlocks: items. description"
+		/// </summary>
+		internal static string BuildTechLabel(Tech tech) {
+			var parts = new List<string>();
+			parts.Add(tech.Name);
+
+			if (tech.IsComplete())
+				parts.Add(STRINGS.ONIACCESS.RESEARCH.COMPLETED);
+			else if (tech.ArePrerequisitesComplete())
+				parts.Add(STRINGS.ONIACCESS.RESEARCH.AVAILABLE);
+			else {
+				parts.Add(STRINGS.ONIACCESS.RESEARCH.LOCKED);
+				string prereqs = BuildPrereqList(tech);
+				if (prereqs != null)
+					parts.Add(prereqs);
+			}
+
+			string cost = BuildCostString(tech);
+			if (cost != null)
+				parts.Add(cost);
+
+			string unlocks = BuildUnlocksList(tech);
+			if (unlocks != null)
+				parts.Add(unlocks);
+
+			string desc = tech.desc;
+			if (!string.IsNullOrEmpty(desc))
+				parts.Add(TextFilter.FilterForSpeech(desc));
+
+			return string.Join(". ", parts);
+		}
+
+		/// <summary>
+		/// Build a label for a queued tech, including live progress.
+		/// Format: "Name, active/queued. progress per type. unlocks. description"
+		/// </summary>
+		internal static string BuildQueuedTechLabel(TechInstance ti, bool isActive) {
+			var parts = new List<string>();
+			parts.Add(ti.tech.Name);
+
+			if (isActive)
+				parts.Add(STRINGS.ONIACCESS.RESEARCH.ACTIVE);
+
+			string progress = BuildProgressString(ti);
+			if (progress != null)
+				parts.Add(progress);
+
+			string unlocks = BuildUnlocksList(ti.tech);
+			if (unlocks != null)
+				parts.Add(unlocks);
+
+			string desc = ti.tech.desc;
+			if (!string.IsNullOrEmpty(desc))
+				parts.Add(TextFilter.FilterForSpeech(desc));
+
+			return string.Join(". ", parts);
+		}
+
+		/// <summary>
+		/// Build cost string: "15 Alpha Research, 30 Beta Research"
+		/// </summary>
+		internal static string BuildCostString(Tech tech) {
+			var costParts = new List<string>();
+			foreach (var kv in tech.costsByResearchTypeID) {
+				if (kv.Value <= 0f) continue;
+				string typeName = GetResearchTypeName(kv.Key);
+				costParts.Add($"{kv.Value:F0} {typeName}");
+			}
+			return costParts.Count > 0 ? string.Join(", ", costParts) : null;
+		}
+
+		/// <summary>
+		/// Build progress string: "15 of 50 Alpha Research, 0 of 30 Beta Research"
+		/// </summary>
+		internal static string BuildProgressString(TechInstance ti) {
+			var progressParts = new List<string>();
+			foreach (var kv in ti.tech.costsByResearchTypeID) {
+				if (kv.Value <= 0f) continue;
+				string typeName = GetResearchTypeName(kv.Key);
+				float current = 0f;
+				ti.progressInventory.PointsByTypeID.TryGetValue(kv.Key, out current);
+				progressParts.Add(string.Format(STRINGS.ONIACCESS.RESEARCH.PROGRESS_ENTRY,
+				$"{current:F0}", $"{kv.Value:F0}", typeName));
+			}
+			return progressParts.Count > 0 ? string.Join(", ", progressParts) : null;
+		}
+
+		/// <summary>
+		/// Build prerequisite list: "needs Tech A completed, Tech B"
+		/// </summary>
+		internal static string BuildPrereqList(Tech tech) {
+			if (tech.requiredTech == null || tech.requiredTech.Count == 0)
+				return null;
+			var prereqParts = new List<string>();
+			foreach (var prereq in tech.requiredTech) {
+				string entry = prereq.Name;
+				if (prereq.IsComplete())
+					entry += " " + STRINGS.ONIACCESS.RESEARCH.COMPLETED;
+				prereqParts.Add(entry);
+			}
+			return STRINGS.ONIACCESS.RESEARCH.NEEDS + " " + string.Join(", ", prereqParts);
+		}
+
+		/// <summary>
+		/// Build unlocks list: "unlocks Gas Pipe, Gas Pump"
+		/// </summary>
+		internal static string BuildUnlocksList(Tech tech) {
+			if (tech.unlockedItems == null || tech.unlockedItems.Count == 0)
+				return null;
+			var names = new List<string>();
+			foreach (var item in tech.unlockedItems)
+				names.Add(item.Name);
+			return STRINGS.ONIACCESS.RESEARCH.UNLOCKS + " " + string.Join(", ", names);
+		}
+
+		/// <summary>
+		/// Build the global research point inventory string.
+		/// </summary>
+		internal static string BuildPointInventoryString() {
+			if (!global::Research.Instance.UseGlobalPointInventory)
+				return null;
+			var inv = global::Research.Instance.globalPointInventory;
+			if (inv == null) return null;
+			var parts = new List<string>();
+			foreach (var kv in inv.PointsByTypeID) {
+				if (kv.Value <= 0f) continue;
+				string typeName = GetResearchTypeName(kv.Key);
+				parts.Add($"{kv.Value:F0} {typeName}");
+			}
+			return parts.Count > 0
+				? STRINGS.ONIACCESS.RESEARCH.BANKED_POINTS + " " + string.Join(", ", parts)
+				: null;
+		}
+
+		/// <summary>
+		/// Get all techs sorted by tier ascending, then name.
+		/// </summary>
+		internal static List<Tech> GetAllTechs() {
+			var result = new List<Tech>(Db.Get().Techs.resources);
+			result.Sort((a, b) => {
+				int cmp = a.tier.CompareTo(b.tier);
+				return cmp != 0 ? cmp : string.Compare(a.Name, b.Name, System.StringComparison.Ordinal);
+			});
+			return result;
+		}
+
+		/// <summary>
+		/// Get techs matching a bucket filter, sorted by tier then name.
+		/// </summary>
+		internal static List<Tech> GetTechsInBucket(int bucket) {
+			var all = GetAllTechs();
+			var result = new List<Tech>();
+			foreach (var tech in all) {
+				bool match = bucket switch {
+					0 => !tech.IsComplete() && tech.ArePrerequisitesComplete(),
+					1 => !tech.IsComplete() && !tech.ArePrerequisitesComplete(),
+					2 => tech.IsComplete(),
+					_ => false,
+				};
+				if (match) result.Add(tech);
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// Get root techs (no prerequisites), ordered by tier then name.
+		/// </summary>
+		internal static List<Tech> GetRootTechs() {
+			var roots = new List<Tech>();
+			foreach (var tech in Db.Get().Techs.resources) {
+				if (tech.requiredTech == null || tech.requiredTech.Count == 0)
+					roots.Add(tech);
+			}
+			roots.Sort((a, b) => {
+				int cmp = a.tier.CompareTo(b.tier);
+				return cmp != 0 ? cmp : string.Compare(a.Name, b.Name, System.StringComparison.Ordinal);
+			});
+			return roots;
+		}
+
+		internal static string GetBucketName(int bucket) {
+			return bucket switch {
+				0 => (string)STRINGS.ONIACCESS.RESEARCH.BUCKET_AVAILABLE,
+				1 => (string)STRINGS.ONIACCESS.RESEARCH.BUCKET_LOCKED,
+				2 => (string)STRINGS.ONIACCESS.RESEARCH.BUCKET_COMPLETED,
+				_ => "",
+			};
+		}
+
+		static string GetResearchTypeName(string typeId) {
+			var researchType = global::Research.Instance.GetResearchType(typeId);
+			return researchType != null ? researchType.name : typeId;
+		}
+	}
+}

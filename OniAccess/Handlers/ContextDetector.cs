@@ -272,6 +272,11 @@ namespace OniAccess.Handlers {
 			Register<ConsumablesTableScreen>(screen => new ConsumablesScreenHandler(screen));
 			_showPatchedTypes.Add(typeof(ConsumablesTableScreen));
 
+			// ResearchScreen (KModalScreen -- research management)
+			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
+			Register<ResearchScreen>(screen => new ResearchScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(ResearchScreen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 

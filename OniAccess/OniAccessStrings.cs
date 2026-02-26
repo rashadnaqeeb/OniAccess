@@ -565,6 +565,34 @@ namespace STRINGS {
 			public static LocString TOGGLE_PERMISSION = "Toggle permission";
 		}
 
+		public class RESEARCH {
+			public static LocString HANDLER_NAME = "Research";
+			public static LocString BROWSE_TAB = "Browse";
+			public static LocString QUEUE_TAB = "Queue";
+			public static LocString TREE_TAB = "Tree";
+			public static LocString AVAILABLE = "available";
+			public static LocString LOCKED = "locked";
+			public static LocString COMPLETED = "completed";
+			public static LocString ACTIVE = "active";
+			public static LocString NEEDS = "needs";
+			public static LocString UNLOCKS = "unlocks";
+			public static LocString QUEUED = "{0} queued";
+			public static LocString CANCELED = "{0} canceled";
+			public static LocString CASCADE_REMOVED = "{0} dependent techs also removed";
+			public static LocString QUEUE_EMPTY = "no research queued";
+			public static LocString BANKED_POINTS = "banked research points:";
+			public static LocString NO_BANKED_POINTS = "no banked research points";
+			public static LocString DEAD_END = "no further techs";
+			public static LocString ROOT_NODE = "no prerequisites";
+			public static LocString BUCKET_AVAILABLE = "Available";
+			public static LocString BUCKET_LOCKED = "Locked";
+			public static LocString BUCKET_COMPLETED = "Completed";
+			public static LocString JUMP_TO_TREE_HELP = "Jump to tech in tree view";
+			public static LocString QUEUE_CANCEL_HELP = "Queue or cancel research";
+			public static LocString CANCEL_HELP = "Cancel selected research";
+			public static LocString PROGRESS_ENTRY = "{0} of {1} {2}";
+		}
+
 		public class BUILD_MENU {
 			public static LocString ACTION_MENU = "action menu";
 			public static LocString TOOLS_CATEGORY = "Tools";
