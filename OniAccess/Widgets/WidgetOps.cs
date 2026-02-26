@@ -14,7 +14,7 @@ namespace OniAccess.Widgets {
 		/// Build speech text for a widget by delegating to its virtual GetSpeechText().
 		/// </summary>
 		public static string GetSpeechText(Widget widget) {
-			return widget.GetSpeechText();
+			return CleanTooltipEntry(widget.GetSpeechText());
 		}
 
 		// ========================================
@@ -54,7 +54,7 @@ namespace OniAccess.Widgets {
 
 		/// <summary>
 		/// Rebuild a ToolTip's dynamic content and return all multiString
-		/// entries joined with ", ".
+		/// entries as sentences separated by periods.
 		/// </summary>
 		public static string ReadAllTooltipText(ToolTip tooltip) {
 			tooltip.RebuildDynamicTooltip();
@@ -62,18 +62,48 @@ namespace OniAccess.Widgets {
 			if (tooltip.multiStringCount == 0) return null;
 
 			if (tooltip.multiStringCount == 1) {
-				string single = tooltip.GetMultiString(0);
+				string single = CleanTooltipEntry(tooltip.GetMultiString(0));
 				return string.IsNullOrEmpty(single) ? null : single;
 			}
 
 			var sb = new System.Text.StringBuilder();
 			for (int i = 0; i < tooltip.multiStringCount; i++) {
-				string entry = tooltip.GetMultiString(i);
+				string entry = CleanTooltipEntry(tooltip.GetMultiString(i));
 				if (string.IsNullOrEmpty(entry)) continue;
-				if (sb.Length > 0) sb.Append(", ");
+				if (sb.Length > 0) {
+					char last = sb[sb.Length - 1];
+					if (last != '.' && last != '!' && last != '?')
+						sb.Append('.');
+					sb.Append(' ');
+				}
 				sb.Append(entry);
 			}
 			return sb.Length == 0 ? null : sb.ToString();
+		}
+
+		/// <summary>
+		/// Replace newlines and bullet characters with sentence boundaries
+		/// so the screen reader pauses naturally between fields.
+		/// </summary>
+		static string CleanTooltipEntry(string text) {
+			if (string.IsNullOrEmpty(text)) return text;
+
+			// Replace bullets (with surrounding whitespace variants)
+			text = text.Replace(" \u2022 ", ". ");
+			text = text.Replace("\u2022 ", ". ");
+			text = text.Replace("\u2022", ".");
+
+			// Replace newlines with period-space sentence boundaries.
+			// The game uses \n as a field separator in tooltip text;
+			// TextFilter would otherwise collapse these to plain spaces.
+			text = text.Replace("\n", ". ");
+
+			// Clean up leading bullets/whitespace and any doubled periods
+			text = text.TrimStart(' ', '\t');
+			text = text.Replace(". . ", ". ");
+			text = text.Replace("..", ".");
+
+			return text;
 		}
 
 		// ========================================

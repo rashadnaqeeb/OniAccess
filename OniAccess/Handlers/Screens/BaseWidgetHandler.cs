@@ -210,7 +210,7 @@ namespace OniAccess.Handlers.Screens {
 
 			if (widget is ToggleWidget tw) {
 				tw.Activate();
-				Speech.SpeechPipeline.SpeakInterrupt(tw.GetSpeechText());
+				Speech.SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(tw));
 				return;
 			}
 
