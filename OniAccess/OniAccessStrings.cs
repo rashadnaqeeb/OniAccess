@@ -542,6 +542,13 @@ namespace STRINGS {
 			public static LocString SET_COLUMN = "Set all priorities in column";
 		}
 
+		public class VITALS_SCREEN {
+			public static LocString HANDLER_NAME = "Vitals table";
+			public static LocString STORED = "Stored";
+			public static LocString FOCUSED = "focused";
+			public static LocString FOCUS_DUPLICANT = "Focus camera on duplicant";
+		}
+
 		public class BUILD_MENU {
 			public static LocString ACTION_MENU = "action menu";
 			public static LocString TOOLS_CATEGORY = "Tools";

@@ -61,6 +61,7 @@ namespace OniAccess.Handlers {
 		protected virtual bool ColumnWraps(TableRowKind kind) => kind != TableRowKind.Toolbar;
 		protected virtual void OnEnterPressed(RowEntry row) { }
 		protected virtual bool IsColumnSortable(int col) => true;
+		protected virtual string GetCellTooltip(RowEntry row) => null;
 
 		protected virtual string GetWorldName(int worldId) {
 			var world = ClusterManager.Instance.GetWorld(worldId);
@@ -147,6 +148,10 @@ namespace OniAccess.Handlers {
 			}
 
 			parts.Add(GetCellValue(row));
+
+			string tooltip = GetCellTooltip(row);
+			if (tooltip != null)
+				parts.Add(tooltip);
 
 			_lastSpokenRow = _row;
 			_lastSpokenCol = _col;
