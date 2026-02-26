@@ -12,12 +12,16 @@ namespace OniAccess.Handlers.Screens {
 	/// Builds a virtual table from live game state on every navigation event.
 	/// Column list is built once on activation; DLC3 Power Banks column is
 	/// conditionally included.
+	///
+	/// Column headers include static descriptions (sourced from game Amount/Attribute
+	/// data). Data cells assemble value + delta + modifier sources programmatically
+	/// rather than using pre-formatted game tooltips.
 	/// </summary>
 	public class VitalsScreenHandler : BaseTableHandler {
 		struct ColumnDef {
 			public string Name;
+			public string HeaderDescription;
 			public Func<MinionIdentity, string> GetValue;
-			public Func<MinionIdentity, string> GetTooltip;
 			public Func<MinionIdentity, float> GetSortValue;
 			public bool Sortable;
 		}
@@ -49,15 +53,17 @@ namespace OniAccess.Handlers.Screens {
 			_columns = new List<ColumnDef> {
 				new ColumnDef {
 					Name = STRINGS.UI.VITALSSCREEN.STRESS,
-					GetValue = mi => Db.Get().Amounts.Stress.Lookup(mi).GetValueString(),
-					GetTooltip = mi => Db.Get().Amounts.Stress.Lookup(mi).GetTooltip(),
+					HeaderDescription = TextFilter.FilterForSpeech(
+						Db.Get().Amounts.Stress.description),
+					GetValue = GetStressValue,
 					GetSortValue = mi => Db.Get().Amounts.Stress.Lookup(mi).value,
 					Sortable = true
 				},
 				new ColumnDef {
 					Name = STRINGS.UI.VITALSSCREEN.QUALITYOFLIFE_EXPECTATIONS,
-					GetValue = mi => Db.Get().Attributes.QualityOfLife.Lookup(mi).GetFormattedValue(),
-					GetTooltip = mi => Db.Get().Attributes.QualityOfLife.Lookup(mi).GetAttributeValueTooltip(),
+					HeaderDescription = TextFilter.FilterForSpeech(
+						Db.Get().Attributes.QualityOfLife.Description),
+					GetValue = GetMoraleValue,
 					GetSortValue = mi => Db.Get().Attributes.QualityOfLifeExpectation.Lookup(mi).GetTotalValue(),
 					Sortable = true
 				},
@@ -66,17 +72,9 @@ namespace OniAccess.Handlers.Screens {
 			if (Game.IsDlcActiveForCurrentSave("DLC3_ID")) {
 				_columns.Add(new ColumnDef {
 					Name = STRINGS.UI.VITALSSCREEN_POWERBANKS,
-					GetValue = mi => {
-						if (mi.HasTag(GameTags.Minions.Models.Bionic))
-							return GameUtil.GetFormattedJoules(
-								mi.GetAmounts().Get(Db.Get().Amounts.BionicInternalBattery).value);
-						return STRINGS.UI.TABLESCREENS.NA;
-					},
-					GetTooltip = mi => {
-						if (mi.HasTag(GameTags.Minions.Models.Bionic))
-							return mi.GetAmounts().Get(Db.Get().Amounts.BionicInternalBattery).GetDescription();
-						return null;
-					},
+					HeaderDescription = TextFilter.FilterForSpeech(
+						Db.Get().Amounts.BionicInternalBattery.description),
+					GetValue = GetPowerBanksValue,
 					GetSortValue = mi => {
 						if (mi.HasTag(GameTags.Minions.Models.Bionic))
 							return mi.GetAmounts().Get(Db.Get().Amounts.BionicInternalBattery).value;
@@ -88,21 +86,8 @@ namespace OniAccess.Handlers.Screens {
 
 			_columns.Add(new ColumnDef {
 				Name = STRINGS.UI.VITALSSCREEN_CALORIES,
-				GetValue = mi => {
-					var amount = Db.Get().Amounts.Calories.Lookup(mi);
-					return amount != null ? amount.GetValueString() : (string)STRINGS.UI.TABLESCREENS.NA;
-				},
-				GetTooltip = mi => {
-					var amount = Db.Get().Amounts.Calories.Lookup(mi);
-					if (amount == null) return null;
-					string tip = amount.GetTooltip();
-					var ration = mi.GetSMI<RationMonitor.Instance>();
-					if (ration != null) {
-						tip += ", " + string.Format(STRINGS.UI.VITALSSCREEN.EATEN_TODAY_TOOLTIP,
-							GameUtil.GetFormattedCalories(ration.GetRationsAteToday()));
-					}
-					return tip;
-				},
+				HeaderDescription = STRINGS.ONIACCESS.VITALS_SCREEN.FULLNESS_HEADER,
+				GetValue = GetFullnessValue,
 				GetSortValue = mi => {
 					var amount = Db.Get().Amounts.Calories.Lookup(mi);
 					return amount != null ? amount.value : -1f;
@@ -112,16 +97,17 @@ namespace OniAccess.Handlers.Screens {
 
 			_columns.Add(new ColumnDef {
 				Name = STRINGS.UI.VITALSSCREEN_HEALTH,
-				GetValue = mi => Db.Get().Amounts.HitPoints.Lookup(mi).GetValueString(),
-				GetTooltip = mi => Db.Get().Amounts.HitPoints.Lookup(mi).GetTooltip(),
+				HeaderDescription = TextFilter.FilterForSpeech(
+					Db.Get().Amounts.HitPoints.description),
+				GetValue = GetHealthValue,
 				GetSortValue = mi => Db.Get().Amounts.HitPoints.Lookup(mi).value,
 				Sortable = true
 			});
 
 			_columns.Add(new ColumnDef {
 				Name = STRINGS.UI.VITALSSCREEN_SICKNESS,
-				GetValue = mi => GetSicknessLabel(mi),
-				GetTooltip = mi => GetSicknessTooltip(mi),
+				HeaderDescription = STRINGS.ONIACCESS.VITALS_SCREEN.DISEASE_HEADER,
+				GetValue = GetSicknessValue,
 				GetSortValue = null,
 				Sortable = false
 			});
@@ -162,7 +148,7 @@ namespace OniAccess.Handlers.Screens {
 						var miA = (MinionIdentity)a;
 						var miB = (MinionIdentity)b;
 						int cmp = colDef.GetSortValue(miA).CompareTo(colDef.GetSortValue(miB));
-						if (!_sortAscending) cmp = -cmp;
+						if (_sortAscending) cmp = -cmp;
 						if (cmp != 0) return cmp;
 						return a.GetProperName().CompareTo(b.GetProperName());
 					});
@@ -234,21 +220,28 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		protected override string GetCellValue(RowEntry row) {
-			switch (row.Kind) {
-				case TableRowKind.ColumnHeader:
-					if (_col >= 0 && _col < _columns.Count)
-						return _columns[_col].Name;
-					return "";
+			if (_col < 0 || _col >= _columns.Count)
+				return "";
 
-				case TableRowKind.Minion: {
-					var mi = (MinionIdentity)row.Identity;
-					if (_col >= 0 && _col < _columns.Count)
-						return _columns[_col].GetValue(mi);
-					return "";
+			switch (row.Kind) {
+				case TableRowKind.ColumnHeader: {
+					var col = _columns[_col];
+					string desc = col.HeaderDescription;
+					if (!string.IsNullOrEmpty(desc))
+						return col.Name + ", " + desc;
+					return col.Name;
 				}
 
-				case TableRowKind.StoredMinion:
-					return STRINGS.UI.TABLESCREENS.NA;
+				case TableRowKind.Minion:
+					return _columns[_col].GetValue((MinionIdentity)row.Identity);
+
+				case TableRowKind.StoredMinion: {
+					var smi = (StoredMinionIdentity)row.Identity;
+					string reason = TextFilter.FilterForSpeech(string.Format(
+						STRINGS.UI.TABLESCREENS.INFORMATION_NOT_AVAILABLE_TOOLTIP,
+						smi.GetStorageReason(), smi.GetProperName()));
+					return STRINGS.UI.TABLESCREENS.NA + ", " + reason;
+				}
 
 				default:
 					return "";
@@ -259,26 +252,6 @@ namespace OniAccess.Handlers.Screens {
 			if (col >= 0 && col < _columns.Count)
 				return _columns[col].Sortable;
 			return false;
-		}
-
-		// ========================================
-		// TOOLTIP
-		// ========================================
-
-		protected override string GetCellTooltip(RowEntry row) {
-			if (row.Kind == TableRowKind.StoredMinion) {
-				var smi = (StoredMinionIdentity)row.Identity;
-				return TextFilter.FilterForSpeech(string.Format(
-					STRINGS.UI.TABLESCREENS.INFORMATION_NOT_AVAILABLE_TOOLTIP,
-					smi.GetStorageReason(), smi.GetProperName()));
-			}
-			if (row.Kind != TableRowKind.Minion) return null;
-			if (_col < 0 || _col >= _columns.Count) return null;
-			var getTooltip = _columns[_col].GetTooltip;
-			if (getTooltip == null) return null;
-			string tip = getTooltip((MinionIdentity)row.Identity);
-			if (string.IsNullOrEmpty(tip)) return null;
-			return TextFilter.FilterForSpeech(tip);
 		}
 
 		// ========================================
@@ -302,6 +275,101 @@ namespace OniAccess.Handlers.Screens {
 				mi.GetComponent<KSelectable>(),
 				new UnityEngine.Vector3(8f, 0f, 0f));
 			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.VITALS_SCREEN.FOCUSED);
+		}
+
+		// ========================================
+		// AMOUNT BREAKDOWN HELPER
+		// ========================================
+
+		static string FormatAmountBreakdown(AmountInstance amount) {
+			var formatter = amount.amount.displayer.Formatter;
+			var parts = new List<string>();
+
+			float delta = amount.deltaAttribute.GetTotalDisplayValue();
+			parts.Add(string.Format(
+				STRINGS.ONIACCESS.VITALS_SCREEN.CHANGE,
+				formatter.GetFormattedValue(delta, formatter.DeltaTimeSlice)));
+
+			for (int i = 0; i < amount.deltaAttribute.Modifiers.Count; i++) {
+				var mod = amount.deltaAttribute.Modifiers[i];
+				parts.Add(mod.GetDescription() + ": " + formatter.GetFormattedModifier(mod));
+			}
+			return string.Join(". ", parts);
+		}
+
+		// ========================================
+		// COLUMN VALUE BUILDERS
+		// ========================================
+
+		static string GetStressValue(MinionIdentity mi) {
+			var amount = Db.Get().Amounts.Stress.Lookup(mi);
+			return amount.GetValueString() + ". " + FormatAmountBreakdown(amount);
+		}
+
+		static string GetMoraleValue(MinionIdentity mi) {
+			var qolAttr = Db.Get().Attributes.QualityOfLife.Lookup(mi);
+			var parts = new List<string>();
+			parts.Add(qolAttr.GetFormattedValue());
+
+			for (int i = 0; i < qolAttr.Modifiers.Count; i++) {
+				var mod = qolAttr.Modifiers[i];
+				string formatted = mod.GetFormattedString();
+				if (formatted != null)
+					parts.Add(mod.GetDescription() + ": " + formatted);
+			}
+
+			return string.Join(". ", parts);
+		}
+
+		static string GetPowerBanksValue(MinionIdentity mi) {
+			if (!mi.HasTag(GameTags.Minions.Models.Bionic))
+				return STRINGS.UI.TABLESCREENS.NA;
+
+			var amount = mi.GetAmounts().Get(Db.Get().Amounts.BionicInternalBattery);
+			var parts = new List<string>();
+			parts.Add(amount.GetValueString());
+
+			var batteryMonitor = mi.GetSMI<BionicBatteryMonitor.Instance>();
+			if (batteryMonitor != null) {
+				parts.Add(TextFilter.FilterForSpeech(string.Format(
+					STRINGS.DUPLICANTS.MODIFIERS.BIONIC_WATTS.TOOLTIP.CURRENT_WATTAGE_LABEL,
+					GameUtil.GetFormattedWattage(batteryMonitor.Wattage))));
+
+				foreach (var mod in batteryMonitor.Modifiers) {
+					if (mod.value != 0f)
+						parts.Add(TextFilter.FilterForSpeech(mod.name));
+				}
+			}
+			return string.Join(". ", parts);
+		}
+
+		static string GetFullnessValue(MinionIdentity mi) {
+			var amount = Db.Get().Amounts.Calories.Lookup(mi);
+			if (amount == null)
+				return STRINGS.UI.TABLESCREENS.NA;
+
+			string result = amount.GetValueString() + ". " + FormatAmountBreakdown(amount);
+
+			var ration = mi.GetSMI<RationMonitor.Instance>();
+			if (ration != null) {
+				result += ". " + string.Format(
+					STRINGS.ONIACCESS.VITALS_SCREEN.EATEN_TODAY,
+					GameUtil.GetFormattedCalories(ration.GetRationsAteToday()));
+			}
+			return result;
+		}
+
+		static string GetHealthValue(MinionIdentity mi) {
+			var amount = Db.Get().Amounts.HitPoints.Lookup(mi);
+			return amount.GetValueString() + ". " + FormatAmountBreakdown(amount);
+		}
+
+		static string GetSicknessValue(MinionIdentity mi) {
+			string label = GetSicknessLabel(mi);
+			string detail = GetSicknessDetail(mi);
+			if (detail != null)
+				return label + ". " + TextFilter.FilterForSpeech(detail);
+			return label;
 		}
 
 		// ========================================
@@ -352,7 +420,7 @@ namespace OniAccess.Handlers.Screens {
 				sicknessList[0].Key, GameUtil.GetFormattedCycles(sicknessList[0].Value));
 		}
 
-		static string GetSicknessTooltip(MinionIdentity mi) {
+		static string GetSicknessDetail(MinionIdentity mi) {
 			var parts = new List<string>();
 
 			if (DlcManager.FeatureRadiationEnabled()) {

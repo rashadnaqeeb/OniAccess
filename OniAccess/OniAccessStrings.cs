@@ -547,6 +547,10 @@ namespace STRINGS {
 			public static LocString STORED = "Stored";
 			public static LocString FOCUSED = "focused";
 			public static LocString FOCUS_DUPLICANT = "Focus camera on duplicant";
+			public static LocString CHANGE = "change: {0}";
+			public static LocString EATEN_TODAY = "eaten today: {0}";
+			public static LocString FULLNESS_HEADER = "Calories remaining before starvation";
+			public static LocString DISEASE_HEADER = "Current diseases and time remaining";
 		}
 
 		public class BUILD_MENU {
