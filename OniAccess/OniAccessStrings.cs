@@ -560,6 +560,7 @@ namespace STRINGS {
 			public static LocString FORBIDDEN = "forbidden";
 			public static LocString RESTRICTED = "restricted";
 			public static LocString MORALE = "morale {0}";
+			public static LocString MIXED = "mixed";
 			public static LocString ALL_PERMITTED = "all permitted";
 			public static LocString ALL_FORBIDDEN = "all forbidden";
 			public static LocString TOGGLE_ALL = "Toggle all duplicants for this consumable";

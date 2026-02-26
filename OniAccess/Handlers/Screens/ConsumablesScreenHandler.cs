@@ -201,7 +201,7 @@ namespace OniAccess.Handlers.Screens {
 				case TableRowKind.StoredMinion:
 					return row.Identity.GetProperName();
 				case TableRowKind.Default:
-					return STRINGS.UI.CONSUMABLESSCREEN.TITLE;
+					return STRINGS.UI.JOBSCREEN_DEFAULT;
 				default:
 					return null;
 			}
@@ -215,6 +215,8 @@ namespace OniAccess.Handlers.Screens {
 
 			switch (row.Kind) {
 				case TableRowKind.ColumnHeader:
+					if (colDef.ConsumableInfo != null)
+						return colDef.Name + ", " + GetColumnStatus(colDef.ConsumableInfo);
 					return colDef.Name;
 
 				case TableRowKind.Minion:
@@ -253,6 +255,28 @@ namespace OniAccess.Handlers.Screens {
 		// CELL VALUE BUILDERS
 		// ========================================
 
+		string GetColumnStatus(IConsumableUIItem consumable) {
+			string id = consumable.ConsumableId;
+			bool anyPermitted = false;
+			bool anyForbidden = false;
+
+			foreach (var row in _rows) {
+				if (row.Kind != TableRowKind.Minion) continue;
+				var consumer = ((MinionIdentity)row.Identity).GetComponent<ConsumableConsumer>();
+				if (consumer.IsDietRestricted(id)) continue;
+				if (consumer.IsPermitted(id))
+					anyPermitted = true;
+				else
+					anyForbidden = true;
+				if (anyPermitted && anyForbidden)
+					return (string)STRINGS.ONIACCESS.CONSUMABLES_SCREEN.MIXED;
+			}
+
+			if (anyPermitted) return (string)STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_PERMITTED;
+			if (anyForbidden) return (string)STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN;
+			return (string)STRINGS.ONIACCESS.CONSUMABLES_SCREEN.RESTRICTED;
+		}
+
 		static string GetQoLValue(MinionIdentity mi) {
 			var attr = Db.Get().Attributes.QualityOfLife.Lookup(mi);
 			return attr.GetFormattedValue();
@@ -263,7 +287,10 @@ namespace OniAccess.Handlers.Screens {
 			string id = consumable.ConsumableId;
 
 			if (consumer.IsDietRestricted(id))
-				return (string)STRINGS.ONIACCESS.CONSUMABLES_SCREEN.RESTRICTED;
+				return STRINGS.ONIACCESS.CONSUMABLES_SCREEN.RESTRICTED + ", "
+					+ TextFilter.FilterForSpeech(string.Format(
+						STRINGS.UI.CONSUMABLESSCREEN.FOOD_CANT_CONSUME,
+						mi.GetProperName(), consumable.ConsumableName));
 
 			bool permitted = consumer.IsPermitted(id);
 			string state = permitted
@@ -283,8 +310,11 @@ namespace OniAccess.Handlers.Screens {
 				}
 				string qualityDesc = GameUtil.GetFormattedFoodQuality(foodInfo.Quality);
 				string moraleStr = GameUtil.AddPositiveSign(morale.ToString(), morale > 0);
-				return state + ", " + TextFilter.FilterForSpeech(qualityDesc)
+				string result = state + ", " + TextFilter.FilterForSpeech(qualityDesc)
 					+ ", " + string.Format(STRINGS.ONIACCESS.CONSUMABLES_SCREEN.MORALE, moraleStr);
+				if (!string.IsNullOrEmpty(foodInfo.Description))
+					result += ". " + TextFilter.FilterForSpeech(foodInfo.Description);
+				return result;
 			}
 
 			return state;
