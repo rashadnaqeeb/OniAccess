@@ -558,17 +558,18 @@ namespace OniAccess.Handlers.Screens.Skills {
 				var smi = minionIdentity.GetSMI<BionicUpgradesMonitor.Instance>();
 				if (smi == null) return false;
 				var slots = smi.upgradeComponentSlots;
-				// First pass: pending-not-installed (instant return to world inventory)
+				// First pass: installed+matching (matches game's DecrementBoosterAssignment)
 				for (int i = slots.Length - 1; i >= 0; i--) {
 					var slot = slots[i];
 					if (slot.assignedUpgradeComponent != null &&
 						slot.assignedUpgradeComponent.PrefabID() == boosterTag &&
-						!slot.HasUpgradeInstalled) {
+						slot.HasUpgradeInstalled &&
+						slot.AssignedUpgradeMatchesInstalledUpgrade) {
 						slot.GetAssignableSlotInstance().Unassign();
 						return true;
 					}
 				}
-				// Second pass: installed (requires physical ejection by dupe)
+				// Second pass: any assigned booster of this type
 				for (int i = slots.Length - 1; i >= 0; i--) {
 					var slot = slots[i];
 					if (slot.assignedUpgradeComponent != null &&
