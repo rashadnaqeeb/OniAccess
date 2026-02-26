@@ -602,7 +602,10 @@ namespace STRINGS {
 			public static LocString POINTS = "{0} points";
 			public static LocString MORALE_OF = "morale {0} of {1}";
 			public static LocString NO_HAT = "no hat";
+			public static LocString INTERESTS = "interests: {0}";
+			public static LocString NO_INTERESTS = "no interests";
 			public static LocString XP_PROGRESS = "{0} of {1} experience to next point";
+			public static LocString HAT_QUEUED = "{0} queued";
 
 			public static LocString BUCKET_DUPE_INFO = "Dupe Info";
 			public static LocString BUCKET_AVAILABLE = "Available";

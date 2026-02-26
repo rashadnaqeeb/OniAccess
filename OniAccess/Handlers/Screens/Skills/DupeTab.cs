@@ -76,6 +76,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 		public override void SpeakCurrentItem(string parentContext = null) {
 			var dupes = GetDupeList();
 			if (_currentIndex < 0 || _currentIndex >= dupes.Count) return;
+			// Auto-select the dupe under the cursor
+			_parent.SetSelectedDupe(dupes[_currentIndex]);
 			string label = SkillsHelper.BuildDupeLabel(dupes[_currentIndex]);
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
@@ -83,10 +85,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 		}
 
 		protected override void ActivateCurrentItem() {
-			var dupes = GetDupeList();
-			if (_currentIndex < 0 || _currentIndex >= dupes.Count) return;
-			var dupe = dupes[_currentIndex];
-			_parent.SelectDupeAndJumpToSkills(dupe);
+			// Dupe is already selected by navigation; just jump to skills tab
+			_parent.JumpToSkillsTab();
 		}
 
 		// ========================================

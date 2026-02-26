@@ -103,6 +103,10 @@ namespace OniAccess.Handlers.Screens {
 
 		internal void SelectDupeAndJumpToSkills(IAssignableIdentity dupe) {
 			SetSelectedDupe(dupe);
+			JumpToSkillsTab();
+		}
+
+		internal void JumpToSkillsTab() {
 			ActiveTab.OnTabDeactivated();
 			_activeTab = TabId.Skills;
 			PlayHoverSound();
@@ -115,7 +119,7 @@ namespace OniAccess.Handlers.Screens {
 			_treeTab.OnTabActivatedAt(skill);
 		}
 
-		private void SetSelectedDupe(IAssignableIdentity dupe) {
+		internal void SetSelectedDupe(IAssignableIdentity dupe) {
 			_selectedDupe = dupe;
 			// Sync with the game screen
 			var screen = _screen as SkillsScreen;

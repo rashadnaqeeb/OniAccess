@@ -212,11 +212,11 @@ namespace OniAccess.Patches {
 
 	/// <summary>
 	/// SkillsScreen is toggled by ManagementMenu via Show(bool).
-	/// Like ResearchScreen, it extends KModalScreen whose OnActivate calls
-	/// OnShow(true) during prefab init. Patch Show to avoid that init path.
+	/// Unlike ResearchScreen, SkillsScreen does not override Show — only OnShow.
+	/// Patch OnShow directly (same pattern as VideoScreen).
 	/// </summary>
-	[HarmonyPatch(typeof(SkillsScreen), nameof(SkillsScreen.Show))]
-	internal static class SkillsScreen_Show_Patch {
+	[HarmonyPatch(typeof(SkillsScreen), "OnShow")]
+	internal static class SkillsScreen_OnShow_Patch {
 		private static void Postfix(SkillsScreen __instance, bool show) {
 			if (!ModToggle.IsEnabled) return;
 			if (show)

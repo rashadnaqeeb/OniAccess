@@ -205,10 +205,6 @@ namespace OniAccess.Handlers.Screens.Skills {
 				}
 			}
 
-			string prereqs = BuildPrereqList(skill);
-			if (prereqs != null)
-				parts.Add(prereqs);
-
 			int masteryCount = CountMasters(skill.Id);
 			if (masteryCount > 0)
 				parts.Add(string.Format(
@@ -222,12 +218,14 @@ namespace OniAccess.Handlers.Screens.Skills {
 			MinionResume resume, IAssignableIdentity identity) {
 			if (resume != null) {
 				if (resume.HasMasteredSkill(skill.Id)) {
-					if (resume.HasBeenGrantedSkill(skill))
-						parts.Add(STRINGS.ONIACCESS.SKILLS.GRANTED);
+					parts.Add(resume.HasBeenGrantedSkill(skill)
+						? (string)STRINGS.ONIACCESS.SKILLS.GRANTED
+						: (string)STRINGS.ONIACCESS.SKILLS.MASTERED);
 					return;
 				}
 				var conditions = resume.GetSkillMasteryConditions(skill.Id);
 				if (resume.CanMasterSkill(conditions)) {
+					parts.Add(STRINGS.ONIACCESS.SKILLS.AVAILABLE);
 					if (Array.Exists(conditions,
 						c => c == MinionResume.SkillMasteryConditions.StressWarning))
 						parts.Add(STRINGS.ONIACCESS.SKILLS.MORALE_DEFICIT);
@@ -241,8 +239,10 @@ namespace OniAccess.Handlers.Screens.Skills {
 			}
 			// Stored
 			ResolveDupe(identity, out _, out var stored);
-			if (stored != null && stored.HasMasteredSkill(skill.Id))
+			if (stored != null && stored.HasMasteredSkill(skill.Id)) {
+				parts.Add(STRINGS.ONIACCESS.SKILLS.MASTERED);
 				return;
+			}
 			parts.Add(STRINGS.ONIACCESS.SKILLS.LOCKED);
 		}
 
@@ -338,6 +338,9 @@ namespace OniAccess.Handlers.Screens.Skills {
 				string.Format(STRINGS.ONIACCESS.SKILLS.POINTS,
 					resume.AvailableSkillpoints));
 
+			// Interests (skill groups with aptitude)
+			labels.Add(BuildInterestsLabel(resume));
+
 			// Morale breakdown
 			var moraleAttr = Db.Get().Attributes.QualityOfLife.Lookup(resume);
 			labels.Add(BuildModifierBreakdown(
@@ -362,6 +365,19 @@ namespace OniAccess.Handlers.Screens.Skills {
 			labels.Add(hatName ?? (string)STRINGS.ONIACCESS.SKILLS.NO_HAT);
 
 			return labels;
+		}
+
+		private static string BuildInterestsLabel(MinionResume resume) {
+			var names = new List<string>();
+			foreach (var group in Db.Get().SkillGroups.resources) {
+				if (resume.AptitudeBySkillGroup.TryGetValue(
+					new HashedString(group.Id), out float aptitude) && aptitude > 0f)
+					names.Add(group.Name);
+			}
+			if (names.Count == 0)
+				return STRINGS.ONIACCESS.SKILLS.NO_INTERESTS;
+			return string.Format(STRINGS.ONIACCESS.SKILLS.INTERESTS,
+				string.Join(", ", names));
 		}
 
 		private static string BuildModifierBreakdown(
@@ -418,6 +434,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 		// ========================================
 
 		internal static bool IsBionic(IAssignableIdentity identity) {
+			if (!DlcManager.IsContentSubscribed(DlcManager.DLC3_ID))
+				return false;
 			try {
 				var model = GetDupeModel(identity);
 				return model == GameTags.Minions.Models.Bionic;

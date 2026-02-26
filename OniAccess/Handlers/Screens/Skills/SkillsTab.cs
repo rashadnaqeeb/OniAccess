@@ -22,10 +22,11 @@ namespace OniAccess.Handlers.Screens.Skills {
 
 		// Dupe Info item indices
 		private const int INFO_NAME_POINTS = 0;
-		private const int INFO_MORALE = 1;
-		private const int INFO_MORALE_NEED = 2;
-		private const int INFO_XP = 3;
-		private const int INFO_HAT = 4;
+		private const int INFO_INTERESTS = 1;
+		private const int INFO_MORALE = 2;
+		private const int INFO_MORALE_NEED = 3;
+		private const int INFO_XP = 4;
+		private const int INFO_HAT = 5;
 
 		internal SkillsTab(SkillsScreenHandler parent) : base(screen: null) {
 			_parent = parent;
@@ -251,7 +252,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 
 			switch (cat) {
 				case CAT_DUPE_INFO:
-					return SkillsHelper.IsStored(identity) ? 1 : 5;
+					return SkillsHelper.IsStored(identity) ? 1 : 6;
 				case CAT_AVAILABLE:
 				case CAT_LOCKED:
 				case CAT_MASTERED:
@@ -322,12 +323,24 @@ namespace OniAccess.Handlers.Screens.Skills {
 			var hats = SkillsHelper.GetAvailableHats(resume);
 			if (hatIdx < 0 || hatIdx >= hats.Count) return;
 			var hat = hats[hatIdx];
-			string currentHat = resume.CurrentHat;
-			resume.SetHats(currentHat, hat.HatId);
-			resume.ApplyTargetHat();
+			if (string.IsNullOrEmpty(hat.HatId)) {
+				// "None" — remove hat immediately
+				resume.SetHats(resume.CurrentHat, null);
+				resume.ApplyTargetHat();
+			} else {
+				// Actual hat — set target and queue the chore
+				resume.SetHats(resume.CurrentHat, hat.HatId);
+				if (resume.OwnsHat(hat.HatId))
+					new PutOnHatChore(resume, Db.Get().ChoreTypes.SwitchHat);
+			}
+			var skillsScreen = _parent.Screen as SkillsScreen;
+			if (skillsScreen != null)
+				skillsScreen.RefreshAll();
 			SkillsHelper.PlayClickSound();
-			SpeechPipeline.SpeakInterrupt(string.Format(
-				STRINGS.ONIACCESS.SKILLS.HAT_SELECTED, hat.Name));
+			string msg = string.IsNullOrEmpty(hat.HatId)
+				? string.Format(STRINGS.ONIACCESS.SKILLS.HAT_SELECTED, hat.Name)
+				: string.Format(STRINGS.ONIACCESS.SKILLS.HAT_QUEUED, hat.Name);
+			SpeechPipeline.SpeakInterrupt(msg);
 		}
 
 		// ========================================

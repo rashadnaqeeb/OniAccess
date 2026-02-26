@@ -90,9 +90,19 @@ namespace OniAccess.Handlers {
 				return null;
 			}
 
+			_current = parents[0];
+			// If we landed on a root node, use roots as siblings
+			var landedParents = _getParents(_current);
+			if ((landedParents == null || landedParents.Count == 0) && _getRoots != null) {
+				var roots = _getRoots();
+				if (roots != null && roots.Count > 0) {
+					_siblings = roots;
+					_siblingIndex = IndexOf(roots, _current);
+					return _current;
+				}
+			}
 			_siblings = parents;
 			_siblingIndex = 0;
-			_current = parents[0];
 			return _current;
 		}
 

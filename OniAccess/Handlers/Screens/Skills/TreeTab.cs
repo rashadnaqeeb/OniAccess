@@ -42,7 +42,16 @@ namespace OniAccess.Handlers.Screens.Skills {
 		internal void OnTabActivatedAt(Skill skill) {
 			RebuildGraph();
 			SpeechPipeline.SpeakInterrupt(TabName);
-			_graph.MoveTo(skill);
+			// Establish sibling context based on the skill's position
+			var parents = SkillsHelper.GetParents(skill);
+			if (parents.Count > 0) {
+				var siblings = SkillsHelper.GetChildren(parents[0]);
+				_graph.MoveToWithSiblings(skill, siblings);
+			} else {
+				var model = SkillsHelper.GetDupeModel(_parent.SelectedDupe);
+				var roots = SkillsHelper.GetRootSkills(model);
+				_graph.MoveToWithSiblings(skill, roots);
+			}
 			SpeechPipeline.SpeakQueued(
 				SkillsHelper.BuildSkillLabel(skill, _parent.SelectedDupe));
 		}
