@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Screens {
 	/// _choreGroups holds a filtered snapshot of Db ChoreGroup resources, which are
 	/// immutable database objects — safe to cache for the screen's lifetime.
 	/// </summary>
-	public class PriorityScreenHandler : BaseTableHandler {
+	public class PriorityScreenHandler: BaseTableHandler {
 		List<ChoreGroup> _choreGroups;
 
 		public override string DisplayName => STRINGS.ONIACCESS.PRIORITY_SCREEN.HANDLER_NAME;
@@ -151,32 +151,32 @@ namespace OniAccess.Handlers.Screens {
 					return "";
 
 				case TableRowKind.Minion: {
-					var manager = GetPriorityManager(row);
-					var group = _choreGroups[_col];
-					if (manager.IsChoreGroupDisabled(group)) {
-						string traitName = GetDisablingTraitName(row.Identity, group);
-						return string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT, traitName);
+						var manager = GetPriorityManager(row);
+						var group = _choreGroups[_col];
+						if (manager.IsChoreGroupDisabled(group)) {
+							string traitName = GetDisablingTraitName(row.Identity, group);
+							return string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT, traitName);
+						}
+						int priority = manager.GetPersonalPriority(group);
+						int skill = manager.GetAssociatedSkillLevel(group);
+						return GetPriorityName(priority) + ", "
+							+ string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.SKILL, skill);
 					}
-					int priority = manager.GetPersonalPriority(group);
-					int skill = manager.GetAssociatedSkillLevel(group);
-					return GetPriorityName(priority) + ", "
-						+ string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.SKILL, skill);
-				}
 
 				case TableRowKind.StoredMinion: {
-					var manager = GetPriorityManager(row);
-					var group = _choreGroups[_col];
-					if (manager.IsChoreGroupDisabled(group)) {
-						string traitName = GetDisablingTraitName(row.Identity, group);
-						return string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT, traitName);
+						var manager = GetPriorityManager(row);
+						var group = _choreGroups[_col];
+						if (manager.IsChoreGroupDisabled(group)) {
+							string traitName = GetDisablingTraitName(row.Identity, group);
+							return string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT, traitName);
+						}
+						return GetPriorityName(manager.GetPersonalPriority(group));
 					}
-					return GetPriorityName(manager.GetPersonalPriority(group));
-				}
 
 				case TableRowKind.Default: {
-					var group = _choreGroups[_col];
-					return GetPriorityName(Immigration.Instance.GetPersonalPriority(group));
-				}
+						var group = _choreGroups[_col];
+						return GetPriorityName(Immigration.Instance.GetPersonalPriority(group));
+					}
 
 				default:
 					return "";

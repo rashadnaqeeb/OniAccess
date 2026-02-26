@@ -17,7 +17,7 @@ namespace OniAccess.Handlers.Screens {
 	/// data). Data cells assemble value + delta + modifier sources programmatically
 	/// rather than using pre-formatted game tooltips.
 	/// </summary>
-	public class VitalsScreenHandler : BaseTableHandler {
+	public class VitalsScreenHandler: BaseTableHandler {
 		struct ColumnDef {
 			public string Name;
 			public string HeaderDescription;
@@ -193,23 +193,23 @@ namespace OniAccess.Handlers.Screens {
 
 			switch (row.Kind) {
 				case TableRowKind.ColumnHeader: {
-					var col = _columns[_col];
-					string desc = col.HeaderDescription;
-					if (!string.IsNullOrEmpty(desc))
-						return col.Name + ", " + desc;
-					return col.Name;
-				}
+						var col = _columns[_col];
+						string desc = col.HeaderDescription;
+						if (!string.IsNullOrEmpty(desc))
+							return col.Name + ", " + desc;
+						return col.Name;
+					}
 
 				case TableRowKind.Minion:
 					return _columns[_col].GetValue((MinionIdentity)row.Identity);
 
 				case TableRowKind.StoredMinion: {
-					var smi = (StoredMinionIdentity)row.Identity;
-					string reason = TextFilter.FilterForSpeech(string.Format(
-						STRINGS.UI.TABLESCREENS.INFORMATION_NOT_AVAILABLE_TOOLTIP,
-						smi.GetStorageReason(), smi.GetProperName()));
-					return STRINGS.UI.TABLESCREENS.NA + ", " + reason;
-				}
+						var smi = (StoredMinionIdentity)row.Identity;
+						string reason = TextFilter.FilterForSpeech(string.Format(
+							STRINGS.UI.TABLESCREENS.INFORMATION_NOT_AVAILABLE_TOOLTIP,
+							smi.GetStorageReason(), smi.GetProperName()));
+						return STRINGS.UI.TABLESCREENS.NA + ", " + reason;
+					}
 
 				default:
 					return "";

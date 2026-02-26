@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Screens.Research {
 	/// Left/Right cycles among siblings from the last Up/Down move.
 	/// Enter queues the current tech for research.
 	/// </summary>
-	internal class TreeTab : IResearchTab {
+	internal class TreeTab: IResearchTab {
 		private readonly ResearchScreenHandler _parent;
 		private readonly NavigableGraph<Tech> _graph;
 
@@ -110,13 +110,11 @@ namespace OniAccess.Handlers.Screens.Research {
 		// ========================================
 
 		static void PlayHoverSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover")); }
-			catch (System.Exception ex) { Util.Log.Warn($"TreeTab: hover sound failed: {ex.Message}"); }
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover")); } catch (System.Exception ex) { Util.Log.Warn($"TreeTab: hover sound failed: {ex.Message}"); }
 		}
 
 		static void PlayWrapSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); }
-			catch (System.Exception ex) { Util.Log.Warn($"TreeTab: wrap sound failed: {ex.Message}"); }
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); } catch (System.Exception ex) { Util.Log.Warn($"TreeTab: wrap sound failed: {ex.Message}"); }
 		}
 	}
 }

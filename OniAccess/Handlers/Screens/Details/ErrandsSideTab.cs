@@ -98,7 +98,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				var section = new DetailSection();
 				section.Header = header;
 
-					// Snapshot speech text at populate time. The game continuously
+				// Snapshot speech text at populate time. The game continuously
 				// re-sorts MinionTodoChoreEntry objects via Apply(), recycling
 				// them with new chore data even while paused. Live reads cause
 				// navigation to land on different items between frames.

@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Screens.Research {
 	/// Remaining entries are queued TechInstances in tier order.
 	/// Enter cancels the selected tech. Space jumps to Tree tab.
 	/// </summary>
-	internal class QueueTab : BaseMenuHandler, IResearchTab {
+	internal class QueueTab: BaseMenuHandler, IResearchTab {
 		private readonly ResearchScreenHandler _parent;
 
 		internal QueueTab(ResearchScreenHandler parent) : base(screen: null) {

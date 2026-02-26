@@ -12,7 +12,7 @@ namespace OniAccess.Handlers {
 	/// Subclasses implement BuildRowList, GetColumnCount, GetColumnName,
 	/// GetCellValue, and GetRowLabel to describe their specific table.
 	/// </summary>
-	public abstract class BaseTableHandler : BaseScreenHandler {
+	public abstract class BaseTableHandler: BaseScreenHandler {
 		protected enum TableRowKind {
 			Toolbar,
 			ColumnHeader,

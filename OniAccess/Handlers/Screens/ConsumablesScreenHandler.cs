@@ -15,7 +15,7 @@ namespace OniAccess.Handlers.Screens {
 	/// Enter on a column header triggers the super-checkbox (toggle all duplicants
 	/// for that consumable). Enter on a data row toggles the individual permission.
 	/// </summary>
-	public class ConsumablesScreenHandler : BaseTableHandler {
+	public class ConsumablesScreenHandler: BaseTableHandler {
 		struct ColumnDef {
 			public string Name;
 			public IConsumableUIItem ConsumableInfo;
@@ -193,12 +193,12 @@ namespace OniAccess.Handlers.Screens {
 					return GetConsumableValue((MinionIdentity)row.Identity, colDef.ConsumableInfo);
 
 				case TableRowKind.StoredMinion: {
-					var smi = (StoredMinionIdentity)row.Identity;
-					string reason = TextFilter.FilterForSpeech(string.Format(
-						STRINGS.UI.TABLESCREENS.INFORMATION_NOT_AVAILABLE_TOOLTIP,
-						smi.GetStorageReason(), smi.GetProperName()));
-					return STRINGS.UI.TABLESCREENS.NA + ", " + reason;
-				}
+						var smi = (StoredMinionIdentity)row.Identity;
+						string reason = TextFilter.FilterForSpeech(string.Format(
+							STRINGS.UI.TABLESCREENS.INFORMATION_NOT_AVAILABLE_TOOLTIP,
+							smi.GetStorageReason(), smi.GetProperName()));
+						return STRINGS.UI.TABLESCREENS.NA + ", " + reason;
+					}
 
 				case TableRowKind.Default:
 					if (colDef.ConsumableInfo == null)

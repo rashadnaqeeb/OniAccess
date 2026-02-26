@@ -15,7 +15,7 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Lifecycle: Show-patch on ResearchScreen.OnShow(bool).
 	/// </summary>
-	public class ResearchScreenHandler : BaseScreenHandler {
+	public class ResearchScreenHandler: BaseScreenHandler {
 		private enum TabId { Browse, Queue, Tree }
 
 		private readonly BrowseTab _browseTab;
@@ -122,13 +122,11 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		static void PlayHoverSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover")); }
-			catch (System.Exception ex) { Util.Log.Warn($"ResearchScreenHandler: hover sound failed: {ex.Message}"); }
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover")); } catch (System.Exception ex) { Util.Log.Warn($"ResearchScreenHandler: hover sound failed: {ex.Message}"); }
 		}
 
 		static void PlayWrapSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); }
-			catch (System.Exception ex) { Util.Log.Warn($"ResearchScreenHandler: wrap sound failed: {ex.Message}"); }
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); } catch (System.Exception ex) { Util.Log.Warn($"ResearchScreenHandler: wrap sound failed: {ex.Message}"); }
 		}
 	}
 }
