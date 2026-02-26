@@ -17,7 +17,8 @@ namespace OniAccess.Handlers.Screens.Research {
 			_parent = parent;
 			_graph = new NavigableGraph<Tech>(
 				getParents: tech => tech.requiredTech,
-				getChildren: tech => (IReadOnlyList<Tech>)tech.unlockedTech);
+				getChildren: tech => (IReadOnlyList<Tech>)tech.unlockedTech,
+				getRoots: ResearchHelper.GetRootTechs);
 		}
 
 		public string TabName => (string)STRINGS.ONIACCESS.RESEARCH.TREE_TAB;
@@ -91,11 +92,14 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
 				var tech = _graph.Current;
 				if (tech != null && !tech.IsComplete()) {
+					ResearchHelper.PlayClickSound();
 					global::Research.Instance.SetActiveResearch(tech, clearQueue: true);
 					SpeechPipeline.SpeakInterrupt(
 						string.Format(STRINGS.ONIACCESS.RESEARCH.QUEUED, tech.Name));
 				} else if (tech != null) {
-					SpeechPipeline.SpeakInterrupt(ResearchHelper.BuildTechLabel(tech));
+					ResearchHelper.PlayRejectSound();
+					SpeechPipeline.SpeakInterrupt(
+						tech.Name + ", " + STRINGS.ONIACCESS.RESEARCH.COMPLETED);
 				}
 				return true;
 			}

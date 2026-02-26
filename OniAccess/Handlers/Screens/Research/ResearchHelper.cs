@@ -27,9 +27,16 @@ namespace OniAccess.Handlers.Screens.Research {
 					parts.Add(prereqs);
 			}
 
-			string cost = BuildCostString(tech);
-			if (cost != null)
-				parts.Add(cost);
+			// Show progress if partially researched, otherwise show total cost
+			var ti = !tech.IsComplete() ? global::Research.Instance.Get(tech) : null;
+			string progress = ti != null && HasProgress(ti) ? BuildProgressString(ti) : null;
+			if (progress != null)
+				parts.Add(progress);
+			else {
+				string cost = BuildCostString(tech);
+				if (cost != null)
+					parts.Add(cost);
+			}
 
 			string unlocks = BuildUnlocksList(tech);
 			if (unlocks != null)
@@ -197,6 +204,23 @@ namespace OniAccess.Handlers.Screens.Research {
 				2 => (string)STRINGS.ONIACCESS.RESEARCH.BUCKET_COMPLETED,
 				_ => "",
 			};
+		}
+
+		static bool HasProgress(TechInstance ti) {
+			foreach (var kv in ti.progressInventory.PointsByTypeID) {
+				if (kv.Value > 0f) return true;
+			}
+			return false;
+		}
+
+		internal static void PlayClickSound() {
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click_Open")); }
+			catch (System.Exception ex) { Util.Log.Warn($"ResearchHelper: click sound failed: {ex.Message}"); }
+		}
+
+		internal static void PlayRejectSound() {
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("Negative")); }
+			catch (System.Exception ex) { Util.Log.Warn($"ResearchHelper: reject sound failed: {ex.Message}"); }
 		}
 
 		static string GetResearchTypeName(string typeId) {

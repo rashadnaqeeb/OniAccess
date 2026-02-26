@@ -75,6 +75,9 @@ This mod runs on Harmony patches and reflection. Both fail in ways that produce 
 - New screen handlers must be registered in `ContextDetector.RegisterMenuHandlers()` or they will never activate
 - Key detection goes in `Tick()` via `UnityEngine.Input.GetKeyDown()`. `HandleKeyDown()` is only for Escape interception through KButtonEvent
 - `UnityEngine.Input` must be fully qualified inside the `OniAccess.Input` namespace. Bare `Input` resolves to the namespace, not the Unity class
+- Show-lifecycle patches depend on the screen's base class:
+  - `ShowOptimizedKScreen` subclasses (e.g. `TableScreen`): patch `OnShow` — `KScreen.OnActivate` does not call `OnShow`, so it only fires on ManagementMenu toggles
+  - `KModalScreen` subclasses (e.g. `ResearchScreen`): patch `Show`, NOT `OnShow` — `KModalScreen.OnActivate` calls `OnShow(true)` directly during prefab init, which would push a handler before the game world is ready
 
 ## Game Log
 

@@ -34,6 +34,7 @@ namespace OniAccess.Handlers.Screens.Research {
 		public void OnTabActivated(bool announce) {
 			_currentIndex = 0;
 			_search.Clear();
+			SuppressSearchThisFrame();
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
 			if (ItemCount > 0)
@@ -92,6 +93,7 @@ namespace OniAccess.Handlers.Screens.Research {
 		}
 
 		protected override void ActivateCurrentItem() {
+			ResearchHelper.PlayClickSound();
 			if (_currentIndex == 0) {
 				// Point inventory row — no action
 				SpeakCurrentItem();

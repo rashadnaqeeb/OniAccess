@@ -31,7 +31,11 @@ namespace OniAccess.Handlers.Screens.Research {
 			ResetState();
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
-			SpeakCurrentItem();
+			if (ItemCount > 0) {
+				string label = GetItemLabel(_currentIndex);
+				if (!string.IsNullOrEmpty(label))
+					SpeechPipeline.SpeakQueued(label);
+			}
 		}
 
 		public void OnTabDeactivated() {
@@ -62,7 +66,7 @@ namespace OniAccess.Handlers.Screens.Research {
 
 		protected override int MaxLevel => 1;
 		protected override int SearchLevel => 1;
-		protected override int StartLevel => 0;
+		protected override int StartLevel => 1;
 
 		protected override int GetItemCount(int level, int[] indices) {
 			if (level == 0) return 3;
@@ -89,10 +93,13 @@ namespace OniAccess.Handlers.Screens.Research {
 			var tech = techs[indices[1]];
 
 			if (tech.IsComplete()) {
-				SpeakCurrentItem();
+				ResearchHelper.PlayRejectSound();
+				SpeechPipeline.SpeakInterrupt(
+					tech.Name + ", " + STRINGS.ONIACCESS.RESEARCH.COMPLETED);
 				return;
 			}
 
+			ResearchHelper.PlayClickSound();
 			global::Research.Instance.SetActiveResearch(tech, clearQueue: true);
 			SpeechPipeline.SpeakInterrupt(
 				string.Format(STRINGS.ONIACCESS.RESEARCH.QUEUED, tech.Name));

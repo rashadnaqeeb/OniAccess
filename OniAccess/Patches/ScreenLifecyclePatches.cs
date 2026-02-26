@@ -193,11 +193,14 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
-	/// ResearchScreen is toggled by ManagementMenu via Show(bool), same pattern as
-	/// TableScreen. Patch OnShow to push/pop the handler via ContextDetector.
+	/// ResearchScreen is toggled by ManagementMenu via Show(bool).
+	/// Unlike TableScreen (which extends ShowOptimizedKScreen → KScreen),
+	/// ResearchScreen extends KModalScreen whose OnActivate calls OnShow(true)
+	/// directly during prefab init. Patching Show instead of OnShow avoids
+	/// firing on that init path.
 	/// </summary>
-	[HarmonyPatch(typeof(ResearchScreen), "OnShow")]
-	internal static class ResearchScreen_OnShow_Patch {
+	[HarmonyPatch(typeof(ResearchScreen), nameof(ResearchScreen.Show))]
+	internal static class ResearchScreen_Show_Patch {
 		private static void Postfix(ResearchScreen __instance, bool show) {
 			if (!ModToggle.IsEnabled) return;
 			if (show)
