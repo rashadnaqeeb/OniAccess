@@ -23,12 +23,10 @@ namespace OniAccess.Handlers.Screens {
 		// HELP
 		// ========================================
 
-		static readonly List<HelpEntry> _helpEntries = new List<HelpEntry> {
-			new HelpEntry("Arrows", STRINGS.ONIACCESS.TABLE.NAVIGATE_TABLE),
-			new HelpEntry("Home/End", STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST),
+		static readonly List<HelpEntry> _helpEntries = new List<HelpEntry>(TableNavHelpEntries) {
+			TableSortHelpEntry,
 			new HelpEntry("0-5", STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_PRIORITY),
 			new HelpEntry("Shift+0-5", STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_COLUMN),
-			new HelpEntry("Enter", STRINGS.ONIACCESS.TABLE.SORT_COLUMN),
 			new HelpEntry("Ctrl+Left/Right", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_ROW),
 			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_COLUMN),
 		};
@@ -43,14 +41,6 @@ namespace OniAccess.Handlers.Screens {
 			_choreGroups = Db.Get().ChoreGroups.resources
 				.Where(g => g.userPrioritizable)
 				.ToList();
-		}
-
-		protected override int FindInitialRow() {
-			for (int i = 0; i < _rows.Count; i++) {
-				if (_rows[i].Kind == TableRowKind.Minion)
-					return i;
-			}
-			return base.FindInitialRow();
 		}
 
 		// ========================================
@@ -98,35 +88,13 @@ namespace OniAccess.Handlers.Screens {
 			var stored = GetStoredMinions();
 			if (stored.Count > 0) {
 				if (showDividers)
-					_rows.Add(new RowEntry { Kind = TableRowKind.WorldDivider, WorldId = 255 });
+					_rows.Add(new RowEntry { Kind = TableRowKind.WorldDivider, WorldId = StoredMinionWorldId });
 				foreach (var smi in stored) {
 					_rows.Add(new RowEntry { Kind = TableRowKind.StoredMinion, Identity = smi });
 				}
 			}
 
 			_rows.Add(new RowEntry { Kind = TableRowKind.Default });
-		}
-
-		List<IAssignableIdentity> GetLiveMinionsForWorld(int worldId) {
-			var result = new List<IAssignableIdentity>();
-			foreach (var mi in Components.LiveMinionIdentities.Items) {
-				if (mi != null && mi.GetMyWorldId() == worldId)
-					result.Add(mi);
-			}
-			return result;
-		}
-
-		List<StoredMinionIdentity> GetStoredMinions() {
-			var result = new List<StoredMinionIdentity>();
-			foreach (var storage in Components.MinionStorages.Items) {
-				foreach (var info in storage.GetStoredMinionInfo()) {
-					if (info.serializedMinion != null) {
-						var smi = info.serializedMinion.Get<StoredMinionIdentity>();
-						if (smi != null) result.Add(smi);
-					}
-				}
-			}
-			return result;
 		}
 
 		// ========================================
@@ -213,15 +181,6 @@ namespace OniAccess.Handlers.Screens {
 				default:
 					return "";
 			}
-		}
-
-		// ========================================
-		// WORLD NAME
-		// ========================================
-
-		protected override string GetWorldName(int worldId) {
-			if (worldId == 255) return STRINGS.ONIACCESS.PRIORITY_SCREEN.STORED;
-			return base.GetWorldName(worldId);
 		}
 
 		// ========================================

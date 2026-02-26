@@ -520,12 +520,12 @@ namespace STRINGS {
 			public static LocString NAVIGATE_TABLE = "Navigate rows and columns";
 			public static LocString JUMP_FIRST_LAST = "Jump to first or last row";
 			public static LocString SORT_COLUMN = "Sort by column on header row";
+			public static LocString STORED = "Stored";
 		}
 
 		public class PRIORITY_SCREEN {
 			public static LocString HANDLER_NAME = "Priorities table";
 			public static LocString TOOLBAR = "Toolbar";
-			public static LocString STORED = "Stored";
 			public static LocString SKILL = "skill {0}";
 			public static LocString DISABLED_TRAIT = "Disabled, {0}";
 			public static LocString ROW_INCREASED = "row increased";
@@ -544,7 +544,6 @@ namespace STRINGS {
 
 		public class VITALS_SCREEN {
 			public static LocString HANDLER_NAME = "Vitals table";
-			public static LocString STORED = "Stored";
 			public static LocString FOCUSED = "focused";
 			public static LocString FOCUS_DUPLICANT = "Focus camera on duplicant";
 			public static LocString CHANGE = "change: {0}";
@@ -555,7 +554,6 @@ namespace STRINGS {
 
 		public class CONSUMABLES_SCREEN {
 			public static LocString HANDLER_NAME = "Consumables table";
-			public static LocString STORED = "Stored";
 			public static LocString PERMITTED = "permitted";
 			public static LocString FORBIDDEN = "forbidden";
 			public static LocString RESTRICTED = "restricted";

@@ -62,7 +62,10 @@ namespace OniAccess.Handlers {
 		protected virtual void OnEnterPressed(RowEntry row) { }
 		protected virtual bool IsColumnSortable(int col) => true;
 
+		protected const int StoredMinionWorldId = 255;
+
 		protected virtual string GetWorldName(int worldId) {
+			if (worldId == StoredMinionWorldId) return STRINGS.ONIACCESS.TABLE.STORED;
 			var world = ClusterManager.Instance.GetWorld(worldId);
 			return world != null ? world.GetProperName() : worldId.ToString();
 		}
@@ -82,6 +85,32 @@ namespace OniAccess.Handlers {
 					return i;
 			}
 			return 0;
+		}
+
+		// ========================================
+		// SHARED QUERIES
+		// ========================================
+
+		protected static List<IAssignableIdentity> GetLiveMinionsForWorld(int worldId) {
+			var result = new List<IAssignableIdentity>();
+			foreach (var mi in Components.LiveMinionIdentities.Items) {
+				if (mi != null && mi.GetMyWorldId() == worldId)
+					result.Add(mi);
+			}
+			return result;
+		}
+
+		protected static List<StoredMinionIdentity> GetStoredMinions() {
+			var result = new List<StoredMinionIdentity>();
+			foreach (var storage in Components.MinionStorages.Items) {
+				foreach (var info in storage.GetStoredMinionInfo()) {
+					if (info.serializedMinion != null) {
+						var smi = info.serializedMinion.Get<StoredMinionIdentity>();
+						if (smi != null) result.Add(smi);
+					}
+				}
+			}
+			return result;
 		}
 
 		// ========================================
@@ -284,8 +313,10 @@ namespace OniAccess.Handlers {
 		protected static readonly List<HelpEntry> TableNavHelpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrows", STRINGS.ONIACCESS.TABLE.NAVIGATE_TABLE),
 			new HelpEntry("Home/End", STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST),
-			new HelpEntry("Enter", STRINGS.ONIACCESS.TABLE.SORT_COLUMN),
 		};
+
+		protected static readonly HelpEntry TableSortHelpEntry =
+			new HelpEntry("Enter", STRINGS.ONIACCESS.TABLE.SORT_COLUMN);
 
 		// ========================================
 		// TICK
