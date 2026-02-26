@@ -593,6 +593,57 @@ namespace STRINGS {
 			public static LocString PROGRESS_ENTRY = "{0} of {1} {2}";
 		}
 
+		public class SKILLS {
+			public static LocString HANDLER_NAME = "Skills";
+			public static LocString DUPES_TAB = "Duplicants";
+			public static LocString SKILLS_TAB = "Skills";
+			public static LocString TREE_TAB = "Tree";
+
+			public static LocString POINTS = "{0} points";
+			public static LocString MORALE_OF = "morale {0} of {1}";
+			public static LocString NO_HAT = "no hat";
+			public static LocString XP_PROGRESS = "{0} of {1} experience to next point";
+
+			public static LocString BUCKET_DUPE_INFO = "Dupe Info";
+			public static LocString BUCKET_AVAILABLE = "Available";
+			public static LocString BUCKET_LOCKED = "Locked";
+			public static LocString BUCKET_MASTERED = "Mastered";
+			public static LocString BUCKET_BOOSTERS = "Boosters";
+
+			public static LocString AVAILABLE = "available";
+			public static LocString MASTERED = "mastered";
+			public static LocString LOCKED = "locked";
+			public static LocString GRANTED = "granted";
+			public static LocString MORALE_DEFICIT = "morale deficit";
+			public static LocString INTERESTED = "interested";
+			public static LocString NO_SKILL_POINTS = "no skill points";
+			public static LocString NEEDS = "needs";
+			public static LocString BLOCKED_BY = "blocked by {0}";
+			public static LocString MORALE_NEED = "{0} morale need";
+			public static LocString MASTERED_BY = "mastered by {0}";
+			public static LocString LEARNED = "{0} learned";
+			public static LocString CANNOT_LEARN = "cannot learn";
+			public static LocString DEAD_END = "no further skills";
+			public static LocString ROOT_NODE = "no prerequisites";
+
+			public static LocString BOOSTER_SLOTS = "{0} of {1} booster slots used";
+			public static LocString ASSIGNED = "{0} assigned";
+			public static LocString BOOSTER_AVAILABLE = "{0} available";
+			public static LocString BOOSTER_HINT = "use plus to assign, minus to unassign";
+			public static LocString BOOSTER_ASSIGNED = "booster assigned";
+			public static LocString BOOSTER_UNASSIGNED = "booster unassigned";
+			public static LocString NO_BOOSTERS_AVAILABLE = "no boosters available";
+			public static LocString NONE_ASSIGNED = "none assigned";
+			public static LocString NO_EMPTY_SLOTS = "no empty slots";
+
+			public static LocString HAT_SELECTED = "{0} selected";
+			public static LocString SELECT_HAT = "select hat";
+
+			public static LocString JUMP_TO_TREE_HELP = "Jump to skill in tree view";
+			public static LocString LEARN_HELP = "Learn skill or select hat";
+			public static LocString BOOSTER_HELP = "Assign or unassign boosters with +/-";
+		}
+
 		public class BUILD_MENU {
 			public static LocString ACTION_MENU = "action menu";
 			public static LocString TOOLS_CATEGORY = "Tools";

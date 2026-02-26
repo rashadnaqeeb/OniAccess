@@ -211,6 +211,22 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
+	/// SkillsScreen is toggled by ManagementMenu via Show(bool).
+	/// Like ResearchScreen, it extends KModalScreen whose OnActivate calls
+	/// OnShow(true) during prefab init. Patch Show to avoid that init path.
+	/// </summary>
+	[HarmonyPatch(typeof(SkillsScreen), nameof(SkillsScreen.Show))]
+	internal static class SkillsScreen_Show_Patch {
+		private static void Postfix(SkillsScreen __instance, bool show) {
+			if (!ModToggle.IsEnabled) return;
+			if (show)
+				ContextDetector.OnScreenActivated(__instance);
+			else
+				ContextDetector.OnScreenDeactivating(__instance);
+		}
+	}
+
+	/// <summary>
 	/// RetiredColonyInfoScreen reuses its instance via Show(true) on subsequent opens,
 	/// so KScreen.Activate never fires again. Patch Show(bool) to push/pop the handler.
 	/// The duplicate guard in OnScreenActivated prevents double-pushing when both
