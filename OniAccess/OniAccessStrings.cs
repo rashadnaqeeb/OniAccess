@@ -553,6 +553,19 @@ namespace STRINGS {
 			public static LocString DISEASE_HEADER = "Current diseases and time remaining";
 		}
 
+		public class CONSUMABLES_SCREEN {
+			public static LocString HANDLER_NAME = "Consumables table";
+			public static LocString STORED = "Stored";
+			public static LocString PERMITTED = "permitted";
+			public static LocString FORBIDDEN = "forbidden";
+			public static LocString RESTRICTED = "restricted";
+			public static LocString MORALE = "morale {0}";
+			public static LocString ALL_PERMITTED = "all permitted";
+			public static LocString ALL_FORBIDDEN = "all forbidden";
+			public static LocString TOGGLE_ALL = "Toggle all duplicants for this consumable";
+			public static LocString TOGGLE_PERMISSION = "Toggle permission";
+		}
+
 		public class BUILD_MENU {
 			public static LocString ACTION_MENU = "action menu";
 			public static LocString TOOLS_CATEGORY = "Tools";

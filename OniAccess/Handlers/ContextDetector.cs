@@ -267,6 +267,11 @@ namespace OniAccess.Handlers {
 			Register<VitalsTableScreen>(screen => new VitalsScreenHandler(screen));
 			_showPatchedTypes.Add(typeof(VitalsTableScreen));
 
+			// ConsumablesTableScreen (duplicant food/medicine permissions -- 2D grid)
+			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
+			Register<ConsumablesTableScreen>(screen => new ConsumablesScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(ConsumablesTableScreen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 
