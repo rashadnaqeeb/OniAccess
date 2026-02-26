@@ -450,13 +450,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 			try {
 				var smi = minionIdentity.GetSMI<BionicUpgradesMonitor.Instance>();
 				if (smi == null) return null;
-				int totalSlots = 0, assigned = 0;
-				foreach (var slot in smi.upgradeComponentSlots) {
-					if (!slot.IsLocked) totalSlots++;
-					if (slot.HasUpgradeInstalled) assigned++;
-				}
 				return string.Format(STRINGS.ONIACCESS.SKILLS.BOOSTER_SLOTS,
-					assigned, totalSlots);
+					smi.AssignedSlotCount, smi.UnlockedSlotCount);
 			} catch (Exception ex) {
 				Util.Log.Warn($"SkillsHelper.BuildSlotSummary: {ex.Message}");
 				return null;
@@ -469,37 +464,43 @@ namespace OniAccess.Handlers.Screens.Skills {
 				var smi = minionIdentity.GetSMI<BionicUpgradesMonitor.Instance>();
 				if (smi == null) return entries;
 
-				var slots = smi.upgradeComponentSlots;
-				// Count assigned by prefab tag
+				// Count assigned by prefab tag (matches game's RefreshBoosters)
 				var assignedCounts = new Dictionary<Tag, int>();
-				foreach (var slot in slots) {
-					if (slot.HasUpgradeInstalled) {
-						var tag = slot.installedUpgradeComponent.PrefabID();
+				foreach (var slot in smi.upgradeComponentSlots) {
+					if (slot.assignedUpgradeComponent != null) {
+						var tag = slot.assignedUpgradeComponent.PrefabID();
 						assignedCounts.TryGetValue(tag, out int c);
 						assignedCounts[tag] = c + 1;
 					}
 				}
 
-				// Gather all booster types available in world inventory
-				var worldInventory = ClusterManager.Instance.activeWorld.worldInventory;
+				// Gather all booster types from assigned + known prefabs
 				var boosterTags = new HashSet<Tag>();
-
-				// Include both assigned and available types
 				foreach (var kv in assignedCounts)
 					boosterTags.Add(kv.Key);
-
-				foreach (var tag in Assets.GetPrefabTagsWithComponent<BionicUpgradeComponent>()) {
+				foreach (var tag in Assets.GetPrefabTagsWithComponent<BionicUpgradeComponent>())
 					boosterTags.Add(tag);
-				}
+
+				// Availability: unassigned pickupables in this dupe's world
+				var worldId = minionIdentity.GetMyWorldId();
+				var worldInventory = ClusterManager.Instance.GetWorld(worldId).worldInventory;
 
 				foreach (var tag in boosterTags) {
 					assignedCounts.TryGetValue(tag, out int assignedCount);
 					var prefab = Assets.GetPrefab(tag);
 					if (prefab == null) continue;
 					string name = prefab.GetProperName();
-					int available = worldInventory.GetCountWithAdditionalTag(
-						tag, GameTags.Stored, false) - assignedCount;
-					if (available < 0) available = 0;
+
+					// Match game: filter to unassigned pickupables
+					int available = 0;
+					var pickupables = worldInventory.CreatePickupablesList(tag);
+					if (pickupables != null) {
+						foreach (var p in pickupables) {
+							if (p.GetComponent<Assignable>().assignee == null)
+								available++;
+						}
+					}
+
 					string desc = "";
 					var prefabTag = prefab.PrefabID();
 					if (BionicUpgradeComponentConfig.UpgradesData.TryGetValue(
@@ -521,23 +522,26 @@ namespace OniAccess.Handlers.Screens.Skills {
 				var smi = minionIdentity.GetSMI<BionicUpgradesMonitor.Instance>();
 				if (smi == null) return false;
 
-				// Find an empty slot
-				BionicUpgradesMonitor.UpgradeComponentSlot emptySlot = null;
+				// Find a truly empty slot (not locked, not assigned, not mid-ejection)
+				bool hasEmptySlot = false;
 				foreach (var slot in smi.upgradeComponentSlots) {
-					if (!slot.HasUpgradeInstalled) { emptySlot = slot; break; }
+					if (!slot.IsLocked && !slot.HasUpgradeComponentAssigned
+						&& !slot.HasUpgradeInstalled) {
+						hasEmptySlot = true;
+						break;
+					}
 				}
-				if (emptySlot == null) return false;
+				if (!hasEmptySlot) return false;
 
-				// Find an available booster item
-				var worldInventory = ClusterManager.Instance.activeWorld.worldInventory;
-				var items = worldInventory.GetPickupables(boosterTag);
+				// Find an available booster item (matches game's FindAvailableBoosterOfType)
+				var worldId = minionIdentity.GetMyWorldId();
+				var worldInventory = ClusterManager.Instance.GetWorld(worldId).worldInventory;
+				var items = worldInventory.CreatePickupablesList(boosterTag);
 				if (items == null) return false;
-				var proxy = minionIdentity.assignableProxy.Get();
-				if (proxy == null) return false;
 				foreach (var item in items) {
 					var comp = item.GetComponent<BionicUpgradeComponent>();
 					if (comp != null && comp.assignee == null) {
-						comp.Assign(proxy);
+						comp.Assign(minionIdentity);
 						return true;
 					}
 				}
@@ -553,10 +557,23 @@ namespace OniAccess.Handlers.Screens.Skills {
 			try {
 				var smi = minionIdentity.GetSMI<BionicUpgradesMonitor.Instance>();
 				if (smi == null) return false;
-				foreach (var slot in smi.upgradeComponentSlots) {
-					if (slot.HasUpgradeInstalled &&
-						slot.installedUpgradeComponent.PrefabID() == boosterTag) {
-						slot.installedUpgradeComponent.Unassign();
+				var slots = smi.upgradeComponentSlots;
+				// First pass: pending-not-installed (instant return to world inventory)
+				for (int i = slots.Length - 1; i >= 0; i--) {
+					var slot = slots[i];
+					if (slot.assignedUpgradeComponent != null &&
+						slot.assignedUpgradeComponent.PrefabID() == boosterTag &&
+						!slot.HasUpgradeInstalled) {
+						slot.GetAssignableSlotInstance().Unassign();
+						return true;
+					}
+				}
+				// Second pass: installed (requires physical ejection by dupe)
+				for (int i = slots.Length - 1; i >= 0; i--) {
+					var slot = slots[i];
+					if (slot.assignedUpgradeComponent != null &&
+						slot.assignedUpgradeComponent.PrefabID() == boosterTag) {
+						slot.GetAssignableSlotInstance().Unassign();
 						return true;
 					}
 				}

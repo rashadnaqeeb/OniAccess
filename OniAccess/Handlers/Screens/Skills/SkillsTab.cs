@@ -391,6 +391,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 					return;
 				}
 				if (SkillsHelper.TryAssignBooster(minionIdentity, entry.Tag)) {
+					RefreshGameScreen();
 					SkillsHelper.PlayClickSound();
 					SpeechPipeline.SpeakInterrupt(
 						STRINGS.ONIACCESS.SKILLS.BOOSTER_ASSIGNED);
@@ -422,6 +423,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 					return;
 				}
 				if (SkillsHelper.TryUnassignBooster(minionIdentity, entry.Tag)) {
+					RefreshGameScreen();
 					SkillsHelper.PlayClickSound();
 					SpeechPipeline.SpeakInterrupt(
 						STRINGS.ONIACCESS.SKILLS.BOOSTER_UNASSIGNED);
@@ -432,6 +434,12 @@ namespace OniAccess.Handlers.Screens.Skills {
 				Util.Log.Warn($"SkillsTab.HandleBoosterUnassign: {ex.Message}");
 				SkillsHelper.PlayRejectSound();
 			}
+		}
+
+		private void RefreshGameScreen() {
+			var skillsScreen = _parent.Screen as SkillsScreen;
+			if (skillsScreen != null)
+				skillsScreen.RefreshAll();
 		}
 
 		// ========================================
