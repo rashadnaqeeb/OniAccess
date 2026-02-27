@@ -20,6 +20,7 @@ When a build fails on a type or method signature, look it up in `ONI-Decompiled/
 - `ONI-Decompiled/` - decompiled game source for reference (read-only, not part of build)
 - `docs/` - design documentation
 - `docs/CODEBASE_INDEX.md` - complete namespace reference for decompiled ONI source
+- `llm-docs/` - game reference and synthesized documentation for LLM context
 - `.planning/` - project planning files
 
 ## Code Style
@@ -77,11 +78,11 @@ This mod runs on Harmony patches and reflection. Both fail in ways that produce 
 - `UnityEngine.Input` must be fully qualified inside the `OniAccess.Input` namespace. Bare `Input` resolves to the namespace, not the Unity class
 - Show-lifecycle patches depend on the screen's base class:
   - `ShowOptimizedKScreen` subclasses (e.g. `TableScreen`): patch `OnShow` — `KScreen.OnActivate` does not call `OnShow`, so it only fires on ManagementMenu toggles
-  - `KModalScreen` subclasses (e.g. `ResearchScreen`): patch `Show`, NOT `OnShow` — `KModalScreen.OnActivate` calls `OnShow(true)` directly during prefab init, which would push a handler before the game world is ready
+  - `KModalScreen` subclasses: default to patching `Show`, NOT `OnShow` — `KModalScreen.OnActivate` calls `OnShow(true)` directly during prefab init, which would push a handler before the game world is ready. However, not all subclasses override `Show`; for example `SkillsScreen` only overrides `OnShow`, so it must be patched there instead. Always check the decompiled source to see which method the specific subclass overrides
 
 ## Game Log
 
-The Unity player log is at `C:\Users\rasha\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`. Lines prefixed with `[OniAccess]` are mod debug output.
+The Unity player log is at `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`. Lines prefixed with `[OniAccess]` are mod debug output.
 
 ## Common LLM Antipatterns
 
