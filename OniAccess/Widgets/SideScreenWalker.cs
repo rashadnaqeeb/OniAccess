@@ -607,102 +607,56 @@ namespace OniAccess.Widgets {
 		/// Children for the seed rows inside.
 		/// </summary>
 		private static bool TryAddCategoryContainer(Transform t, List<Widget> items, HashSet<LocText> claimedLabels) {
-			var href = t.GetComponent<HierarchyReferences>();
-			if (href == null) return false;
-			if (!href.HasReference("HeaderLabel") || !href.HasReference("GridLayout"))
-				return false;
+			return TryAddCategoryCore(t, items, claimedLabels,
+				"HeaderLabel", "GridLayout",
+				child => child.GetComponent<ReceptacleToggle>() != null);
+		}
 
-			var grid = href.GetReference<GridLayoutGroup>("GridLayout");
-			if (grid == null) return false;
-
-			// Verify at least one grid child has ReceptacleToggle
-			bool hasReceptacle = false;
-			var gridT = grid.transform;
-			for (int i = 0; i < gridT.childCount; i++) {
-				var child = gridT.GetChild(i);
-				if (!child.gameObject.activeSelf) continue;
-				if (child.GetComponent<ReceptacleToggle>() != null) {
-					hasReceptacle = true;
-					break;
-				}
-			}
-			if (!hasReceptacle) return false;
-
-			// Build child widget list from grid contents
-			var children = new List<Widget>();
-			for (int i = 0; i < gridT.childCount; i++) {
-				var child = gridT.GetChild(i);
-				if (!child.gameObject.activeSelf) continue;
-				TryAddWidget(child, children, claimedLabels);
-			}
-
-			var headerLt = href.GetReference<LocText>("HeaderLabel");
-			if (headerLt != null) claimedLabels.Add(headerLt);
-
-			var capturedHeader = headerLt;
-			var capturedGrid = gridT;
-			items.Add(new LabelWidget {
-				Label = headerLt != null ? headerLt.GetParsedText() : t.name,
-				GameObject = t.gameObject,
-				SuppressTooltip = true,
-				Children = children,
-				SpeechFunc = () => {
-					string header = capturedHeader != null
-						? capturedHeader.GetParsedText() : t.name;
-					int activeCount = 0;
-					for (int i = 0; i < capturedGrid.childCount; i++) {
-						if (capturedGrid.GetChild(i).gameObject.activeSelf)
-							activeCount++;
-					}
-					string countText = string.Format(
-						(string)STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT, activeCount);
-					return $"{header}, {countText}";
-				}
-			});
-			return true;
+		private static bool TryAddSelectionCategoryContainer(Transform t, List<Widget> items, HashSet<LocText> claimedLabels) {
+			return TryAddCategoryCore(t, items, claimedLabels,
+				"Label", "Entries",
+				child => child.GetComponent<SingleItemSelectionRow>() != null);
 		}
 
 		/// <summary>
-		/// Detect a SingleItemSelectionSideScreenBase category container:
-		/// HierarchyReferences with "Label" + "Entries" refs whose entries
-		/// children have SingleItemSelectionRow. Emits a drillable parent
-		/// Widget with Children for the item rows inside.
+		/// Shared logic for TryAddCategoryContainer and
+		/// TryAddSelectionCategoryContainer. Detects a HierarchyReferences
+		/// node with a header LocText and a container whose children pass
+		/// the given component check, then emits a drillable LabelWidget.
 		/// </summary>
-		private static bool TryAddSelectionCategoryContainer(Transform t, List<Widget> items, HashSet<LocText> claimedLabels) {
+		private static bool TryAddCategoryCore(
+				Transform t, List<Widget> items, HashSet<LocText> claimedLabels,
+				string headerRef, string containerRef,
+				System.Func<Transform, bool> hasTargetComponent) {
 			var href = t.GetComponent<HierarchyReferences>();
 			if (href == null) return false;
-			if (!href.HasReference("Label") || !href.HasReference("Entries"))
+			if (!href.HasReference(headerRef) || !href.HasReference(containerRef))
 				return false;
 
-			var entriesRef = href.GetReference("Entries");
-			if (entriesRef == null) return false;
-			var entriesT = entriesRef.transform;
+			var containerObj = href.GetReference(containerRef);
+			if (containerObj == null) return false;
+			var containerT = containerObj.transform;
 
-			// Verify at least one entries child has SingleItemSelectionRow
-			bool hasSelectionRow = false;
-			for (int i = 0; i < entriesT.childCount; i++) {
-				var child = entriesT.GetChild(i);
+			bool found = false;
+			for (int i = 0; i < containerT.childCount; i++) {
+				var child = containerT.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
-				if (child.GetComponent<SingleItemSelectionRow>() != null) {
-					hasSelectionRow = true;
-					break;
-				}
+				if (hasTargetComponent(child)) { found = true; break; }
 			}
-			if (!hasSelectionRow) return false;
+			if (!found) return false;
 
-			// Build child widget list from entries contents
 			var children = new List<Widget>();
-			for (int i = 0; i < entriesT.childCount; i++) {
-				var child = entriesT.GetChild(i);
+			for (int i = 0; i < containerT.childCount; i++) {
+				var child = containerT.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
 				TryAddWidget(child, children, claimedLabels);
 			}
 
-			var headerLt = href.GetReference<LocText>("Label");
+			var headerLt = href.GetReference<LocText>(headerRef);
 			if (headerLt != null) claimedLabels.Add(headerLt);
 
 			var capturedHeader = headerLt;
-			var capturedEntries = entriesT;
+			var capturedContainer = containerT;
 			items.Add(new LabelWidget {
 				Label = headerLt != null ? headerLt.GetParsedText() : t.name,
 				GameObject = t.gameObject,
@@ -712,8 +666,8 @@ namespace OniAccess.Widgets {
 					string header = capturedHeader != null
 						? capturedHeader.GetParsedText() : t.name;
 					int activeCount = 0;
-					for (int i = 0; i < capturedEntries.childCount; i++) {
-						if (capturedEntries.GetChild(i).gameObject.activeSelf)
+					for (int i = 0; i < capturedContainer.childCount; i++) {
+						if (capturedContainer.GetChild(i).gameObject.activeSelf)
 							activeCount++;
 					}
 					string countText = string.Format(
