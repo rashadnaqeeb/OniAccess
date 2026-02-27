@@ -232,6 +232,8 @@ namespace OniAccess.Handlers.Build {
 
 		private static string BuildLabel(BuildingDef def, PlanScreen.RequirementsState state) {
 			string name = def.Name;
+			if (!IsUtilityBuilding(def))
+				name += ", " + def.WidthInCells + "x" + def.HeightInCells;
 			string effect = STRINGS.UI.StripLinkFormatting(def.Effect);
 			string label = string.IsNullOrEmpty(effect) ? name : name + ", " + effect;
 
