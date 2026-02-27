@@ -117,16 +117,5 @@ namespace OniAccess.Handlers.Screens {
 			ActiveTab.OnTabActivated(announce: true);
 		}
 
-		// ========================================
-		// SOUNDS
-		// ========================================
-
-		static void PlayHoverSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover")); } catch (System.Exception ex) { Util.Log.Warn($"ResearchScreenHandler: hover sound failed: {ex.Message}"); }
-		}
-
-		static void PlayWrapSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); } catch (System.Exception ex) { Util.Log.Warn($"ResearchScreenHandler: wrap sound failed: {ex.Message}"); }
-		}
 	}
 }

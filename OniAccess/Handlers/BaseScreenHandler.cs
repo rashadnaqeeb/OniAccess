@@ -87,5 +87,25 @@ namespace OniAccess.Handlers {
 		public virtual bool HandleKeyDown(KButtonEvent e) {
 			return false;
 		}
+
+		// ========================================
+		// SOUNDS
+		// ========================================
+
+		protected internal static void PlayHoverSound() {
+			try {
+				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover"));
+			} catch (System.Exception ex) {
+				Util.Log.Error($"PlayHoverSound failed: {ex.Message}");
+			}
+		}
+
+		protected internal static void PlayWrapSound() {
+			try {
+				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click"));
+			} catch (System.Exception ex) {
+				Util.Log.Error($"PlayWrapSound failed: {ex.Message}");
+			}
+		}
 	}
 }

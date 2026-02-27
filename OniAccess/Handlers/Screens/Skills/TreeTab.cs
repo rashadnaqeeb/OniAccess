@@ -63,7 +63,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 				EnsureGraphCurrent();
 				var node = _graph.NavigateDown();
 				if (node != null) {
-					PlayHoverSound();
+					BaseScreenHandler.PlayHoverSound();
 					SpeechPipeline.SpeakInterrupt(
 						SkillsHelper.BuildSkillLabel(node, _parent.SelectedDupe));
 				} else {
@@ -76,7 +76,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 				EnsureGraphCurrent();
 				var node = _graph.NavigateUp();
 				if (node != null) {
-					PlayHoverSound();
+					BaseScreenHandler.PlayHoverSound();
 					SpeechPipeline.SpeakInterrupt(
 						SkillsHelper.BuildSkillLabel(node, _parent.SelectedDupe));
 				} else {
@@ -89,8 +89,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 				EnsureGraphCurrent();
 				var node = _graph.CycleSibling(1, out bool wrapped);
 				if (node != null) {
-					if (wrapped) PlayWrapSound();
-					else PlayHoverSound();
+					if (wrapped) BaseScreenHandler.PlayWrapSound();
+					else BaseScreenHandler.PlayHoverSound();
 					SpeechPipeline.SpeakInterrupt(
 						SkillsHelper.BuildSkillLabel(node, _parent.SelectedDupe));
 				}
@@ -100,8 +100,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 				EnsureGraphCurrent();
 				var node = _graph.CycleSibling(-1, out bool wrapped);
 				if (node != null) {
-					if (wrapped) PlayWrapSound();
-					else PlayHoverSound();
+					if (wrapped) BaseScreenHandler.PlayWrapSound();
+					else BaseScreenHandler.PlayHoverSound();
 					SpeechPipeline.SpeakInterrupt(
 						SkillsHelper.BuildSkillLabel(node, _parent.SelectedDupe));
 				}
@@ -143,18 +143,5 @@ namespace OniAccess.Handlers.Screens.Skills {
 			}
 		}
 
-		// ========================================
-		// Sounds
-		// ========================================
-
-		static void PlayHoverSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover")); }
-			catch (System.Exception ex) { Util.Log.Warn($"TreeTab: hover sound failed: {ex.Message}"); }
-		}
-
-		static void PlayWrapSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); }
-			catch (System.Exception ex) { Util.Log.Warn($"TreeTab: wrap sound failed: {ex.Message}"); }
-		}
 	}
 }

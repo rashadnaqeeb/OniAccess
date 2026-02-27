@@ -364,15 +364,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			if (count <= 1) return;
 			bool wrapped = (direction > 0 && next <= prev)
 				|| (direction < 0 && next >= prev);
-			if (wrapped) PlayWrapSound();
-		}
-
-		private static void PlayWrapSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click"));
-			} catch (System.Exception ex) {
-				Log.Error($"ScannerNavigator.PlayWrapSound: {ex.Message}");
-			}
+			if (wrapped) BaseScreenHandler.PlayWrapSound();
 		}
 
 		private static void SpeakEmpty() {

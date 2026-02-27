@@ -54,7 +54,7 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
 				var node = _graph.NavigateDown();
 				if (node != null) {
-					PlayHoverSound();
+					BaseScreenHandler.PlayHoverSound();
 					SpeechPipeline.SpeakInterrupt(ResearchHelper.BuildTechLabel(node));
 				} else {
 					SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.RESEARCH.DEAD_END);
@@ -64,7 +64,7 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
 				var node = _graph.NavigateUp();
 				if (node != null) {
-					PlayHoverSound();
+					BaseScreenHandler.PlayHoverSound();
 					SpeechPipeline.SpeakInterrupt(ResearchHelper.BuildTechLabel(node));
 				} else {
 					SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.RESEARCH.ROOT_NODE);
@@ -74,8 +74,8 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)) {
 				var node = _graph.CycleSibling(1, out bool wrapped);
 				if (node != null) {
-					if (wrapped) PlayWrapSound();
-					else PlayHoverSound();
+					if (wrapped) BaseScreenHandler.PlayWrapSound();
+					else BaseScreenHandler.PlayHoverSound();
 					SpeechPipeline.SpeakInterrupt(ResearchHelper.BuildTechLabel(node));
 				}
 				return true;
@@ -83,8 +83,8 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
 				var node = _graph.CycleSibling(-1, out bool wrapped);
 				if (node != null) {
-					if (wrapped) PlayWrapSound();
-					else PlayHoverSound();
+					if (wrapped) BaseScreenHandler.PlayWrapSound();
+					else BaseScreenHandler.PlayHoverSound();
 					SpeechPipeline.SpeakInterrupt(ResearchHelper.BuildTechLabel(node));
 				}
 				return true;
@@ -109,16 +109,5 @@ namespace OniAccess.Handlers.Screens.Research {
 
 		public bool HandleKeyDown(KButtonEvent e) => false;
 
-		// ========================================
-		// Sounds
-		// ========================================
-
-		static void PlayHoverSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover")); } catch (System.Exception ex) { Util.Log.Warn($"TreeTab: hover sound failed: {ex.Message}"); }
-		}
-
-		static void PlayWrapSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); } catch (System.Exception ex) { Util.Log.Warn($"TreeTab: wrap sound failed: {ex.Message}"); }
-		}
 	}
 }

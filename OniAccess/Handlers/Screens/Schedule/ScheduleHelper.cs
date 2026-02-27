@@ -95,15 +95,9 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			catch (System.Exception ex) { Util.Log.Error($"PlayClickSound failed: {ex.Message}"); }
 		}
 
-		internal static void PlayHoverSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover")); }
-			catch (System.Exception ex) { Util.Log.Error($"PlayHoverSound failed: {ex.Message}"); }
-		}
+		internal static void PlayHoverSound() => BaseScreenHandler.PlayHoverSound();
 
-		internal static void PlayWrapSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); }
-			catch (System.Exception ex) { Util.Log.Error($"PlayWrapSound failed: {ex.Message}"); }
-		}
+		internal static void PlayWrapSound() => BaseScreenHandler.PlayWrapSound();
 
 		internal static void PlayPaintSound(int dragCount) {
 			try {
