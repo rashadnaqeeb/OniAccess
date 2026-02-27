@@ -104,5 +104,58 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); }
 			catch (System.Exception ex) { Util.Log.Error($"PlayWrapSound failed: {ex.Message}"); }
 		}
+
+		internal static void PlayPaintSound(int dragCount) {
+			try {
+				var pos = SoundListenerController.Instance.transform.GetPosition();
+				string sound = GlobalAssets.GetSound("ScheduleMenu_Select");
+				if (sound == null) return;
+				var instance = SoundEvent.BeginOneShot(sound, pos);
+				instance.setParameterByName("Drag_Count", dragCount);
+				SoundEvent.EndOneShot(instance);
+			} catch (System.Exception ex) {
+				Util.Log.Error($"PlayPaintSound failed: {ex.Message}");
+			}
+		}
+
+		internal static void PlayPaintNoneSound() {
+			try {
+				var pos = SoundListenerController.Instance.transform.GetPosition();
+				string sound = GlobalAssets.GetSound("ScheduleMenu_Select_none");
+				if (sound == null) return;
+				SoundEvent.EndOneShot(SoundEvent.BeginOneShot(sound, pos));
+			} catch (System.Exception ex) {
+				Util.Log.Error($"PlayPaintNoneSound failed: {ex.Message}");
+			}
+		}
+
+		private static bool _shiftUpToggle;
+		private static bool _shiftDownToggle;
+
+		internal static void PlayShiftUpSound() {
+			try {
+				string name = _shiftUpToggle ? "ScheduleMenu_Shift_up_reset" : "ScheduleMenu_Shift_up";
+				_shiftUpToggle = !_shiftUpToggle;
+				var pos = SoundListenerController.Instance.transform.GetPosition();
+				string sound = GlobalAssets.GetSound(name);
+				if (sound == null) return;
+				SoundEvent.EndOneShot(SoundEvent.BeginOneShot(sound, pos));
+			} catch (System.Exception ex) {
+				Util.Log.Error($"PlayShiftUpSound failed: {ex.Message}");
+			}
+		}
+
+		internal static void PlayShiftDownSound() {
+			try {
+				string name = _shiftDownToggle ? "ScheduleMenu_Shift_down_reset" : "ScheduleMenu_Shift_down";
+				_shiftDownToggle = !_shiftDownToggle;
+				var pos = SoundListenerController.Instance.transform.GetPosition();
+				string sound = GlobalAssets.GetSound(name);
+				if (sound == null) return;
+				SoundEvent.EndOneShot(SoundEvent.BeginOneShot(sound, pos));
+			} catch (System.Exception ex) {
+				Util.Log.Error($"PlayShiftDownSound failed: {ex.Message}");
+			}
+		}
 	}
 }

@@ -22,6 +22,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 
 		// Brush
 		private string _brushGroupId;
+		private int _paintCounter;
 
 		// Inline options submenu
 		private enum OptionId { Rename, Alarm, Duplicate, DeleteSchedule, AddRow, DeleteRow }
@@ -393,12 +394,12 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			// Home/End
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home)) {
 				if (shiftHeld) PaintRange(0);
-				else { _col = 0; ScheduleHelper.PlayHoverSound(); SpeakCurrentCell(); }
+				else { _col = 0; ScheduleHelper.PlayHoverSound(); SpeakCurrentCell(includeRowContext: false); }
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)) {
 				if (shiftHeld) PaintRange(23);
-				else { _col = 23; ScheduleHelper.PlayHoverSound(); SpeakCurrentCell(); }
+				else { _col = 23; ScheduleHelper.PlayHoverSound(); SpeakCurrentCell(includeRowContext: false); }
 				return true;
 			}
 
@@ -436,6 +437,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			if (newRow < 0 || newRow >= total) return;
 
 			_row = newRow;
+			_paintCounter = 0;
 			ScheduleHelper.PlayHoverSound();
 			SpeakCurrentCell();
 		}
@@ -443,6 +445,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 		private void NavigateCol(int direction) {
 			var gr = GetRow(_row);
 			if (gr.IsAddButton) return;
+			_paintCounter = 0;
 
 			int newCol = _col + direction;
 			if (newCol < 0) {
@@ -455,7 +458,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 				_col = newCol;
 				ScheduleHelper.PlayHoverSound();
 			}
-			SpeakCurrentCell();
+			SpeakCurrentCell(includeRowContext: false);
 		}
 
 		// ========================================
@@ -495,13 +498,17 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			string groupName = ScheduleHelper.GetGroupName(_brushGroupId);
 
 			if (block.GroupId == _brushGroupId) {
+				ScheduleHelper.PlayPaintNoneSound();
 				SpeechPipeline.SpeakInterrupt(string.Format(
 					STRINGS.ONIACCESS.SCHEDULE.BLOCK_ALREADY, _col, groupName));
+				_paintCounter = 0;
 				return;
 			}
 
 			var group = Db.Get().ScheduleGroups.Get(_brushGroupId);
 			gr.Schedule.SetBlockGroup(blockIdx, group);
+			ScheduleHelper.PlayPaintSound(_paintCounter);
+			_paintCounter = 0;
 			SpeechPipeline.SpeakInterrupt(string.Format(
 				STRINGS.ONIACCESS.SCHEDULE.BLOCK_LABEL, groupName, _col));
 		}
@@ -512,21 +519,19 @@ namespace OniAccess.Handlers.Screens.Schedule {
 
 			// Move first
 			int newCol = _col + direction;
-			if (newCol < 0) {
+			if (newCol < 0)
 				_col = 23;
-				ScheduleHelper.PlayWrapSound();
-			} else if (newCol > 23) {
+			else if (newCol > 23)
 				_col = 0;
-				ScheduleHelper.PlayWrapSound();
-			} else {
+			else
 				_col = newCol;
-				ScheduleHelper.PlayHoverSound();
-			}
 
 			// Paint the new cell
 			int blockIdx = gr.TimetableIndex * 24 + _col;
 			var group = Db.Get().ScheduleGroups.Get(_brushGroupId);
 			gr.Schedule.SetBlockGroup(blockIdx, group);
+			ScheduleHelper.PlayPaintSound(_paintCounter);
+			_paintCounter++;
 			string groupName = ScheduleHelper.GetGroupName(_brushGroupId);
 			SpeechPipeline.SpeakInterrupt(string.Format(
 				STRINGS.ONIACCESS.SCHEDULE.BLOCK_LABEL, groupName, _col));
@@ -547,7 +552,8 @@ namespace OniAccess.Handlers.Screens.Schedule {
 
 			string groupName = ScheduleHelper.GetGroupName(_brushGroupId);
 			_col = targetCol;
-			ScheduleHelper.PlayClickSound();
+			_paintCounter = 0;
+			ScheduleHelper.PlayPaintSound(0);
 			SpeechPipeline.SpeakInterrupt(string.Format(
 				STRINGS.ONIACCESS.SCHEDULE.PAINTED_RANGE, groupName, startCol, endCol));
 		}
@@ -604,7 +610,8 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			_row += up ? -1 : 1;
 			ClampCursor();
 			var newGr = GetRow(_row);
-			ScheduleHelper.PlayClickSound();
+			if (up) ScheduleHelper.PlayShiftUpSound();
+			else ScheduleHelper.PlayShiftDownSound();
 			SpeechPipeline.SpeakInterrupt(string.Format(
 				STRINGS.ONIACCESS.SCHEDULE.ROW_LABEL, newGr.TimetableIndex + 1));
 		}
@@ -615,7 +622,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 
 			gr.Schedule.RotateBlocks(directionLeft, gr.TimetableIndex);
 			// Announce the block now under the cursor
-			SpeakCurrentCell();
+			SpeakCurrentCell(includeRowContext: false);
 		}
 
 		// ========================================
@@ -640,7 +647,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 		// SPEECH
 		// ========================================
 
-		private void SpeakCurrentCell() {
+		private void SpeakCurrentCell(bool includeRowContext = true) {
 			ClampCursor();
 			var gr = GetRow(_row);
 
@@ -651,12 +658,12 @@ namespace OniAccess.Handlers.Screens.Schedule {
 				return;
 			}
 
-			string announcement = BuildFullCellAnnouncement(gr, forceScheduleName: false);
+			string announcement = BuildFullCellAnnouncement(gr, forceScheduleName: false, includeRowContext);
 			SpeechPipeline.SpeakInterrupt(announcement);
 			_lastSpokenScheduleIndex = gr.ScheduleIndex;
 		}
 
-		private string BuildFullCellAnnouncement(GridRow gr, bool forceScheduleName) {
+		private string BuildFullCellAnnouncement(GridRow gr, bool forceScheduleName, bool includeRowContext = true) {
 			var parts = new List<string>();
 
 			// Schedule name when crossing boundary
@@ -669,7 +676,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 						gr.Schedule.name, gr.TimetableIndex + 1));
 				else
 					parts.Add(gr.Schedule.name);
-			} else {
+			} else if (includeRowContext) {
 				// Same schedule, but multi-row: show row number
 				int ttCount = ScheduleHelper.GetTimetableCount(gr.Schedule);
 				if (ttCount > 1)
