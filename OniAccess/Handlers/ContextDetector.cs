@@ -144,26 +144,15 @@ namespace OniAccess.Handlers {
 
 			// Options sub-screens may not have compile-time types available.
 			// Use AccessTools.TypeByName for runtime resolution and the non-generic Register overload.
-			var audioType = HarmonyLib.AccessTools.TypeByName("AudioOptionsScreen");
-			Register(audioType, screen => new OptionsMenuHandler(screen));
-
-			var graphicsType = HarmonyLib.AccessTools.TypeByName("GraphicsOptionsScreen");
-			Register(graphicsType, screen => new OptionsMenuHandler(screen));
-
-			var gameOptionsType = HarmonyLib.AccessTools.TypeByName("GameOptionsScreen");
-			Register(gameOptionsType, screen => new OptionsMenuHandler(screen));
+			foreach (var name in new[] {
+				"AudioOptionsScreen", "GraphicsOptionsScreen", "GameOptionsScreen",
+				"MetricsOptionsScreen", "FeedbackScreen", "CreditsScreen" }) {
+				Register(HarmonyLib.AccessTools.TypeByName(name),
+					screen => new OptionsMenuHandler(screen));
+			}
 
 			var inputBindingsType = HarmonyLib.AccessTools.TypeByName("InputBindingsScreen");
 			Register(inputBindingsType, screen => new KeyBindingsHandler(screen));
-
-			var metricsType = HarmonyLib.AccessTools.TypeByName("MetricsOptionsScreen");
-			Register(metricsType, screen => new OptionsMenuHandler(screen));
-
-			var feedbackType = HarmonyLib.AccessTools.TypeByName("FeedbackScreen");
-			Register(feedbackType, screen => new OptionsMenuHandler(screen));
-
-			var creditsType = HarmonyLib.AccessTools.TypeByName("CreditsScreen");
-			Register(creditsType, screen => new OptionsMenuHandler(screen));
 
 			// RetiredColonyInfoScreen (KModalScreen -- colony summary, MENU-09)
 			var retiredColonyType = HarmonyLib.AccessTools.TypeByName("RetiredColonyInfoScreen");
