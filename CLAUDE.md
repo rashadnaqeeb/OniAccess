@@ -79,6 +79,7 @@ This mod runs on Harmony patches and reflection. Both fail in ways that produce 
 - Show-lifecycle patches depend on the screen's base class:
   - `ShowOptimizedKScreen` subclasses (e.g. `TableScreen`): patch `OnShow` — `KScreen.OnActivate` does not call `OnShow`, so it only fires on ManagementMenu toggles
   - `KModalScreen` subclasses: default to patching `Show`, NOT `OnShow` — `KModalScreen.OnActivate` calls `OnShow(true)` directly during prefab init, which would push a handler before the game world is ready. However, not all subclasses override `Show`; for example `SkillsScreen` only overrides `OnShow`, so it must be patched there instead. Always check the decompiled source to see which method the specific subclass overrides
+  - **Harmony requires the target method to be declared on the patched type**, not just inherited. If a screen doesn't override `Show` or `OnShow` (e.g. `CodexScreen`), patching `typeof(ScreenType)` crashes the entire mod at load. Target `typeof(KScreen)` instead and filter with `__instance is ScreenType` in the postfix
 
 ## Game Log
 

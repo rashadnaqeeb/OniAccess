@@ -201,10 +201,14 @@ namespace OniAccess.Patches {
 	}
 
 	/// CodexScreen extends KScreen directly. ManagementMenu toggles it via Show().
-	[HarmonyPatch(typeof(CodexScreen), "OnShow")]
+	/// CodexScreen does not override Show or OnShow, so we must target the base
+	/// KScreen.OnShow where the method actually lives and filter by instance type.
+	[HarmonyPatch(typeof(KScreen), "OnShow")]
 	internal static class CodexScreen_OnShow_Patch {
-		private static void Postfix(KScreen __instance, bool show) =>
-			ShowDispatch.Handle(__instance, show);
+		private static void Postfix(KScreen __instance, bool show) {
+			if (__instance is CodexScreen)
+				ShowDispatch.Handle(__instance, show);
+		}
 	}
 
 	/// Postfix on ChangeArticle to notify the handler when the article changes.
