@@ -131,12 +131,8 @@ namespace OniAccess.Handlers.Screens {
 				_currentIndex = System.Math.Min(_currentIndex, System.Math.Max(0, _widgets.Count - 1));
 				if (_widgets.Count != oldCount)
 					Util.Log.Debug($"{GetType().Name}: deferred refresh changed widget count {oldCount} → {_widgets.Count}");
-				if (_widgets.Count > 0) {
-					var w = _widgets[_currentIndex];
-					string text = GetWidgetSpeechText(w);
-					text = WidgetOps.AppendTooltip(text, GetTooltipText(w));
-					Speech.SpeechPipeline.SpeakQueued(text);
-				}
+				if (_widgets.Count > 0)
+					Speech.SpeechPipeline.SpeakQueued(BuildWidgetText(_widgets[_currentIndex]));
 			}
 
 			// Deferred rediscovery: screen UI wasn't ready during OnActivate
@@ -145,10 +141,7 @@ namespace OniAccess.Handlers.Screens {
 				bool ready = DiscoverWidgets(_screen);
 				_currentIndex = 0;
 				if (ready && _widgets.Count > 0) {
-					var w = _widgets[0];
-					string text = GetWidgetSpeechText(w);
-					text = WidgetOps.AppendTooltip(text, GetTooltipText(w));
-					Speech.SpeechPipeline.SpeakQueued(text);
+					Speech.SpeechPipeline.SpeakQueued(BuildWidgetText(_widgets[0]));
 				} else if (_retryCount < MaxDiscoveryRetries) {
 					_retryCount++;
 					_pendingRediscovery = true;
@@ -270,7 +263,12 @@ namespace OniAccess.Handlers.Screens {
 		// WIDGET SPEECH
 		// ========================================
 
-		protected virtual string GetWidgetSpeechText(Widget widget) => WidgetOps.GetSpeechText(widget);
+			protected virtual string GetWidgetSpeechText(Widget widget) => WidgetOps.GetSpeechText(widget);
+
+		protected string BuildWidgetText(Widget widget) {
+			string text = GetWidgetSpeechText(widget);
+			return WidgetOps.AppendTooltip(text, GetTooltipText(widget));
+		}
 
 		/// <summary>
 		/// Speak the currently focused widget via SpeakInterrupt.
@@ -280,9 +278,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_currentIndex >= 0 && _currentIndex < _widgets.Count) {
 				var w = _widgets[_currentIndex];
 				if (!IsWidgetValid(w)) return;
-				string text = GetWidgetSpeechText(w);
-				text = WidgetOps.AppendTooltip(text, GetTooltipText(w));
-				Speech.SpeechPipeline.SpeakInterrupt(text);
+				Speech.SpeechPipeline.SpeakInterrupt(BuildWidgetText(w));
 			}
 		}
 
@@ -294,9 +290,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_currentIndex >= 0 && _currentIndex < _widgets.Count) {
 				var w = _widgets[_currentIndex];
 				if (!IsWidgetValid(w)) return;
-				string text = GetWidgetSpeechText(w);
-				text = WidgetOps.AppendTooltip(text, GetTooltipText(w));
-				Speech.SpeechPipeline.SpeakQueued(text);
+				Speech.SpeechPipeline.SpeakQueued(BuildWidgetText(w));
 			}
 		}
 
