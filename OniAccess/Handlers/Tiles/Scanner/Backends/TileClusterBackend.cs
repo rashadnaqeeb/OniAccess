@@ -30,25 +30,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 
 		public bool ValidateEntry(ScanEntry entry, int cursorCell) {
 			var cluster = (TileCluster)entry.BackendData;
-			int bestCell = -1;
-			int bestDist = int.MaxValue;
-
-			for (int i = cluster.Cells.Count - 1; i >= 0; i--) {
-				int cell = cluster.Cells[i];
-				if (!IsTileStillPresent(cell, cluster.PrefabId)) {
-					cluster.Cells.RemoveAt(i);
-					continue;
-				}
-				int dist = GridUtil.CellDistance(cursorCell, cell);
-				if (dist < bestDist) {
-					bestDist = dist;
-					bestCell = cell;
-				}
-			}
-
-			if (bestCell < 0) return false;
-			entry.Cell = bestCell;
-			return true;
+			return GridUtil.ValidateCluster(cluster.Cells, cursorCell, entry,
+				cell => IsTileStillPresent(cell, cluster.PrefabId));
 		}
 
 		public string FormatName(ScanEntry entry) {
