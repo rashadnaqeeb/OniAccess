@@ -225,7 +225,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 			if (go == null) return false;
 			var workable = go.GetComponent<IEmptyConduitWorkable>();
 			if (workable.IsNullOrDestroyed()) return false;
-			var selectable = ((UnityEngine.MonoBehaviour)workable).GetComponent<KSelectable>();
+			var selectable = (workable as UnityEngine.MonoBehaviour)?.GetComponent<KSelectable>();
 			if (selectable == null) return false;
 			var group = selectable.GetStatusItemGroup();
 			if (group == null) return false;

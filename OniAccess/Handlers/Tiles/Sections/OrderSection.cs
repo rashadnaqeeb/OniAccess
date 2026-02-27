@@ -173,7 +173,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		private static bool IsMarkedForEmptying(IEmptyConduitWorkable workable) {
-			var selectable = ((MonoBehaviour)workable).GetComponent<KSelectable>();
+			var selectable = (workable as MonoBehaviour)?.GetComponent<KSelectable>();
+			if (selectable == null) return false;
 			var group = selectable.GetStatusItemGroup();
 			return group.HasStatusItemID("EmptyLiquidConduit")
 				|| group.HasStatusItemID("EmptyGasConduit")
