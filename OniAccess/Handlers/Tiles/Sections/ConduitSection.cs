@@ -2,14 +2,16 @@ using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
-	/// Reads power infrastructure (wires, bridges) at a cell.
-	/// The game registers buildings on WireConnectors at their power
-	/// port cells; skip those so BuildingSection handles them.
+	/// Reads conduit/wire infrastructure at a cell. Skips buildings that
+	/// are registered on a layer only for port tracking (handled by
+	/// BuildingSection). Parameterized by the object layers to scan.
 	/// </summary>
-	public class PowerSection: ICellSection {
-		private static readonly int[] _layers = {
-			(int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors
-		};
+	public class ConduitSection : ICellSection {
+		private readonly int[] _layers;
+
+		public ConduitSection(params int[] layers) {
+			_layers = layers;
+		}
 
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();

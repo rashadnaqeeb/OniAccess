@@ -6,9 +6,8 @@ namespace OniAccess.Handlers.Tiles {
 	/// concatenates their output tokens with ", ", and returns
 	/// the final speech string.
 	///
-	/// Constructed with an immutable section list. Phase 4
-	/// OverlayProfileRegistry will construct different instances
-	/// per overlay profile.
+	/// Constructed with an immutable section list.
+	/// OverlayProfileRegistry constructs different instances per overlay profile.
 	/// </summary>
 	public class GlanceComposer {
 		private readonly IReadOnlyList<ICellSection> _sections;
@@ -25,10 +24,14 @@ namespace OniAccess.Handlers.Tiles {
 		internal static readonly ICellSection Radiation = new Sections.RadiationSection();
 		internal static readonly ICellSection Decor = new Sections.DecorSection();
 		internal static readonly ICellSection Disease = new Sections.DiseaseSection();
-		internal static readonly ICellSection Power = new Sections.PowerSection();
-		internal static readonly ICellSection Plumbing = new Sections.PlumbingSection();
-		internal static readonly ICellSection Ventilation = new Sections.VentilationSection();
-		internal static readonly ICellSection Conveyor = new Sections.ConveyorSection();
+		internal static readonly ICellSection Power = new Sections.ConduitSection(
+			(int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors);
+		internal static readonly ICellSection Plumbing = new Sections.ConduitSection(
+			(int)ObjectLayer.LiquidConduit, (int)ObjectLayer.LiquidConduitConnection);
+		internal static readonly ICellSection Ventilation = new Sections.ConduitSection(
+			(int)ObjectLayer.GasConduit, (int)ObjectLayer.GasConduitConnection);
+		internal static readonly ICellSection Conveyor = new Sections.ConduitSection(
+			(int)ObjectLayer.SolidConduit, (int)ObjectLayer.SolidConduitConnection);
 		internal static readonly ICellSection Automation = new Sections.AutomationSection();
 		internal static readonly ICellSection Temperature = new Sections.TemperatureSection();
 
