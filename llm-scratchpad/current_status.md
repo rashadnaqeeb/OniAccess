@@ -11,7 +11,7 @@
 5. `prompts/string-builder.md` - done (not a string builder mod, ~8% string building, well-organized)
 
 ## Next Prompt
-`prompts/high-level-cleanup.md`
+`prompts/finalization.md`
 
 ## What Was Done
 - Validated CLAUDE.md: all facts verified, fixed KModalScreen lifecycle gotcha (was oversimplified), replaced hardcoded user path with %USERPROFILE%
@@ -38,6 +38,21 @@
 13. **Dead TypeAheadSearch Escape case** — removed unreachable switch case
 14. **Dead NestedMenuHandler HandleKeyDown** — removed pure passthrough override
 15. **ScreenLifecyclePatches comment trimming** — removed redundant per-class XML docs
+
+### High-Level Cleanup (13 items, all completed)
+1. **EmptySolidConduit glance bug** — OrderSection missed solid conduit empty-pipe orders
+2. **NavigateCol bounds check** — crash if row list shrinks between Left/Right keystrokes
+3. **screenStack Traverse null warning** — log when Traverse silently returns null
+4. **Pop reactivation recovery** — remove broken handler from stack on OnActivate failure
+5. **ValidateAndAnnounce bounded loop** — cap at 200 iterations to prevent infinite spin
+6. **SubcategoryGroup struct→class** — prevent latent value-type aliasing bug
+7. **DEFAULT_FACADE shared constant** — deduplicate magic string across two files
+8. **IEmptyConduitWorkable safe cast** — use as-cast to prevent crash on non-MonoBehaviour
+9. **Schedule reorder error severity** — Warn→Error for state-corrupting notification failure
+10. **ScheduleScreen patch comment** — clarify KScreen vs KModalScreen rationale
+11. **BrushGroupIds comment** — document actual game IDs and intentional reordering
+12. **Unhide patch intent** — clarify fail-open fallthrough behavior
+13. **PruneEmptyItem early break** — break after matching category
 
 ## Key Findings
 - The project has 177 source files (~30k lines total), ~25 screen handlers implemented
