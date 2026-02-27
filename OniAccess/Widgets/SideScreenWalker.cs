@@ -141,65 +141,10 @@ namespace OniAccess.Widgets {
 				}
 			});
 
-			// Active colors group (drillable)
-			var activeChildren = new List<Widget>();
-			for (int i = 0; i < pixelPack.activeColors.Count; i++) {
-				var slotGO = pixelPack.activeColors[i];
-				var capturedSlot = slotGO;
-				int slotIndex = i + 1;
-				string slotLabel = string.Format(
-					(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex);
-				activeChildren.Add(new ButtonWidget {
-					Label = slotLabel,
-					Component = slotGO.GetComponent<KButton>(),
-					GameObject = slotGO,
-					SuppressTooltip = true,
-					SpeechFunc = () => {
-						string colorName = ColorNameUtil.GetColorName(
-							capturedSlot.GetComponent<Image>().color) ?? capturedSlot.name;
-						return string.Format(
-							(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex)
-							+ ", " + colorName;
-					}
-				});
-			}
-			items.Add(new LabelWidget {
-				Label = (string)STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS,
-				GameObject = pixelPack.activeColorsContainer,
-				SuppressTooltip = true,
-				Children = activeChildren,
-				SpeechFunc = () => (string)STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS
-			});
-
-			// Standby colors group (drillable)
-			var standbyChildren = new List<Widget>();
-			for (int i = 0; i < pixelPack.standbyColors.Count; i++) {
-				var slotGO = pixelPack.standbyColors[i];
-				var capturedSlot = slotGO;
-				int slotIndex = i + 1;
-				string slotLabel = string.Format(
-					(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex);
-				standbyChildren.Add(new ButtonWidget {
-					Label = slotLabel,
-					Component = slotGO.GetComponent<KButton>(),
-					GameObject = slotGO,
-					SuppressTooltip = true,
-					SpeechFunc = () => {
-						string colorName = ColorNameUtil.GetColorName(
-							capturedSlot.GetComponent<Image>().color) ?? capturedSlot.name;
-						return string.Format(
-							(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex)
-							+ ", " + colorName;
-					}
-				});
-			}
-			items.Add(new LabelWidget {
-				Label = (string)STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS,
-				GameObject = pixelPack.standbyColorsContainer,
-				SuppressTooltip = true,
-				Children = standbyChildren,
-				SpeechFunc = () => (string)STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS
-			});
+			AddColorSlotGroup(pixelPack.activeColors, pixelPack.activeColorsContainer,
+				(string)STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS, items);
+			AddColorSlotGroup(pixelPack.standbyColors, pixelPack.standbyColorsContainer,
+				(string)STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS, items);
 
 			// Action buttons (these have LocText labels)
 			var buttons = new[] {
@@ -219,6 +164,39 @@ namespace OniAccess.Widgets {
 					SpeechFunc = () => GetButtonLabel(captured, captured.transform.name)
 				});
 			}
+		}
+
+		private static void AddColorSlotGroup(
+				List<GameObject> slots, GameObject container,
+				string groupLabel, List<Widget> items) {
+			var children = new List<Widget>();
+			for (int i = 0; i < slots.Count; i++) {
+				var slotGO = slots[i];
+				var capturedSlot = slotGO;
+				int slotIndex = i + 1;
+				string slotLabel = string.Format(
+					(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex);
+				children.Add(new ButtonWidget {
+					Label = slotLabel,
+					Component = slotGO.GetComponent<KButton>(),
+					GameObject = slotGO,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string colorName = ColorNameUtil.GetColorName(
+							capturedSlot.GetComponent<Image>().color) ?? capturedSlot.name;
+						return string.Format(
+							(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex)
+							+ ", " + colorName;
+					}
+				});
+			}
+			items.Add(new LabelWidget {
+				Label = groupLabel,
+				GameObject = container,
+				SuppressTooltip = true,
+				Children = children,
+				SpeechFunc = () => groupLabel
+			});
 		}
 
 		private static void WalkConditionContainer(
