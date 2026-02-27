@@ -576,13 +576,17 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			schedules.RemoveAt(si);
 			schedules.Insert(newSi, schedule);
 
-			// Notify game UI of reorder (event can only be raised from declaring class)
+			// ScheduleManager has no public reorder API. GetSchedules() returns the
+			// live list so we mutate it directly, then raise onSchedulesChanged via
+			// its backing field (field-like events compile to a backing delegate of
+			// the same name). If this fails, the reorder succeeded but the game UI
+			// will not refresh — state corruption the user cannot recover from.
 			try {
 				var del = HarmonyLib.Traverse.Create(ScheduleManager.Instance)
 					.Field<System.Action<List<global::Schedule>>>("onSchedulesChanged").Value;
 				del?.Invoke(schedules);
 			} catch (System.Exception ex) {
-				Util.Log.Warn($"SchedulesTab.ReorderSchedule: onSchedulesChanged invoke failed: {ex.Message}");
+				Util.Log.Error($"SchedulesTab.ReorderSchedule: onSchedulesChanged invoke failed: {ex.Message}");
 			}
 
 			// Update cursor to follow the schedule
