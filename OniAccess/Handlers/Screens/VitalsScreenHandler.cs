@@ -175,6 +175,12 @@ namespace OniAccess.Handlers.Screens {
 			return null;
 		}
 
+		protected override string GetSearchableColumnName(int col) {
+			if (col >= 0 && col < _columns.Count)
+				return _columns[col].Name;
+			return null;
+		}
+
 		protected override string GetRowLabel(RowEntry row) {
 			switch (row.Kind) {
 				case TableRowKind.ColumnHeader:

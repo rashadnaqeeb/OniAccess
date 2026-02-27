@@ -115,6 +115,12 @@ namespace OniAccess.Handlers.Screens {
 			return null;
 		}
 
+		protected override string GetSearchableColumnName(int col) {
+			if (col >= 0 && col < _choreGroups.Count)
+				return _choreGroups[col].Name;
+			return null;
+		}
+
 		protected override string GetRowLabel(RowEntry row) {
 			switch (row.Kind) {
 				case TableRowKind.Toolbar:

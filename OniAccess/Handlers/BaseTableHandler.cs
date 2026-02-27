@@ -12,7 +12,7 @@ namespace OniAccess.Handlers {
 	/// Subclasses implement BuildRowList, GetColumnCount, GetColumnName,
 	/// GetCellValue, and GetRowLabel to describe their specific table.
 	/// </summary>
-	public abstract class BaseTableHandler: BaseScreenHandler {
+	public abstract class BaseTableHandler: BaseScreenHandler, ISearchable {
 		protected enum TableRowKind {
 			Toolbar,
 			ColumnHeader,
@@ -39,6 +39,16 @@ namespace OniAccess.Handlers {
 		// Sort state
 		protected int _sortColumn = -1;
 		protected bool _sortAscending;
+
+		// Type-ahead search (columns)
+		protected readonly TypeAheadSearch _search = new TypeAheadSearch();
+		private int _searchSuppressFrame = -1;
+
+		private static readonly UnityEngine.KeyCode[] _searchNavKeys = {
+			UnityEngine.KeyCode.UpArrow, UnityEngine.KeyCode.DownArrow,
+			UnityEngine.KeyCode.Home, UnityEngine.KeyCode.End,
+			UnityEngine.KeyCode.Backspace,
+		};
 
 		public override bool CapturesAllInput => true;
 
@@ -75,6 +85,7 @@ namespace OniAccess.Handlers {
 		protected virtual bool HandleModifiedUpDown(int direction) => false;
 		protected virtual bool HandleModifiedLeftRight(int direction) => false;
 		protected virtual void OnTableActivate() { }
+		protected virtual string GetSearchableColumnName(int col) => GetColumnName(col);
 
 		protected virtual int FindInitialRow() {
 			for (int i = 0; i < _rows.Count; i++) {
@@ -126,8 +137,15 @@ namespace OniAccess.Handlers {
 			_col = 0;
 			_lastSpokenRow = -1;
 			_lastSpokenCol = -1;
+			_search.Clear();
+			SuppressSearchThisFrame();
 			base.OnActivate();
 			SpeechPipeline.SpeakQueued(BuildCellParts(forceFullContext: true));
+		}
+
+		public override void OnDeactivate() {
+			_search.Clear();
+			base.OnDeactivate();
 		}
 
 		// ========================================
@@ -288,12 +306,74 @@ namespace OniAccess.Handlers {
 		}
 
 		// ========================================
+		// SEARCH
+		// ========================================
+
+		private void SuppressSearchThisFrame() {
+			_searchSuppressFrame = UnityEngine.Time.frameCount;
+		}
+
+		protected bool TryRouteToSearch(bool ctrlHeld, bool altHeld) {
+			if (UnityEngine.Time.frameCount == _searchSuppressFrame)
+				return false;
+
+			if (!ctrlHeld && !altHeld) {
+				for (var k = UnityEngine.KeyCode.A; k <= UnityEngine.KeyCode.Z; k++) {
+					if (UnityEngine.Input.GetKeyDown(k))
+						return _search.HandleKey(k, ctrlHeld, altHeld, this);
+				}
+			}
+
+			for (int i = 0; i < _searchNavKeys.Length; i++) {
+				if (UnityEngine.Input.GetKeyDown(_searchNavKeys[i]))
+					return _search.HandleKey(_searchNavKeys[i], ctrlHeld, altHeld, this);
+			}
+
+			return false;
+		}
+
+		public override bool HandleKeyDown(KButtonEvent e) {
+			if (_search.IsSearchActive && e.TryConsume(Action.Escape)) {
+				_search.Clear();
+				SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SEARCH.CLEARED);
+				return true;
+			}
+
+			return false;
+		}
+
+		// ISearchable
+
+		public int SearchItemCount {
+			get {
+				if (_rows.Count == 0) return 0;
+				return GetColumnCount(_rows[_row].Kind);
+			}
+		}
+
+		public string GetSearchLabel(int index) {
+			if (_rows.Count == 0) return null;
+			string name = GetSearchableColumnName(index);
+			if (name == null) return null;
+			return TextFilter.FilterForSpeech(name);
+		}
+
+		public void SearchMoveTo(int index) {
+			if (_rows.Count == 0) return;
+			int maxCol = GetColumnCount(_rows[_row].Kind) - 1;
+			if (index < 0 || index > maxCol) return;
+			_col = index;
+			SpeakCell();
+		}
+
+		// ========================================
 		// HELP
 		// ========================================
 
 		protected static readonly List<HelpEntry> TableNavHelpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrows", STRINGS.ONIACCESS.TABLE.NAVIGATE_TABLE),
 			new HelpEntry("Home/End", STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST),
+			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
 		};
 
 		protected static readonly HelpEntry TableSortHelpEntry =
@@ -307,6 +387,10 @@ namespace OniAccess.Handlers {
 			if (base.Tick()) return true;
 
 			bool ctrlHeld = InputUtil.CtrlHeld();
+			bool altHeld = InputUtil.AltHeld();
+
+			if (TryRouteToSearch(ctrlHeld, altHeld))
+				return true;
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
 				if (ctrlHeld) {
