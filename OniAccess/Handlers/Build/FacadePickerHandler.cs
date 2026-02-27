@@ -80,7 +80,7 @@ namespace OniAccess.Handlers.Build {
 			_facades = new List<FacadeEntry>();
 
 			_facades.Add(new FacadeEntry {
-				Id = "DEFAULT_FACADE",
+				Id = BuildMenuData.DefaultFacadeId,
 				Label = (string)STRINGS.ONIACCESS.BUILD_MENU.FACADE_DEFAULT,
 			});
 

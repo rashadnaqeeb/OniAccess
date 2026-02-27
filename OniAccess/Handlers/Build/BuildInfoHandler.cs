@@ -208,7 +208,7 @@ namespace OniAccess.Handlers.Build {
 				var facadePanel = PlanScreen.Instance.ProductInfoScreen.FacadeSelectionPanel;
 				string facadeId = facadePanel.SelectedFacade;
 				string name;
-				if (facadeId == "DEFAULT_FACADE" || facadeId == null) {
+				if (facadeId == BuildMenuData.DefaultFacadeId || facadeId == null) {
 					name = (string)STRINGS.ONIACCESS.BUILD_MENU.FACADE_DEFAULT;
 				} else {
 					var resource = Db.GetBuildingFacades().TryGet(facadeId);

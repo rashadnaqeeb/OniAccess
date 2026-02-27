@@ -7,6 +7,8 @@ namespace OniAccess.Handlers.Build {
 	/// All methods re-query live game data on every call.
 	/// </summary>
 	public static class BuildMenuData {
+		internal const string DefaultFacadeId = "DEFAULT_FACADE";
+
 		public struct CategoryEntry {
 			public HashedString Category;
 			public string DisplayName;
