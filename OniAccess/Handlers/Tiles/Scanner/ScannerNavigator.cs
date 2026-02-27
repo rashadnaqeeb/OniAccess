@@ -263,8 +263,10 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			return item.Instances[_instanceIndex];
 		}
 
+		private const int MaxValidateIterations = 200;
+
 		private string ValidateAndAnnounce(bool speakOnEmpty = true) {
-			while (true) {
+			for (int guard = 0; guard < MaxValidateIterations; guard++) {
 				var item = CurrentItem();
 				if (item == null || item.Instances.Count == 0) {
 					if (speakOnEmpty) SpeakEmpty();
@@ -284,6 +286,9 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 					return null;
 				}
 			}
+			Util.Log.Warn("ValidateAndAnnounce: exceeded iteration limit");
+			if (speakOnEmpty) SpeakEmpty();
+			return null;
 		}
 
 		private string FormatAnnouncement(ScanEntry entry, ScannerItem item) {
