@@ -14,14 +14,6 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 			GameTags.HighEnergyParticle, GameTags.Artifact,
 		};
 
-		private static readonly Tag[] _materialTags = {
-			GameTags.Metal, GameTags.RefinedMetal, GameTags.Alloy,
-			GameTags.BuildableRaw, GameTags.BuildableProcessed,
-			GameTags.Filter, GameTags.Liquifiable, GameTags.ConsumableOre,
-			GameTags.Sublimating, GameTags.Organics, GameTags.Farmable,
-			GameTags.Agriculture, GameTags.Other, GameTags.ManufacturedMaterial,
-			GameTags.CookingIngredient, GameTags.RareMaterials,
-		};
 
 		/// <summary>
 		/// Returns true if this pickupable should be excluded from debris.
@@ -53,11 +45,6 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 			for (int i = 0; i < _itemTags.Length; i++) {
 				if (prefabId.HasTag(_itemTags[i]))
 					return ScannerTaxonomy.Subcategories.Items;
-			}
-
-			for (int i = 0; i < _materialTags.Length; i++) {
-				if (prefabId.HasTag(_materialTags[i]))
-					return ScannerTaxonomy.Subcategories.Materials;
 			}
 
 			return ScannerTaxonomy.Subcategories.Materials;

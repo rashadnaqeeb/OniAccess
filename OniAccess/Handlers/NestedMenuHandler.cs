@@ -243,10 +243,6 @@ namespace OniAccess.Handlers {
 			return GetItemCount(_level + 1, _indices) > 0;
 		}
 
-		public override bool HandleKeyDown(KButtonEvent e) {
-			return base.HandleKeyDown(e);
-		}
-
 		// ========================================
 		// SEARCH: explicit ISearchable re-implementation
 		// TypeAheadSearch receives this as ISearchable. If these explicit

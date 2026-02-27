@@ -161,10 +161,6 @@ namespace OniAccess.Handlers {
 					case KeyCode.End:
 						JumpToLastResult();
 						return true;
-					case KeyCode.Escape:
-						Clear();
-						Speech.SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SEARCH.CLEARED);
-						return true;
 					case KeyCode.Backspace:
 						if (!RemoveChar())
 							return true;
