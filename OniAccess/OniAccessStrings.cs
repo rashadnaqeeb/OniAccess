@@ -682,6 +682,16 @@ namespace STRINGS {
 			public static LocString HELP_CHANGE_SCHEDULE = "Change schedule assignment";
 		}
 
+		public class CODEX {
+			public static LocString CATEGORIES_TAB = "Categories";
+			public static LocString CONTENT_TAB = "Content";
+			public static LocString NO_ARTICLE = "no article selected";
+			public static LocString LOCKED_CONTENT = "locked content";
+			public static LocString PRODUCES = "produces";
+			public static LocString LINK_MENU = "{0} links";
+			public static LocString FOLLOW_LINK_HELP = "Follow link";
+		}
+
 		public class BUILD_MENU {
 			public static LocString ACTION_MENU = "action menu";
 			public static LocString TOOLS_CATEGORY = "Tools";

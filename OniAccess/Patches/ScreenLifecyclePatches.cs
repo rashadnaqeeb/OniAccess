@@ -1,5 +1,6 @@
 using HarmonyLib;
 using OniAccess.Handlers;
+using OniAccess.Handlers.Screens.Codex;
 using OniAccess.Util;
 using UnityEngine;
 
@@ -197,5 +198,25 @@ namespace OniAccess.Patches {
 	internal static class RetiredColonyInfoScreen_Show_Patch {
 		private static void Postfix(KScreen __instance, bool show) =>
 			ShowDispatch.Handle(__instance, show);
+	}
+
+	/// CodexScreen extends KScreen directly. ManagementMenu toggles it via Show().
+	[HarmonyPatch(typeof(CodexScreen), "OnShow")]
+	internal static class CodexScreen_OnShow_Patch {
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
+	}
+
+	/// Postfix on ChangeArticle to notify the handler when the article changes.
+	/// Fires for user navigation, deep links, and unlock-triggered refreshes.
+	[HarmonyPatch(typeof(CodexScreen), nameof(CodexScreen.ChangeArticle))]
+	internal static class CodexScreen_ChangeArticle_Patch {
+		private static void Postfix(CodexScreen __instance) {
+			if (!ModToggle.IsEnabled) return;
+			var active = HandlerStack.ActiveHandler;
+			if (active is CodexScreenHandler handler && handler.Screen == __instance) {
+				handler.OnArticleChanged();
+			}
+		}
 	}
 }

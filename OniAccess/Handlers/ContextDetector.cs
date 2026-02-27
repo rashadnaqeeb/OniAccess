@@ -1,4 +1,5 @@
 using OniAccess.Handlers.Screens;
+using OniAccess.Handlers.Screens.Codex;
 
 namespace OniAccess.Handlers {
 	/// <summary>
@@ -275,6 +276,11 @@ namespace OniAccess.Handlers {
 			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
 			Register<ScheduleScreen>(screen => new ScheduleScreenHandler(screen));
 			_showPatchedTypes.Add(typeof(ScheduleScreen));
+
+			// CodexScreen (KScreen -- in-game Database/Incyclopedia)
+			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
+			Register<CodexScreen>(screen => new CodexScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(CodexScreen));
 
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
