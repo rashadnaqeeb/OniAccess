@@ -658,13 +658,6 @@ namespace OniAccess.Handlers.Build {
 			}
 		}
 
-		private static void PlayNegativeSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
-			} catch (Exception ex) {
-				Util.Log.Error($"BuildToolHandler.PlayNegativeSound: {ex}");
-			}
-		}
 
 		private static void PlayCancelSound() {
 			try {

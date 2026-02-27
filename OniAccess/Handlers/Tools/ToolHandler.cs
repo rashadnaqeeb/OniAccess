@@ -625,13 +625,6 @@ namespace OniAccess.Handlers.Tools {
 			}
 		}
 
-		private static void PlayNegativeSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
-			} catch (Exception ex) {
-				Util.Log.Error($"ToolHandler.PlayNegativeSound: {ex}");
-			}
-		}
 
 		// ========================================
 		// TOOL INFO REGISTRY

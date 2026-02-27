@@ -159,13 +159,6 @@ namespace OniAccess.Handlers.Build {
 			}
 		}
 
-		private static void PlayOpenSound() {
-			Tools.ToolPickerHandler.PlaySound("HUD_Click_Open");
-		}
-
-		private static void PlayCloseSound() {
-			Tools.ToolPickerHandler.PlaySound("HUD_Click_Close");
-		}
 
 		private struct MaterialEntry {
 			public Tag Tag;

@@ -322,13 +322,6 @@ namespace OniAccess.Handlers.Build {
 			return name;
 		}
 
-		private static void PlayOpenSound() {
-			Tools.ToolPickerHandler.PlaySound("HUD_Click_Open");
-		}
-
-		private static void PlayCloseSound() {
-			Tools.ToolPickerHandler.PlaySound("HUD_Click_Close");
-		}
 
 		private struct InfoItem {
 			public string Label;

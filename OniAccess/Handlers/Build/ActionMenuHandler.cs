@@ -661,20 +661,5 @@ namespace OniAccess.Handlers.Build {
 			SpeakCurrentItem(catName + ", " + subName);
 		}
 
-		private static void PlayOpenSound() {
-			Tools.ToolPickerHandler.PlaySound("HUD_Click_Open");
-		}
-
-		private static void PlayCloseSound() {
-			Tools.ToolPickerHandler.PlaySound("HUD_Click_Close");
-		}
-
-		private static void PlayNegativeSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"ActionMenuHandler.PlayNegativeSound: {ex.Message}");
-			}
-		}
 	}
 }
