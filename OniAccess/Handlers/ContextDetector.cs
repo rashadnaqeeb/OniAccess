@@ -312,6 +312,8 @@ namespace OniAccess.Handlers {
 					} catch (System.Exception ex) {
 						Util.Log.Warn($"DetectAndActivate: screenStack read failed: {ex.Message}");
 					}
+					if (screenStack == null)
+						Util.Log.Warn("DetectAndActivate: screenStack field not found; handler order may be wrong");
 				}
 
 				if (screenStack != null && matches.Count > 1) {
