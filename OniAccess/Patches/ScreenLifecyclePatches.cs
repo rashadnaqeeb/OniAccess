@@ -76,7 +76,8 @@ namespace OniAccess.Patches {
 					return false;
 				}
 			} catch (System.Exception ex) {
-				Log.Warn($"KModalButtonMenu_Unhide_Patch: Traverse failed: {ex.Message}");
+				// Traverse failed (field renamed?). Fall through to let original Unhide run.
+				Log.Warn($"KModalButtonMenu_Unhide_Patch: Traverse failed, skipping guard: {ex.Message}");
 			}
 			return true;
 		}
@@ -179,7 +180,8 @@ namespace OniAccess.Patches {
 			ShowDispatch.Handle(__instance, show);
 	}
 
-	/// Same pattern as SkillsScreen.
+	/// ScheduleScreen extends KScreen (not KModalScreen). ManagementMenu toggles
+	/// it via Show(), which calls OnShow(), without going through Activate/Deactivate.
 	[HarmonyPatch(typeof(ScheduleScreen), "OnShow")]
 	internal static class ScheduleScreen_OnShow_Patch {
 		private static void Postfix(KScreen __instance, bool show) =>

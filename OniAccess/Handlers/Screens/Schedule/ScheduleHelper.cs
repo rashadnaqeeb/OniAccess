@@ -4,9 +4,9 @@ using Database;
 
 namespace OniAccess.Handlers.Screens.Schedule {
 	internal static class ScheduleHelper {
-		/// <summary>
-		/// Brush groups in number-key order: 1=Work, 2=Bathtime, 3=Downtime, 4=Bedtime.
-		/// </summary>
+		/// Game ScheduleGroup IDs in number-key order: 1=Worktime, 2=Hygene,
+		/// 3=Recreation, 4=Sleep. Differs from the game's allGroups insertion
+		/// order (Hygene first) for usability — Work as key 1 is more natural.
 		internal static readonly string[] BrushGroupIds = {
 			"Worktime", "Hygene", "Recreation", "Sleep"
 		};
