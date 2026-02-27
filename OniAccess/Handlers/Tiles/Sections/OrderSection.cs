@@ -176,7 +176,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var selectable = ((MonoBehaviour)workable).GetComponent<KSelectable>();
 			var group = selectable.GetStatusItemGroup();
 			return group.HasStatusItemID("EmptyLiquidConduit")
-				|| group.HasStatusItemID("EmptyGasConduit");
+				|| group.HasStatusItemID("EmptyGasConduit")
+				|| group.HasStatusItemID("EmptySolidConduit");
 		}
 
 		private static string FormatOrder(string label, GameObject go) {
