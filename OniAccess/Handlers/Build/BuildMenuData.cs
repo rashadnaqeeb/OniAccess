@@ -18,7 +18,7 @@ namespace OniAccess.Handlers.Build {
 			public string Label;
 		}
 
-		public struct SubcategoryGroup {
+		public class SubcategoryGroup {
 			public string Name;
 			public List<BuildingEntry> Buildings;
 		}
