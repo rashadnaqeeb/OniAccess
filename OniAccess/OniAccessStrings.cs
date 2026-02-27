@@ -647,6 +647,41 @@ namespace STRINGS {
 			public static LocString BOOSTER_HELP = "Assign or unassign boosters with +/-";
 		}
 
+		public class SCHEDULE {
+			public static LocString HANDLER_NAME = "Schedule";
+			public static LocString SCHEDULES_TAB = "Schedules";
+			public static LocString DUPES_TAB = "Duplicants";
+			public static LocString ADD_SCHEDULE = "Add new schedule";
+			public static LocString CANNOT_DELETE_LAST = "Cannot delete last schedule";
+			public static LocString CANNOT_DELETE_LAST_ROW = "Cannot delete last row";
+			public static LocString SCHEDULE_DELETED = "Schedule deleted";
+			public static LocString TIMETABLE_ROW_ADDED = "Row added";
+			public static LocString TIMETABLE_ROW_DELETED = "Row deleted";
+			public static LocString OPTIONS_RENAME = "Rename";
+			public static LocString OPTIONS_DUPLICATE = "Duplicate schedule";
+			public static LocString OPTIONS_DELETE_SCHEDULE = "Delete schedule";
+			public static LocString OPTIONS_ADD_ROW = "Add timetable row";
+			public static LocString OPTIONS_DELETE_ROW = "Delete timetable row";
+			public static LocString BLOCK_LABEL = "{0}, block {1}";
+			public static LocString BLOCK_ALREADY = "block {0}, already {1}";
+			public static LocString BRUSH_ACTIVE = "Brush: {0}";
+			public static LocString PAINTED_RANGE = "Painted {0}, blocks {1} through {2}";
+			public static LocString ROW_LABEL = "row {0}";
+			public static LocString SCHEDULE_ROW = "{0}, row {1}";
+			public static LocString MOVED_UP = "moved up";
+			public static LocString MOVED_DOWN = "moved down";
+			public static LocString HELP_NAVIGATE_BLOCKS = "Navigate blocks";
+			public static LocString HELP_JUMP_BLOCK = "Jump to first or last block";
+			public static LocString HELP_SELECT_BRUSH = "Select brush";
+			public static LocString HELP_PAINT = "Paint current block";
+			public static LocString HELP_PAINT_MOVE = "Paint and move";
+			public static LocString HELP_PAINT_RANGE = "Paint range to start or end";
+			public static LocString HELP_REORDER_SCHEDULE = "Move schedule up or down";
+			public static LocString HELP_ROTATE = "Rotate blocks left or right";
+			public static LocString HELP_OPTIONS = "Open schedule options";
+			public static LocString HELP_CHANGE_SCHEDULE = "Change schedule assignment";
+		}
+
 		public class BUILD_MENU {
 			public static LocString ACTION_MENU = "action menu";
 			public static LocString TOOLS_CATEGORY = "Tools";

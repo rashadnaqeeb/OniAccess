@@ -227,6 +227,21 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
+	/// ScheduleScreen is toggled by ManagementMenu via Show(bool).
+	/// Like SkillsScreen, it overrides OnShow (not Show), so patch OnShow directly.
+	/// </summary>
+	[HarmonyPatch(typeof(ScheduleScreen), "OnShow")]
+	internal static class ScheduleScreen_OnShow_Patch {
+		private static void Postfix(ScheduleScreen __instance, bool show) {
+			if (!ModToggle.IsEnabled) return;
+			if (show)
+				ContextDetector.OnScreenActivated(__instance);
+			else
+				ContextDetector.OnScreenDeactivating(__instance);
+		}
+	}
+
+	/// <summary>
 	/// RetiredColonyInfoScreen reuses its instance via Show(true) on subsequent opens,
 	/// so KScreen.Activate never fires again. Patch Show(bool) to push/pop the handler.
 	/// The duplicate guard in OnScreenActivated prevents double-pushing when both

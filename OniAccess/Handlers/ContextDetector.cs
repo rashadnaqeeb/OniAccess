@@ -282,6 +282,11 @@ namespace OniAccess.Handlers {
 			Register<SkillsScreen>(screen => new SkillsScreenHandler(screen));
 			_showPatchedTypes.Add(typeof(SkillsScreen));
 
+			// ScheduleScreen (KScreen -- duplicant schedule management)
+			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
+			Register<ScheduleScreen>(screen => new ScheduleScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(ScheduleScreen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 
