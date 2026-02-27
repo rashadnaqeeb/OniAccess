@@ -64,6 +64,7 @@ namespace OniAccess.Tests {
 			results.Add(SearchCaseInsensitive());
 			results.Add(SearchMultiCharNarrowing());
 			results.Add(SearchRepeatLetterCycles());
+			results.Add(SearchRepeatLetterSkipsSubstring());
 			results.Add(SearchBackspace());
 			results.Add(SearchNavigateWraps());
 			results.Add(SearchJumpFirstLast());
@@ -619,6 +620,27 @@ namespace OniAccess.Tests {
 				   && search.Buffer == "b";
 			return Assert("SearchRepeatLetterCycles", ok,
 				$"first={firstIdx}, second={secondIdx}, buffer=\"{search.Buffer}\"");
+		}
+
+		private static (string, bool, string) SearchRepeatLetterSkipsSubstring() {
+			// 'a' matches Apple(0,tier1), Apricot(1,tier1), Banana(2,tier4 substring).
+			// Cycling should stay within Apple/Apricot, never reach Banana.
+			var search = new TypeAheadSearch(() => 0f);
+			search.AddChar('a');
+			search.Search(SearchItems.Length, NameByIndex);
+			int first = search.SelectedOriginalIndex; // Apple(0)
+
+			search.AddChar('a'); // cycle -> Apricot
+			search.Search(SearchItems.Length, NameByIndex);
+			int second = search.SelectedOriginalIndex; // Apricot(1)
+
+			search.AddChar('a'); // cycle wraps -> Apple
+			search.Search(SearchItems.Length, NameByIndex);
+			int third = search.SelectedOriginalIndex; // Apple(0), not Banana
+
+			bool ok = first == 0 && second == 1 && third == 0;
+			return Assert("SearchRepeatLetterSkipsSubstring", ok,
+				$"first={first}, second={second}, third={third}");
 		}
 
 		private static (string, bool, string) SearchBackspace() {

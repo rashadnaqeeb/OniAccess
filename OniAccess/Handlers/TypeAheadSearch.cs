@@ -234,7 +234,7 @@ namespace OniAccess.Handlers {
 				_buffer.Length = 1;
 				if (announceResult != null)
 					_announceResult = announceResult;
-				NavigateResults(1);
+				CycleStartsWithResults();
 				return;
 			}
 
@@ -292,6 +292,29 @@ namespace OniAccess.Handlers {
 				_isSearchActive = true;
 				AnnounceCurrentResult();
 			}
+		}
+
+		/// <summary>
+		/// Cycle forward within start-of-string results only (tiers 0-1).
+		/// Used for single-letter repeat navigation so holding a key
+		/// doesn't wrap into mid-string or substring matches.
+		/// </summary>
+		private void CycleStartsWithResults() {
+			if (_resultIndices.Count == 0) return;
+
+			char letter = char.ToLowerInvariant(_buffer[0]);
+			int count = 0;
+			for (int i = 0; i < _resultNames.Count; i++) {
+				if (_resultNames[i].Length > 0 && char.ToLowerInvariant(_resultNames[i][0]) == letter)
+					count++;
+				else
+					break;
+			}
+
+			if (count == 0) return;
+
+			_resultCursor = (_resultCursor + 1) % count;
+			AnnounceCurrentResult();
 		}
 
 		/// <summary>
