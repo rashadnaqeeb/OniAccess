@@ -362,7 +362,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 
 			// Current hat
 			string hatName = GetCurrentHatName(resume);
-			labels.Add(hatName ?? (string)STRINGS.ONIACCESS.SKILLS.NO_HAT);
+			labels.Add(string.Format(STRINGS.ONIACCESS.SKILLS.HAT_LABEL,
+				hatName ?? (string)STRINGS.ONIACCESS.SKILLS.NO_HAT));
 
 			return labels;
 		}
