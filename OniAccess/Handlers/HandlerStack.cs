@@ -98,6 +98,9 @@ namespace OniAccess.Handlers {
 				} catch (System.Exception ex) {
 					Util.Log.Error($"HandlerStack.Pop: reactivation of {newActive.DisplayName} failed: {ex}");
 					Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.SPEECH.HANDLER_FAILED, newActive.DisplayName));
+					_stack.RemoveAt(_stack.Count - 1);
+					if (_pushFrames.Count > _stack.Count)
+						_pushFrames.RemoveAt(_stack.Count);
 					return;
 				}
 				Util.Log.Debug($"HandlerStack.Pop: reactivated {newActive.DisplayName}");
