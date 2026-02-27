@@ -254,7 +254,10 @@ namespace OniAccess.Handlers.Build {
 		// REGULAR PLACEMENT
 		// ========================================
 
-		private void RegularPlacement() {
+		private void RegularPlacement() => PlaceRegular(exitAfter: false);
+		private void RegularPlaceAndExit() => PlaceRegular(exitAfter: true);
+
+		private void PlaceRegular(bool exitAfter) {
 			int cell = TileCursor.Instance.Cell;
 			if (!Grid.IsVisible(cell)) {
 				PlayNegativeSound();
@@ -275,33 +278,6 @@ namespace OniAccess.Handlers.Build {
 			BuildTool.Instance.OnLeftClickUp(pos);
 			// OnePerWorld buildings auto-dismiss the tool, triggering
 			// OnActiveToolChanged which announces "placed" and pops.
-			if (!_def.OnePerWorld) {
-				if (!hasMaterials)
-					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED_NO_MATERIAL);
-				else
-					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
-			}
-		}
-
-		private void RegularPlaceAndExit() {
-			int cell = TileCursor.Instance.Cell;
-			if (!Grid.IsVisible(cell)) {
-				PlayNegativeSound();
-				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
-				return;
-			}
-			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
-			var orientation = BuildMenuData.GetCurrentOrientation();
-			string failReason;
-			if (!_def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, out failReason)) {
-				PlayNegativeSound();
-				SpeechPipeline.SpeakInterrupt(failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
-				return;
-			}
-
-			bool hasMaterials = HasSufficientMaterials();
-			BuildTool.Instance.OnLeftClickDown(pos);
-			BuildTool.Instance.OnLeftClickUp(pos);
 			if (_def.OnePerWorld)
 				return;
 
@@ -309,7 +285,8 @@ namespace OniAccess.Handlers.Build {
 				? (string)STRINGS.ONIACCESS.BUILD_MENU.PLACED
 				: (string)STRINGS.ONIACCESS.BUILD_MENU.PLACED_NO_MATERIAL;
 			SpeechPipeline.SpeakInterrupt(announcement);
-			ExitBuildMode();
+			if (exitAfter)
+				ExitBuildMode();
 		}
 
 		private bool HasSufficientMaterials() {
@@ -639,7 +616,10 @@ namespace OniAccess.Handlers.Build {
 		// CLOSE AND CLEANUP
 		// ========================================
 
-		private void CloseEverything() {
+		private void CloseEverything() => LeaveBuildMode(announceCancel: true);
+		private void ExitBuildMode() => LeaveBuildMode(announceCancel: false);
+
+		private void LeaveBuildMode(bool announceCancel) {
 			if (Game.Instance != null)
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
 
@@ -648,25 +628,11 @@ namespace OniAccess.Handlers.Build {
 			try {
 				SelectTool.Instance.Activate();
 			} catch (Exception ex) {
-				Util.Log.Error($"BuildToolHandler.CloseEverything: {ex}");
+				Util.Log.Error($"BuildToolHandler.LeaveBuildMode: {ex}");
 			}
 
-			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.CANCELED);
-			PlayDeactivateSound();
-		}
-
-		private void ExitBuildMode() {
-			if (Game.Instance != null)
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
-
-			QueueOverlayAndPop();
-
-			try {
-				SelectTool.Instance.Activate();
-			} catch (Exception ex) {
-				Util.Log.Error($"BuildToolHandler.ExitBuildMode: {ex}");
-			}
-
+			if (announceCancel)
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.CANCELED);
 			PlayDeactivateSound();
 		}
 
