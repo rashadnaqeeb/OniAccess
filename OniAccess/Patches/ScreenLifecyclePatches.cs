@@ -11,7 +11,27 @@ namespace OniAccess.Patches {
 	/// KScreen_Activate_Patch: Fires context detection when screens open.
 	/// KScreen_Deactivate_Patch: Fires context detection when screens close (Prefix because
 	/// Deactivate calls PopScreen then Destroy).
+	///
+	/// Show/OnShow patches: Some screens call Show(false) during prefab init, which means
+	/// KScreen.Activate/Deactivate hooks don't fire for user-visible show/hide transitions.
+	/// These patches dispatch to ContextDetector via DispatchShowEvent instead.
+	/// Whether to patch Show or OnShow depends on the screen — KModalScreen subclasses
+	/// that override Show use Show; screens that only override OnShow use OnShow.
 	/// </summary>
+
+	/// <summary>
+	/// Shared dispatch for Show/OnShow postfixes. Pushes or pops the handler
+	/// via ContextDetector based on the show flag.
+	/// </summary>
+	static class ShowDispatch {
+		internal static void Handle(KScreen instance, bool show) {
+			if (!ModToggle.IsEnabled) return;
+			if (show)
+				ContextDetector.OnScreenActivated(instance);
+			else
+				ContextDetector.OnScreenDeactivating(instance);
+		}
+	}
 
 	/// <summary>
 	/// Detect screen activations for context-aware handler switching.
@@ -31,13 +51,11 @@ namespace OniAccess.Patches {
 	/// <summary>
 	/// Detect screen deactivations for context-aware handler switching.
 	/// Prefix: fires BEFORE KScreen.Deactivate because Deactivate calls PopScreen then Destroy.
-	/// We need the screen instance before it's destroyed.
 	/// </summary>
 	[HarmonyPatch(typeof(KScreen), nameof(KScreen.Deactivate))]
 	internal static class KScreen_Deactivate_Patch {
 		private static void Prefix(KScreen __instance) {
 			if (!ModToggle.IsEnabled) return;
-			// Skip screens managed via Show patches -- lifecycle handled there.
 			if (ContextDetector.IsShowPatched(__instance.GetType())) return;
 			ContextDetector.OnScreenDeactivating(__instance);
 		}
@@ -64,95 +82,50 @@ namespace OniAccess.Patches {
 		}
 	}
 
-	/// <summary>
-	/// LockerMenuScreen.OnActivate() immediately calls Show(false) during prefab init,
-	/// so KScreen.Activate/Deactivate hooks don't fire for user-visible show/hide.
-	/// Patch Show(bool) to push/pop the handler via ContextDetector instead.
-	/// </summary>
+	/// Patch Show — OnActivate calls Show(false) during prefab init.
 	[HarmonyPatch(typeof(LockerMenuScreen), nameof(LockerMenuScreen.Show))]
 	internal static class LockerMenuScreen_Show_Patch {
-		private static void Postfix(LockerMenuScreen __instance, bool show) {
-			if (!ModToggle.IsEnabled) return;
-			if (show) {
-				ContextDetector.OnScreenActivated(__instance);
-			} else {
-				ContextDetector.OnScreenDeactivating(__instance);
-			}
-		}
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
 	}
 
-	/// <summary>
-	/// KleiItemDropScreen.OnActivate() calls Show(false) during prefab init (same as LockerMenuScreen).
-	/// Patch Show(bool) to push/pop the handler via ContextDetector instead.
-	/// </summary>
+	/// Same pattern as LockerMenuScreen.
 	[HarmonyPatch(typeof(KleiItemDropScreen), nameof(KleiItemDropScreen.Show))]
 	internal static class KleiItemDropScreen_Show_Patch {
-		private static void Postfix(KleiItemDropScreen __instance, bool show) {
-			if (!ModToggle.IsEnabled) return;
-			if (show) {
-				ContextDetector.OnScreenActivated(__instance);
-			} else {
-				ContextDetector.OnScreenDeactivating(__instance);
-			}
-		}
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
 	}
 
-	/// <summary>
-	/// PauseScreen.OnActivate() calls Show(false) during prefab init (same as LockerMenuScreen).
-	/// PauseScreen overrides OnShow (not Show), so patch OnShow directly.
-	/// </summary>
+	/// Patch OnShow — PauseScreen overrides OnShow, not Show.
 	[HarmonyPatch(typeof(PauseScreen), "OnShow")]
 	internal static class PauseScreen_Show_Patch {
-		private static void Postfix(PauseScreen __instance, bool show) {
-			if (!ModToggle.IsEnabled) return;
-			if (show) {
-				ContextDetector.OnScreenActivated(__instance);
-			} else {
-				ContextDetector.OnScreenDeactivating(__instance);
-			}
-		}
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
 	}
 
-	/// <summary>
-	/// VideoScreen.OnActivate() calls Show(false) during prefab init (same as PauseScreen).
-	/// VideoScreen overrides OnShow (not Show), so patch OnShow directly.
-	/// </summary>
+	/// Same pattern as PauseScreen.
 	[HarmonyPatch(typeof(VideoScreen), "OnShow")]
 	internal static class VideoScreen_OnShow_Patch {
-		private static void Postfix(VideoScreen __instance, bool show) {
-			if (!ModToggle.IsEnabled) return;
-			if (show) {
-				ContextDetector.OnScreenActivated(__instance);
-			} else {
-				ContextDetector.OnScreenDeactivating(__instance);
-			}
-		}
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
 	}
 
 	/// <summary>
 	/// TableScreen subclasses (JobsTableScreen, ConsumablesTableScreen) extend
 	/// ShowOptimizedKScreen, which hides via canvas alpha in Show(false) without
-	/// calling Deactivate. ManagementMenu toggles them via Show(). Show is declared
-	/// on ShowOptimizedKScreen (not overridden by subclasses), so we patch
+	/// calling Deactivate. ManagementMenu toggles them via Show(). Patch
 	/// TableScreen.OnShow and let ContextDetector filter by registration.
 	/// </summary>
 	[HarmonyPatch(typeof(TableScreen), "OnShow")]
 	internal static class TableScreen_OnShow_Patch {
-		private static void Postfix(TableScreen __instance, bool show) {
-			if (!ModToggle.IsEnabled) return;
-			if (show) {
-				ContextDetector.OnScreenActivated(__instance);
-			} else {
-				ContextDetector.OnScreenDeactivating(__instance);
-			}
-		}
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
 	}
 
 	/// <summary>
 	/// DetailsScreen.OnPrefabInit() calls Show(false) during init, so
 	/// KScreen.Activate/Deactivate patches do not fire for user-visible show/hide.
-	/// Patch OnShow(bool) directly to push the handler via ContextDetector.
-	/// Handler removal is handled by OnCmpDisable (see below).
+	/// Push-only: handler removal is handled by OnCmpDisable below.
 	/// </summary>
 	[HarmonyPatch(typeof(DetailsScreen), "OnShow")]
 	internal static class DetailsScreen_OnShow_Patch {
@@ -165,11 +138,9 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
-	/// RootMenu.CloseSubMenus() hides the DetailsScreen via gameObject.SetActive(false)
-	/// when the player deselects (Escape, clicking empty space). This bypasses Show(false)
-	/// entirely, so the OnShow patch above never fires for removal.
-	/// OnCmpDisable fires for both SetActive(false) and Show(false) (which calls
-	/// SetActive internally), so it catches all hiding paths.
+	/// RootMenu.CloseSubMenus() hides DetailsScreen via gameObject.SetActive(false),
+	/// bypassing Show(false) entirely. OnCmpDisable fires for both SetActive(false)
+	/// and Show(false), so it catches all hiding paths.
 	/// </summary>
 	[HarmonyPatch(typeof(DetailsScreen), "OnCmpDisable")]
 	internal static class DetailsScreen_OnCmpDisable_Patch {
@@ -181,8 +152,7 @@ namespace OniAccess.Patches {
 
 	/// <summary>
 	/// MinionSelectScreen.OnSpawn() does not call base.OnSpawn(), so
-	/// KScreen.Activate() is never invoked and our generic KScreen_Activate_Patch
-	/// never fires. Patch OnSpawn directly to trigger handler activation.
+	/// KScreen.Activate() is never invoked. Patch OnSpawn directly.
 	/// </summary>
 	[HarmonyPatch(typeof(MinionSelectScreen), "OnSpawn")]
 	internal static class MinionSelectScreen_OnSpawn_Patch {
@@ -193,68 +163,37 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
-	/// ResearchScreen is toggled by ManagementMenu via Show(bool).
-	/// Unlike TableScreen (which extends ShowOptimizedKScreen → KScreen),
 	/// ResearchScreen extends KModalScreen whose OnActivate calls OnShow(true)
-	/// directly during prefab init. Patching Show instead of OnShow avoids
-	/// firing on that init path.
+	/// during prefab init. Patch Show (not OnShow) to avoid that init path.
 	/// </summary>
 	[HarmonyPatch(typeof(ResearchScreen), nameof(ResearchScreen.Show))]
 	internal static class ResearchScreen_Show_Patch {
-		private static void Postfix(ResearchScreen __instance, bool show) {
-			if (!ModToggle.IsEnabled) return;
-			if (show)
-				ContextDetector.OnScreenActivated(__instance);
-			else
-				ContextDetector.OnScreenDeactivating(__instance);
-		}
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
 	}
 
-	/// <summary>
-	/// SkillsScreen is toggled by ManagementMenu via Show(bool).
-	/// Unlike ResearchScreen, SkillsScreen does not override Show — only OnShow.
-	/// Patch OnShow directly (same pattern as VideoScreen).
-	/// </summary>
+	/// Patch OnShow — SkillsScreen overrides OnShow, not Show.
 	[HarmonyPatch(typeof(SkillsScreen), "OnShow")]
 	internal static class SkillsScreen_OnShow_Patch {
-		private static void Postfix(SkillsScreen __instance, bool show) {
-			if (!ModToggle.IsEnabled) return;
-			if (show)
-				ContextDetector.OnScreenActivated(__instance);
-			else
-				ContextDetector.OnScreenDeactivating(__instance);
-		}
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
 	}
 
-	/// <summary>
-	/// ScheduleScreen is toggled by ManagementMenu via Show(bool).
-	/// Like SkillsScreen, it overrides OnShow (not Show), so patch OnShow directly.
-	/// </summary>
+	/// Same pattern as SkillsScreen.
 	[HarmonyPatch(typeof(ScheduleScreen), "OnShow")]
 	internal static class ScheduleScreen_OnShow_Patch {
-		private static void Postfix(ScheduleScreen __instance, bool show) {
-			if (!ModToggle.IsEnabled) return;
-			if (show)
-				ContextDetector.OnScreenActivated(__instance);
-			else
-				ContextDetector.OnScreenDeactivating(__instance);
-		}
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
 	}
 
 	/// <summary>
 	/// RetiredColonyInfoScreen reuses its instance via Show(true) on subsequent opens,
-	/// so KScreen.Activate never fires again. Patch Show(bool) to push/pop the handler.
-	/// The duplicate guard in OnScreenActivated prevents double-pushing when both
-	/// Activate and Show(true) fire on first open.
+	/// so KScreen.Activate never fires again. The duplicate guard in OnScreenActivated
+	/// prevents double-pushing when both Activate and Show(true) fire on first open.
 	/// </summary>
 	[HarmonyPatch(typeof(RetiredColonyInfoScreen), nameof(RetiredColonyInfoScreen.Show))]
 	internal static class RetiredColonyInfoScreen_Show_Patch {
-		private static void Postfix(KScreen __instance, bool show) {
-			if (!ModToggle.IsEnabled) return;
-			if (show)
-				ContextDetector.OnScreenActivated(__instance);
-			else
-				ContextDetector.OnScreenDeactivating(__instance);
-		}
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
 	}
 }
