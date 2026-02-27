@@ -51,43 +51,10 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		/// <summary>
-		/// Returns buildings in a category in game-definition order.
-		/// Unresearched buildings are hidden, matching the sighted UI.
-		/// </summary>
-		public static List<BuildingEntry> GetVisibleBuildings(HashedString category) {
-			var result = new List<BuildingEntry>();
-			PlanScreen.PlanInfo? found = null;
-			foreach (var planInfo in TUNING.BUILDINGS.PLANORDER) {
-				if (planInfo.category == category) {
-					found = planInfo;
-					break;
-				}
-			}
-			if (found == null) return result;
-
-			var planInfoVal = found.Value;
-			foreach (var kv in planInfoVal.buildingAndSubcategoryData) {
-				var def = Assets.GetBuildingDef(kv.Key);
-				if (def == null) continue;
-				if (!def.IsAvailable() || !def.ShouldShowInBuildMenu()
-					|| !Game.IsCorrectDlcActiveForCurrentSave(def)) continue;
-
-				var state = PlanScreen.Instance.GetBuildableState(def);
-				if (state == PlanScreen.RequirementsState.Invalid) continue;
-				if (state == PlanScreen.RequirementsState.Tech) continue;
-
-				string label = BuildLabel(def, state);
-				result.Add(new BuildingEntry { Def = def, State = state, Label = label });
-			}
-
-			return result;
-		}
-
-		/// <summary>
 		/// Returns buildings grouped by subcategory. Each group has the
 		/// subcategory display name from STRINGS.UI.NEWBUILDCATEGORIES and
-		/// a list of visible buildings. Same filtering as GetVisibleBuildings.
-		/// </summary>
+		/// a list of visible buildings.
+		///
 		public static List<SubcategoryGroup> GetGroupedBuildings(HashedString category) {
 			var result = new List<SubcategoryGroup>();
 			PlanScreen.PlanInfo? found = null;
