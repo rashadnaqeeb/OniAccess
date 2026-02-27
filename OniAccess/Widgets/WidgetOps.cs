@@ -85,7 +85,7 @@ namespace OniAccess.Widgets {
 		/// Replace newlines and bullet characters with sentence boundaries
 		/// so the screen reader pauses naturally between fields.
 		/// </summary>
-		static string CleanTooltipEntry(string text) {
+		internal static string CleanTooltipEntry(string text) {
 			if (string.IsNullOrEmpty(text)) return text;
 
 			// Replace bullets (with surrounding whitespace variants)

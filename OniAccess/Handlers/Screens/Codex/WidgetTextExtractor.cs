@@ -14,34 +14,37 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// Returns speech text for a widget, or null if the widget should be skipped.
 		/// </summary>
 		internal static string GetText(ICodexWidget widget) {
+			string raw;
 			if (widget is CodexText ct)
-				return GetCodexTextSpeech(ct);
-			if (widget is CodexTextWithTooltip ctwt)
-				return GetCodexTextWithTooltipSpeech(ctwt);
-			if (widget is CodexLabelWithLargeIcon clli)
-				return clli.label?.text;
-			if (widget is CodexLabelWithIcon cli)
-				return cli.label?.text;
-			if (widget is CodexIndentedLabelWithIcon cili)
-				return cili.label?.text;
-			if (widget is CodexRecipePanel crp)
-				return GetRecipeSpeech(crp);
-			if (widget is CodexConversionPanel ccp)
-				return GetConversionSpeech(ccp);
-			if (widget is CodexTemperatureTransitionPanel cttp)
-				return GetTemperatureTransitionSpeech(cttp);
-			if (widget is CodexConfigurableConsumerRecipePanel ccrp)
-				return GetConsumerRecipeSpeech(ccrp);
-			if (widget is CodexCollapsibleHeader cch)
-				return GetCollapsibleHeaderSpeech(cch);
-			if (widget is CodexVideo cv)
-				return GetVideoSpeech(cv);
-			if (widget is CodexContentLockedIndicator)
-				return (string)STRINGS.ONIACCESS.CODEX.LOCKED_CONTENT;
+				raw = GetCodexTextSpeech(ct);
+			else if (widget is CodexTextWithTooltip ctwt)
+				raw = GetCodexTextWithTooltipSpeech(ctwt);
+			else if (widget is CodexLabelWithLargeIcon clli)
+				raw = clli.label?.text;
+			else if (widget is CodexLabelWithIcon cli)
+				raw = cli.label?.text;
+			else if (widget is CodexIndentedLabelWithIcon cili)
+				raw = cili.label?.text;
+			else if (widget is CodexRecipePanel crp)
+				raw = GetRecipeSpeech(crp);
+			else if (widget is CodexConversionPanel ccp)
+				raw = GetConversionSpeech(ccp);
+			else if (widget is CodexTemperatureTransitionPanel cttp)
+				raw = GetTemperatureTransitionSpeech(cttp);
+			else if (widget is CodexConfigurableConsumerRecipePanel ccrp)
+				raw = GetConsumerRecipeSpeech(ccrp);
+			else if (widget is CodexCollapsibleHeader cch)
+				raw = GetCollapsibleHeaderSpeech(cch);
+			else if (widget is CodexVideo cv)
+				raw = GetVideoSpeech(cv);
+			else if (widget is CodexContentLockedIndicator)
+				raw = (string)STRINGS.ONIACCESS.CODEX.LOCKED_CONTENT;
+			else
+				// Skip visual-only widgets: CodexImage, CodexDividerLine,
+				// CodexSpacer, CodexLargeSpacer, CodexCritterLifecycleWidget
+				return null;
 
-			// Skip visual-only widgets: CodexImage, CodexDividerLine,
-			// CodexSpacer, CodexLargeSpacer, CodexCritterLifecycleWidget
-			return null;
+			return Widgets.WidgetOps.CleanTooltipEntry(raw);
 		}
 
 		/// <summary>
