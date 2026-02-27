@@ -138,14 +138,19 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		private void PruneEmptyItem(ScannerItem item) {
 			for (int ci = Categories.Count - 1; ci >= 0; ci--) {
 				var cat = Categories[ci];
-				for (int si = cat.Subcategories.Count - 1; si >= 0; si--)
-					cat.Subcategories[si].Items.Remove(item);
+				bool found = false;
+				for (int si = cat.Subcategories.Count - 1; si >= 0; si--) {
+					if (cat.Subcategories[si].Items.Remove(item))
+						found = true;
+				}
+				if (!found) continue;
 				for (int si = cat.Subcategories.Count - 1; si >= 0; si--) {
 					if (cat.Subcategories[si].Items.Count == 0)
 						cat.Subcategories.RemoveAt(si);
 				}
 				if (cat.Subcategories.Count == 0)
 					Categories.RemoveAt(ci);
+				break;
 			}
 		}
 
