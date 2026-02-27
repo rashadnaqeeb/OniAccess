@@ -44,12 +44,6 @@ namespace OniAccess.Handlers {
 		protected readonly TypeAheadSearch _search = new TypeAheadSearch();
 		private int _searchSuppressFrame = -1;
 
-		private static readonly UnityEngine.KeyCode[] _searchNavKeys = {
-			UnityEngine.KeyCode.UpArrow, UnityEngine.KeyCode.DownArrow,
-			UnityEngine.KeyCode.Home, UnityEngine.KeyCode.End,
-			UnityEngine.KeyCode.Backspace,
-		};
-
 		public override bool CapturesAllInput => true;
 
 		protected BaseTableHandler(KScreen screen) : base(screen) { }
@@ -316,27 +310,15 @@ namespace OniAccess.Handlers {
 		protected bool TryRouteToSearch(bool ctrlHeld, bool altHeld) {
 			if (UnityEngine.Time.frameCount == _searchSuppressFrame)
 				return false;
+			if (ctrlHeld || altHeld) return false;
 
-			if (!ctrlHeld && !altHeld) {
-				for (var k = UnityEngine.KeyCode.A; k <= UnityEngine.KeyCode.Z; k++) {
-					if (UnityEngine.Input.GetKeyDown(k))
-						return _search.HandleKey(k, ctrlHeld, altHeld, this);
+			for (var k = UnityEngine.KeyCode.A; k <= UnityEngine.KeyCode.Z; k++) {
+				if (UnityEngine.Input.GetKeyDown(k)) {
+					char c = (char)('a' + (k - UnityEngine.KeyCode.A));
+					_search.AddChar(c);
+					_search.Search(SearchItemCount, GetSearchLabel, SearchMoveTo);
+					return true;
 				}
-			}
-
-			for (int i = 0; i < _searchNavKeys.Length; i++) {
-				if (UnityEngine.Input.GetKeyDown(_searchNavKeys[i]))
-					return _search.HandleKey(_searchNavKeys[i], ctrlHeld, altHeld, this);
-			}
-
-			return false;
-		}
-
-		public override bool HandleKeyDown(KButtonEvent e) {
-			if (_search.IsSearchActive && e.TryConsume(Action.Escape)) {
-				_search.Clear();
-				SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SEARCH.CLEARED);
-				return true;
 			}
 
 			return false;
@@ -391,6 +373,9 @@ namespace OniAccess.Handlers {
 
 			if (TryRouteToSearch(ctrlHeld, altHeld))
 				return true;
+
+			if (_search.HasBuffer && UnityEngine.Input.anyKeyDown)
+				_search.Clear();
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
 				if (ctrlHeld) {
