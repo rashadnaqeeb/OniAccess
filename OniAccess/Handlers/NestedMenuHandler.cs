@@ -17,7 +17,7 @@ namespace OniAccess.Handlers {
 
 		protected NestedMenuHandler(KScreen screen = null) : base(screen) { }
 
-		protected int Level => _level;
+		protected int Level { get => _level; set => _level = value; }
 		protected virtual int StartLevel => 0;
 
 		protected int GetIndex(int level) => _indices[level];

@@ -13,7 +13,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// <summary>
 		/// Returns speech text for a widget, or null if the widget should be skipped.
 		/// </summary>
-		internal static string GetText(ICodexWidget widget) {
+		internal static string GetText(ICodexWidget widget, string currentEntryId = null) {
 			string raw;
 			if (widget is CodexText ct)
 				raw = GetCodexTextSpeech(ct);
@@ -26,7 +26,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			else if (widget is CodexIndentedLabelWithIcon cili)
 				raw = cili.label?.text;
 			else if (widget is CodexRecipePanel crp)
-				raw = GetRecipeSpeech(crp);
+				raw = GetRecipeSpeech(crp, currentEntryId);
 			else if (widget is CodexConversionPanel ccp)
 				raw = GetConversionSpeech(ccp);
 			else if (widget is CodexTemperatureTransitionPanel cttp)
@@ -121,20 +121,20 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// RECIPE PANEL
 		// ========================================
 
-		private static string GetRecipeSpeech(CodexRecipePanel panel) {
+		private static string GetRecipeSpeech(CodexRecipePanel panel, string currentEntryId) {
 			var t = Traverse.Create(panel);
 			var complexRecipe = t.Field<ComplexRecipe>("complexRecipe").Value;
 			var simpleRecipe = t.Field<Recipe>("recipe").Value;
 			bool useFabTitle = t.Field<bool>("useFabricatorForTitle").Value;
 
 			if (complexRecipe != null)
-				return BuildComplexRecipeSpeech(complexRecipe, useFabTitle);
+				return BuildComplexRecipeSpeech(complexRecipe, useFabTitle, currentEntryId);
 			if (simpleRecipe != null)
 				return BuildSimpleRecipeSpeech(simpleRecipe);
 			return null;
 		}
 
-		private static string BuildComplexRecipeSpeech(ComplexRecipe recipe, bool useFabTitle) {
+		private static string BuildComplexRecipeSpeech(ComplexRecipe recipe, bool useFabTitle, string currentEntryId) {
 			var sb = new StringBuilder();
 
 			// Title
@@ -147,6 +147,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 			// Ingredients
 			sb.Append(". ");
+			sb.Append((string)STRINGS.ONIACCESS.CODEX.REQUIRES);
+			sb.Append(' ');
 			for (int i = 0; i < recipe.ingredients.Length; i++) {
 				if (i > 0) sb.Append("; ");
 				var ing = recipe.ingredients[i];
@@ -167,13 +169,21 @@ namespace OniAccess.Handlers.Screens.Codex {
 				sb.Append(GameUtil.GetFormattedByTag(res.material, res.amount));
 			}
 
-			// Fabricator
+			// Fabricator + time
 			if (recipe.fabricators.Count > 0) {
 				var fab = Assets.GetPrefab(recipe.fabricators[0].Name.ToTag());
 				if (fab != null) {
+					bool isSameArticle = currentEntryId != null &&
+						recipe.fabricators[0].Name.ToUpper() == currentEntryId;
 					sb.Append(". ");
-					sb.Append(fab.GetProperName());
-					sb.Append(", ");
+					if (!isSameArticle) {
+						sb.Append((string)STRINGS.ONIACCESS.CODEX.MADE_IN);
+						sb.Append(' ');
+						sb.Append(fab.GetProperName());
+						sb.Append(", ");
+					}
+					sb.Append((string)STRINGS.ONIACCESS.CODEX.TIME);
+					sb.Append(' ');
 					sb.Append(GameUtil.GetFormattedTime(recipe.time));
 				}
 			}

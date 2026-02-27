@@ -687,7 +687,10 @@ namespace STRINGS {
 			public static LocString CONTENT_TAB = "Content";
 			public static LocString NO_ARTICLE = "no article selected";
 			public static LocString LOCKED_CONTENT = "locked content";
+			public static LocString REQUIRES = "requires";
 			public static LocString PRODUCES = "produces";
+			public static LocString TIME = "time:";
+			public static LocString MADE_IN = "made in";
 			public static LocString LINK_MENU = "{0} links";
 			public static LocString FOLLOW_LINK_HELP = "Follow link";
 		}

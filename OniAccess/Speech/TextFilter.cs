@@ -96,6 +96,11 @@ namespace OniAccess.Speech {
 			// Screen readers mispronounce º; ONI uses it in temperature strings.
 			text = text.Replace('\u00BA', '\u00B0');
 
+			// Resolve game template placeholders: {Hotkey/ActionName} → key name,
+			// (ClickType/click) → "click" or "press" depending on controller.
+			// LocText normally does this at render time; we read raw data.
+			text = LocText.ParseText(text);
+
 			// Fast path: skip regex pipeline for plain text (no markup)
 			if (text.IndexOf('<') < 0 && text.IndexOf('[') < 0 && text.IndexOf('{') < 0)
 				return WhitespaceRegex.Replace(text, " ").Trim();

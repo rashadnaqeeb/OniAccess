@@ -71,8 +71,12 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (base.Tick()) return true;
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)) {
-				int dir = InputUtil.ShiftHeld() ? -1 : 1;
-				CycleTab(dir);
+				if (_activeTab == TabId.Content) {
+					JumpToCategoriesOnArticle();
+				} else {
+					int dir = InputUtil.ShiftHeld() ? -1 : 1;
+					CycleTab(dir);
+				}
 				return true;
 			}
 
@@ -80,6 +84,11 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {
+			// Escape from content tab returns to categories instead of closing
+			if (_activeTab == TabId.Content && e.TryConsume(Action.Escape)) {
+				JumpToCategoriesOnArticle();
+				return true;
+			}
 			return ActiveTab.HandleKeyDown(e);
 		}
 
@@ -95,6 +104,17 @@ namespace OniAccess.Handlers.Screens.Codex {
 			_activeTab = TabId.Content;
 			PlayHoverSound();
 			ActiveTab.OnTabActivated(announce: true);
+		}
+
+		/// <summary>
+		/// Switch from content tab to categories, landing on the current article.
+		/// </summary>
+		private void JumpToCategoriesOnArticle() {
+			ActiveTab.OnTabDeactivated();
+			_activeTab = TabId.Categories;
+			PlayHoverSound();
+			string entryId = CodexScreen?.activeEntryID;
+			_categoriesTab.OnTabActivatedOnEntry(announce: true, entryId: entryId);
 		}
 
 		/// <summary>

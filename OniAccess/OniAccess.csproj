@@ -47,6 +47,10 @@
       <HintPath>$(ONI_MANAGED)\UnityEngine.UIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.VideoModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="FMODUnity">
       <HintPath>$(ONI_MANAGED)\FMODUnity.dll</HintPath>
       <Private>false</Private>

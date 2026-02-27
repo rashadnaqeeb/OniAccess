@@ -146,12 +146,20 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		// ========================================
-		// Link following (Enter)
+		// Activation (Enter): links and videos
 		// ========================================
 
 		protected override void ActivateCurrentItem() {
 			if (_currentIndex < 0 || _currentIndex >= _items.Count) return;
-			var links = _items[_currentIndex].links;
+
+			var item = _items[_currentIndex];
+
+			if (item.video != null) {
+				PlayVideo(item.video);
+				return;
+			}
+
+			var links = item.links;
 			if (links == null || links.Count == 0) return;
 
 			if (links.Count == 1) {
@@ -162,6 +170,14 @@ namespace OniAccess.Handlers.Screens.Codex {
 			// Multiple links: open popup sub-menu
 			var linkMenu = new LinkMenuHandler(_parent, links);
 			HandlerStack.Push(linkMenu);
+		}
+
+		private static void PlayVideo(CodexVideo video) {
+			var clip = Assets.GetVideo(video.name);
+			if (clip == null) return;
+			VideoScreen.Instance.PlayVideo(clip);
+			if (!string.IsNullOrEmpty(video.overlayName))
+				VideoScreen.Instance.SetOverlayText(video.overlayName, video.overlayTexts);
 		}
 
 		internal void FollowLink(string entryId) {
@@ -214,13 +230,14 @@ namespace OniAccess.Handlers.Screens.Codex {
 						continue;
 					}
 
-					string text = WidgetTextExtractor.GetText(widget);
+					string text = WidgetTextExtractor.GetText(widget, entryId);
 					if (text == null) continue;
 
 					_items.Add(new ContentItem {
 						text = text,
 						isHeading = WidgetTextExtractor.IsSectionHeading(widget),
 						links = WidgetTextExtractor.GetLinks(widget),
+						video = widget as CodexVideo,
 					});
 				}
 			}
@@ -255,6 +272,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			internal string text;
 			internal bool isHeading;
 			internal List<(string id, string text)> links;
+			internal CodexVideo video;
 		}
 	}
 }

@@ -29,8 +29,18 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// ICodexTab
 		// ========================================
 
-		public void OnTabActivated(bool announce) {
-			ResetState();
+			public void OnTabActivated(bool announce) {
+			OnTabActivatedOnEntry(announce, entryId: null);
+		}
+
+		/// <summary>
+		/// Activate and optionally position the cursor on a specific entry.
+		/// Used when returning from the content tab to land on the article
+		/// the user was reading.
+		/// </summary>
+		internal void OnTabActivatedOnEntry(bool announce, string entryId) {
+			if (entryId == null || !NavigateToEntry(entryId))
+				ResetState();
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
 			if (ItemCount > 0) {
@@ -162,6 +172,32 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// ========================================
 		// Helpers
 		// ========================================
+
+		/// <summary>
+		/// Position the cursor on the leaf entry matching entryId.
+		/// Returns false if the entry isn't found in the category tree.
+		/// </summary>
+		private bool NavigateToEntry(string entryId) {
+			var all = GetAllLeafEntries();
+			for (int i = 0; i < all.Count; i++) {
+				if (all[i].entry.id == entryId) {
+					var item = all[i];
+					SetIndex(0, item.catIdx);
+					SetIndex(1, item.entryIdx);
+					SetIndex(2, item.subIdx);
+
+					var topCats = CodexHelper.GetTopCategories();
+					var entries = CodexHelper.GetEntriesInCategory(topCats[item.catIdx]);
+					Level = (entries[item.entryIdx] is CategoryEntry) ? 2 : 1;
+
+					_currentIndex = GetIndex(Level);
+					_search.Clear();
+					SuppressSearchThisFrame();
+					return true;
+				}
+			}
+			return false;
+		}
 
 		private CodexEntry ResolveEntry(int[] indices) {
 			var topCats = CodexHelper.GetTopCategories();
