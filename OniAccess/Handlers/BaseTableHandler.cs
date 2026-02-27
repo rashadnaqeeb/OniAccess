@@ -200,6 +200,7 @@ namespace OniAccess.Handlers {
 		}
 
 		protected void NavigateCol(int direction) {
+			if (_rows.Count == 0 || _row < 0 || _row >= _rows.Count) return;
 			var row = _rows[_row];
 			int maxCol = GetColumnCount(row.Kind) - 1;
 			int newCol = _col + direction;
