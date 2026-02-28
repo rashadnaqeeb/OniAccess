@@ -52,10 +52,11 @@ namespace OniAccess.Handlers.Tiles {
 				return (string)STRINGS.ONIACCESS.BOOKMARKS.NO_BOOKMARK;
 			int targetCell = Grid.PosToCell(pos);
 			int cursorCell = TileCursor.Instance.Cell;
+			string coords = Util.GridCoordinates.Format(targetCell);
 			string distance = AnnouncementFormatter.FormatDistance(cursorCell, targetCell);
 			if (string.IsNullOrEmpty(distance))
-				return (string)STRINGS.ONIACCESS.BOOKMARKS.AT_BOOKMARK;
-			return distance;
+				return (string)STRINGS.ONIACCESS.BOOKMARKS.AT_BOOKMARK + ". " + coords;
+			return distance + ". " + coords;
 		}
 
 		public static string JumpHome() {
