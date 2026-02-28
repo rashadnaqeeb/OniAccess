@@ -41,12 +41,30 @@ if (-not (Test-Path $BuildOutput)) {
     exit 1
 }
 
-# --- Copy DLL ---
+# --- Copy DLL and native dependencies ---
 if (-not (Test-Path $ModDir)) {
     New-Item -ItemType Directory -Path $ModDir -Force | Out-Null
 }
 Copy-Item $BuildOutput "$ModDir\OniAccess.dll" -Force
-Write-Host "Deployed DLL to $ModDir" -ForegroundColor Green
+
+# Tolk and screen reader driver DLLs go in a "native" subfolder so ONI's
+# mod loader doesn't try to load them as .NET assemblies (BadImageFormatException).
+# SetDllDirectory(native) lets LoadLibrary find them at runtime.
+$NativeDir = "$ModDir\native"
+if (-not (Test-Path $NativeDir)) {
+    New-Item -ItemType Directory -Path $NativeDir -Force | Out-Null
+}
+$TolkSrc = "$PSScriptRoot\tolk\dist"
+$TolkDlls = @("Tolk.dll", "nvdaControllerClient64.dll", "SAAPI64.dll")
+foreach ($dll in $TolkDlls) {
+    $src = Join-Path $TolkSrc $dll
+    if (Test-Path $src) {
+        Copy-Item $src "$NativeDir\$dll" -Force
+    } else {
+        Write-Host "WARNING: $dll not found at $src" -ForegroundColor Yellow
+    }
+}
+Write-Host "Deployed DLL and Tolk libraries to $ModDir" -ForegroundColor Green
 
 # --- Patch mods.json ---
 # Ensures the mod entry has enabledForDlc covering both base game ("") and

@@ -19,6 +19,9 @@ namespace OniAccess {
 		[DllImport("kernel32.dll", SetLastError = true)]
 		private static extern bool SetDllDirectory(string lpPathName);
 
+		[DllImport("kernel32.dll", SetLastError = true)]
+		private static extern IntPtr LoadLibrary(string lpFileName);
+
 		public override void OnLoad(Harmony harmony) {
 			Instance = this;
 			ModDir = Path.GetDirectoryName(typeof(Mod).Assembly.Location);
@@ -28,10 +31,18 @@ namespace OniAccess {
 			LogUnityBackend.Install();
 			ConfigManager.Load(ModDir);
 
-			// Set DLL search path for Tolk native libraries before any Tolk calls
-			string tolkDir = Path.Combine(ModDir, "tolk", "dist");
-			if (!SetDllDirectory(tolkDir)) {
-				Log.Error($"Failed to set DLL directory to: {tolkDir}");
+			// Native DLLs live in a "native" subfolder so ONI's mod loader
+			// doesn't try to load them as .NET assemblies. Pre-load each with
+			// a full path because: (1) Mono's DllImport ignores SetDllDirectory,
+			// and (2) Tolk's internal LoadLibrary for the screen reader drivers
+			// needs them already in process since SetDllDirectory can be reset
+			// by Harmony patching or other mods.
+			string nativeDir = Path.Combine(ModDir, "native");
+			foreach (var dll in new[] { "nvdaControllerClient64.dll", "SAAPI64.dll", "Tolk.dll" }) {
+				string path = Path.Combine(nativeDir, dll);
+				if (LoadLibrary(path) == IntPtr.Zero) {
+					Log.Warn($"Failed to pre-load {dll} from: {path}");
+				}
 			}
 
 			base.OnLoad(harmony);

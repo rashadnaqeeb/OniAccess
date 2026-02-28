@@ -47,8 +47,9 @@ namespace OniAccess.Speech {
 		public static bool IsAvailable => _available;
 
 		/// <summary>
-		/// Initialize Tolk. Must be called after SetDllDirectory points
-		/// to the Tolk DLL location.
+		/// Initialize Tolk. Must be called after Mod.OnLoad pre-loads
+		/// Tolk.dll via LoadLibrary and sets SetDllDirectory for the
+		/// screen reader driver DLLs.
 		/// </summary>
 		public static bool Initialize() {
 			if (_initialized) return _available;
