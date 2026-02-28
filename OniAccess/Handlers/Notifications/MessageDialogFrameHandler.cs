@@ -43,6 +43,7 @@ namespace OniAccess.Handlers.Notifications {
 		public override bool DiscoverWidgets(KScreen screen) {
 			_widgets.Clear();
 			_widgetLinks.Clear();
+			_titleLocText = null;
 
 			try {
 				var traverse = HarmonyLib.Traverse.Create(screen);
