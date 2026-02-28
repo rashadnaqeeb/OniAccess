@@ -1,30 +1,26 @@
 using System.Collections.Generic;
+using Database;
 using HarmonyLib;
 
-using OniAccess.Widgets;
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for RetiredColonyInfoScreen (colony summary accessible from main menu
 	/// and pause menu). Covers MENU-09 requirement.
 	///
+	/// Data-driven: reads RetiredColonyData directly instead of scraping UI widgets.
+	/// The only widget interaction is clicking KButtons for view transitions.
+	///
 	/// The screen has two views:
-	/// 1. Explorer view (explorerRoot): a grid of colony buttons showing past/retired colonies
-	/// 2. Colony detail view (colonyDataRoot): stats, achievements, duplicants for a selected colony
+	/// 1. Explorer view (main menu): grid of colony buttons for past/retired colonies
+	/// 2. Colony detail view: duplicants, buildings, statistics, achievements
 	///
 	/// Navigation:
-	/// - Explorer view: Up/Down navigates colony entries, Enter opens colony detail
+	/// - Explorer view: Up/Down navigates colony entries, Enter opens colony detail,
+	///   Tab switches between colonies and achievements sections
 	/// - Detail view: Up/Down navigates entries within current section, Tab switches sections
-	/// - Escape returns from detail to explorer, or closes the screen from explorer
-	///
-	/// Detail view sections (Tab navigation):
-	/// 0 = Duplicants, 1 = Buildings, 2 = Statistics, 3 = Achievements
-	/// Explorer view sections: 0 = Colonies, 1 = Achievements
-	///
-	/// Duplicant, building, and stat widgets use live reading at speech time
-	/// because the game populates LocTexts via SetText() which updates TMP's
-	/// internal buffer but not m_text. GetParsedText() needs a frame to catch up.
+	/// - Escape returns from detail to explorer (main menu) or closes (in-game)
 	/// </summary>
-	public class ColonySummaryHandler: BaseWidgetHandler {
+	public class ColonySummaryHandler : BaseMenuHandler {
 		private const int ExplorerSectionMain = 0;
 		private const int ExplorerSectionAchievements = 1;
 		private const int ExplorerSectionCount = 2;
@@ -35,16 +31,41 @@ namespace OniAccess.Handlers.Screens {
 		private const int DetailSectionAchievements = 3;
 		private const int DetailSectionCount = 4;
 
+		private enum ItemKind {
+			Colony,
+			Duplicant,
+			Building,
+			Stat,
+			Achievement,
+			VictoryHeader,
+			Button,
+		}
+
+		private struct Item {
+			public ItemKind Kind;
+			public string Label;
+			public int DataIndex;
+			public string AchievementId;
+		}
+
 		private bool _inColonyDetail;
 		private bool _isInGameContext;
 		private int _currentSection;
-		private KButton _viewOtherColoniesButton;
 
-		protected override int MaxDiscoveryRetries => 5;
+		private RetiredColonyData[] _allColonies;
+		private RetiredColonyData _colonyData;
+		private List<Item> _items = new List<Item>();
+
+		private KButton _viewOtherColoniesButton;
+		private KButton _closeScreenButton;
+		private Traverse _explorerGridField;
+		private Traverse _screenTraverse;
 
 		private int SectionCount => _inColonyDetail ? DetailSectionCount : ExplorerSectionCount;
 
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.COLONY_SUMMARY;
+
+		public override int ItemCount => _items.Count;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
@@ -52,447 +73,373 @@ namespace OniAccess.Handlers.Screens {
 			HelpEntries = BuildHelpEntries(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
 		}
 
+		public override string GetItemLabel(int index) {
+			if (index < 0 || index >= _items.Count) return null;
+			return _items[index].Label;
+		}
+
+		public override void SpeakCurrentItem(string parentContext = null) {
+			if (_currentIndex < 0 || _currentIndex >= _items.Count) return;
+			var item = _items[_currentIndex];
+			string speech = BuildSpeech(item);
+			Speech.SpeechPipeline.SpeakInterrupt(speech);
+		}
+
+		// ========================================
+		// LIFECYCLE
+		// ========================================
+
 		public override void OnActivate() {
 			_inColonyDetail = false;
 			_isInGameContext = false;
 			_currentSection = ExplorerSectionMain;
+
+			_screenTraverse = Traverse.Create(_screen);
 			CacheButtons();
 
 			try {
-				var explorerRoot = Traverse.Create(_screen).Field("explorerRoot")
+				var explorerRoot = _screenTraverse.Field("explorerRoot")
 					.GetValue<UnityEngine.GameObject>();
 				if (explorerRoot != null && !explorerRoot.activeSelf) {
 					_isInGameContext = true;
 					_inColonyDetail = true;
 					_currentSection = DetailSectionDuplicants;
-					_pendingRediscovery = true;
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ColonySummaryHandler.OnActivate: {ex.Message}");
 			}
 
+			LoadColonyData();
+			BuildItems();
 			base.OnActivate();
+
+			if (_items.Count > 0)
+				Speech.SpeechPipeline.SpeakQueued(BuildSpeech(_items[0]));
 		}
 
 		private void CacheButtons() {
 			try {
-				_viewOtherColoniesButton = Traverse.Create(_screen).Field("viewOtherColoniesButton")
+				_viewOtherColoniesButton = _screenTraverse.Field("viewOtherColoniesButton")
 					.GetValue<KButton>();
+				_closeScreenButton = _screenTraverse.Field("closeScreenButton")
+					.GetValue<KButton>();
+				_explorerGridField = _screenTraverse.Field("explorerGrid");
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ColonySummaryHandler.CacheButtons: {ex.Message}");
 			}
 		}
 
-		public override bool DiscoverWidgets(KScreen screen) {
-			_widgets.Clear();
+		private void LoadColonyData() {
+			try {
+				if (_isInGameContext) {
+					_colonyData = RetireColonyUtility.GetCurrentColonyRetiredColonyData();
+					_allColonies = null;
+				} else {
+					_allColonies = _screenTraverse.Field("retiredColonyData")
+						.GetValue<RetiredColonyData[]>();
+					if (_allColonies == null)
+						_allColonies = RetireColonyUtility.LoadRetiredColonies();
+					_colonyData = null;
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Error($"ColonySummaryHandler.LoadColonyData: {ex.Message}");
+			}
+		}
+
+		// ========================================
+		// ITEM BUILDING
+		// ========================================
+
+		private void BuildItems() {
+			_items.Clear();
 
 			if (!_inColonyDetail) {
 				if (_currentSection == ExplorerSectionAchievements)
-					DiscoverAchievementWidgets(screen);
+					BuildAchievementItems();
 				else
-					DiscoverExplorerViewWidgets(screen);
+					BuildExplorerItems();
 			} else {
 				switch (_currentSection) {
 					case DetailSectionDuplicants:
-						DiscoverDuplicantWidgets(screen);
+						BuildDuplicantItems();
 						break;
 					case DetailSectionBuildings:
-						DiscoverBuildingWidgets(screen);
+						BuildBuildingItems();
 						break;
 					case DetailSectionStats:
-						DiscoverStatWidgets(screen);
+						BuildStatItems();
 						break;
 					case DetailSectionAchievements:
-						DiscoverAchievementWidgets(screen);
+						BuildAchievementItems();
 						break;
 				}
 			}
-			return _widgets.Count > 0;
+
+			AddButtons();
 		}
 
-		// ========================================
-		// EXPLORER VIEW (colony list)
-		// ========================================
-
-		private void DiscoverExplorerViewWidgets(KScreen screen) {
-			var explorerGridGO = Traverse.Create(screen).Field("explorerGrid")
-				.GetValue<UnityEngine.GameObject>();
-			var explorerGrid = explorerGridGO != null ? explorerGridGO.transform : null;
-
-			if (explorerGrid != null) {
-				for (int i = 0; i < explorerGrid.childCount; i++) {
-					var child = explorerGrid.GetChild(i);
-					if (child == null || !child.gameObject.activeInHierarchy) continue;
-
-					var kbutton = child.GetComponent<KButton>();
-					if (kbutton == null) continue;
-
-					string label = ReadColonyEntryLabel(child);
-					if (string.IsNullOrEmpty(label)) continue;
-
-					_widgets.Add(new ButtonWidget {
-						Label = label,
-						Component = kbutton,
-						GameObject = kbutton.gameObject
-					});
-				}
+		private void BuildExplorerItems() {
+			if (_allColonies == null) return;
+			for (int i = 0; i < _allColonies.Length; i++) {
+				var colony = _allColonies[i];
+				string label = FormatColonyEntry(colony);
+				_items.Add(new Item { Kind = ItemKind.Colony, Label = label, DataIndex = i });
 			}
-
-			AddDetailButtons(screen);
 		}
 
-		/// <summary>
-		/// Read colony entry label from HierarchyReferences using GetParsedText()
-		/// to avoid the SetText()/TMP buffer quirk where .text returns stale data.
-		/// Format: "ColonyName, Cycle Count: X, date"
-		/// </summary>
-		private static string ReadColonyEntryLabel(UnityEngine.Transform entry) {
-			var hierRef = entry.GetComponent<HierarchyReferences>();
-			if (hierRef == null) return null;
-
-			string name = null;
-			string cycles = null;
-			string date = null;
-
-			if (hierRef.HasReference("ColonyNameLabel")) {
-				var label = hierRef.GetReference<LocText>("ColonyNameLabel");
-				if (label != null) name = label.GetParsedText();
+		private void BuildDuplicantItems() {
+			var data = GetActiveColonyData();
+			if (data?.Duplicants == null) return;
+			for (int i = 0; i < data.Duplicants.Length; i++) {
+				var dup = data.Duplicants[i];
+				string label = FormatDuplicant(dup);
+				_items.Add(new Item { Kind = ItemKind.Duplicant, Label = label, DataIndex = i });
 			}
-			if (hierRef.HasReference("CycleCountLabel")) {
-				var label = hierRef.GetReference<LocText>("CycleCountLabel");
-				if (label != null) cycles = label.GetParsedText();
-			}
-			if (hierRef.HasReference("DateLabel")) {
-				var label = hierRef.GetReference<LocText>("DateLabel");
-				if (label != null) date = label.GetParsedText();
-			}
-
-			if (string.IsNullOrEmpty(name)) return null;
-
-			var parts = new List<string> { name };
-			if (!string.IsNullOrEmpty(cycles)) parts.Add(cycles);
-			if (!string.IsNullOrEmpty(date)) parts.Add(date);
-			return string.Join(", ", parts);
 		}
 
-		// ========================================
-		// DETAIL VIEW - DUPLICANTS (section 0)
-		// ========================================
-
-		private void DiscoverDuplicantWidgets(KScreen screen) {
-			var activeWidgets = Traverse.Create(screen).Field("activeColonyWidgets")
-				.GetValue<Dictionary<string, UnityEngine.GameObject>>();
-			if (activeWidgets == null || !activeWidgets.TryGetValue("duplicants", out var dupBlock))
-				return;
-
-			var hierRef = dupBlock.GetComponent<HierarchyReferences>();
-			if (hierRef == null || !hierRef.HasReference("Content")) return;
-
-			var contentTransform = hierRef.GetReference("Content").transform;
-			if (contentTransform == null) return;
-
-			for (int i = 0; i < contentTransform.childCount; i++) {
-				var child = contentTransform.GetChild(i);
-				if (child == null || !child.gameObject.activeInHierarchy) continue;
-
-				// Pagination creates empty placeholder GameObjects without HierarchyReferences
-				if (child.GetComponent<HierarchyReferences>() == null) continue;
-
-				var dupGO = child.gameObject;
-				_widgets.Add(new LabelWidget {
-					Label = "",
-					GameObject = dupGO,
-					SpeechFunc = () => ReadDuplicantEntry(dupGO.transform)
-				});
+		private void BuildBuildingItems() {
+			var data = GetActiveColonyData();
+			if (data?.buildings == null) return;
+			for (int i = 0; i < data.buildings.Count; i++) {
+				var bldg = data.buildings[i];
+				string label = FormatBuilding(bldg);
+				_items.Add(new Item { Kind = ItemKind.Building, Label = label, DataIndex = i });
 			}
-
-			AddDetailButtons(screen);
 		}
 
-		/// <summary>
-		/// Read duplicant entry live from HierarchyReferences at speech time.
-		/// </summary>
-		private static string ReadDuplicantEntry(UnityEngine.Transform entry) {
-			var refs = entry.GetComponent<HierarchyReferences>();
-			if (refs == null) return null;
-
-			string name = null;
-			string age = null;
-			string skill = null;
-
-			if (refs.HasReference("NameLabel")) {
-				var label = refs.GetReference<LocText>("NameLabel");
-				if (label != null) name = label.GetParsedText();
+		private void BuildStatItems() {
+			var data = GetActiveColonyData();
+			if (data?.Stats == null) return;
+			for (int i = 0; i < data.Stats.Length; i++) {
+				var stat = data.Stats[i];
+				string label = FormatStat(stat);
+				_items.Add(new Item { Kind = ItemKind.Stat, Label = label, DataIndex = i });
 			}
-			if (refs.HasReference("AgeLabel")) {
-				var label = refs.GetReference<LocText>("AgeLabel");
-				if (label != null) age = label.GetParsedText();
-			}
-			if (refs.HasReference("SkillLabel")) {
-				var label = refs.GetReference<LocText>("SkillLabel");
-				if (label != null) skill = label.GetParsedText();
-			}
-
-			if (string.IsNullOrEmpty(name)) return null;
-
-			var parts = new List<string> { name };
-			if (!string.IsNullOrEmpty(age)) parts.Add(age);
-			if (!string.IsNullOrEmpty(skill)) parts.Add(skill);
-			return string.Join(", ", parts);
 		}
 
-		// ========================================
-		// DETAIL VIEW - BUILDINGS (section 1)
-		// ========================================
+		private void BuildAchievementItems() {
+			var achievements = Db.Get().ColonyAchievements.resources;
+			var data = _inColonyDetail ? GetActiveColonyData() : null;
 
-		private void DiscoverBuildingWidgets(KScreen screen) {
-			var activeWidgets = Traverse.Create(screen).Field("activeColonyWidgets")
-				.GetValue<Dictionary<string, UnityEngine.GameObject>>();
-			if (activeWidgets == null || !activeWidgets.TryGetValue("buildings", out var bldgBlock))
-				return;
-
-			var hierRef = bldgBlock.GetComponent<HierarchyReferences>();
-			if (hierRef == null || !hierRef.HasReference("Content")) return;
-
-			var contentTransform = hierRef.GetReference("Content").transform;
-			if (contentTransform == null) return;
-
-			for (int i = 0; i < contentTransform.childCount; i++) {
-				var child = contentTransform.GetChild(i);
-				if (child == null || !child.gameObject.activeInHierarchy) continue;
-
-				if (child.GetComponent<HierarchyReferences>() == null) continue;
-
-				var bldgGO = child.gameObject;
-				_widgets.Add(new LabelWidget {
-					Label = "",
-					GameObject = bldgGO,
-					SpeechFunc = () => ReadBuildingEntry(bldgGO.transform)
-				});
-			}
-
-			AddDetailButtons(screen);
-		}
-
-		/// <summary>
-		/// Read building entry live from HierarchyReferences at speech time.
-		/// </summary>
-		private static string ReadBuildingEntry(UnityEngine.Transform entry) {
-			var refs = entry.GetComponent<HierarchyReferences>();
-			if (refs == null) return null;
-
-			string name = null;
-			string count = null;
-
-			if (refs.HasReference("NameLabel")) {
-				var label = refs.GetReference<LocText>("NameLabel");
-				if (label != null) name = label.GetParsedText();
-			}
-			if (refs.HasReference("CountLabel")) {
-				var label = refs.GetReference<LocText>("CountLabel");
-				if (label != null) count = label.GetParsedText();
-			}
-
-			if (string.IsNullOrEmpty(name)) return null;
-			if (!string.IsNullOrEmpty(count))
-				return $"{name}, {count}";
-			return name;
-		}
-
-		// ========================================
-		// DETAIL VIEW - STATISTICS (section 2)
-		// ========================================
-
-		private void DiscoverStatWidgets(KScreen screen) {
-			var activeWidgets = Traverse.Create(screen).Field("activeColonyWidgets")
-				.GetValue<Dictionary<string, UnityEngine.GameObject>>();
-			if (activeWidgets != null) {
-				foreach (var kvp in activeWidgets) {
-					if (kvp.Key == "timelapse" || kvp.Key == "duplicants" || kvp.Key == "buildings")
-						continue;
-
-					var statGO = kvp.Value;
-					string statKey = kvp.Key;
-					_widgets.Add(new LabelWidget {
-						Label = statKey,
-						GameObject = statGO,
-						SpeechFunc = () => ReadStatEntry(statGO, statKey)
-					});
-				}
-			}
-
-			AddDetailButtons(screen);
-		}
-
-		/// <summary>
-		/// Read stat name and latest value live from the GraphBase component.
-		/// Each stat graph widget has a GraphBase with graphName and a LineLayer
-		/// containing a GraphedLine with the data points (cycle, value).
-		/// When no data points exist, appends "None" so the user knows the stat
-		/// is present but empty rather than thinking the mod failed to read it.
-		/// </summary>
-		private static string ReadStatEntry(UnityEngine.GameObject go, string fallbackName) {
-			var graph = go.GetComponentInChildren<GraphBase>();
-			string name = graph != null ? graph.graphName : null;
-			if (string.IsNullOrEmpty(name)) name = fallbackName;
-			if (string.IsNullOrEmpty(name)) return null;
-
-			if (graph != null) {
-				var lineLayer = go.GetComponentInChildren<LineLayer>();
-				if (lineLayer != null) {
-					var lines = Traverse.Create(lineLayer).Field("lines")
-						.GetValue<List<GraphedLine>>();
-					if (lines != null && lines.Count > 0) {
-						var points = Traverse.Create(lines[0]).Field("points")
-							.GetValue<UnityEngine.Vector2[]>();
-						if (points != null && points.Length > 0) {
-							float lastValue = points[points.Length - 1].y;
-							string unit = graph.axis_y.name;
-							if (!string.IsNullOrEmpty(unit))
-								return $"{name}, {lastValue:N0} {unit}";
-							return $"{name}, {lastValue:N0}";
-						}
-					}
-				}
-			}
-
-			return $"{name}, {(string)STRINGS.ONIACCESS.STATES.NONE}";
-		}
-
-		// ========================================
-		// ACHIEVEMENTS VIEW
-		// ========================================
-
-		/// <summary>
-		/// Discover achievement entries from the achievementsContainer.
-		/// Inserts "Victory conditions" and "Achievements" headers to separate
-		/// the two groups (victory conditions are placed first by the game).
-		/// Texts are read live at speech time via GetWidgetSpeechText.
-		/// </summary>
-		private void DiscoverAchievementWidgets(KScreen screen) {
-			var achievementsContainerGO = Traverse.Create(screen).Field("achievementsContainer")
-				.GetValue<UnityEngine.GameObject>();
-			var achievementsContainer = achievementsContainerGO != null
-				? achievementsContainerGO.transform : null;
-			if (achievementsContainer == null) return;
-
-			// Build set of victory condition GameObjects via achievementEntries dict
-			var victoryGOs = new HashSet<UnityEngine.GameObject>();
-			var achievementEntries = Traverse.Create(screen).Field("achievementEntries")
-				.GetValue<System.Collections.Generic.Dictionary<string, UnityEngine.GameObject>>();
-			if (achievementEntries != null) {
-				foreach (var kvp in achievementEntries) {
-					var achievement = Db.Get().ColonyAchievements.TryGet(kvp.Key);
-					if (achievement != null && achievement.isVictoryCondition)
-						victoryGOs.Add(kvp.Value);
-				}
+			var completedIds = new HashSet<string>();
+			if (data?.achievements != null) {
+				foreach (string id in data.achievements)
+					completedIds.Add(id);
 			}
 
 			bool addedVictoryHeader = false;
-			for (int i = 0; i < achievementsContainer.childCount; i++) {
-				var child = achievementsContainer.GetChild(i);
-				if (child == null || !child.gameObject.activeInHierarchy) continue;
+			foreach (var achievement in achievements) {
+				if (!IsAchievementValid(achievement)) continue;
 
-				if (!addedVictoryHeader && victoryGOs.Contains(child.gameObject)) {
+				if (!addedVictoryHeader && achievement.isVictoryCondition) {
 					addedVictoryHeader = true;
-					_widgets.Add(new LabelWidget {
-						Label = STRINGS.ONIACCESS.PANELS.VICTORY_CONDITIONS,
-						GameObject = screen.gameObject
+					_items.Add(new Item {
+						Kind = ItemKind.VictoryHeader,
+						Label = STRINGS.ONIACCESS.PANELS.VICTORY_CONDITIONS
 					});
 				}
 
-				var achGO = child.gameObject;
-				_widgets.Add(new LabelWidget {
-					Label = (string)STRINGS.ONIACCESS.INFO.ACHIEVEMENT,
-					GameObject = achGO,
-					SpeechFunc = () => ReadAchievementText(achGO.transform)
+				string label = FormatAchievement(achievement, completedIds, data);
+				_items.Add(new Item {
+					Kind = ItemKind.Achievement,
+					Label = label,
+					AchievementId = achievement.Id
 				});
 			}
+		}
 
-			if (_inColonyDetail)
-				AddDetailButtons(screen);
+		private void AddButtons() {
+			if (_inColonyDetail && !_isInGameContext
+				&& _viewOtherColoniesButton != null
+				&& _viewOtherColoniesButton.gameObject.activeSelf) {
+				_items.Add(new Item {
+					Kind = ItemKind.Button,
+					Label = STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES
+				});
+			}
+			if (_closeScreenButton != null && _closeScreenButton.gameObject.activeSelf) {
+				_items.Add(new Item {
+					Kind = ItemKind.Button,
+					Label = (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP
+				});
+			}
 		}
 
 		// ========================================
-		// SHARED BUTTONS
+		// LABEL FORMATTING
 		// ========================================
 
+		private static string FormatColonyEntry(RetiredColonyData colony) {
+			string cycles = string.Format(STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.CYCLE_COUNT,
+				colony.cycleCount.ToString());
+			if (!string.IsNullOrEmpty(colony.date))
+				return $"{colony.colonyName}, {cycles}, {colony.date}";
+			return $"{colony.colonyName}, {cycles}";
+		}
+
+		private static string FormatDuplicant(RetiredColonyData.RetiredDuplicantData dup) {
+			string age = string.Format(STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.DUPLICANT_AGE,
+				dup.age.ToString());
+			string skill = string.Format(STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.SKILL_LEVEL,
+				dup.skillPointsGained.ToString());
+			return $"{dup.name}, {age}, {skill}";
+		}
+
+		private static string FormatBuilding(Tuple<string, int> bldg) {
+			string name;
+			var prefab = Assets.GetPrefab(new Tag(bldg.first));
+			name = prefab != null ? prefab.GetProperName() : bldg.first;
+			string count = string.Format(STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.BUILDING_COUNT,
+				bldg.second.ToString());
+			return $"{name}, {count}";
+		}
+
+		private static string FormatStat(RetiredColonyData.RetiredColonyStatistic stat) {
+			if (stat.value != null && stat.value.Length > 0) {
+				float lastValue = stat.value[stat.value.Length - 1].second;
+				if (!string.IsNullOrEmpty(stat.nameY))
+					return $"{stat.name}, {lastValue:N0} {stat.nameY}";
+				return $"{stat.name}, {lastValue:N0}";
+			}
+			return $"{stat.name}, {(string)STRINGS.ONIACCESS.STATES.NONE}";
+		}
+
+		private string FormatAchievement(ColonyAchievement achievement,
+			HashSet<string> completedIds, RetiredColonyData data) {
+			string label = $"{achievement.Name}, {achievement.description}";
+
+			if (_inColonyDetail) {
+				if (completedIds.Contains(achievement.Id))
+					label += $", {(string)STRINGS.ONIACCESS.STATES.CONDITION_MET}";
+				else if (_isInGameContext)
+					label += GetAchievementFailedStatus(achievement.Id);
+			}
+			return label;
+		}
+
+		private static string GetAchievementFailedStatus(string achievementId) {
+			if (SaveGame.Instance == null) return "";
+			var tracker = SaveGame.Instance.GetComponent<ColonyAchievementTracker>();
+			if (tracker == null) return "";
+			if (!tracker.achievements.TryGetValue(achievementId, out var status)) return "";
+			if (status.failed)
+				return $", {(string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET}";
+			return "";
+		}
+
+		// ========================================
+		// SPEECH
+		// ========================================
+
+		private string BuildSpeech(Item item) {
+			if (item.Kind == ItemKind.Achievement && _isInGameContext && _inColonyDetail)
+				return BuildAchievementSpeechLive(item);
+			return item.Label;
+		}
+
 		/// <summary>
-		/// Add navigation buttons common to all detail view sections.
-		/// Also used by explorer view for close/quit buttons.
+		/// For in-game achievements, re-query status at speech time since
+		/// achievement progress can change while the screen is open.
 		/// </summary>
-		private void AddDetailButtons(KScreen screen) {
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "viewOtherColoniesButton", (string)STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES, _widgets);
-			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeScreenButton", (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP, _widgets);
+		private string BuildAchievementSpeechLive(Item item) {
+			var achievement = Db.Get().ColonyAchievements.TryGet(item.AchievementId);
+			if (achievement == null) return item.Label;
+
+			string label = $"{achievement.Name}, {achievement.description}";
+			if (SaveGame.Instance == null) return label;
+
+			var tracker = SaveGame.Instance.GetComponent<ColonyAchievementTracker>();
+			if (tracker == null) return label;
+			if (!tracker.achievements.TryGetValue(item.AchievementId, out var status))
+				return label;
+
+			if (status.success)
+				return label + $", {(string)STRINGS.ONIACCESS.STATES.CONDITION_MET}";
+			if (status.failed)
+				return label + $", {(string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET}";
+			return label;
 		}
 
 		// ========================================
 		// VIEW TRANSITIONS
 		// ========================================
 
-		/// <summary>
-		/// Override ActivateCurrentItem to handle view transitions.
-		/// When Enter is pressed on a colony in the explorer view, open colony detail.
-		/// When "View other colonies" is pressed in detail view, return to explorer.
-		/// </summary>
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
+			if (_currentIndex < 0 || _currentIndex >= _items.Count) return;
+			var item = _items[_currentIndex];
 
-			if (!_inColonyDetail && widget is ButtonWidget) {
-				// Colony entries have HierarchyReferences with "ColonyNameLabel"
-				var hierRef = widget.GameObject != null
-					? widget.GameObject.GetComponent<HierarchyReferences>() : null;
-				if (hierRef != null && hierRef.HasReference("ColonyNameLabel")) {
-					var kbutton = widget.Component as KButton;
-					ClickButton(kbutton);
-					_inColonyDetail = true;
-					_currentSection = DetailSectionDuplicants;
-
-					// Defer widget discovery: LoadColony uses coroutines to populate
-					// the detail view. Widgets aren't ready until a later frame.
-					_pendingRediscovery = true;
-					SpeakDetailHeader();
-					return;
-				}
-			}
-
-			if (_inColonyDetail && widget.Component is KButton btn && btn == _viewOtherColoniesButton) {
-				ReturnToExplorerView();
+			if (item.Kind == ItemKind.Colony && !_inColonyDetail) {
+				OpenColonyDetail(item.DataIndex);
 				return;
 			}
 
-			if (_isInGameContext && _currentSection == DetailSectionAchievements
-				&& widget.GameObject != null
-				&& widget.GameObject.GetComponent<AchievementWidget>() != null) {
-				SpeakAchievementProgress(widget.GameObject);
+			if (item.Kind == ItemKind.Button) {
+				ActivateButton(item);
 				return;
 			}
 
-			base.ActivateCurrentItem();
+			if (item.Kind == ItemKind.Achievement && _isInGameContext && _inColonyDetail) {
+				SpeakAchievementProgress(item.AchievementId);
+				return;
+			}
 		}
 
-		/// <summary>
-		/// Speak the colony name and cycle count header when entering detail view.
-		/// Uses .text here (not GetParsedText) because LoadColony sets colonyName.text
-		/// and cycleCount.text directly via assignment, not via SetText().
-		/// </summary>
-		private void SpeakDetailHeader() {
-			var colonyNameLoc = Traverse.Create(_screen).Field("colonyName")
-				.GetValue<LocText>();
-			var cycleCountLoc = Traverse.Create(_screen).Field("cycleCount")
-				.GetValue<LocText>();
+		private void OpenColonyDetail(int colonyIndex) {
+			if (_allColonies == null || colonyIndex < 0 || colonyIndex >= _allColonies.Length) return;
+			_colonyData = _allColonies[colonyIndex];
 
-			string name = colonyNameLoc != null ? colonyNameLoc.text : null;
-			string cycles = cycleCountLoc != null ? cycleCountLoc.text : null;
+			// Click the matching KButton in the explorer grid to trigger the game's
+			// LoadColony, which sets up the detail view UI.
+			ClickExplorerButton(colonyIndex);
 
-			var parts = new List<string>();
-			if (!string.IsNullOrEmpty(name)) parts.Add(name);
-			if (!string.IsNullOrEmpty(cycles)) parts.Add(cycles);
+			_inColonyDetail = true;
+			_currentSection = DetailSectionDuplicants;
+
+			string header = FormatDetailHeader(_colonyData);
 			string sectionName = GetSectionName(_currentSection);
-			parts.Add(sectionName);
+			Speech.SpeechPipeline.SpeakInterrupt($"{header}, {sectionName}");
 
-			Speech.SpeechPipeline.SpeakInterrupt(string.Join(", ", parts));
+			BuildItems();
+			_currentIndex = 0;
+			if (_items.Count > 0)
+				Speech.SpeechPipeline.SpeakQueued(BuildSpeech(_items[0]));
+		}
+
+		private void ClickExplorerButton(int index) {
+			try {
+				var explorerGridGO = _explorerGridField.GetValue<UnityEngine.GameObject>();
+				if (explorerGridGO == null) return;
+				var grid = explorerGridGO.transform;
+				int buttonIndex = 0;
+				for (int i = 0; i < grid.childCount; i++) {
+					var child = grid.GetChild(i);
+					if (child == null || !child.gameObject.activeInHierarchy) continue;
+					var kbutton = child.GetComponent<KButton>();
+					if (kbutton == null) continue;
+					if (buttonIndex == index) {
+						Widgets.WidgetOps.ClickButton(kbutton);
+						return;
+					}
+					buttonIndex++;
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Error($"ColonySummaryHandler.ClickExplorerButton: {ex.Message}");
+			}
+		}
+
+		private void ActivateButton(Item item) {
+			if (item.Label == (string)STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES) {
+				ReturnToExplorerView();
+			} else if (item.Label == (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP) {
+				if (_closeScreenButton != null)
+					Widgets.WidgetOps.ClickButton(_closeScreenButton);
+			}
+		}
+
+		private static string FormatDetailHeader(RetiredColonyData data) {
+			string cycles = string.Format(STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.CYCLE_COUNT,
+				data.cycleCount.ToString());
+			return $"{data.colonyName}, {cycles}";
 		}
 
 		/// <summary>
@@ -510,42 +457,36 @@ namespace OniAccess.Handlers.Screens {
 			return false;
 		}
 
-		/// <summary>
-		/// Return from colony detail view to explorer view.
-		/// Clicks "View other colonies" button to trigger the game's own transition,
-		/// then rediscovers widgets and speaks the explorer view.
-		/// </summary>
 		private void ReturnToExplorerView() {
 			if (_isInGameContext) return;
 
 			try {
-				if (_viewOtherColoniesButton != null) {
-					ClickButton(_viewOtherColoniesButton);
-				}
+				if (_viewOtherColoniesButton != null)
+					Widgets.WidgetOps.ClickButton(_viewOtherColoniesButton);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ColonySummaryHandler.ReturnToExplorerView: {ex.Message}");
 			}
 
 			_inColonyDetail = false;
+			_colonyData = null;
 			_currentSection = ExplorerSectionMain;
-			DiscoverWidgets(_screen);
+			BuildItems();
 			_currentIndex = 0;
 
 			Speech.SpeechPipeline.SpeakInterrupt(DisplayName);
-			if (_widgets.Count > 0) {
-				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
-			}
+			if (_items.Count > 0)
+				Speech.SpeechPipeline.SpeakQueued(BuildSpeech(_items[0]));
 		}
 
 		// ========================================
-		// TAB NAVIGATION (section switching)
+		// TAB NAVIGATION
 		// ========================================
 
 		protected override void NavigateTabForward() {
 			int count = SectionCount;
 			_currentSection = (_currentSection + 1) % count;
 			if (_currentSection == 0) PlayWrapSound();
-			RediscoverForCurrentSection();
+			RebuildForCurrentSection();
 		}
 
 		protected override void NavigateTabBackward() {
@@ -553,17 +494,16 @@ namespace OniAccess.Handlers.Screens {
 			int prev = _currentSection;
 			_currentSection = (_currentSection - 1 + count) % count;
 			if (_currentSection == count - 1 && prev == 0) PlayWrapSound();
-			RediscoverForCurrentSection();
+			RebuildForCurrentSection();
 		}
 
-		private void RediscoverForCurrentSection() {
-			DiscoverWidgets(_screen);
+		private void RebuildForCurrentSection() {
+			BuildItems();
+			_currentIndex = 0;
 			string sectionName = GetSectionName(_currentSection);
 			Speech.SpeechPipeline.SpeakInterrupt(sectionName);
-			if (_widgets.Count > 0) {
-				_currentIndex = 0;
-				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
-			}
+			if (_items.Count > 0)
+				Speech.SpeechPipeline.SpeakQueued(BuildSpeech(_items[0]));
 		}
 
 		private string GetSectionName(int section) {
@@ -583,84 +523,58 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		// ========================================
-		// WIDGET SPEECH
+		// ACHIEVEMENT PROGRESS (in-game only)
 		// ========================================
 
-
 		/// <summary>
-		/// Read achievement name and description live from HierarchyReferences.
-		/// Uses GetParsedText() instead of .text because the game sets text via
-		/// LocText.SetText() which updates TMP's internal char buffer but not m_text.
+		/// Speak per-requirement progress for an in-game achievement.
+		/// Reads directly from ColonyAchievementStatus.Requirements.
 		/// </summary>
-		private string ReadAchievementText(UnityEngine.Transform entry) {
-			string name = null;
-			string desc = null;
-
-			var hierRef = entry.GetComponent<HierarchyReferences>();
-			if (hierRef != null) {
-				if (hierRef.HasReference("nameLabel")) {
-					var nameLabel = hierRef.GetReference<LocText>("nameLabel");
-					if (nameLabel != null)
-						name = nameLabel.GetParsedText();
-				}
-				if (hierRef.HasReference("descriptionLabel")) {
-					var descLabel = hierRef.GetReference<LocText>("descriptionLabel");
-					if (descLabel != null)
-						desc = descLabel.GetParsedText();
-				}
-			}
-
-			if (string.IsNullOrEmpty(name)) return (string)STRINGS.ONIACCESS.INFO.ACHIEVEMENT;
-			if (!string.IsNullOrEmpty(desc) && desc != name)
-				return $"{name}, {desc}";
-			return name;
-		}
-
-		/// <summary>
-		/// Read achievement progress requirements directly from AchievementWidget's
-		/// progressParent children. ShowProgress populates these during colony loading
-		/// while progressParent is inactive.
-		///
-		/// SetText() stores text in TMP's internal char buffer, not m_text. So .text
-		/// returns the prefab default and GetParsedText() returns empty (inactive object,
-		/// TMP hasn't rendered). To get the real text we temporarily activate
-		/// progressParent, force a canvas update so TMP renders, then restore state.
-		/// </summary>
-		private void SpeakAchievementProgress(UnityEngine.GameObject achGO) {
-			var achievementWidget = achGO.GetComponent<AchievementWidget>();
-			if (achievementWidget == null) return;
-
-			var progressParent = Traverse.Create(achievementWidget).Field("progressParent")
-				.GetValue<UnityEngine.RectTransform>();
-			if (progressParent == null || progressParent.childCount == 0) return;
-
-			bool wasActive = progressParent.gameObject.activeSelf;
-			if (!wasActive)
-				progressParent.gameObject.SetActive(true);
-			UnityEngine.Canvas.ForceUpdateCanvases();
+		private static void SpeakAchievementProgress(string achievementId) {
+			if (SaveGame.Instance == null) return;
+			var tracker = SaveGame.Instance.GetComponent<ColonyAchievementTracker>();
+			if (tracker == null) return;
+			if (!tracker.achievements.TryGetValue(achievementId, out var status)) return;
 
 			var entries = new List<string>();
-			for (int i = 0; i < progressParent.childCount; i++) {
-				var child = progressParent.GetChild(i);
-				if (child == null) continue;
-
-				var refs = child.GetComponent<HierarchyReferences>();
-				if (refs == null || !refs.HasReference("Desc")) continue;
-
-				var descLoc = refs.GetReference<LocText>("Desc");
-				if (descLoc == null) continue;
-
-				string text = descLoc.GetParsedText();
-				if (!string.IsNullOrEmpty(text))
-					entries.Add(text);
+			foreach (var req in status.Requirements) {
+				bool complete = req.Success();
+				string progress = req.GetProgress(complete);
+				if (!string.IsNullOrEmpty(progress)) {
+					string prefix = complete
+						? (string)STRINGS.ONIACCESS.STATES.CONDITION_MET
+						: (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+					entries.Add($"{prefix}: {progress}");
+				}
 			}
-
-			if (!wasActive)
-				progressParent.gameObject.SetActive(false);
 
 			if (entries.Count > 0)
 				Speech.SpeechPipeline.SpeakInterrupt(string.Join(". ", entries));
 		}
 
+		// ========================================
+		// HELPERS
+		// ========================================
+
+		private RetiredColonyData GetActiveColonyData() {
+			if (_colonyData != null) return _colonyData;
+			if (_isInGameContext) {
+				_colonyData = RetireColonyUtility.GetCurrentColonyRetiredColonyData();
+				return _colonyData;
+			}
+			return null;
+		}
+
+		private bool IsAchievementValid(ColonyAchievement achievement) {
+			if (!DlcManager.IsCorrectDlcSubscribed(achievement))
+				return false;
+			if (_isInGameContext && Game.Instance != null) {
+				if (!Game.IsCorrectDlcActiveForCurrentSave(achievement))
+					return false;
+				if (!achievement.IsValidForSave())
+					return false;
+			}
+			return true;
+		}
 	}
 }
