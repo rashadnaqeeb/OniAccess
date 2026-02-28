@@ -49,16 +49,44 @@ namespace OniAccess.Handlers.Notifications {
 			var group = FindGroup();
 			if (group == null || index < 0 || index >= group.Count) return null;
 			var n = group.Members[index];
-			string name = n.NotifierName;
-			if (!string.IsNullOrEmpty(name)) {
-				// Strip the leading bullet prefix set by Notifier.Add ("• EntityName")
-				if (name.StartsWith("\u2022 "))
-					name = name.Substring(2);
-				return name;
+			string name = StripBullet(n.NotifierName);
+			if (string.IsNullOrEmpty(name))
+				return string.Format(
+					(string)STRINGS.ONIACCESS.NOTIFICATIONS.NUMBERED_ENTRY,
+					_titleKey, index + 1);
+
+			// Number duplicate names so "Pipe 1", "Pipe 2" instead of "Pipe", "Pipe"
+			if (HasDuplicateName(group, name, index)) {
+				int ordinal = 1;
+				for (int i = 0; i < index; i++) {
+					if (StripBullet(group.Members[i].NotifierName) == name)
+						ordinal++;
+				}
+				return string.Format(
+					(string)STRINGS.ONIACCESS.NOTIFICATIONS.NUMBERED_ENTRY,
+					name, ordinal);
 			}
-			return string.Format(
-				(string)STRINGS.ONIACCESS.NOTIFICATIONS.NUMBERED_ENTRY,
-				_titleKey, index + 1);
+			return name;
+		}
+
+		private static string StripBullet(string name) {
+			if (string.IsNullOrEmpty(name)) return name;
+			if (name.StartsWith("\u2022 "))
+				return name.Substring(2);
+			return name;
+		}
+
+		/// <summary>
+		/// Returns true if another member in the group shares the same stripped name.
+		/// </summary>
+		private static bool HasDuplicateName(
+			NotificationGroup group, string name, int currentIndex) {
+			for (int i = 0; i < group.Count; i++) {
+				if (i == currentIndex) continue;
+				if (StripBullet(group.Members[i].NotifierName) == name)
+					return true;
+			}
+			return false;
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
