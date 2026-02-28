@@ -97,9 +97,11 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// ========================================
 
 		/// <summary>
-		/// Switch to content tab. Called by CategoriesTab when a leaf entry is activated.
+		/// Switch to content tab. Called by CategoriesTab when a leaf entry is activated,
+		/// and by OnArticleChanged for external navigations.
 		/// </summary>
 		internal void JumpToContentTab() {
+			if (_activeTab == TabId.Content) return;
 			ActiveTab.OnTabDeactivated();
 			_activeTab = TabId.Content;
 			PlayHoverSound();
@@ -119,13 +121,18 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 		/// <summary>
 		/// Called from the ChangeArticle postfix patch.
-		/// Only rebuilds and speaks when the content tab is already active.
-		/// When called from CategoriesTab.ActivateLeafItem, the content tab is
-		/// not yet active — JumpToContentTab handles the rebuild+speak instead.
+		/// When the content tab is active, rebuilds and speaks the new article.
+		/// When on the categories tab (external navigation via OpenCodexToEntry),
+		/// switches to content tab automatically.
+		/// When called from CategoriesTab.ActivateLeafItem, the categories tab is
+		/// still active, so this switches to content. The subsequent JumpToContentTab
+		/// call is then a no-op since we're already on content.
 		/// </summary>
 		internal void OnArticleChanged() {
 			if (_activeTab == TabId.Content)
 				_contentTab.OnArticleChanged();
+			else
+				JumpToContentTab();
 		}
 
 		private ICodexTab ActiveTab => _tabs[(int)_activeTab];
