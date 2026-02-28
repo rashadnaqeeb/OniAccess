@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Level 0: 3 section headers + Colony Summary action
 	/// Level 1: Visible stat categories within each section
-	/// Level 2: Per-entity context entries (duplicant/building breakdowns)
+	/// Level 2: Per-entity context entries, or note breakdowns when no context entries exist
 	///
 	/// Tab/Shift+Tab cycles between report days.
 	/// Data is read live from ReportManager on every call.
@@ -119,6 +119,28 @@ namespace OniAccess.Handlers.Screens {
 			return _visibleTypesScratch;
 		}
 
+		/// <summary>
+		/// Collect and sort notes from an entry into _notesScratch.
+		/// </summary>
+		private void CollectNotes(ReportManager.ReportEntry entry, ReportManager.ReportGroup group) {
+			_notesScratch.Clear();
+			entry.IterateNotes(note => _notesScratch.Add(note));
+			if (group.posNoteOrder == ReportManager.ReportEntry.Order.Descending)
+				_notesScratch.Sort((a, b) => b.value.CompareTo(a.value));
+			else if (group.posNoteOrder == ReportManager.ReportEntry.Order.Ascending)
+				_notesScratch.Sort((a, b) => a.value.CompareTo(b.value));
+		}
+
+		/// <summary>
+		/// Level 2 item count: context entries when available, otherwise notes.
+		/// </summary>
+		private int GetLevel2Count(ReportManager.ReportEntry entry, ReportManager.ReportGroup group) {
+			if (entry.contextEntries.Count > 0)
+				return entry.contextEntries.Count;
+			CollectNotes(entry, group);
+			return _notesScratch.Count;
+		}
+
 		// ========================================
 		// NestedMenuHandler ABSTRACTS
 		// ========================================
@@ -134,12 +156,14 @@ namespace OniAccess.Handlers.Screens {
 			if (level == 1)
 				return GetVisibleTypes(indices[0]).Count;
 
-			// Level 2: context entries
+			// Level 2: context entries, or notes when no context entries exist
 			var types = GetVisibleTypes(indices[0]);
 			if (indices[1] < 0 || indices[1] >= types.Count)
 				return 0;
-			var entry = GetReport().GetEntry(types[indices[1]]);
-			return entry.contextEntries.Count;
+			var reportType = types[indices[1]];
+			var entry = GetReport().GetEntry(reportType);
+			var group = ReportManager.Instance.ReportGroups[reportType];
+			return GetLevel2Count(entry, group);
 		}
 
 		protected override string GetItemLabel(int level, int[] indices) {
@@ -165,11 +189,16 @@ namespace OniAccess.Handlers.Screens {
 			if (level == 1)
 				return BuildStatLabel(entry, group);
 
-			// Level 2: context entry
-			if (indices[2] < 0 || indices[2] >= entry.contextEntries.Count)
+			// Level 2: context entry or note fallback
+			if (entry.contextEntries.Count > 0) {
+				if (indices[2] < 0 || indices[2] >= entry.contextEntries.Count)
+					return null;
+				return BuildContextLabel(entry.contextEntries[indices[2]], group);
+			}
+			CollectNotes(entry, group);
+			if (indices[2] < 0 || indices[2] >= _notesScratch.Count)
 				return null;
-			var contextEntry = entry.contextEntries[indices[2]];
-			return BuildContextLabel(contextEntry, group);
+			return BuildNoteLabel(_notesScratch[indices[2]], group);
 		}
 
 		protected override string GetParentLabel(int level, int[] indices) {
@@ -237,13 +266,19 @@ namespace OniAccess.Handlers.Screens {
 
 		protected override void NavigateTabForward() {
 			int maxDay = ReportManager.Instance.TodaysReport.day;
-			if (_currentDay >= maxDay) return;
+			if (_currentDay >= maxDay) {
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.REPORT.NO_LATER_CYCLE);
+				return;
+			}
 			_currentDay++;
 			OnCycleChanged();
 		}
 
 		protected override void NavigateTabBackward() {
-			if (ReportManager.Instance.FindReport(_currentDay - 1) == null) return;
+			if (ReportManager.Instance.FindReport(_currentDay - 1) == null) {
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.REPORT.NO_EARLIER_CYCLE);
+				return;
+			}
 			_currentDay--;
 			OnCycleChanged();
 		}
@@ -267,10 +302,13 @@ namespace OniAccess.Handlers.Screens {
 					SetIndex(1, Math.Max(0, types.Count - 1));
 
 				if (Level >= 2 && types.Count > 0) {
-					var entry = GetReport().GetEntry(types[GetIndex(1)]);
+					var reportType = types[GetIndex(1)];
+					var entry = GetReport().GetEntry(reportType);
+					var group = ReportManager.Instance.ReportGroups[reportType];
+					int l2Count = GetLevel2Count(entry, group);
 					int l2 = GetIndex(2);
-					if (l2 >= entry.contextEntries.Count)
-						SetIndex(2, Math.Max(0, entry.contextEntries.Count - 1));
+					if (l2 >= l2Count)
+						SetIndex(2, Math.Max(0, l2Count - 1));
 				}
 			}
 		}
@@ -382,20 +420,20 @@ namespace OniAccess.Handlers.Screens {
 				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.REMOVED,
 					group.formatfn(0f - contextEntry.Negative)));
 
-			// Append notes
-			_notesScratch.Clear();
-			contextEntry.IterateNotes(note => _notesScratch.Add(note));
-			if (group.posNoteOrder == ReportManager.ReportEntry.Order.Descending)
-				_notesScratch.Sort((a, b) => b.value.CompareTo(a.value));
-			else if (group.posNoteOrder == ReportManager.ReportEntry.Order.Ascending)
-				_notesScratch.Sort((a, b) => a.value.CompareTo(b.value));
-
+			CollectNotes(contextEntry, group);
 			foreach (var note in _notesScratch) {
 				string formatted = group.formatfn(note.value);
 				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NOTE, note.note, formatted));
 			}
 
 			return string.Join(", ", parts);
+		}
+
+		private string BuildNoteLabel(
+			ReportManager.ReportEntry.Note note,
+			ReportManager.ReportGroup group) {
+			return string.Format(STRINGS.ONIACCESS.REPORT.NOTE,
+				note.note, group.formatfn(note.value));
 		}
 	}
 }

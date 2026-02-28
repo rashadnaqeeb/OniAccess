@@ -691,6 +691,8 @@ namespace STRINGS {
 			public static LocString NET = "net {0}";
 			public static LocString NOTE = "{0} {1}";
 			public static LocString HELP_CYCLE = "Previous or next cycle";
+			public static LocString NO_LATER_CYCLE = "Latest cycle";
+			public static LocString NO_EARLIER_CYCLE = "Earliest cycle";
 		}
 
 		public class NOTIFICATIONS {
