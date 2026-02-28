@@ -357,6 +357,14 @@ namespace OniAccess.Handlers.Screens {
 		// LABEL BUILDING
 		// ========================================
 
+		/// <summary>
+		/// Format a value using the group's formatfn, falling back to ToString
+		/// when formatfn is null (critters, chores, level-ups, etc.).
+		/// </summary>
+		private static string FormatValue(float value, ReportManager.ReportGroup group) {
+			return group.formatfn != null ? group.formatfn(value) : value.ToString();
+		}
+
 		private string BuildStatLabel(
 			ReportManager.ReportEntry entry,
 			ReportManager.ReportGroup group) {
@@ -400,13 +408,13 @@ namespace OniAccess.Handlers.Screens {
 				}
 			} else if (isDelta) {
 				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NET,
-					group.formatfn(entry.Net)));
+					FormatValue(entry.Net, group)));
 				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.ADDED,
-					group.formatfn(entry.Positive)));
+					FormatValue(entry.Positive, group)));
 				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.REMOVED,
-					group.formatfn(0f - entry.Negative)));
+					FormatValue(0f - entry.Negative, group)));
 			} else {
-				parts.Add(group.formatfn(entry.Net));
+				parts.Add(FormatValue(entry.Net, group));
 			}
 
 			return string.Join(", ", parts);
@@ -420,18 +428,18 @@ namespace OniAccess.Handlers.Screens {
 			parts.Add(contextEntry.context);
 
 			parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NET,
-				group.formatfn(contextEntry.Net)));
+				FormatValue(contextEntry.Net, group)));
 			if (contextEntry.Positive != 0f)
 				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.ADDED,
-					group.formatfn(contextEntry.Positive)));
+					FormatValue(contextEntry.Positive, group)));
 			if (contextEntry.Negative != 0f)
 				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.REMOVED,
-					group.formatfn(0f - contextEntry.Negative)));
+					FormatValue(0f - contextEntry.Negative, group)));
 
 			CollectNotes(contextEntry, group);
 			foreach (var note in _notesScratch) {
-				string formatted = group.formatfn(note.value);
-				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NOTE, note.note, formatted));
+				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NOTE,
+					note.note, FormatValue(note.value, group)));
 			}
 
 			return string.Join(", ", parts);
@@ -441,7 +449,7 @@ namespace OniAccess.Handlers.Screens {
 			ReportManager.ReportEntry.Note note,
 			ReportManager.ReportGroup group) {
 			return string.Format(STRINGS.ONIACCESS.REPORT.NOTE,
-				note.note, group.formatfn(note.value));
+				note.note, FormatValue(note.value, group));
 		}
 	}
 }
