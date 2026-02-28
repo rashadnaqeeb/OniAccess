@@ -57,7 +57,16 @@ namespace OniAccess.Handlers.Screens {
 			_currentDay = ReportManager.Instance.TodaysReport.day;
 			BuildSections();
 			base.OnActivate();
-			SpeakCycleTitle();
+			// base.OnActivate interrupts with DisplayName; queue title and first item after it
+			SpeechPipeline.SpeakQueued(TextFilter.FilterForSpeech(GetCycleTitle()));
+			int count = GetItemCount(Level, new int[] {
+				GetIndex(0), GetIndex(1), GetIndex(2) });
+			if (count > 0) {
+				string label = GetItemLabel(Level, new int[] {
+					GetIndex(0), GetIndex(1), GetIndex(2) });
+				if (!string.IsNullOrWhiteSpace(label))
+					SpeechPipeline.SpeakQueued(label);
+			}
 		}
 
 		// ========================================
@@ -164,7 +173,15 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		protected override string GetParentLabel(int level, int[] indices) {
-			if (level >= 1 && indices[0] >= 0 && indices[0] < _sections.Count)
+			if (level == 2) {
+				// At level 2, parent is the level 1 stat category
+				var types = GetVisibleTypes(indices[0]);
+				if (indices[1] >= 0 && indices[1] < types.Count) {
+					var group = ReportManager.Instance.ReportGroups[types[indices[1]]];
+					return group.stringKey;
+				}
+			}
+			if (level == 1 && indices[0] >= 0 && indices[0] < _sections.Count)
 				return _sections[indices[0]].name;
 			return null;
 		}
@@ -235,8 +252,7 @@ namespace OniAccess.Handlers.Screens {
 			ClampIndices();
 			SyncCurrentIndex();
 			PlayHoverSound();
-			SpeakCycleTitle();
-			SpeakCurrentItem();
+			SpeakCycleTitleAndCurrentItem();
 		}
 
 		private void ClampIndices() {
@@ -259,16 +275,29 @@ namespace OniAccess.Handlers.Screens {
 			}
 		}
 
-		private void SpeakCycleTitle() {
+		private string GetCycleTitle() {
 			int todayDay = ReportManager.Instance.TodaysReport.day;
-			string title;
 			if (_currentDay == todayDay)
-				title = string.Format(UI.ENDOFDAYREPORT.DAY_TITLE_TODAY, _currentDay);
-			else if (_currentDay == todayDay - 1)
-				title = string.Format(UI.ENDOFDAYREPORT.DAY_TITLE_YESTERDAY, _currentDay);
-			else
-				title = string.Format(UI.ENDOFDAYREPORT.DAY_TITLE, _currentDay);
-			SpeechPipeline.SpeakQueued(TextFilter.FilterForSpeech(title));
+				return string.Format(UI.ENDOFDAYREPORT.DAY_TITLE_TODAY, _currentDay);
+			if (_currentDay == todayDay - 1)
+				return string.Format(UI.ENDOFDAYREPORT.DAY_TITLE_YESTERDAY, _currentDay);
+			return string.Format(UI.ENDOFDAYREPORT.DAY_TITLE, _currentDay);
+		}
+
+		/// <summary>
+		/// Speak cycle title as interrupt, then queue the current item label
+		/// so the item doesn't cut off the title announcement.
+		/// </summary>
+		private void SpeakCycleTitleAndCurrentItem() {
+			SpeechPipeline.SpeakInterrupt(TextFilter.FilterForSpeech(GetCycleTitle()));
+			int count = GetItemCount(Level, new int[] {
+				GetIndex(0), GetIndex(1), GetIndex(2) });
+			if (count > 0) {
+				string label = GetItemLabel(Level, new int[] {
+					GetIndex(0), GetIndex(1), GetIndex(2) });
+				if (!string.IsNullOrWhiteSpace(label))
+					SpeechPipeline.SpeakQueued(label);
+			}
 		}
 
 		// ========================================

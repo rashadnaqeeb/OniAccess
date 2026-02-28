@@ -193,8 +193,8 @@ namespace OniAccess.Patches {
 	/// which calls OnShow(). ReportScreen declares OnShow, so patch it directly.
 	[HarmonyPatch(typeof(ReportScreen), "OnShow")]
 	internal static class ReportScreen_OnShow_Patch {
-		private static void Postfix(KScreen __instance, bool show) =>
-			ShowDispatch.Handle(__instance, show);
+		private static void Postfix(KScreen __instance, bool bShow) =>
+			ShowDispatch.Handle(__instance, bShow);
 	}
 
 	/// <summary>
