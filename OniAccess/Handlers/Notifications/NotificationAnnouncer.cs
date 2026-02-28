@@ -10,20 +10,26 @@ namespace OniAccess.Handlers.Notifications {
 	/// Different-title notifications queue FIFO.
 	///
 	/// Called from TileCursorHandler.Tick() each frame. Each new arrival resets
-	/// the timer, so the flush only fires after 200ms of silence. This naturally
-	/// batches load-time notification bursts into a single announcement.
+	/// the timer, so the flush only fires after 200ms of silence.
+	///
+	/// During load phase (before first unpause), notifications accumulate without
+	/// flushing. On first unpause, everything is announced in one batch, then
+	/// normal 200ms batching takes over.
 	/// </summary>
 	internal sealed class NotificationAnnouncer {
 		private const float BatchWindowSeconds = 0.2f;
+		private const float FirstBatchWindowSeconds = 1.0f;
 
 		private readonly NotificationTracker _tracker;
 		private bool _batchPending;
 		private float _batchStart;
+		private bool _loadPhase = true;
+		private bool _firstFlush = true;
 
 		/// <summary>
 		/// Tracks the last-announced group counts by titleText. On flush, only groups
 		/// with new or increased counts are announced. This avoids re-announcing
-		/// pre-existing notifications and ensures removal events are silent.
+		/// already-spoken notifications and ensures removal events are silent.
 		/// </summary>
 		private readonly Dictionary<string, int> _knownCounts = new Dictionary<string, int>();
 
@@ -32,15 +38,15 @@ namespace OniAccess.Handlers.Notifications {
 		/// </summary>
 		internal static Func<float> TimeSource = () => UnityEngine.Time.unscaledTime;
 
+		/// <summary>
+		/// Injectable pause check for offline testing. Defaults to SpeedControlScreen.
+		/// </summary>
+		internal static Func<bool> IsPaused = () =>
+			SpeedControlScreen.Instance != null && SpeedControlScreen.Instance.IsPaused;
+
 		internal NotificationAnnouncer(NotificationTracker tracker) {
 			_tracker = tracker;
 			_tracker.OnChanged += OnChanged;
-
-			// Seed _knownCounts from the tracker's current state so pre-existing
-			// notifications are never announced.
-			var groups = _tracker.Groups;
-			for (int i = 0; i < groups.Count; i++)
-				_knownCounts[groups[i].TitleText] = groups[i].Count;
 		}
 
 		internal void Detach() {
@@ -54,8 +60,17 @@ namespace OniAccess.Handlers.Notifications {
 		}
 
 		internal void Tick() {
+			if (_loadPhase) {
+				if (IsPaused()) return;
+				_loadPhase = false;
+				_batchPending = true;
+				_batchStart = TimeSource();
+				return;
+			}
 			if (!_batchPending) return;
-			if (TimeSource() - _batchStart < BatchWindowSeconds) return;
+			float window = _firstFlush ? FirstBatchWindowSeconds : BatchWindowSeconds;
+			if (TimeSource() - _batchStart < window) return;
+			_firstFlush = false;
 			Flush();
 		}
 
@@ -70,7 +85,6 @@ namespace OniAccess.Handlers.Notifications {
 				_knownCounts.TryGetValue(group.TitleText, out int knownCount);
 
 				if (group.Count <= knownCount) {
-					// No new notifications in this group
 					_knownCounts[group.TitleText] = group.Count;
 					continue;
 				}
