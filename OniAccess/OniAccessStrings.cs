@@ -695,6 +695,7 @@ namespace STRINGS {
 			public static LocString MESSAGE_DIALOG = "Message";
 			public static LocString NEXT_MESSAGE = "next message";
 			public static LocString DONT_SHOW_AGAIN = "don't show again";
+			public static LocString PLAY_VIDEO = "play video";
 		}
 
 		public class CODEX {

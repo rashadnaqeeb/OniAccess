@@ -81,6 +81,25 @@ namespace OniAccess.Handlers.Notifications {
 					}
 				}
 
+				// Video widget (thumbnail button on tutorial messages with videos).
+				// Only present for fresh notifications — videoClipId isn't serialized,
+				// so messages restored from a save file lose their video data.
+				if (body != null) {
+					var videoWidget = body.GetComponentInChildren<VideoWidget>(true);
+					if (videoWidget != null) {
+						var videoButton = HarmonyLib.Traverse.Create(videoWidget)
+							.Field<KButton>("button").Value;
+						if (videoButton != null) {
+							_widgets.Add(new ButtonWidget {
+								Label = (string)STRINGS.ONIACCESS.NOTIFICATIONS.PLAY_VIDEO,
+								Component = videoButton,
+								GameObject = videoButton.gameObject,
+								SuppressTooltip = true
+							});
+						}
+					}
+				}
+
 				// Close button
 				var closeButton = traverse.Field<KButton>("closeButton").Value;
 				if (closeButton != null) {
