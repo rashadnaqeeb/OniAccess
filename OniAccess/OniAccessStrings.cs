@@ -683,6 +683,20 @@ namespace STRINGS {
 			public static LocString HELP_CHANGE_SCHEDULE = "Change schedule assignment";
 		}
 
+		public class NOTIFICATIONS {
+			public static LocString GROUP_COUNT = "{0} x{1}";
+			public static LocString NUMBERED_ENTRY = "{0} {1}";
+			public static LocString MENU_TITLE = "Notifications";
+			public static LocString EMPTY = "no notifications";
+			public static LocString DISMISSED = "dismissed";
+			public static LocString CANNOT_DISMISS = "cannot dismiss";
+			public static LocString OPEN_MENU_HELP = "Open notifications menu";
+			public static LocString DISMISS_HELP = "Dismiss notification";
+			public static LocString MESSAGE_DIALOG = "Message";
+			public static LocString NEXT_MESSAGE = "next message";
+			public static LocString DONT_SHOW_AGAIN = "don't show again";
+		}
+
 		public class CODEX {
 			public static LocString CATEGORIES_TAB = "Categories";
 			public static LocString CONTENT_TAB = "Content";

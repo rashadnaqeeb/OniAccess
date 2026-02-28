@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OniAccess.Handlers.Notifications;
 using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Input;
 using OniAccess.Speech;
@@ -18,6 +19,8 @@ namespace OniAccess.Handlers.Tiles {
 		private Overlays.OverlayProfileRegistry _overlayRegistry;
 		private ScannerNavigator _scanner;
 		private GameStateMonitor _monitor;
+		private NotificationTracker _notificationTracker;
+		private NotificationAnnouncer _notificationAnnouncer;
 		private bool _hasActivated;
 		private bool _overlaySubscribed;
 		private int _queueNextOverlayTtl;
@@ -49,6 +52,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.PageDown, Modifier.Alt),
 			new ConsumedKey(KKeyCode.Q),
 			new ConsumedKey(KKeyCode.Return),
+			new ConsumedKey(KKeyCode.N, Modifier.Shift),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -68,6 +72,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Alt+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE),
 			new HelpEntry("Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS),
 			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED),
+			new HelpEntry("Shift+N", (string)STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;
@@ -85,6 +90,11 @@ namespace OniAccess.Handlers.Tiles {
 				TileCursor.Create(_overlayRegistry);
 				_scanner = new ScannerNavigator();
 				_monitor = new GameStateMonitor();
+				if (NotificationManager.Instance != null) {
+					_notificationTracker = new NotificationTracker();
+					_notificationTracker.Attach();
+					_notificationAnnouncer = new NotificationAnnouncer(_notificationTracker);
+				}
 				SpeechPipeline.SpeakQueued(DisplayName);
 				try {
 					TileCursor.Instance.Initialize();
@@ -110,6 +120,10 @@ namespace OniAccess.Handlers.Tiles {
 		public override void OnDeactivate() {
 			if (Game.Instance != null)
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			_notificationAnnouncer?.Detach();
+			_notificationAnnouncer = null;
+			_notificationTracker?.Detach();
+			_notificationTracker = null;
 			TileCursor.Destroy();
 			_scanner = null;
 			if (OverlayScreen.Instance != null)
@@ -142,6 +156,7 @@ namespace OniAccess.Handlers.Tiles {
 
 			_scanner.CheckWorldSwitch();
 			_monitor.Tick();
+			_notificationAnnouncer?.Tick();
 
 			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null)
@@ -208,6 +223,11 @@ namespace OniAccess.Handlers.Tiles {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)
 				&& !InputUtil.AnyModifierHeld()) {
 				_monitor.SpeakCycleStatus();
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.N)
+				&& InputUtil.ShiftHeld()) {
+				OpenNotificationMenu();
 				return true;
 			}
 
@@ -279,6 +299,17 @@ namespace OniAccess.Handlers.Tiles {
 				return;
 			}
 			HandlerStack.Push(new EntityPickerHandler(selectables));
+		}
+
+		private void OpenNotificationMenu() {
+			if (_notificationTracker == null) return;
+			if (_notificationTracker.Groups.Count == 0) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY);
+				return;
+			}
+			HandlerStack.Push(
+				new Notifications.NotificationMenuHandler(_notificationTracker));
 		}
 
 		private void OnActiveToolChanged(object data) {

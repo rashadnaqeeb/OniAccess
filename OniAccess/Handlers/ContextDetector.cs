@@ -282,6 +282,11 @@ namespace OniAccess.Handlers {
 			Register<CodexScreen>(screen => new CodexScreenHandler(screen));
 			_showPatchedTypes.Add(typeof(CodexScreen));
 
+			// MessageDialogFrame (KScreen -- message popup from notification click)
+			// OnActivate is declared on MessageDialogFrame, so generic KScreen_Activate_Patch fires.
+			Register<MessageDialogFrame>(screen =>
+				new Notifications.MessageDialogFrameHandler(screen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 
