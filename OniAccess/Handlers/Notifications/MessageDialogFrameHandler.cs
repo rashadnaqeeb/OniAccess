@@ -63,23 +63,6 @@ namespace OniAccess.Handlers.Notifications {
 							});
 						}
 					}
-
-					// TutorialMessageDialog embeds a VideoWidget with a play button
-					var videoWidgets = body.GetComponentsInChildren<VideoWidget>(false);
-					if (videoWidgets != null) {
-						for (int i = 0; i < videoWidgets.Length; i++) {
-							var videoButton = HarmonyLib.Traverse.Create(videoWidgets[i])
-								.Field<KButton>("button").Value;
-							if (videoButton != null) {
-								_widgets.Add(new ButtonWidget {
-									Label = (string)STRINGS.ONIACCESS.NOTIFICATIONS.PLAY_VIDEO,
-									Component = videoButton,
-									GameObject = videoButton.gameObject,
-									SuppressTooltip = true
-								});
-							}
-						}
-					}
 				}
 
 				// Close button

@@ -694,7 +694,6 @@ namespace STRINGS {
 			public static LocString DISMISS_HELP = "Dismiss notification";
 			public static LocString MESSAGE_DIALOG = "Message";
 			public static LocString NEXT_MESSAGE = "next message";
-			public static LocString PLAY_VIDEO = "play video";
 			public static LocString DONT_SHOW_AGAIN = "don't show again";
 		}
 
