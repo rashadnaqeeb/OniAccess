@@ -15,6 +15,7 @@ namespace OniAccess.Handlers.Tiles {
 		public static TileCursor Instance { get; private set; }
 
 		private int _cell;
+		private int? _originCell;
 		private bool _wasPanning;
 		private string _lastRoomName;
 		private readonly Overlays.OverlayProfileRegistry _registry;
@@ -44,6 +45,7 @@ namespace OniAccess.Handlers.Tiles {
 		/// Falls back to world center if no telepad exists.
 		/// </summary>
 		public void Initialize() {
+			_originCell = null;
 			var world = ClusterManager.Instance.activeWorld;
 			int cell = FindTelepadCell(world);
 			if (cell == Grid.InvalidCell)
@@ -71,12 +73,17 @@ namespace OniAccess.Handlers.Tiles {
 
 		/// <summary>
 		/// Return coordinates for the current cell, relative to the
-		/// active world's origin (so bottom-left of the world is 0, 0).
+		/// Printing Pod (0,0). Falls back to world center if no telepad.
+		/// Origin is resolved lazily so it works on new games where
+		/// buildings spawn after the cursor initializes.
 		/// </summary>
 		public string ReadCoordinates() {
-			var world = ClusterManager.Instance.activeWorld;
-			int x = Grid.CellColumn(_cell) - (int)world.minimumBounds.x;
-			int y = Grid.CellRow(_cell) - (int)world.minimumBounds.y;
+			if (_originCell == null)
+				_originCell = ResolveOrigin();
+			int originX = Grid.CellColumn(_originCell.Value);
+			int originY = Grid.CellRow(_originCell.Value);
+			int x = Grid.CellColumn(_cell) - originX;
+			int y = Grid.CellRow(_cell) - originY;
 			return string.Format((string)STRINGS.ONIACCESS.TILE_CURSOR.COORDS, x, y);
 		}
 
@@ -161,6 +168,14 @@ namespace OniAccess.Handlers.Tiles {
 				content = PrependRoomName(content);
 
 			return AttachCoordinates(content);
+		}
+
+		private int ResolveOrigin() {
+			var world = ClusterManager.Instance.activeWorld;
+			int cell = FindTelepadCell(world);
+			if (cell == Grid.InvalidCell)
+				cell = FindWorldCenter(world);
+			return cell;
 		}
 
 		private int FindTelepadCell(WorldContainer world) {
