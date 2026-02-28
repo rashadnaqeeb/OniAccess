@@ -41,11 +41,18 @@ namespace OniAccess.Handlers.Screens {
 			Button,
 		}
 
+		private enum ButtonId {
+			None,
+			ViewOtherColonies,
+			Close,
+		}
+
 		private struct Item {
 			public ItemKind Kind;
 			public string Label;
 			public int DataIndex;
 			public string AchievementId;
+			public ButtonId Button;
 		}
 
 		private bool _inColonyDetail;
@@ -132,15 +139,14 @@ namespace OniAccess.Handlers.Screens {
 		private void LoadColonyData() {
 			try {
 				if (_isInGameContext) {
-					_colonyData = RetireColonyUtility.GetCurrentColonyRetiredColonyData();
 					_allColonies = null;
 				} else {
 					_allColonies = _screenTraverse.Field("retiredColonyData")
 						.GetValue<RetiredColonyData[]>();
 					if (_allColonies == null)
 						_allColonies = RetireColonyUtility.LoadRetiredColonies();
-					_colonyData = null;
 				}
+				_colonyData = null;
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ColonySummaryHandler.LoadColonyData: {ex.Message}");
 			}
@@ -201,11 +207,12 @@ namespace OniAccess.Handlers.Screens {
 			var data = GetActiveColonyData();
 			if (data?.buildings == null) return;
 
-			// Sort by count descending to match the game's visual order
-			data.buildings.Sort((a, b) => b.second.CompareTo(a.second));
+			// Copy before sorting — never mutate the game's live data
+			var sorted = new List<Tuple<string, int>>(data.buildings);
+			sorted.Sort((a, b) => b.second.CompareTo(a.second));
 
-			for (int i = 0; i < data.buildings.Count; i++) {
-				var bldg = data.buildings[i];
+			for (int i = 0; i < sorted.Count; i++) {
+				var bldg = sorted[i];
 				if (Assets.GetPrefab(new Tag(bldg.first)) == null) continue;
 				string label = FormatBuilding(bldg);
 				_items.Add(new Item { Kind = ItemKind.Building, Label = label, DataIndex = i });
@@ -259,13 +266,15 @@ namespace OniAccess.Handlers.Screens {
 				&& _viewOtherColoniesButton.gameObject.activeSelf) {
 				_items.Add(new Item {
 					Kind = ItemKind.Button,
-					Label = STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES
+					Label = STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES,
+					Button = ButtonId.ViewOtherColonies
 				});
 			}
 			if (_closeScreenButton != null && _closeScreenButton.gameObject.activeSelf) {
 				_items.Add(new Item {
 					Kind = ItemKind.Button,
-					Label = (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP
+					Label = (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP,
+					Button = ButtonId.Close
 				});
 			}
 		}
@@ -329,11 +338,22 @@ namespace OniAccess.Handlers.Screens {
 			string status = GetAchievementStatus(achievement.Id, completedIds);
 			string label = $"{achievement.Name}, {status}, {achievement.description}";
 
-			// Append victory requirement descriptions (safe static text)
 			var reqs = new List<string>();
 			foreach (var req in achievement.requirementChecklist) {
 				if (req is VictoryColonyAchievementRequirement victoryReq) {
-					string desc = victoryReq.Description();
+					string desc = null;
+					try {
+						desc = victoryReq.Description();
+					} catch (System.Exception ex) {
+						Util.Log.Debug($"VictoryReq.Description() unavailable for {achievement.Id}: {ex.Message}");
+					}
+					if (string.IsNullOrEmpty(desc)) {
+						try {
+							desc = victoryReq.Name();
+						} catch (System.Exception ex) {
+							Util.Log.Warn($"VictoryReq.Name() failed for {achievement.Id}: {ex.Message}");
+						}
+					}
 					if (!string.IsNullOrEmpty(desc))
 						reqs.Add(desc);
 				}
@@ -374,7 +394,7 @@ namespace OniAccess.Handlers.Screens {
 			if (!tracker.achievements.TryGetValue(achievementId, out var status))
 				return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
 			if (status.success) return (string)STRINGS.ONIACCESS.STATES.CONDITION_MET;
-			if (status.failed) return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+			if (status.failed) return (string)STRINGS.ONIACCESS.STATES.CONDITION_FAILED;
 			return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
 		}
 
@@ -389,22 +409,16 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// For in-game achievements, re-query status and append per-requirement
-		/// progress at speech time. GetProgress on some requirements references
-		/// live game singletons, so each call is guarded.
+		/// For in-game achievements, append live per-requirement progress to the
+		/// pre-formatted label. GetProgress on some requirements references live
+		/// game singletons, so each call is guarded.
 		/// </summary>
 		private static string BuildAchievementSpeechLive(Item item) {
-			var achievement = Db.Get().ColonyAchievements.TryGet(item.AchievementId);
-			if (achievement == null) return item.Label;
-
-			string status = GetInGameAchievementStatus(item.AchievementId);
-			string label = $"{achievement.Name}, {status}, {achievement.description}";
-
-			if (SaveGame.Instance == null) return label;
+			if (SaveGame.Instance == null) return item.Label;
 			var tracker = SaveGame.Instance.GetComponent<ColonyAchievementTracker>();
-			if (tracker == null) return label;
+			if (tracker == null) return item.Label;
 			if (!tracker.achievements.TryGetValue(item.AchievementId, out var achStatus))
-				return label;
+				return item.Label;
 
 			var progress = new List<string>();
 			foreach (var req in achStatus.Requirements) {
@@ -423,8 +437,8 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			if (progress.Count > 0)
-				label += ". " + string.Join(". ", progress);
-			return label;
+				return item.Label + ". " + string.Join(". ", progress);
+			return item.Label;
 		}
 
 		// ========================================
@@ -490,11 +504,14 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		private void ActivateButton(Item item) {
-			if (item.Label == (string)STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES) {
-				ReturnToExplorerView();
-			} else if (item.Label == (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP) {
-				if (_closeScreenButton != null)
-					Widgets.WidgetOps.ClickButton(_closeScreenButton);
+			switch (item.Button) {
+				case ButtonId.ViewOtherColonies:
+					ReturnToExplorerView();
+					break;
+				case ButtonId.Close:
+					if (_closeScreenButton != null)
+						Widgets.WidgetOps.ClickButton(_closeScreenButton);
+					break;
 			}
 		}
 
@@ -589,12 +606,10 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		private RetiredColonyData GetActiveColonyData() {
-			if (_colonyData != null) return _colonyData;
-			if (_isInGameContext) {
-				_colonyData = RetireColonyUtility.GetCurrentColonyRetiredColonyData();
-				return _colonyData;
-			}
-			return null;
+			// In-game: always re-query — colony data changes as the game progresses
+			if (_isInGameContext)
+				return RetireColonyUtility.GetCurrentColonyRetiredColonyData();
+			return _colonyData;
 		}
 
 		private bool IsAchievementValid(ColonyAchievement achievement) {

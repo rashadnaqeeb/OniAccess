@@ -133,6 +133,7 @@ namespace STRINGS {
 			public static LocString NONE = "None";
 			public static LocString CONDITION_MET = "met";
 			public static LocString CONDITION_NOT_MET = "not met";
+			public static LocString CONDITION_FAILED = "failed";
 			public static LocString INPUT_FIELD = "input field";
 			public static LocString SLIDER = "slider";
 			public static LocString AVAILABLE = "available";
