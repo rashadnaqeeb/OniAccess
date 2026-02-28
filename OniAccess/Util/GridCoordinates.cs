@@ -1,41 +1,52 @@
 namespace OniAccess.Util {
 	/// <summary>
 	/// Formats a grid cell as coordinates relative to the Printing Pod (0,0).
-	/// Falls back to world center if no telepad exists.
+	/// Falls back to world center if no telepad exists yet, but keeps
+	/// retrying until a telepad is found so early callers (before
+	/// Telepad.OnSpawn) don't lock in the wrong origin.
 	/// </summary>
 	internal static class GridCoordinates {
 		private static int? _originCell;
+		private static bool _telepadFound;
 
 		internal static string Format(int cell) {
-			if (_originCell == null)
-				_originCell = ResolveOrigin();
-			int originX = Grid.CellColumn(_originCell.Value);
-			int originY = Grid.CellRow(_originCell.Value);
+			int origin = GetOrResolveOrigin();
+			int originX = Grid.CellColumn(origin);
+			int originY = Grid.CellRow(origin);
 			int x = Grid.CellColumn(cell) - originX;
 			int y = Grid.CellRow(cell) - originY;
 			return string.Format((string)STRINGS.ONIACCESS.TILE_CURSOR.COORDS, x, y);
 		}
 
 		/// <summary>
-		/// Returns the origin cell (telepad or world center), resolving lazily.
-		/// Clears the cached origin first so it re-resolves for the current world.
-		/// Used by TileCursor to set its starting position.
+		/// Returns the origin cell (telepad or world center).
+		/// Always re-resolves so TileCursor starts at the freshest position.
 		/// </summary>
 		internal static int GetOriginCell() {
 			_originCell = null;
-			_originCell = ResolveOrigin();
-			return _originCell.Value;
+			_telepadFound = false;
+			return GetOrResolveOrigin();
 		}
 
 		internal static void ClearOrigin() {
 			_originCell = null;
+			_telepadFound = false;
 		}
 
-		private static int ResolveOrigin() {
+		private static int GetOrResolveOrigin() {
+			if (_originCell != null && _telepadFound)
+				return _originCell.Value;
 			var world = ClusterManager.Instance.activeWorld;
 			int cell = FindTelepadCell(world);
-			if (cell == Grid.InvalidCell)
-				cell = FindWorldCenter(world);
+			if (cell != Grid.InvalidCell) {
+				_originCell = cell;
+				_telepadFound = true;
+				return cell;
+			}
+			if (_originCell != null)
+				return _originCell.Value;
+			cell = FindWorldCenter(world);
+			_originCell = cell;
 			return cell;
 		}
 
