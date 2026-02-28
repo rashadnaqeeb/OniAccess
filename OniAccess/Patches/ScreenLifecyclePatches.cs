@@ -189,6 +189,14 @@ namespace OniAccess.Patches {
 			ShowDispatch.Handle(__instance, show);
 	}
 
+	/// ReportScreen extends KScreen. ManagementMenu toggles it via Show(),
+	/// which calls OnShow(). ReportScreen declares OnShow, so patch it directly.
+	[HarmonyPatch(typeof(ReportScreen), "OnShow")]
+	internal static class ReportScreen_OnShow_Patch {
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
+	}
+
 	/// <summary>
 	/// RetiredColonyInfoScreen reuses its instance via Show(true) on subsequent opens,
 	/// so KScreen.Activate never fires again. The duplicate guard in OnScreenActivated

@@ -683,6 +683,16 @@ namespace STRINGS {
 			public static LocString HELP_CHANGE_SCHEDULE = "Change schedule assignment";
 		}
 
+		public class REPORT {
+			public static LocString HANDLER_NAME = "Daily report";
+			public static LocString COLONY_SUMMARY = "Colony summary";
+			public static LocString ADDED = "added {0}";
+			public static LocString REMOVED = "removed {0}";
+			public static LocString NET = "net {0}";
+			public static LocString NOTE = "{0} {1}";
+			public static LocString HELP_CYCLE = "Previous or next cycle";
+		}
+
 		public class NOTIFICATIONS {
 			public static LocString GROUP_COUNT = "{0} x{1}";
 			public static LocString NUMBERED_ENTRY = "{0} {1}";

@@ -277,6 +277,11 @@ namespace OniAccess.Handlers {
 			Register<ScheduleScreen>(screen => new ScheduleScreenHandler(screen));
 			_showPatchedTypes.Add(typeof(ScheduleScreen));
 
+			// ReportScreen (KScreen -- daily reports)
+			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
+			Register<ReportScreen>(screen => new ReportScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(ReportScreen));
+
 			// CodexScreen (KScreen -- in-game Database/Incyclopedia)
 			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
 			Register<CodexScreen>(screen => new CodexScreenHandler(screen));

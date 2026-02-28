@@ -1,0 +1,372 @@
+using System;
+using System.Collections.Generic;
+
+using OniAccess.Input;
+using OniAccess.Speech;
+
+using STRINGS;
+
+namespace OniAccess.Handlers.Screens {
+	/// <summary>
+	/// Handler for the ReportScreen (daily reports). Standalone NestedMenuHandler.
+	///
+	/// Level 0: 3 section headers + Colony Summary action
+	/// Level 1: Visible stat categories within each section
+	/// Level 2: Per-entity context entries (duplicant/building breakdowns)
+	///
+	/// Tab/Shift+Tab cycles between report days.
+	/// Data is read live from ReportManager on every call.
+	///
+	/// Lifecycle: OnShow-patch on ReportScreen.OnShow(bool).
+	/// </summary>
+	public class ReportScreenHandler : NestedMenuHandler {
+		private int _currentDay;
+
+		// Section structure derived from ReportGroups. This is static metadata
+		// (the dictionary is initialized once and never modified), so it is
+		// built once in OnActivate rather than re-queried per frame.
+		private List<SectionInfo> _sections;
+
+		private readonly List<ReportManager.ReportType> _visibleTypesScratch =
+			new List<ReportManager.ReportType>();
+		private readonly List<ReportManager.ReportEntry.Note> _notesScratch =
+			new List<ReportManager.ReportEntry.Note>();
+
+		public ReportScreenHandler(KScreen screen) : base(screen) { }
+
+		public override string DisplayName =>
+			(string)STRINGS.ONIACCESS.REPORT.HANDLER_NAME;
+
+		public override bool CapturesAllInput => true;
+
+		protected override int MaxLevel => 2;
+		protected override int SearchLevel => 1;
+		protected override int StartLevel => 1;
+
+		private static readonly List<HelpEntry> _helpEntries = new List<HelpEntry>(NestedNavHelpEntries) {
+			new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.REPORT.HELP_CYCLE),
+		};
+
+		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
+
+		// ========================================
+		// LIFECYCLE
+		// ========================================
+
+		public override void OnActivate() {
+			_currentDay = ReportManager.Instance.TodaysReport.day;
+			BuildSections();
+			base.OnActivate();
+			SpeakCycleTitle();
+		}
+
+		// ========================================
+		// SECTION / DATA HELPERS
+		// ========================================
+
+		private struct SectionInfo {
+			public string name;
+			public List<ReportManager.ReportType> types;
+		}
+
+		private void BuildSections() {
+			_sections = new List<SectionInfo>();
+			SectionInfo current = default;
+			current.types = null;
+
+			foreach (var kvp in ReportManager.Instance.ReportGroups) {
+				if (kvp.Value.isHeader) {
+					if (current.types != null)
+						_sections.Add(current);
+					current = new SectionInfo {
+						name = kvp.Value.stringKey,
+						types = new List<ReportManager.ReportType>()
+					};
+				} else {
+					current.types?.Add(kvp.Key);
+				}
+			}
+			if (current.types != null)
+				_sections.Add(current);
+		}
+
+		private ReportManager.DailyReport GetReport() {
+			return ReportManager.Instance.FindReport(_currentDay)
+				?? ReportManager.Instance.TodaysReport;
+		}
+
+		private List<ReportManager.ReportType> GetVisibleTypes(int sectionIndex) {
+			_visibleTypesScratch.Clear();
+			if (sectionIndex < 0 || sectionIndex >= _sections.Count)
+				return _visibleTypesScratch;
+			var report = GetReport();
+			var section = _sections[sectionIndex];
+			foreach (var type in section.types) {
+				var entry = report.GetEntry(type);
+				var group = ReportManager.Instance.ReportGroups[type];
+				if (entry.accumulate != 0f || group.reportIfZero)
+					_visibleTypesScratch.Add(type);
+			}
+			return _visibleTypesScratch;
+		}
+
+		// ========================================
+		// NestedMenuHandler ABSTRACTS
+		// ========================================
+
+		protected override int GetItemCount(int level, int[] indices) {
+			if (level == 0)
+				return _sections.Count + 1; // +1 for Colony Summary
+
+			// Colony Summary has no children
+			if (indices[0] == _sections.Count)
+				return 0;
+
+			if (level == 1)
+				return GetVisibleTypes(indices[0]).Count;
+
+			// Level 2: context entries
+			var types = GetVisibleTypes(indices[0]);
+			if (indices[1] < 0 || indices[1] >= types.Count)
+				return 0;
+			var entry = GetReport().GetEntry(types[indices[1]]);
+			return entry.contextEntries.Count;
+		}
+
+		protected override string GetItemLabel(int level, int[] indices) {
+			if (level == 0) {
+				if (indices[0] == _sections.Count)
+					return (string)STRINGS.ONIACCESS.REPORT.COLONY_SUMMARY;
+				if (indices[0] < 0 || indices[0] >= _sections.Count)
+					return null;
+				return _sections[indices[0]].name;
+			}
+
+			if (indices[0] < 0 || indices[0] >= _sections.Count)
+				return null;
+
+			var types = GetVisibleTypes(indices[0]);
+			if (indices[1] < 0 || indices[1] >= types.Count)
+				return null;
+
+			var reportType = types[indices[1]];
+			var group = ReportManager.Instance.ReportGroups[reportType];
+			var entry = GetReport().GetEntry(reportType);
+
+			if (level == 1)
+				return BuildStatLabel(entry, group);
+
+			// Level 2: context entry
+			if (indices[2] < 0 || indices[2] >= entry.contextEntries.Count)
+				return null;
+			var contextEntry = entry.contextEntries[indices[2]];
+			return BuildContextLabel(contextEntry, group);
+		}
+
+		protected override string GetParentLabel(int level, int[] indices) {
+			if (level >= 1 && indices[0] >= 0 && indices[0] < _sections.Count)
+				return _sections[indices[0]].name;
+			return null;
+		}
+
+		protected override void ActivateLeafItem(int[] indices) {
+			if (Level == 0 && indices[0] == _sections.Count) {
+				ActivateColonySummary();
+				return;
+			}
+		}
+
+		// ========================================
+		// SEARCH
+		// ========================================
+
+		protected override int GetSearchItemCount(int[] indices) {
+			int count = 0;
+			for (int s = 0; s < _sections.Count; s++)
+				count += GetVisibleTypes(s).Count;
+			return count;
+		}
+
+		protected override string GetSearchItemLabel(int flatIndex) {
+			int remaining = flatIndex;
+			for (int s = 0; s < _sections.Count; s++) {
+				var types = GetVisibleTypes(s);
+				if (remaining < types.Count) {
+					var group = ReportManager.Instance.ReportGroups[types[remaining]];
+					return group.stringKey;
+				}
+				remaining -= types.Count;
+			}
+			return null;
+		}
+
+		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
+			int remaining = flatIndex;
+			for (int s = 0; s < _sections.Count; s++) {
+				var types = GetVisibleTypes(s);
+				if (remaining < types.Count) {
+					outIndices[0] = s;
+					outIndices[1] = remaining;
+					outIndices[2] = 0;
+					return;
+				}
+				remaining -= types.Count;
+			}
+		}
+
+		// ========================================
+		// CYCLE NAVIGATION (Tab/Shift+Tab)
+		// ========================================
+
+		protected override void NavigateTabForward() {
+			int maxDay = ReportManager.Instance.TodaysReport.day;
+			if (_currentDay >= maxDay) return;
+			_currentDay++;
+			OnCycleChanged();
+		}
+
+		protected override void NavigateTabBackward() {
+			if (ReportManager.Instance.FindReport(_currentDay - 1) == null) return;
+			_currentDay--;
+			OnCycleChanged();
+		}
+
+		private void OnCycleChanged() {
+			ClampIndices();
+			SyncCurrentIndex();
+			PlayHoverSound();
+			SpeakCycleTitle();
+			SpeakCurrentItem();
+		}
+
+		private void ClampIndices() {
+			if (Level >= 1) {
+				int sectionIdx = GetIndex(0);
+				if (sectionIdx >= _sections.Count)
+					return; // On Colony Summary, stay there
+
+				var types = GetVisibleTypes(sectionIdx);
+				int l1 = GetIndex(1);
+				if (l1 >= types.Count)
+					SetIndex(1, Math.Max(0, types.Count - 1));
+
+				if (Level >= 2 && types.Count > 0) {
+					var entry = GetReport().GetEntry(types[GetIndex(1)]);
+					int l2 = GetIndex(2);
+					if (l2 >= entry.contextEntries.Count)
+						SetIndex(2, Math.Max(0, entry.contextEntries.Count - 1));
+				}
+			}
+		}
+
+		private void SpeakCycleTitle() {
+			int todayDay = ReportManager.Instance.TodaysReport.day;
+			string title;
+			if (_currentDay == todayDay)
+				title = string.Format(UI.ENDOFDAYREPORT.DAY_TITLE_TODAY, _currentDay);
+			else if (_currentDay == todayDay - 1)
+				title = string.Format(UI.ENDOFDAYREPORT.DAY_TITLE_YESTERDAY, _currentDay);
+			else
+				title = string.Format(UI.ENDOFDAYREPORT.DAY_TITLE, _currentDay);
+			SpeechPipeline.SpeakQueued(TextFilter.FilterForSpeech(title));
+		}
+
+		// ========================================
+		// COLONY SUMMARY
+		// ========================================
+
+		private void ActivateColonySummary() {
+			try {
+				var data = RetireColonyUtility.GetCurrentColonyRetiredColonyData();
+				MainMenu.ActivateRetiredColoniesScreenFromData(
+					PauseScreen.Instance.transform.parent.gameObject, data);
+			} catch (Exception ex) {
+				Util.Log.Error($"ReportScreenHandler.ActivateColonySummary failed: {ex.Message}");
+				PlayNegativeSound();
+			}
+		}
+
+		// ========================================
+		// LABEL BUILDING
+		// ========================================
+
+		private string BuildStatLabel(
+			ReportManager.ReportEntry entry,
+			ReportManager.ReportGroup group) {
+
+			var parts = new List<string>(4);
+			parts.Add(group.stringKey);
+
+			if (group.groupFormatfn != null) {
+				// Mirror game's per-column denominator logic (ReportScreenEntryRow.SetLine).
+				// When context entries exist, use their count. Otherwise count notes per sign.
+				int ctxCount = entry.contextEntries.Count;
+				float addedDenom, removedDenom, netDenom;
+				if (ctxCount > 0) {
+					addedDenom = removedDenom = netDenom = ctxCount;
+				} else {
+					int posCount = 0, negCount = 0;
+					entry.IterateNotes(note => {
+						if (note.value > 0f) posCount++;
+						else if (note.value < 0f) negCount++;
+					});
+					addedDenom = Math.Max(posCount, 1f);
+					removedDenom = Math.Max(negCount, 1f);
+					netDenom = Math.Max(posCount + negCount, 1f);
+				}
+
+				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NET,
+					group.groupFormatfn(entry.Net, netDenom)));
+				if (entry.Positive != 0f)
+					parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.ADDED,
+						group.groupFormatfn(entry.Positive, addedDenom)));
+				if (entry.Negative != 0f)
+					parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.REMOVED,
+						group.groupFormatfn(0f - entry.Negative, removedDenom)));
+			} else {
+				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NET,
+					group.formatfn(entry.Net)));
+				if (entry.Positive != 0f)
+					parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.ADDED,
+						group.formatfn(entry.Positive)));
+				if (entry.Negative != 0f)
+					parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.REMOVED,
+						group.formatfn(0f - entry.Negative)));
+			}
+
+			return string.Join(", ", parts);
+		}
+
+		private string BuildContextLabel(
+			ReportManager.ReportEntry contextEntry,
+			ReportManager.ReportGroup group) {
+
+			var parts = new List<string>(8);
+			parts.Add(contextEntry.context);
+
+			parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NET,
+				group.formatfn(contextEntry.Net)));
+			if (contextEntry.Positive != 0f)
+				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.ADDED,
+					group.formatfn(contextEntry.Positive)));
+			if (contextEntry.Negative != 0f)
+				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.REMOVED,
+					group.formatfn(0f - contextEntry.Negative)));
+
+			// Append notes
+			_notesScratch.Clear();
+			contextEntry.IterateNotes(note => _notesScratch.Add(note));
+			if (group.posNoteOrder == ReportManager.ReportEntry.Order.Descending)
+				_notesScratch.Sort((a, b) => b.value.CompareTo(a.value));
+			else if (group.posNoteOrder == ReportManager.ReportEntry.Order.Ascending)
+				_notesScratch.Sort((a, b) => a.value.CompareTo(b.value));
+
+			foreach (var note in _notesScratch) {
+				string formatted = group.formatfn(note.value);
+				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NOTE, note.note, formatted));
+			}
+
+			return string.Join(", ", parts);
+		}
+	}
+}
