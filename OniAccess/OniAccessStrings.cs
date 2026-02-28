@@ -132,6 +132,7 @@ namespace STRINGS {
 			public static LocString ANY = "Any";
 			public static LocString NONE = "None";
 			public static LocString CONDITION_MET = "met";
+			public static LocString CONDITION_MET_OTHER = "met by past colony";
 			public static LocString CONDITION_NOT_MET = "not met";
 			public static LocString CONDITION_FAILED = "failed";
 			public static LocString INPUT_FIELD = "input field";

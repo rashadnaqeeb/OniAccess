@@ -45,6 +45,7 @@ namespace OniAccess.Handlers.Screens {
 			None,
 			ViewOtherColonies,
 			Close,
+			QuitToMainMenu,
 		}
 
 		private struct Item {
@@ -65,6 +66,7 @@ namespace OniAccess.Handlers.Screens {
 
 		private KButton _viewOtherColoniesButton;
 		private KButton _closeScreenButton;
+		private KButton _quitToMainMenuButton;
 		private Traverse _explorerGridField;
 		private Traverse _screenTraverse;
 
@@ -122,6 +124,8 @@ namespace OniAccess.Handlers.Screens {
 				_viewOtherColoniesButton = _screenTraverse.Field("viewOtherColoniesButton")
 					.GetValue<KButton>();
 				_closeScreenButton = _screenTraverse.Field("closeScreenButton")
+					.GetValue<KButton>();
+				_quitToMainMenuButton = _screenTraverse.Field("quitToMainMenuButton")
 					.GetValue<KButton>();
 				_explorerGridField = _screenTraverse.Field("explorerGrid");
 			} catch (System.Exception ex) {
@@ -275,8 +279,17 @@ namespace OniAccess.Handlers.Screens {
 			if (_closeScreenButton != null && _closeScreenButton.gameObject.activeSelf) {
 				_items.Add(new Item {
 					Kind = ItemKind.Button,
-					Label = (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP,
+					Label = _isInGameContext
+						? (string)STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.BUTTONS.RETURN_TO_GAME
+						: (string)STRINGS.UI.TOOLTIPS.CLOSETOOLTIP,
 					Button = ButtonId.Close
+				});
+			}
+			if (_quitToMainMenuButton != null && _quitToMainMenuButton.gameObject.activeSelf) {
+				_items.Add(new Item {
+					Kind = ItemKind.Button,
+					Label = (string)STRINGS.UI.RETIRED_COLONY_INFO_SCREEN.BUTTONS.QUIT_TO_MENU,
+					Button = ButtonId.QuitToMainMenu
 				});
 			}
 		}
@@ -368,20 +381,27 @@ namespace OniAccess.Handlers.Screens {
 					return (string)STRINGS.ONIACCESS.STATES.CONDITION_MET;
 				if (_isInGameContext)
 					return GetInGameAchievementStatus(achievement.Id);
+				// Retired colony detail: check if a different colony achieved it
+				if (IsAchievedByAnyColony(achievement.Id))
+					return (string)STRINGS.ONIACCESS.STATES.CONDITION_MET_OTHER;
 				return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
 			}
 
 			// Explorer view: check all retired colonies
-			if (_allColonies != null) {
-				foreach (var colony in _allColonies) {
-					if (colony.achievements == null) continue;
-					foreach (string id in colony.achievements) {
-						if (id == achievement.Id)
-							return (string)STRINGS.ONIACCESS.STATES.CONDITION_MET;
-					}
+			if (IsAchievedByAnyColony(achievement.Id))
+				return (string)STRINGS.ONIACCESS.STATES.CONDITION_MET;
+			return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+		}
+
+		private bool IsAchievedByAnyColony(string achievementId) {
+			if (_allColonies == null) return false;
+			foreach (var colony in _allColonies) {
+				if (colony.achievements == null) continue;
+				foreach (string id in colony.achievements) {
+					if (id == achievementId) return true;
 				}
 			}
-			return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+			return false;
 		}
 
 		private static string GetInGameAchievementStatus(string achievementId) {
@@ -439,22 +459,24 @@ namespace OniAccess.Handlers.Screens {
 			bool wasActive = progressParent.gameObject.activeSelf;
 			if (!wasActive)
 				progressParent.gameObject.SetActive(true);
-			UnityEngine.Canvas.ForceUpdateCanvases();
+			try {
+				UnityEngine.Canvas.ForceUpdateCanvases();
 
-			for (int i = 0; i < progressParent.childCount; i++) {
-				var child = progressParent.GetChild(i);
-				if (child == null || !child.gameObject.activeSelf) continue;
-				var refs = child.GetComponent<HierarchyReferences>();
-				if (refs == null || !refs.HasReference("Desc")) continue;
-				var descLoc = refs.GetReference<LocText>("Desc");
-				if (descLoc == null) continue;
-				string text = descLoc.GetParsedText();
-				if (!string.IsNullOrEmpty(text))
-					result.Add(text);
+				for (int i = 0; i < progressParent.childCount; i++) {
+					var child = progressParent.GetChild(i);
+					if (child == null || !child.gameObject.activeSelf) continue;
+					var refs = child.GetComponent<HierarchyReferences>();
+					if (refs == null || !refs.HasReference("Desc")) continue;
+					var descLoc = refs.GetReference<LocText>("Desc");
+					if (descLoc == null) continue;
+					string text = descLoc.GetParsedText();
+					if (!string.IsNullOrEmpty(text))
+						result.Add(text);
+				}
+			} finally {
+				if (!wasActive)
+					progressParent.gameObject.SetActive(false);
 			}
-
-			if (!wasActive)
-				progressParent.gameObject.SetActive(false);
 			return result;
 		}
 
@@ -529,6 +551,10 @@ namespace OniAccess.Handlers.Screens {
 					if (_closeScreenButton != null)
 						Widgets.WidgetOps.ClickButton(_closeScreenButton);
 					break;
+				case ButtonId.QuitToMainMenu:
+					if (_quitToMainMenuButton != null)
+						Widgets.WidgetOps.ClickButton(_quitToMainMenuButton);
+					break;
 			}
 		}
 
@@ -555,12 +581,13 @@ namespace OniAccess.Handlers.Screens {
 
 		private void ReturnToExplorerView() {
 			if (_isInGameContext) return;
+			if (_viewOtherColoniesButton == null) return;
 
 			try {
-				if (_viewOtherColoniesButton != null)
-					Widgets.WidgetOps.ClickButton(_viewOtherColoniesButton);
+				Widgets.WidgetOps.ClickButton(_viewOtherColoniesButton);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ColonySummaryHandler.ReturnToExplorerView: {ex.Message}");
+				return;
 			}
 
 			_inColonyDetail = false;
