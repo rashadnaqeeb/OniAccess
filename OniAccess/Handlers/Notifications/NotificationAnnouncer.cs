@@ -5,12 +5,13 @@ using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Notifications {
 	/// <summary>
-	/// Announces new notifications via SpeechPipeline with a 200ms batching window.
-	/// Same-title notifications within the window collapse into "{title} x{count}".
+	/// Announces new notifications via SpeechPipeline with a 200ms quiet-window.
+	/// Same-title notifications collapse into "{title} x{count}".
 	/// Different-title notifications queue FIFO.
 	///
-	/// Called from TileCursorHandler.Tick() each frame. The batching window prevents
-	/// rapid-fire notifications from interrupting each other.
+	/// Called from TileCursorHandler.Tick() each frame. Each new arrival resets
+	/// the timer, so the flush only fires after 200ms of silence. This naturally
+	/// batches load-time notification bursts into a single announcement.
 	/// </summary>
 	internal sealed class NotificationAnnouncer {
 		private const float BatchWindowSeconds = 0.2f;
@@ -48,10 +49,8 @@ namespace OniAccess.Handlers.Notifications {
 
 		private void OnChanged() {
 			if (!_tracker.HasNew) return;
-			if (!_batchPending) {
-				_batchPending = true;
-				_batchStart = TimeSource();
-			}
+			_batchPending = true;
+			_batchStart = TimeSource();
 		}
 
 		internal void Tick() {
