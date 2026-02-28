@@ -15,7 +15,6 @@ namespace OniAccess.Handlers.Tiles {
 		public static TileCursor Instance { get; private set; }
 
 		private int _cell;
-		private int? _originCell;
 		private bool _wasPanning;
 		private string _lastRoomName;
 		private readonly Overlays.OverlayProfileRegistry _registry;
@@ -45,12 +44,7 @@ namespace OniAccess.Handlers.Tiles {
 		/// Falls back to world center if no telepad exists.
 		/// </summary>
 		public void Initialize() {
-			_originCell = null;
-			var world = ClusterManager.Instance.activeWorld;
-			int cell = FindTelepadCell(world);
-			if (cell == Grid.InvalidCell)
-				cell = FindWorldCenter(world);
-			_cell = cell;
+			_cell = Util.GridCoordinates.GetOriginCell();
 			LockMouseToCell(_cell);
 			SnapCameraToCell(_cell);
 		}
@@ -74,17 +68,9 @@ namespace OniAccess.Handlers.Tiles {
 		/// <summary>
 		/// Return coordinates for the current cell, relative to the
 		/// Printing Pod (0,0). Falls back to world center if no telepad.
-		/// Origin is resolved lazily so it works on new games where
-		/// buildings spawn after the cursor initializes.
 		/// </summary>
 		public string ReadCoordinates() {
-			if (_originCell == null)
-				_originCell = ResolveOrigin();
-			int originX = Grid.CellColumn(_originCell.Value);
-			int originY = Grid.CellRow(_originCell.Value);
-			int x = Grid.CellColumn(_cell) - originX;
-			int y = Grid.CellRow(_cell) - originY;
-			return string.Format((string)STRINGS.ONIACCESS.TILE_CURSOR.COORDS, x, y);
+			return Util.GridCoordinates.Format(_cell);
 		}
 
 		/// <summary>
@@ -168,35 +154,6 @@ namespace OniAccess.Handlers.Tiles {
 				content = PrependRoomName(content);
 
 			return AttachCoordinates(content);
-		}
-
-		private int ResolveOrigin() {
-			var world = ClusterManager.Instance.activeWorld;
-			int cell = FindTelepadCell(world);
-			if (cell == Grid.InvalidCell)
-				cell = FindWorldCenter(world);
-			return cell;
-		}
-
-		private int FindTelepadCell(WorldContainer world) {
-			try {
-				var telepads = Components.Telepads.GetWorldItems(world.id);
-				if (telepads != null && telepads.Count > 0)
-					return Grid.PosToCell(telepads[0].transform.GetPosition());
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"TileCursor.FindTelepadCell: {ex.Message}");
-			}
-			return Grid.InvalidCell;
-		}
-
-		private int FindWorldCenter(WorldContainer world) {
-			int x = (int)((world.minimumBounds.x + world.maximumBounds.x) / 2f);
-			int y = (int)((world.minimumBounds.y + world.maximumBounds.y) / 2f);
-			int cell = Grid.XYToCell(x, y);
-			if (Grid.IsValidCell(cell))
-				return cell;
-			Util.Log.Warn("TileCursor.FindWorldCenter: center cell invalid, using cell 0");
-			return 0;
 		}
 
 		internal static int GetNeighbor(int cell, Direction direction) {
