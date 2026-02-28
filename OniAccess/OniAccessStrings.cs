@@ -87,6 +87,11 @@ namespace STRINGS {
 			}
 		}
 
+		public class COLONY_STATS {
+			public static LocString LAST_CYCLE = "last cycle";
+			public static LocString PEAK = "peak";
+		}
+
 		public class PANELS {
 			public static LocString SEED = "World seed";
 			public static LocString ACHIEVEMENTS = "Achievements";

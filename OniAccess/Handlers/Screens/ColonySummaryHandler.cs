@@ -200,8 +200,13 @@ namespace OniAccess.Handlers.Screens {
 		private void BuildBuildingItems() {
 			var data = GetActiveColonyData();
 			if (data?.buildings == null) return;
+
+			// Sort by count descending to match the game's visual order
+			data.buildings.Sort((a, b) => b.second.CompareTo(a.second));
+
 			for (int i = 0; i < data.buildings.Count; i++) {
 				var bldg = data.buildings[i];
+				if (Assets.GetPrefab(new Tag(bldg.first)) == null) continue;
 				string label = FormatBuilding(bldg);
 				_items.Add(new Item { Kind = ItemKind.Building, Label = label, DataIndex = i });
 			}
@@ -294,37 +299,83 @@ namespace OniAccess.Handlers.Screens {
 			return $"{name}, {count}";
 		}
 
+		/// <summary>
+		/// Each stat is a per-cycle time series. A sighted user sees a line graph.
+		/// Show last cycle value and peak to convey the trend.
+		/// </summary>
 		private static string FormatStat(RetiredColonyData.RetiredColonyStatistic stat) {
-			if (stat.value != null && stat.value.Length > 0) {
-				float lastValue = stat.value[stat.value.Length - 1].second;
-				if (!string.IsNullOrEmpty(stat.nameY))
-					return $"{stat.name}, {lastValue:N0} {stat.nameY}";
-				return $"{stat.name}, {lastValue:N0}";
+			if (stat.value == null || stat.value.Length == 0)
+				return $"{stat.name}, {(string)STRINGS.ONIACCESS.STATES.NONE}";
+
+			float latest = stat.value[stat.value.Length - 1].second;
+			float peak = stat.GetByMaxValue().second;
+			string unit = stat.nameY ?? "";
+			string lastCycle = (string)STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE;
+			string peakLabel = (string)STRINGS.ONIACCESS.COLONY_STATS.PEAK;
+
+			if (peak > latest && peak > 0) {
+				if (!string.IsNullOrEmpty(unit))
+					return $"{stat.name}, {lastCycle} {latest:N0} {unit}, {peakLabel} {peak:N0} {unit}";
+				return $"{stat.name}, {lastCycle} {latest:N0}, {peakLabel} {peak:N0}";
 			}
-			return $"{stat.name}, {(string)STRINGS.ONIACCESS.STATES.NONE}";
+
+			if (!string.IsNullOrEmpty(unit))
+				return $"{stat.name}, {lastCycle} {latest:N0} {unit}";
+			return $"{stat.name}, {lastCycle} {latest:N0}";
 		}
 
 		private string FormatAchievement(ColonyAchievement achievement,
 			HashSet<string> completedIds, RetiredColonyData data) {
-			string label = $"{achievement.Name}, {achievement.description}";
+			string status = GetAchievementStatus(achievement.Id, completedIds);
+			string label = $"{achievement.Name}, {status}, {achievement.description}";
 
-			if (_inColonyDetail) {
-				if (completedIds.Contains(achievement.Id))
-					label += $", {(string)STRINGS.ONIACCESS.STATES.CONDITION_MET}";
-				else if (_isInGameContext)
-					label += GetAchievementFailedStatus(achievement.Id);
+			// Append victory requirement descriptions (safe static text)
+			var reqs = new List<string>();
+			foreach (var req in achievement.requirementChecklist) {
+				if (req is VictoryColonyAchievementRequirement victoryReq) {
+					string desc = victoryReq.Description();
+					if (!string.IsNullOrEmpty(desc))
+						reqs.Add(desc);
+				}
 			}
+			if (reqs.Count > 0)
+				label += ". " + string.Join(". ", reqs);
 			return label;
 		}
 
-		private static string GetAchievementFailedStatus(string achievementId) {
-			if (SaveGame.Instance == null) return "";
+		private string GetAchievementStatus(string achievementId, HashSet<string> completedIds) {
+			if (_inColonyDetail) {
+				if (completedIds.Contains(achievementId))
+					return (string)STRINGS.ONIACCESS.STATES.CONDITION_MET;
+				if (_isInGameContext)
+					return GetInGameAchievementStatus(achievementId);
+				return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+			}
+
+			// Explorer view: check all retired colonies
+			if (_allColonies != null) {
+				foreach (var colony in _allColonies) {
+					if (colony.achievements == null) continue;
+					foreach (string id in colony.achievements) {
+						if (id == achievementId)
+							return (string)STRINGS.ONIACCESS.STATES.CONDITION_MET;
+					}
+				}
+			}
+			return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+		}
+
+		private static string GetInGameAchievementStatus(string achievementId) {
+			if (SaveGame.Instance == null)
+				return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
 			var tracker = SaveGame.Instance.GetComponent<ColonyAchievementTracker>();
-			if (tracker == null) return "";
-			if (!tracker.achievements.TryGetValue(achievementId, out var status)) return "";
-			if (status.failed)
-				return $", {(string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET}";
-			return "";
+			if (tracker == null)
+				return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+			if (!tracker.achievements.TryGetValue(achievementId, out var status))
+				return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+			if (status.success) return (string)STRINGS.ONIACCESS.STATES.CONDITION_MET;
+			if (status.failed) return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+			return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
 		}
 
 		// ========================================
@@ -332,31 +383,47 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		private string BuildSpeech(Item item) {
-			if (item.Kind == ItemKind.Achievement && _isInGameContext && _inColonyDetail)
+			if (item.Kind == ItemKind.Achievement && _isInGameContext)
 				return BuildAchievementSpeechLive(item);
 			return item.Label;
 		}
 
 		/// <summary>
-		/// For in-game achievements, re-query status at speech time since
-		/// achievement progress can change while the screen is open.
+		/// For in-game achievements, re-query status and append per-requirement
+		/// progress at speech time. GetProgress on some requirements references
+		/// live game singletons, so each call is guarded.
 		/// </summary>
-		private string BuildAchievementSpeechLive(Item item) {
+		private static string BuildAchievementSpeechLive(Item item) {
 			var achievement = Db.Get().ColonyAchievements.TryGet(item.AchievementId);
 			if (achievement == null) return item.Label;
 
-			string label = $"{achievement.Name}, {achievement.description}";
-			if (SaveGame.Instance == null) return label;
+			string status = GetInGameAchievementStatus(item.AchievementId);
+			string label = $"{achievement.Name}, {status}, {achievement.description}";
 
+			if (SaveGame.Instance == null) return label;
 			var tracker = SaveGame.Instance.GetComponent<ColonyAchievementTracker>();
 			if (tracker == null) return label;
-			if (!tracker.achievements.TryGetValue(item.AchievementId, out var status))
+			if (!tracker.achievements.TryGetValue(item.AchievementId, out var achStatus))
 				return label;
 
-			if (status.success)
-				return label + $", {(string)STRINGS.ONIACCESS.STATES.CONDITION_MET}";
-			if (status.failed)
-				return label + $", {(string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET}";
+			var progress = new List<string>();
+			foreach (var req in achStatus.Requirements) {
+				try {
+					bool complete = req.Success();
+					string text = req.GetProgress(complete);
+					if (!string.IsNullOrEmpty(text)) {
+						string prefix = complete
+							? (string)STRINGS.ONIACCESS.STATES.CONDITION_MET
+							: (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+						progress.Add($"{prefix}: {text}");
+					}
+				} catch (System.Exception ex) {
+					Util.Log.Debug($"ColonySummaryHandler: GetProgress failed for {item.AchievementId}: {ex.Message}");
+				}
+			}
+
+			if (progress.Count > 0)
+				label += ". " + string.Join(". ", progress);
 			return label;
 		}
 
@@ -375,11 +442,6 @@ namespace OniAccess.Handlers.Screens {
 
 			if (item.Kind == ItemKind.Button) {
 				ActivateButton(item);
-				return;
-			}
-
-			if (item.Kind == ItemKind.Achievement && _isInGameContext && _inColonyDetail) {
-				SpeakAchievementProgress(item.AchievementId);
 				return;
 			}
 		}
@@ -520,36 +582,6 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 			return DisplayName;
-		}
-
-		// ========================================
-		// ACHIEVEMENT PROGRESS (in-game only)
-		// ========================================
-
-		/// <summary>
-		/// Speak per-requirement progress for an in-game achievement.
-		/// Reads directly from ColonyAchievementStatus.Requirements.
-		/// </summary>
-		private static void SpeakAchievementProgress(string achievementId) {
-			if (SaveGame.Instance == null) return;
-			var tracker = SaveGame.Instance.GetComponent<ColonyAchievementTracker>();
-			if (tracker == null) return;
-			if (!tracker.achievements.TryGetValue(achievementId, out var status)) return;
-
-			var entries = new List<string>();
-			foreach (var req in status.Requirements) {
-				bool complete = req.Success();
-				string progress = req.GetProgress(complete);
-				if (!string.IsNullOrEmpty(progress)) {
-					string prefix = complete
-						? (string)STRINGS.ONIACCESS.STATES.CONDITION_MET
-						: (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
-					entries.Add($"{prefix}: {progress}");
-				}
-			}
-
-			if (entries.Count > 0)
-				Speech.SpeechPipeline.SpeakInterrupt(string.Join(". ", entries));
 		}
 
 		// ========================================
