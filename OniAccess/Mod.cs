@@ -7,6 +7,7 @@ using OniAccess.Handlers.Tiles.Sections;
 using OniAccess.Input;
 using OniAccess.Speech;
 using OniAccess.Util;
+using OniAccess.Widgets;
 using UnityEngine;
 
 namespace OniAccess {
@@ -47,6 +48,7 @@ namespace OniAccess {
 
 			// Register screen-to-handler mappings for ContextDetector
 			ContextDetector.RegisterMenuHandlers();
+			SideScreenOverrides.RegisterAll();
 
 			// Push BaselineHandler so the stack is never empty
 			// ModInputRouter will be registered later via Harmony patch on InputInit.Awake

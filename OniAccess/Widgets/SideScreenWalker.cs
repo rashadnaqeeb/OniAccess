@@ -22,32 +22,35 @@ namespace OniAccess.Widgets {
 			public object Tag;
 		}
 
+		static readonly Dictionary<System.Type, System.Action<SideScreenContent, List<Widget>>> _overrides
+			= new Dictionary<System.Type, System.Action<SideScreenContent, List<Widget>>>();
+
+		public static void RegisterOverride<T>(System.Action<T, List<Widget>> handler)
+				where T : SideScreenContent {
+			_overrides[typeof(T)] = (screen, items) => handler((T)screen, items);
+		}
+
 		/// <summary>
 		/// Walk the ContentContainer of a SideScreenContent (or its
 		/// root transform if ContentContainer is null/inactive).
 		/// Appends discovered widgets to <paramref name="items"/>.
 		/// </summary>
 		public static void Walk(SideScreenContent screen, List<Widget> items) {
+			if (_overrides.TryGetValue(screen.GetType(), out var handler)) {
+				handler(screen, items);
+				return;
+			}
+			WalkDefault(screen, items);
+		}
+
+		/// <summary>
+		/// Generic walk path: walks ContentContainer, picks up
+		/// outside-container widgets, removes claimed labels, and
+		/// collapses radio toggle groups. Overrides that need the
+		/// default walk followed by a fixup call this directly.
+		/// </summary>
+		internal static void WalkDefault(SideScreenContent screen, List<Widget> items) {
 			var claimedLabels = new HashSet<LocText>();
-
-			var pixelPack = screen as PixelPackSideScreen;
-			if (pixelPack != null) {
-				WalkPixelPackScreen(pixelPack, items, claimedLabels);
-				return;
-			}
-
-			var commandModule = screen as CommandModuleSideScreen;
-			if (commandModule != null) {
-				WalkConditionContainer(commandModule.conditionListContainer, items, claimedLabels);
-				WalkCommandModuleExtras(commandModule, items, claimedLabels);
-				return;
-			}
-
-			var conditionList = screen as ConditionListSideScreen;
-			if (conditionList != null) {
-				WalkConditionContainer(conditionList.rowContainer, items, claimedLabels);
-				return;
-			}
 
 			var root = screen.ContentContainer != null
 				&& screen.ContentContainer.activeInHierarchy
@@ -77,129 +80,15 @@ namespace OniAccess.Widgets {
 				return lt != null && claimedLabels.Contains(lt);
 			});
 
-			var alarm = screen as AlarmSideScreen;
-			if (alarm != null)
-				CollapseAlarmTypeButtons(alarm, items, claimedLabels);
-
-			var fewOption = screen as FewOptionSideScreen;
-			if (fewOption != null)
-				CollapseFewOptionRows(fewOption, items, claimedLabels);
-
 			CollapseRadioToggles(items, screen.GetTitle(), screen.transform, claimedLabels);
 		}
 
-		private static void WalkPixelPackScreen(
-				PixelPackSideScreen pixelPack, List<Widget> items,
-				HashSet<LocText> claimedLabels) {
-			// Palette group (drillable)
-			var swatchContainer = pixelPack.colorSwatchContainer.transform;
-			var paletteChildren = new List<Widget>();
-			for (int i = 0; i < swatchContainer.childCount; i++) {
-				var child = swatchContainer.GetChild(i);
-				if (!child.gameObject.activeSelf) continue;
-				var swatchGO = child.gameObject;
-				var capturedGO = swatchGO;
-				var img = swatchGO.GetComponent<Image>();
-				if (img == null) continue;
-				string label = ColorNameUtil.GetColorName(img.color) ?? capturedGO.name;
-				paletteChildren.Add(new ButtonWidget {
-					Label = label,
-					Component = swatchGO.GetComponent<KButton>(),
-					GameObject = capturedGO,
-					SuppressTooltip = true,
-					SpeechFunc = () => {
-						string name = ColorNameUtil.GetColorName(capturedGO.GetComponent<Image>().color)
-							?? capturedGO.name;
-						var href = capturedGO.GetComponent<HierarchyReferences>();
-						var selectedRef = href.GetReference("selected");
-						bool isSelected = selectedRef != null && selectedRef.gameObject.activeSelf;
-						var usedImage = href.GetReference("used").GetComponentInChildren<Image>();
-						bool inUse = usedImage != null && usedImage.gameObject.activeSelf;
-						string speech = name;
-						if (isSelected)
-							speech += $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
-						if (inUse)
-							speech += $", {(string)STRINGS.ONIACCESS.PIXEL_PACK.IN_USE}";
-						return speech;
-					}
-				});
-			}
-			var capturedContainer = swatchContainer;
-			items.Add(new LabelWidget {
-				Label = (string)STRINGS.ONIACCESS.PIXEL_PACK.PALETTE,
-				GameObject = pixelPack.colorSwatchContainer,
-				SuppressTooltip = true,
-				Children = paletteChildren,
-				SpeechFunc = () => {
-					int count = 0;
-					for (int i = 0; i < capturedContainer.childCount; i++) {
-						if (capturedContainer.GetChild(i).gameObject.activeSelf) count++;
-					}
-					string countText = string.Format(
-						(string)STRINGS.ONIACCESS.PIXEL_PACK.PALETTE_COUNT, count);
-					return $"{(string)STRINGS.ONIACCESS.PIXEL_PACK.PALETTE}, {countText}";
-				}
-			});
-
-			AddColorSlotGroup(pixelPack.activeColors, pixelPack.activeColorsContainer,
-				(string)STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS, items);
-			AddColorSlotGroup(pixelPack.standbyColors, pixelPack.standbyColorsContainer,
-				(string)STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS, items);
-
-			// Action buttons (these have LocText labels)
-			var buttons = new[] {
-				pixelPack.copyActiveToStandbyButton,
-				pixelPack.copyStandbyToActiveButton,
-				pixelPack.swapColorsButton
-			};
-			foreach (var btn in buttons) {
-				if (btn == null || !btn.gameObject.activeSelf) continue;
-				var captured = btn;
-				string label = GetButtonLabel(captured, captured.transform.name);
-				if (!HasVisibleContent(label)) continue;
-				items.Add(new ButtonWidget {
-					Label = label,
-					Component = captured,
-					GameObject = captured.gameObject,
-					SpeechFunc = () => GetButtonLabel(captured, captured.transform.name)
-				});
-			}
+		internal static void WalkConditionContainer(
+				GameObject container, List<Widget> items) {
+			WalkConditionContainer(container, items, new HashSet<LocText>());
 		}
 
-		private static void AddColorSlotGroup(
-				List<GameObject> slots, GameObject container,
-				string groupLabel, List<Widget> items) {
-			var children = new List<Widget>();
-			for (int i = 0; i < slots.Count; i++) {
-				var slotGO = slots[i];
-				var capturedSlot = slotGO;
-				int slotIndex = i + 1;
-				string slotLabel = string.Format(
-					(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex);
-				children.Add(new ButtonWidget {
-					Label = slotLabel,
-					Component = slotGO.GetComponent<KButton>(),
-					GameObject = slotGO,
-					SuppressTooltip = true,
-					SpeechFunc = () => {
-						string colorName = ColorNameUtil.GetColorName(
-							capturedSlot.GetComponent<Image>().color) ?? capturedSlot.name;
-						return string.Format(
-							(string)STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT, slotIndex)
-							+ ", " + colorName;
-					}
-				});
-			}
-			items.Add(new LabelWidget {
-				Label = groupLabel,
-				GameObject = container,
-				SuppressTooltip = true,
-				Children = children,
-				SpeechFunc = () => groupLabel
-			});
-		}
-
-		private static void WalkConditionContainer(
+		internal static void WalkConditionContainer(
 				GameObject container, List<Widget> items,
 				HashSet<LocText> claimedLabels) {
 			if (container == null) return;
@@ -209,30 +98,6 @@ namespace OniAccess.Widgets {
 				if (!child.gameObject.activeSelf) continue;
 				TryAddConditionRow(child, items, claimedLabels);
 			}
-		}
-
-		private static void WalkCommandModuleExtras(
-				CommandModuleSideScreen screen, List<Widget> items,
-				HashSet<LocText> claimedLabels) {
-			var dest = screen.destinationButton;
-			if (dest == null || !dest.gameObject.activeSelf) return;
-			var captured = dest;
-			var childLt = FindChildLocText(dest.transform, null);
-			if (childLt != null) claimedLabels.Add(childLt);
-			string label = childLt != null
-				? childLt.GetParsedText() : dest.transform.name;
-			if (!HasVisibleContent(label)) return;
-			items.Add(new ToggleWidget {
-				Label = label,
-				Component = captured,
-				GameObject = captured.gameObject,
-				SpeechFunc = () => {
-					string lbl = childLt != null
-						? childLt.GetParsedText()
-						: captured.transform.name;
-					return $"{lbl}, {WidgetOps.GetMultiToggleState(captured)}";
-				}
-			});
 		}
 
 		private static void WalkTransform(Transform parent, List<Widget> items, HashSet<LocText> claimedLabels) {
@@ -540,7 +405,7 @@ namespace OniAccess.Widgets {
 		/// HierarchyReferences with "Label" (LocText) and "Check" (Image, active = ready).
 		/// Emits a single Label widget with check/uncheck status prepended.
 		/// </summary>
-		private static bool TryAddConditionRow(Transform t, List<Widget> items, HashSet<LocText> claimedLabels) {
+		internal static bool TryAddConditionRow(Transform t, List<Widget> items, HashSet<LocText> claimedLabels) {
 			var href = t.GetComponent<HierarchyReferences>();
 			if (href == null) return false;
 			if (!href.HasReference("Label") || !href.HasReference("Check"))
@@ -719,7 +584,7 @@ namespace OniAccess.Widgets {
 		/// Unicode format/zero-width characters (U+200B, U+FEFF, etc.)
 		/// that TextMeshPro inserts.
 		/// </summary>
-		private static bool HasVisibleContent(string text) {
+		internal static bool HasVisibleContent(string text) {
 			if (string.IsNullOrEmpty(text)) return false;
 			for (int i = 0; i < text.Length; i++) {
 				char c = text[i];
@@ -741,7 +606,7 @@ namespace OniAccess.Widgets {
 		/// Skips the excluded component's GameObject if provided.
 		/// Returns the LocText reference (for live reading), or null.
 		/// </summary>
-		private static LocText FindChildLocText(Transform t, Component exclude) {
+		internal static LocText FindChildLocText(Transform t, Component exclude) {
 			for (int i = 0; i < t.childCount; i++) {
 				var child = t.GetChild(i);
 				if (!child.gameObject.activeSelf) continue;
@@ -856,7 +721,7 @@ namespace OniAccess.Widgets {
 		/// <summary>
 		/// Read a LocText reference, falling back to a name-based label.
 		/// </summary>
-		private static string ReadLocText(LocText lt, string fallback) {
+		internal static string ReadLocText(LocText lt, string fallback) {
 			if (lt != null) {
 				string text = lt.GetParsedText();
 				if (HasVisibleContent(text))
@@ -870,7 +735,7 @@ namespace OniAccess.Widgets {
 		/// Falls back to the enclosing SideScreenContent title when the
 		/// button has no text (e.g., animated icon-only buttons).
 		/// </summary>
-		private static string GetButtonLabel(KButton button, string fallback) {
+		internal static string GetButtonLabel(KButton button, string fallback) {
 			var lt = button.GetComponentInChildren<LocText>();
 			if (lt != null) {
 				string text = lt.GetParsedText();
@@ -1008,190 +873,6 @@ namespace OniAccess.Widgets {
 				// Remove the collapsed items
 				items.RemoveRange(start + 1, count - 1);
 			}
-		}
-
-		// ========================================
-		// ALARM SIDE SCREEN OVERRIDE
-		// ========================================
-
-		/// <summary>
-		/// AlarmSideScreen has 3 icon-only MultiToggle buttons for notification
-		/// type (Bad, Neutral, DuplicantThreatening). The generic walker only
-		/// emits the first one (IsRedundantMultiToggle kills siblings). This
-		/// method replaces that single item with a Dropdown built from the
-		/// screen's toggles_by_type dictionary, using tooltip text as labels.
-		/// </summary>
-		private static void CollapseAlarmTypeButtons(
-				AlarmSideScreen alarm, List<Widget> items,
-				HashSet<LocText> claimedLabels) {
-			Dictionary<NotificationType, MultiToggle> togglesByType;
-			try {
-				togglesByType = Traverse.Create(alarm)
-					.Field<Dictionary<NotificationType, MultiToggle>>("toggles_by_type").Value;
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"CollapseAlarmTypeButtons: toggles_by_type read failed: {ex.Message}");
-				return;
-			}
-			if (togglesByType == null || togglesByType.Count == 0) return;
-
-			// Find the existing MultiToggle item from the type buttons
-			var typeToggles = new HashSet<MultiToggle>();
-			foreach (var kv in togglesByType)
-				typeToggles.Add(kv.Value);
-
-			int insertIndex = -1;
-			for (int i = items.Count - 1; i >= 0; i--) {
-				var mt = items[i].Component as MultiToggle;
-				if (mt != null && typeToggles.Contains(mt)) {
-					if (insertIndex < 0) insertIndex = i;
-					items.RemoveAt(i);
-				}
-			}
-			if (insertIndex < 0) insertIndex = items.Count;
-
-			// Build RadioMember list in the game's validTypes order
-			var validTypes = new[] {
-				NotificationType.Bad,
-				NotificationType.Neutral,
-				NotificationType.DuplicantThreatening
-			};
-			var members = new List<RadioMember>();
-			foreach (var type in validTypes) {
-				if (!togglesByType.TryGetValue(type, out var mt)) continue;
-				var tooltip = mt.GetComponent<ToolTip>();
-				string label = tooltip != null
-					? WidgetOps.ReadAllTooltipText(tooltip) : type.ToString();
-				if (!HasVisibleContent(label)) label = type.ToString();
-				members.Add(new RadioMember {
-					Label = label,
-					MultiToggleRef = mt,
-					Tag = type
-				});
-			}
-			if (members.Count == 0) return;
-
-			// Claim the "Type:" label LocText so it doesn't appear as a
-			// standalone label alongside the Dropdown
-			var buttonsParent = members[0].MultiToggleRef.transform.parent;
-			if (buttonsParent != null && buttonsParent.parent != null) {
-				var typeLt = FindSiblingLocText(buttonsParent);
-				if (typeLt != null) claimedLabels.Add(typeLt);
-			}
-
-			string groupLabel = (string)STRINGS.UI.UISIDESCREENS.LOGICALARMSIDESCREEN.TOOLTIPS.TYPE;
-			var radioMembers = members;
-			var capturedAlarm = alarm;
-			items.Insert(insertIndex, new DropdownWidget {
-				Label = groupLabel,
-				Component = members[0].MultiToggleRef,
-				SuppressTooltip = true,
-				GameObject = buttonsParent != null ? buttonsParent.gameObject
-					: members[0].MultiToggleRef.gameObject,
-				Tag = radioMembers,
-				SpeechFunc = () => {
-					string selected = radioMembers[0].Label;
-					var activeType = capturedAlarm.targetAlarm.notificationType;
-					for (int k = 0; k < radioMembers.Count; k++) {
-						if (radioMembers[k].Tag is NotificationType nt && nt == activeType) {
-							selected = radioMembers[k].Label;
-							break;
-						}
-					}
-					return $"{groupLabel}, {selected}";
-				}
-			});
-		}
-
-		/// <summary>
-		/// FewOptionSideScreen spawns MultiToggle rows as siblings in a
-		/// container. IsRedundantMultiToggle kills all but the first.
-		/// Replace all row items with a single Dropdown built from the
-		/// screen's rows dictionary, using LocText labels and tooltip
-		/// descriptions.
-		/// </summary>
-		private static void CollapseFewOptionRows(
-				FewOptionSideScreen fewOption, List<Widget> items,
-				HashSet<LocText> claimedLabels) {
-			var rows = fewOption.rows;
-			if (rows == null || rows.Count == 0) return;
-
-			FewOptionSideScreen.IFewOptionSideScreen target;
-			try {
-				target = Traverse.Create(fewOption)
-					.Field<FewOptionSideScreen.IFewOptionSideScreen>("targetFewOptions").Value;
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"CollapseFewOptionRows: targetFewOptions read failed: {ex.Message}");
-				return;
-			}
-			if (target == null) return;
-
-			// Remove any items the walker already emitted for the row GameObjects
-			var rowObjects = new HashSet<GameObject>();
-			foreach (var kv in rows)
-				rowObjects.Add(kv.Value);
-			int insertIndex = -1;
-			for (int i = items.Count - 1; i >= 0; i--) {
-				if (items[i].GameObject != null && rowObjects.Contains(items[i].GameObject)) {
-					insertIndex = i;
-					items.RemoveAt(i);
-				}
-			}
-			if (insertIndex < 0) insertIndex = items.Count;
-			if (insertIndex > items.Count) insertIndex = items.Count;
-
-			// Build RadioMember list from the rows
-			var members = new List<RadioMember>();
-			foreach (var kv in rows) {
-				var go = kv.Value;
-				var href = go.GetComponent<HierarchyReferences>();
-				LocText labelLt = href != null ? href.GetReference<LocText>("label") : null;
-				string label = labelLt != null ? labelLt.GetParsedText() : kv.Key.ToString();
-				if (labelLt != null) claimedLabels.Add(labelLt);
-				members.Add(new RadioMember {
-					Label = label,
-					MultiToggleRef = go.GetComponent<MultiToggle>(),
-					Tag = kv.Key
-				});
-			}
-			if (members.Count == 0) return;
-
-			string groupLabel = fewOption.GetTitle();
-			if (string.IsNullOrEmpty(groupLabel))
-				groupLabel = members[0].Label;
-			var radioMembers = members;
-			var capturedTarget = target;
-			var capturedRows = rows;
-			items.Insert(insertIndex, new DropdownWidget {
-				Label = groupLabel,
-				Component = members[0].MultiToggleRef,
-				SuppressTooltip = true,
-				GameObject = fewOption.rowContainer != null
-					? fewOption.rowContainer.gameObject
-					: members[0].MultiToggleRef.gameObject,
-				Tag = radioMembers,
-				SpeechFunc = () => {
-					var selectedTag = capturedTarget.GetSelectedOption();
-					string selected = null;
-					for (int k = 0; k < radioMembers.Count; k++) {
-						if (radioMembers[k].Tag is Tag t && t == selectedTag) {
-							selected = radioMembers[k].Label;
-							break;
-						}
-					}
-					if (selected == null) selected = radioMembers[0].Label;
-					string speech = $"{groupLabel}, {selected}";
-					// Read tooltip from the selected row for description
-					if (capturedRows.TryGetValue(selectedTag, out var rowGO)) {
-						var tooltip = rowGO.GetComponent<ToolTip>();
-						if (tooltip != null) {
-							string desc = WidgetOps.ReadAllTooltipText(tooltip);
-							if (!string.IsNullOrEmpty(desc))
-								speech += ", " + desc;
-						}
-					}
-					return speech;
-				}
-			});
 		}
 
 		/// <summary>
