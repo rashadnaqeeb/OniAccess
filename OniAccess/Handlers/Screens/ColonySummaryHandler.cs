@@ -67,7 +67,6 @@ namespace OniAccess.Handlers.Screens {
 		private KButton _closeScreenButton;
 		private Traverse _explorerGridField;
 		private Traverse _screenTraverse;
-		private Dictionary<string, UnityEngine.GameObject> _achievementEntries;
 
 		private int SectionCount => _inColonyDetail ? DetailSectionCount : ExplorerSectionCount;
 
@@ -99,22 +98,15 @@ namespace OniAccess.Handlers.Screens {
 
 		public override void OnActivate() {
 			_inColonyDetail = false;
-			_isInGameContext = false;
 			_currentSection = ExplorerSectionMain;
 
 			_screenTraverse = Traverse.Create(_screen);
 			CacheButtons();
 
-			try {
-				var explorerRoot = _screenTraverse.Field("explorerRoot")
-					.GetValue<UnityEngine.GameObject>();
-				if (explorerRoot != null && !explorerRoot.activeSelf) {
-					_isInGameContext = true;
-					_inColonyDetail = true;
-					_currentSection = DetailSectionDuplicants;
-				}
-			} catch (System.Exception ex) {
-				Util.Log.Error($"ColonySummaryHandler.OnActivate: {ex.Message}");
+			_isInGameContext = SaveGame.Instance != null;
+			if (_isInGameContext) {
+				_inColonyDetail = true;
+				_currentSection = DetailSectionDuplicants;
 			}
 
 			LoadColonyData();
@@ -132,8 +124,6 @@ namespace OniAccess.Handlers.Screens {
 				_closeScreenButton = _screenTraverse.Field("closeScreenButton")
 					.GetValue<KButton>();
 				_explorerGridField = _screenTraverse.Field("explorerGrid");
-				_achievementEntries = _screenTraverse.Field("achievementEntries")
-					.GetValue<Dictionary<string, UnityEngine.GameObject>>();
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ColonySummaryHandler.CacheButtons: {ex.Message}");
 			}
@@ -420,16 +410,20 @@ namespace OniAccess.Handlers.Screens {
 		/// <summary>
 		/// For in-game achievements, read per-requirement progress from the game's
 		/// AchievementWidget. The game populates these widgets via ShowProgress()
-		/// during LoadColony — we just read the already-rendered text.
+		/// during LoadColony. Read lazily at speech time to ensure the screen has
+		/// finished populating.
 		/// </summary>
 		private string BuildAchievementSpeechLive(Item item) {
-			if (_achievementEntries == null) return item.Label;
-			if (!_achievementEntries.TryGetValue(item.AchievementId, out var achGO))
+			var entries = _screenTraverse.Field("achievementEntries")
+				.GetValue<Dictionary<string, UnityEngine.GameObject>>();
+			if (entries == null || !entries.TryGetValue(item.AchievementId, out var achGO))
 				return item.Label;
 
 			var progress = ReadWidgetProgress(achGO);
-			if (progress.Count > 0)
-				return item.Label + ". " + string.Join(". ", progress);
+			if (progress.Count > 0) {
+				string sep = item.Label.EndsWith(".") ? " " : ". ";
+				return item.Label + sep + string.Join(". ", progress);
+			}
 			return item.Label;
 		}
 
