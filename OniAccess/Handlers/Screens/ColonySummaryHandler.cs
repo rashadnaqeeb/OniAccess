@@ -67,6 +67,7 @@ namespace OniAccess.Handlers.Screens {
 		private KButton _closeScreenButton;
 		private Traverse _explorerGridField;
 		private Traverse _screenTraverse;
+		private Dictionary<string, UnityEngine.GameObject> _achievementEntries;
 
 		private int SectionCount => _inColonyDetail ? DetailSectionCount : ExplorerSectionCount;
 
@@ -131,6 +132,8 @@ namespace OniAccess.Handlers.Screens {
 				_closeScreenButton = _screenTraverse.Field("closeScreenButton")
 					.GetValue<KButton>();
 				_explorerGridField = _screenTraverse.Field("explorerGrid");
+				_achievementEntries = _screenTraverse.Field("achievementEntries")
+					.GetValue<Dictionary<string, UnityEngine.GameObject>>();
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ColonySummaryHandler.CacheButtons: {ex.Message}");
 			}
@@ -241,7 +244,11 @@ namespace OniAccess.Handlers.Screens {
 
 			bool addedVictoryHeader = false;
 			foreach (var achievement in achievements) {
-				if (!IsAchievementValid(achievement)) continue;
+				if (!DlcManager.IsCorrectDlcSubscribed(achievement)) continue;
+				if (_isInGameContext && Game.Instance != null) {
+					if (!Game.IsCorrectDlcActiveForCurrentSave(achievement)) continue;
+					if (!achievement.IsValidForSave()) continue;
+				}
 
 				if (!addedVictoryHeader && achievement.isVictoryCondition) {
 					addedVictoryHeader = true;
@@ -251,7 +258,12 @@ namespace OniAccess.Handlers.Screens {
 					});
 				}
 
-				string label = FormatAchievement(achievement, completedIds, data);
+				string status = GetAchievementStatus(achievement, completedIds);
+				string label = $"{status}, {achievement.Name}, {achievement.description}";
+
+				if (achievement.isVictoryCondition)
+					label = AppendVictoryRequirements(label, achievement);
+
 				_items.Add(new Item {
 					Kind = ItemKind.Achievement,
 					Label = label,
@@ -333,11 +345,7 @@ namespace OniAccess.Handlers.Screens {
 			return $"{stat.name}, {lastCycle} {latest:N0}";
 		}
 
-		private string FormatAchievement(ColonyAchievement achievement,
-			HashSet<string> completedIds, RetiredColonyData data) {
-			string status = GetAchievementStatus(achievement.Id, completedIds);
-			string label = $"{achievement.Name}, {status}, {achievement.description}";
-
+		private static string AppendVictoryRequirements(string label, ColonyAchievement achievement) {
 			var reqs = new List<string>();
 			foreach (var req in achievement.requirementChecklist) {
 				if (req is VictoryColonyAchievementRequirement victoryReq) {
@@ -359,16 +367,17 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 			if (reqs.Count > 0)
-				label += ". " + string.Join(". ", reqs);
+				return label + ". " + string.Join(". ", reqs);
 			return label;
 		}
 
-		private string GetAchievementStatus(string achievementId, HashSet<string> completedIds) {
+		private string GetAchievementStatus(ColonyAchievement achievement,
+			HashSet<string> completedIds) {
 			if (_inColonyDetail) {
-				if (completedIds.Contains(achievementId))
+				if (completedIds.Contains(achievement.Id))
 					return (string)STRINGS.ONIACCESS.STATES.CONDITION_MET;
 				if (_isInGameContext)
-					return GetInGameAchievementStatus(achievementId);
+					return GetInGameAchievementStatus(achievement.Id);
 				return (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
 			}
 
@@ -377,7 +386,7 @@ namespace OniAccess.Handlers.Screens {
 				foreach (var colony in _allColonies) {
 					if (colony.achievements == null) continue;
 					foreach (string id in colony.achievements) {
-						if (id == achievementId)
+						if (id == achievement.Id)
 							return (string)STRINGS.ONIACCESS.STATES.CONDITION_MET;
 					}
 				}
@@ -409,36 +418,50 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// For in-game achievements, append live per-requirement progress to the
-		/// pre-formatted label. GetProgress on some requirements references live
-		/// game singletons, so each call is guarded.
+		/// For in-game achievements, read per-requirement progress from the game's
+		/// AchievementWidget. The game populates these widgets via ShowProgress()
+		/// during LoadColony — we just read the already-rendered text.
 		/// </summary>
-		private static string BuildAchievementSpeechLive(Item item) {
-			if (SaveGame.Instance == null) return item.Label;
-			var tracker = SaveGame.Instance.GetComponent<ColonyAchievementTracker>();
-			if (tracker == null) return item.Label;
-			if (!tracker.achievements.TryGetValue(item.AchievementId, out var achStatus))
+		private string BuildAchievementSpeechLive(Item item) {
+			if (_achievementEntries == null) return item.Label;
+			if (!_achievementEntries.TryGetValue(item.AchievementId, out var achGO))
 				return item.Label;
 
-			var progress = new List<string>();
-			foreach (var req in achStatus.Requirements) {
-				try {
-					bool complete = req.Success();
-					string text = req.GetProgress(complete);
-					if (!string.IsNullOrEmpty(text)) {
-						string prefix = complete
-							? (string)STRINGS.ONIACCESS.STATES.CONDITION_MET
-							: (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
-						progress.Add($"{prefix}: {text}");
-					}
-				} catch (System.Exception ex) {
-					Util.Log.Debug($"ColonySummaryHandler: GetProgress failed for {item.AchievementId}: {ex.Message}");
-				}
-			}
-
+			var progress = ReadWidgetProgress(achGO);
 			if (progress.Count > 0)
 				return item.Label + ". " + string.Join(". ", progress);
 			return item.Label;
+		}
+
+		private static List<string> ReadWidgetProgress(UnityEngine.GameObject achGO) {
+			var result = new List<string>();
+			var widget = achGO.GetComponent<AchievementWidget>();
+			if (widget == null) return result;
+
+			var progressParent = Traverse.Create(widget).Field("progressParent")
+				.GetValue<UnityEngine.RectTransform>();
+			if (progressParent == null || progressParent.childCount == 0) return result;
+
+			bool wasActive = progressParent.gameObject.activeSelf;
+			if (!wasActive)
+				progressParent.gameObject.SetActive(true);
+			UnityEngine.Canvas.ForceUpdateCanvases();
+
+			for (int i = 0; i < progressParent.childCount; i++) {
+				var child = progressParent.GetChild(i);
+				if (child == null || !child.gameObject.activeSelf) continue;
+				var refs = child.GetComponent<HierarchyReferences>();
+				if (refs == null || !refs.HasReference("Desc")) continue;
+				var descLoc = refs.GetReference<LocText>("Desc");
+				if (descLoc == null) continue;
+				string text = descLoc.GetParsedText();
+				if (!string.IsNullOrEmpty(text))
+					result.Add(text);
+			}
+
+			if (!wasActive)
+				progressParent.gameObject.SetActive(false);
+			return result;
 		}
 
 		// ========================================
@@ -612,16 +635,5 @@ namespace OniAccess.Handlers.Screens {
 			return _colonyData;
 		}
 
-		private bool IsAchievementValid(ColonyAchievement achievement) {
-			if (!DlcManager.IsCorrectDlcSubscribed(achievement))
-				return false;
-			if (_isInGameContext && Game.Instance != null) {
-				if (!Game.IsCorrectDlcActiveForCurrentSave(achievement))
-					return false;
-				if (!achievement.IsValidForSave())
-					return false;
-			}
-			return true;
-		}
 	}
 }
