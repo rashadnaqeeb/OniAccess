@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 
+using HarmonyLib;
+
+using OniAccess.Input;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens.Codex {
@@ -31,6 +34,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.HELP.JUMP_GROUP),
 			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
 			new HelpEntry("Enter", STRINGS.ONIACCESS.CODEX.FOLLOW_LINK_HELP),
+			new HelpEntry("Alt+Left/Backspace", STRINGS.ONIACCESS.CODEX.HISTORY_BACK_HELP),
+			new HelpEntry("Alt+Right", STRINGS.ONIACCESS.CODEX.HISTORY_FORWARD_HELP),
 		};
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
@@ -54,6 +59,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		public bool HandleInput() {
+			if (TryHistoryNavigation())
+				return true;
 			return base.Tick();
 		}
 
@@ -185,6 +192,43 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (codexScreen == null) return;
 			PlayOpenSound();
 			codexScreen.ChangeArticle(entryId);
+		}
+
+		// ========================================
+		// History navigation (Alt+Left / Backspace / Alt+Right)
+		// ========================================
+
+		private bool TryHistoryNavigation() {
+			bool altHeld = InputUtil.AltHeld();
+
+			bool back = (altHeld && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow))
+				|| UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backspace);
+			bool forward = altHeld && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow);
+
+			if (!back && !forward) return false;
+
+			var codexScreen = _parent.CodexScreen;
+			if (codexScreen == null) return false;
+
+			var t = Traverse.Create(codexScreen);
+			int idx = t.Field<int>("currentHistoryIdx").Value;
+			var history = t.Field<List<CodexScreen.HistoryEntry>>("history").Value;
+
+			if (back) {
+				if (idx <= 0) {
+					SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.CODEX.NO_BACK);
+					return true;
+				}
+				t.Method("HistoryStepBack").GetValue();
+			} else {
+				if (idx >= history.Count - 1) {
+					SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.CODEX.NO_FORWARD);
+					return true;
+				}
+				t.Method("HistoryStepForward").GetValue();
+			}
+
+			return true;
 		}
 
 		// ========================================

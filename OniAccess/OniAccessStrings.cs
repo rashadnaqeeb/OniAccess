@@ -728,6 +728,10 @@ namespace STRINGS {
 			public static LocString MADE_IN = "made in";
 			public static LocString LINK_MENU = "{0} links";
 			public static LocString FOLLOW_LINK_HELP = "Follow link";
+			public static LocString NO_BACK = "nothing to go back to";
+			public static LocString NO_FORWARD = "nothing to go forward to";
+			public static LocString HISTORY_BACK_HELP = "Go back";
+			public static LocString HISTORY_FORWARD_HELP = "Go forward";
 		}
 
 		public class BUILD_MENU {
