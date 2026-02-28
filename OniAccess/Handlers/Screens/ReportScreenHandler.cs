@@ -364,6 +364,12 @@ namespace OniAccess.Handlers.Screens {
 			var parts = new List<string>(4);
 			parts.Add(group.stringKey);
 
+			// Stats that only accumulate in one direction (critters, time, level-ups,
+			// etc.) are totals/counts, not deltas. Show plain values without
+			// net/added/removed framing. Only use delta framing when both positive
+			// and negative values exist.
+			bool isDelta = entry.Positive != 0f && entry.Negative != 0f;
+
 			if (group.groupFormatfn != null) {
 				// Mirror game's per-column denominator logic (ReportScreenEntryRow.SetLine).
 				// When context entries exist, use their count. Otherwise count notes per sign.
@@ -382,23 +388,25 @@ namespace OniAccess.Handlers.Screens {
 					netDenom = Math.Max(posCount + negCount, 1f);
 				}
 
-				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NET,
-					group.groupFormatfn(entry.Net, netDenom)));
-				if (entry.Positive != 0f)
+				if (isDelta) {
+					parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NET,
+						group.groupFormatfn(entry.Net, netDenom)));
 					parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.ADDED,
 						group.groupFormatfn(entry.Positive, addedDenom)));
-				if (entry.Negative != 0f)
 					parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.REMOVED,
 						group.groupFormatfn(0f - entry.Negative, removedDenom)));
-			} else {
+				} else {
+					parts.Add(group.groupFormatfn(entry.Net, netDenom));
+				}
+			} else if (isDelta) {
 				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.NET,
 					group.formatfn(entry.Net)));
-				if (entry.Positive != 0f)
-					parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.ADDED,
-						group.formatfn(entry.Positive)));
-				if (entry.Negative != 0f)
-					parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.REMOVED,
-						group.formatfn(0f - entry.Negative)));
+				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.ADDED,
+					group.formatfn(entry.Positive)));
+				parts.Add(string.Format(STRINGS.ONIACCESS.REPORT.REMOVED,
+					group.formatfn(0f - entry.Negative)));
+			} else {
+				parts.Add(group.formatfn(entry.Net));
 			}
 
 			return string.Join(", ", parts);
