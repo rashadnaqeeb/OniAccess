@@ -18,6 +18,7 @@ namespace OniAccess.Handlers.Tiles {
 	public class TileCursorHandler: BaseScreenHandler {
 		private Overlays.OverlayProfileRegistry _overlayRegistry;
 		private ScannerNavigator _scanner;
+		private CursorBookmarks _bookmarks;
 		private GameStateMonitor _monitor;
 		private NotificationTracker _notificationTracker;
 		private NotificationAnnouncer _notificationAnnouncer;
@@ -53,6 +54,28 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Q),
 			new ConsumedKey(KKeyCode.Return),
 			new ConsumedKey(KKeyCode.N, Modifier.Shift),
+			// Bookmark keybinds
+			new ConsumedKey(KKeyCode.H),
+			new ConsumedKey(KKeyCode.Alpha1, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Alpha2, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Alpha3, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Alpha4, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Alpha5, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Alpha6, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Alpha7, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Alpha8, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Alpha9, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Alpha0, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Alpha1, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Alpha2, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Alpha3, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Alpha4, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Alpha5, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Alpha6, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Alpha7, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Alpha8, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Alpha9, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Alpha0, Modifier.Alt),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -73,6 +96,10 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS),
 			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED),
 			new HelpEntry("Shift+N", (string)STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP),
+			new HelpEntry("H", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_HOME),
+			new HelpEntry("Ctrl+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK),
+			new HelpEntry("Shift+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK),
+			new HelpEntry("Alt+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_BOOKMARK),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;
@@ -89,6 +116,7 @@ namespace OniAccess.Handlers.Tiles {
 				ToolProfiles.ToolProfileRegistry.Build();
 				TileCursor.Create(_overlayRegistry);
 				_scanner = new ScannerNavigator();
+				_bookmarks = new CursorBookmarks();
 				_monitor = new GameStateMonitor();
 				if (NotificationManager.Instance != null) {
 					_notificationTracker = new NotificationTracker();
@@ -229,6 +257,30 @@ namespace OniAccess.Handlers.Tiles {
 				&& InputUtil.ShiftHeld()) {
 				OpenNotificationMenu();
 				return true;
+			}
+
+			// Bookmark keybinds
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.H)
+				&& !InputUtil.AnyModifierHeld()) {
+				SpeechPipeline.SpeakInterrupt(CursorBookmarks.JumpHome());
+				return true;
+			}
+			for (var kc = UnityEngine.KeyCode.Alpha0; kc <= UnityEngine.KeyCode.Alpha9; kc++) {
+				if (!UnityEngine.Input.GetKeyDown(kc)) continue;
+				int idx = CursorBookmarks.DigitKeyToIndex(kc);
+				if (InputUtil.ShiftHeld()) {
+					SpeechPipeline.SpeakInterrupt(_bookmarks.Goto(idx));
+					return true;
+				}
+				if (InputUtil.AltHeld()) {
+					SpeechPipeline.SpeakInterrupt(_bookmarks.Orient(idx));
+					return true;
+				}
+				if (InputUtil.CtrlHeld()) {
+					SpeechPipeline.SpeakQueued(string.Format(
+						(string)STRINGS.ONIACCESS.BOOKMARKS.BOOKMARK_SET, idx + 1));
+					return false;
+				}
 			}
 
 			// Scanner keybinds

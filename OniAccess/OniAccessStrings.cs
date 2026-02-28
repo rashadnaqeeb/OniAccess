@@ -734,6 +734,17 @@ namespace STRINGS {
 			public static LocString HISTORY_FORWARD_HELP = "Go forward";
 		}
 
+		public class BOOKMARKS {
+			public static LocString BOOKMARK_SET = "bookmark {0} set";
+			public static LocString NO_BOOKMARK = "no bookmark";
+			public static LocString NO_HOME = "no printing pod";
+			public static LocString AT_BOOKMARK = "here";
+			public static LocString HELP_HOME = "Jump to Printing Pod";
+			public static LocString HELP_SET_BOOKMARK = "Set bookmark";
+			public static LocString HELP_GOTO_BOOKMARK = "Jump to bookmark";
+			public static LocString HELP_ORIENT_BOOKMARK = "Distance to bookmark";
+		}
+
 		public class BUILD_MENU {
 			public static LocString ACTION_MENU = "action menu";
 			public static LocString TOOLS_CATEGORY = "Tools";
