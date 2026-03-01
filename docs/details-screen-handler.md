@@ -174,14 +174,17 @@ Secondary screens are opened via `DetailsScreen.SetSecondarySideScreen` when the
 4. `AssignPilotAndCrewSideScreen` → `AssignmentGroupControllerSideScreen` (crew selection — MultiToggle rows, walker finds widgets but loses available/off-world grouping)
 5. `RocketModuleSideScreen` → `SelectModuleSideScreen` (module picker — MultiToggle grid with category headers, plus MaterialSelectionPanel/FacadeSelectionPanel custom components)
 
-### Phase 9: User Menu Overlay
+### Phase 9: Actions Section — Done
 
-**Goal**: Entity actions are accessible via hotkey.
+**Goal**: Entity actions are accessible via Ctrl+Tab section.
 
-- `]` key opens an action overlay while the details screen is active
-- Read live from `UserMenuScreen`'s button list
-- Up/Down navigates actions, Enter activates, Escape closes overlay
-- Dynamic — buttons change per entity type and state
+`ActionsTab` implements `IDetailTab` as a third Ctrl+Tab section (after main info tabs and side screen tabs). One flat section containing:
+
+1. **User menu buttons** — read live from `UserMenuScreen.buttonInfos` via Traverse. Each becomes a `UserMenuButtonWidget` that fires `ButtonInfo.onClick` directly. Stale-target guard compares `UserMenuScreen.selected` to `DetailsScreen.target` to prevent reading old-entity buttons during target transitions.
+2. **Priority widget** — when entity has `Prioritizable`. `PriorityWidget` is adjustable via Left/Right across basic 1-9 and emergency. Speech uses existing `PRIORITY_BASIC`/`PRIORITY_EMERGENCY` mod strings. Logs unrecognized priority values.
+3. **Title bar buttons** — Codex Entry (`CodexEntryButton`), Pin Resource (`PinResourceButton`), Rename (`editNameButton`), Random Name (`randomNameButton`). Each only shown when its `GameObject.activeInHierarchy` is true.
+
+Section grouping in `RebuildActiveTabs` extended from two-way (game tab vs side screen) to three-way via `GetTabSectionKind()` type-check. Empty Actions tab speaks "No actions".
 
 ## Known Issues / Lessons Learned
 

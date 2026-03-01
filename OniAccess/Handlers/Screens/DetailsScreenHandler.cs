@@ -242,6 +242,10 @@ namespace OniAccess.Handlers.Screens {
 					AdjustSlider(w, direction, stepLevel);
 					return;
 				}
+				if (w is PriorityWidget pw) {
+					AdjustPriority(pw, direction);
+					return;
+				}
 				if (w is DropdownWidget) {
 					CycleRadioGroup(w, direction);
 					return;
@@ -268,6 +272,16 @@ namespace OniAccess.Handlers.Screens {
 
 			PlaySliderSound(sw.GetBoundarySound(direction));
 
+			if (changed) {
+				RebuildSections();
+				var fresh = GetCurrentWidget();
+				if (fresh != null)
+					SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
+			}
+		}
+
+		private void AdjustPriority(PriorityWidget pw, int direction) {
+			bool changed = pw.Adjust(direction, 0);
 			if (changed) {
 				RebuildSections();
 				var fresh = GetCurrentWidget();
@@ -589,14 +603,24 @@ namespace OniAccess.Handlers.Screens {
 
 			_sectionStarts.Clear();
 			_sectionIndex = 0;
-			bool? lastWasSideScreen = null;
+			int? lastKind = null;
 			for (int i = 0; i < _activeTabs.Count; i++) {
-				bool isSideScreen = _activeTabs[i].GameTabId == null;
-				if (lastWasSideScreen != isSideScreen) {
+				int kind = GetTabSectionKind(_activeTabs[i]);
+				if (lastKind != kind) {
 					_sectionStarts.Add(i);
-					lastWasSideScreen = isSideScreen;
+					lastKind = kind;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Returns 0 for main game tabs, 1 for side screen tabs, 2 for actions.
+		/// Used to group tabs into Ctrl+Tab sections.
+		/// </summary>
+		private static int GetTabSectionKind(IDetailTab tab) {
+			if (tab is ActionsTab) return 2;
+			if (tab.GameTabId != null) return 0;
+			return 1;
 		}
 
 		/// <summary>
@@ -640,6 +664,9 @@ namespace OniAccess.Handlers.Screens {
 					else if (_activeTabs[_tabIndex] is ErrandsSideTab)
 						SpeechPipeline.SpeakQueued(
 							(string)STRINGS.ONIACCESS.DETAILS.NO_ERRANDS);
+					else if (_activeTabs[_tabIndex] is ActionsTab)
+						SpeechPipeline.SpeakQueued(
+							(string)STRINGS.ONIACCESS.DETAILS.NO_ACTIONS);
 				}
 				return;
 			}
@@ -682,6 +709,9 @@ namespace OniAccess.Handlers.Screens {
 				new ErrandsSideTab(),
 				new MaterialTab(),
 				new BlueprintTab(),
+
+				// Actions section (null gameTabId — always available).
+				new ActionsTab(),
 			};
 		}
 	}

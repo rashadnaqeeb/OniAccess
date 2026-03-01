@@ -532,6 +532,10 @@ namespace STRINGS {
 			public static LocString NO_ERRANDS = "No errands";
 			public static LocString SCHEDULE = "Schedule";
 			public static LocString CURRENT_TASK = "Current task";
+			public static LocString ACTIONS_TAB = "Actions";
+			public static LocString NO_ACTIONS = "No actions";
+			public static LocString PRIORITY = "Priority";
+			public static LocString PIN_RESOURCE = "Pin resource";
 		}
 
 		public class TABLE {
