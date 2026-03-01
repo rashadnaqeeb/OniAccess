@@ -8,7 +8,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			string q = query.ToLowerInvariant();
 
 			foreach (var entry in allEntries) {
-				int sortKey = MatchSortKey(entry.ItemName, q);
+				string plain = STRINGS.UI.StripLinkFormatting(entry.ItemName);
+				int sortKey = MatchSortKey(plain, q);
 				if (sortKey < 0) continue;
 
 				results.Add(new ScanEntry {
