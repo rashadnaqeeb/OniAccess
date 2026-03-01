@@ -138,7 +138,7 @@ namespace OniAccess.Handlers.Screens {
 				var textField = tiw.GetTextField();
 				if (textField != null) {
 					if (!_textEdit.IsEditing)
-						_textEdit.Begin(textField);
+						_textEdit.Begin(textField, onEnd: RebuildSections);
 					else
 						_textEdit.Confirm();
 				}
@@ -362,14 +362,8 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		public override bool HandleKeyDown(KButtonEvent e) {
-			if (_textEdit.IsEditing) {
-				if (e.TryConsume(Action.Escape)) {
-					_textEdit.Cancel();
-					RebuildSections();
-					return true;
-				}
-				return false;
-			}
+			if (_textEdit.HandleKeyDown(e))
+				return true;
 			return base.HandleKeyDown(e);
 		}
 
@@ -441,14 +435,17 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		public override bool Tick() {
-			if (_textEdit.IsEditing) {
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
-					_textEdit.Confirm();
-					RebuildSections();
-					return true;
+			if (!_textEdit.IsEditing) {
+				var titleBar = GetEditableTitleBar();
+				if (titleBar != null
+					&& titleBar.inputField != null
+					&& titleBar.inputField.gameObject.activeInHierarchy) {
+					_textEdit.Begin(titleBar.inputField, onEnd: RebuildSections);
 				}
-				return false;
 			}
+
+			if (_textEdit.HandleTick())
+				return false;
 
 			if (_pendingActivationSpeech) {
 				_pendingActivationSpeech = false;
@@ -504,6 +501,13 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			return base.Tick();
+		}
+
+		private EditableTitleBar GetEditableTitleBar() {
+			var ds = DetailsScreen.Instance;
+			if (ds == null) return null;
+			return Traverse.Create(ds)
+				.Field<EditableTitleBar>("TabTitle").Value;
 		}
 
 		// ========================================

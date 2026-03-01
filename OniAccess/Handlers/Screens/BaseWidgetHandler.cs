@@ -113,14 +113,8 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		public override bool Tick() {
-			if (_textEdit != null && _textEdit.IsEditing) {
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
-					_textEdit.Confirm();
-					QueueCurrentWidget();
-					return true;
-				}
+			if (_textEdit != null && _textEdit.HandleTick())
 				return false;
-			}
 
 			// Deferred first-widget announcement: rediscover to pick up widgets
 			// that weren't activeInHierarchy on frame 0, then queue the first widget.
@@ -169,14 +163,8 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		public override bool HandleKeyDown(KButtonEvent e) {
-			if (_textEdit != null && _textEdit.IsEditing) {
-				if (e.TryConsume(Action.Escape)) {
-					_textEdit.Cancel();
-					QueueCurrentWidget();
-					return true;
-				}
-				return false;
-			}
+			if (_textEdit != null && _textEdit.HandleKeyDown(e))
+				return true;
 
 			return base.HandleKeyDown(e);
 		}
@@ -211,7 +199,7 @@ namespace OniAccess.Handlers.Screens {
 				var textField = tiw.GetTextField();
 				if (textField != null) {
 					if (!TextEdit.IsEditing)
-						TextEdit.Begin(textField);
+						TextEdit.Begin(textField, onEnd: QueueCurrentWidget);
 					else
 						TextEdit.Confirm();
 				}

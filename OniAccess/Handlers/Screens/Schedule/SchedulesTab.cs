@@ -137,8 +137,8 @@ namespace OniAccess.Handlers.Screens.Schedule {
 		// ========================================
 
 		public bool HandleInput() {
-			if (_renameHelper.IsEditing)
-				return HandleRenameInput();
+			if (_renameHelper.HandleTick())
+				return false;
 
 			if (_inOptions)
 				return HandleOptionsInput();
@@ -147,29 +147,11 @@ namespace OniAccess.Handlers.Screens.Schedule {
 		}
 
 		public bool HandleKeyDown(KButtonEvent e) {
-			// Intercept Escape during rename
-			if (_renameHelper.IsEditing && e.TryConsume(Action.Escape)) {
-				_renameHelper.Cancel();
+			if (_renameHelper.HandleKeyDown(e))
 				return true;
-			}
 			// Intercept Escape during options
 			if (_inOptions && e.TryConsume(Action.Escape)) {
 				ExitOptions();
-				return true;
-			}
-			return false;
-		}
-
-		// ========================================
-		// RENAME INPUT
-		// ========================================
-
-		private bool HandleRenameInput() {
-			// Enter confirms, everything else passes through to the text field
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
-				_renameHelper.Confirm();
-				_inOptions = false;
-				SpeakCurrentCell();
 				return true;
 			}
 			return false;
@@ -268,7 +250,9 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			if (screen == null) return;
 
 			int si = gr.ScheduleIndex;
-			_renameHelper.Begin(() => ScheduleHelper.GetEntryInputField(screen, si));
+			_renameHelper.Begin(
+				() => ScheduleHelper.GetEntryInputField(screen, si),
+				onEnd: () => { _inOptions = false; SpeakCurrentCell(); });
 		}
 
 		private void ToggleAlarm(GridRow gr) {
