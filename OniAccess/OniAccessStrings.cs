@@ -367,6 +367,7 @@ namespace STRINGS {
 				public static LocString DEBRIS = "Debris";
 				public static LocString ZONES = "Zones";
 				public static LocString LIFE = "Life";
+				public static LocString SEARCH = "Search";
 			}
 
 			// Subcategories
@@ -443,6 +444,11 @@ namespace STRINGS {
 			public static LocString AUTO_MOVE_ON = "auto-move on";
 			public static LocString AUTO_MOVE_OFF = "auto-move off";
 
+			// Search
+			public class SEARCH {
+				public static LocString PROMPT = "search";
+			}
+
 			// Help entries
 			public class HELP {
 				public static LocString REFRESH = "Refresh scanner";
@@ -452,6 +458,7 @@ namespace STRINGS {
 				public static LocString CYCLE_SUBCATEGORY = "Scanner: cycle subcategory";
 				public static LocString CYCLE_ITEM = "Scanner: cycle item";
 				public static LocString CYCLE_INSTANCE = "Scanner: cycle instance";
+				public static LocString SEARCH = "Search scanner";
 			}
 		}
 

@@ -63,30 +63,12 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				? _snapshot.GetCategory(_categoryIndex).Name
 				: null;
 
-			var allEntries = new List<ScanEntry>();
-			bool success = false;
+			var allEntries = RunAllBackends(worldId);
 
-			try {
-				var gridResult = _gridScanner.Scan(worldId);
-
-				_elementBackend.SetGridData(gridResult.Elements);
-				_tileBackend.SetGridData(gridResult.Tiles);
-				_networkBackend.SetGridData(gridResult.NetworkSegments, gridResult.Bridges);
-				_orderBackend.SetGridData(gridResult.OrderClusters, gridResult.IndividualOrders);
-				_biomeBackend.SetGridData(gridResult.Biomes);
-
-				allEntries.AddRange(_elementBackend.Scan(worldId));
-				allEntries.AddRange(_tileBackend.Scan(worldId));
-				allEntries.AddRange(_networkBackend.Scan(worldId));
-				allEntries.AddRange(_orderBackend.Scan(worldId));
-				allEntries.AddRange(_biomeBackend.Scan(worldId));
-				allEntries.AddRange(_entityBackend.Scan(worldId));
-				allEntries.AddRange(_geyserBackend.Scan(worldId));
-				allEntries.AddRange(_roomBackend.Scan(worldId));
-				success = true;
-			} catch (System.Exception ex) {
-				Log.Error($"ScannerNavigator.Refresh: {ex}");
-				allEntries.Clear();
+			if (allEntries == null) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.SCANNER.EMPTY);
+				return;
 			}
 
 			_snapshot = new ScannerSnapshot(allEntries, cursorCell);
@@ -105,12 +87,40 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			_itemIndex = 0;
 			_instanceIndex = 0;
 
-			if (success)
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.SCANNER.REFRESHED);
-			else
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.SCANNER.EMPTY);
+			SpeechPipeline.SpeakInterrupt(
+				(string)STRINGS.ONIACCESS.SCANNER.REFRESHED);
+		}
+
+		/// <summary>
+		/// Run a search scan: execute all backends, filter by query,
+		/// build a search-only snapshot with original categories as subcategories.
+		/// </summary>
+		public void SearchRefresh(string query) {
+			int worldId = ClusterManager.Instance.activeWorld.id;
+			int cursorCell = TileCursor.Instance.Cell;
+			_lastWorldId = worldId;
+
+			var allEntries = RunAllBackends(worldId);
+			if (allEntries == null) allEntries = new List<ScanEntry>();
+
+			var searchEntries = ScannerSearch.Filter(allEntries, query);
+
+			if (searchEntries.Count == 0) {
+				SpeechPipeline.SpeakInterrupt(string.Format(
+					(string)STRINGS.ONIACCESS.SEARCH.NO_MATCH, query));
+				return;
+			}
+
+			_snapshot = new ScannerSnapshot(searchEntries, cursorCell);
+			_categoryIndex = 0;
+			_subcategoryIndex = 0;
+			_itemIndex = 0;
+			_instanceIndex = 0;
+
+			SpeechPipeline.SpeakInterrupt(query);
+			string itemAnnouncement = ValidateAndAnnounce(speakOnEmpty: false);
+			if (itemAnnouncement != null)
+				SpeechPipeline.SpeakQueued(itemAnnouncement);
 		}
 
 		public void CycleCategory(int direction) {
@@ -246,6 +256,36 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		// -------------------------------------------------------------------
 		// Private helpers
 		// -------------------------------------------------------------------
+
+		/// <summary>
+		/// Run all scanner backends and return the combined entry list.
+		/// Returns null on failure (after logging the error).
+		/// </summary>
+		private List<ScanEntry> RunAllBackends(int worldId) {
+			var allEntries = new List<ScanEntry>();
+			try {
+				var gridResult = _gridScanner.Scan(worldId);
+
+				_elementBackend.SetGridData(gridResult.Elements);
+				_tileBackend.SetGridData(gridResult.Tiles);
+				_networkBackend.SetGridData(gridResult.NetworkSegments, gridResult.Bridges);
+				_orderBackend.SetGridData(gridResult.OrderClusters, gridResult.IndividualOrders);
+				_biomeBackend.SetGridData(gridResult.Biomes);
+
+				allEntries.AddRange(_elementBackend.Scan(worldId));
+				allEntries.AddRange(_tileBackend.Scan(worldId));
+				allEntries.AddRange(_networkBackend.Scan(worldId));
+				allEntries.AddRange(_orderBackend.Scan(worldId));
+				allEntries.AddRange(_biomeBackend.Scan(worldId));
+				allEntries.AddRange(_entityBackend.Scan(worldId));
+				allEntries.AddRange(_geyserBackend.Scan(worldId));
+				allEntries.AddRange(_roomBackend.Scan(worldId));
+				return allEntries;
+			} catch (System.Exception ex) {
+				Log.Error($"ScannerNavigator.RunAllBackends: {ex}");
+				return null;
+			}
+		}
 
 		/// <summary>
 		/// Auto-refresh if no snapshot. Returns true if a refresh was performed
@@ -430,7 +470,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		}
 
 		private static Dictionary<string, LocString> BuildSubcategoryNames() {
-			return new Dictionary<string, LocString> {
+			var dict = new Dictionary<string, LocString> {
 				{ ScannerTaxonomy.Subcategories.All, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ALL },
 				{ ScannerTaxonomy.Subcategories.Ores, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORES },
 				{ ScannerTaxonomy.Subcategories.Stone, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.STONE },
@@ -480,6 +520,10 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ ScannerTaxonomy.Subcategories.WildPlants, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_PLANTS },
 				{ ScannerTaxonomy.Subcategories.FarmPlants, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FARM_PLANTS },
 			};
+			// Search results use category names as subcategory labels
+			foreach (var kvp in _categoryNames)
+				dict[kvp.Key] = kvp.Value;
+			return dict;
 		}
 	}
 }

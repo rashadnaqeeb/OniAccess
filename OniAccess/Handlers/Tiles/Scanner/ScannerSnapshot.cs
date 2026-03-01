@@ -94,9 +94,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 							Instances = instances,
 						});
 					}
-					items.Sort((a, b) =>
-						GridUtil.CellDistance(cursorCell, a.Instances[0].Cell)
-							.CompareTo(GridUtil.CellDistance(cursorCell, b.Instances[0].Cell)));
+					items.Sort((a, b) => CompareItems(a, b, cursorCell));
 
 					namedSubcats.Add(new ScannerSubcategory {
 						Name = subKvp.Key,
@@ -112,9 +110,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				var allItems = new List<ScannerItem>();
 				foreach (var sub in namedSubcats)
 					allItems.AddRange(sub.Items);
-				allItems.Sort((a, b) =>
-					GridUtil.CellDistance(cursorCell, a.Instances[0].Cell)
-						.CompareTo(GridUtil.CellDistance(cursorCell, b.Instances[0].Cell)));
+				allItems.Sort((a, b) => CompareItems(a, b, cursorCell));
 
 				var subcats = new List<ScannerSubcategory>(namedSubcats.Count + 1) {
 					new ScannerSubcategory {
@@ -135,6 +131,13 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 					.CompareTo(ScannerTaxonomy.CategorySortIndex(b.Name)));
 
 			return categories;
+		}
+
+		private static int CompareItems(ScannerItem a, ScannerItem b, int cursorCell) {
+			int sk = a.Instances[0].SortKey.CompareTo(b.Instances[0].SortKey);
+			if (sk != 0) return sk;
+			return GridUtil.CellDistance(cursorCell, a.Instances[0].Cell)
+				.CompareTo(GridUtil.CellDistance(cursorCell, b.Instances[0].Cell));
 		}
 
 		private void PruneEmptyItem(ScannerItem item) {

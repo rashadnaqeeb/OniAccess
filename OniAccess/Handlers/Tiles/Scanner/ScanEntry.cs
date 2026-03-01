@@ -11,5 +11,6 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		public string Category;
 		public string Subcategory;
 		public string ItemName;
+		public int SortKey;
 	}
 }

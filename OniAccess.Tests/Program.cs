@@ -78,6 +78,15 @@ namespace OniAccess.Tests {
 			results.Add(MatchTierNoMatch());
 			results.Add(SearchTierOrdering());
 
+			// --- ScannerSearch ---
+			results.Add(ScannerSearchPrefixMatch());
+			results.Add(ScannerSearchWholeWordMatch());
+			results.Add(ScannerSearchWordStartMatch());
+			results.Add(ScannerSearchNoMatch());
+			results.Add(ScannerSearchCaseInsensitive());
+			results.Add(ScannerSearchFilterRemapsCategory());
+			results.Add(ScannerSearchBestMatchAcrossPositions());
+
 			// --- TextFilter ---
 			TextFilter.RegisterSprite("warning", "warning:");
 			TextFilter.RegisterSprite("logic_signal_green", "green signal");
@@ -792,6 +801,63 @@ namespace OniAccess.Tests {
 			}
 			return Assert("SearchTierOrdering", ok,
 				$"ResultCount={search.ResultCount}");
+		}
+
+		// ========================================
+		// ScannerSearch tests
+		// ========================================
+
+		private static (string, bool, string) ScannerSearchPrefixMatch() {
+			int key = ScannerSearch.MatchSortKey("Sandstone", "sand");
+			bool ok = key == 0;
+			return Assert("ScannerSearchPrefixMatch", ok, $"key={key}");
+		}
+
+		private static (string, bool, string) ScannerSearchWholeWordMatch() {
+			int key = ScannerSearch.MatchSortKey("Polluted Water", "water");
+			bool ok = key == 1;
+			return Assert("ScannerSearchWholeWordMatch", ok, $"key={key}");
+		}
+
+		private static (string, bool, string) ScannerSearchWordStartMatch() {
+			int key = ScannerSearch.MatchSortKey("Coal Generator", "gen");
+			bool ok = key == 2;
+			return Assert("ScannerSearchWordStartMatch", ok, $"key={key}");
+		}
+
+		private static (string, bool, string) ScannerSearchNoMatch() {
+			int key = ScannerSearch.MatchSortKey("Sandstone", "iron");
+			bool ok = key == -1;
+			return Assert("ScannerSearchNoMatch", ok, $"key={key}");
+		}
+
+		private static (string, bool, string) ScannerSearchCaseInsensitive() {
+			int key = ScannerSearch.MatchSortKey("Sandstone", "SAND");
+			bool ok = key == 0;
+			return Assert("ScannerSearchCaseInsensitive", ok, $"key={key}");
+		}
+
+		private static (string, bool, string) ScannerSearchFilterRemapsCategory() {
+			var entries = new List<ScanEntry> {
+				new ScanEntry { Cell = 0, ItemName = "Sandstone", Category = "Solids", Subcategory = "Stone" },
+				new ScanEntry { Cell = 1, ItemName = "Iron Ore", Category = "Solids", Subcategory = "Ores" },
+			};
+			var results = ScannerSearch.Filter(entries, "sand");
+			bool ok = results.Count == 1
+				&& results[0].Category == (string)STRINGS.ONIACCESS.SCANNER.CATEGORIES.SEARCH
+				&& results[0].Subcategory == "Solids"
+				&& results[0].ItemName == "Sandstone"
+				&& results[0].SortKey == 0;
+			return Assert("ScannerSearchFilterRemapsCategory", ok,
+				$"count={results.Count}");
+		}
+
+		private static (string, bool, string) ScannerSearchBestMatchAcrossPositions() {
+			// "gen" in "X Generators Gen" should find whole-word "Gen" (key=1),
+			// not stop at word-start "Generators" (key=2)
+			int key = ScannerSearch.MatchSortKey("X Generators Gen", "gen");
+			bool ok = key == 1;
+			return Assert("ScannerSearchBestMatchAcrossPositions", ok, $"key={key}");
 		}
 
 		// ========================================

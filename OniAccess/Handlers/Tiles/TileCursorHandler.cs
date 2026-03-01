@@ -32,6 +32,7 @@ namespace OniAccess.Handlers.Tiles {
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Tab),
 			new ConsumedKey(KKeyCode.BackQuote),
+			new ConsumedKey(KKeyCode.F, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.I),
 			new ConsumedKey(KKeyCode.I, Modifier.Shift),
 			new ConsumedKey(KKeyCode.K),
@@ -95,6 +96,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Shift+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_SUBCATEGORY),
 			new HelpEntry("PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM),
 			new HelpEntry("Alt+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE),
+			new HelpEntry("Ctrl+F", (string)STRINGS.ONIACCESS.SCANNER.HELP.SEARCH),
 			new HelpEntry("Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS),
 			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED),
 			new HelpEntry("Shift+N", (string)STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP),
@@ -286,6 +288,11 @@ namespace OniAccess.Handlers.Tiles {
 			}
 
 			// Scanner keybinds
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F)
+				&& InputUtil.CtrlHeld()) {
+				HandlerStack.Push(new SearchInputHandler(_scanner));
+				return true;
+			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)
 				&& !InputUtil.AnyModifierHeld()) {
 				_scanner.Refresh();
