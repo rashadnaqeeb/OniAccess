@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OniAccess.Util;
 
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
@@ -8,12 +9,6 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// Skips duplicants and critters (handled by EntitySection).
 	/// </summary>
 	public class DebrisSection: ICellSection {
-		private static bool IsBottle(KPrefabID prefabId) {
-			return prefabId.HasTag(GameTags.Liquid)
-				|| prefabId.HasTag(GameTags.Breathable)
-				|| prefabId.HasTag(GameTags.Unbreathable);
-		}
-
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 			if (go == null) return System.Array.Empty<string>();
@@ -26,13 +21,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			while (item != null) {
 				if (item.gameObject.GetComponent<MinionIdentity>() == null
 					&& item.gameObject.GetComponent<CreatureBrain>() == null) {
-					string name = item.gameObject.GetProperName();
-					var prefabId = item.gameObject.GetComponent<KPrefabID>();
-					if (prefabId != null && IsBottle(prefabId))
-						name = (string)STRINGS.ONIACCESS.SCANNER.BOTTLE_PREFIX + name;
-					else if (item.gameObject.GetComponent<ElementChunk>() != null)
-						name = (string)STRINGS.ONIACCESS.SCANNER.LOOSE_PREFIX + name;
-					tokens.Add(name);
+					tokens.Add(DebrisNameHelper.GetDisplayName(item.gameObject));
 				}
 				item = item.nextItem;
 			}

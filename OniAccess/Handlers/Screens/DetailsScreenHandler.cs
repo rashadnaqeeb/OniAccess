@@ -4,6 +4,7 @@ using UnityEngine;
 
 using OniAccess.Handlers.Screens.Details;
 using OniAccess.Speech;
+using OniAccess.Util;
 using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens {
@@ -41,7 +42,7 @@ namespace OniAccess.Handlers.Screens {
 				var ds = DetailsScreen.Instance;
 				if (ds == null || ds.target == null)
 					return STRINGS.ONIACCESS.HANDLERS.DETAILS_SCREEN;
-				string entityName = ds.target.GetProperName();
+				string entityName = DebrisNameHelper.GetDisplayName(ds.target);
 				var resume = ds.target.GetComponent<MinionResume>();
 				if (resume != null) {
 					string hatName = null;

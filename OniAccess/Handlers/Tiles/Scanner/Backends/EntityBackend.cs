@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using OniAccess.Handlers.Tiles.Scanner.Routing;
 using OniAccess.Util;
 using UnityEngine;
+using static OniAccess.Util.DebrisNameHelper;
 
 namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 	/// <summary>
@@ -48,19 +49,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				if (building != null)
 					return building.Def.Name;
 			}
-			string name = go.GetComponent<KSelectable>()?.GetName() ?? entry.ItemName;
-			var prefabId = go.GetComponent<KPrefabID>();
-			if (prefabId != null && IsBottle(prefabId))
-				return (string)STRINGS.ONIACCESS.SCANNER.BOTTLE_PREFIX + name;
-			if (go.GetComponent<ElementChunk>() != null)
-				return (string)STRINGS.ONIACCESS.SCANNER.LOOSE_PREFIX + name;
-			return name;
-		}
-
-		private static bool IsBottle(KPrefabID prefabId) {
-			return prefabId.HasTag(GameTags.Liquid)
-				|| prefabId.HasTag(GameTags.Breathable)
-				|| prefabId.HasTag(GameTags.Unbreathable);
+			return GetDisplayName(go);
 		}
 
 		private IEnumerable<ScanEntry> ScanBuildings(int worldId) {

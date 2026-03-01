@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using OniAccess.Speech;
+using OniAccess.Util;
 
 namespace OniAccess.Handlers.Tiles {
 	/// <summary>
@@ -24,12 +25,13 @@ namespace OniAccess.Handlers.Tiles {
 
 		public override string GetItemLabel(int index) {
 			if (index < 0 || index >= _selectables.Count) return null;
-			return _selectables[index].GetName();
+			return DebrisNameHelper.GetDisplayName(_selectables[index].gameObject);
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_currentIndex >= 0 && _currentIndex < _selectables.Count)
-				SpeechPipeline.SpeakInterrupt(_selectables[_currentIndex].GetName());
+				SpeechPipeline.SpeakInterrupt(
+					DebrisNameHelper.GetDisplayName(_selectables[_currentIndex].gameObject));
 		}
 
 		public override void OnActivate() {
@@ -39,7 +41,8 @@ namespace OniAccess.Handlers.Tiles {
 			SpeechPipeline.SpeakQueued(
 				(string)STRINGS.ONIACCESS.TILE_CURSOR.SELECT_OBJECT);
 			if (_selectables.Count > 0)
-				SpeechPipeline.SpeakQueued(_selectables[0].GetName());
+				SpeechPipeline.SpeakQueued(
+					DebrisNameHelper.GetDisplayName(_selectables[0].gameObject));
 		}
 
 		public override void OnDeactivate() {
@@ -106,6 +109,22 @@ namespace OniAccess.Handlers.Tiles {
 			}
 
 			entries.Recycle();
+
+			var pickGo = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
+			if (pickGo != null) {
+				var pick = pickGo.GetComponent<Pickupable>();
+				if (pick != null) {
+					var item = pick.objectLayerListItem;
+					while (item != null) {
+						var ks = item.gameObject.GetComponent<KSelectable>();
+						if (ks != null && ks.isActiveAndEnabled && ks.IsSelectable
+							&& seen.Add(ks.gameObject))
+							result.Add(ks);
+						item = item.nextItem;
+					}
+				}
+			}
+
 			result.Sort((a, b) => EntitySortKey(a).CompareTo(EntitySortKey(b)));
 			return result;
 		}
