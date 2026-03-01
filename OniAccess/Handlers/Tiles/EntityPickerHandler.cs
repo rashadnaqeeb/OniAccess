@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using OniAccess.Handlers.Tiles.Sections;
 using OniAccess.Speech;
 using OniAccess.Util;
-using UnityEngine;
 
 namespace OniAccess.Handlers.Tiles {
 	/// <summary>
@@ -76,102 +74,59 @@ namespace OniAccess.Handlers.Tiles {
 			return false;
 		}
 
-		private static readonly int[] PowerLayers = {
-			(int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors };
-		private static readonly int[] LiquidLayers = {
-			(int)ObjectLayer.LiquidConduit, (int)ObjectLayer.LiquidConduitConnection };
-		private static readonly int[] GasLayers = {
-			(int)ObjectLayer.GasConduit, (int)ObjectLayer.GasConduitConnection };
-		private static readonly int[] SolidLayers = {
-			(int)ObjectLayer.SolidConduit, (int)ObjectLayer.SolidConduitConnection };
-		private static readonly int[] AutomationLayers = {
-			(int)ObjectLayer.LogicWire, (int)ObjectLayer.LogicGate };
-
 		/// <summary>
-		/// Collects all selectable entities at a cell using Grid.Objects layer
-		/// lookups, matching what the tile cursor sections report.
+		/// Collects all selectable entities at a cell using the same collision
+		/// layer the game's SelectTool queries on mouse click.
 		/// </summary>
 		public static List<KSelectable> CollectSelectables(int cell) {
 			var result = new List<KSelectable>();
-			var seen = new HashSet<GameObject>();
+			int x, y;
+			Grid.CellToXY(cell, out x, out y);
+			var cellCenter = Grid.CellToPosCCC(cell, Grid.SceneLayer.Move);
 
-			CollectFromLayer(cell, (int)ObjectLayer.Building, seen, result);
-			CollectFromLayer(cell, (int)ObjectLayer.FoundationTile, seen, result);
-			if (!IsOverlayFocused())
-				CollectFromLayer(cell, (int)ObjectLayer.Backwall, seen, result);
-			CollectFromLayer(cell, (int)ObjectLayer.Minion, seen, result);
-			CollectOverlayLayers(cell, seen, result);
-			CollectPickupables(cell, seen, result);
-			RemoveDuplicateSelectionObjects(result, seen);
+			var entries = ListPool<ScenePartitionerEntry, EntityPickerHandler>.Allocate();
+			GameScenePartitioner.Instance.GatherEntries(
+				x, y, 1, 1,
+				GameScenePartitioner.Instance.collisionLayer,
+				entries);
+
+			var seen = new HashSet<UnityEngine.GameObject>();
+			foreach (var entry in entries) {
+				var collider = entry.obj as KCollider2D;
+				if (collider == null) continue;
+				if (!collider.Intersects(new UnityEngine.Vector2(cellCenter.x, cellCenter.y)))
+					continue;
+				var ks = collider.GetComponent<KSelectable>();
+				if (ks == null)
+					ks = collider.GetComponentInParent<KSelectable>();
+				if (ks == null || !ks.isActiveAndEnabled || !ks.IsSelectable) continue;
+				if (!seen.Add(ks.gameObject)) continue;
+				var cso = ks.GetComponent<CellSelectionObject>();
+				if (cso != null && cso.alternateSelectionObject != null
+					&& seen.Contains(cso.alternateSelectionObject.gameObject))
+					continue;
+				result.Add(ks);
+			}
+
+			entries.Recycle();
+
+			var pickGo = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
+			if (pickGo != null) {
+				var pick = pickGo.GetComponent<Pickupable>();
+				if (pick != null) {
+					var item = pick.objectLayerListItem;
+					while (item != null) {
+						var ks = item.gameObject.GetComponent<KSelectable>();
+						if (ks != null && ks.isActiveAndEnabled && ks.IsSelectable
+							&& seen.Add(ks.gameObject))
+							result.Add(ks);
+						item = item.nextItem;
+					}
+				}
+			}
 
 			result.Sort((a, b) => EntitySortKey(a).CompareTo(EntitySortKey(b)));
 			return result;
-		}
-
-		private static void CollectFromLayer(int cell, int layer,
-				HashSet<GameObject> seen, List<KSelectable> result) {
-			var go = Grid.Objects[cell, layer];
-			if (go == null) return;
-			var ks = go.GetComponent<KSelectable>();
-			if (ks != null && ks.isActiveAndEnabled && ks.IsSelectable
-				&& seen.Add(go))
-				result.Add(ks);
-		}
-
-		private static void CollectOverlayLayers(int cell,
-				HashSet<GameObject> seen, List<KSelectable> result) {
-			var layers = GetOverlayLayers();
-			if (layers == null) return;
-			foreach (int layer in layers) {
-				var go = Grid.Objects[cell, layer];
-				if (go == null || !seen.Add(go)) continue;
-				if (ConduitSection.IsPortRegistration(go, layer)) continue;
-				var ks = go.GetComponent<KSelectable>();
-				if (ks != null && ks.isActiveAndEnabled && ks.IsSelectable)
-					result.Add(ks);
-			}
-		}
-
-		private static int[] GetOverlayLayers() {
-			if (OverlayScreen.Instance == null) return null;
-			var mode = OverlayScreen.Instance.GetMode();
-			if (mode == OverlayModes.Power.ID) return PowerLayers;
-			if (mode == OverlayModes.LiquidConduits.ID) return LiquidLayers;
-			if (mode == OverlayModes.GasConduits.ID) return GasLayers;
-			if (mode == OverlayModes.SolidConveyor.ID) return SolidLayers;
-			if (mode == OverlayModes.Logic.ID) return AutomationLayers;
-			return null;
-		}
-
-		private static void CollectPickupables(int cell,
-				HashSet<GameObject> seen, List<KSelectable> result) {
-			var go = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
-			if (go == null) return;
-			var pick = go.GetComponent<Pickupable>();
-			if (pick == null) return;
-			var item = pick.objectLayerListItem;
-			while (item != null) {
-				var ks = item.gameObject.GetComponent<KSelectable>();
-				if (ks != null && ks.isActiveAndEnabled && ks.IsSelectable
-					&& seen.Add(item.gameObject))
-					result.Add(ks);
-				item = item.nextItem;
-			}
-		}
-
-		private static void RemoveDuplicateSelectionObjects(
-				List<KSelectable> result, HashSet<GameObject> seen) {
-			for (int i = result.Count - 1; i >= 0; i--) {
-				var cso = result[i].GetComponent<CellSelectionObject>();
-				if (cso != null && cso.alternateSelectionObject != null
-					&& seen.Contains(cso.alternateSelectionObject.gameObject))
-					result.RemoveAt(i);
-			}
-		}
-
-		private static bool IsOverlayFocused() {
-			return OverlayScreen.Instance != null
-				&& StatusFilter.IsOverlayFocused(OverlayScreen.Instance.GetMode());
 		}
 
 		private static int EntitySortKey(KSelectable ks) {
