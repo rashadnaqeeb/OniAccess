@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Build;
+using OniAccess.Handlers.Notifications;
 using OniAccess.Handlers.Tiles;
 using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Speech;
@@ -198,6 +199,55 @@ namespace OniAccess.Tests {
 			// --- BuildMenuData ---
 			results.Add(OrientationNameCoversAllKnownValues());
 			results.Add(OrientationNameDefaultReturnsUp());
+
+			// --- CleanTooltipEntry ---
+			results.Add(CleanTooltipSingleNewline());
+			results.Add(CleanTooltipTripleNewlineCollapses());
+			results.Add(CleanTooltipBulletWithSpace());
+			results.Add(CleanTooltipBulletWithSurroundingSpaces());
+			results.Add(CleanTooltipLeadingWhitespaceTrimmed());
+			results.Add(CleanTooltipDoubledPeriodCollapsed());
+			results.Add(CleanTooltipNullAndEmptyPassthrough());
+
+			// --- AppendTooltip ---
+			results.Add(AppendTooltipNullReturnsSpeech());
+			results.Add(AppendTooltipEmptySpeechReturnsTooltip());
+			results.Add(AppendTooltipDuplicateSegmentSuppressed());
+			results.Add(AppendTooltipNonMatchingAppends());
+			results.Add(AppendTooltipSubstringNotSuppressed());
+			results.Add(AppendTooltipSingleSegmentDuplicate());
+
+			// --- NavigableGraph ---
+			results.Add(GraphNavigateDownSetsSiblingContext());
+			results.Add(GraphNavigateUpAtRootEstablishesRootContext());
+			results.Add(GraphNavigateUpToRootUsesRoots());
+			results.Add(GraphCycleSiblingWrapForward());
+			results.Add(GraphCycleSiblingWrapBackward());
+			results.Add(GraphCycleSiblingNoWrap());
+			results.Add(GraphMoveToClearsSiblingContext());
+			results.Add(GraphMoveToWithSiblingsPreservesContext());
+			results.Add(GraphIndexOfFallbackReturnsZero());
+			results.Add(GraphSingleSiblingReturnsNull());
+
+			// --- NotificationAnnouncer ---
+			results.Add(AnnouncerLoadPhaseHoldsUntilUnpause());
+			results.Add(AnnouncerFirstFlushUsesLongWindow());
+			results.Add(AnnouncerSubsequentFlushUsesShortWindow());
+			results.Add(AnnouncerCountDeltaOnlyAnnouncesIncreases());
+			results.Add(AnnouncerStaleKeyCleanupAllowsReannouncement());
+			results.Add(AnnouncerFirstGroupInterruptsRestQueue());
+			results.Add(AnnouncerBatchWindowResetsOnNewArrival());
+
+			// --- GridUtil.ValidateCluster ---
+			results.Add(ValidateClusterAllPrunedReturnsFalse());
+			results.Add(ValidateClusterClosestCellSelected());
+			results.Add(ValidateClusterStaleCellsRemoved());
+			results.Add(ValidateClusterSingleSurvivor());
+
+			// --- CursorBookmarks.DigitKeyToIndex ---
+			results.Add(DigitKeyAlpha1Through9());
+			results.Add(DigitKeyAlpha0MapsToNine());
+			results.Add(DigitKeyNonDigitReturnsNegativeOne());
 
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
@@ -1902,6 +1952,579 @@ namespace OniAccess.Tests {
 			bool ok = result == expected;
 			return Assert("OrientationNameDefaultReturnsUp", ok,
 				$"got \"{result}\", expected \"{expected}\"");
+		}
+
+		// ========================================
+		// CleanTooltipEntry
+		// ========================================
+
+		private static (string, bool, string) CleanTooltipSingleNewline() {
+			string result = WidgetOps.CleanTooltipEntry("a\nb");
+			bool ok = result == "a. b";
+			return Assert("CleanTooltipSingleNewline", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) CleanTooltipTripleNewlineCollapses() {
+			string result = WidgetOps.CleanTooltipEntry("a\n\n\nb");
+			bool ok = result == "a. b";
+			return Assert("CleanTooltipTripleNewlineCollapses", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) CleanTooltipBulletWithSpace() {
+			string result = WidgetOps.CleanTooltipEntry("\u2022 text");
+			bool ok = result == ". text";
+			return Assert("CleanTooltipBulletWithSpace", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) CleanTooltipBulletWithSurroundingSpaces() {
+			string result = WidgetOps.CleanTooltipEntry("x \u2022 y");
+			bool ok = result == "x. y";
+			return Assert("CleanTooltipBulletWithSurroundingSpaces", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) CleanTooltipLeadingWhitespaceTrimmed() {
+			string result = WidgetOps.CleanTooltipEntry("  text");
+			bool ok = result == "text";
+			return Assert("CleanTooltipLeadingWhitespaceTrimmed", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) CleanTooltipDoubledPeriodCollapsed() {
+			string result = WidgetOps.CleanTooltipEntry("a..b");
+			bool ok = result == "a.b";
+			return Assert("CleanTooltipDoubledPeriodCollapsed", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) CleanTooltipNullAndEmptyPassthrough() {
+			string rNull = WidgetOps.CleanTooltipEntry(null);
+			string rEmpty = WidgetOps.CleanTooltipEntry("");
+			bool ok = rNull == null && rEmpty == "";
+			return Assert("CleanTooltipNullAndEmptyPassthrough", ok,
+				$"null→\"{rNull}\", empty→\"{rEmpty}\"");
+		}
+
+		// ========================================
+		// AppendTooltip
+		// ========================================
+
+		private static (string, bool, string) AppendTooltipNullReturnsSpeech() {
+			string result = WidgetOps.AppendTooltip("x", null);
+			bool ok = result == "x";
+			return Assert("AppendTooltipNullReturnsSpeech", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) AppendTooltipEmptySpeechReturnsTooltip() {
+			string r1 = WidgetOps.AppendTooltip("", "tip");
+			string r2 = WidgetOps.AppendTooltip(null, "tip");
+			bool ok = r1 == "tip" && r2 == "tip";
+			return Assert("AppendTooltipEmptySpeechReturnsTooltip", ok,
+				$"empty→\"{r1}\", null→\"{r2}\"");
+		}
+
+		private static (string, bool, string) AppendTooltipDuplicateSegmentSuppressed() {
+			string result = WidgetOps.AppendTooltip("a, b", "a");
+			bool ok = result == "a, b";
+			return Assert("AppendTooltipDuplicateSegmentSuppressed", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) AppendTooltipNonMatchingAppends() {
+			string result = WidgetOps.AppendTooltip("a, b", "c");
+			bool ok = result == "a, b, c";
+			return Assert("AppendTooltipNonMatchingAppends", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) AppendTooltipSubstringNotSuppressed() {
+			string result = WidgetOps.AppendTooltip("ab, c", "a");
+			bool ok = result == "ab, c, a";
+			return Assert("AppendTooltipSubstringNotSuppressed", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) AppendTooltipSingleSegmentDuplicate() {
+			string result = WidgetOps.AppendTooltip("hello", "hello");
+			bool ok = result == "hello";
+			return Assert("AppendTooltipSingleSegmentDuplicate", ok, $"got \"{result}\"");
+		}
+
+		// ========================================
+		// NavigableGraph
+		// ========================================
+
+		private static NavigableGraph<string> MakeTestGraph(
+				out Dictionary<string, List<string>> children,
+				out Dictionary<string, List<string>> parents,
+				List<string> roots = null) {
+			// Default graph:  A -> [B, C],  B -> [D, E]
+			var c = new Dictionary<string, List<string>> {
+				["A"] = new List<string> { "B", "C" },
+				["B"] = new List<string> { "D", "E" },
+			};
+			var p = new Dictionary<string, List<string>> {
+				["B"] = new List<string> { "A" },
+				["C"] = new List<string> { "A" },
+				["D"] = new List<string> { "B" },
+				["E"] = new List<string> { "B" },
+			};
+			children = c;
+			parents = p;
+			return new NavigableGraph<string>(
+				node => p.TryGetValue(node, out var list) ? list : (IReadOnlyList<string>)Array.Empty<string>(),
+				node => c.TryGetValue(node, out var list) ? list : (IReadOnlyList<string>)Array.Empty<string>(),
+				roots != null ? (Func<IReadOnlyList<string>>)(() => roots) : null);
+		}
+
+		private static (string, bool, string) GraphNavigateDownSetsSiblingContext() {
+			var graph = MakeTestGraph(out _, out _);
+			graph.MoveTo("A");
+			string down = graph.NavigateDown(); // → B
+			string sibling = graph.CycleSibling(1, out _); // → C
+			bool ok = down == "B" && sibling == "C";
+			return Assert("GraphNavigateDownSetsSiblingContext", ok,
+				$"down=\"{down}\", sibling=\"{sibling}\"");
+		}
+
+		private static (string, bool, string) GraphNavigateUpAtRootEstablishesRootContext() {
+			var roots = new List<string> { "A", "X" };
+			var graph = MakeTestGraph(out _, out _, roots);
+			graph.MoveTo("A");
+			string up = graph.NavigateUp(); // null (already root)
+			string sibling = graph.CycleSibling(1, out _); // → X
+			bool ok = up == null && sibling == "X";
+			return Assert("GraphNavigateUpAtRootEstablishesRootContext", ok,
+				$"up=\"{up}\", sibling=\"{sibling}\"");
+		}
+
+		private static (string, bool, string) GraphNavigateUpToRootUsesRoots() {
+			var roots = new List<string> { "A", "X" };
+			var graph = MakeTestGraph(out _, out _, roots);
+			graph.MoveTo("B");
+			string up = graph.NavigateUp(); // → A (a root node)
+			// A is a root, so siblings should be the roots list
+			string sibling = graph.CycleSibling(1, out _); // → X
+			bool ok = up == "A" && sibling == "X";
+			return Assert("GraphNavigateUpToRootUsesRoots", ok,
+				$"up=\"{up}\", sibling=\"{sibling}\"");
+		}
+
+		private static (string, bool, string) GraphCycleSiblingWrapForward() {
+			var graph = MakeTestGraph(out _, out _);
+			graph.MoveTo("A");
+			graph.NavigateDown(); // → B, siblings = [B, C]
+			graph.CycleSibling(1, out _); // → C
+			string wrapped = graph.CycleSibling(1, out bool didWrap); // → B (wrap)
+			bool ok = wrapped == "B" && didWrap;
+			return Assert("GraphCycleSiblingWrapForward", ok,
+				$"node=\"{wrapped}\", wrapped={didWrap}");
+		}
+
+		private static (string, bool, string) GraphCycleSiblingWrapBackward() {
+			var graph = MakeTestGraph(out _, out _);
+			graph.MoveTo("A");
+			graph.NavigateDown(); // → B, siblings = [B, C]
+			string wrapped = graph.CycleSibling(-1, out bool didWrap); // → C (wrap)
+			bool ok = wrapped == "C" && didWrap;
+			return Assert("GraphCycleSiblingWrapBackward", ok,
+				$"node=\"{wrapped}\", wrapped={didWrap}");
+		}
+
+		private static (string, bool, string) GraphCycleSiblingNoWrap() {
+			var graph = MakeTestGraph(out _, out _);
+			graph.MoveTo("A");
+			graph.NavigateDown(); // → B, siblings = [B, C]
+			string next = graph.CycleSibling(1, out bool didWrap); // → C (no wrap)
+			bool ok = next == "C" && !didWrap;
+			return Assert("GraphCycleSiblingNoWrap", ok,
+				$"node=\"{next}\", wrapped={didWrap}");
+		}
+
+		private static (string, bool, string) GraphMoveToClearsSiblingContext() {
+			var graph = MakeTestGraph(out _, out _);
+			graph.MoveTo("A");
+			graph.NavigateDown(); // → B, establishes siblings
+			graph.MoveTo("D"); // clears siblings
+			string result = graph.CycleSibling(1, out _);
+			bool ok = result == null;
+			return Assert("GraphMoveToClearsSiblingContext", ok,
+				$"CycleSibling returned \"{result}\"");
+		}
+
+		private static (string, bool, string) GraphMoveToWithSiblingsPreservesContext() {
+			var siblings = new List<string> { "B", "C" };
+			var graph = MakeTestGraph(out _, out _);
+			graph.MoveToWithSiblings("C", siblings); // index 1
+			string prev = graph.CycleSibling(-1, out bool didWrap); // → B (natural backward, no wrap)
+			bool ok = prev == "B" && !didWrap;
+			return Assert("GraphMoveToWithSiblingsPreservesContext", ok,
+				$"node=\"{prev}\", wrapped={didWrap}");
+		}
+
+		private static (string, bool, string) GraphIndexOfFallbackReturnsZero() {
+			var siblings = new List<string> { "X", "Y" };
+			var graph = MakeTestGraph(out _, out _);
+			graph.MoveToWithSiblings("Z", siblings); // Z not in list → index 0
+			string next = graph.CycleSibling(1, out _); // from index 0 → Y
+			bool ok = next == "Y";
+			return Assert("GraphIndexOfFallbackReturnsZero", ok,
+				$"CycleSibling returned \"{next}\"");
+		}
+
+		private static (string, bool, string) GraphSingleSiblingReturnsNull() {
+			var c = new Dictionary<string, List<string>> {
+				["A"] = new List<string> { "B" },
+			};
+			var p = new Dictionary<string, List<string>> {
+				["B"] = new List<string> { "A" },
+			};
+			var graph = new NavigableGraph<string>(
+				node => p.TryGetValue(node, out var list) ? list : (IReadOnlyList<string>)Array.Empty<string>(),
+				node => c.TryGetValue(node, out var list) ? list : (IReadOnlyList<string>)Array.Empty<string>());
+			graph.MoveTo("A");
+			graph.NavigateDown(); // → B, siblings = [B] (only child)
+			string result = graph.CycleSibling(1, out _);
+			bool ok = result == null;
+			return Assert("GraphSingleSiblingReturnsNull", ok,
+				$"CycleSibling returned \"{result}\"");
+		}
+
+		// ========================================
+		// NotificationAnnouncer
+		// ========================================
+
+		private static readonly MethodInfo _trackerAdd = typeof(NotificationTracker)
+			.GetMethod("OnNotificationAdded", BindingFlags.Instance | BindingFlags.NonPublic);
+		private static readonly MethodInfo _trackerRemove = typeof(NotificationTracker)
+			.GetMethod("OnNotificationRemoved", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		private static void AddNotification(NotificationTracker tracker, string title) {
+			_trackerAdd.Invoke(tracker, new object[] {
+				new Notification(title, NotificationType.Bad)
+			});
+		}
+
+		private static void RemoveFirstNotification(NotificationTracker tracker, string title) {
+			for (int i = 0; i < tracker.Notifications.Count; i++) {
+				if (tracker.Notifications[i].titleText == title) {
+					_trackerRemove.Invoke(tracker, new object[] { tracker.Notifications[i] });
+					return;
+				}
+			}
+		}
+
+		private class AnnouncerHarness {
+			public float FakeTime;
+			public bool Paused;
+			public List<(string text, bool interrupt)> Spoken;
+			public NotificationTracker Tracker;
+			public NotificationAnnouncer Announcer;
+		}
+
+		private static AnnouncerHarness SetupAnnouncer(bool startPaused = true) {
+			var h = new AnnouncerHarness {
+				FakeTime = 0f,
+				Paused = startPaused,
+				Spoken = new List<(string, bool)>(),
+				Tracker = new NotificationTracker(),
+			};
+			NotificationAnnouncer.TimeSource = () => h.FakeTime;
+			NotificationAnnouncer.IsPaused = () => h.Paused;
+			SpeechPipeline.TimeSource = () => h.FakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => h.Spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+			h.Announcer = new NotificationAnnouncer(h.Tracker);
+			return h;
+		}
+
+		private static void CleanupAnnouncer(AnnouncerHarness h) {
+			h.Announcer.Detach();
+			NotificationAnnouncer.TimeSource = () => 0f;
+			NotificationAnnouncer.IsPaused = () => false;
+		}
+
+		private static (string, bool, string) AnnouncerLoadPhaseHoldsUntilUnpause() {
+			var h = SetupAnnouncer(startPaused: true);
+			AddNotification(h.Tracker, "Stress");
+			h.FakeTime = 5f;
+			h.Announcer.Tick();
+			h.Announcer.Tick();
+			bool held = h.Spoken.Count == 0;
+
+			// Unpause → load phase ends, batch starts
+			h.Paused = false;
+			h.Announcer.Tick(); // exits load phase, sets batch pending
+			bool stillHeld = h.Spoken.Count == 0; // hasn't flushed yet (window not elapsed)
+
+			h.FakeTime = 6.1f;
+			h.Announcer.Tick(); // first-flush window (1.0s) elapsed
+			bool spoke = h.Spoken.Count == 1 && h.Spoken[0].text == "Stress";
+
+			CleanupAnnouncer(h);
+			bool ok = held && stillHeld && spoke;
+			return Assert("AnnouncerLoadPhaseHoldsUntilUnpause", ok,
+				$"held={held}, stillHeld={stillHeld}, spoke={spoke}, count={h.Spoken.Count}");
+		}
+
+		private static (string, bool, string) AnnouncerFirstFlushUsesLongWindow() {
+			var h = SetupAnnouncer(startPaused: false);
+			// Tick once to exit load phase
+			h.Announcer.Tick();
+			h.FakeTime = 1.1f;
+			h.Announcer.Tick(); // flush the empty first batch
+
+			h.Spoken.Clear();
+			SpeechPipeline.Reset();
+
+			// Now add a notification — should trigger first-flush logic
+			// Wait, _firstFlush was set false by the Tick above.
+			// Need to rethink: _firstFlush is consumed on the first flush after load.
+			// Once the load phase exits, the first Tick sets batchPending.
+			// The next Tick after the window flushes and clears _firstFlush.
+			// So we need to test that the FIRST flush uses 1.0s, not 0.2s.
+			CleanupAnnouncer(h);
+
+			// Restart clean: unpause immediately, add notification, verify 1.0s window
+			h = SetupAnnouncer(startPaused: false);
+			AddNotification(h.Tracker, "Stress");
+			h.Announcer.Tick(); // exits load phase, resets batch start to current time (0)
+			bool noSpeechYet = h.Spoken.Count == 0;
+
+			// At 0.5s — within 1.0s first-flush window
+			h.FakeTime = 0.5f;
+			h.Announcer.Tick();
+			bool stillWaiting = h.Spoken.Count == 0;
+
+			// At 1.1s — past 1.0s first-flush window
+			h.FakeTime = 1.1f;
+			h.Announcer.Tick();
+			bool spoke = h.Spoken.Count == 1;
+
+			CleanupAnnouncer(h);
+			bool ok = noSpeechYet && stillWaiting && spoke;
+			return Assert("AnnouncerFirstFlushUsesLongWindow", ok,
+				$"noSpeech={noSpeechYet}, stillWaiting={stillWaiting}, spoke={spoke}");
+		}
+
+		private static (string, bool, string) AnnouncerSubsequentFlushUsesShortWindow() {
+			var h = SetupAnnouncer(startPaused: false);
+			AddNotification(h.Tracker, "Stress");
+			h.Announcer.Tick(); // exit load phase
+			h.FakeTime = 1.1f;
+			h.Announcer.Tick(); // first flush (1.0s window)
+			h.Spoken.Clear();
+			SpeechPipeline.Reset();
+
+			// Add new notification — subsequent flush should use 0.2s window
+			h.FakeTime = 2.0f;
+			AddNotification(h.Tracker, "Hunger");
+			h.FakeTime = 2.1f;
+			h.Announcer.Tick();
+			bool tooEarly = h.Spoken.Count == 0; // 0.1s < 0.2s window
+
+			h.FakeTime = 2.3f;
+			h.Announcer.Tick();
+			bool spoke = h.Spoken.Count > 0;
+
+			CleanupAnnouncer(h);
+			bool ok = tooEarly && spoke;
+			return Assert("AnnouncerSubsequentFlushUsesShortWindow", ok,
+				$"tooEarly={tooEarly}, spoke={spoke}, count={h.Spoken.Count}");
+		}
+
+		private static (string, bool, string) AnnouncerCountDeltaOnlyAnnouncesIncreases() {
+			var h = SetupAnnouncer(startPaused: false);
+			AddNotification(h.Tracker, "Stress");
+			h.Announcer.Tick(); // exit load phase
+			h.FakeTime = 1.1f;
+			h.Announcer.Tick(); // first flush → speaks "Stress"
+
+			// Add second "Stress" → count grows from 1 to 2
+			h.Spoken.Clear();
+			SpeechPipeline.Reset();
+			h.FakeTime = 2.0f;
+			AddNotification(h.Tracker, "Stress");
+			h.FakeTime = 2.3f;
+			h.Announcer.Tick();
+			string format = (string)STRINGS.ONIACCESS.NOTIFICATIONS.GROUP_COUNT;
+			string expected = string.Format(format, "Stress", 2);
+			bool spokeIncrease = h.Spoken.Count == 1 && h.Spoken[0].text == expected;
+
+			// Remove one "Stress" → count drops from 2 to 1. Should be silent.
+			h.Spoken.Clear();
+			SpeechPipeline.Reset();
+			h.FakeTime = 3.0f;
+			RemoveFirstNotification(h.Tracker, "Stress");
+			h.FakeTime = 3.3f;
+			h.Announcer.Tick();
+			bool silentDecrease = h.Spoken.Count == 0;
+
+			CleanupAnnouncer(h);
+			bool ok = spokeIncrease && silentDecrease;
+			return Assert("AnnouncerCountDeltaOnlyAnnouncesIncreases", ok,
+				$"spokeIncrease={spokeIncrease}, silentDecrease={silentDecrease}");
+		}
+
+		private static (string, bool, string) AnnouncerStaleKeyCleanupAllowsReannouncement() {
+			var h = SetupAnnouncer(startPaused: false);
+			AddNotification(h.Tracker, "Stress");
+			h.Announcer.Tick(); // exit load phase
+			h.FakeTime = 1.1f;
+			h.Announcer.Tick(); // first flush → speaks "Stress", _knownCounts["Stress"]=1
+
+			// Remove "Stress" and add a different notification to trigger a flush
+			// while "Stress" is absent — this prunes the stale key.
+			h.FakeTime = 2.0f;
+			RemoveFirstNotification(h.Tracker, "Stress");
+			AddNotification(h.Tracker, "Hunger"); // triggers OnChanged with HasNew
+			h.FakeTime = 2.3f;
+			h.Announcer.Tick(); // flushes: announces Hunger, prunes "Stress" from _knownCounts
+
+			// Re-add "Stress" — should announce again since key was pruned
+			h.Spoken.Clear();
+			SpeechPipeline.Reset();
+			h.FakeTime = 3.0f;
+			AddNotification(h.Tracker, "Stress");
+			h.FakeTime = 3.3f;
+			h.Announcer.Tick();
+
+			bool reannounced = false;
+			for (int i = 0; i < h.Spoken.Count; i++) {
+				if (h.Spoken[i].text == "Stress") { reannounced = true; break; }
+			}
+
+			CleanupAnnouncer(h);
+			return Assert("AnnouncerStaleKeyCleanupAllowsReannouncement", reannounced,
+				$"count={h.Spoken.Count}" +
+				(h.Spoken.Count > 0 ? $", texts=[{string.Join(", ", h.Spoken.ConvertAll(s => s.text))}]" : ""));
+		}
+
+		private static (string, bool, string) AnnouncerFirstGroupInterruptsRestQueue() {
+			var h = SetupAnnouncer(startPaused: false);
+			AddNotification(h.Tracker, "Stress");
+			AddNotification(h.Tracker, "Hunger");
+			h.Announcer.Tick(); // exit load phase
+			h.FakeTime = 1.1f;
+			h.Announcer.Tick(); // first flush
+
+			bool firstInterrupt = h.Spoken.Count >= 1 && h.Spoken[0].interrupt;
+			bool secondQueued = h.Spoken.Count >= 2 && !h.Spoken[1].interrupt;
+			bool twoTotal = h.Spoken.Count == 2;
+
+			CleanupAnnouncer(h);
+			bool ok = firstInterrupt && secondQueued && twoTotal;
+			return Assert("AnnouncerFirstGroupInterruptsRestQueue", ok,
+				$"count={h.Spoken.Count}, firstInterrupt={firstInterrupt}, secondQueued={secondQueued}");
+		}
+
+		private static (string, bool, string) AnnouncerBatchWindowResetsOnNewArrival() {
+			var h = SetupAnnouncer(startPaused: false);
+			h.Announcer.Tick(); // exit load phase
+			h.FakeTime = 1.1f;
+			h.Announcer.Tick(); // flush empty first batch
+			h.Spoken.Clear();
+			SpeechPipeline.Reset();
+
+			// Add notification at t=2.0
+			h.FakeTime = 2.0f;
+			AddNotification(h.Tracker, "Stress");
+
+			// Add another at t=2.15 — resets the batch timer
+			h.FakeTime = 2.15f;
+			AddNotification(h.Tracker, "Hunger");
+
+			// At t=2.25: only 0.1s since last arrival (2.15), within 0.2s window
+			h.FakeTime = 2.25f;
+			h.Announcer.Tick();
+			bool tooEarly = h.Spoken.Count == 0;
+
+			// At t=2.4: 0.25s since last arrival (2.15), past 0.2s window
+			h.FakeTime = 2.4f;
+			h.Announcer.Tick();
+			bool spoke = h.Spoken.Count == 2;
+
+			CleanupAnnouncer(h);
+			bool ok = tooEarly && spoke;
+			return Assert("AnnouncerBatchWindowResetsOnNewArrival", ok,
+				$"tooEarly={tooEarly}, spoke={spoke}, count={h.Spoken.Count}");
+		}
+
+		// ========================================
+		// GridUtil.ValidateCluster
+		// ========================================
+
+		private static (string, bool, string) ValidateClusterAllPrunedReturnsFalse() {
+			SetupGrid(100);
+			var entry = new ScanEntry { Cell = 505 };
+			var cells = new List<int> { 10, 20, 30 };
+			bool result = GridUtil.ValidateCluster(cells, 505, entry, cell => false);
+			bool ok = !result && cells.Count == 0 && entry.Cell == 505;
+			return Assert("ValidateClusterAllPrunedReturnsFalse", ok,
+				$"result={result}, cells={cells.Count}, entry.Cell={entry.Cell}");
+		}
+
+		private static (string, bool, string) ValidateClusterClosestCellSelected() {
+			SetupGrid(100);
+			// cursor at row 5 col 5 (cell 505)
+			// cells at: row 5 col 15 (dist 10), row 5 col 10 (dist 5), row 6 col 20 (dist 16)
+			int cursor = 505;
+			var cells = new List<int> { 515, 510, 620 };
+			var entry = new ScanEntry { Cell = 0 };
+			bool result = GridUtil.ValidateCluster(cells, cursor, entry, cell => true);
+			bool ok = result && entry.Cell == 510;
+			return Assert("ValidateClusterClosestCellSelected", ok,
+				$"result={result}, entry.Cell={entry.Cell}");
+		}
+
+		private static (string, bool, string) ValidateClusterStaleCellsRemoved() {
+			SetupGrid(100);
+			int cursor = 505;
+			// Keep 510 (dist 5) and 520 (dist 15), prune 515
+			var cells = new List<int> { 510, 515, 520 };
+			var entry = new ScanEntry { Cell = 0 };
+			bool result = GridUtil.ValidateCluster(cells, cursor, entry,
+				cell => cell != 515);
+			bool ok = result && entry.Cell == 510 && cells.Count == 2
+				&& !cells.Contains(515);
+			return Assert("ValidateClusterStaleCellsRemoved", ok,
+				$"result={result}, entry.Cell={entry.Cell}, cells={cells.Count}");
+		}
+
+		private static (string, bool, string) ValidateClusterSingleSurvivor() {
+			SetupGrid(100);
+			int cursor = 505;
+			// Only cell 900 survives (far away but only option)
+			var cells = new List<int> { 510, 520, 900 };
+			var entry = new ScanEntry { Cell = 0 };
+			bool result = GridUtil.ValidateCluster(cells, cursor, entry,
+				cell => cell == 900);
+			bool ok = result && entry.Cell == 900 && cells.Count == 1;
+			return Assert("ValidateClusterSingleSurvivor", ok,
+				$"result={result}, entry.Cell={entry.Cell}, cells={cells.Count}");
+		}
+
+		// ========================================
+		// CursorBookmarks.DigitKeyToIndex
+		// ========================================
+
+		private static (string, bool, string) DigitKeyAlpha1Through9() {
+			var failures = new List<string>();
+			for (int i = 0; i < 9; i++) {
+				KeyCode key = KeyCode.Alpha1 + i;
+				int result = CursorBookmarks.DigitKeyToIndex(key);
+				if (result != i)
+					failures.Add($"Alpha{i + 1}→{result} (expected {i})");
+			}
+			bool ok = failures.Count == 0;
+			return Assert("DigitKeyAlpha1Through9", ok,
+				ok ? "all correct" : string.Join("; ", failures));
+		}
+
+		private static (string, bool, string) DigitKeyAlpha0MapsToNine() {
+			int result = CursorBookmarks.DigitKeyToIndex(KeyCode.Alpha0);
+			bool ok = result == 9;
+			return Assert("DigitKeyAlpha0MapsToNine", ok, $"got {result}");
+		}
+
+		private static (string, bool, string) DigitKeyNonDigitReturnsNegativeOne() {
+			int result = CursorBookmarks.DigitKeyToIndex(KeyCode.A);
+			bool ok = result == -1;
+			return Assert("DigitKeyNonDigitReturnsNegativeOne", ok, $"got {result}");
 		}
 	}
 }
