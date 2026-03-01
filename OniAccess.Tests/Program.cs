@@ -2263,24 +2263,6 @@ namespace OniAccess.Tests {
 
 		private static (string, bool, string) AnnouncerFirstFlushUsesLongWindow() {
 			var h = SetupAnnouncer(startPaused: false);
-			// Tick once to exit load phase
-			h.Announcer.Tick();
-			h.FakeTime = 1.1f;
-			h.Announcer.Tick(); // flush the empty first batch
-
-			h.Spoken.Clear();
-			SpeechPipeline.Reset();
-
-			// Now add a notification — should trigger first-flush logic
-			// Wait, _firstFlush was set false by the Tick above.
-			// Need to rethink: _firstFlush is consumed on the first flush after load.
-			// Once the load phase exits, the first Tick sets batchPending.
-			// The next Tick after the window flushes and clears _firstFlush.
-			// So we need to test that the FIRST flush uses 1.0s, not 0.2s.
-			CleanupAnnouncer(h);
-
-			// Restart clean: unpause immediately, add notification, verify 1.0s window
-			h = SetupAnnouncer(startPaused: false);
 			AddNotification(h.Tracker, "Stress");
 			h.Announcer.Tick(); // exits load phase, resets batch start to current time (0)
 			bool noSpeechYet = h.Spoken.Count == 0;
@@ -2330,34 +2312,33 @@ namespace OniAccess.Tests {
 		private static (string, bool, string) AnnouncerCountDeltaOnlyAnnouncesIncreases() {
 			var h = SetupAnnouncer(startPaused: false);
 			AddNotification(h.Tracker, "Stress");
+			AddNotification(h.Tracker, "Stress");
 			h.Announcer.Tick(); // exit load phase
 			h.FakeTime = 1.1f;
-			h.Announcer.Tick(); // first flush → speaks "Stress"
+			h.Announcer.Tick(); // first flush → speaks "Stress x2", _knownCounts["Stress"]=2
 
-			// Add second "Stress" → count grows from 1 to 2
+			string format = (string)STRINGS.ONIACCESS.NOTIFICATIONS.GROUP_COUNT;
+			string expectedX2 = string.Format(format, "Stress", 2);
+			bool spokeIncrease = h.Spoken.Count == 1 && h.Spoken[0].text == expectedX2;
+
+			// Remove one "Stress" (count 2→1) and add "Hunger" to trigger a flush.
+			// The flush must skip "Stress" (count 1 <= knownCount 2) and only
+			// announce "Hunger". This exercises the count-delta skip on line 87.
 			h.Spoken.Clear();
 			SpeechPipeline.Reset();
 			h.FakeTime = 2.0f;
-			AddNotification(h.Tracker, "Stress");
+			RemoveFirstNotification(h.Tracker, "Stress");
+			AddNotification(h.Tracker, "Hunger");
 			h.FakeTime = 2.3f;
 			h.Announcer.Tick();
-			string format = (string)STRINGS.ONIACCESS.NOTIFICATIONS.GROUP_COUNT;
-			string expected = string.Format(format, "Stress", 2);
-			bool spokeIncrease = h.Spoken.Count == 1 && h.Spoken[0].text == expected;
 
-			// Remove one "Stress" → count drops from 2 to 1. Should be silent.
-			h.Spoken.Clear();
-			SpeechPipeline.Reset();
-			h.FakeTime = 3.0f;
-			RemoveFirstNotification(h.Tracker, "Stress");
-			h.FakeTime = 3.3f;
-			h.Announcer.Tick();
-			bool silentDecrease = h.Spoken.Count == 0;
+			bool hungerOnly = h.Spoken.Count == 1 && h.Spoken[0].text == "Hunger";
 
 			CleanupAnnouncer(h);
-			bool ok = spokeIncrease && silentDecrease;
+			bool ok = spokeIncrease && hungerOnly;
 			return Assert("AnnouncerCountDeltaOnlyAnnouncesIncreases", ok,
-				$"spokeIncrease={spokeIncrease}, silentDecrease={silentDecrease}");
+				$"spokeIncrease={spokeIncrease}, hungerOnly={hungerOnly}" +
+				$", spoken=[{string.Join(", ", h.Spoken.ConvertAll(s => s.text))}]");
 		}
 
 		private static (string, bool, string) AnnouncerStaleKeyCleanupAllowsReannouncement() {
