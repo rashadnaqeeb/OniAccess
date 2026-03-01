@@ -252,7 +252,6 @@ namespace OniAccess.Widgets {
 							? capturedLabel.GetParsedText() : "All",
 						Component = capturedBox,
 						GameObject = capturedBox.gameObject,
-						SuppressTooltip = true,
 						SpeechFunc = () => {
 							string lbl = capturedLabel != null
 								? capturedLabel.GetParsedText() : "All";
@@ -278,7 +277,6 @@ namespace OniAccess.Widgets {
 							Label = label,
 							Component = captured,
 							GameObject = captured.gameObject,
-							SuppressTooltip = true,
 							SpeechFunc = () =>
 								$"{label}, {WidgetOps.GetMultiToggleState(captured)}"
 						});
@@ -302,7 +300,6 @@ namespace OniAccess.Widgets {
 							Label = label,
 							Component = captured,
 							GameObject = captured.gameObject,
-							SuppressTooltip = true,
 							SpeechFunc = () =>
 								$"{label}, {WidgetOps.GetMultiToggleState(captured)}"
 						});
