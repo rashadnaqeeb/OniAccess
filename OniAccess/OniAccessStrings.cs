@@ -266,6 +266,9 @@ namespace STRINGS {
 			public static LocString ACTIVATION = "{0} tool, {1}";
 			public static LocString ACTIVATION_WITH_FILTER = "{0} tool, {1}, {2}";
 			public static LocString FALLBACK_LABEL = "tool";
+			public static LocString MOVE_TO_ACTIVATION = "move to, {0}";
+			public static LocString MOVE_TO_CONFIRMED = "destination set";
+			public static LocString MOVE_TO_UNREACHABLE = "unreachable";
 		}
 
 		public class TEMPERATURE {

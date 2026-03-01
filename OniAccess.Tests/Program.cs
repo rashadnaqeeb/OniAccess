@@ -515,7 +515,7 @@ namespace OniAccess.Tests {
 		}
 
 		// ========================================
-		// CollectHelpEntries tests (new)
+		// CollectHelpEntries tests
 		// ========================================
 
 		private static IReadOnlyList<HelpEntry> MakeEntries(params string[] keys) {

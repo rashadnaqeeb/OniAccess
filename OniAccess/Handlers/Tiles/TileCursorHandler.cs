@@ -384,8 +384,13 @@ namespace OniAccess.Handlers.Tiles {
 			if (tool is BuildTool || tool is UtilityBuildTool || tool is WireBuildTool) return;
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolHandler) return;
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolFilterHandler) return;
+			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.MoveToLocationHandler) return;
 			if (HandlerStack.ActiveHandler is Build.BuildToolHandler) return;
 			if (HandlerStack.ActiveHandler is Build.ActionMenuHandler) return;
+			if (tool is MoveToLocationTool) {
+				HandlerStack.Push(new OniAccess.Handlers.Tools.MoveToLocationHandler());
+				return;
+			}
 			HandlerStack.Push(new OniAccess.Handlers.Tools.ToolHandler());
 		}
 

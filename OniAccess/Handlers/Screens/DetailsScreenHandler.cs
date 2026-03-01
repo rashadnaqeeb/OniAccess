@@ -33,6 +33,7 @@ namespace OniAccess.Handlers.Screens {
 		private GameObject _lastTarget;
 		private bool _suppressDisplayName;
 		private bool _pendingFirstSection;
+		private bool _pendingSilentRebuild;
 		private bool _pendingTabSpeech;
 		private bool _pendingActivationSpeech;
 
@@ -411,13 +412,25 @@ namespace OniAccess.Handlers.Screens {
 		// LIFECYCLE
 		// ========================================
 
+		/// <summary>
+		/// When set, the next DetailsScreenHandler activation suppresses all
+		/// speech. Used by MoveToLocationHandler so the details screen
+		/// reopens silently after the tool completes.
+		/// </summary>
+		internal static bool SuppressNextActivation;
+
 		public override void OnActivate() {
 			_lastTarget = DetailsScreen.Instance != null
 				? DetailsScreen.Instance.target : null;
 			RebuildActiveTabs(_lastTarget);
 			_tabIndex = 0;
 			SwitchGameTab();
-			_pendingFirstSection = true;
+			if (SuppressNextActivation) {
+				SuppressNextActivation = false;
+				_pendingSilentRebuild = true;
+			} else {
+				_pendingFirstSection = true;
+			}
 			_suppressDisplayName = true;
 			base.OnActivate();
 			_suppressDisplayName = false;
@@ -468,6 +481,13 @@ namespace OniAccess.Handlers.Screens {
 					SpeakFirstSection();
 				}
 				return false;
+			} else if (_pendingSilentRebuild) {
+				RebuildSections();
+				if (_sections.Count > 0) {
+					_pendingSilentRebuild = false;
+					ResetNavigation();
+					return false;
+				}
 			} else if (_pendingFirstSection) {
 				RebuildSections();
 				if (_sections.Count > 0) {
