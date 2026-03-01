@@ -4,7 +4,7 @@ using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Tiles {
-	public class SearchInputHandler : IAccessHandler {
+	public class SearchInputHandler: IAccessHandler {
 		private readonly ScannerNavigator _scanner;
 		private readonly StringBuilder _query = new StringBuilder();
 

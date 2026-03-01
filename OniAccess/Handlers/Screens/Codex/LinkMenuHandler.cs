@@ -7,7 +7,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 	/// Temporary popup menu for choosing between multiple links on a widget.
 	/// Pushed onto HandlerStack; pops itself on Enter (follow link) or Escape.
 	/// </summary>
-	internal class LinkMenuHandler : BaseMenuHandler {
+	internal class LinkMenuHandler: BaseMenuHandler {
 		private readonly CodexScreenHandler _parent;
 		private readonly List<(string id, string text)> _links;
 

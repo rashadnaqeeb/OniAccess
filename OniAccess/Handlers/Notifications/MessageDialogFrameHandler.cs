@@ -17,7 +17,7 @@ namespace OniAccess.Handlers.Notifications {
 	/// MessageDialogFrame extends KScreen and overrides OnActivate, so the
 	/// generic KScreen_Activate_Patch fires naturally.
 	/// </summary>
-	internal sealed class MessageDialogFrameHandler : BaseWidgetHandler {
+	internal sealed class MessageDialogFrameHandler: BaseWidgetHandler {
 		private LocText _titleLocText;
 		private readonly Dictionary<int, List<(string id, string text)>> _widgetLinks
 			= new Dictionary<int, List<(string id, string text)>>();
@@ -167,7 +167,7 @@ namespace OniAccess.Handlers.Notifications {
 		/// <summary>
 		/// Popup menu for choosing between multiple inline codex links.
 		/// </summary>
-		private sealed class MessageLinkMenuHandler : BaseMenuHandler {
+		private sealed class MessageLinkMenuHandler: BaseMenuHandler {
 			private readonly List<(string id, string text)> _links;
 
 			internal MessageLinkMenuHandler(List<(string id, string text)> links) : base(screen: null) {

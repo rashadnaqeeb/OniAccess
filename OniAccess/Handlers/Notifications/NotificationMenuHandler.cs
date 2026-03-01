@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Notifications {
 	/// Groups by titleText, sorted by (Type, Idx). Supports Enter to activate,
 	/// Delete to dismiss, and Escape to close.
 	/// </summary>
-	internal sealed class NotificationMenuHandler : BaseMenuHandler {
+	internal sealed class NotificationMenuHandler: BaseMenuHandler {
 		private readonly NotificationTracker _tracker;
 
 		internal NotificationMenuHandler(NotificationTracker tracker) : base(screen: null) {

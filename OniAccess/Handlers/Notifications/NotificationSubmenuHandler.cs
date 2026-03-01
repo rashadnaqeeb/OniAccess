@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Notifications {
 	/// Reads live from the tracker's current group matching the title key.
 	/// If the group disappears (all members removed), auto-pops.
 	/// </summary>
-	internal sealed class NotificationSubmenuHandler : BaseMenuHandler {
+	internal sealed class NotificationSubmenuHandler: BaseMenuHandler {
 		private readonly NotificationTracker _tracker;
 		private readonly string _titleKey;
 

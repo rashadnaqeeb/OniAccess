@@ -253,17 +253,17 @@ namespace OniAccess.Handlers.Screens.Skills {
 
 			switch (cat) {
 				case CAT_DUPE_INFO: {
-					var labels = SkillsHelper.BuildDupeInfoLabels(identity);
-					return idx < labels.Count ? labels[idx] : null;
-				}
+						var labels = SkillsHelper.BuildDupeInfoLabels(identity);
+						return idx < labels.Count ? labels[idx] : null;
+					}
 				case CAT_AVAILABLE:
 				case CAT_LOCKED:
 				case CAT_MASTERED: {
-					var skills = SkillsHelper.GetSkillsInBucket(
-						CategoryToBucket(cat), identity, model);
-					if (idx < 0 || idx >= skills.Count) return null;
-					return SkillsHelper.BuildSkillLabel(skills[idx], identity);
-				}
+						var skills = SkillsHelper.GetSkillsInBucket(
+							CategoryToBucket(cat), identity, model);
+						if (idx < 0 || idx >= skills.Count) return null;
+						return SkillsHelper.BuildSkillLabel(skills[idx], identity);
+					}
 				case CAT_BOOSTERS:
 					return GetBoosterLabel(idx);
 				default:

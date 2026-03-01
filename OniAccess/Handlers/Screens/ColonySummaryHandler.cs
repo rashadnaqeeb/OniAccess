@@ -20,7 +20,7 @@ namespace OniAccess.Handlers.Screens {
 	/// - Detail view: Up/Down navigates entries within current section, Tab switches sections
 	/// - Escape returns from detail to explorer (main menu) or closes (in-game)
 	/// </summary>
-	public class ColonySummaryHandler : BaseMenuHandler {
+	public class ColonySummaryHandler: BaseMenuHandler {
 		private const int ExplorerSectionMain = 0;
 		private const int ExplorerSectionAchievements = 1;
 		private const int ExplorerSectionCount = 2;

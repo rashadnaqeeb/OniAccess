@@ -214,13 +214,11 @@ namespace OniAccess.Handlers.Screens.Research {
 		}
 
 		internal static void PlayClickSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click_Open")); }
-			catch (System.Exception ex) { Util.Log.Warn($"ResearchHelper: click sound failed: {ex.Message}"); }
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click_Open")); } catch (System.Exception ex) { Util.Log.Warn($"ResearchHelper: click sound failed: {ex.Message}"); }
 		}
 
 		internal static void PlayRejectSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("Negative")); }
-			catch (System.Exception ex) { Util.Log.Warn($"ResearchHelper: reject sound failed: {ex.Message}"); }
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("Negative")); } catch (System.Exception ex) { Util.Log.Warn($"ResearchHelper: reject sound failed: {ex.Message}"); }
 		}
 
 		static string GetResearchTypeName(string typeId) {

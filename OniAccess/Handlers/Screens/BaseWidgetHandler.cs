@@ -263,7 +263,7 @@ namespace OniAccess.Handlers.Screens {
 		// WIDGET SPEECH
 		// ========================================
 
-			protected virtual string GetWidgetSpeechText(Widget widget) => WidgetOps.GetSpeechText(widget);
+		protected virtual string GetWidgetSpeechText(Widget widget) => WidgetOps.GetSpeechText(widget);
 
 		protected string BuildWidgetText(Widget widget) {
 			string text = GetWidgetSpeechText(widget);

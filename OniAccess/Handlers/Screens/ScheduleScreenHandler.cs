@@ -14,7 +14,7 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Lifecycle: OnShow-patch on ScheduleScreen.OnShow(bool).
 	/// </summary>
-	public class ScheduleScreenHandler : BaseScreenHandler {
+	public class ScheduleScreenHandler: BaseScreenHandler {
 		private enum TabId { Schedules, Duplicants }
 
 		private readonly SchedulesTab _schedulesTab;

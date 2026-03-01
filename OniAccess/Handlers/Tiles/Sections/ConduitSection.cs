@@ -6,7 +6,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// are registered on a layer only for port tracking (handled by
 	/// BuildingSection). Parameterized by the object layers to scan.
 	/// </summary>
-	public class ConduitSection : ICellSection {
+	public class ConduitSection: ICellSection {
 		private readonly int[] _layers;
 
 		public ConduitSection(params int[] layers) {

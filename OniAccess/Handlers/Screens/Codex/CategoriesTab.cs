@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 	/// Leaf activation calls ChangeArticle on the game screen and
 	/// switches to the content tab.
 	/// </summary>
-	internal class CategoriesTab : NestedMenuHandler, ICodexTab {
+	internal class CategoriesTab: NestedMenuHandler, ICodexTab {
 		private readonly CodexScreenHandler _parent;
 
 		internal CategoriesTab(CodexScreenHandler parent) : base(screen: null) {
@@ -29,7 +29,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// ICodexTab
 		// ========================================
 
-			public void OnTabActivated(bool announce) {
+		public void OnTabActivated(bool announce) {
 			OnTabActivatedOnEntry(announce, entryId: null);
 		}
 

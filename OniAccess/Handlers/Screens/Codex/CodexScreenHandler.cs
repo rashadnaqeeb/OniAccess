@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 	/// Lifecycle: Show-patch on CodexScreen.OnShow(bool).
 	/// ChangeArticle postfix resets the content tab.
 	/// </summary>
-	public class CodexScreenHandler : BaseScreenHandler {
+	public class CodexScreenHandler: BaseScreenHandler {
 		private enum TabId { Categories, Content }
 
 		private readonly CategoriesTab _categoriesTab;

@@ -656,13 +656,11 @@ namespace OniAccess.Handlers.Screens.Skills {
 		// ========================================
 
 		internal static void PlayClickSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click_Open")); }
-			catch (Exception ex) { Util.Log.Warn($"SkillsHelper: click sound failed: {ex.Message}"); }
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click_Open")); } catch (Exception ex) { Util.Log.Warn($"SkillsHelper: click sound failed: {ex.Message}"); }
 		}
 
 		internal static void PlayRejectSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("Negative")); }
-			catch (Exception ex) { Util.Log.Warn($"SkillsHelper: reject sound failed: {ex.Message}"); }
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("Negative")); } catch (Exception ex) { Util.Log.Warn($"SkillsHelper: reject sound failed: {ex.Message}"); }
 		}
 	}
 }

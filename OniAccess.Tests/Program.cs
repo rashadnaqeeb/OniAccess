@@ -987,7 +987,7 @@ namespace OniAccess.Tests {
 		// LogCapture helper
 		// ========================================
 
-		private class LogCapture : IDisposable {
+		private class LogCapture: IDisposable {
 			public List<string> LogMessages = new List<string>();
 			public List<string> WarnMessages = new List<string>();
 			public List<string> ErrorMessages = new List<string>();
@@ -1764,13 +1764,13 @@ namespace OniAccess.Tests {
 		// GlanceComposer tests
 		// ========================================
 
-		private class StubSection : ICellSection {
+		private class StubSection: ICellSection {
 			private readonly string[] _tokens;
 			public StubSection(params string[] tokens) { _tokens = tokens; }
 			public IEnumerable<string> Read(int cell, CellContext ctx) => _tokens;
 		}
 
-		private class ThrowingSection : ICellSection {
+		private class ThrowingSection: ICellSection {
 			public IEnumerable<string> Read(int cell, CellContext ctx) {
 				throw new InvalidOperationException("section exploded");
 			}

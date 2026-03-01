@@ -329,29 +329,29 @@ namespace OniAccess.Handlers.Screens.Codex {
 					AppendTransitionResult(sb, source.lowTempTransition, source.lowTempTransitionOreID, source.lowTempTransitionOreMassConversion);
 					break;
 				case CodexTemperatureTransitionPanel.TransitionType.SUBLIMATE: {
-					sb.Append(", ");
-					sb.Append(STRINGS.CODEX.FORMAT_STRINGS.SUBLIMATION_NAME);
-					var result = ElementLoader.FindElementByHash(source.sublimateId);
-					if (result != null) {
-						sb.Append(". ");
-						sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
-						sb.Append(' ');
-						sb.Append(result.name);
+						sb.Append(", ");
+						sb.Append(STRINGS.CODEX.FORMAT_STRINGS.SUBLIMATION_NAME);
+						var result = ElementLoader.FindElementByHash(source.sublimateId);
+						if (result != null) {
+							sb.Append(". ");
+							sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
+							sb.Append(' ');
+							sb.Append(result.name);
+						}
+						break;
 					}
-					break;
-				}
 				case CodexTemperatureTransitionPanel.TransitionType.OFFGASS: {
-					sb.Append(", ");
-					sb.Append(STRINGS.CODEX.FORMAT_STRINGS.OFFGASS_NAME);
-					var result = ElementLoader.FindElementByHash(source.sublimateId);
-					if (result != null) {
-						sb.Append(". ");
-						sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
-						sb.Append(' ');
-						sb.Append(result.name);
+						sb.Append(", ");
+						sb.Append(STRINGS.CODEX.FORMAT_STRINGS.OFFGASS_NAME);
+						var result = ElementLoader.FindElementByHash(source.sublimateId);
+						if (result != null) {
+							sb.Append(". ");
+							sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
+							sb.Append(' ');
+							sb.Append(result.name);
+						}
+						break;
 					}
-					break;
-				}
 			}
 
 			return sb.ToString();

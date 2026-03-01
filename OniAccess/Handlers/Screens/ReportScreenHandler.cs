@@ -19,7 +19,7 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Lifecycle: OnShow-patch on ReportScreen.OnShow(bool).
 	/// </summary>
-	public class ReportScreenHandler : NestedMenuHandler {
+	public class ReportScreenHandler: NestedMenuHandler {
 		private int _currentDay;
 
 		// Section structure derived from ReportGroups. This is static metadata

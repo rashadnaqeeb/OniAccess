@@ -91,8 +91,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 		}
 
 		internal static void PlayClickSound() {
-			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); }
-			catch (System.Exception ex) { Util.Log.Error($"PlayClickSound failed: {ex.Message}"); }
+			try { KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click")); } catch (System.Exception ex) { Util.Log.Error($"PlayClickSound failed: {ex.Message}"); }
 		}
 
 		internal static void PlayHoverSound() => BaseScreenHandler.PlayHoverSound();

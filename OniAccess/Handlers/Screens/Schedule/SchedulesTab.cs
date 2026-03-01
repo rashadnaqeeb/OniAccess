@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 	/// Does not extend BaseMenuHandler — the 2D cursor and custom key routing
 	/// conflict with 1D list navigation.
 	/// </summary>
-	internal class SchedulesTab : IScheduleTab {
+	internal class SchedulesTab: IScheduleTab {
 		private readonly ScheduleScreenHandler _parent;
 
 		// 2D cursor
