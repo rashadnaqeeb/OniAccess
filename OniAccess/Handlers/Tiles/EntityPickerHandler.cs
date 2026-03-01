@@ -110,14 +110,6 @@ namespace OniAccess.Handlers.Tiles {
 
 			entries.Recycle();
 
-			var minionGo = Grid.Objects[cell, (int)ObjectLayer.Minion];
-			if (minionGo != null) {
-				var ks = minionGo.GetComponent<KSelectable>();
-				if (ks != null && ks.isActiveAndEnabled && ks.IsSelectable
-					&& seen.Add(ks.gameObject))
-					result.Add(ks);
-			}
-
 			var pickGo = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 			if (pickGo != null) {
 				var pick = pickGo.GetComponent<Pickupable>();
