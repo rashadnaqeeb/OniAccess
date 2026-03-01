@@ -172,6 +172,7 @@ namespace STRINGS {
 			public static LocString BIONIC_UPGRADE = "Bionic upgrade";
 			public static LocString BIONIC_BUG = "Bionic bug";
 			public static LocString SLOT = "Slot {0}";
+			public static LocString COLONY_HAS = "Colony has: ";
 		}
 
 		public class SAVE_LOAD {

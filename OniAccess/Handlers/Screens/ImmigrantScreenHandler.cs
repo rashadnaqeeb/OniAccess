@@ -90,7 +90,7 @@ namespace OniAccess.Handlers.Screens {
 
 				if (confirmBtn != null) {
 					_widgets.Add(new ButtonWidget {
-						Label = GetButtonLabel(confirmBtn, (string)STRINGS.UI.CONFIRMDIALOG.OK),
+						Label = (string)STRINGS.UI.IMMIGRANTSCREEN.REJECTALL,
 						Component = confirmBtn,
 						GameObject = confirmBtn.gameObject,
 						Tag = "confirm_reject"
@@ -98,7 +98,7 @@ namespace OniAccess.Handlers.Screens {
 				}
 				if (cancelBtn != null) {
 					_widgets.Add(new ButtonWidget {
-						Label = GetButtonLabel(cancelBtn, (string)STRINGS.UI.CONFIRMDIALOG.CANCEL),
+						Label = (string)STRINGS.UI.CONFIRMDIALOG.CANCEL,
 						Component = cancelBtn,
 						GameObject = cancelBtn.gameObject,
 						Tag = "cancel_reject"
@@ -384,6 +384,15 @@ namespace OniAccess.Handlers.Screens {
 					new System.Type[] { typeof(WorldInventory) })
 					.GetValue<string>(inventory);
 				if (!string.IsNullOrEmpty(current)) {
+					// Game returns "Available: {amount}" which is misleading —
+					// replace prefix with mod string for clarity.
+					string gameFormat = (string)STRINGS.UI.IMMIGRANTSCREEN.CARE_PACKAGE_CURRENT_AMOUNT;
+					int placeholder = gameFormat.IndexOf("{0}");
+					if (placeholder > 0) {
+						string gamePrefix = gameFormat.Substring(0, placeholder);
+						current = current.Replace(gamePrefix,
+							(string)STRINGS.ONIACCESS.INFO.COLONY_HAS);
+					}
 					_widgets.Add(new LabelWidget {
 						Label = current.Trim(),
 						GameObject = container.gameObject
