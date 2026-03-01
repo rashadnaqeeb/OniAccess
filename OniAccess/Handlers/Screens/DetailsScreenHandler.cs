@@ -283,6 +283,13 @@ namespace OniAccess.Handlers.Screens {
 		private void AdjustPriority(PriorityWidget pw, int direction) {
 			bool changed = pw.Adjust(direction, 0);
 			if (changed) {
+				try {
+					PriorityScreen.PlayPriorityConfirmSound(
+						pw.Prioritizable.GetMasterPriority());
+				} catch (System.Exception ex) {
+					Util.Log.Warn(
+						$"AdjustPriority sound failed: {ex.Message}");
+				}
 				RebuildSections();
 				var fresh = GetCurrentWidget();
 				if (fresh != null)
