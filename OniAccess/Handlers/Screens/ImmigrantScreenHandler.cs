@@ -14,7 +14,7 @@ namespace OniAccess.Handlers.Screens {
 	/// Choose selects the deliverable and prints. Reject All opens a confirmation dialog.
 	/// Escape closes the screen without rejecting.
 	/// </summary>
-	public class ImmigrantScreenHandler : BaseWidgetHandler {
+	public class ImmigrantScreenHandler: BaseWidgetHandler {
 		private int _currentSlot;
 		private bool _rejectDialogOpen;
 		private bool _pendingProceed;

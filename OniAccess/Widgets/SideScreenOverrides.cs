@@ -235,8 +235,7 @@ namespace OniAccess.Widgets {
 
 		static void WalkTreeFilter(TreeFilterableSideScreen screen, List<Widget> items) {
 			Traverse tv;
-			try { tv = Traverse.Create(screen); }
-			catch (System.Exception ex) {
+			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
 				Util.Log.Warn($"WalkTreeFilter: Traverse create failed: {ex.Message}");
 				return;
 			}
@@ -315,8 +314,7 @@ namespace OniAccess.Widgets {
 
 			// Category rows from rowGroup
 			GameObject rowGroup;
-			try { rowGroup = tv.Field<GameObject>("rowGroup").Value; }
-			catch (System.Exception ex) {
+			try { rowGroup = tv.Field<GameObject>("rowGroup").Value; } catch (System.Exception ex) {
 				Util.Log.Warn($"WalkTreeFilter: rowGroup read failed: {ex.Message}");
 				return;
 			}
