@@ -49,9 +49,16 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 					return building.Def.Name;
 			}
 			string name = go.GetComponent<KSelectable>()?.GetName() ?? entry.ItemName;
-			if (entry.Subcategory == ScannerTaxonomy.Subcategories.Bottles)
+			var prefabId = go.GetComponent<KPrefabID>();
+			if (prefabId != null && IsBottle(prefabId))
 				return (string)STRINGS.ONIACCESS.SCANNER.BOTTLE_PREFIX + name;
 			return name;
+		}
+
+		private static bool IsBottle(KPrefabID prefabId) {
+			return prefabId.HasTag(GameTags.Liquid)
+				|| prefabId.HasTag(GameTags.Breathable)
+				|| prefabId.HasTag(GameTags.Unbreathable);
 		}
 
 		private IEnumerable<ScanEntry> ScanBuildings(int worldId) {
