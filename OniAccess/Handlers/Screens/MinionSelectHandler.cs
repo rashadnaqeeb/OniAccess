@@ -7,8 +7,7 @@ using OniAccess.Input;
 using OniAccess.Widgets;
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
-	/// Handler for MinionSelectScreen (initial colony start — full game start screen)
-	/// and Printing Pod selection (recurring every 3 cycles).
+	/// Handler for MinionSelectScreen (initial colony start — full game start screen).
 	///
 	/// Two-level navigation:
 	/// TOP LEVEL (Up/Down): Colony name, Shuffle name, Select duplicants, Embark

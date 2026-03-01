@@ -152,6 +152,13 @@ namespace OniAccess.Patches {
 		}
 	}
 
+	/// ImmigrantScreen declares OnShow directly. Patch it for show/hide lifecycle.
+	[HarmonyPatch(typeof(ImmigrantScreen), "OnShow")]
+	internal static class ImmigrantScreen_OnShow_Patch {
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
+	}
+
 	/// <summary>
 	/// MinionSelectScreen.OnSpawn() does not call base.OnSpawn(), so
 	/// KScreen.Activate() is never invoked. Patch OnSpawn directly.

@@ -175,8 +175,11 @@ namespace OniAccess.Handlers {
 			Register(worldGenType, screen => new WorldGenHandler(screen));
 
 			// MinionSelectScreen (CharacterSelectionController -> NewGameFlowScreen)
-			// Handles both initial colony start and Printing Pod duplicant selection
 			Register<MinionSelectScreen>(screen => new MinionSelectHandler(screen));
+
+			// ImmigrantScreen (Printing Pod selection, every 3 cycles)
+			Register<ImmigrantScreen>(screen => new ImmigrantScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(ImmigrantScreen));
 
 			// LoadScreen (KModalScreen -- save/load with two-level colony/save navigation)
 			Register<LoadScreen>(screen => new SaveLoadHandler(screen));

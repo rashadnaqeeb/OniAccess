@@ -43,6 +43,7 @@ namespace STRINGS {
 			public static LocString TOOLTIP_BROWSER = "Tooltip";
 			public static LocString ENTITY_PICKER = "object selection";
 			public static LocString DETAILS_SCREEN = "Entity details";
+			public static LocString PRINTING_POD = "Printing pod";
 		}
 
 		public class SUPPLY_CLOSET {
@@ -64,6 +65,7 @@ namespace STRINGS {
 			public static LocString SWITCH_PANEL = "Switch panel";
 			public static LocString SWITCH_SECTION = "Switch section";
 			public static LocString SWITCH_DUPE_SLOT = "Switch duplicant slot";
+			public static LocString SWITCH_OPTION = "Switch option";
 			public static LocString MOVE_CURSOR = "Move tile cursor";
 			public static LocString READ_COORDS = "Read coordinates";
 			public static LocString CYCLE_COORD_MODE = "Cycle coordinate display";
