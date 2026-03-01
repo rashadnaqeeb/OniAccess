@@ -258,7 +258,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 			if (Array.Exists(conditions,
 				c => c == MinionResume.SkillMasteryConditions.MissingPreviousSkill)) {
 				var missing = GetMissingPrereqs(skill, resume);
-				return STRINGS.ONIACCESS.SKILLS.NEEDS + " " + string.Join(", ", missing);
+				return string.Format(STRINGS.ONIACCESS.SKILLS.NEEDS_FMT, string.Join(", ", missing));
 			}
 			if (Array.Exists(conditions,
 				c => c == MinionResume.SkillMasteryConditions.NeedsSkillPoints))
@@ -306,7 +306,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 				var prereq = Db.Get().Skills.TryGet(prereqId);
 				names.Add(prereq != null ? prereq.Name : prereqId);
 			}
-			return STRINGS.ONIACCESS.SKILLS.NEEDS + " " + string.Join(", ", names);
+			return string.Format(STRINGS.ONIACCESS.SKILLS.NEEDS_FMT, string.Join(", ", names));
 		}
 
 		internal static int CountMasters(string skillId) {
@@ -328,15 +328,15 @@ namespace OniAccess.Handlers.Screens.Skills {
 			var resume = GetResume(identity);
 
 			if (resume == null) {
-				labels.Add(identity.GetProperName() + ", " +
-					STRINGS.ONIACCESS.TABLE.STORED);
+				labels.Add(string.Format(STRINGS.ONIACCESS.SKILLS.NAME_STORED,
+					identity.GetProperName()));
 				return labels;
 			}
 
 			// Name and points
-			labels.Add(identity.GetProperName() + ", " +
-				string.Format(STRINGS.ONIACCESS.SKILLS.POINTS,
-					resume.AvailableSkillpoints));
+			labels.Add(string.Format(STRINGS.ONIACCESS.SKILLS.NAME_POINTS,
+				identity.GetProperName(),
+				string.Format(STRINGS.ONIACCESS.SKILLS.POINTS, resume.AvailableSkillpoints)));
 
 			// Interests (skill groups with aptitude)
 			labels.Add(BuildInterestsLabel(resume));
@@ -385,14 +385,15 @@ namespace OniAccess.Handlers.Screens.Skills {
 			string header, AttributeInstance attr) {
 			string total = $"{attr.GetTotalValue():F0}";
 			var parts = new List<string>();
-			parts.Add(TextFilter.FilterForSpeech(header) + " " + total);
+			parts.Add(string.Format(STRINGS.ONIACCESS.SKILLS.HEADER_TOTAL,
+				TextFilter.FilterForSpeech(header), total));
 			for (int i = 0; i < attr.Modifiers.Count; i++) {
 				var mod = attr.Modifiers[i];
 				float val = mod.Value;
 				if (val == 0f) continue;
 				string sign = val > 0 ? "+" : "";
-				parts.Add(TextFilter.FilterForSpeech(mod.GetDescription()) +
-					" " + sign + $"{val:F0}");
+				parts.Add(string.Format(STRINGS.ONIACCESS.SKILLS.MODIFIER_LINE,
+					TextFilter.FilterForSpeech(mod.GetDescription()), sign, $"{val:F0}"));
 			}
 			return string.Join(", ", parts);
 		}
@@ -629,8 +630,9 @@ namespace OniAccess.Handlers.Screens.Skills {
 
 			if (resume.HasMasteredSkill(skill.Id)) {
 				PlayRejectSound();
-				SpeechPipeline.SpeakInterrupt(
-					skill.Name + ", " + STRINGS.ONIACCESS.SKILLS.MASTERED);
+				SpeechPipeline.SpeakInterrupt(string.Format(
+					STRINGS.ONIACCESS.SKILLS.NAME_STATUS,
+					skill.Name, STRINGS.ONIACCESS.SKILLS.MASTERED));
 				return;
 			}
 
@@ -638,7 +640,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 			if (!resume.CanMasterSkill(conditions)) {
 				PlayRejectSound();
 				string reason = GetLockReason(skill, resume);
-				SpeechPipeline.SpeakInterrupt(skill.Name + ", " + reason);
+				SpeechPipeline.SpeakInterrupt(string.Format(
+					STRINGS.ONIACCESS.SKILLS.NAME_STATUS, skill.Name, reason));
 				return;
 			}
 

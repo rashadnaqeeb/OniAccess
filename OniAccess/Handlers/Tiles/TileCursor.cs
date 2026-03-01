@@ -148,7 +148,8 @@ namespace OniAccess.Handlers.Tiles {
 
 			string content = composer.Compose(_cell);
 			if (content == null)
-				content = $"{Grid.Element[_cell].name}, {Sections.ElementSection.FormatGlanceMass(Grid.Mass[_cell])}";
+				content = string.Format(STRINGS.ONIACCESS.GLANCE.ELEMENT_MASS,
+					Grid.Element[_cell].name, Sections.ElementSection.FormatGlanceMass(Grid.Mass[_cell]));
 
 			if (mode == OverlayModes.Rooms.ID)
 				content = PrependRoomName(content);

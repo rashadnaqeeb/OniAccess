@@ -1,5 +1,11 @@
 namespace STRINGS {
 	public class ONIACCESS {
+		public class SPRITES {
+			public static LocString WARNING = "warning:";
+			public static LocString LOGIC_GREEN = "green signal";
+			public static LocString LOGIC_RED = "red signal";
+		}
+
 		public class SPEECH {
 			public static LocString MOD_LOADED = "Oni-Access version {0} loaded";
 			public static LocString MOD_ON = "Oni-Access on";
@@ -325,6 +331,7 @@ namespace STRINGS {
 			public static LocString OVERLAY_DECOR = "{0}{1} decor";
 			public static LocString DISEASE_CLEAR = "clean";
 			public static LocString DISEASE_ENTRY = "{0}, {1}";
+			public static LocString ELEMENT_MASS = "{0}, {1}";
 		}
 
 		public class SCANNER {
@@ -543,12 +550,17 @@ namespace STRINGS {
 			public static LocString NO_ACTIONS = "No actions";
 			public static LocString PRIORITY = "Priority";
 			public static LocString PIN_RESOURCE = "Pin resource";
+			public static LocString DUPE_HAT_SUBTITLE = "{0}, {1}, {2}";
+			public static LocString DUPE_SUBTITLE = "{0}, {1}";
+			public static LocString ENTITY_TAB = "{0}, {1}";
+			public static LocString PARENT_ITEM = "{0}, {1}";
+			public static LocString HEADER_ITEM = "{0}, {1}";
 		}
 
 		public class TABLE {
-			public static LocString SORT_ASCENDING = "sorted low to high";
-			public static LocString SORT_DESCENDING = "sorted high to low";
-			public static LocString SORT_CLEARED = "sort cleared";
+			public static LocString SORT_DESC_FMT = "{0}, sorted high to low";
+			public static LocString SORT_ASC_FMT = "{0}, sorted low to high";
+			public static LocString SORT_CLEARED_FMT = "{0}, sort cleared";
 			public static LocString NAVIGATE_TABLE = "Navigate rows and columns";
 			public static LocString JUMP_FIRST_LAST = "Jump to first or last row";
 			public static LocString SORT_COLUMN = "Sort by column on header row";
@@ -606,13 +618,14 @@ namespace STRINGS {
 			public static LocString LOCKED = "locked";
 			public static LocString COMPLETED = "completed";
 			public static LocString ACTIVE = "active";
-			public static LocString NEEDS = "needs";
-			public static LocString UNLOCKS = "unlocks";
+			public static LocString NEEDS_FMT = "needs {0}";
+			public static LocString UNLOCKS_FMT = "unlocks {0}";
+			public static LocString PREREQ_COMPLETED = "{0} completed";
+			public static LocString BANKED_POINTS_FMT = "banked research points: {0}";
 			public static LocString QUEUED = "{0} queued";
 			public static LocString CANCELED = "{0} canceled";
 			public static LocString CASCADE_REMOVED = "{0} dependent techs also removed";
 			public static LocString QUEUE_EMPTY = "no research queued";
-			public static LocString BANKED_POINTS = "banked research points:";
 			public static LocString NO_BANKED_POINTS = "no banked research points";
 			public static LocString DEAD_END = "no further techs";
 			public static LocString ROOT_NODE = "no prerequisites";
@@ -653,7 +666,12 @@ namespace STRINGS {
 			public static LocString MORALE_DEFICIT = "morale deficit";
 			public static LocString INTERESTED = "interested";
 			public static LocString NO_SKILL_POINTS = "no skill points";
-			public static LocString NEEDS = "needs";
+			public static LocString NEEDS_FMT = "needs {0}";
+			public static LocString NAME_STATUS = "{0}, {1}";
+			public static LocString MODIFIER_LINE = "{0} {1}{2}";
+			public static LocString HEADER_TOTAL = "{0} {1}";
+			public static LocString NAME_STORED = "{0}, stored";
+			public static LocString NAME_POINTS = "{0}, {1}";
 			public static LocString BLOCKED_BY = "blocked by {0}";
 			public static LocString MORALE_NEED = "{0} morale need";
 			public static LocString MASTERED_BY = "mastered by {0}";
@@ -763,7 +781,8 @@ namespace STRINGS {
 			public static LocString BOOKMARK_SET = "bookmark {0} set";
 			public static LocString NO_BOOKMARK = "no bookmark";
 			public static LocString NO_HOME = "no printing pod";
-			public static LocString AT_BOOKMARK = "here";
+			public static LocString ORIENT_HERE = "here. {0}";
+			public static LocString ORIENT_DISTANCE = "{0}. {1}";
 			public static LocString HELP_HOME = "Jump to Printing Pod";
 			public static LocString HELP_SET_BOOKMARK = "Set bookmark";
 			public static LocString HELP_GOTO_BOOKMARK = "Jump to bookmark";
@@ -798,10 +817,8 @@ namespace STRINGS {
 			public static LocString ORIENT_RIGHT = "right";
 			public static LocString ORIENT_DOWN = "down";
 			public static LocString ORIENT_LEFT = "left";
-			public static LocString DESCRIPTION = "description";
 			public static LocString EFFECTS = "effects";
 			public static LocString REQUIREMENTS = "requirements";
-			public static LocString CATEGORY = "category";
 			public static LocString MATERIAL_SLOT = "{0}: {1}, {2}";
 			public static LocString MATERIAL_SLOT_INSUFFICIENT = "{0}: {1}, {2}, insufficient";
 			public static LocString EXTENT_FORMAT = "extends {0}";
@@ -813,9 +830,15 @@ namespace STRINGS {
 			public static LocString HELP_CANCEL_CONSTRUCTION = "Cancel construction at cursor";
 			public static LocString HELP_OPEN_ACTION_MENU = "Open action menu";
 			public static LocString MATERIAL_OR = " or ";
-			public static LocString ATTRIBUTES = "attributes";
-			public static LocString MATERIAL_EFFECTS = "material effects";
-			public static LocString FACADE = "facade";
+			public static LocString ATTRIBUTES_FMT = "attributes: {0}";
+			public static LocString MATERIAL_EFFECTS_FMT = "material effects: {0}";
+			public static LocString FACADE_FMT = "facade: {0}";
+			public static LocString CATEGORY_FMT = "category: {0}";
+			public static LocString DESCRIPTION_FMT = "description: {0}";
+			public static LocString DESCRIPTOR_FMT = "{0}: {1}";
+			public static LocString PREBUILD_ERROR = "{0}, {1}";
+			public static LocString ATTR_VALUE = "{0} {1}";
+			public static LocString ATTR_MODIFIER = "{0} {1}{2}";
 			public static LocString FACADE_DEFAULT = "default";
 		}
 	}

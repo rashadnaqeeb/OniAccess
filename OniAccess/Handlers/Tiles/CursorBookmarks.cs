@@ -55,8 +55,8 @@ namespace OniAccess.Handlers.Tiles {
 			string coords = Util.GridCoordinates.Format(targetCell);
 			string distance = AnnouncementFormatter.FormatDistance(cursorCell, targetCell);
 			if (string.IsNullOrEmpty(distance))
-				return (string)STRINGS.ONIACCESS.BOOKMARKS.AT_BOOKMARK + ". " + coords;
-			return distance + ". " + coords;
+				return string.Format(STRINGS.ONIACCESS.BOOKMARKS.ORIENT_HERE, coords);
+			return string.Format(STRINGS.ONIACCESS.BOOKMARKS.ORIENT_DISTANCE, distance, coords);
 		}
 
 		public static string JumpHome() {

@@ -121,7 +121,7 @@ namespace OniAccess.Handlers.Build {
 
 			if (combined != null)
 				_items.Add(new InfoItem(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTION + ": " + combined, -1));
+					string.Format(STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTION_FMT, combined), -1));
 		}
 
 		private Dictionary<Klei.AI.Attribute, float> AddBaseAttributeItem() {
@@ -143,10 +143,10 @@ namespace OniAccess.Handlers.Build {
 				if (baseAttrs.Count > 0) {
 					var parts = new List<string>();
 					foreach (var pair in baseAttrs)
-						parts.Add(pair.Key.Name + " " + pair.Value);
+						parts.Add(string.Format(STRINGS.ONIACCESS.BUILD_MENU.ATTR_VALUE, pair.Key.Name, pair.Value));
 					_items.Add(new InfoItem(
-						(string)STRINGS.ONIACCESS.BUILD_MENU.ATTRIBUTES + ": " +
-						string.Join(", ", parts.ToArray()), -1));
+						string.Format(STRINGS.ONIACCESS.BUILD_MENU.ATTRIBUTES_FMT,
+							string.Join(", ", parts.ToArray())), -1));
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"BuildInfoHandler.AddBaseAttributeItem: {ex.Message}");
@@ -190,11 +190,11 @@ namespace OniAccess.Handlers.Build {
 							? Mathf.Abs(baseAttrs[pair.Key] * pair.Value)
 							: pair.Value;
 						string sign = scaled >= 0 ? "+" : "";
-						parts.Add(pair.Key.Name + " " + sign + scaled);
+						parts.Add(string.Format(STRINGS.ONIACCESS.BUILD_MENU.ATTR_MODIFIER, pair.Key.Name, sign, scaled));
 					}
 					_items.Add(new InfoItem(
-						(string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_EFFECTS + ": " +
-						string.Join(", ", parts.ToArray()), -1));
+						string.Format(STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_EFFECTS_FMT,
+							string.Join(", ", parts.ToArray())), -1));
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"BuildInfoHandler.AddMaterialEffectsItem: {ex.Message}");
@@ -215,7 +215,7 @@ namespace OniAccess.Handlers.Build {
 					name = resource != null ? resource.Name : facadeId;
 				}
 				_items.Add(new InfoItem(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.FACADE + ": " + name, -2));
+					string.Format(STRINGS.ONIACCESS.BUILD_MENU.FACADE_FMT, name), -2));
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"BuildInfoHandler.AddFacadeItem: {ex.Message}");
 			}
@@ -247,7 +247,8 @@ namespace OniAccess.Handlers.Build {
 			if (texts.Count == 0) return;
 
 			_items.Add(new InfoItem(
-				prefix + ": " + string.Join(", ", texts.ToArray()), -1));
+				string.Format(STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTOR_FMT,
+					prefix, string.Join(", ", texts.ToArray())), -1));
 		}
 
 		private void AddRoomTypeItem() {
@@ -264,8 +265,8 @@ namespace OniAccess.Handlers.Build {
 				}
 				if (roomLabels.Count > 0)
 					_items.Add(new InfoItem(
-						(string)STRINGS.ONIACCESS.BUILD_MENU.CATEGORY + ": " +
-						string.Join(", ", roomLabels.ToArray()), -1));
+						string.Format(STRINGS.ONIACCESS.BUILD_MENU.CATEGORY_FMT,
+							string.Join(", ", roomLabels.ToArray())), -1));
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"BuildInfoHandler.AddRoomTypeItem: {ex.Message}");
 			}

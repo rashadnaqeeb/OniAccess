@@ -64,9 +64,9 @@ namespace OniAccess.Speech {
 		/// Called during mod startup to register known meaningful sprites.
 		/// </summary>
 		public static void InitializeDefaults() {
-			RegisterSprite("warning", "warning:");
-			RegisterSprite("logic_signal_green", "green signal");
-			RegisterSprite("logic_signal_red", "red signal");
+			RegisterSprite("warning", (string)STRINGS.ONIACCESS.SPRITES.WARNING);
+			RegisterSprite("logic_signal_green", (string)STRINGS.ONIACCESS.SPRITES.LOGIC_GREEN);
+			RegisterSprite("logic_signal_red", (string)STRINGS.ONIACCESS.SPRITES.LOGIC_RED);
 		}
 
 		/// <summary>

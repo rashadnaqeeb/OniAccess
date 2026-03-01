@@ -94,7 +94,7 @@ namespace OniAccess.Handlers.Build {
 			if (IsInPrebuildMode()) {
 				string error = GetPrebuildError();
 				if (!string.IsNullOrEmpty(error))
-					announcement += ", " + error;
+					announcement = string.Format(STRINGS.ONIACCESS.BUILD_MENU.PREBUILD_ERROR, announcement, error);
 				SpeechPipeline.SpeakInterrupt(announcement);
 			} else {
 				SetupBuildMode();

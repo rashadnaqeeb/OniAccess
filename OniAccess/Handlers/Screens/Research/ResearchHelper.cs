@@ -114,10 +114,10 @@ namespace OniAccess.Handlers.Screens.Research {
 			foreach (var prereq in tech.requiredTech) {
 				string entry = prereq.Name;
 				if (prereq.IsComplete())
-					entry += " " + STRINGS.ONIACCESS.RESEARCH.COMPLETED;
+					entry = string.Format(STRINGS.ONIACCESS.RESEARCH.PREREQ_COMPLETED, entry);
 				prereqParts.Add(entry);
 			}
-			return STRINGS.ONIACCESS.RESEARCH.NEEDS + " " + string.Join(", ", prereqParts);
+			return string.Format(STRINGS.ONIACCESS.RESEARCH.NEEDS_FMT, string.Join(", ", prereqParts));
 		}
 
 		/// <summary>
@@ -129,7 +129,7 @@ namespace OniAccess.Handlers.Screens.Research {
 			var names = new List<string>();
 			foreach (var item in tech.unlockedItems)
 				names.Add(item.Name);
-			return STRINGS.ONIACCESS.RESEARCH.UNLOCKS + " " + string.Join(", ", names);
+			return string.Format(STRINGS.ONIACCESS.RESEARCH.UNLOCKS_FMT, string.Join(", ", names));
 		}
 
 		/// <summary>
@@ -147,7 +147,7 @@ namespace OniAccess.Handlers.Screens.Research {
 				parts.Add($"{kv.Value:F0} {typeName}");
 			}
 			return parts.Count > 0
-				? STRINGS.ONIACCESS.RESEARCH.BANKED_POINTS + " " + string.Join(", ", parts)
+				? string.Format(STRINGS.ONIACCESS.RESEARCH.BANKED_POINTS_FMT, string.Join(", ", parts))
 				: null;
 		}
 

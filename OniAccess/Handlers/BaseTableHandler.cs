@@ -285,15 +285,15 @@ namespace OniAccess.Handlers {
 				_sortColumn = _col;
 				_sortAscending = false;
 				SpeechPipeline.SpeakInterrupt(
-					colName + ", " + STRINGS.ONIACCESS.TABLE.SORT_DESCENDING);
+					string.Format(STRINGS.ONIACCESS.TABLE.SORT_DESC_FMT, colName));
 			} else if (!_sortAscending) {
 				_sortAscending = true;
 				SpeechPipeline.SpeakInterrupt(
-					colName + ", " + STRINGS.ONIACCESS.TABLE.SORT_ASCENDING);
+					string.Format(STRINGS.ONIACCESS.TABLE.SORT_ASC_FMT, colName));
 			} else {
 				_sortColumn = -1;
 				SpeechPipeline.SpeakInterrupt(
-					colName + ", " + STRINGS.ONIACCESS.TABLE.SORT_CLEARED);
+					string.Format(STRINGS.ONIACCESS.TABLE.SORT_CLEARED_FMT, colName));
 			}
 
 			BuildRowList();

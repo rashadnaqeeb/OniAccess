@@ -51,11 +51,14 @@ namespace OniAccess.Handlers.Screens {
 						foreach (var skill in Db.Get().Skills.resources)
 							if (skill.hat == resume.CurrentHat) { hatName = skill.Name; break; }
 					entityName = hatName != null
-						? $"{entityName}, {hatName}, {resume.GetSkillsSubtitle()}"
-						: $"{entityName}, {resume.GetSkillsSubtitle()}";
+						? string.Format(STRINGS.ONIACCESS.DETAILS.DUPE_HAT_SUBTITLE,
+							entityName, hatName, resume.GetSkillsSubtitle())
+						: string.Format(STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE,
+							entityName, resume.GetSkillsSubtitle());
 				}
 				if (_tabIndex >= 0 && _tabIndex < _activeTabs.Count)
-					return $"{entityName}, {_activeTabs[_tabIndex].DisplayName}";
+					return string.Format(STRINGS.ONIACCESS.DETAILS.ENTITY_TAB,
+					entityName, _activeTabs[_tabIndex].DisplayName);
 				return entityName;
 			}
 		}
@@ -394,7 +397,7 @@ namespace OniAccess.Handlers.Screens {
 			string text = WidgetOps.GetSpeechText(w);
 			text = WidgetOps.AppendTooltip(text, WidgetOps.GetTooltipText(w));
 			if (!string.IsNullOrEmpty(parentContext))
-				text = parentContext + ", " + text;
+				text = string.Format(STRINGS.ONIACCESS.DETAILS.PARENT_ITEM, parentContext, text);
 			if (!string.IsNullOrEmpty(text))
 				SpeechPipeline.SpeakInterrupt(text);
 		}
@@ -724,7 +727,8 @@ namespace OniAccess.Handlers.Screens {
 				if (items.Count == 0) return;
 				string item = WidgetOps.GetSpeechText(items[0]);
 				if (string.IsNullOrWhiteSpace(item)) return;
-				string label = headerIsTabName ? item : header + ", " + item;
+				string label = headerIsTabName ? item
+					: string.Format(STRINGS.ONIACCESS.DETAILS.HEADER_ITEM, header, item);
 				SpeechPipeline.SpeakQueued(label);
 			} else {
 				if (!headerIsTabName)
