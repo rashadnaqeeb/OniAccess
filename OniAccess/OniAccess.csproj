@@ -35,6 +35,10 @@
       <HintPath>$(ONI_MANAGED)\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>$(ONI_MANAGED)\Unity.TextMeshPro.dll</HintPath>
       <Private>false</Private>

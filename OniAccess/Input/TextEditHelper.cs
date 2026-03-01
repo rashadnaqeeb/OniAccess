@@ -34,7 +34,16 @@ namespace OniAccess.Input {
 		/// </summary>
 		public bool HandleTick() {
 			if (!IsEditing) return false;
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
+			if (InputUtil.CtrlHeld() && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.C)) {
+				UnityEngine.GUIUtility.systemCopyBuffer = _cachedValue;
+				Speech.SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TEXT_EDIT.COPIED);
+			} else if (InputUtil.CtrlHeld() && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.V)) {
+				var field = _fieldAccessor?.Invoke();
+				if (field != null) {
+					field.text = UnityEngine.GUIUtility.systemCopyBuffer;
+					Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.PASTED}, {field.text}");
+				}
+			} else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
 				Confirm();
 				_onEnd?.Invoke();
 			}

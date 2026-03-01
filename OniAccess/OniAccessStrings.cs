@@ -118,6 +118,8 @@ namespace STRINGS {
 			public static LocString EDITING = "Editing";
 			public static LocString CONFIRMED = "Confirmed";
 			public static LocString CANCELLED = "Cancelled";
+			public static LocString COPIED = "Copied";
+			public static LocString PASTED = "Pasted";
 		}
 
 		public class STATES {
