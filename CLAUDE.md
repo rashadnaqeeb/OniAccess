@@ -4,7 +4,7 @@ OniAccess is an accessibility mod for Oxygen Not Included that makes the game pl
 
 ## Build
 
-Always use the build script, never `dotnet build` directly. The project references game assemblies via the `ONI_MANAGED` environment variable which the build script sets automatically.
+Always use the build script, never `dotnet build` directly. 
 
 ```
 powershell -ExecutionPolicy Bypass -File build.ps1
@@ -20,7 +20,6 @@ When a build fails on a type or method signature, look it up in `ONI-Decompiled/
 - `ONI-Decompiled/` - decompiled game source for reference (read-only, not part of build)
 - `docs/` - design documentation
 - `docs/CODEBASE_INDEX.md` - complete namespace reference for decompiled ONI source
-- `llm-docs/` - game reference and synthesized documentation for LLM context
 - `.planning/` - project planning files
 
 ## Code Style
@@ -47,11 +46,11 @@ Use the game's localized text (`STRINGS` namespace, `LocText` components), UI st
 ### Never cache game state
 Do not copy game data into mod-side dictionaries, lists, or string fields for later use. Always re-query the game when you need a value. A sighted player can see when the screen contradicts itself; a blind player trusts speech absolutely. Stale data is worse than no data. The only acceptable "cache" is holding a reference to a live Unity component (e.g., a `KSlider` or `LocText`) and reading its properties at speech time.
 
+### No inline string literals
+All user-facing text must come from a `LocString` reference, either the game's `STRINGS` namespace or `STRINGS.ONIACCESS` in `OniAccessStrings.cs`. Never inline string literals for text that gets spoken.
+
 ### Game strings first, OniAccessStrings.cs second
 Before creating a new `LocString` in `OniAccessStrings.cs`, search the game's `STRINGS` namespace (see `docs/CODEBASE_INDEX.md` and `ONI-Decompiled/`) for existing localized text that conveys the same meaning. The game already has strings for common labels like "Embark", "Close", "Cancel", etc. Only add to `OniAccessStrings.cs` when no game string exists or the mod needs text with no game equivalent (e.g., screen reader instructions, mod-specific labels). Every mod-authored string is a translation burden and a divergence from the game's own wording.
-
-### No inline string literals
-All user-facing text must come from a `LocString` reference, either the game's `STRINGS` namespace or `STRINGS.ONIACCESS` in `OniAccessStrings.cs`. Never inline string literals for text that gets spoken or displayed.
 
 ### Concise announcements
 **These rules apply to mod-authored text only; never alter, truncate, or reword game text.** Users are experienced screen reader users. Strip fluff, never strip information.
@@ -76,10 +75,7 @@ This mod runs on Harmony patches and reflection. Both fail in ways that produce 
 - New screen handlers must be registered in `ContextDetector.RegisterMenuHandlers()` or they will never activate
 - Key detection goes in `Tick()` via `UnityEngine.Input.GetKeyDown()`. `HandleKeyDown()` is only for Escape interception through KButtonEvent
 - `UnityEngine.Input` must be fully qualified inside the `OniAccess.Input` namespace. Bare `Input` resolves to the namespace, not the Unity class
-- Show-lifecycle patches depend on the screen's base class:
-  - `ShowOptimizedKScreen` subclasses (e.g. `TableScreen`): patch `OnShow` — `KScreen.OnActivate` does not call `OnShow`, so it only fires on ManagementMenu toggles
-  - `KModalScreen` subclasses: default to patching `Show`, NOT `OnShow` — `KModalScreen.OnActivate` calls `OnShow(true)` directly during prefab init, which would push a handler before the game world is ready. However, not all subclasses override `Show`; for example `SkillsScreen` only overrides `OnShow`, so it must be patched there instead. Always check the decompiled source to see which method the specific subclass overrides
-  - **Harmony requires the target method to be declared on the patched type**, not just inherited. If a screen doesn't override `Show` or `OnShow` (e.g. `CodexScreen`), patching `typeof(ScreenType)` crashes the entire mod at load. Target `typeof(KScreen)` instead and filter with `__instance is ScreenType` in the postfix
+- **Show-lifecycle patches**: Always check the decompiled source to see whether the screen declares `Show` or `OnShow`, then patch whichever it declares. If it declares neither (e.g. `CodexScreen`), patch `typeof(KScreen)` instead and filter with `__instance is ScreenType` in the postfix — Harmony requires the target method to be declared on the patched type, not just inherited
 
 ## Game Log
 
@@ -129,4 +125,4 @@ Do **NOT** use `?.` to avoid thinking about whether something *should* be null. 
 Only guard after `FirstOrDefault()` which legitimately returns null. Everything before it should crash if broken.
 
 ### Padding and false balance
-Don't invent concerns to appear thorough. If there are no problems, say "no issues." Don't present two options as equally valid out of fairness when one is clearly better — just recommend the better one.
+Don't invent concerns to appear thorough. If there are no problems, say "no issues." Don't present two options as equally valid out of fairness when one is clearly better — just recommend the better one. 
