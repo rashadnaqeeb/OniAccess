@@ -344,73 +344,73 @@ namespace OniAccess.Handlers.Screens {
 		private bool DiscoverCarePackageWidgets(CarePackageContainer container) {
 			var traverse = Traverse.Create(container);
 
-			// Check if data is ready (info is set after DelayedGeneration coroutine)
-			var info = traverse.Field("info").GetValue<CarePackageInfo>();
-			if (info == null) {
-				Util.Log.Debug("ImmigrantScreenHandler: care package info null (coroutine pending)");
+			// carePackageInstanceData is created in GenerateCharacter right before
+			// SetInfoText — if it exists, all data methods are safe to call.
+			if (container.carePackageInstanceData == null) {
+				Util.Log.Debug("ImmigrantScreenHandler: carePackageInstanceData null (coroutine pending)");
 				return false;
 			}
 
-			// Item name
+			// Invoke the same private methods SetInfoText uses, bypassing
+			// serialized LocText field references which may not match the
+			// decompiled field names in the actual prefab.
 			try {
-				var nameText = traverse.Field("characterName").GetValue<LocText>();
-				if (nameText != null && !string.IsNullOrEmpty(nameText.text)) {
+				string name = traverse.Method("GetSpawnableName").GetValue<string>();
+				if (!string.IsNullOrEmpty(name)) {
 					_widgets.Add(new LabelWidget {
-						Label = nameText.text.Trim(),
-						GameObject = nameText.gameObject
+						Label = name.Trim(),
+						GameObject = container.gameObject
 					});
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ImmigrantScreenHandler.DiscoverCarePackageWidgets(name): {ex.Message}");
 			}
 
-			// Quantity
 			try {
-				var quantityText = traverse.Field("quantity").GetValue<LocText>();
-				if (quantityText != null && !string.IsNullOrEmpty(quantityText.text)) {
+				string qty = traverse.Method("GetSpawnableQuantityOnly").GetValue<string>();
+				if (!string.IsNullOrEmpty(qty)) {
 					_widgets.Add(new LabelWidget {
-						Label = quantityText.text.Trim(),
-						GameObject = quantityText.gameObject
+						Label = qty.Trim(),
+						GameObject = container.gameObject
 					});
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ImmigrantScreenHandler.DiscoverCarePackageWidgets(quantity): {ex.Message}");
 			}
 
-			// Current colony amount
 			try {
-				var currentText = traverse.Field("currentQuantity").GetValue<LocText>();
-				if (currentText != null && !string.IsNullOrEmpty(currentText.text)) {
+				var inventory = ClusterManager.Instance.activeWorld.worldInventory;
+				string current = traverse.Method("GetCurrentQuantity",
+					new System.Type[] { typeof(WorldInventory) })
+					.GetValue<string>(inventory);
+				if (!string.IsNullOrEmpty(current)) {
 					_widgets.Add(new LabelWidget {
-						Label = currentText.text.Trim(),
-						GameObject = currentText.gameObject
+						Label = current.Trim(),
+						GameObject = container.gameObject
 					});
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ImmigrantScreenHandler.DiscoverCarePackageWidgets(currentQuantity): {ex.Message}");
 			}
 
-			// Description
 			try {
-				var descText = traverse.Field("description").GetValue<LocText>();
-				if (descText != null && !string.IsNullOrEmpty(descText.text)) {
+				string desc = traverse.Method("GetSpawnableDescription").GetValue<string>();
+				if (!string.IsNullOrEmpty(desc)) {
 					_widgets.Add(new LabelWidget {
-						Label = descText.text.Trim(),
-						GameObject = descText.gameObject
+						Label = desc.Trim(),
+						GameObject = container.gameObject
 					});
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ImmigrantScreenHandler.DiscoverCarePackageWidgets(description): {ex.Message}");
 			}
 
-			// Effects (skip if empty)
 			try {
-				var effectsText = traverse.Field("effects").GetValue<LocText>();
-				if (effectsText != null && !string.IsNullOrEmpty(effectsText.text)
-					&& effectsText.text.Trim().Length > 0) {
+				string effects = traverse.Method("GetSpawnableEffects").GetValue<string>();
+				if (!string.IsNullOrEmpty(effects) && effects.Trim().Length > 0) {
 					_widgets.Add(new LabelWidget {
-						Label = effectsText.text.Trim(),
-						GameObject = effectsText.gameObject
+						Label = effects.Trim(),
+						GameObject = container.gameObject
 					});
 				}
 			} catch (System.Exception ex) {
