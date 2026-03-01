@@ -47,10 +47,7 @@ Use the game's localized text (`STRINGS` namespace, `LocText` components), UI st
 Do not copy game data into mod-side dictionaries, lists, or string fields for later use. Always re-query the game when you need a value. A sighted player can see when the screen contradicts itself; a blind player trusts speech absolutely. Stale data is worse than no data. The only acceptable "cache" is holding a reference to a live Unity component (e.g., a `KSlider` or `LocText`) and reading its properties at speech time.
 
 ### No inline string literals
-All user-facing text must come from a `LocString` reference, either the game's `STRINGS` namespace or `STRINGS.ONIACCESS` in `OniAccessStrings.cs`. Never inline string literals for text that gets spoken.
-
-### Game strings first, OniAccessStrings.cs second
-Before creating a new `LocString` in `OniAccessStrings.cs`, search the game's `STRINGS` namespace (see `docs/CODEBASE_INDEX.md` and `ONI-Decompiled/`) for existing localized text that conveys the same meaning. The game already has strings for common labels like "Embark", "Close", "Cancel", etc. Only add to `OniAccessStrings.cs` when no game string exists or the mod needs text with no game equivalent (e.g., screen reader instructions, mod-specific labels). Every mod-authored string is a translation burden and a divergence from the game's own wording.
+All user-facing text must come from a `LocString` reference. Never inline string literals for text that gets spoken. Prefer the game's `STRINGS` namespace — search `docs/CODEBASE_INDEX.md` and `ONI-Decompiled/` for existing localized text before adding to `OniAccessStrings.cs`. The game already has strings for common labels ("Embark", "Close", "Cancel", etc.). Only add mod-authored strings when no game equivalent exists.
 
 ### Concise announcements
 **These rules apply to mod-authored text only; never alter, truncate, or reword game text.** Users are experienced screen reader users. Strip fluff, never strip information.
@@ -90,39 +87,20 @@ Comments should describe the current state, not the change history. Consider whe
 **WRONG**: `// Changed to use controllers. Now handles force_close`
 **CORRECT**: `// Can be closed with the controller`
 
-### Redundant null checks
-Before adding a null check, consider whether nullability has already been established by a caller or earlier in the method. Don't re-check what's already guaranteed.
+### Defensive null handling
+Excessive validation hides bugs. Only null-check where null is a legitimate, expected state (e.g., after `FirstOrDefault()`, at public API boundaries). Let code crash otherwise — a crash is visible, a silently swallowed null is not. Trust private callers.
 
-### Defensive coding
-Excessive validation hides bugs. Let code crash to find edge cases. (The flip side: when you *do* catch, always log — see "No silent failures" above.)
-
-**WRONG** — null-checking every intermediate step and silently returning empty:
+**WRONG** — silently returning empty instead of crashing:
 ```csharp
 if (entity == null) return new List();
 var controller = entity.GetControlBehavior();
 if (controller == null) return new List();
 ```
 
-**CORRECT** — only guard what's legitimately nullable:
-```csharp
-var controller = entity.GetControlBehavior();
-foreach (var section in controller.Sections) {
-	var slot = section.GetSlot(i);
-	if (slot.Value != null) { // Only check what's expected to be null
-		// process slot
-	}
-}
-```
+**WRONG** — `?.` on things that should never be null:
+`var name = entity?.GetController()?.Sections?.FirstOrDefault()?.Name ?? "default";`
 
-Validate at public API boundaries and UI entry points. Trust private callers.
-
-### Null-conditional operator abuse
-Do **NOT** use `?.` to avoid thinking about whether something *should* be null. Only use it where null is a legitimate, expected state.
-
-**WRONG**: `var name = entity?.GetController()?.Sections?.FirstOrDefault()?.Name ?? "default";`
 **CORRECT**: `var name = entity.GetController().Sections.FirstOrDefault()?.Name ?? "default";`
-
-Only guard after `FirstOrDefault()` which legitimately returns null. Everything before it should crash if broken.
 
 ### Padding and false balance
 Don't invent concerns to appear thorough. If there are no problems, say "no issues." Don't present two options as equally valid out of fairness when one is clearly better — just recommend the better one. 
