@@ -36,10 +36,12 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 
 		public string FormatName(ScanEntry entry) {
 			var cluster = (BiomeCluster)entry.BackendData;
-			if (cluster.Cells.Count == 1) return cluster.DisplayName;
+			string name = cluster.DisplayName
+				+ (string)STRINGS.ONIACCESS.SCANNER.BIOME_SUFFIX;
+			if (cluster.Cells.Count == 1) return name;
 			return string.Format(
 				(string)STRINGS.ONIACCESS.SCANNER.CLUSTER_LABEL,
-				cluster.Cells.Count, cluster.DisplayName);
+				cluster.Cells.Count, name);
 		}
 
 	}

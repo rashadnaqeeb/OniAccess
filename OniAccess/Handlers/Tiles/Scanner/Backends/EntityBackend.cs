@@ -42,7 +42,16 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 
 		public string FormatName(ScanEntry entry) {
 			var go = (GameObject)entry.BackendData;
-			return go.GetComponent<KSelectable>()?.GetName() ?? entry.ItemName;
+			var facade = go.GetComponent<BuildingFacade>();
+			if (facade != null && !facade.IsOriginal) {
+				var building = go.GetComponent<Building>();
+				if (building != null)
+					return building.Def.Name;
+			}
+			string name = go.GetComponent<KSelectable>()?.GetName() ?? entry.ItemName;
+			if (entry.Subcategory == ScannerTaxonomy.Subcategories.Bottles)
+				return (string)STRINGS.ONIACCESS.SCANNER.BOTTLE_PREFIX + name;
+			return name;
 		}
 
 		private IEnumerable<ScanEntry> ScanBuildings(int worldId) {
