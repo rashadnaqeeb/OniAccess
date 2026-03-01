@@ -483,20 +483,20 @@ namespace OniAccess.Handlers.Build {
 
 			BuildTool.Instance.TryRotate();
 			var orientation = BuildMenuData.GetCurrentOrientation();
-			string announcement = BuildMenuData.GetOrientationName(orientation);
+			var parts = new List<string> { BuildMenuData.GetOrientationName(orientation) };
 
 			int cell = TileCursor.Instance.Cell;
 			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
 			string failReason;
 			if (!_def.IsValidPlaceLocation(
 					BuildTool.Instance.visualizer, pos, orientation, out failReason))
-				announcement += ", " + (failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
+				parts.Add(failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
 
 			string extent = BuildExtentText(orientation);
 			if (extent != null)
-				announcement += ", " + extent;
+				parts.Add(extent);
 
-			SpeechPipeline.SpeakInterrupt(announcement);
+			SpeechPipeline.SpeakInterrupt(string.Join(", ", parts));
 		}
 
 		/// <summary>

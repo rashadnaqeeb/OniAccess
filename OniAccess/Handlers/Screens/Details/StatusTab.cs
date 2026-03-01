@@ -210,14 +210,14 @@ namespace OniAccess.Handlers.Screens.Details {
 		}
 
 		private static string BuildStorageItemText(DetailLabelWithButton item) {
-			string text = item.label.GetParsedText();
+			var parts = new List<string> { item.label.GetParsedText() };
 			string t2 = item.label2.GetParsedText();
 			string t3 = item.label3.GetParsedText();
 			if (!string.IsNullOrEmpty(t2))
-				text = $"{text}, {t2}";
+				parts.Add(t2);
 			if (!string.IsNullOrEmpty(t3))
-				text = $"{text}, {t3}";
-			return text;
+				parts.Add(t3);
+			return string.Join(", ", parts);
 		}
 
 		// ========================================
@@ -578,20 +578,20 @@ namespace OniAccess.Handlers.Screens.Details {
 				Label = capturedName.GetParsedText(),
 				GameObject = go,
 				SpeechFunc = () => {
-					string text = capturedName.GetParsedText();
+					var parts = new List<string> { capturedName.GetParsedText() };
 					if (capturedValue != null
 							&& capturedValue.gameObject.activeSelf) {
 						string val = capturedValue.GetParsedText();
 						if (!string.IsNullOrEmpty(val))
-							text = $"{text}, {val}";
+							parts.Add(val);
 					}
 					if (capturedDesc != null
 							&& capturedDesc.gameObject.activeSelf) {
 						string desc = capturedDesc.GetParsedText();
 						if (!string.IsNullOrEmpty(desc))
-							text = $"{text}, {desc}";
+							parts.Add(desc);
 					}
-					return text;
+					return string.Join(", ", parts);
 				}
 			});
 		}

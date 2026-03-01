@@ -144,18 +144,18 @@ namespace OniAccess.Widgets {
 					SpeechFunc = () => {
 						string name = captured.title != null
 							? captured.title.text : captured.transform.name;
+						var parts = new List<string> { name };
 						string count = captured.amount != null
 							? captured.amount.text : null;
-						string speech = name;
 						if (!string.IsNullOrEmpty(count))
-							speech += $", {count} {(string)STRINGS.ONIACCESS.STATES.AVAILABLE}";
+							parts.Add($"{count} {(string)STRINGS.ONIACCESS.STATES.AVAILABLE}");
 						int state = captured.toggle.CurrentState;
 						if (state == 1 || state == 3)
-							speech += $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
+							parts.Add((string)STRINGS.ONIACCESS.STATES.SELECTED);
 						string desc = GetReceptacleDescription(captured);
 						if (desc != null)
-							speech += $", {desc}";
-						return speech;
+							parts.Add(desc);
+						return string.Join(", ", parts);
 					}
 				});
 				return true;
