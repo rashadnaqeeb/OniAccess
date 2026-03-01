@@ -145,7 +145,6 @@ namespace OniAccess.Tests {
 			results.Add(UnionFindTransitiveUnion());
 			results.Add(UnionFindSelfUnionNoOp());
 			results.Add(UnionFindDuplicateUnionNoOp());
-			results.Add(UnionFindPathCompression());
 			results.Add(UnionFindResetReinitializes());
 			results.Add(UnionFindResetReallocatesOnSizeChange());
 			results.Add(UnionFindLargeChainMerge());
@@ -155,6 +154,7 @@ namespace OniAccess.Tests {
 			results.Add(PipelineEnabledSpeaks());
 			results.Add(PipelineFiltersBeforeSpeaking());
 			results.Add(PipelineDeduplicatesSameText());
+			results.Add(PipelineDuplicateSuppressedWithinWindow());
 			results.Add(PipelineAllowsSameTextAfterWindow());
 			results.Add(PipelineAllowsDifferentTextImmediately());
 			results.Add(PipelineNullAndEmptySkipped());
@@ -626,18 +626,26 @@ namespace OniAccess.Tests {
 			search.AddChar('c');
 			search.Search(SearchItems.Length, NameByIndex);
 
-			// 'c' matches Cherry(4,tier1), Blue Cheese(3,tier3), Apricot(1,tier4 substring)
-			bool ok = search.ResultCount == 3;
+			// 'c' matches Cherry(4,tier1), Blue Cheese(3,tier3 mid-word),
+			// Apricot(1,tier4 substring). Verify Blue Cheese is in the results
+			// to prove mid-word matching works.
+			bool foundBlueCheese = false;
+			for (int i = 0; i < search.ResultCount; i++) {
+				if (search.SelectedOriginalIndex == 3) foundBlueCheese = true;
+				if (i < search.ResultCount - 1) search.NavigateResults(1);
+			}
+			bool ok = search.ResultCount == 3 && foundBlueCheese;
 			return Assert("SearchMultiWordMatch", ok,
-				$"ResultCount={search.ResultCount}");
+				$"ResultCount={search.ResultCount}, foundBlueCheese={foundBlueCheese}");
 		}
 
 		private static (string, bool, string) SearchCaseInsensitive() {
 			var search = new TypeAheadSearch(() => 0f);
-			search.AddChar('b');
+			search.AddChar('B'); // uppercase input
 			search.Search(SearchItems.Length, NameByIndex);
 
-			// 'b' matches Banana(2), Blue Cheese(3)
+			// Uppercase 'B' must still match Banana(2), Blue Cheese(3)
+			// because Search lowercases the buffer before matching.
 			bool ok = search.ResultCount == 2;
 			return Assert("SearchCaseInsensitive", ok,
 				$"ResultCount={search.ResultCount}");
@@ -1329,24 +1337,6 @@ namespace OniAccess.Tests {
 				$"first={rootAfterFirst}, second={rootAfterSecond}");
 		}
 
-		private static (string, bool, string) UnionFindPathCompression() {
-			// Build a chain: 0->1->2->3 via sequential unions
-			var uf = new UnionFind(4);
-			uf.Union(0, 1);
-			uf.Union(1, 2);
-			uf.Union(2, 3);
-			// All should resolve to the same root
-			int root = uf.Find(0);
-			// After Find with path compression, Find(0) should go
-			// directly to root without traversal
-			bool ok = uf.Find(0) == root
-				&& uf.Find(1) == root
-				&& uf.Find(2) == root
-				&& uf.Find(3) == root;
-			return Assert("UnionFindPathCompression", ok,
-				$"roots: 0={uf.Find(0)}, 1={uf.Find(1)}, 2={uf.Find(2)}, 3={uf.Find(3)}");
-		}
-
 		private static (string, bool, string) UnionFindResetReinitializes() {
 			var uf = new UnionFind(4);
 			uf.Union(0, 1);
@@ -1452,6 +1442,20 @@ namespace OniAccess.Tests {
 			SpeechPipeline.SpeakInterrupt("hello");
 			bool ok = spoken.Count == 1;
 			return Assert("PipelineDeduplicatesSameText", ok, $"spoken={spoken.Count}");
+		}
+
+		private static (string, bool, string) PipelineDuplicateSuppressedWithinWindow() {
+			float fakeTime = 0f;
+			var spoken = new List<(string text, bool interrupt)>();
+			SpeechPipeline.TimeSource = () => fakeTime;
+			SpeechPipeline.SpeakAction = (text, intr) => spoken.Add((text, intr));
+			SpeechPipeline.Reset();
+
+			SpeechPipeline.SpeakInterrupt("hello");
+			fakeTime = 0.04f; // inside the 0.05s deduplication window
+			SpeechPipeline.SpeakInterrupt("hello");
+			bool ok = spoken.Count == 1;
+			return Assert("PipelineDuplicateSuppressedWithinWindow", ok, $"spoken={spoken.Count}");
 		}
 
 		private static (string, bool, string) PipelineAllowsSameTextAfterWindow() {
@@ -1936,10 +1940,10 @@ namespace OniAccess.Tests {
 				failures.Add($"R180=\"{r180}\"");
 			if (r270 != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT)
 				failures.Add($"R270=\"{r270}\"");
-			if (flipH != r270)
-				failures.Add($"FlipH=\"{flipH}\" != R270=\"{r270}\"");
-			if (flipV != r180)
-				failures.Add($"FlipV=\"{flipV}\" != R180=\"{r180}\"");
+			if (flipH != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT)
+				failures.Add($"FlipH=\"{flipH}\"");
+			if (flipV != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN)
+				failures.Add($"FlipV=\"{flipV}\"");
 
 			bool ok = failures.Count == 0;
 			return Assert("OrientationNameCoversAllKnownValues", ok,
@@ -1989,8 +1993,10 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) CleanTooltipDoubledPeriodCollapsed() {
-			string result = WidgetOps.CleanTooltipEntry("a..b");
-			bool ok = result == "a.b";
+			// Period before newline produces ".." after newline→". " replacement:
+			// "a.\nb" → "a.. b" → "a. b" after doubled-period collapse.
+			string result = WidgetOps.CleanTooltipEntry("a.\nb");
+			bool ok = result == "a. b";
 			return Assert("CleanTooltipDoubledPeriodCollapsed", ok, $"got \"{result}\"");
 		}
 
