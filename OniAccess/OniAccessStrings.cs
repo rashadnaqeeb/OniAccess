@@ -344,6 +344,7 @@ namespace STRINGS {
 			// Must match the suffix used by STRINGS.SUBWORLDS.*.NAME (e.g., "Forest Biome")
 			public static LocString BIOME_SUFFIX = " Biome";
 			public static LocString BOTTLE_PREFIX = "Bottled ";
+			public static LocString LOOSE_PREFIX = "Loose ";
 
 			// Direction tokens
 			public static LocString DIRECTION_UP = "up";

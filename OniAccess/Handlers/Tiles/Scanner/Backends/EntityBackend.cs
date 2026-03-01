@@ -52,6 +52,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 			var prefabId = go.GetComponent<KPrefabID>();
 			if (prefabId != null && IsBottle(prefabId))
 				return (string)STRINGS.ONIACCESS.SCANNER.BOTTLE_PREFIX + name;
+			if (go.GetComponent<ElementChunk>() != null)
+				return (string)STRINGS.ONIACCESS.SCANNER.LOOSE_PREFIX + name;
 			return name;
 		}
 

@@ -30,6 +30,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					var prefabId = item.gameObject.GetComponent<KPrefabID>();
 					if (prefabId != null && IsBottle(prefabId))
 						name = (string)STRINGS.ONIACCESS.SCANNER.BOTTLE_PREFIX + name;
+					else if (item.gameObject.GetComponent<ElementChunk>() != null)
+						name = (string)STRINGS.ONIACCESS.SCANNER.LOOSE_PREFIX + name;
 					tokens.Add(name);
 				}
 				item = item.nextItem;
