@@ -116,7 +116,6 @@ namespace STRINGS {
 
 		public class TEXT_EDIT {
 			public static LocString EDITING = "Editing";
-			public static LocString CONFIRMED = "Confirmed";
 			public static LocString CANCELLED = "Cancelled";
 			public static LocString COPIED = "Copied";
 			public static LocString PASTED = "Pasted";

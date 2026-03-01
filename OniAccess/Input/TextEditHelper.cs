@@ -69,7 +69,6 @@ namespace OniAccess.Input {
 			var field = _fieldAccessor?.Invoke();
 			if (field != null) {
 				field.DeactivateInputField();
-				Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.CONFIRMED}, {field.text}");
 			} else {
 				Util.Log.Warn("TextEditHelper.Confirm: field accessor returned null, treating as cancel");
 				Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED}, {_cachedValue}");
