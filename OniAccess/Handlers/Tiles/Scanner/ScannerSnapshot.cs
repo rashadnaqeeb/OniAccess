@@ -25,8 +25,10 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 	/// </summary>
 	public class ScannerSnapshot {
 		public readonly List<ScannerCategory> Categories;
+		public readonly int OriginCell;
 
 		public ScannerSnapshot(List<ScanEntry> entries, int cursorCell) {
+			OriginCell = cursorCell;
 			Categories = Build(entries, cursorCell);
 		}
 

@@ -439,10 +439,15 @@ namespace STRINGS {
 				public static LocString FARM_PLANTS = "Farm Plants";
 			}
 
+			// Auto-move toggle
+			public static LocString AUTO_MOVE_ON = "auto-move on";
+			public static LocString AUTO_MOVE_OFF = "auto-move off";
+
 			// Help entries
 			public class HELP {
 				public static LocString REFRESH = "Refresh scanner";
 				public static LocString TELEPORT = "Jump to selected scanner entry";
+				public static LocString TOGGLE_AUTO_MOVE = "Toggle auto-move cursor";
 				public static LocString CYCLE_CATEGORY = "Scanner: cycle category";
 				public static LocString CYCLE_SUBCATEGORY = "Scanner: cycle subcategory";
 				public static LocString CYCLE_ITEM = "Scanner: cycle item";

@@ -16,6 +16,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		private int _itemIndex;
 		private int _instanceIndex;
 		private int _lastWorldId = -1;
+		private bool _autoMove = ConfigManager.Config.AutoMoveCursor;
 
 		// Backends
 		private readonly GridScanner _gridScanner;
@@ -136,6 +137,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			string itemAnnouncement = ValidateAndAnnounce(speakOnEmpty: false);
 			if (itemAnnouncement != null)
 				SpeechPipeline.SpeakQueued(itemAnnouncement);
+			AutoMoveIfEnabled();
 		}
 
 		public void CycleSubcategory(int direction) {
@@ -162,6 +164,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			string itemAnnouncement = ValidateAndAnnounce(speakOnEmpty: false);
 			if (itemAnnouncement != null)
 				SpeechPipeline.SpeakQueued(itemAnnouncement);
+			AutoMoveIfEnabled();
 		}
 
 		public void CycleItem(int direction) {
@@ -186,6 +189,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			string announcement = ValidateAndAnnounce();
 			if (announcement != null)
 				SpeechPipeline.SpeakInterrupt(announcement);
+			AutoMoveIfEnabled();
 		}
 
 		public void CycleInstance(int direction) {
@@ -208,6 +212,16 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			string announcement = ValidateAndAnnounce();
 			if (announcement != null)
 				SpeechPipeline.SpeakInterrupt(announcement);
+			AutoMoveIfEnabled();
+		}
+
+		public string ToggleAutoMove() {
+			_autoMove = !_autoMove;
+			ConfigManager.Config.AutoMoveCursor = _autoMove;
+			ConfigManager.Save();
+			return _autoMove
+				? (string)STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_ON
+				: (string)STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_OFF;
 		}
 
 		public void Teleport() {
@@ -243,6 +257,13 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			return true;
 		}
 
+		private void AutoMoveIfEnabled() {
+			if (!_autoMove) return;
+			var entry = CurrentEntry();
+			if (entry == null) return;
+			TileCursor.Instance.JumpTo(entry.Cell);
+		}
+
 		private ScannerSubcategory CurrentSubcategory() {
 			if (_snapshot == null || _categoryIndex >= _snapshot.CategoryCount)
 				return null;
@@ -275,9 +296,9 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 				ClampInstanceIndex(item);
 				var entry = item.Instances[_instanceIndex];
-				int cursorCell = TileCursor.Instance.Cell;
+				int referenceCell = ReferenceCell();
 
-				if (entry.Backend.ValidateEntry(entry, cursorCell))
+				if (entry.Backend.ValidateEntry(entry, referenceCell))
 					return FormatAnnouncement(entry, item);
 
 				RemoveCurrentAndAdvance();
@@ -292,11 +313,14 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		}
 
 		private string FormatAnnouncement(ScanEntry entry, ScannerItem item) {
-			int cursorCell = TileCursor.Instance.Cell;
 			string name = entry.Backend.FormatName(entry);
 			return AnnouncementFormatter.FormatEntityInstance(
-				name, cursorCell, entry.Cell,
+				name, ReferenceCell(), entry.Cell,
 				_instanceIndex + 1, item.Instances.Count);
+		}
+
+		private int ReferenceCell() {
+			return _autoMove ? _snapshot.OriginCell : TileCursor.Instance.Cell;
 		}
 
 		private void RemoveCurrentAndAdvance() {

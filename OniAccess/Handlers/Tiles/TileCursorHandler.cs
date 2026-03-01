@@ -43,6 +43,7 @@ namespace OniAccess.Handlers.Tiles {
 			// Scanner keybinds
 			new ConsumedKey(KKeyCode.End),
 			new ConsumedKey(KKeyCode.Home),
+			new ConsumedKey(KKeyCode.Home, Modifier.Shift),
 			new ConsumedKey(KKeyCode.PageUp, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.PageDown, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.PageUp, Modifier.Shift),
@@ -89,6 +90,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Shift+K", (string)STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE),
 			new HelpEntry("End", (string)STRINGS.ONIACCESS.SCANNER.HELP.REFRESH),
 			new HelpEntry("Home", (string)STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT),
+			new HelpEntry("Shift+Home", (string)STRINGS.ONIACCESS.SCANNER.HELP.TOGGLE_AUTO_MOVE),
 			new HelpEntry("Ctrl+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_CATEGORY),
 			new HelpEntry("Shift+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_SUBCATEGORY),
 			new HelpEntry("PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM),
@@ -289,10 +291,15 @@ namespace OniAccess.Handlers.Tiles {
 				_scanner.Refresh();
 				return true;
 			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home)
-				&& !InputUtil.AnyModifierHeld()) {
-				_scanner.Teleport();
-				return true;
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home)) {
+				if (InputUtil.ShiftHeld()) {
+					SpeechPipeline.SpeakInterrupt(_scanner.ToggleAutoMove());
+					return true;
+				}
+				if (!InputUtil.AnyModifierHeld()) {
+					_scanner.Teleport();
+					return true;
+				}
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.PageUp)) {
 				if (InputUtil.CtrlHeld())
