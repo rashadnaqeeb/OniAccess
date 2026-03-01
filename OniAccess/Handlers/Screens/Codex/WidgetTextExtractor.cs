@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,6 +11,25 @@ namespace OniAccess.Handlers.Screens.Codex {
 	/// All methods read the widget's data model directly — no UI hierarchy walking.
 	/// </summary>
 	internal static class WidgetTextExtractor {
+		/// <summary>
+		/// Appends a semicolon-separated item list to sb. Each item is
+		/// "name, formatted". Uses a bool tracker instead of loop index
+		/// so that skipped items don't leave a leading separator.
+		/// </summary>
+		private static void AppendItemList(StringBuilder sb, int count,
+				System.Func<int, Tag> getTag, System.Func<int, string> getFormatted,
+				System.Func<int, bool> skip = null) {
+			bool first = true;
+			for (int i = 0; i < count; i++) {
+				if (skip != null && skip(i)) continue;
+				if (!first) sb.Append("; ");
+				first = false;
+				sb.Append(getTag(i).ProperName());
+				sb.Append(", ");
+				sb.Append(getFormatted(i));
+			}
+		}
+
 		/// <summary>
 		/// Returns speech text for a widget, or null if the widget should be skipped.
 		/// </summary>
@@ -149,25 +169,17 @@ namespace OniAccess.Handlers.Screens.Codex {
 			sb.Append(". ");
 			sb.Append((string)STRINGS.ONIACCESS.CODEX.REQUIRES);
 			sb.Append(' ');
-			for (int i = 0; i < recipe.ingredients.Length; i++) {
-				if (i > 0) sb.Append("; ");
-				var ing = recipe.ingredients[i];
-				sb.Append(ing.material.ProperName());
-				sb.Append(", ");
-				sb.Append(GameUtil.GetFormattedByTag(ing.material, ing.amount));
-			}
+			AppendItemList(sb, recipe.ingredients.Length,
+				i => recipe.ingredients[i].material,
+				i => GameUtil.GetFormattedByTag(recipe.ingredients[i].material, recipe.ingredients[i].amount));
 
 			// Results
 			sb.Append(". ");
 			sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
 			sb.Append(' ');
-			for (int i = 0; i < recipe.results.Length; i++) {
-				if (i > 0) sb.Append("; ");
-				var res = recipe.results[i];
-				sb.Append(res.material.ProperName());
-				sb.Append(", ");
-				sb.Append(GameUtil.GetFormattedByTag(res.material, res.amount));
-			}
+			AppendItemList(sb, recipe.results.Length,
+				i => recipe.results[i].material,
+				i => GameUtil.GetFormattedByTag(recipe.results[i].material, recipe.results[i].amount));
 
 			// Fabricator + time
 			if (recipe.fabricators.Count > 0) {
@@ -196,13 +208,9 @@ namespace OniAccess.Handlers.Screens.Codex {
 			sb.Append(recipe.Result.ProperName());
 
 			sb.Append(". ");
-			for (int i = 0; i < recipe.Ingredients.Count; i++) {
-				if (i > 0) sb.Append("; ");
-				var ing = recipe.Ingredients[i];
-				sb.Append(ing.tag.ProperName());
-				sb.Append(", ");
-				sb.Append(GameUtil.GetFormattedByTag(ing.tag, ing.amount));
-			}
+			AppendItemList(sb, recipe.Ingredients.Count,
+				i => recipe.Ingredients[i].tag,
+				i => GameUtil.GetFormattedByTag(recipe.Ingredients[i].tag, recipe.Ingredients[i].amount));
 
 			return sb.ToString();
 		}
@@ -249,32 +257,30 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 			if (ins != null && ins.Length > 0) {
 				sb.Append(". ");
-				for (int i = 0; i < ins.Length; i++) {
-					if (ins[i].tag == Tag.Invalid) continue;
-					if (i > 0) sb.Append("; ");
-					sb.Append(ins[i].tag.ProperName());
-					sb.Append(", ");
-					var timeSlice = ins[i].continuous ? GameUtil.TimeSlice.PerCycle : GameUtil.TimeSlice.None;
-					sb.Append(ins[i].customFormating != null
-						? ins[i].customFormating(ins[i].tag, ins[i].amount, ins[i].continuous)
-						: GameUtil.GetFormattedByTag(ins[i].tag, ins[i].amount, timeSlice));
-				}
+				AppendItemList(sb, ins.Length,
+					i => ins[i].tag,
+					i => {
+						var timeSlice = ins[i].continuous ? GameUtil.TimeSlice.PerCycle : GameUtil.TimeSlice.None;
+						return ins[i].customFormating != null
+							? ins[i].customFormating(ins[i].tag, ins[i].amount, ins[i].continuous)
+							: GameUtil.GetFormattedByTag(ins[i].tag, ins[i].amount, timeSlice);
+					},
+					skip: i => ins[i].tag == Tag.Invalid);
 			}
 
 			if (outs != null && outs.Length > 0) {
 				sb.Append(". ");
 				sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
 				sb.Append(' ');
-				for (int i = 0; i < outs.Length; i++) {
-					if (outs[i].tag == Tag.Invalid) continue;
-					if (i > 0) sb.Append("; ");
-					sb.Append(outs[i].tag.ProperName());
-					sb.Append(", ");
-					var timeSlice = outs[i].continuous ? GameUtil.TimeSlice.PerCycle : GameUtil.TimeSlice.None;
-					sb.Append(outs[i].customFormating != null
-						? outs[i].customFormating(outs[i].tag, outs[i].amount, outs[i].continuous)
-						: GameUtil.GetFormattedByTag(outs[i].tag, outs[i].amount, timeSlice));
-				}
+				AppendItemList(sb, outs.Length,
+					i => outs[i].tag,
+					i => {
+						var timeSlice = outs[i].continuous ? GameUtil.TimeSlice.PerCycle : GameUtil.TimeSlice.None;
+						return outs[i].customFormating != null
+							? outs[i].customFormating(outs[i].tag, outs[i].amount, outs[i].continuous)
+							: GameUtil.GetFormattedByTag(outs[i].tag, outs[i].amount, timeSlice);
+					},
+					skip: i => outs[i].tag == Tag.Invalid);
 			}
 
 			if (converter != null) {
@@ -328,21 +334,13 @@ namespace OniAccess.Handlers.Screens.Codex {
 					sb.Append(GameUtil.GetFormattedTemperature(source.lowTemp));
 					AppendTransitionResult(sb, source.lowTempTransition, source.lowTempTransitionOreID, source.lowTempTransitionOreMassConversion);
 					break;
-				case CodexTemperatureTransitionPanel.TransitionType.SUBLIMATE: {
-						sb.Append(", ");
-						sb.Append(STRINGS.CODEX.FORMAT_STRINGS.SUBLIMATION_NAME);
-						var result = ElementLoader.FindElementByHash(source.sublimateId);
-						if (result != null) {
-							sb.Append(". ");
-							sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
-							sb.Append(' ');
-							sb.Append(result.name);
-						}
-						break;
-					}
+				case CodexTemperatureTransitionPanel.TransitionType.SUBLIMATE:
 				case CodexTemperatureTransitionPanel.TransitionType.OFFGASS: {
+						string label = type == CodexTemperatureTransitionPanel.TransitionType.SUBLIMATE
+							? STRINGS.CODEX.FORMAT_STRINGS.SUBLIMATION_NAME
+							: STRINGS.CODEX.FORMAT_STRINGS.OFFGASS_NAME;
 						sb.Append(", ");
-						sb.Append(STRINGS.CODEX.FORMAT_STRINGS.OFFGASS_NAME);
+						sb.Append(label);
 						var result = ElementLoader.FindElementByHash(source.sublimateId);
 						if (result != null) {
 							sb.Append(". ");
@@ -391,15 +389,10 @@ namespace OniAccess.Handlers.Screens.Codex {
 			var ingredients = data.GetIngredients();
 			if (ingredients != null && ingredients.Length > 0) {
 				sb.Append(". ");
-				for (int i = 0; i < ingredients.Length; i++) {
-					if (i > 0) sb.Append("; ");
-					var tags = ingredients[i].GetIDSets();
-					if (tags.Length > 0) {
-						sb.Append(tags[0].ProperName());
-						sb.Append(", ");
-						sb.Append(GameUtil.GetFormattedByTag(tags[0], ingredients[i].GetAmount()));
-					}
-				}
+				AppendItemList(sb, ingredients.Length,
+					i => ingredients[i].GetIDSets()[0],
+					i => GameUtil.GetFormattedByTag(ingredients[i].GetIDSets()[0], ingredients[i].GetAmount()),
+					skip: i => ingredients[i].GetIDSets().Length == 0);
 			}
 
 			return sb.ToString();
