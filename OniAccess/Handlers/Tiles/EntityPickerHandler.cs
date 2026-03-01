@@ -74,41 +74,39 @@ namespace OniAccess.Handlers.Tiles {
 			return false;
 		}
 
+		private static readonly int[] SingleGoLayers = {
+			(int)ObjectLayer.Building,
+			(int)ObjectLayer.FoundationTile,
+			(int)ObjectLayer.Backwall,
+			(int)ObjectLayer.Minion,
+			(int)ObjectLayer.Wire,
+			(int)ObjectLayer.WireConnectors,
+			(int)ObjectLayer.LiquidConduit,
+			(int)ObjectLayer.LiquidConduitConnection,
+			(int)ObjectLayer.GasConduit,
+			(int)ObjectLayer.GasConduitConnection,
+			(int)ObjectLayer.SolidConduit,
+			(int)ObjectLayer.SolidConduitConnection,
+			(int)ObjectLayer.LogicWire,
+			(int)ObjectLayer.LogicGate,
+		};
+
 		/// <summary>
-		/// Collects all selectable entities at a cell using the same collision
-		/// layer the game's SelectTool queries on mouse click.
+		/// Collects all selectable entities at a cell. Uses Grid.Objects for
+		/// layer-registered entities plus a collision query for elements
+		/// (CellSelectionObject) which aren't on any object layer.
 		/// </summary>
 		public static List<KSelectable> CollectSelectables(int cell) {
 			var result = new List<KSelectable>();
-			int x, y;
-			Grid.CellToXY(cell, out x, out y);
-			var cellCenter = Grid.CellToPosCCC(cell, Grid.SceneLayer.Move);
-
-			var entries = ListPool<ScenePartitionerEntry, EntityPickerHandler>.Allocate();
-			GameScenePartitioner.Instance.GatherEntries(
-				x, y, 1, 1,
-				GameScenePartitioner.Instance.collisionLayer,
-				entries);
-
 			var seen = new HashSet<UnityEngine.GameObject>();
-			foreach (var entry in entries) {
-				var collider = entry.obj as KCollider2D;
-				if (collider == null) continue;
-				if (!collider.Intersects(new UnityEngine.Vector2(cellCenter.x, cellCenter.y)))
-					continue;
-				var ks = collider.GetComponent<KSelectable>();
-				if (ks == null)
-					ks = collider.GetComponentInParent<KSelectable>();
-				if (ks == null || !ks.isActiveAndEnabled || !ks.IsSelectable) continue;
-				if (!seen.Add(ks.gameObject)) continue;
-				var cso = ks.GetComponent<CellSelectionObject>();
-				if (cso != null && cso.alternateSelectionObject != null
-					&& seen.Contains(cso.alternateSelectionObject.gameObject))
-					continue;
-				result.Add(ks);
-			}
 
-			entries.Recycle();
+			foreach (int layer in SingleGoLayers) {
+				var go = Grid.Objects[cell, layer];
+				if (go == null || !seen.Add(go)) continue;
+				var ks = go.GetComponent<KSelectable>();
+				if (ks != null && ks.isActiveAndEnabled && ks.IsSelectable)
+					result.Add(ks);
+			}
 
 			var pickGo = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 			if (pickGo != null) {
@@ -124,6 +122,35 @@ namespace OniAccess.Handlers.Tiles {
 					}
 				}
 			}
+
+			// CellSelectionObject (element info) isn't on any object layer —
+			// it's only reachable via the collision query.
+			int x, y;
+			Grid.CellToXY(cell, out x, out y);
+			var cellCenter = Grid.CellToPosCCC(cell, Grid.SceneLayer.Move);
+			var entries = ListPool<ScenePartitionerEntry, EntityPickerHandler>.Allocate();
+			GameScenePartitioner.Instance.GatherEntries(
+				x, y, 1, 1,
+				GameScenePartitioner.Instance.collisionLayer,
+				entries);
+			foreach (var entry in entries) {
+				var collider = entry.obj as KCollider2D;
+				if (collider == null) continue;
+				if (!collider.Intersects(
+						new UnityEngine.Vector2(cellCenter.x, cellCenter.y)))
+					continue;
+				var ks = collider.GetComponent<KSelectable>();
+				if (ks == null)
+					ks = collider.GetComponentInParent<KSelectable>();
+				if (ks == null || !ks.isActiveAndEnabled || !ks.IsSelectable) continue;
+				if (!seen.Add(ks.gameObject)) continue;
+				var cso = ks.GetComponent<CellSelectionObject>();
+				if (cso != null && cso.alternateSelectionObject != null
+					&& seen.Contains(cso.alternateSelectionObject.gameObject))
+					continue;
+				result.Add(ks);
+			}
+			entries.Recycle();
 
 			result.Sort((a, b) => EntitySortKey(a).CompareTo(EntitySortKey(b)));
 			return result;
