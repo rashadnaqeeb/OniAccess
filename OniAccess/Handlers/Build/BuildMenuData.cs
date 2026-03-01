@@ -8,6 +8,7 @@ namespace OniAccess.Handlers.Build {
 	/// </summary>
 	public static class BuildMenuData {
 		internal const string DefaultFacadeId = "DEFAULT_FACADE";
+		internal static bool _selectBuildingInProgress;
 
 		public struct CategoryEntry {
 			public HashedString Category;
@@ -130,7 +131,12 @@ namespace OniAccess.Handlers.Build {
 		public static bool SelectBuilding(BuildingDef def, HashedString category) {
 			try {
 				string categoryName = HashCache.Get().Get(category);
-				PlanScreen.Instance.OpenCategoryByName(categoryName);
+				_selectBuildingInProgress = true;
+				try {
+					PlanScreen.Instance.OpenCategoryByName(categoryName);
+				} finally {
+					_selectBuildingInProgress = false;
+				}
 				if (!PlanScreen.Instance.activeCategoryBuildingToggles.TryGetValue(def, out var toggle)) {
 					Util.Log.Warn($"BuildMenuData.SelectBuilding: no toggle for {def.PrefabID}");
 					return false;

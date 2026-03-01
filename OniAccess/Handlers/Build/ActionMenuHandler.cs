@@ -39,6 +39,15 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		/// <summary>
+		/// Open focused on a specific category (e.g., from tutorial notification).
+		/// Cursor starts on the category at level 0.
+		/// </summary>
+		public ActionMenuHandler(HashedString category) {
+			_initialCategory = category;
+			_initialDef = null;
+		}
+
+		/// <summary>
 		/// Return from placement (Tab in BuildToolHandler). Cursor starts on
 		/// the building matching initialDef within the given category.
 		/// </summary>
@@ -592,6 +601,8 @@ namespace OniAccess.Handlers.Build {
 			if (_restoreFlatIndex >= 0) {
 				NestedSearchMoveTo(_restoreFlatIndex);
 				_restoreFlatIndex = -1;
+			} else if (_initialCategory.IsValid && _initialDef == null) {
+				MoveToCategory(_initialCategory);
 			} else {
 				SpeechPipeline.SpeakQueued(
 					(string)STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY);
@@ -644,6 +655,22 @@ namespace OniAccess.Handlers.Build {
 			if (category.IsValid) {
 				FindDefFlatIndex(def, HashedString.Invalid);
 			}
+		}
+
+		private void MoveToCategory(HashedString category) {
+			for (int c = 0; c < _tree.Count; c++) {
+				if (_tree[c].Category == category) {
+					SetIndex(0, c + 1);
+					Level = 0;
+					SyncCurrentIndex();
+					SpeakCurrentItem();
+					return;
+				}
+			}
+			// Category not found (e.g., all buildings behind unresearched tech).
+			// Fall back to Tools.
+			SpeechPipeline.SpeakQueued(
+				(string)STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY);
 		}
 
 		private void SpeakWithSubcategoryContext() {
