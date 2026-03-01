@@ -113,6 +113,17 @@ namespace OniAccess.Handlers.Screens {
 			return WidgetOps.GetSpeechText(items[indices[1]]);
 		}
 
+		protected override void ActivateCurrentItem() {
+			if (ItemCount == 0) return;
+			var w = GetCurrentWidget();
+			if (w is ToggleWidget && Level > 0) {
+				var indices = new int[] { GetIndex(0), GetIndex(1), GetIndex(2) };
+				ActivateLeafItem(indices);
+				return;
+			}
+			base.ActivateCurrentItem();
+		}
+
 		protected override void ActivateLeafItem(int[] indices) {
 			var w = GetWidgetAt(indices[0], indices[1], indices[2]);
 			if (w == null) return;

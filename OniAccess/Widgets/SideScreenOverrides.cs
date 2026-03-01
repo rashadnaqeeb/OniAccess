@@ -11,6 +11,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<ConditionListSideScreen>(WalkConditionList);
 			SideScreenWalker.RegisterOverride<AlarmSideScreen>(WalkAlarm);
 			SideScreenWalker.RegisterOverride<FewOptionSideScreen>(WalkFewOption);
+			SideScreenWalker.RegisterOverride<TreeFilterableSideScreen>(WalkTreeFilter);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -230,6 +231,186 @@ namespace OniAccess.Widgets {
 		static void WalkFewOption(FewOptionSideScreen fewOption, List<Widget> items) {
 			SideScreenWalker.WalkDefault(fewOption, items);
 			CollapseFewOptionRows(fewOption, items);
+		}
+
+		static void WalkTreeFilter(TreeFilterableSideScreen screen, List<Widget> items) {
+			Traverse tv;
+			try { tv = Traverse.Create(screen); }
+			catch (System.Exception ex) {
+				Util.Log.Warn($"WalkTreeFilter: Traverse create failed: {ex.Message}");
+				return;
+			}
+
+			// All toggle
+			try {
+				var allCheckBox = tv.Field<MultiToggle>("allCheckBox").Value;
+				var allCheckBoxLabel = tv.Field<LocText>("allCheckBoxLabel").Value;
+				if (allCheckBox != null) {
+					var capturedBox = allCheckBox;
+					var capturedLabel = allCheckBoxLabel;
+					items.Add(new ToggleWidget {
+						Label = capturedLabel != null
+							? capturedLabel.GetParsedText() : "All",
+						Component = capturedBox,
+						GameObject = capturedBox.gameObject,
+						SuppressTooltip = true,
+						SpeechFunc = () => {
+							string lbl = capturedLabel != null
+								? capturedLabel.GetParsedText() : "All";
+							return $"{lbl}, {WidgetOps.GetMultiToggleState(capturedBox)}";
+						}
+					});
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkTreeFilter: allCheckBox read failed: {ex.Message}");
+			}
+
+			// Sweep Only toggle
+			try {
+				var transportRow = tv.Field<GameObject>("onlyallowTransportItemsRow").Value;
+				if (transportRow != null && transportRow.activeSelf) {
+					var transportCheckBox = tv.Field<MultiToggle>(
+						"onlyAllowTransportItemsCheckBox").Value;
+					if (transportCheckBox != null) {
+						var captured = transportCheckBox;
+						string label = (string)STRINGS.UI.UISIDESCREENS
+							.TREEFILTERABLESIDESCREEN.ONLYALLOWTRANSPORTITEMSBUTTON;
+						items.Add(new ToggleWidget {
+							Label = label,
+							Component = captured,
+							GameObject = captured.gameObject,
+							SuppressTooltip = true,
+							SpeechFunc = () =>
+								$"{label}, {WidgetOps.GetMultiToggleState(captured)}"
+						});
+					}
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkTreeFilter: transport row read failed: {ex.Message}");
+			}
+
+			// Seasoned Food Only toggle
+			try {
+				var spicedRow = tv.Field<GameObject>("onlyallowSpicedItemsRow").Value;
+				if (spicedRow != null && spicedRow.activeSelf) {
+					var spicedCheckBox = tv.Field<MultiToggle>(
+						"onlyAllowSpicedItemsCheckBox").Value;
+					if (spicedCheckBox != null) {
+						var captured = spicedCheckBox;
+						string label = (string)STRINGS.UI.UISIDESCREENS
+							.TREEFILTERABLESIDESCREEN.ONLYALLOWSPICEDITEMSBUTTON;
+						items.Add(new ToggleWidget {
+							Label = label,
+							Component = captured,
+							GameObject = captured.gameObject,
+							SuppressTooltip = true,
+							SpeechFunc = () =>
+								$"{label}, {WidgetOps.GetMultiToggleState(captured)}"
+						});
+					}
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkTreeFilter: spiced row read failed: {ex.Message}");
+			}
+
+			// Category rows from rowGroup
+			GameObject rowGroup;
+			try { rowGroup = tv.Field<GameObject>("rowGroup").Value; }
+			catch (System.Exception ex) {
+				Util.Log.Warn($"WalkTreeFilter: rowGroup read failed: {ex.Message}");
+				return;
+			}
+			if (rowGroup == null) return;
+
+			var rowGroupT = rowGroup.transform;
+			var capturedScreen = screen;
+			for (int i = 0; i < rowGroupT.childCount; i++) {
+				var child = rowGroupT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				var row = child.GetComponent<TreeFilterableSideScreenRow>();
+				if (row == null) continue;
+
+				try {
+					AddTreeFilterRow(row, capturedScreen, items);
+				} catch (System.Exception ex) {
+					Util.Log.Warn(
+						$"WalkTreeFilter: row '{child.name}' failed: {ex.Message}");
+				}
+			}
+		}
+
+		private static void AddTreeFilterRow(
+				TreeFilterableSideScreenRow row,
+				TreeFilterableSideScreen screen,
+				List<Widget> items) {
+			var rowTv = Traverse.Create(row);
+			var checkBoxToggle = rowTv.Field<MultiToggle>("checkBoxToggle").Value;
+			var elementNameLt = rowTv.Field<LocText>("elementName").Value;
+			var rowElements = rowTv
+				.Field<List<TreeFilterableSideScreenElement>>("rowElements").Value;
+
+			var capturedRow = row;
+			var capturedToggle = checkBoxToggle;
+			var capturedNameLt = elementNameLt;
+
+			string label = capturedNameLt != null
+				? capturedNameLt.GetParsedText() : row.transform.name;
+
+			// Build children for individual elements
+			List<Widget> children = null;
+			if (rowElements != null && rowElements.Count > 0) {
+				children = new List<Widget>();
+				var capturedScreen = screen;
+				foreach (var elem in rowElements) {
+					if (elem == null || !elem.gameObject.activeSelf) continue;
+					var capturedElem = elem;
+					var elemTag = capturedElem.GetElementTag();
+					string elemLabel = elemTag.ProperName();
+					children.Add(new ToggleWidget {
+						Label = elemLabel,
+						Component = capturedElem.GetCheckboxToggle(),
+						GameObject = capturedElem.gameObject,
+						SuppressTooltip = true,
+						SpeechFunc = () => {
+							string name = capturedElem.GetElementTag().ProperName();
+							string state = capturedElem.IsSelected
+								? (string)STRINGS.ONIACCESS.STATES.ON
+								: (string)STRINGS.ONIACCESS.STATES.OFF;
+							if (capturedScreen.IsStorage) {
+								float mass = capturedScreen.GetAmountInStorage(
+									capturedElem.GetElementTag());
+								string massText = GameUtil.GetFormattedMass(mass);
+								return $"{name}, {massText}, {state}";
+							}
+							return $"{name}, {state}";
+						}
+					});
+				}
+			}
+
+			items.Add(new ToggleWidget {
+				Label = label,
+				Component = capturedToggle,
+				GameObject = row.gameObject,
+				SuppressTooltip = true,
+				Children = children,
+				SpeechFunc = () => {
+					string name = capturedNameLt != null
+						? capturedNameLt.GetParsedText() : capturedRow.transform.name;
+					return $"{name}, {RowStateToString(capturedRow.GetState())}";
+				}
+			});
+		}
+
+		private static string RowStateToString(TreeFilterableSideScreenRow.State state) {
+			switch (state) {
+				case TreeFilterableSideScreenRow.State.On:
+					return (string)STRINGS.ONIACCESS.STATES.ON;
+				case TreeFilterableSideScreenRow.State.Off:
+					return (string)STRINGS.ONIACCESS.STATES.OFF;
+				default:
+					return (string)STRINGS.ONIACCESS.STATES.MIXED;
+			}
 		}
 
 		private static void CollapseFewOptionRows(
