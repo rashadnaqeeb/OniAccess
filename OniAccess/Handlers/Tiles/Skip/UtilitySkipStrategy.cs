@@ -1,8 +1,8 @@
 namespace OniAccess.Handlers.Tiles.Skip {
 	/// <summary>
 	/// Skips along utility networks (power, plumbing, ventilation,
-	/// conveyor, automation). Stops at buildings, junctions, network
-	/// boundaries, and transitions between empty and occupied cells.
+	/// conveyor, automation). Stops at junctions, network boundaries,
+	/// and transitions between utility and non-utility cells.
 	/// Parameterized by object layers and a cell-to-network accessor.
 	/// </summary>
 	public class UtilitySkipStrategy: ISkipStrategy {
@@ -22,10 +22,8 @@ namespace OniAccess.Handlers.Tiles.Skip {
 			if (go == null) return Empty;
 
 			var building = go.GetComponent<Building>();
-			if (building == null) return Empty;
-
-			if (!building.Def.isUtility)
-				return go.GetInstanceID();
+			if (building == null || !building.Def.isUtility)
+				return Empty;
 
 			int networkId = _getNetwork(cell)?.id ?? -1;
 			bool isJunction = CountSameNetworkNeighbors(cell, networkId) >= 3;
