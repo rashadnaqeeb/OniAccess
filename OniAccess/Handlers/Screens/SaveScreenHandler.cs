@@ -25,13 +25,16 @@ namespace OniAccess.Handlers.Screens {
 
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "newSaveButton", null, _widgets);
 
+			bool foundSaves = false;
+			int activeChildren = 0;
 			try {
 				var oldSavesRoot = Traverse.Create(screen).Field("oldSavesRoot")
 					.GetValue<UnityEngine.Transform>();
 				if (oldSavesRoot != null) {
 					for (int i = 0; i < oldSavesRoot.childCount; i++) {
 						var child = oldSavesRoot.GetChild(i);
-						if (child == null || !child.gameObject.activeInHierarchy) continue;
+						if (child == null || !child.gameObject.activeSelf) continue;
+						activeChildren++;
 
 						var refs = child.GetComponent<HierarchyReferences>();
 						if (refs == null) continue;
@@ -51,7 +54,11 @@ namespace OniAccess.Handlers.Screens {
 								GameObject = child.gameObject
 							};
 						_widgets.Add(w);
+						foundSaves = true;
 					}
+					Util.Log.Debug($"SaveScreenHandler: oldSavesRoot has {oldSavesRoot.childCount} children ({activeChildren} active), {(foundSaves ? "found" : "no")} saves");
+				} else {
+					Util.Log.Warn("SaveScreenHandler: oldSavesRoot field is null");
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Error($"SaveScreenHandler.DiscoverWidgets(oldSavesRoot): {ex.Message}");
@@ -60,7 +67,9 @@ namespace OniAccess.Handlers.Screens {
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "closeButton", null, _widgets);
 
 			Util.Log.Debug($"SaveScreenHandler.DiscoverWidgets: {_widgets.Count} widgets");
-			return true;
+			// Not ready if active children exist but none resolved to widgets
+			// (clones may not be fully initialized yet)
+			return foundSaves || activeChildren == 0;
 		}
 
 		/// <summary>
