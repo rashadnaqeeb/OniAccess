@@ -66,6 +66,9 @@ namespace OniAccess.Handlers.Tiles.Skip {
 			registry.Register(OverlayModes.Radiation.ID,
 				new RadiationSkipStrategy());
 
+			registry.Register(OverlayModes.Decor.ID,
+				new DecorSkipStrategy());
+
 			return registry;
 		}
 	}
