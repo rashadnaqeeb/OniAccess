@@ -549,6 +549,16 @@ namespace STRINGS {
 			public static LocString PALETTE_COUNT = "{0} colors";
 		}
 
+		public class ACCESS_CONTROL {
+			public static LocString ALLOWED = "allowed";
+			public static LocString BLOCKED = "blocked";
+			public static LocString LOCKED = "Door locked, access control disabled";
+			public static LocString DEFAULT_LEFT = "default left";
+			public static LocString DEFAULT_RIGHT = "default right";
+			public static LocString DEFAULT_UP = "default up";
+			public static LocString DEFAULT_DOWN = "default down";
+		}
+
 		public class DETAILS {
 			public static LocString NO_ERRANDS = "No errands";
 			public static LocString SCHEDULE = "Schedule";

@@ -13,6 +13,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<FewOptionSideScreen>(WalkFewOption);
 			SideScreenWalker.RegisterOverride<TreeFilterableSideScreen>(WalkTreeFilter);
 			SideScreenWalker.RegisterOverride<ComplexFabricatorSideScreen>(WalkComplexFabricator);
+			SideScreenWalker.RegisterOverride<AccessControlSideScreen>(WalkAccessControl);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -625,6 +626,216 @@ namespace OniAccess.Widgets {
 					return speech;
 				}
 			});
+		}
+
+		static void WalkAccessControl(AccessControlSideScreen screen, List<Widget> items) {
+			Traverse tv;
+			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkAccessControl: Traverse create failed: {ex.Message}");
+				return;
+			}
+
+			AccessControl target;
+			try { target = tv.Field<AccessControl>("target").Value; } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkAccessControl: target read failed: {ex.Message}");
+				return;
+			}
+			if (target == null) return;
+
+			if (target.overrideAccess == Door.ControlState.Locked) {
+				items.Add(new LabelWidget {
+					Label = (string)STRINGS.ONIACCESS.ACCESS_CONTROL.LOCKED,
+					GameObject = screen.gameObject,
+					SpeechFunc = () => (string)STRINGS.ONIACCESS.ACCESS_CONTROL.LOCKED
+				});
+				return;
+			}
+
+			var rotatable = target.GetComponent<Rotatable>();
+			bool isRotated = rotatable != null && rotatable.IsRotated;
+
+			var sections = new[] {
+				("standardMinionSectionHeader", "standardMinionSectionContent", false),
+				("bionicMinionSectionHeader", "bionicMinionSectionContent", false),
+				("robotSectionHeader", "robotSectionContent", true)
+			};
+
+			foreach (var (headerField, contentField, isRobot) in sections) {
+				try {
+					AddAccessSection(tv, target, isRotated, headerField, contentField,
+						isRobot, items);
+				} catch (System.Exception ex) {
+					Util.Log.Warn(
+						$"WalkAccessControl: {headerField} failed: {ex.Message}");
+				}
+			}
+		}
+
+		private static void AddAccessSection(
+				Traverse tv, AccessControl target, bool isRotated,
+				string headerField, string contentField, bool isRobot,
+				List<Widget> items) {
+			GameObject header;
+			GameObject content;
+			try {
+				header = tv.Field<GameObject>(headerField).Value;
+				content = tv.Field<GameObject>(contentField).Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkAccessControl: {headerField} read failed: {ex.Message}");
+				return;
+			}
+			if (header == null || !header.activeSelf) return;
+
+			var href = header.GetComponent<HierarchyReferences>();
+			var categoryLabel = href.GetReference<LocText>("CategoryLabel");
+			var headerToggleLeft = href.GetReference<MultiToggle>("ToggleLeft");
+			var headerToggleRight = href.GetReference<MultiToggle>("ToggleRight");
+			var collapseToggle = href.GetReference<MultiToggle>("CollapseToggle");
+
+			string leftDir = isRotated
+				? (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_UP
+				: (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT;
+			string rightDir = isRotated
+				? (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN
+				: (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT;
+			string defaultLeftLabel = isRotated
+				? (string)STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_UP
+				: (string)STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_LEFT;
+			string defaultRightLabel = isRotated
+				? (string)STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_DOWN
+				: (string)STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_RIGHT;
+
+			var children = new List<Widget>();
+
+			var capturedHeaderLeft = headerToggleLeft;
+			children.Add(new ToggleWidget {
+				Label = defaultLeftLabel,
+				Component = capturedHeaderLeft,
+				GameObject = capturedHeaderLeft.gameObject,
+				SuppressTooltip = true,
+				SpeechFunc = () => {
+					string state = capturedHeaderLeft.CurrentState == 0
+						? (string)STRINGS.ONIACCESS.ACCESS_CONTROL.ALLOWED
+						: (string)STRINGS.ONIACCESS.ACCESS_CONTROL.BLOCKED;
+					return $"{defaultLeftLabel}, {state}";
+				}
+			});
+
+			var capturedHeaderRight = headerToggleRight;
+			children.Add(new ToggleWidget {
+				Label = defaultRightLabel,
+				Component = capturedHeaderRight,
+				GameObject = capturedHeaderRight.gameObject,
+				SuppressTooltip = true,
+				SpeechFunc = () => {
+					string state = capturedHeaderRight.CurrentState == 0
+						? (string)STRINGS.ONIACCESS.ACCESS_CONTROL.ALLOWED
+						: (string)STRINGS.ONIACCESS.ACCESS_CONTROL.BLOCKED;
+					return $"{defaultRightLabel}, {state}";
+				}
+			});
+
+			if (content != null) {
+				var contentT = content.transform;
+				for (int i = 0; i < contentT.childCount; i++) {
+					var rowGO = contentT.GetChild(i).gameObject;
+					if (!rowGO.activeSelf) continue;
+					try {
+						AddAccessRow(rowGO, isRotated, isRobot, leftDir, rightDir,
+							children);
+					} catch (System.Exception ex) {
+						Util.Log.Warn(
+							$"WalkAccessControl: row {i} failed: {ex.Message}");
+					}
+				}
+			}
+
+			var capturedCatLabel = categoryLabel;
+			items.Add(new ToggleWidget {
+				Label = capturedCatLabel.GetParsedText(),
+				Component = collapseToggle,
+				GameObject = header,
+				SuppressTooltip = true,
+				Children = children,
+				SpeechFunc = () => {
+					string catName = capturedCatLabel.GetParsedText();
+					string leftState = capturedHeaderLeft.CurrentState == 0
+						? (string)STRINGS.ONIACCESS.ACCESS_CONTROL.ALLOWED
+						: (string)STRINGS.ONIACCESS.ACCESS_CONTROL.BLOCKED;
+					string rightState = capturedHeaderRight.CurrentState == 0
+						? (string)STRINGS.ONIACCESS.ACCESS_CONTROL.ALLOWED
+						: (string)STRINGS.ONIACCESS.ACCESS_CONTROL.BLOCKED;
+					return $"{catName}, {leftDir} {leftState}, {rightDir} {rightState}";
+				}
+			});
+		}
+
+		private static void AddAccessRow(
+				GameObject rowGO, bool isRotated, bool isRobot,
+				string leftDir, string rightDir,
+				List<Widget> children) {
+			var href = rowGO.GetComponent<HierarchyReferences>();
+			if (href == null) return;
+
+			var useDefaultBtn = href.GetReference<MultiToggle>("UseDefaultButton");
+			var toggleLeft = href.GetReference<MultiToggle>("ToggleLeft");
+			var toggleRight = href.GetReference<MultiToggle>("ToggleRight");
+			var directionToggles = href.GetReference<RectTransform>("DirectionToggles");
+
+			var capturedHref = href;
+			var capturedRowGO = rowGO;
+			children.Add(new ToggleWidget {
+				Label = GetRowEntityName(href, isRobot, rowGO),
+				Component = useDefaultBtn,
+				GameObject = rowGO,
+				SuppressTooltip = true,
+				SpeechFunc = () => {
+					string name = GetRowEntityName(capturedHref, isRobot, capturedRowGO);
+					string defaultState = useDefaultBtn.CurrentState == 1
+						? (string)STRINGS.UI.UISIDESCREENS.ACCESS_CONTROL_SIDE_SCREEN.USING_DEFAULT
+						: (string)STRINGS.UI.UISIDESCREENS.ACCESS_CONTROL_SIDE_SCREEN.USING_CUSTOM;
+					return $"{name}, {defaultState}";
+				}
+			});
+
+			if (directionToggles != null && directionToggles.gameObject.activeSelf) {
+				children.Add(new ToggleWidget {
+					Label = leftDir,
+					Component = toggleLeft,
+					GameObject = toggleLeft.gameObject,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string state = toggleLeft.CurrentState == 0
+							? (string)STRINGS.ONIACCESS.ACCESS_CONTROL.ALLOWED
+							: (string)STRINGS.ONIACCESS.ACCESS_CONTROL.BLOCKED;
+						return $"{leftDir}, {state}";
+					}
+				});
+
+				children.Add(new ToggleWidget {
+					Label = rightDir,
+					Component = toggleRight,
+					GameObject = toggleRight.gameObject,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string state = toggleRight.CurrentState == 0
+							? (string)STRINGS.ONIACCESS.ACCESS_CONTROL.ALLOWED
+							: (string)STRINGS.ONIACCESS.ACCESS_CONTROL.BLOCKED;
+						return $"{rightDir}, {state}";
+					}
+				});
+			}
+		}
+
+		private static string GetRowEntityName(
+				HierarchyReferences href, bool isRobot, GameObject fallback) {
+			if (isRobot) {
+				var nameLabel = href.GetReference<LocText>("NameLabel");
+				return nameLabel.GetParsedText();
+			}
+			var portrait = href.GetReference<CrewPortrait>("Portrait");
+			var identity = portrait.identityObject;
+			return identity != null ? identity.GetProperName() : fallback.name;
 		}
 	}
 }
