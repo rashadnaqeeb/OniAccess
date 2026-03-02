@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using OniAccess.Handlers;
 
 namespace OniAccess.Input {
@@ -16,6 +17,16 @@ namespace OniAccess.Input {
 	public class ModInputRouter: IInputHandler {
 		public static ModInputRouter Instance { get; private set; }
 
+		private static readonly HashSet<Action> _globalBlockedActions = new HashSet<Action> {
+			// Building categories — handled by the action tab
+			Action.Plan1, Action.Plan2, Action.Plan3, Action.Plan4,
+			Action.Plan5, Action.Plan6, Action.Plan7, Action.Plan8,
+			Action.Plan9, Action.Plan10, Action.Plan11, Action.Plan12,
+			Action.Plan13, Action.Plan14,
+			// Camera pan — not usable without sight
+			Action.PanUp, Action.PanDown, Action.PanLeft, Action.PanRight,
+		};
+
 		public string handlerName => "OniAccess";
 		public KInputHandler inputHandler { get; set; }
 
@@ -25,6 +36,10 @@ namespace OniAccess.Input {
 
 		public void OnKeyDown(KButtonEvent e) {
 			if (e.Consumed || !ModToggle.IsEnabled) return;
+			if (IsGloballyBlocked(e)) {
+				e.Consumed = true;
+				return;
+			}
 
 			int count = HandlerStack.Count;
 			for (int i = count - 1; i >= 0; i--) {
@@ -44,6 +59,10 @@ namespace OniAccess.Input {
 
 		public void OnKeyUp(KButtonEvent e) {
 			if (e.Consumed || !ModToggle.IsEnabled) return;
+			if (IsGloballyBlocked(e)) {
+				e.Consumed = true;
+				return;
+			}
 
 			int count = HandlerStack.Count;
 			for (int i = count - 1; i >= 0; i--) {
@@ -90,6 +109,13 @@ namespace OniAccess.Input {
 		/// which fires our Harmony patch, which pops the handler. Handlers that need
 		/// to intercept Escape consume it in HandleKeyDown before this check runs.
 		/// </summary>
+		private static bool IsGloballyBlocked(KButtonEvent e) {
+			foreach (var action in _globalBlockedActions) {
+				if (e.IsAction(action)) return true;
+			}
+			return false;
+		}
+
 		private static bool IsPassThroughAction(KButtonEvent e) {
 			return e.IsAction(Action.MouseLeft) || e.IsAction(Action.MouseRight)
 				|| e.IsAction(Action.MouseMiddle) || e.IsAction(Action.ShiftMouseLeft)
