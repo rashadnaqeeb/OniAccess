@@ -27,6 +27,7 @@ namespace OniAccess.Handlers.Build {
 
 		// Utility placement state
 		private int _utilityStartCell = Grid.InvalidCell;
+		private int _lastDragCell = Grid.InvalidCell;
 		internal bool UtilityStartSet => _utilityStartCell != Grid.InvalidCell;
 		internal int UtilityStartCell => _utilityStartCell;
 
@@ -164,10 +165,20 @@ namespace OniAccess.Handlers.Build {
 		// ========================================
 
 		public override bool Tick() {
+			if (_utilityStartCell != Grid.InvalidCell) {
+				int cell = TileCursor.Instance.Cell;
+				if (cell != _lastDragCell) {
+					_lastDragCell = cell;
+					if (IsValidDragTarget(cell))
+						PlayDragSound(Grid.GetCellDistance(cell, _utilityStartCell) + 1);
+				}
+			}
+
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)) {
 				if (InputUtil.ShiftHeld()) {
 					if (_isUtility && UtilityStartSet) {
 						_utilityStartCell = Grid.InvalidCell;
+						_lastDragCell = Grid.InvalidCell;
 						SpeechPipeline.SpeakInterrupt(
 							(string)STRINGS.ONIACCESS.BUILD_MENU.START_CLEARED);
 					} else
@@ -325,6 +336,8 @@ namespace OniAccess.Handlers.Build {
 					return;
 				}
 				_utilityStartCell = cell;
+				_lastDragCell = cell;
+				PlayDragSound(1);
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.START_SET);
 				return;
 			}
@@ -359,6 +372,7 @@ namespace OniAccess.Handlers.Build {
 
 			SimulateUtilityDrag(path, tool);
 			_utilityStartCell = Grid.InvalidCell;
+			_lastDragCell = Grid.InvalidCell;
 			SpeechPipeline.SpeakInterrupt(
 				string.Format((string)STRINGS.ONIACCESS.BUILD_MENU.LINE_CELLS, path.Count)
 				+ ", " + (string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
@@ -649,6 +663,27 @@ namespace OniAccess.Handlers.Build {
 		// ========================================
 		// SOUNDS
 		// ========================================
+
+		private bool IsValidDragTarget(int cell) {
+			int col = Grid.CellColumn(cell);
+			int row = Grid.CellRow(cell);
+			int startCol = Grid.CellColumn(_utilityStartCell);
+			int startRow = Grid.CellRow(_utilityStartCell);
+			if (col != startCol && row != startRow) return false;
+			var path = BuildLinePath(_utilityStartCell, cell);
+			return ValidateUtilityPath(path);
+		}
+
+		private void PlayDragSound(int tileCount) {
+			try {
+				var pos = Grid.CellToPosCCC(TileCursor.Instance.Cell, Grid.SceneLayer.Move);
+				var ev = KFMOD.BeginOneShot(GlobalAssets.GetSound("Tile_Drag"), pos);
+				ev.setParameterByName("tileCount", tileCount);
+				KFMOD.EndOneShot(ev);
+			} catch (Exception ex) {
+				Util.Log.Error($"BuildToolHandler.PlayDragSound: {ex}");
+			}
+		}
 
 		private static void PlayDeactivateSound() {
 			try {

@@ -4,8 +4,7 @@ using OniAccess.Handlers.Build;
 namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	/// <summary>
 	/// Utility line feedback for the build tool cursor. When a utility
-	/// start point is set, reports the cell count and "invalid" if the
-	/// proposed line contains bad cells.
+	/// start point is set, reports either "invalid" or the cell count.
 	/// </summary>
 	public class BuildToolSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
@@ -23,31 +22,18 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 			int startRow = Grid.CellRow(startCell);
 			int endCol = Grid.CellColumn(cell);
 			int endRow = Grid.CellRow(cell);
-			bool sameCol = startCol == endCol;
-			bool sameRow = startRow == endRow;
 
-			int count;
-			bool invalid = false;
-			if (!sameCol && !sameRow) {
-				invalid = true;
-				int dx = System.Math.Abs(endCol - startCol);
-				int dy = System.Math.Abs(endRow - startRow);
-				count = System.Math.Max(dx, dy) + 1;
-			} else {
-				count = sameRow
-					? System.Math.Abs(endCol - startCol) + 1
-					: System.Math.Abs(endRow - startRow) + 1;
-				if (!BuildToolHandler.IsUtilityLineValid(startCell, cell))
-					invalid = true;
-			}
+			if (startCol != endCol && startRow != endRow)
+				return new[] { (string)STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE };
 
-			var tokens = new List<string>();
-			if (invalid)
-				tokens.Add((string)STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE);
+			if (!BuildToolHandler.IsUtilityLineValid(startCell, cell))
+				return new[] { (string)STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE };
 
-			tokens.Add(string.Format(
-				(string)STRINGS.ONIACCESS.BUILD_MENU.LINE_CELLS, count));
-			return tokens;
+			int count = startRow == endRow
+				? System.Math.Abs(endCol - startCol) + 1
+				: System.Math.Abs(endRow - startRow) + 1;
+			return new[] { string.Format(
+				(string)STRINGS.ONIACCESS.BUILD_MENU.LINE_CELLS, count) };
 		}
 	}
 
