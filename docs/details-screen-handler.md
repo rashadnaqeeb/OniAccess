@@ -141,15 +141,15 @@ These open a second side screen panel via `DetailsScreen.SetSecondarySideScreen`
 
 ## Remaining Phases
 
-### Phase 6: Hierarchical Side Screens (2 of 5 done)
+### Phase 6: Hierarchical Side Screens (3 of 5 done)
 
-**Goal**: The remaining 3 hierarchical side screens (Category D) get dedicated multi-level reading logic.
+**Goal**: The remaining 2 hierarchical side screens (Category D) get dedicated multi-level reading logic.
 
 Each needs NestedMenuHandler's multi-level navigation (sections at level 0, items at level 1):
 
 1. ~~`TreeFilterableSideScreen`~~ — **Done.**
-2. `AccessControlSideScreen` — sections per group with per-dupe permission row children. Walker finds MultiToggles but not the Standard/Bionic/Robot grouping.
-3. `ComplexFabricatorSideScreen` — sections per category with recipe toggle children. Walker finds KToggles but no category headers.
+2. `AccessControlSideScreen` — **Done.**
+3. `ComplexFabricatorSideScreen` **Done.**
 4. `BionicSideScreen` — upgrade slots grouped by category. Walker finds MultiToggle+LocText but loses category structure. Also opens secondary screen.
 5. `OwnablesSidescreen` — items grouped by category. Walker finds MultiToggle+LocText but flattens hierarchy. Also opens secondary screen.
 
