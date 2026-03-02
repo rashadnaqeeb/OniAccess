@@ -49,6 +49,7 @@ namespace STRINGS {
 			public static LocString ENTITY_PICKER = "object selection";
 			public static LocString DETAILS_SCREEN = "Entity details";
 			public static LocString PRINTING_POD = "Printing pod";
+			public static LocString ERROR_SCREEN = "Error";
 		}
 
 		public class SUPPLY_CLOSET {
@@ -227,6 +228,8 @@ namespace STRINGS {
 		public class TOOLTIP {
 			public static LocString NO_TOOLTIP = "no tooltip";
 			public static LocString CLOSED = "closed";
+			public static LocString CANNOT_CONTINUE = "cannot continue";
+			public static LocString CONTINUING = "continuing";
 		}
 
 		public class TOOLS {

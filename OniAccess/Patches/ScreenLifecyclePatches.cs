@@ -1,5 +1,6 @@
 using HarmonyLib;
 using OniAccess.Handlers;
+using OniAccess.Handlers.Screens;
 using OniAccess.Handlers.Screens.Codex;
 using OniAccess.Util;
 using UnityEngine;
@@ -236,6 +237,31 @@ namespace OniAccess.Patches {
 			if (active is CodexScreenHandler handler && handler.Screen == __instance) {
 				handler.OnArticleChanged();
 			}
+		}
+	}
+
+	/// <summary>
+	/// ReportErrorDialog is a plain MonoBehaviour (not a KScreen), so normal
+	/// lifecycle patches don't detect it. Push the error handler when it starts.
+	/// </summary>
+	[HarmonyPatch(typeof(ReportErrorDialog), "Start")]
+	internal static class ReportErrorDialog_Start_Patch {
+		private static void Postfix(ReportErrorDialog __instance) {
+			if (!ModToggle.IsEnabled) return;
+			HandlerStack.Push(new ErrorScreenHandler(__instance));
+		}
+	}
+
+	/// <summary>
+	/// Pop the error handler when the dialog is destroyed.
+	/// Prefix so it fires before Unity cleanup.
+	/// </summary>
+	[HarmonyPatch(typeof(ReportErrorDialog), "OnDestroy")]
+	internal static class ReportErrorDialog_OnDestroy_Patch {
+		private static void Prefix(ReportErrorDialog __instance) {
+			if (!ModToggle.IsEnabled) return;
+			if (HandlerStack.ActiveHandler is ErrorScreenHandler h && h.Dialog == __instance)
+				HandlerStack.Pop();
 		}
 	}
 }
