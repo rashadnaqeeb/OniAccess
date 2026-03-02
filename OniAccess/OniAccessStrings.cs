@@ -91,7 +91,6 @@ namespace STRINGS {
 				public static LocString CANCEL_TOOL = "Cancel tool";
 				public static LocString SET_PRIORITY = "Set priority";
 				public static LocString OPEN_FILTER = "Change filter";
-				public static LocString JUMP_SELECTION = "Jump to selection boundary";
 			}
 		}
 
@@ -241,7 +240,6 @@ namespace STRINGS {
 			public static LocString RECT_SUMMARY = "{0}x{1}, {2} valid";
 			public static LocString RECT_SUMMARY_INVALID = "{0}x{1}, {2} valid, {3} invalid";
 			public static LocString SELECTED = "selected";
-			public static LocString NO_CHANGE = "no change";
 			public static LocString CANCELED = "canceled";
 			public static LocString NO_VALID_CELLS = "no valid cells";
 			public static LocString CONFIRM_DIG = "marked {0} for digging at priority {1}";

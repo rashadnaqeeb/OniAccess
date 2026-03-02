@@ -10,8 +10,8 @@ using OniAccess.Speech;
 namespace OniAccess.Handlers.Tools {
 	/// <summary>
 	/// Non-modal handler for tool mode. Sits on top of TileCursorHandler,
-	/// intercepts tool-specific keys (Space, Enter, Escape, 0-9, F, Delete,
-	/// Ctrl+Arrows) and passes everything else through to the tile cursor.
+	/// intercepts tool-specific keys (Space, Enter, Escape, 0-9, F, Delete)
+	/// and passes everything else through to the tile cursor.
 	///
 	/// Manages rectangle selection state. On confirm, submits each rectangle
 	/// to the game via DragTool.OnLeftClickDown/OnLeftClickUp.
@@ -60,10 +60,6 @@ namespace OniAccess.Handlers.Tools {
 			new ConsumedKey(KKeyCode.Alpha7),
 			new ConsumedKey(KKeyCode.Alpha8),
 			new ConsumedKey(KKeyCode.Alpha9),
-			new ConsumedKey(KKeyCode.UpArrow, Modifier.Ctrl),
-			new ConsumedKey(KKeyCode.DownArrow, Modifier.Ctrl),
-			new ConsumedKey(KKeyCode.LeftArrow, Modifier.Ctrl),
-			new ConsumedKey(KKeyCode.RightArrow, Modifier.Ctrl),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -77,7 +73,6 @@ namespace OniAccess.Handlers.Tools {
 			new HelpEntry("0-9", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY),
 			new HelpEntry("F", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_FILTER),
 			new HelpEntry("Delete", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT),
-			new HelpEntry("Ctrl+Arrows", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.JUMP_SELECTION),
 		}.AsReadOnly();
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
@@ -232,24 +227,6 @@ namespace OniAccess.Handlers.Tools {
 				}
 			}
 
-			if (InputUtil.CtrlHeld() && !InputUtil.ShiftHeld() && !InputUtil.AltHeld()) {
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
-					JumpToSelectionBoundary(Tiles.Direction.Up);
-					return true;
-				}
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
-					JumpToSelectionBoundary(Tiles.Direction.Down);
-					return true;
-				}
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
-					JumpToSelectionBoundary(Tiles.Direction.Left);
-					return true;
-				}
-				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)) {
-					JumpToSelectionBoundary(Tiles.Direction.Right);
-					return true;
-				}
-			}
 			return false;
 		}
 
@@ -387,31 +364,6 @@ namespace OniAccess.Handlers.Tools {
 					return;
 				}
 			}
-		}
-
-		// ========================================
-		// JUMP NAVIGATION
-		// ========================================
-
-		private void JumpToSelectionBoundary(Tiles.Direction direction) {
-			int current = TileCursor.Instance.Cell;
-			bool currentSelected = IsCellSelected(current);
-			int walk = current;
-
-			while (true) {
-				int next = TileCursor.GetNeighbor(walk, direction);
-				if (next == Grid.InvalidCell || !Grid.IsValidCell(next))
-					break;
-				if (IsCellSelected(next) != currentSelected) {
-					string speech = TileCursor.Instance.JumpTo(next);
-					if (speech != null)
-						SpeechPipeline.SpeakInterrupt(speech);
-					return;
-				}
-				walk = next;
-			}
-
-			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.NO_CHANGE);
 		}
 
 		// ========================================
