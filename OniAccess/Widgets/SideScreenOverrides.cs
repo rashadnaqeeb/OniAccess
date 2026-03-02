@@ -651,8 +651,9 @@ namespace OniAccess.Widgets {
 				return;
 			}
 
-			var rotatable = target.GetComponent<Rotatable>();
-			bool isRotated = rotatable != null && rotatable.IsRotated;
+			var building = target.GetComponent<Building>();
+			bool isRotated = building != null
+				&& building.Orientation != Orientation.Neutral;
 
 			var sections = new[] {
 				("standardMinionSectionHeader", "standardMinionSectionContent", false),
