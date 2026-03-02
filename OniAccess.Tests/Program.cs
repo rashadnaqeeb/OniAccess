@@ -1925,33 +1925,50 @@ namespace OniAccess.Tests {
 
 		private static (string, bool, string) OrientationNameCoversAllKnownValues() {
 			var failures = new List<string>();
-			string neutral = BuildMenuData.GetOrientationName(Orientation.Neutral);
-			string r90 = BuildMenuData.GetOrientationName(Orientation.R90);
-			string r180 = BuildMenuData.GetOrientationName(Orientation.R180);
-			string r270 = BuildMenuData.GetOrientationName(Orientation.R270);
-			string flipH = BuildMenuData.GetOrientationName(Orientation.FlipH);
-			string flipV = BuildMenuData.GetOrientationName(Orientation.FlipV);
 
-			if (neutral != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP)
-				failures.Add($"Neutral=\"{neutral}\"");
-			if (r90 != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT)
-				failures.Add($"R90=\"{r90}\"");
-			if (r180 != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN)
-				failures.Add($"R180=\"{r180}\"");
-			if (r270 != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT)
-				failures.Add($"R270=\"{r270}\"");
-			if (flipH != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT)
-				failures.Add($"FlipH=\"{flipH}\"");
-			if (flipV != (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN)
-				failures.Add($"FlipV=\"{flipV}\"");
+			// R360: full directional rotation
+			Check(Orientation.Neutral, PermittedRotations.R360,
+				(string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP, "R360+Neutral");
+			Check(Orientation.R90, PermittedRotations.R360,
+				(string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT, "R360+R90");
+			Check(Orientation.R180, PermittedRotations.R360,
+				(string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN, "R360+R180");
+			Check(Orientation.R270, PermittedRotations.R360,
+				(string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT, "R360+R270");
+
+			// R90: vertical/horizontal toggle
+			Check(Orientation.Neutral, PermittedRotations.R90,
+				(string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL, "R90+Neutral");
+			Check(Orientation.R90, PermittedRotations.R90,
+				(string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL, "R90+R90");
+
+			// FlipH: right/left toggle
+			Check(Orientation.Neutral, PermittedRotations.FlipH,
+				(string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT, "FlipH+Neutral");
+			Check(Orientation.FlipH, PermittedRotations.FlipH,
+				(string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT, "FlipH+FlipH");
+
+			// FlipV: up/down toggle
+			Check(Orientation.Neutral, PermittedRotations.FlipV,
+				(string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP, "FlipV+Neutral");
+			Check(Orientation.FlipV, PermittedRotations.FlipV,
+				(string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN, "FlipV+FlipV");
 
 			bool ok = failures.Count == 0;
 			return Assert("OrientationNameCoversAllKnownValues", ok,
 				ok ? "all correct" : string.Join("; ", failures));
+
+			void Check(Orientation o, PermittedRotations p,
+					string expected, string label) {
+				string actual = BuildMenuData.GetOrientationName(o, p);
+				if (actual != expected)
+					failures.Add($"{label}=\"{actual}\" expected \"{expected}\"");
+			}
 		}
 
 		private static (string, bool, string) OrientationNameDefaultReturnsUp() {
-			string result = BuildMenuData.GetOrientationName((Orientation)99);
+			string result = BuildMenuData.GetOrientationName(
+				(Orientation)99, PermittedRotations.R360);
 			string expected = (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP;
 			bool ok = result == expected;
 			return Assert("OrientationNameDefaultReturnsUp", ok,

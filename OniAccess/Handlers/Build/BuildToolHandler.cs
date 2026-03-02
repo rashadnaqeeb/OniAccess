@@ -483,7 +483,7 @@ namespace OniAccess.Handlers.Build {
 
 			BuildTool.Instance.TryRotate();
 			var orientation = BuildMenuData.GetCurrentOrientation();
-			var parts = new List<string> { BuildMenuData.GetOrientationName(orientation) };
+			var parts = new List<string> { BuildMenuData.GetOrientationName(orientation, _def.PermittedRotations) };
 
 			int cell = TileCursor.Instance.Cell;
 			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);

@@ -153,15 +153,28 @@ namespace OniAccess.Handlers.Build {
 			return def.isKAnimTile && def.isUtility;
 		}
 
-		public static string GetOrientationName(Orientation orientation) {
-			switch (orientation) {
-				case Orientation.Neutral: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP;
-				case Orientation.R90: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT;
-				case Orientation.R180: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN;
-				case Orientation.R270: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT;
-				case Orientation.FlipH: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT;
-				case Orientation.FlipV: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN;
-				default: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP;
+		public static string GetOrientationName(
+				Orientation orientation, PermittedRotations permitted) {
+			switch (permitted) {
+				case PermittedRotations.R90:
+					return orientation == Orientation.Neutral
+						? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL
+						: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL;
+				case PermittedRotations.FlipH:
+					return orientation == Orientation.FlipH
+						? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT
+						: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT;
+				case PermittedRotations.FlipV:
+					return orientation == Orientation.FlipV
+						? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN
+						: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP;
+				default:
+					switch (orientation) {
+						case Orientation.R90: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT;
+						case Orientation.R180: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN;
+						case Orientation.R270: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT;
+						default: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP;
+					}
 			}
 		}
 
@@ -192,7 +205,7 @@ namespace OniAccess.Handlers.Build {
 		public static string BuildNameAnnouncement(BuildingDef def) {
 			string name = def.Name;
 			if (def.PermittedRotations != PermittedRotations.Unrotatable) {
-				string dir = GetOrientationName(GetCurrentOrientation());
+				string dir = GetOrientationName(GetCurrentOrientation(), def.PermittedRotations);
 				return name + ", " + string.Format(
 					(string)STRINGS.ONIACCESS.BUILD_MENU.FACING, dir);
 			}

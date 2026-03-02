@@ -834,6 +834,8 @@ namespace STRINGS {
 			public static LocString ORIENT_RIGHT = "right";
 			public static LocString ORIENT_DOWN = "down";
 			public static LocString ORIENT_LEFT = "left";
+			public static LocString ORIENT_VERTICAL = "vertical";
+			public static LocString ORIENT_HORIZONTAL = "horizontal";
 			public static LocString EFFECTS = "effects";
 			public static LocString REQUIREMENTS = "requirements";
 			public static LocString MATERIAL_SLOT = "{0}: {1}, {2}";
