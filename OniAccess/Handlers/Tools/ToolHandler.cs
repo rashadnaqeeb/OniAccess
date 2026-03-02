@@ -20,6 +20,7 @@ namespace OniAccess.Handlers.Tools {
 		public static ToolHandler Instance { get; private set; }
 
 		private int _pendingFirstCorner = Grid.InvalidCell;
+		private int _lastDragCell = Grid.InvalidCell;
 		private readonly List<RectCorners> _rectangles = new List<RectCorners>();
 		private ModToolInfo _toolInfo;
 		private string _lastFilterKey;
@@ -131,6 +132,7 @@ namespace OniAccess.Handlers.Tools {
 			_lastFilterKey = null;
 			_rectangles.Clear();
 			_pendingFirstCorner = Grid.InvalidCell;
+			_lastDragCell = Grid.InvalidCell;
 		}
 
 		private void OnActiveToolChanged(object data) {
@@ -186,6 +188,15 @@ namespace OniAccess.Handlers.Tools {
 		// ========================================
 
 		public override bool Tick() {
+			if (_pendingFirstCorner != Grid.InvalidCell) {
+				int cell = TileCursor.Instance.Cell;
+				if (cell != _lastDragCell) {
+					_lastDragCell = cell;
+					int tileCount = TileCountBetween(_pendingFirstCorner, cell);
+					PlayDragSound(tileCount);
+				}
+			}
+
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)
 				&& !InputUtil.AnyModifierHeld()) {
 				SetCorner();
@@ -267,6 +278,7 @@ namespace OniAccess.Handlers.Tools {
 
 			if (_pendingFirstCorner == Grid.InvalidCell) {
 				_pendingFirstCorner = cell;
+				_lastDragCell = cell;
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.CORNER_SET);
 				PlayDragSound(1);
 				return;
@@ -437,6 +449,7 @@ namespace OniAccess.Handlers.Tools {
 		internal void ClearSelection() {
 			_rectangles.Clear();
 			_pendingFirstCorner = Grid.InvalidCell;
+			_lastDragCell = Grid.InvalidCell;
 		}
 
 		// ========================================
@@ -586,6 +599,12 @@ namespace OniAccess.Handlers.Tools {
 			int width = Math.Abs(Grid.CellColumn(rect.Cell2) - Grid.CellColumn(rect.Cell1)) + 1;
 			int height = Math.Abs(Grid.CellRow(rect.Cell2) - Grid.CellRow(rect.Cell1)) + 1;
 			return width * height;
+		}
+
+		private static int TileCountBetween(int cell1, int cell2) {
+			int width = Math.Abs(Grid.CellColumn(cell2) - Grid.CellColumn(cell1)) + 1;
+			int height = Math.Abs(Grid.CellRow(cell2) - Grid.CellRow(cell1)) + 1;
+			return width + height - 1;
 		}
 
 		// ========================================
