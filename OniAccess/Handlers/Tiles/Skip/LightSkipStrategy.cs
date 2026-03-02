@@ -7,8 +7,9 @@ namespace OniAccess.Handlers.Tiles.Skip {
 		private const int Band1 = 500;
 		private const int Band2 = 1000;
 		private const int Band3 = 10000;
-		private const int Band4 = 50000;
-		private const int Band5 = 72000;
+		private const int Band4 = 40000;
+		private const int Band5 = 50000;
+		private const int Band6 = 72000;
 
 		public object GetSignature(int cell) {
 			int lux = Grid.LightIntensity[cell];
@@ -18,7 +19,8 @@ namespace OniAccess.Handlers.Tiles.Skip {
 			if (lux < Band3) return 3;
 			if (lux < Band4) return 4;
 			if (lux < Band5) return 5;
-			return 6;
+			if (lux < Band6) return 6;
+			return 7;
 		}
 	}
 }

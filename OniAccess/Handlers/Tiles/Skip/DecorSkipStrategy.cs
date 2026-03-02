@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Tiles.Skip {
 		private const float Band6 = 120f;
 
 		public object GetSignature(int cell) {
-			float decor = Grid.Decor[cell];
+			float decor = GameUtil.GetDecorAtCell(cell);
 			if (decor < Band1) return 0;
 			if (decor < Band2) return 1;
 			if (decor < Band3) return 2;

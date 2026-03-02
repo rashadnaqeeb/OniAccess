@@ -47,6 +47,11 @@ namespace OniAccess.Handlers.Tiles.Skip {
 				steps++;
 				current = next;
 
+				if (startedUnexplored && Grid.IsVisible(current)) {
+					string cellSpeech = cursor.JumpTo(current);
+					return FormatTileCount(steps) + ", " + cellSpeech;
+				}
+
 				if (!startedUnexplored && !Grid.IsVisible(current)) {
 					string speech = cursor.JumpTo(current);
 					return FormatTileCount(steps) + ", " + speech;

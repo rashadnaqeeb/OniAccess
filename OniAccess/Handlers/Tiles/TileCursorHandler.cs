@@ -191,6 +191,7 @@ namespace OniAccess.Handlers.Tiles {
 
 			if (!_overlaySubscribed && OverlayScreen.Instance != null) {
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
+				_lastOverlayMode = OverlayScreen.Instance.mode;
 				_overlaySubscribed = true;
 			}
 

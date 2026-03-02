@@ -26,6 +26,7 @@ namespace OniAccess.Handlers.Tiles.Skip {
 				return Empty;
 
 			int networkId = _getNetwork(cell)?.id ?? -1;
+			if (networkId == -1) return Empty;
 			bool isJunction = CountSameNetworkNeighbors(cell, networkId) >= 3;
 			return (networkId, isJunction);
 		}
