@@ -153,6 +153,13 @@ namespace STRINGS {
 			public static LocString ITEM_COUNT = "{0} items";
 		}
 
+		public class FABRICATOR {
+			public static LocString QUEUED = "{0} queued";
+			public static LocString CONTINUOUS = "continuous";
+			public static LocString NOT_QUEUED = "not queued";
+			public static LocString UNAVAILABLE = "unavailable";
+		}
+
 		public class BUTTONS {
 			public static LocString ACCEPT = "Accept";
 			public static LocString MANAGE = "Manage";

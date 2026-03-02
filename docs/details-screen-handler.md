@@ -106,7 +106,7 @@ Generic walking finds the individual widgets but doesn't capture the semantic gr
 
 | # | Screen | Structure | Status |
 |---|--------|-----------|--------|
-| 75 | `TreeFilterableSideScreen` | Master "all" toggle, then sections per category (category name + state at level 0, element toggles at level 1). Walker misses category rows entirely (custom `TreeFilterableSideScreenRow` pooled objects) | |
+| 75 | `TreeFilterableSideScreen` | Master "all" toggle, then sections per category (category name + state at level 0, element toggles at level 1). Walker misses category rows entirely (custom `TreeFilterableSideScreenRow` pooled objects) | **Done** |
 | 76 | `ComplexFabricatorSideScreen` | Sections per recipe category (category name at level 0, recipe toggles at level 1). Walker finds KToggles but no category headers (implicit in Dictionary, not rendered). Also opens secondary `SelectedRecipeQueueScreen` | |
 | 77 | `AccessControlSideScreen` | Sections per group (Standard/Bionic/Robot at level 0, per-dupe permission toggles at level 1). Walker finds MultiToggles but no section grouping | |
 | 78 | `MinionTodoSideScreen` | **Done.** Handled by `ErrandsSideTab` with snapshot-based speech | |
@@ -141,13 +141,13 @@ These open a second side screen panel via `DetailsScreen.SetSecondarySideScreen`
 
 ## Remaining Phases
 
-### Phase 6: Hierarchical Side Screens (1 of 5 done)
+### Phase 6: Hierarchical Side Screens (2 of 5 done)
 
-**Goal**: The remaining 4 hierarchical side screens (Category D) get dedicated multi-level reading logic.
+**Goal**: The remaining 3 hierarchical side screens (Category D) get dedicated multi-level reading logic.
 
 Each needs NestedMenuHandler's multi-level navigation (sections at level 0, items at level 1):
 
-1. `TreeFilterableSideScreen` — master toggle, then sections per category with element toggle children. Walker misses category rows entirely (custom `TreeFilterableSideScreenRow`).
+1. ~~`TreeFilterableSideScreen`~~ — **Done.**
 2. `AccessControlSideScreen` — sections per group with per-dupe permission row children. Walker finds MultiToggles but not the Standard/Bionic/Robot grouping.
 3. `ComplexFabricatorSideScreen` — sections per category with recipe toggle children. Walker finds KToggles but no category headers.
 4. `BionicSideScreen` — upgrade slots grouped by category. Walker finds MultiToggle+LocText but loses category structure. Also opens secondary screen.
@@ -166,7 +166,7 @@ Each needs NestedMenuHandler's multi-level navigation (sections at level 0, item
 
 **Goal**: The 5 secondary screen pairs (Category E) are accessible.
 
-Secondary screens are opened via `DetailsScreen.SetSecondarySideScreen` when the user activates certain elements. UX for secondary screen navigation to be designed during this phase.
+Secondary screens are opened via `DetailsScreen.SetSecondarySideScreen` when the user activates certain elements. Each secondary screen gets its own handler pushed on top of the handler stack; when the secondary screen closes, the handler pops and the user returns to the parent side screen tab.
 
 1. `ComplexFabricatorSideScreen` → `SelectedRecipeQueueScreen` (recipe queue management)
 2. `BionicSideScreen` → `OwnablesSecondSideScreen` (upgrade slot picker). Note: main view is Phase 6 (Cat D).

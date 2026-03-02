@@ -12,6 +12,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<AlarmSideScreen>(WalkAlarm);
 			SideScreenWalker.RegisterOverride<FewOptionSideScreen>(WalkFewOption);
 			SideScreenWalker.RegisterOverride<TreeFilterableSideScreen>(WalkTreeFilter);
+			SideScreenWalker.RegisterOverride<ComplexFabricatorSideScreen>(WalkComplexFabricator);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -405,6 +406,142 @@ namespace OniAccess.Widgets {
 					return (string)STRINGS.ONIACCESS.STATES.OFF;
 				default:
 					return (string)STRINGS.ONIACCESS.STATES.MIXED;
+			}
+		}
+
+		static void WalkComplexFabricator(ComplexFabricatorSideScreen screen, List<Widget> items) {
+			Traverse tv;
+			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkComplexFabricator: Traverse create failed: {ex.Message}");
+				return;
+			}
+
+			// Order status labels
+			try {
+				var currentOrderLabel = tv.Field<LocText>("currentOrderLabel").Value;
+				if (currentOrderLabel != null && currentOrderLabel.gameObject.activeSelf) {
+					var captured = currentOrderLabel;
+					string text = captured.GetParsedText();
+					if (SideScreenWalker.HasVisibleContent(text)) {
+						items.Add(new LabelWidget {
+							Label = text,
+							GameObject = captured.gameObject,
+							SpeechFunc = () => captured.GetParsedText()
+						});
+					}
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkComplexFabricator: currentOrderLabel read failed: {ex.Message}");
+			}
+
+			try {
+				var nextOrderLabel = tv.Field<LocText>("nextOrderLabel").Value;
+				if (nextOrderLabel != null && nextOrderLabel.gameObject.activeSelf) {
+					var captured = nextOrderLabel;
+					string text = captured.GetParsedText();
+					if (SideScreenWalker.HasVisibleContent(text)) {
+						items.Add(new LabelWidget {
+							Label = text,
+							GameObject = captured.gameObject,
+							SpeechFunc = () => captured.GetParsedText()
+						});
+					}
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkComplexFabricator: nextOrderLabel read failed: {ex.Message}");
+			}
+
+			// No recipes fallback
+			try {
+				var noRecipesLabel = tv.Field<LocText>("noRecipesDiscoveredLabel").Value;
+				if (noRecipesLabel != null && noRecipesLabel.gameObject.activeSelf) {
+					var captured = noRecipesLabel;
+					string text = captured.GetParsedText();
+					if (SideScreenWalker.HasVisibleContent(text)) {
+						items.Add(new LabelWidget {
+							Label = text,
+							GameObject = captured.gameObject,
+							SpeechFunc = () => captured.GetParsedText()
+						});
+						return;
+					}
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkComplexFabricator: noRecipesDiscoveredLabel read failed: {ex.Message}");
+			}
+
+			// Recipe toggles
+			List<GameObject> recipeToggles;
+			Dictionary<GameObject, List<ComplexRecipe>> recipeCategoryToggleMap;
+			try {
+				recipeToggles = tv.Field<List<GameObject>>("recipeToggles").Value;
+				recipeCategoryToggleMap = tv
+					.Field<Dictionary<GameObject, List<ComplexRecipe>>>("recipeCategoryToggleMap").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkComplexFabricator: recipe fields read failed: {ex.Message}");
+				return;
+			}
+			if (recipeToggles == null || recipeCategoryToggleMap == null) return;
+
+			foreach (var toggleGO in recipeToggles) {
+				if (toggleGO == null || !toggleGO.activeSelf) continue;
+				var href = toggleGO.GetComponent<HierarchyReferences>();
+				if (href == null) continue;
+
+				var toggle = toggleGO.GetComponent<KToggle>();
+				if (toggle == null) continue;
+
+				var labelLt = href.GetReference<LocText>("Label");
+				string label = labelLt != null ? labelLt.GetParsedText() : toggleGO.name;
+				if (!SideScreenWalker.HasVisibleContent(label)) continue;
+
+				var capturedGO = toggleGO;
+				var capturedHref = href;
+				var capturedLabelLt = labelLt;
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = toggle,
+					GameObject = capturedGO,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string name = capturedLabelLt != null
+							? capturedLabelLt.GetParsedText() : capturedGO.name;
+
+						// Queue status
+						string queueStatus;
+						var infiniteIcon = capturedHref
+							.GetReference<RectTransform>("InfiniteIcon");
+						if (infiniteIcon != null && infiniteIcon.gameObject.activeSelf) {
+							queueStatus = (string)STRINGS.ONIACCESS.FABRICATOR.CONTINUOUS;
+						} else {
+							var countLabel = capturedHref.GetReference<LocText>("CountLabel");
+							string countText = countLabel != null
+								? countLabel.GetParsedText() : "";
+							if (string.IsNullOrEmpty(countText) || countText == "0") {
+								queueStatus = (string)STRINGS.ONIACCESS.FABRICATOR.NOT_QUEUED;
+							} else {
+								queueStatus = string.Format(
+									(string)STRINGS.ONIACCESS.FABRICATOR.QUEUED, countText);
+							}
+						}
+
+						string speech = $"{name}, {queueStatus}";
+
+						// Availability via label color
+						if (capturedLabelLt != null && capturedLabelLt.color.r >= 0.1f) {
+							speech += $", {(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE}";
+						}
+
+						// Tech required
+						var techRequired = capturedHref
+							.GetReference<RectTransform>("TechRequired");
+						if (techRequired != null && techRequired.gameObject.activeSelf) {
+							speech += $", {(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE}";
+						}
+
+						return speech;
+					}
+				});
 			}
 		}
 
