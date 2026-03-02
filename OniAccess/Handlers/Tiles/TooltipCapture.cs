@@ -84,7 +84,8 @@ namespace OniAccess.Handlers.Tiles {
 
 		/// <summary>
 		/// Return the most relevant tooltip block for a quick summary.
-		/// Priority: overlay-specific block, then building, then first block.
+		/// Priority: overlay-specific block, then conduit block (in
+		/// utility overlays), then building, then first block.
 		/// Returns null when no tooltip is captured.
 		/// </summary>
 		internal static string GetPrioritySummary(int cell) {
@@ -105,10 +106,17 @@ namespace OniAccess.Handlers.Tiles {
 				&& !MatchesAnyName(lines[0], buildingNames))
 				return lines[0];
 
+			// In utility overlays, conduit status (circuit load, pipe
+			// contents) is more relevant than the building block. Find
+			// the conduit block first and strip its name prefix.
+			string conduitResult = FindConduitBlock(lines, cell);
+			if (conduitResult != null) return conduitResult;
+
 			if (buildingNames.Count > 0) {
 				for (int i = 0; i < lines.Count; i++) {
 					if (MatchesAnyName(lines[i], buildingNames))
-						return lines[i];
+						return StripEntityPrefix(lines[i], cell)
+							?? lines[i];
 				}
 			}
 
@@ -122,6 +130,87 @@ namespace OniAccess.Handlers.Tiles {
 			}
 
 			return lines[0];
+		}
+
+		/// <summary>
+		/// In utility overlays, find the tooltip block for the conduit
+		/// at this cell and return it with the name stripped. Returns
+		/// null when not in a utility overlay or no conduit block found.
+		/// </summary>
+		private static string FindConduitBlock(
+				System.Collections.Generic.IReadOnlyList<string> lines,
+				int cell) {
+			int[] layers = GetUtilityConduitLayers();
+			if (layers == null) return null;
+
+			var names = new List<string>(2);
+			foreach (int layer in layers)
+				AddBuildingName(cell, layer, names);
+			if (names.Count == 0) return null;
+
+			for (int i = 0; i < lines.Count; i++) {
+				if (!MatchesAnyName(lines[i], names)) continue;
+				return StripFirstSegment(lines[i]) ?? lines[i];
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Strip the first comma-separated segment (entity name line)
+		/// from a tooltip block. Returns null if there is no separator
+		/// or stripping would leave only whitespace.
+		/// </summary>
+		private static string StripFirstSegment(string block) {
+			int sep = block.IndexOf(", ", System.StringComparison.Ordinal);
+			if (sep < 0) return null;
+			string remainder = block.Substring(sep + 2);
+			return string.IsNullOrWhiteSpace(remainder) ? null : remainder;
+		}
+
+		/// <summary>
+		/// Strip the entity identity (name and material) from a tooltip
+		/// block. Always checks building layers; also checks conduit
+		/// layers when a utility overlay is active. Returns null when
+		/// the block doesn't match any entity name at the cell, or
+		/// when stripping would leave nothing.
+		/// </summary>
+		private static string StripEntityPrefix(string block, int cell) {
+			var names = new List<string>(4);
+			AddBuildingName(cell, (int)ObjectLayer.Building, names);
+			AddBuildingName(cell, (int)ObjectLayer.FoundationTile, names);
+
+			int[] conduitLayers = GetUtilityConduitLayers();
+			if (conduitLayers != null) {
+				foreach (int layer in conduitLayers)
+					AddBuildingName(cell, layer, names);
+			}
+
+			if (names.Count == 0) return null;
+			if (!MatchesAnyName(block, names)) return null;
+
+			return StripFirstSegment(block);
+		}
+
+		private static int[] GetUtilityConduitLayers() {
+			if (OverlayScreen.Instance == null) return null;
+			var mode = OverlayScreen.Instance.GetMode();
+			if (mode == OverlayModes.Power.ID)
+				return new[] {
+					(int)ObjectLayer.Wire,
+					(int)ObjectLayer.WireConnectors };
+			if (mode == OverlayModes.LiquidConduits.ID)
+				return new[] {
+					(int)ObjectLayer.LiquidConduit,
+					(int)ObjectLayer.LiquidConduitConnection };
+			if (mode == OverlayModes.GasConduits.ID)
+				return new[] {
+					(int)ObjectLayer.GasConduit,
+					(int)ObjectLayer.GasConduitConnection };
+			if (mode == OverlayModes.SolidConveyor.ID)
+				return new[] {
+					(int)ObjectLayer.SolidConduit,
+					(int)ObjectLayer.SolidConduitConnection };
+			return null;
 		}
 
 		/// <summary>
