@@ -337,6 +337,7 @@ namespace STRINGS {
 			public static LocString DISEASE_CLEAR = "clean";
 			public static LocString DISEASE_ENTRY = "{0}, {1}";
 			public static LocString ELEMENT_MASS = "{0}, {1}";
+			public static LocString CONNECTS = "connects {0}";
 		}
 
 		public class SCANNER {

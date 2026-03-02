@@ -25,12 +25,16 @@ namespace OniAccess.Handlers.Tiles {
 		internal static readonly ICellSection Decor = new Sections.DecorSection();
 		internal static readonly ICellSection Disease = new Sections.DiseaseSection();
 		internal static readonly ICellSection Power = new Sections.ConduitSection(
+			() => Game.Instance.electricalConduitSystem,
 			(int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors);
 		internal static readonly ICellSection Plumbing = new Sections.ConduitSection(
+			() => Game.Instance.liquidConduitSystem,
 			(int)ObjectLayer.LiquidConduit, (int)ObjectLayer.LiquidConduitConnection);
 		internal static readonly ICellSection Ventilation = new Sections.ConduitSection(
+			() => Game.Instance.gasConduitSystem,
 			(int)ObjectLayer.GasConduit, (int)ObjectLayer.GasConduitConnection);
 		internal static readonly ICellSection Conveyor = new Sections.ConduitSection(
+			() => Game.Instance.solidConduitSystem,
 			(int)ObjectLayer.SolidConduit, (int)ObjectLayer.SolidConduitConnection);
 		internal static readonly ICellSection Automation = new Sections.AutomationSection();
 		internal static readonly ICellSection Temperature = new Sections.TemperatureSection();

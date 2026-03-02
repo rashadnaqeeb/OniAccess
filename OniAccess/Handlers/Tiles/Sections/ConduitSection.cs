@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Sections {
@@ -8,8 +9,11 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// </summary>
 	public class ConduitSection: ICellSection {
 		private readonly int[] _layers;
+		private readonly Func<IUtilityNetworkMgr> _getManager;
 
-		public ConduitSection(params int[] layers) {
+		public ConduitSection(Func<IUtilityNetworkMgr> getManager,
+				params int[] layers) {
+			_getManager = getManager;
 			_layers = layers;
 		}
 
@@ -24,6 +28,12 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (sel != null)
 					tokens.Add(sel.GetName());
 			}
+			if (tokens.Count > 0) {
+				var conn = FormatConnections(
+					_getManager().GetConnections(cell, true));
+				if (conn != null)
+					tokens.Add(conn);
+			}
 			return tokens;
 		}
 
@@ -36,6 +46,27 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var building = go.GetComponent<Building>();
 			return building != null
 				&& (int)building.Def.ObjectLayer != layer;
+		}
+
+		/// <summary>
+		/// Formats a UtilityConnections flags value as "connects up, down"
+		/// etc. Returns null if no connections.
+		/// </summary>
+		internal static string FormatConnections(UtilityConnections connections) {
+			if (connections == 0) return null;
+			var dirs = new List<string>(4);
+			if ((connections & UtilityConnections.Up) != 0)
+				dirs.Add(STRINGS.ONIACCESS.SCANNER.DIRECTION_UP);
+			if ((connections & UtilityConnections.Down) != 0)
+				dirs.Add(STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN);
+			if ((connections & UtilityConnections.Left) != 0)
+				dirs.Add(STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT);
+			if ((connections & UtilityConnections.Right) != 0)
+				dirs.Add(STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT);
+			if (dirs.Count == 0) return null;
+			return string.Format(
+				STRINGS.ONIACCESS.GLANCE.CONNECTS,
+				string.Join(", ", dirs));
 		}
 	}
 }

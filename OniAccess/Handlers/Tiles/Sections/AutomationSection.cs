@@ -19,6 +19,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 						tokens.Add(sel.GetName());
 				}
 			}
+			if (tokens.Count > 0) {
+				var conn = ConduitSection.FormatConnections(
+					Game.Instance.logicCircuitSystem
+						.GetConnections(cell, true));
+				if (conn != null)
+					tokens.Add(conn);
+			}
 			return tokens;
 		}
 	}
