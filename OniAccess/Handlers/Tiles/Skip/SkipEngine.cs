@@ -47,6 +47,13 @@ namespace OniAccess.Handlers.Tiles.Skip {
 				steps++;
 				current = next;
 
+				var ruler = CursorRuler.Instance;
+				if (ruler.IsOnRulerLine(current)
+					&& !ruler.IsOnRulerLine(startCell)) {
+					string cellSpeech = cursor.JumpTo(current);
+					return FormatTileCount(steps) + ", " + cellSpeech;
+				}
+
 				if (startedUnexplored && Grid.IsVisible(current)) {
 					string cellSpeech = cursor.JumpTo(current);
 					return FormatTileCount(steps) + ", " + cellSpeech;

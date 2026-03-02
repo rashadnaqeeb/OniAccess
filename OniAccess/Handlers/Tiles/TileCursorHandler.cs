@@ -61,6 +61,9 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Q),
 			new ConsumedKey(KKeyCode.Return),
 			new ConsumedKey(KKeyCode.N, Modifier.Shift),
+			// Ruler keybinds
+			new ConsumedKey(KKeyCode.R, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.R, Modifier.Ctrl | Modifier.Shift),
 			// Bookmark keybinds
 			new ConsumedKey(KKeyCode.H),
 			new ConsumedKey(KKeyCode.Alpha1, Modifier.Shift),
@@ -109,6 +112,8 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Ctrl+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK),
 			new HelpEntry("Shift+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK),
 			new HelpEntry("Alt+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_BOOKMARK),
+			new HelpEntry("Ctrl+R", (string)STRINGS.ONIACCESS.RULER.HELP_PLACE),
+			new HelpEntry("Ctrl+Shift+R", (string)STRINGS.ONIACCESS.RULER.HELP_CLEAR),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;
@@ -140,6 +145,7 @@ namespace OniAccess.Handlers.Tiles {
 					Util.Log.Error($"TileCursorHandler.OnActivate: cursor init failed: {ex}");
 				}
 			}
+			CursorRuler.Create();
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 			if (Game.Instance != null)
@@ -163,6 +169,7 @@ namespace OniAccess.Handlers.Tiles {
 			_notificationTracker?.Detach();
 			_notificationTracker = null;
 			TileCursor.Destroy();
+			CursorRuler.Destroy();
 			_scanner = null;
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
@@ -206,6 +213,8 @@ namespace OniAccess.Handlers.Tiles {
 			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null)
 				SpeechPipeline.SpeakInterrupt(arrived);
+
+			CursorRuler.Instance.OnCursorMoved(TileCursor.Instance.Cell);
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)
 				&& !InputUtil.AnyModifierHeld()) {
@@ -291,6 +300,17 @@ namespace OniAccess.Handlers.Tiles {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.N)
 				&& InputUtil.ShiftHeld()) {
 				OpenNotificationMenu();
+				return true;
+			}
+
+			// Ruler keybinds
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)
+				&& InputUtil.CtrlHeld()) {
+				if (InputUtil.ShiftHeld())
+					SpeechPipeline.SpeakInterrupt(CursorRuler.Instance.Clear());
+				else
+					SpeechPipeline.SpeakInterrupt(
+						CursorRuler.Instance.PlaceAt(TileCursor.Instance.Cell));
 				return true;
 			}
 

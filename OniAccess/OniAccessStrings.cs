@@ -794,6 +794,13 @@ namespace STRINGS {
 			public static LocString HISTORY_FORWARD_HELP = "Go forward";
 		}
 
+		public class RULER {
+			public static LocString PLACED = "ruler set";
+			public static LocString CLEARED = "ruler cleared";
+			public static LocString HELP_PLACE = "Place ruler at cursor";
+			public static LocString HELP_CLEAR = "Clear ruler";
+		}
+
 		public class BOOKMARKS {
 			public static LocString BOOKMARK_SET = "bookmark {0} set";
 			public static LocString NO_BOOKMARK = "no bookmark";
