@@ -188,8 +188,14 @@ namespace OniAccess.Handlers.Tiles {
 				_queueNextOverlayTtl--;
 
 			if (!_overlaySubscribed && OverlayScreen.Instance != null) {
+				try {
+					_lastOverlayMode = OverlayScreen.Instance.mode;
+				} catch {
+					// OverlayScreen.Instance exists but currentModeInfo
+					// isn't populated yet during early load. Retry next frame.
+					return false;
+				}
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
-				_lastOverlayMode = OverlayScreen.Instance.mode;
 				_overlaySubscribed = true;
 			}
 
