@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using OniAccess.Handlers.Notifications;
 using OniAccess.Handlers.Tiles.Scanner;
+using OniAccess.Handlers.Tiles.Skip;
 using OniAccess.Input;
 using OniAccess.Speech;
 
@@ -17,6 +18,7 @@ namespace OniAccess.Handlers.Tiles {
 	/// </summary>
 	public class TileCursorHandler: BaseScreenHandler {
 		private Overlays.OverlayProfileRegistry _overlayRegistry;
+		private SkipEngine _skipEngine;
 		private ScannerNavigator _scanner;
 		private CursorBookmarks _bookmarks;
 		private GameStateMonitor _monitor;
@@ -41,6 +43,10 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.DownArrow),
 			new ConsumedKey(KKeyCode.LeftArrow),
 			new ConsumedKey(KKeyCode.RightArrow),
+			new ConsumedKey(KKeyCode.UpArrow, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.DownArrow, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.LeftArrow, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.RightArrow, Modifier.Ctrl),
 			// Scanner keybinds
 			new ConsumedKey(KKeyCode.End),
 			new ConsumedKey(KKeyCode.Home),
@@ -83,6 +89,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrow keys", (string)STRINGS.ONIACCESS.HELP.MOVE_CURSOR),
+			new HelpEntry("Ctrl+Arrow keys", (string)STRINGS.ONIACCESS.SKIP.HELP_SKIP),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_ACTION_MENU),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.SELECT_ENTITY),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY),
@@ -117,6 +124,7 @@ namespace OniAccess.Handlers.Tiles {
 			if (!_hasActivated) {
 				_hasActivated = true;
 				_overlayRegistry = Overlays.OverlayProfileRegistry.Build();
+				_skipEngine = new SkipEngine(SkipStrategyRegistry.Build());
 				ToolProfiles.ToolProfileRegistry.Build();
 				TileCursor.Create(_overlayRegistry);
 				_scanner = new ScannerNavigator();
@@ -218,6 +226,26 @@ namespace OniAccess.Handlers.Tiles {
 				return true;
 			}
 
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
+				&& InputUtil.CtrlHeld()) {
+				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Up));
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)
+				&& InputUtil.CtrlHeld()) {
+				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Down));
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)
+				&& InputUtil.CtrlHeld()) {
+				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Left));
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)
+				&& InputUtil.CtrlHeld()) {
+				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Right));
+				return true;
+			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
 				&& !InputUtil.AnyModifierHeld()) {
 				SpeakMove(Direction.Up);

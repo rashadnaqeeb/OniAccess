@@ -167,7 +167,7 @@ namespace OniAccess.Handlers.Tiles {
 			}
 		}
 
-		private bool IsInWorldBounds(int cell) {
+		internal static bool IsInWorldBounds(int cell) {
 			if (!Grid.IsValidCell(cell))
 				return false;
 			var world = ClusterManager.Instance.activeWorld;

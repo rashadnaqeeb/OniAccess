@@ -858,5 +858,12 @@ namespace STRINGS {
 			public static LocString ATTR_MODIFIER = "{0} {1}{2}";
 			public static LocString FACADE_DEFAULT = "default";
 		}
+
+		public class SKIP {
+			public static LocString TILES_FORMAT = "{0} tiles";
+			public static LocString TILE_FORMAT = "{0} tile";
+			public static LocString NO_CHANGE_BOUNDARY = "no change till map boundary";
+			public static LocString HELP_SKIP = "Skip cursor to next change";
+		}
 	}
 }
