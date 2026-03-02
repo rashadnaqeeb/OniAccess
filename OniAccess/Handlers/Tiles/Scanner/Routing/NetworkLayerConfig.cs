@@ -9,6 +9,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 		public string ScannerSubcategory;
 		public ObjectLayer SegmentLayer;
 		public ObjectLayer BridgeLayer;
+		public System.Func<IUtilityNetworkMgr> GetManager;
 	}
 
 	public static class NetworkLayerConfig {
@@ -18,36 +19,42 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 				ScannerSubcategory = ScannerTaxonomy.Subcategories.Power,
 				SegmentLayer = ObjectLayer.Wire,
 				BridgeLayer = ObjectLayer.WireConnectors,
+				GetManager = () => Game.Instance.electricalConduitSystem,
 			},
 			new NetworkType {
 				ScannerCategory = ScannerTaxonomy.Categories.Networks,
 				ScannerSubcategory = ScannerTaxonomy.Subcategories.Liquid,
 				SegmentLayer = ObjectLayer.LiquidConduit,
 				BridgeLayer = ObjectLayer.LiquidConduitConnection,
+				GetManager = () => Game.Instance.liquidConduitSystem,
 			},
 			new NetworkType {
 				ScannerCategory = ScannerTaxonomy.Categories.Networks,
 				ScannerSubcategory = ScannerTaxonomy.Subcategories.Gas,
 				SegmentLayer = ObjectLayer.GasConduit,
 				BridgeLayer = ObjectLayer.GasConduitConnection,
+				GetManager = () => Game.Instance.gasConduitSystem,
 			},
 			new NetworkType {
 				ScannerCategory = ScannerTaxonomy.Categories.Networks,
 				ScannerSubcategory = ScannerTaxonomy.Subcategories.Conveyor,
 				SegmentLayer = ObjectLayer.SolidConduit,
 				BridgeLayer = ObjectLayer.SolidConduitConnection,
+				GetManager = () => Game.Instance.solidConduitSystem,
 			},
 			new NetworkType {
 				ScannerCategory = ScannerTaxonomy.Categories.Networks,
 				ScannerSubcategory = ScannerTaxonomy.Subcategories.Transport,
 				SegmentLayer = ObjectLayer.TravelTube,
 				BridgeLayer = ObjectLayer.TravelTubeConnection,
+				GetManager = () => Game.Instance.travelTubeSystem,
 			},
 			new NetworkType {
 				ScannerCategory = ScannerTaxonomy.Categories.Automation,
 				ScannerSubcategory = ScannerTaxonomy.Subcategories.Wires,
 				SegmentLayer = ObjectLayer.LogicWire,
 				BridgeLayer = ObjectLayer.LogicGate,
+				GetManager = () => Game.Instance.logicCircuitSystem,
 			},
 		};
 	}

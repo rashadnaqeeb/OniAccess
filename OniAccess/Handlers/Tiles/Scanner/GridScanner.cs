@@ -80,7 +80,6 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		// UnionFind instances — one per clustering domain
 		private UnionFind _ufElements;
 		private UnionFind _ufTiles;
-		private readonly UnionFind[] _ufNetworks;
 		private readonly UnionFind[] _ufBoxOrders; // one per box-order type (4)
 		private UnionFind _ufSameTypeOrders;
 		private UnionFind _ufBiomes;
@@ -89,7 +88,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		// used for union decisions and cluster extraction.
 		private int[] _elementKey;       // SimHashes cast to int; 0 = none
 		private int[] _tileKey;          // prefab ID hash; 0 = none
-		private int[][] _networkKey;     // [networkTypeIndex][cell]; 0 = none
+		private int[][] _networkId;      // [networkTypeIndex][cell]; network.id + 1, 0 = none
 		private int[][] _boxOrderKey;    // [boxOrderIndex][cell]; 1 = present, 0 = none
 		private string[] _sameTypeKey;   // "Build:PrefabId" etc; null = none
 		private int[] _biomeKey;         // ZoneType cast to int; -1 = unset
@@ -99,7 +98,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			= new Dictionary<int, ElementCluster>();
 		private readonly Dictionary<int, TileCluster> _tileClusters
 			= new Dictionary<int, TileCluster>();
-		private readonly Dictionary<int, NetworkSegmentCluster>[] _networkClusters;
+		private readonly Dictionary<long, NetworkSegmentCluster>[] _networkClusters;
 		private readonly Dictionary<int, OrderCluster>[] _boxOrderClusters;
 		private readonly Dictionary<int, OrderCluster> _sameTypeOrderClusters
 			= new Dictionary<int, OrderCluster>();
@@ -148,11 +147,10 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			_biomeNameResolver = biomeNameResolver;
 
 			int netCount = NetworkLayerConfig.Types.Length;
-			_ufNetworks = new UnionFind[netCount];
-			_networkKey = new int[netCount][];
-			_networkClusters = new Dictionary<int, NetworkSegmentCluster>[netCount];
+			_networkId = new int[netCount][];
+			_networkClusters = new Dictionary<long, NetworkSegmentCluster>[netCount];
 			for (int i = 0; i < netCount; i++)
-				_networkClusters[i] = new Dictionary<int, NetworkSegmentCluster>();
+				_networkClusters[i] = new Dictionary<long, NetworkSegmentCluster>();
 
 			int boxCount = BoxOrderDefs.Length;
 			_ufBoxOrders = new UnionFind[boxCount];
@@ -186,8 +184,6 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		private void AllocateOrReset(int cellCount) {
 			_ufElements = ResetUF(_ufElements, cellCount);
 			_ufTiles = ResetUF(_ufTiles, cellCount);
-			for (int i = 0; i < _ufNetworks.Length; i++)
-				_ufNetworks[i] = ResetUF(_ufNetworks[i], cellCount);
 			for (int i = 0; i < _ufBoxOrders.Length; i++)
 				_ufBoxOrders[i] = ResetUF(_ufBoxOrders[i], cellCount);
 			_ufSameTypeOrders = ResetUF(_ufSameTypeOrders, cellCount);
@@ -195,8 +191,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 			_elementKey = ResetIntArray(_elementKey, cellCount, 0);
 			_tileKey = ResetIntArray(_tileKey, cellCount, 0);
-			for (int i = 0; i < _networkKey.Length; i++)
-				_networkKey[i] = ResetIntArray(_networkKey[i], cellCount, 0);
+			for (int i = 0; i < _networkId.Length; i++)
+				_networkId[i] = ResetIntArray(_networkId[i], cellCount, 0);
 			for (int i = 0; i < _boxOrderKey.Length; i++)
 				_boxOrderKey[i] = ResetIntArray(_boxOrderKey[i], cellCount, 0);
 			_biomeKey = ResetIntArray(_biomeKey, cellCount, -1);
@@ -319,8 +315,10 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			if (building == null) return;
 			if (!building.Def.isUtility) return;
 
-			_networkKey[typeIndex][cell] = building.Def.PrefabID.GetHashCode();
-			UnionWithNeighbors(_ufNetworks[typeIndex], _networkKey[typeIndex], cell);
+			var network = net.GetManager().GetNetworkForCell(cell);
+			if (network == null) return;
+
+			_networkId[typeIndex][cell] = network.id + 1;
 		}
 
 		// --- Bridge instances (non-clustered) ---
@@ -495,8 +493,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 					ExtractElement(cell);
 				if (_tileKey[cell] != 0)
 					ExtractTile(cell);
-				for (int i = 0; i < _networkKey.Length; i++)
-					if (_networkKey[i][cell] != 0)
+				for (int i = 0; i < _networkId.Length; i++)
+					if (_networkId[i][cell] != 0)
 						ExtractNetwork(cell, i);
 				for (int i = 0; i < _boxOrderKey.Length; i++)
 					if (_boxOrderKey[i][cell] != 0)
@@ -552,18 +550,20 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		}
 
 		private void ExtractNetwork(int cell, int typeIndex) {
-			int root = _ufNetworks[typeIndex].Find(cell);
+			var net = NetworkLayerConfig.Types[typeIndex];
+			var go = Grid.Objects[cell, (int)net.SegmentLayer];
+			int prefabHash = go.GetComponent<Building>().Def.PrefabID.GetHashCode();
+			long key = ((long)_networkId[typeIndex][cell] << 32) | (uint)prefabHash;
+
 			var clusters = _networkClusters[typeIndex];
-			if (!clusters.TryGetValue(root, out var cluster)) {
-				var net = NetworkLayerConfig.Types[typeIndex];
-				var go = Grid.Objects[cell, (int)net.SegmentLayer];
+			if (!clusters.TryGetValue(key, out var cluster)) {
 				string prefabId = go.GetComponent<Building>().Def.PrefabID;
 				cluster = new NetworkSegmentCluster {
 					PrefabId = prefabId,
 					ScannerCategory = net.ScannerCategory,
 					ScannerSubcategory = net.ScannerSubcategory,
 				};
-				clusters[root] = cluster;
+				clusters[key] = cluster;
 			}
 			cluster.Cells.Add(cell);
 		}
