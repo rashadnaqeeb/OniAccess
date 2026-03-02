@@ -204,12 +204,13 @@ namespace OniAccess.Handlers.Build {
 		/// </summary>
 		public static string BuildNameAnnouncement(BuildingDef def) {
 			string name = def.Name;
-			if (def.PermittedRotations != PermittedRotations.Unrotatable) {
-				string dir = GetOrientationName(GetCurrentOrientation(), def.PermittedRotations);
-				return name + ", " + string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.FACING, dir);
-			}
-			return name;
+			if (def.PermittedRotations == PermittedRotations.Unrotatable)
+				return name;
+			string dir = GetOrientationName(GetCurrentOrientation(), def.PermittedRotations);
+			if (def.PermittedRotations == PermittedRotations.R90)
+				return name + ", " + dir;
+			return name + ", " + string.Format(
+				(string)STRINGS.ONIACCESS.BUILD_MENU.FACING, dir);
 		}
 
 		/// <summary>
