@@ -91,7 +91,6 @@ namespace OniAccess.Handlers.Tiles {
 		internal static string GetPrioritySummary(int cell) {
 			var lines = _capturedLines;
 			if (lines == null || lines.Count == 0) return null;
-			if (lines.Count == 1) return lines[0];
 
 			var buildingNames = GetNonBackwallBuildingNames(cell);
 			var backwallName = GetBackwallName(cell);
