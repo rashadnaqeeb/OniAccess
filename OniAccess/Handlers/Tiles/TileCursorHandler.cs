@@ -36,6 +36,8 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.BackQuote),
 			new ConsumedKey(KKeyCode.F, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.I),
+			new ConsumedKey(KKeyCode.I, Modifier.Shift),
+			new ConsumedKey(KKeyCode.P, Modifier.Shift),
 			new ConsumedKey(KKeyCode.K),
 			new ConsumedKey(KKeyCode.K, Modifier.Shift),
 			new ConsumedKey(KKeyCode.UpArrow),
@@ -108,6 +110,8 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS),
 			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED),
 			new HelpEntry("Shift+N", (string)STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP),
+			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.RESOURCES.HELP_OPEN),
+			new HelpEntry("Shift+P", (string)STRINGS.ONIACCESS.RESOURCES.HELP_READ_PINNED),
 			new HelpEntry("H", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_HOME),
 			new HelpEntry("Ctrl+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK),
 			new HelpEntry("Shift+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK),
@@ -287,9 +291,19 @@ namespace OniAccess.Handlers.Tiles {
 					SpeechPipeline.SpeakInterrupt(TileCursor.Instance.ReadCoordinates());
 				return true;
 			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)
-				&& !InputUtil.AnyModifierHeld()) {
-				ReadTooltipSummary();
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)) {
+				if (InputUtil.ShiftHeld()) {
+					OpenResourceBrowser();
+					return true;
+				}
+				if (!InputUtil.AnyModifierHeld()) {
+					ReadTooltipSummary();
+					return true;
+				}
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.P)
+				&& InputUtil.ShiftHeld()) {
+				ReadPinnedResources();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)
@@ -419,6 +433,16 @@ namespace OniAccess.Handlers.Tiles {
 			var displayLabels = EntityPickerHandler.MatchTooltipLabels(
 				selectables, tooltipLines);
 			HandlerStack.Push(new EntityPickerHandler(selectables, displayLabels));
+		}
+
+		private void OpenResourceBrowser() {
+			if (AllResourcesScreen.Instance != null)
+				AllResourcesScreen.Instance.Show(true);
+		}
+
+		private void ReadPinnedResources() {
+			string speech = Resources.ResourceHelper.BuildPinnedSpeech();
+			SpeechPipeline.SpeakInterrupt(speech);
 		}
 
 		private void OpenNotificationMenu() {

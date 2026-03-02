@@ -1,3 +1,4 @@
+using OniAccess.Handlers.Resources;
 using OniAccess.Handlers.Screens;
 using OniAccess.Handlers.Screens.Codex;
 
@@ -289,6 +290,11 @@ namespace OniAccess.Handlers {
 			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
 			Register<CodexScreen>(screen => new CodexScreenHandler(screen));
 			_showPatchedTypes.Add(typeof(CodexScreen));
+
+			// AllResourcesScreen (ShowOptimizedKScreen -- full resource list)
+			// Show patch pushes/pops via ContextDetector since it uses Show() toggle
+			Register<AllResourcesScreen>(screen => new ResourceBrowserHandler(screen));
+			_showPatchedTypes.Add(typeof(AllResourcesScreen));
 
 			// MessageDialogFrame (KScreen -- message popup from notification click)
 			// OnActivate is declared on MessageDialogFrame, so generic KScreen_Activate_Patch fires.

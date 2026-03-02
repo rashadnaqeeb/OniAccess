@@ -874,5 +874,27 @@ namespace STRINGS {
 			public static LocString NO_CHANGE_BOUNDARY = "no change till map boundary";
 			public static LocString HELP_SKIP = "Skip cursor to next change";
 		}
+
+		public class RESOURCES {
+			public static LocString BROWSER_TITLE = "Resources";
+			public static LocString NO_PINNED = "no pinned resources";
+			public static LocString PINNED = "pinned";
+			public static LocString UNPINNED = "unpinned";
+			public static LocString ALL_UNPINNED = "all unpinned";
+			public static LocString NO_INSTANCES = "none in world";
+			public static LocString RESERVED = "reserved";
+			public static LocString RISING = "rising";
+			public static LocString FALLING = "falling";
+			public static LocString DISCOVERED = "Discovered: {0}";
+			// {0} = amount, {1} = building name, {2} = coordinates
+			public static LocString INSTANCE_IN_BUILDING = "{0} in {1} at {2}";
+			// {0} = amount, {1} = coordinates
+			public static LocString INSTANCE_LOOSE = "{0} at {1}";
+			public static LocString HELP_PIN = "Pin or unpin resource";
+			public static LocString HELP_CLEAR_PINS = "Unpin all resources";
+			public static LocString HELP_JUMP = "Jump to instance location";
+			public static LocString HELP_OPEN = "Open resource browser";
+			public static LocString HELP_READ_PINNED = "Read pinned resources";
+		}
 	}
 }
