@@ -46,7 +46,6 @@ namespace STRINGS {
 			public static LocString STORY_MESSAGE = "Story message";
 			public static LocString VIDEO = "Video";
 			public static LocString COLONY_VIEW = "Colony View";
-			public static LocString TOOLTIP_BROWSER = "Tooltip";
 			public static LocString ENTITY_PICKER = "object selection";
 			public static LocString DETAILS_SCREEN = "Entity details";
 			public static LocString PRINTING_POD = "Printing pod";
@@ -76,7 +75,6 @@ namespace STRINGS {
 			public static LocString READ_COORDS = "Read coordinates";
 			public static LocString CYCLE_COORD_MODE = "Cycle coordinate display";
 			public static LocString READ_TOOLTIP_SUMMARY = "Read tooltip summary at cursor";
-			public static LocString READ_TOOLTIP = "Browse all tooltips at cursor";
 			public static LocString CYCLE_GAME_SPEED = "Cycle game speed";
 			public static LocString SELECT_ENTITY = "Select object at cursor";
 			public static LocString OPEN_GROUP = "Open group";

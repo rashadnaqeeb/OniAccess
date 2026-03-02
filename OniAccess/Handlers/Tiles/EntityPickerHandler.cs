@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OniAccess.Speech;
 using OniAccess.Util;
@@ -10,6 +11,7 @@ namespace OniAccess.Handlers.Tiles {
 	/// </summary>
 	public class EntityPickerHandler: BaseMenuHandler {
 		private readonly IReadOnlyList<KSelectable> _selectables;
+		private readonly IReadOnlyList<string> _displayLabels;
 
 		public override string DisplayName =>
 			(string)STRINGS.ONIACCESS.HANDLERS.ENTITY_PICKER;
@@ -17,21 +19,30 @@ namespace OniAccess.Handlers.Tiles {
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 			= OniAccess.Handlers.Tools.ToolPickerHandler.ModalMenuHelp;
 
-		public EntityPickerHandler(IReadOnlyList<KSelectable> selectables) {
+		public EntityPickerHandler(
+				IReadOnlyList<KSelectable> selectables,
+				IReadOnlyList<string> displayLabels = null) {
 			_selectables = selectables;
+			_displayLabels = displayLabels;
 		}
 
 		public override int ItemCount => _selectables.Count;
 
+		private string GetDisplayText(int index) {
+			if (_displayLabels != null && index >= 0 && index < _displayLabels.Count)
+				return _displayLabels[index];
+			return DebrisNameHelper.GetDisplayName(_selectables[index].gameObject);
+		}
+
 		public override string GetItemLabel(int index) {
 			if (index < 0 || index >= _selectables.Count) return null;
-			return DebrisNameHelper.GetDisplayName(_selectables[index].gameObject);
+			return GetDisplayText(index);
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_currentIndex >= 0 && _currentIndex < _selectables.Count)
 				SpeechPipeline.SpeakInterrupt(
-					DebrisNameHelper.GetDisplayName(_selectables[_currentIndex].gameObject));
+					TextFilter.FilterForSpeech(GetDisplayText(_currentIndex)));
 		}
 
 		public override void OnActivate() {
@@ -42,7 +53,7 @@ namespace OniAccess.Handlers.Tiles {
 				(string)STRINGS.ONIACCESS.TILE_CURSOR.SELECT_OBJECT);
 			if (_selectables.Count > 0)
 				SpeechPipeline.SpeakQueued(
-					DebrisNameHelper.GetDisplayName(_selectables[0].gameObject));
+					TextFilter.FilterForSpeech(GetDisplayText(0)));
 		}
 
 		public override void OnDeactivate() {
@@ -162,6 +173,39 @@ namespace OniAccess.Handlers.Tiles {
 				return building.Def.ObjectLayer == ObjectLayer.Building ? 0 : 1;
 			if (ks.GetComponent<CellSelectionObject>() != null) return 3;
 			return 2;
+		}
+
+		/// <summary>
+		/// Match each selectable to a tooltip block by comparing entity names
+		/// against block prefixes. Returns a label list parallel to selectables.
+		/// </summary>
+		public static IReadOnlyList<string> MatchTooltipLabels(
+				IReadOnlyList<KSelectable> selectables,
+				IReadOnlyList<string> tooltipLines) {
+			var labels = new string[selectables.Count];
+			if (tooltipLines == null || tooltipLines.Count == 0) {
+				for (int i = 0; i < selectables.Count; i++)
+					labels[i] = DebrisNameHelper.GetDisplayName(selectables[i].gameObject);
+				return labels;
+			}
+			var consumed = new bool[tooltipLines.Count];
+			for (int i = 0; i < selectables.Count; i++) {
+				string rawName = selectables[i].GetName();
+				bool matched = false;
+				for (int j = 0; j < tooltipLines.Count; j++) {
+					if (consumed[j]) continue;
+					if (tooltipLines[j].StartsWith(
+							rawName, StringComparison.OrdinalIgnoreCase)) {
+						labels[i] = tooltipLines[j];
+						consumed[j] = true;
+						matched = true;
+						break;
+					}
+				}
+				if (!matched)
+					labels[i] = DebrisNameHelper.GetDisplayName(selectables[i].gameObject);
+			}
+			return labels;
 		}
 
 		private static void PlaySound(string name) {

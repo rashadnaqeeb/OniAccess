@@ -36,7 +36,6 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.BackQuote),
 			new ConsumedKey(KKeyCode.F, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.I),
-			new ConsumedKey(KKeyCode.I, Modifier.Shift),
 			new ConsumedKey(KKeyCode.K),
 			new ConsumedKey(KKeyCode.K, Modifier.Shift),
 			new ConsumedKey(KKeyCode.UpArrow),
@@ -93,7 +92,6 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_ACTION_MENU),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.SELECT_ENTITY),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY),
-			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP),
 			new HelpEntry("K", (string)STRINGS.ONIACCESS.HELP.READ_COORDS),
 			new HelpEntry("Shift+K", (string)STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE),
 			new HelpEntry("End", (string)STRINGS.ONIACCESS.SCANNER.HELP.REFRESH),
@@ -274,11 +272,9 @@ namespace OniAccess.Handlers.Tiles {
 					SpeechPipeline.SpeakInterrupt(TileCursor.Instance.ReadCoordinates());
 				return true;
 			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)) {
-				if (InputUtil.ShiftHeld())
-					OpenTooltipBrowser();
-				else
-					ReadTooltipSummary();
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)
+				&& !InputUtil.AnyModifierHeld()) {
+				ReadTooltipSummary();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)
@@ -393,7 +389,10 @@ namespace OniAccess.Handlers.Tiles {
 				SelectTool.Instance.Select(selectables[0]);
 				return;
 			}
-			HandlerStack.Push(new EntityPickerHandler(selectables));
+			var tooltipLines = TooltipCapture.GetTooltipLines();
+			var displayLabels = EntityPickerHandler.MatchTooltipLabels(
+				selectables, tooltipLines);
+			HandlerStack.Push(new EntityPickerHandler(selectables, displayLabels));
 		}
 
 		private void OpenNotificationMenu() {
@@ -437,21 +436,6 @@ namespace OniAccess.Handlers.Tiles {
 				return;
 			}
 			SpeechPipeline.SpeakInterrupt(summary);
-		}
-
-		private void OpenTooltipBrowser() {
-			if (!Grid.IsVisible(TileCursor.Instance.Cell)) {
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
-				return;
-			}
-			var lines = TooltipCapture.GetTooltipLines();
-			if (lines == null || lines.Count == 0) {
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP);
-				return;
-			}
-			HandlerStack.Push(new TooltipBrowserHandler(lines));
 		}
 
 		private static void PlaySpeedChangeSound(float speed) {

@@ -9,8 +9,8 @@ namespace OniAccess.Handlers {
 	/// Left/Right adjustment, Tab stubs, and A-Z type-ahead search.
 	///
 	/// Accepts a null KScreen because it serves both screen-bound widget handlers
-	/// (via BaseWidgetHandler) and lightweight overlay browsers like TooltipBrowserHandler
-	/// and HelpHandler that have no KScreen.
+	/// (via BaseWidgetHandler) and lightweight handlers like HelpHandler
+	/// that have no KScreen.
 	///
 	/// Subclasses implement ItemCount, GetItemLabel, and SpeakCurrentItem to describe
 	/// their list. Override ActivateCurrentItem, AdjustCurrentItem, and NavigateTab*
