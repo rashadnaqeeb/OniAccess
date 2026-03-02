@@ -16,15 +16,17 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 					tokens.Add((string)STRINGS.ONIACCESS.TOOLS.DIG_ORDER);
 			}
 
-			var element = Grid.Element[cell];
-			if (element != null) {
-				tokens.Add(element.name);
-				string hardness = GameUtil.GetHardnessString(element);
-				if (!string.IsNullOrEmpty(hardness))
-					tokens.Add(hardness);
-				float mass = Grid.Mass[cell];
-				if (mass > 0f)
-					tokens.Add(GameUtil.GetFormattedMass(mass));
+			if (!Grid.Foundation[cell]) {
+				var element = Grid.Element[cell];
+				if (element != null) {
+					tokens.Add(element.name);
+					string hardness = GameUtil.GetHardnessString(element);
+					if (!string.IsNullOrEmpty(hardness))
+						tokens.Add(hardness);
+					float mass = Grid.Mass[cell];
+					if (mass > 0f)
+						tokens.Add(GameUtil.GetFormattedMass(mass));
+				}
 			}
 
 			return tokens;
