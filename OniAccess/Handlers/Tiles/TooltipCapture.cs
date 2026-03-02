@@ -129,6 +129,18 @@ namespace OniAccess.Handlers.Tiles {
 				}
 			}
 
+			// Outside utility overlays, skip conduit/wire blocks that the
+			// movement cursor doesn't mention — hearing them is disorienting.
+			if (GetUtilityConduitLayers() == null) {
+				var conduitNames = GetAllConduitNames(cell);
+				if (conduitNames.Count > 0) {
+					for (int i = 0; i < lines.Count; i++) {
+						if (!MatchesAnyName(lines[i], conduitNames))
+							return lines[i];
+					}
+				}
+			}
+
 			return lines[0];
 		}
 
@@ -168,11 +180,30 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		/// <summary>
-		/// Strip the entity identity (name and material) from a tooltip
-		/// block. Always checks building layers; also checks conduit
-		/// layers when a utility overlay is active. Returns null when
-		/// the block doesn't match any entity name at the cell, or
-		/// when stripping would leave nothing.
+		/// Like StripFirstSegment but requires at least two segments
+		/// after the name before stripping. A building with only one
+		/// extra line (typically just temperature) keeps its name —
+		/// hearing bare temperature with no context is disorienting.
+		/// </summary>
+		private static string StripFirstSegmentIfMultiple(string block) {
+			int first = block.IndexOf(", ", System.StringComparison.Ordinal);
+			if (first < 0) return null;
+			int second = block.IndexOf(", ", first + 2,
+				System.StringComparison.Ordinal);
+			if (second < 0) return null;
+			string remainder = block.Substring(first + 2);
+			return string.IsNullOrWhiteSpace(remainder) ? null : remainder;
+		}
+
+		/// <summary>
+		/// Strip the building identity (name and material) from a
+		/// tooltip block. In the None overlay, requires multiple
+		/// status lines after the name before stripping so a building
+		/// with only temperature keeps its name. Other overlays strip
+		/// temperature, so a single remaining line is still worth
+		/// reading without the name prefix. Returns null when the
+		/// block doesn't match any entity name at the cell, or when
+		/// stripping would leave insufficient content.
 		/// </summary>
 		private static string StripEntityPrefix(string block, int cell) {
 			var names = new List<string>(4);
@@ -188,7 +219,11 @@ namespace OniAccess.Handlers.Tiles {
 			if (names.Count == 0) return null;
 			if (!MatchesAnyName(block, names)) return null;
 
-			return StripFirstSegment(block);
+			bool isNoneOverlay = OverlayScreen.Instance == null
+				|| OverlayScreen.Instance.GetMode() == OverlayModes.None.ID;
+			return isNoneOverlay
+				? StripFirstSegmentIfMultiple(block)
+				: StripFirstSegment(block);
 		}
 
 		private static int[] GetUtilityConduitLayers() {
@@ -211,6 +246,24 @@ namespace OniAccess.Handlers.Tiles {
 					(int)ObjectLayer.SolidConduit,
 					(int)ObjectLayer.SolidConduitConnection };
 			return null;
+		}
+
+		private static readonly int[] AllConduitLayers = {
+			(int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors,
+			(int)ObjectLayer.LiquidConduit,
+			(int)ObjectLayer.LiquidConduitConnection,
+			(int)ObjectLayer.GasConduit,
+			(int)ObjectLayer.GasConduitConnection,
+			(int)ObjectLayer.SolidConduit,
+			(int)ObjectLayer.SolidConduitConnection,
+			(int)ObjectLayer.LogicWire, (int)ObjectLayer.LogicGate,
+		};
+
+		private static List<string> GetAllConduitNames(int cell) {
+			var names = new List<string>(4);
+			foreach (int layer in AllConduitLayers)
+				AddBuildingName(cell, layer, names);
+			return names;
 		}
 
 		/// <summary>
