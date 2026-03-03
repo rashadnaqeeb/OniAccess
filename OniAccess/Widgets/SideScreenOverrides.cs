@@ -26,6 +26,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<ClusterDestinationSideScreen>(WalkClusterDestination);
 			SideScreenWalker.RegisterOverride<CheckboxListGroupSideScreen>(WalkCheckboxListGroup);
 			SideScreenWalker.RegisterOverride<ModuleFlightUtilitySideScreen>(WalkModuleFlightUtility);
+			SideScreenWalker.RegisterOverride<TagFilterScreen>(WalkTagFilter);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -1608,6 +1609,49 @@ namespace OniAccess.Widgets {
 					SpeechFunc = () => capturedGroupLabel.GetParsedText()
 				});
 			}
+		}
+
+		static void WalkTagFilter(TagFilterScreen screen, List<Widget> items) {
+			KTreeControl treeControl;
+			try {
+				treeControl = Traverse.Create(screen)
+					.Field<KTreeControl>("treeControl").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkTagFilter: Traverse create failed: {ex.Message}");
+				return;
+			}
+			if (treeControl == null || treeControl.root == null) return;
+
+			try {
+				foreach (KTreeItem child in treeControl.root.children)
+					AddTreeItem(child, items);
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkTagFilter: tree walk failed: {ex.Message}");
+			}
+		}
+
+		static void AddTreeItem(KTreeItem item, List<Widget> items) {
+			List<Widget> children = null;
+			if (item.children.Count > 0) {
+				children = new List<Widget>();
+				foreach (KTreeItem child in item.children)
+					AddTreeItem(child, children);
+			}
+
+			var captured = item;
+			items.Add(new TreeItemWidget {
+				TreeItem = captured,
+				Label = captured.text,
+				GameObject = captured.gameObject,
+				SuppressTooltip = true,
+				Children = children,
+				SpeechFunc = () => {
+					string state = captured.checkboxChecked
+						? (string)STRINGS.ONIACCESS.STATES.ON
+						: (string)STRINGS.ONIACCESS.STATES.OFF;
+					return $"{captured.text}, {state}";
+				}
+			});
 		}
 	}
 }
