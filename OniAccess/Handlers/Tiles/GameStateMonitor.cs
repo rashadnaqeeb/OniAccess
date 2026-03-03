@@ -1,4 +1,5 @@
 using OniAccess.Speech;
+using UnityEngine;
 
 namespace OniAccess.Handlers.Tiles {
 	public class GameStateMonitor {
@@ -40,11 +41,29 @@ namespace OniAccess.Handlers.Tiles {
 			}
 		}
 
+		public void CycleSpeed() {
+			var scs = SpeedControlScreen.Instance;
+			if (scs == null) return;
+			int newSpeed = (scs.GetSpeed() + 1) % 3;
+			PlaySpeedChangeSound(newSpeed + 1);
+			scs.SetSpeed(newSpeed);
+			scs.OnSpeedChange();
+		}
+
 		public void SpeakCycleStatus() {
 			int cycle = GameClock.Instance.GetCycle();
 			int block = ScheduleManager.GetCurrentHour();
 			SpeechPipeline.SpeakInterrupt(
 				string.Format((string)STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS, cycle, block));
+		}
+
+		private static void PlaySpeedChangeSound(float speed) {
+			string sound = GlobalAssets.GetSound("Speed_Change");
+			if (sound != null) {
+				var instance = SoundEvent.BeginOneShot(sound, UnityEngine.Vector3.zero);
+				instance.setParameterByName("Speed", speed);
+				SoundEvent.EndOneShot(instance);
+			}
 		}
 
 		private static string SpeedName(int speed) {

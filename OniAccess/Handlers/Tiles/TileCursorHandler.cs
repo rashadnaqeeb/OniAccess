@@ -234,13 +234,7 @@ namespace OniAccess.Handlers.Tiles {
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.BackQuote)
 				&& !InputUtil.AnyModifierHeld()) {
-				if (SpeedControlScreen.Instance != null) {
-					var scs = SpeedControlScreen.Instance;
-					int newSpeed = (scs.GetSpeed() + 1) % 3;
-					PlaySpeedChangeSound(newSpeed + 1);
-					scs.SetSpeed(newSpeed);
-					scs.OnSpeedChange();
-				}
+				_monitor.CycleSpeed();
 				return true;
 			}
 
@@ -489,13 +483,5 @@ namespace OniAccess.Handlers.Tiles {
 			SpeechPipeline.SpeakInterrupt(summary);
 		}
 
-		private static void PlaySpeedChangeSound(float speed) {
-			string sound = GlobalAssets.GetSound("Speed_Change");
-			if (sound != null) {
-				var instance = SoundEvent.BeginOneShot(sound, UnityEngine.Vector3.zero);
-				instance.setParameterByName("Speed", speed);
-				SoundEvent.EndOneShot(instance);
-			}
-		}
 	}
 }
