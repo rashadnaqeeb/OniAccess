@@ -20,6 +20,8 @@ namespace OniAccess.Widgets {
 			public KToggle Toggle;
 			public MultiToggle MultiToggleRef;
 			public object Tag;
+			public System.Action OnSelect;
+			public System.Func<bool> IsActive;
 		}
 
 		static readonly Dictionary<System.Type, System.Action<SideScreenContent, List<Widget>>> _overrides

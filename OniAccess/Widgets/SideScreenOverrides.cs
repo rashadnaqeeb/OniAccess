@@ -23,6 +23,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<CritterSensorSideScreen>(WalkCritterSensor);
 			SideScreenWalker.RegisterOverride<HighEnergyParticleDirectionSideScreen>(WalkHEPDirection);
 			SideScreenWalker.RegisterOverride<TelepadSideScreen>(WalkTelepad);
+			SideScreenWalker.RegisterOverride<ClusterDestinationSideScreen>(WalkClusterDestination);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -1368,6 +1369,66 @@ namespace OniAccess.Widgets {
 					SpeechFunc = () => capturedGroupLabel.GetParsedText()
 				});
 			}
+		}
+
+		static void WalkClusterDestination(
+				ClusterDestinationSideScreen screen, List<Widget> items) {
+			SideScreenWalker.WalkDefault(screen, items);
+
+			var rocketSelector = Traverse.Create(screen)
+				.Property<RocketClusterDestinationSelector>("targetRocketSelector").Value;
+			if (rocketSelector == null) return;
+
+			var pads = LaunchPad.GetLaunchPadsForDestination(
+				rocketSelector.GetDestination());
+
+			var members = new List<SideScreenWalker.RadioMember>();
+			members.Add(new SideScreenWalker.RadioMember {
+				Label = (string)STRINGS.UI.UISIDESCREENS
+					.CLUSTERDESTINATIONSIDESCREEN.FIRSTAVAILABLE,
+				OnSelect = () => rocketSelector.SetDestinationPad(null),
+				IsActive = () => rocketSelector.GetDestinationPad() == null
+			});
+			foreach (var pad in pads) {
+				var capturedPad = pad;
+				members.Add(new SideScreenWalker.RadioMember {
+					Label = capturedPad.GetProperName(),
+					OnSelect = () => rocketSelector.SetDestinationPad(capturedPad),
+					IsActive = () => rocketSelector.GetDestinationPad() == capturedPad
+				});
+			}
+
+			var openButton = screen.launchPadDropDown.openButton;
+			int openButtonIndex = -1;
+			for (int i = 0; i < items.Count; i++) {
+				if (items[i].Component == openButton) {
+					openButtonIndex = i;
+					break;
+				}
+			}
+
+			var platformLabel = screen.landingPlatformInfoLabel;
+			var dropdown = new DropdownWidget {
+				Label = (string)STRINGS.UI.UISIDESCREENS
+					.CLUSTERDESTINATIONSIDESCREEN.LANDING_PLATFORM_LABEL,
+				Component = openButton,
+				GameObject = screen.launchPadDropDown.gameObject,
+				Tag = members,
+				SpeechFunc = () => {
+					string label = platformLabel.GetParsedText();
+					var currentPad = rocketSelector.GetDestinationPad();
+					string padName = currentPad != null
+						? currentPad.GetProperName()
+						: (string)STRINGS.UI.UISIDESCREENS
+							.CLUSTERDESTINATIONSIDESCREEN.FIRSTAVAILABLE;
+					return $"{label}, {padName}";
+				}
+			};
+
+			if (openButtonIndex >= 0)
+				items[openButtonIndex] = dropdown;
+			else
+				items.Add(dropdown);
 		}
 	}
 }

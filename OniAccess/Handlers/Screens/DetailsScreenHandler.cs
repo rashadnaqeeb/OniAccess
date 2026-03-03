@@ -322,7 +322,9 @@ namespace OniAccess.Handlers.Screens {
 			int newIndex = ((activeIndex + direction) % members.Count + members.Count)
 				% members.Count;
 			var target = members[newIndex];
-			if (target.Toggle != null)
+			if (target.OnSelect != null)
+				target.OnSelect();
+			else if (target.Toggle != null)
 				target.Toggle.Click();
 			else
 				WidgetOps.ClickMultiToggle(target.MultiToggleRef);
@@ -342,6 +344,12 @@ namespace OniAccess.Handlers.Screens {
 		/// any valid type, leaving all toggles at state 1).
 		/// </summary>
 		private static int FindActiveRadioIndex(List<SideScreenWalker.RadioMember> members) {
+			if (members[0].IsActive != null) {
+				for (int i = 0; i < members.Count; i++) {
+					if (members[i].IsActive()) return i;
+				}
+				return 0;
+			}
 			for (int i = 0; i < members.Count; i++) {
 				if (members[i].Toggle != null && SideScreenWalker.IsToggleActive(members[i].Toggle))
 					return i;
