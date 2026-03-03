@@ -247,6 +247,8 @@ namespace OniAccess.Widgets {
 			CollapseFewOptionRows(fewOption, items);
 		}
 
+		// TagFilterScreen also targets TreeFilterable but uses KTreeControl instead of rows.
+		// It exists as a prefab in ScreenPrefabs but no vanilla building activates it.
 		static void WalkTreeFilter(TreeFilterableSideScreen screen, List<Widget> items) {
 			Traverse tv;
 			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
