@@ -293,6 +293,9 @@ namespace STRINGS {
 			public static LocString CYCLE_STATUS = "Cycle {0}, block {1}";
 			public static LocString READ_CYCLE_STATUS = "Read cycle status";
 			public static LocString READ_TIME_PLAYED = "Read total playtime";
+			public static LocString RED_ALERT_OFF = "Red Alert off";
+			public static LocString YELLOW_ALERT_OFF = "Yellow Alert off";
+			public static LocString TOGGLE_RED_ALERT = "Toggle red alert";
 		}
 
 		// Tooltip summary readout at cursor

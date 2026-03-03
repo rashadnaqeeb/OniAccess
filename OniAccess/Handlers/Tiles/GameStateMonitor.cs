@@ -7,6 +7,8 @@ namespace OniAccess.Handlers.Tiles {
 		private bool _wasPaused;
 		private int _lastSpeed;
 		private int _lastCycle;
+		private bool _wasRedAlert;
+		private bool _wasYellowAlert;
 
 		public void Tick() {
 			var speedScreen = SpeedControlScreen.Instance;
@@ -14,11 +16,17 @@ namespace OniAccess.Handlers.Tiles {
 			int speed = speedScreen.GetSpeed();
 			int cycle = GameClock.Instance.GetCycle();
 
+			var world = ClusterManager.Instance.activeWorld;
+			bool red = world.IsRedAlert();
+			bool yellow = world.IsYellowAlert();
+
 			if (_firstTick) {
 				_firstTick = false;
 				_wasPaused = paused;
 				_lastSpeed = speed;
 				_lastCycle = cycle;
+				_wasRedAlert = red;
+				_wasYellowAlert = yellow;
 				return;
 			}
 
@@ -39,6 +47,20 @@ namespace OniAccess.Handlers.Tiles {
 				SpeechPipeline.SpeakInterrupt(
 					string.Format((string)STRINGS.ONIACCESS.GAME_STATE.CYCLE, cycle));
 			}
+
+			if (red != _wasRedAlert) {
+				if (red)
+					SpeechPipeline.SpeakInterrupt((string)STRINGS.MISC.NOTIFICATIONS.REDALERT.NAME);
+				else
+					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.GAME_STATE.RED_ALERT_OFF);
+			} else if (yellow != _wasYellowAlert) {
+				if (yellow)
+					SpeechPipeline.SpeakInterrupt((string)STRINGS.MISC.NOTIFICATIONS.YELLOWALERT.NAME);
+				else
+					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.GAME_STATE.YELLOW_ALERT_OFF);
+			}
+			_wasRedAlert = red;
+			_wasYellowAlert = yellow;
 		}
 
 		public void CycleSpeed() {
@@ -53,8 +75,18 @@ namespace OniAccess.Handlers.Tiles {
 		public void SpeakCycleStatus() {
 			int cycle = GameClock.Instance.GetCycle();
 			int block = ScheduleManager.GetCurrentHour();
-			SpeechPipeline.SpeakInterrupt(
-				string.Format((string)STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS, cycle, block));
+			string msg = string.Format((string)STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS, cycle, block);
+			var world = ClusterManager.Instance.activeWorld;
+			if (world.IsRedAlert())
+				msg += ", " + (string)STRINGS.MISC.NOTIFICATIONS.REDALERT.NAME;
+			else if (world.IsYellowAlert())
+				msg += ", " + (string)STRINGS.MISC.NOTIFICATIONS.YELLOWALERT.NAME;
+			SpeechPipeline.SpeakInterrupt(msg);
+		}
+
+		public void ToggleRedAlert() {
+			var world = ClusterManager.Instance.activeWorld;
+			world.AlertManager.ToggleRedAlert(!world.AlertManager.IsRedAlertToggledOn());
 		}
 
 		public void SpeakTimePlayed() {

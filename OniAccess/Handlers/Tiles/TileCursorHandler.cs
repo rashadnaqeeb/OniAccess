@@ -64,9 +64,11 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Q, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Return),
 			new ConsumedKey(KKeyCode.N, Modifier.Shift),
-			// Ruler keybinds
+			// Red alert keybind
 			new ConsumedKey(KKeyCode.R, Modifier.Ctrl),
-			new ConsumedKey(KKeyCode.R, Modifier.Ctrl | Modifier.Shift),
+			// Ruler keybinds
+			new ConsumedKey(KKeyCode.B, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.B, Modifier.Ctrl | Modifier.Shift),
 			// Bookmark keybinds
 			new ConsumedKey(KKeyCode.H),
 			new ConsumedKey(KKeyCode.Alpha1, Modifier.Shift),
@@ -118,8 +120,9 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Ctrl+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK),
 			new HelpEntry("Shift+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK),
 			new HelpEntry("Alt+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_BOOKMARK),
-			new HelpEntry("Ctrl+R", (string)STRINGS.ONIACCESS.RULER.HELP_PLACE),
-			new HelpEntry("Ctrl+Shift+R", (string)STRINGS.ONIACCESS.RULER.HELP_CLEAR),
+			new HelpEntry("Ctrl+R", (string)STRINGS.ONIACCESS.GAME_STATE.TOGGLE_RED_ALERT),
+			new HelpEntry("Ctrl+B", (string)STRINGS.ONIACCESS.RULER.HELP_PLACE),
+			new HelpEntry("Ctrl+Shift+B", (string)STRINGS.ONIACCESS.RULER.HELP_CLEAR),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;
@@ -318,8 +321,15 @@ namespace OniAccess.Handlers.Tiles {
 				return true;
 			}
 
-			// Ruler keybinds
+			// Red alert toggle
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)
+				&& InputUtil.CtrlHeld() && !InputUtil.ShiftHeld()) {
+				_monitor.ToggleRedAlert();
+				return true;
+			}
+
+			// Ruler keybinds
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.B)
 				&& InputUtil.CtrlHeld()) {
 				if (InputUtil.ShiftHeld())
 					SpeechPipeline.SpeakInterrupt(CursorRuler.Instance.Clear());
