@@ -24,6 +24,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<HighEnergyParticleDirectionSideScreen>(WalkHEPDirection);
 			SideScreenWalker.RegisterOverride<TelepadSideScreen>(WalkTelepad);
 			SideScreenWalker.RegisterOverride<ClusterDestinationSideScreen>(WalkClusterDestination);
+			SideScreenWalker.RegisterOverride<CheckboxListGroupSideScreen>(WalkCheckboxListGroup);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -1429,6 +1430,73 @@ namespace OniAccess.Widgets {
 				items[openButtonIndex] = dropdown;
 			else
 				items.Add(dropdown);
+		}
+
+		static void WalkCheckboxListGroup(
+				CheckboxListGroupSideScreen screen, List<Widget> items) {
+			var t = Traverse.Create(screen);
+
+			var descriptionLabel = t.Field<LocText>("descriptionLabel").Value;
+			if (descriptionLabel != null && descriptionLabel.enabled) {
+				string desc = descriptionLabel.GetParsedText();
+				if (!string.IsNullOrEmpty(desc)) {
+					var capturedDesc = descriptionLabel;
+					items.Add(new LabelWidget {
+						Label = desc,
+						GameObject = descriptionLabel.gameObject,
+						SpeechFunc = () => capturedDesc.GetParsedText()
+					});
+				}
+			}
+
+			var groups = t.Field<List<CheckboxListGroupSideScreen.CheckboxContainer>>(
+				"activeChecklistGroups").Value;
+			if (groups == null) return;
+
+			foreach (var group in groups) {
+				if (!group.container.gameObject.activeSelf) continue;
+
+				LocText groupLabel;
+				try {
+					groupLabel = group.container.GetReference<LocText>("Text");
+				} catch { continue; }
+				if (groupLabel == null) continue;
+
+				var children = new List<Widget>();
+				foreach (var checkboxRef in group.checkboxUIItems) {
+					if (!checkboxRef.gameObject.activeSelf) continue;
+
+					LocText itemLabel;
+					Image itemCheck;
+					try {
+						itemLabel = checkboxRef.GetReference<LocText>("Text");
+						itemCheck = checkboxRef.GetReference<Image>("Check");
+					} catch { continue; }
+					if (itemLabel == null || itemCheck == null) continue;
+
+					var capturedLabel = itemLabel;
+					var capturedCheck = itemCheck;
+					children.Add(new LabelWidget {
+						Label = capturedLabel.GetParsedText(),
+						GameObject = checkboxRef.gameObject,
+						SpeechFunc = () => {
+							string status = capturedCheck.enabled
+								? (string)STRINGS.ONIACCESS.STATES.CONDITION_MET
+								: (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+							return $"{status}, {capturedLabel.GetParsedText()}";
+						}
+					});
+				}
+
+				var capturedGroupLabel = groupLabel;
+				items.Add(new LabelWidget {
+					Label = capturedGroupLabel.GetParsedText(),
+					GameObject = group.container.gameObject,
+					SuppressTooltip = true,
+					Children = children.Count > 0 ? children : null,
+					SpeechFunc = () => capturedGroupLabel.GetParsedText()
+				});
+			}
 		}
 	}
 }
