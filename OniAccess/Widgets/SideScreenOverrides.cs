@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Database;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,8 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<OwnablesSidescreen>(WalkOwnables);
 			SideScreenWalker.RegisterOverride<AssignableSideScreen>(WalkAssignable);
 			SideScreenWalker.RegisterOverride<BionicSideScreen>(WalkBionic);
+			SideScreenWalker.RegisterOverride<ArtableSelectionSideScreen>(WalkArtableSelection);
+			SideScreenWalker.RegisterOverride<MonumentSideScreen>(WalkMonument);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -1015,6 +1018,150 @@ namespace OniAccess.Widgets {
 					return text;
 				}
 			});
+		}
+
+		static void WalkArtableSelection(ArtableSelectionSideScreen screen, List<Widget> items) {
+			Traverse tv;
+			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkArtableSelection: Traverse create failed: {ex.Message}");
+				return;
+			}
+
+			Artable target;
+			Dictionary<string, MultiToggle> buttons;
+			try {
+				target = tv.Field<Artable>("target").Value;
+				buttons = tv.Field<Dictionary<string, MultiToggle>>("buttons").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkArtableSelection: field read failed: {ex.Message}");
+				return;
+			}
+			if (target == null || buttons == null) return;
+
+			var prefabId = target.GetComponent<KPrefabID>().PrefabID();
+			var stages = Db.GetArtableStages().GetPrefabStages(prefabId);
+			var stageById = new Dictionary<string, ArtableStage>();
+			foreach (var stage in stages)
+				stageById[stage.id] = stage;
+
+			var capturedScreen = screen;
+			foreach (var kv in buttons) {
+				var mt = kv.Value;
+				if (!mt.gameObject.activeSelf) continue;
+				if (!stageById.TryGetValue(kv.Key, out var stage)) continue;
+
+				var capturedMt = mt;
+				var capturedStageId = kv.Key;
+				var capturedStage = stage;
+				items.Add(new ToggleWidget {
+					Label = capturedStage.Name,
+					Component = capturedMt,
+					GameObject = capturedMt.gameObject,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string selectedId;
+						try {
+							selectedId = Traverse.Create(capturedScreen)
+								.Field<string>("selectedStage").Value;
+						} catch {
+							selectedId = "";
+						}
+						bool isSelected = capturedStageId == selectedId;
+						string decor = capturedStage.decor >= 0
+							? $"+{capturedStage.decor}" : capturedStage.decor.ToString();
+						string speech = capturedStage.Name;
+						if (isSelected)
+							speech += $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
+						speech += $", {decor} decor";
+						return speech;
+					}
+				});
+			}
+
+			var applyBtn = screen.applyButton;
+			if (applyBtn != null && applyBtn.gameObject.activeSelf) {
+				var captured = applyBtn;
+				string label = SideScreenWalker.GetButtonLabel(captured, captured.transform.name);
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = captured,
+					GameObject = captured.gameObject,
+					SpeechFunc = () => SideScreenWalker.GetButtonLabel(captured, captured.transform.name)
+				});
+			}
+
+			var clearBtn = screen.clearButton;
+			if (clearBtn != null && clearBtn.gameObject.activeSelf) {
+				var captured = clearBtn;
+				string label = SideScreenWalker.GetButtonLabel(captured, captured.transform.name);
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = captured,
+					GameObject = captured.gameObject,
+					SpeechFunc = () => SideScreenWalker.GetButtonLabel(captured, captured.transform.name)
+				});
+			}
+		}
+
+		static void WalkMonument(MonumentSideScreen screen, List<Widget> items) {
+			Traverse tv;
+			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkMonument: Traverse create failed: {ex.Message}");
+				return;
+			}
+
+			MonumentPart target;
+			List<GameObject> buttons;
+			try {
+				target = tv.Field<MonumentPart>("target").Value;
+				buttons = tv.Field<List<GameObject>>("buttons").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkMonument: field read failed: {ex.Message}");
+				return;
+			}
+			if (target == null || buttons == null) return;
+
+			var parts = Db.GetMonumentParts().GetParts(target.part);
+			var capturedTarget = target;
+			for (int i = 0; i < buttons.Count && i < parts.Count; i++) {
+				var btnGO = buttons[i];
+				if (!btnGO.activeSelf) continue;
+				var kButton = btnGO.GetComponent<KButton>();
+				if (kButton == null) continue;
+
+				var capturedPart = parts[i];
+				items.Add(new ButtonWidget {
+					Label = capturedPart.Name,
+					Component = kButton,
+					GameObject = btnGO,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string chosenState;
+						try {
+							chosenState = Traverse.Create(capturedTarget)
+								.Field<string>("chosenState").Value;
+						} catch {
+							chosenState = "";
+						}
+						string speech = capturedPart.Name;
+						if (capturedPart.Id == chosenState)
+							speech += $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
+						return speech;
+					}
+				});
+			}
+
+			var flipBtn = screen.flipButton;
+			if (flipBtn != null && flipBtn.gameObject.activeSelf) {
+				var captured = flipBtn;
+				string label = SideScreenWalker.GetButtonLabel(captured, captured.transform.name);
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = captured,
+					GameObject = captured.gameObject,
+					SpeechFunc = () => SideScreenWalker.GetButtonLabel(captured, captured.transform.name)
+				});
+			}
 		}
 	}
 }
