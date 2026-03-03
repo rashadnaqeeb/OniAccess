@@ -18,6 +18,14 @@ namespace OniAccess.Handlers.Resources {
 		public override string DisplayName =>
 			(string)STRINGS.ONIACCESS.RESOURCES.BROWSER_TITLE;
 
+		public override void OnActivate() {
+			PlayOpenSound();
+			base.OnActivate();
+			string first = GetItemLabel(0, new int[MaxLevel + 1]);
+			if (first != null)
+				SpeechPipeline.SpeakQueued(first);
+		}
+
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 			= new List<HelpEntry>(NestedNavHelpEntries) {
 				new HelpEntry("Shift+P", STRINGS.ONIACCESS.RESOURCES.HELP_PIN),
@@ -185,6 +193,7 @@ namespace OniAccess.Handlers.Resources {
 		}
 
 		internal void CloseScreen() {
+			PlayCloseSound();
 			if (AllResourcesScreen.Instance != null)
 				AllResourcesScreen.Instance.Show(false);
 		}

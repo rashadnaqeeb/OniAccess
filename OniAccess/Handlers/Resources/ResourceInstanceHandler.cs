@@ -64,13 +64,18 @@ namespace OniAccess.Handlers.Resources {
 			if (_currentIndex < 0 || _currentIndex >= instances.Count) return;
 			int cell = instances[_currentIndex].Cell;
 
-			HandlerStack.Pop();
-
+			// Close screen first so the show patch removes the buried browser
+			// handler via RemoveByScreen (no OnActivate). Then pop this handler.
 			if (AllResourcesScreen.Instance != null)
 				AllResourcesScreen.Instance.Show(false);
 
-			if (Tiles.TileCursor.Instance != null)
-				Tiles.TileCursor.Instance.JumpTo(cell);
+			HandlerStack.Pop();
+
+			if (Tiles.TileCursor.Instance != null) {
+				string speech = Tiles.TileCursor.Instance.JumpTo(cell);
+				if (speech != null)
+					SpeechPipeline.SpeakInterrupt(speech);
+			}
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {
