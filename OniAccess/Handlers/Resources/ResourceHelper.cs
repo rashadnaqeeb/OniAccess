@@ -43,8 +43,7 @@ namespace OniAccess.Handlers.Resources {
 		}
 
 		private static void AddDiscoveredFrom(
-			TagSet tagSet, List<CategoryEntry> result, HashSet<Tag> seen)
-		{
+			TagSet tagSet, List<CategoryEntry> result, HashSet<Tag> seen) {
 			foreach (Tag tag in tagSet) {
 				var resources = DiscoveredResources.Instance
 					.GetDiscoveredResourcesFromTag(tag);

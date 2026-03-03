@@ -15,7 +15,7 @@ namespace OniAccess.Handlers.Screens {
 	/// detection uses UnityEngine.Input in Tick(). Enter invokes the continue
 	/// button if available; any other key re-speaks the error message.
 	/// </summary>
-	public class ErrorScreenHandler : IAccessHandler {
+	public class ErrorScreenHandler: IAccessHandler {
 		private readonly ReportErrorDialog _dialog;
 		private readonly LocText _crashLabel;
 		private readonly KButton _continueButton;

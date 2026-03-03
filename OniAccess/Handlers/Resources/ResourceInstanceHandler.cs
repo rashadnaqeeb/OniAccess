@@ -20,8 +20,7 @@ namespace OniAccess.Handlers.Resources {
 		private readonly GameUtil.MeasureUnit _measure;
 
 		internal ResourceInstanceHandler(Tag resourceTag, GameUtil.MeasureUnit measure)
-			: base(screen: null)
-		{
+			: base(screen: null) {
 			_resourceTag = resourceTag;
 			_measure = measure;
 		}
