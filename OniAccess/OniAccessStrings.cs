@@ -671,6 +671,12 @@ namespace STRINGS {
 		}
 
 		// Door/checkpoint access control side screen
+		// Telepad (Printing Pod) side screen badge notifications
+		public class TELEPAD {
+			public static LocString NEW_ACHIEVEMENTS = "new achievements";
+			public static LocString SKILL_POINTS = "skill points available";
+		}
+
 		public class ACCESS_CONTROL {
 			public static LocString ALLOWED = "allowed";
 			public static LocString BLOCKED = "blocked";

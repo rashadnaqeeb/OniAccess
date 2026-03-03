@@ -20,6 +20,9 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<BionicSideScreen>(WalkBionic);
 			SideScreenWalker.RegisterOverride<ArtableSelectionSideScreen>(WalkArtableSelection);
 			SideScreenWalker.RegisterOverride<MonumentSideScreen>(WalkMonument);
+			SideScreenWalker.RegisterOverride<CritterSensorSideScreen>(WalkCritterSensor);
+			SideScreenWalker.RegisterOverride<HighEnergyParticleDirectionSideScreen>(WalkHEPDirection);
+			SideScreenWalker.RegisterOverride<TelepadSideScreen>(WalkTelepad);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -1159,6 +1162,210 @@ namespace OniAccess.Widgets {
 					Component = captured,
 					GameObject = captured.gameObject,
 					SpeechFunc = () => SideScreenWalker.GetButtonLabel(captured, captured.transform.name)
+				});
+			}
+		}
+		static void WalkCritterSensor(CritterSensorSideScreen screen, List<Widget> items) {
+			var capturedScreen = screen;
+			string crittersLabel = (string)STRINGS.BUILDINGS.PREFABS
+				.LOGICCRITTERCOUNTSENSOR.COUNT_CRITTER_LABEL;
+			items.Add(new ToggleWidget {
+				Label = crittersLabel,
+				Component = screen.countCrittersToggle,
+				GameObject = screen.countCrittersToggle.gameObject,
+				SuppressTooltip = true,
+				SpeechFunc = () => {
+					string state = capturedScreen.targetSensor.countCritters
+						? (string)STRINGS.ONIACCESS.STATES.ON
+						: (string)STRINGS.ONIACCESS.STATES.OFF;
+					return $"{crittersLabel}, {state}";
+				}
+			});
+
+			string eggsLabel = (string)STRINGS.BUILDINGS.PREFABS
+				.LOGICCRITTERCOUNTSENSOR.COUNT_EGG_LABEL;
+			items.Add(new ToggleWidget {
+				Label = eggsLabel,
+				Component = screen.countEggsToggle,
+				GameObject = screen.countEggsToggle.gameObject,
+				SuppressTooltip = true,
+				SpeechFunc = () => {
+					string state = capturedScreen.targetSensor.countEggs
+						? (string)STRINGS.ONIACCESS.STATES.ON
+						: (string)STRINGS.ONIACCESS.STATES.OFF;
+					return $"{eggsLabel}, {state}";
+				}
+			});
+		}
+
+		static void WalkHEPDirection(
+				HighEnergyParticleDirectionSideScreen screen, List<Widget> items) {
+			string[] dirStrings;
+			try {
+				dirStrings = Traverse.Create(screen)
+					.Field<string[]>("directionStrings").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkHEPDirection: directionStrings read failed: {ex.Message}");
+				return;
+			}
+			if (dirStrings == null) return;
+
+			for (int i = 0; i < screen.Buttons.Count && i < dirStrings.Length; i++) {
+				var btn = screen.Buttons[i];
+				var capturedBtn = btn;
+				string dirLabel = dirStrings[i];
+				items.Add(new ToggleWidget {
+					Label = dirLabel,
+					Component = capturedBtn,
+					GameObject = capturedBtn.gameObject,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						if (!capturedBtn.isInteractable)
+							return $"{dirLabel}, {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
+						return dirLabel;
+					}
+				});
+			}
+		}
+
+		static void WalkTelepad(TelepadSideScreen screen, List<Widget> items) {
+			Traverse tv;
+			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkTelepad: Traverse create failed: {ex.Message}");
+				return;
+			}
+
+			LocText timeLabel;
+			KButton viewImmigrantsBtn;
+			KButton viewColonySummaryBtn;
+			Image newAchievementsEarned;
+			KButton openRolesScreenButton;
+			Image skillPointsAvailable;
+			GameObject victoryConditionsContainer;
+			try {
+				timeLabel = tv.Field<LocText>("timeLabel").Value;
+				viewImmigrantsBtn = tv.Field<KButton>("viewImmigrantsBtn").Value;
+				viewColonySummaryBtn = tv.Field<KButton>("viewColonySummaryBtn").Value;
+				newAchievementsEarned = tv.Field<Image>("newAchievementsEarned").Value;
+				openRolesScreenButton = tv.Field<KButton>("openRolesScreenButton").Value;
+				skillPointsAvailable = tv.Field<Image>("skillPointsAvailable").Value;
+				victoryConditionsContainer = tv.Field<GameObject>("victoryConditionsContainer").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkTelepad: field read failed: {ex.Message}");
+				return;
+			}
+
+			// timeLabel and viewImmigrantsBtn are mutually exclusive
+			if (timeLabel != null && timeLabel.gameObject.activeSelf) {
+				var capturedTime = timeLabel;
+				items.Add(new LabelWidget {
+					Label = capturedTime.GetParsedText(),
+					GameObject = capturedTime.gameObject,
+					SpeechFunc = () => capturedTime.GetParsedText()
+				});
+			}
+
+			if (viewImmigrantsBtn != null && viewImmigrantsBtn.gameObject.activeSelf) {
+				var captured = viewImmigrantsBtn;
+				string label = (string)STRINGS.UI.IMMIGRANTSCREEN.IMMIGRANTSCREENTITLE;
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = captured,
+					GameObject = captured.gameObject,
+					SpeechFunc = () => label
+				});
+			}
+
+			if (viewColonySummaryBtn != null && viewColonySummaryBtn.gameObject.activeSelf) {
+				var captured = viewColonySummaryBtn;
+				var capturedBadge = newAchievementsEarned;
+				string label = (string)STRINGS.UI.UISIDESCREENS
+					.TELEPADSIDESCREEN.SUMMARY_TITLE;
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = captured,
+					GameObject = captured.gameObject,
+					SpeechFunc = () => {
+						string speech = label;
+						if (capturedBadge != null
+							&& capturedBadge.gameObject.activeSelf)
+							speech += $", {(string)STRINGS.ONIACCESS.TELEPAD.NEW_ACHIEVEMENTS}";
+						return speech;
+					}
+				});
+			}
+
+			if (openRolesScreenButton != null && openRolesScreenButton.gameObject.activeSelf) {
+				var captured = openRolesScreenButton;
+				var capturedBadge = skillPointsAvailable;
+				string label = (string)STRINGS.UI.UISIDESCREENS
+					.TELEPADSIDESCREEN.SKILLS_BUTTON;
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = captured,
+					GameObject = captured.gameObject,
+					SpeechFunc = () => {
+						string speech = label;
+						if (capturedBadge != null
+							&& capturedBadge.gameObject.activeSelf)
+							speech += $", {(string)STRINGS.ONIACCESS.TELEPAD.SKILL_POINTS}";
+						return speech;
+					}
+				});
+			}
+
+			// Victory conditions
+			if (victoryConditionsContainer == null) return;
+			var containerT = victoryConditionsContainer.transform;
+			for (int g = 0; g < containerT.childCount; g++) {
+				var groupT = containerT.GetChild(g);
+				if (!groupT.gameObject.activeSelf) continue;
+				var groupHref = groupT.GetComponent<HierarchyReferences>();
+				if (groupHref == null) continue;
+
+				LocText groupLabel;
+				try {
+					groupLabel = groupHref.GetReference<LocText>("Label");
+				} catch { continue; }
+				if (groupLabel == null) continue;
+
+				var children = new List<Widget>();
+				for (int r = 0; r < groupT.childCount; r++) {
+					var rowT = groupT.GetChild(r);
+					if (!rowT.gameObject.activeSelf) continue;
+					var rowHref = rowT.GetComponent<HierarchyReferences>();
+					if (rowHref == null) continue;
+
+					LocText rowLabel;
+					Image rowCheck;
+					try {
+						rowLabel = rowHref.GetReference<LocText>("Label");
+						rowCheck = rowHref.GetReference<Image>("Check");
+					} catch { continue; }
+					if (rowLabel == null || rowCheck == null) continue;
+					if (rowLabel == groupLabel) continue;
+
+					var capturedLabel = rowLabel;
+					var capturedCheck = rowCheck;
+					children.Add(new LabelWidget {
+						Label = capturedLabel.GetParsedText(),
+						GameObject = rowT.gameObject,
+						SpeechFunc = () => {
+							string status = capturedCheck.enabled
+								? (string)STRINGS.ONIACCESS.STATES.CONDITION_MET
+								: (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
+							return $"{status}, {capturedLabel.GetParsedText()}";
+						}
+					});
+				}
+
+				var capturedGroupLabel = groupLabel;
+				items.Add(new LabelWidget {
+					Label = capturedGroupLabel.GetParsedText(),
+					GameObject = groupT.gameObject,
+					SuppressTooltip = true,
+					Children = children.Count > 0 ? children : null,
+					SpeechFunc = () => capturedGroupLabel.GetParsedText()
 				});
 			}
 		}
