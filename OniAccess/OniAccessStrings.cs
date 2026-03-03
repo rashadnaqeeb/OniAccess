@@ -1,4 +1,9 @@
 namespace STRINGS {
+	// Translation notes:
+	// - These strings are spoken by a screen reader, not displayed visually.
+	// - Game terms (Duplicant, Cycle, Block, Morale, Decor, Errand, Chore)
+	//   must match the base game's official translation for the target language.
+	// - Consult the game's .po translation files for canonical term translations.
 	public class ONIACCESS {
 		// Spoken descriptions of sprite/icon overlays
 		public class SPRITES {
