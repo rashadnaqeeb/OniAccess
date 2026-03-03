@@ -16,6 +16,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<AccessControlSideScreen>(WalkAccessControl);
 			SideScreenWalker.RegisterOverride<OwnablesSidescreen>(WalkOwnables);
 			SideScreenWalker.RegisterOverride<AssignableSideScreen>(WalkAssignable);
+			SideScreenWalker.RegisterOverride<BionicSideScreen>(WalkBionic);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -962,6 +963,39 @@ namespace OniAccess.Widgets {
 					return $"{name}, {state}";
 				}
 			});
+		}
+
+		static void WalkBionic(BionicSideScreen screen, List<Widget> items) {
+			List<BionicSideScreenUpgradeSlot> slots;
+			try {
+				slots = Traverse.Create(screen)
+					.Field<List<BionicSideScreenUpgradeSlot>>("bionicSlots").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkBionic: bionicSlots read failed: {ex.Message}");
+				return;
+			}
+			if (slots == null) return;
+
+			foreach (var slot in slots) {
+				if (slot == null || !slot.gameObject.activeSelf) continue;
+				var capturedSlot = slot;
+				items.Add(new ButtonWidget {
+					Label = slot.label.GetParsedText(),
+					Component = slot.toggle,
+					GameObject = slot.gameObject,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						var upgrade = capturedSlot.upgradeSlot;
+						if (upgrade.IsLocked)
+							return (string)STRINGS.ONIACCESS.STATES.LOCKED;
+						if (upgrade.HasUpgradeInstalled)
+							return $"{upgrade.installedUpgradeComponent.GetProperName()}, {capturedSlot.label.GetParsedText()}";
+						if (upgrade.HasUpgradeComponentAssigned)
+							return $"{upgrade.assignedUpgradeComponent.GetProperName()}, {capturedSlot.label.GetParsedText()}";
+						return capturedSlot.label.GetParsedText();
+					}
+				});
+			}
 		}
 
 		private static void AddOwnableItemRow(
