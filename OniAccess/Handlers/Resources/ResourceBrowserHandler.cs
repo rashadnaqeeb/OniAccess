@@ -8,6 +8,10 @@ namespace OniAccess.Handlers.Resources {
 	/// Two-level resource browser backed by AllResourcesScreen.
 	/// Level 0 = discovered resource categories, level 1 = resources within category.
 	///
+	/// If any resources are pinned, a synthetic "Pinned" category appears at
+	/// index 0 containing all pinned resources. Regular categories follow,
+	/// offset by 1. If nothing is pinned the offset is 0.
+	///
 	/// Shift+P at level 1 toggles pin. Shift+C at any level clears all pins.
 	/// Enter at level 1 pushes ResourceInstanceHandler.
 	/// Escape at any level closes AllResourcesScreen.
@@ -28,7 +32,7 @@ namespace OniAccess.Handlers.Resources {
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 			= new List<HelpEntry>(NestedNavHelpEntries) {
-				new HelpEntry("Shift+P", STRINGS.ONIACCESS.RESOURCES.HELP_PIN),
+				new HelpEntry("Space", STRINGS.ONIACCESS.RESOURCES.HELP_PIN),
 				new HelpEntry("Shift+C", STRINGS.ONIACCESS.RESOURCES.HELP_CLEAR_PINS),
 			}.AsReadOnly();
 
@@ -36,36 +40,72 @@ namespace OniAccess.Handlers.Resources {
 		protected override int SearchLevel => 1;
 
 		// ========================================
+		// PINNED CATEGORY OFFSET
+		// ========================================
+
+		/// <summary>
+		/// 1 when pinned resources exist (synthetic category at index 0), 0 otherwise.
+		/// </summary>
+		private int PinnedOffset =>
+			ResourceHelper.GetPinnedResources().Count > 0 ? 1 : 0;
+
+		private bool IsPinnedCategory(int catIndex) =>
+			PinnedOffset == 1 && catIndex == 0;
+
+		// ========================================
 		// ITEM COUNTS AND LABELS
 		// ========================================
 
 		protected override int GetItemCount(int level, int[] indices) {
 			if (level == 0)
-				return ResourceHelper.GetCategories().Count;
+				return ResourceHelper.GetCategories().Count + PinnedOffset;
+
+			if (IsPinnedCategory(indices[0]))
+				return ResourceHelper.GetPinnedResources().Count;
+
 			var categories = ResourceHelper.GetCategories();
-			if (indices[0] < 0 || indices[0] >= categories.Count) return 0;
-			return ResourceHelper.GetResources(categories[indices[0]].Tag).Count;
+			int catIdx = indices[0] - PinnedOffset;
+			if (catIdx < 0 || catIdx >= categories.Count) return 0;
+			return ResourceHelper.GetResources(categories[catIdx].Tag).Count;
 		}
 
 		protected override string GetItemLabel(int level, int[] indices) {
-			var categories = ResourceHelper.GetCategories();
 			if (level == 0) {
-				if (indices[0] < 0 || indices[0] >= categories.Count) return null;
-				return ResourceHelper.BuildCategoryLabel(categories[indices[0]].Tag);
+				if (IsPinnedCategory(indices[0]))
+					return (string)STRINGS.ONIACCESS.RESOURCES.PINNED;
+
+				var categories = ResourceHelper.GetCategories();
+				int catIdx = indices[0] - PinnedOffset;
+				if (catIdx < 0 || catIdx >= categories.Count) return null;
+				return ResourceHelper.BuildCategoryLabel(categories[catIdx].Tag);
 			}
-			if (indices[0] < 0 || indices[0] >= categories.Count) return null;
-			var categoryTag = categories[indices[0]].Tag;
+
+			if (IsPinnedCategory(indices[0])) {
+				var pinned = ResourceHelper.GetPinnedResources();
+				if (indices[1] < 0 || indices[1] >= pinned.Count) return null;
+				var measure = ResourceHelper.GetMeasureForResource(pinned[indices[1]]);
+				return ResourceHelper.BuildResourceLabel(pinned[indices[1]], measure);
+			}
+
+			var cats = ResourceHelper.GetCategories();
+			int ci = indices[0] - PinnedOffset;
+			if (ci < 0 || ci >= cats.Count) return null;
+			var categoryTag = cats[ci].Tag;
 			var resources = ResourceHelper.GetResources(categoryTag);
 			if (indices[1] < 0 || indices[1] >= resources.Count) return null;
-			var measure = ResourceHelper.GetMeasure(categoryTag);
-			return ResourceHelper.BuildResourceLabel(resources[indices[1]], measure);
+			var m = ResourceHelper.GetMeasure(categoryTag);
+			return ResourceHelper.BuildResourceLabel(resources[indices[1]], m);
 		}
 
 		protected override string GetParentLabel(int level, int[] indices) {
 			if (level >= 1) {
+				if (IsPinnedCategory(indices[0]))
+					return (string)STRINGS.ONIACCESS.RESOURCES.PINNED;
+
 				var categories = ResourceHelper.GetCategories();
-				if (indices[0] >= 0 && indices[0] < categories.Count)
-					return categories[indices[0]].Tag.ProperNameStripLink();
+				int catIdx = indices[0] - PinnedOffset;
+				if (catIdx >= 0 && catIdx < categories.Count)
+					return categories[catIdx].Tag.ProperNameStripLink();
 			}
 			return null;
 		}
@@ -75,14 +115,24 @@ namespace OniAccess.Handlers.Resources {
 		// ========================================
 
 		protected override void ActivateLeafItem(int[] indices) {
-			var categories = ResourceHelper.GetCategories();
-			if (indices[0] < 0 || indices[0] >= categories.Count) return;
-			var categoryTag = categories[indices[0]].Tag;
-			var resources = ResourceHelper.GetResources(categoryTag);
-			if (indices[1] < 0 || indices[1] >= resources.Count) return;
+			Tag resourceTag;
+			GameUtil.MeasureUnit measure;
 
-			var resourceTag = resources[indices[1]];
-			var measure = ResourceHelper.GetMeasure(categoryTag);
+			if (IsPinnedCategory(indices[0])) {
+				var pinned = ResourceHelper.GetPinnedResources();
+				if (indices[1] < 0 || indices[1] >= pinned.Count) return;
+				resourceTag = pinned[indices[1]];
+				measure = ResourceHelper.GetMeasureForResource(resourceTag);
+			} else {
+				var categories = ResourceHelper.GetCategories();
+				int catIdx = indices[0] - PinnedOffset;
+				if (catIdx < 0 || catIdx >= categories.Count) return;
+				var categoryTag = categories[catIdx].Tag;
+				var resources = ResourceHelper.GetResources(categoryTag);
+				if (indices[1] < 0 || indices[1] >= resources.Count) return;
+				resourceTag = resources[indices[1]];
+				measure = ResourceHelper.GetMeasure(categoryTag);
+			}
 
 			if (ResourceHelper.GetInstances(resourceTag).Count == 0) {
 				PlayNegativeSound();
@@ -122,10 +172,11 @@ namespace OniAccess.Handlers.Resources {
 		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
 			var categories = ResourceHelper.GetCategories();
 			int offset = 0;
+			int po = PinnedOffset;
 			for (int i = 0; i < categories.Count; i++) {
 				var resources = ResourceHelper.GetResources(categories[i].Tag);
 				if (flatIndex < offset + resources.Count) {
-					outIndices[0] = i;
+					outIndices[0] = i + po;
 					outIndices[1] = flatIndex - offset;
 					return;
 				}
@@ -138,8 +189,8 @@ namespace OniAccess.Handlers.Resources {
 		// ========================================
 
 		public override bool Tick() {
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.P)
-				&& InputUtil.ShiftHeld()) {
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)
+				&& !InputUtil.AnyModifierHeld()) {
 				TogglePin();
 				return true;
 			}
@@ -153,21 +204,54 @@ namespace OniAccess.Handlers.Resources {
 
 		private void TogglePin() {
 			if (Level != 1) return;
-			var categories = ResourceHelper.GetCategories();
-			int catIdx = GetIndex(0);
-			if (catIdx < 0 || catIdx >= categories.Count) return;
-			var resources = ResourceHelper.GetResources(categories[catIdx].Tag);
-			int resIdx = GetIndex(1);
-			if (resIdx < 0 || resIdx >= resources.Count) return;
 
-			var tag = resources[resIdx];
-			var pinned = ClusterManager.Instance.activeWorld.worldInventory.pinnedResources;
-			if (pinned.Contains(tag)) {
-				pinned.Remove(tag);
+			bool inPinned = IsPinnedCategory(GetIndex(0));
+			Tag tag;
+			if (inPinned) {
+				var pinned = ResourceHelper.GetPinnedResources();
+				int resIdx = GetIndex(1);
+				if (resIdx < 0 || resIdx >= pinned.Count) return;
+				tag = pinned[resIdx];
+			} else {
+				var categories = ResourceHelper.GetCategories();
+				int catIdx = GetIndex(0) - PinnedOffset;
+				if (catIdx < 0 || catIdx >= categories.Count) return;
+				var resources = ResourceHelper.GetResources(categories[catIdx].Tag);
+				int resIdx = GetIndex(1);
+				if (resIdx < 0 || resIdx >= resources.Count) return;
+				tag = resources[resIdx];
+			}
+
+			var pinnedList = ClusterManager.Instance.activeWorld.worldInventory.pinnedResources;
+			if (pinnedList.Contains(tag)) {
+				pinnedList.Remove(tag);
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.RESOURCES.UNPINNED);
+
+				if (inPinned) {
+					var remaining = ResourceHelper.GetPinnedResources();
+					if (remaining.Count == 0) {
+						// Pinned category gone — drop to level 0
+						Level = 0;
+						SetIndex(0, 0);
+						SetIndex(1, 0);
+						_currentIndex = 0;
+						string label = GetItemLabel(0, new int[MaxLevel + 1]);
+						if (label != null)
+							SpeechPipeline.SpeakQueued(label);
+					} else {
+						int idx = GetIndex(1);
+						if (idx >= remaining.Count)
+							idx = remaining.Count - 1;
+						SetIndex(1, idx);
+						_currentIndex = idx;
+						string label = GetItemLabel(Level, new[] { GetIndex(0), idx });
+						if (label != null)
+							SpeechPipeline.SpeakQueued(label);
+					}
+				}
 			} else {
-				pinned.Add(tag);
+				pinnedList.Add(tag);
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.RESOURCES.PINNED);
 			}

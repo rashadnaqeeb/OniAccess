@@ -883,6 +883,8 @@ namespace STRINGS {
 			public static LocString ALL_UNPINNED = "all unpinned";
 			public static LocString NO_INSTANCES = "none available";
 			public static LocString RESERVED = "reserved";
+			public static LocString AVAILABLE = "available";
+			public static LocString OVERDRAWN = "overdrawn";
 			public static LocString RISING = "rising";
 			public static LocString FALLING = "falling";
 			public static LocString DISCOVERED = "Discovered: {0}";

@@ -13,14 +13,12 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(DiscoveredResources), nameof(DiscoveredResources.Discover),
 		new[] { typeof(Tag), typeof(Tag) })]
 	internal static class DiscoveredResources_Discover_Patch {
-		private static bool _wasNew;
-
-		private static void Prefix(DiscoveredResources __instance, Tag tag) {
-			_wasNew = !__instance.GetDiscovered().Contains(tag);
+		private static void Prefix(DiscoveredResources __instance, Tag tag, ref bool __state) {
+			__state = !__instance.GetDiscovered().Contains(tag);
 		}
 
-		private static void Postfix(Tag tag) {
-			if (!_wasNew) return;
+		private static void Postfix(Tag tag, bool __state) {
+			if (!__state) return;
 			if (!ModToggle.IsEnabled) return;
 			string name = tag.ProperNameStripLink();
 			SpeechPipeline.SpeakQueued(string.Format(

@@ -148,21 +148,29 @@ namespace OniAccess.Handlers.Resources {
 			string name = resourceTag.ProperNameStripLink();
 			var worldInventory = ClusterManager.Instance.activeWorld.worldInventory;
 
-			string label;
+			float total;
+			float reserved;
 			if (measure == GameUtil.MeasureUnit.kcal) {
-				float calories = WorldResourceAmountTracker<RationTracker>.Get()
-					.CountAmountForItemWithID(
-						resourceTag.Name, worldInventory);
-				label = name + ": " + FormatAmount(calories, measure);
+				var foodInfo = EdiblesManager.GetFoodInfo(resourceTag.Name);
+				float calsPerUnit = foodInfo != null ? foodInfo.CaloriesPerUnit : 1f;
+				total = worldInventory.GetTotalAmount(resourceTag, false) * calsPerUnit;
+				reserved = MaterialNeeds.GetAmount(resourceTag,
+					ClusterManager.Instance.activeWorld.id, false) * calsPerUnit;
 			} else {
-				float total = worldInventory.GetTotalAmount(resourceTag, false);
-				label = name + ": " + FormatAmount(total, measure);
-
-				float reserved = MaterialNeeds.GetAmount(resourceTag,
+				total = worldInventory.GetTotalAmount(resourceTag, false);
+				reserved = MaterialNeeds.GetAmount(resourceTag,
 					ClusterManager.Instance.activeWorld.id, false);
-				if (reserved > 0f)
-					label += ", " + FormatAmount(reserved, measure) + " " +
-						(string)STRINGS.ONIACCESS.RESOURCES.RESERVED;
+			}
+
+			string label = name + ": " + FormatAmount(total, measure);
+			if (reserved > 0f) {
+				label += ", " + FormatAmount(reserved, measure) + " " +
+					(string)STRINGS.ONIACCESS.RESOURCES.RESERVED;
+				float available = total - reserved;
+				string word = available < 0f
+					? (string)STRINGS.ONIACCESS.RESOURCES.OVERDRAWN
+					: (string)STRINGS.ONIACCESS.RESOURCES.AVAILABLE;
+				label += ", " + FormatAmount(available, measure) + " " + word;
 			}
 
 			string trend = GetTrendWord(resourceTag);
@@ -227,7 +235,7 @@ namespace OniAccess.Handlers.Resources {
 
 		/// <summary>
 		/// Builds a speech block for reading pinned resources.
-		/// Returns null if no resources are pinned.
+		/// Returns NO_PINNED message if no resources are pinned.
 		/// </summary>
 		internal static string BuildPinnedSpeech() {
 			var worldInventory = ClusterManager.Instance.activeWorld.worldInventory;
@@ -257,6 +265,17 @@ namespace OniAccess.Handlers.Resources {
 		/// </summary>
 		internal static GameUtil.MeasureUnit GetMeasureForResource(Tag resourceTag) {
 			return GetPrimaryMeasure(resourceTag);
+		}
+
+		/// <summary>
+		/// Returns the current pinned resources sorted alphabetically.
+		/// </summary>
+		internal static List<Tag> GetPinnedResources() {
+			var pinned = ClusterManager.Instance.activeWorld.worldInventory.pinnedResources;
+			var result = new List<Tag>(pinned);
+			result.Sort((a, b) =>
+				a.ProperNameStripLink().CompareTo(b.ProperNameStripLink()));
+			return result;
 		}
 
 		/// <summary>
