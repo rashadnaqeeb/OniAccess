@@ -289,6 +289,7 @@ namespace STRINGS {
 			// {0} = cycle number (int), {1} = schedule block/hour (int, 0-23)
 			public static LocString CYCLE_STATUS = "Cycle {0}, block {1}";
 			public static LocString READ_CYCLE_STATUS = "Read cycle status";
+			public static LocString READ_TIME_PLAYED = "Read total playtime";
 		}
 
 		// Tooltip summary readout at cursor

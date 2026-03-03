@@ -61,6 +61,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.PageUp, Modifier.Alt),
 			new ConsumedKey(KKeyCode.PageDown, Modifier.Alt),
 			new ConsumedKey(KKeyCode.Q),
+			new ConsumedKey(KKeyCode.Q, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Return),
 			new ConsumedKey(KKeyCode.N, Modifier.Shift),
 			// Ruler keybinds
@@ -108,6 +109,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Alt+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE),
 			new HelpEntry("Ctrl+F", (string)STRINGS.ONIACCESS.SCANNER.HELP.SEARCH),
 			new HelpEntry("Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS),
+			new HelpEntry("Shift+Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_TIME_PLAYED),
 			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED),
 			new HelpEntry("Shift+N", (string)STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP),
 			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.RESOURCES.HELP_OPEN),
@@ -300,10 +302,15 @@ namespace OniAccess.Handlers.Tiles {
 				ReadPinnedResources();
 				return true;
 			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)
-				&& !InputUtil.AnyModifierHeld()) {
-				_monitor.SpeakCycleStatus();
-				return true;
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Q)) {
+				if (InputUtil.ShiftHeld()) {
+					_monitor.SpeakTimePlayed();
+					return true;
+				}
+				if (!InputUtil.AnyModifierHeld()) {
+					_monitor.SpeakCycleStatus();
+					return true;
+				}
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.N)
 				&& InputUtil.ShiftHeld()) {

@@ -57,6 +57,12 @@ namespace OniAccess.Handlers.Tiles {
 				string.Format((string)STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS, cycle, block));
 		}
 
+		public void SpeakTimePlayed() {
+			float hours = GameClock.Instance.GetTimePlayedInSeconds() / 3600f;
+			SpeechPipeline.SpeakInterrupt(
+				string.Format((string)STRINGS.UI.ASTEROIDCLOCK.TIME_PLAYED, hours.ToString("0.00")));
+		}
+
 		private static void PlaySpeedChangeSound(float speed) {
 			string sound = GlobalAssets.GetSound("Speed_Change");
 			if (sound != null) {
