@@ -225,6 +225,7 @@ namespace OniAccess.Handlers.Resources {
 			var pinnedList = ClusterManager.Instance.activeWorld.worldInventory.pinnedResources;
 			if (pinnedList.Contains(tag)) {
 				pinnedList.Remove(tag);
+				PlaySound("HUD_Click_Deselect");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.RESOURCES.UNPINNED);
 
@@ -252,6 +253,7 @@ namespace OniAccess.Handlers.Resources {
 				}
 			} else {
 				pinnedList.Add(tag);
+				PlaySound("HUD_Click");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.RESOURCES.PINNED);
 			}
@@ -280,6 +282,14 @@ namespace OniAccess.Handlers.Resources {
 			PlayCloseSound();
 			if (AllResourcesScreen.Instance != null)
 				AllResourcesScreen.Instance.Show(false);
+		}
+
+		private static void PlaySound(string name) {
+			try {
+				KFMOD.PlayUISound(GlobalAssets.GetSound(name));
+			} catch (System.Exception ex) {
+				Util.Log.Error($"ResourceBrowserHandler.PlaySound failed: {ex.Message}");
+			}
 		}
 	}
 }
