@@ -448,8 +448,10 @@ namespace OniAccess.Handlers.Screens {
 			if (SuppressNextActivation) {
 				SuppressNextActivation = false;
 				_pendingSilentRebuild = true;
-			} else {
+			} else if (!sameTarget) {
 				_pendingFirstSection = true;
+			} else {
+				_pendingSilentRebuild = true;
 			}
 			_suppressDisplayName = true;
 			base.OnActivate();

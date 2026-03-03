@@ -38,6 +38,15 @@ namespace OniAccess.Handlers.Screens {
 		private static readonly FieldInfo _categoryIdField = typeof(SelectedRecipeQueueScreen)
 			.GetField("selectedRecipeCategoryID", BindingFlags.NonPublic | BindingFlags.Instance);
 
+		static RecipeQueueHandler() {
+			if (_containersField == null) Util.Log.Warn("RecipeQueueHandler: materialSelectionContainers field not found");
+			if (_rowsByContainerField == null) Util.Log.Warn("RecipeQueueHandler: materialSelectionRowsByContainer field not found");
+			if (_targetField == null) Util.Log.Warn("RecipeQueueHandler: target field not found");
+			if (_ownerScreenField == null) Util.Log.Warn("RecipeQueueHandler: ownerScreen field not found");
+			if (_selectedMaterialField == null) Util.Log.Warn("RecipeQueueHandler: selectedMaterialOption field not found");
+			if (_categoryIdField == null) Util.Log.Warn("RecipeQueueHandler: selectedRecipeCategoryID field not found");
+		}
+
 		private enum ItemKind { RecipeInfo, IngredientSlot, QueueCount, Confirm }
 
 		public override string DisplayName => null;
@@ -269,12 +278,12 @@ namespace OniAccess.Handlers.Screens {
 
 			// Warnings
 			if (!recipe.IsRequiredTechUnlocked())
-				label += ", " + (string)STRINGS.ONIACCESS.RECIPE.RESEARCH_REQUIRED;
+				label += ", " + (string)STRINGS.UI.UISIDESCREENS.FABRICATORSIDESCREEN.RECIPE_RESEARCH_REQUIRED;
 			var selectedTags = GetSelectedMaterialOption();
 			if (selectedTags != null) {
 				foreach (var tag in selectedTags) {
 					if (!DiscoveredResources.Instance.IsDiscovered(tag)) {
-						label += ", " + (string)STRINGS.ONIACCESS.RECIPE.MATERIALS_UNDISCOVERED;
+						label += ", " + (string)STRINGS.UI.UISIDESCREENS.FABRICATORSIDESCREEN.RECIPE_UNDISCOVERED_INGREDIENTS;
 						break;
 					}
 				}
@@ -348,7 +357,7 @@ namespace OniAccess.Handlers.Screens {
 			var selectedTags = GetSelectedMaterialOption();
 			if (selectedTags != null && slotIdx < selectedTags.Count
 				&& selectedTags[slotIdx] == tag) {
-				label += ", " + (string)STRINGS.ONIACCESS.RECIPE.SELECTED;
+				label += ", " + (string)STRINGS.ONIACCESS.STATES.SELECTED;
 			}
 
 			return TextFilter.FilterForSpeech(label);
@@ -416,7 +425,7 @@ namespace OniAccess.Handlers.Screens {
 		private void SpeakUndiscovered() {
 			PlaySound("Slider_Boundary_Low");
 			SpeechPipeline.SpeakInterrupt(
-				(string)STRINGS.ONIACCESS.RECIPE.MATERIALS_UNDISCOVERED);
+				(string)STRINGS.UI.UISIDESCREENS.FABRICATORSIDESCREEN.RECIPE_UNDISCOVERED_INGREDIENTS);
 		}
 
 		private void CloseScreen() {
@@ -428,7 +437,14 @@ namespace OniAccess.Handlers.Screens {
 
 		private void ClickMaterial(int slotIdx, int rowIdx) {
 			var rows = GetRowsForSlot(slotIdx);
-			if (rows == null || rowIdx < 0 || rowIdx >= rows.Count) return;
+			if (rows == null) {
+				Util.Log.Warn($"RecipeQueueHandler.ClickMaterial: no rows for slot {slotIdx}");
+				return;
+			}
+			if (rowIdx < 0 || rowIdx >= rows.Count) {
+				Util.Log.Warn($"RecipeQueueHandler.ClickMaterial: rowIdx {rowIdx} out of range [0,{rows.Count})");
+				return;
+			}
 
 			var toggle = rows[rowIdx].GetComponent<MultiToggle>();
 			if (toggle != null)
@@ -503,6 +519,7 @@ namespace OniAccess.Handlers.Screens {
 			if (categoryId == null) return null;
 
 			foreach (var recipe in target.GetRecipesWithCategoryID(categoryId)) {
+				if (recipe.ingredients.Length != selectedTags.Count) continue;
 				bool match = true;
 				for (int i = 0; i < selectedTags.Count; i++) {
 					if (recipe.ingredients[i].material != selectedTags[i]) {

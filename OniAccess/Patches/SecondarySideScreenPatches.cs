@@ -8,7 +8,9 @@ namespace OniAccess.Patches {
 	internal static class DetailsScreen_SetSecondarySideScreen_Patch {
 		private static void Postfix(KScreen __result) {
 			if (!ModToggle.IsEnabled) return;
-			if (__result is SelectedRecipeQueueScreen recipeScreen) {
+			if (__result == null) {
+				Util.Log.Warn("SetSecondarySideScreen: __result is null");
+			} else if (__result is SelectedRecipeQueueScreen recipeScreen) {
 				HandlerStack.Push(new RecipeQueueHandler(recipeScreen));
 			} else {
 				Util.Log.Debug(
@@ -21,8 +23,10 @@ namespace OniAccess.Patches {
 	internal static class DetailsScreen_ClearSecondarySideScreen_Patch {
 		private static void Prefix() {
 			if (!ModToggle.IsEnabled) return;
-			if (HandlerStack.ActiveHandler is RecipeQueueHandler)
+			if (HandlerStack.ActiveHandler is RecipeQueueHandler) {
+				Util.Log.Debug("ClearSecondarySideScreen: popping RecipeQueueHandler");
 				HandlerStack.Pop();
+			}
 		}
 	}
 }

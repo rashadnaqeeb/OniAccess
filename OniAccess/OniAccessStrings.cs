@@ -115,9 +115,6 @@ namespace STRINGS {
 		public class RECIPE {
 			// {0} = queue count number or "Forever"
 			public static LocString QUEUE_COUNT = "Queue: {0}";
-			public static LocString SELECTED = "selected";
-			public static LocString RESEARCH_REQUIRED = "Research required";
-			public static LocString MATERIALS_UNDISCOVERED = "Undiscovered materials";
 		}
 
 		// Labels for colony summary statistics
