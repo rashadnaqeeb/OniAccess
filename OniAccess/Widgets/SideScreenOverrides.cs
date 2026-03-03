@@ -1078,27 +1078,26 @@ namespace OniAccess.Widgets {
 				});
 			}
 
+			string applyLabel = (string)STRINGS.UI.FRONTEND.GRAPHICS_OPTIONS_SCREEN.APPLYBUTTON;
 			var applyBtn = screen.applyButton;
 			if (applyBtn != null && applyBtn.gameObject.activeSelf) {
-				var captured = applyBtn;
-				string label = SideScreenWalker.GetButtonLabel(captured, captured.transform.name);
 				items.Add(new ButtonWidget {
-					Label = label,
-					Component = captured,
-					GameObject = captured.gameObject,
-					SpeechFunc = () => SideScreenWalker.GetButtonLabel(captured, captured.transform.name)
+					Label = applyLabel,
+					Component = applyBtn,
+					GameObject = applyBtn.gameObject,
+					SpeechFunc = () => applyLabel
 				});
 			}
 
+			string clearLabel = (string)STRINGS.UI.UISIDESCREENS
+				.OWNABLESSECONDSIDESCREEN.NONE_ROW_LABEL;
 			var clearBtn = screen.clearButton;
 			if (clearBtn != null && clearBtn.gameObject.activeSelf) {
-				var captured = clearBtn;
-				string label = SideScreenWalker.GetButtonLabel(captured, captured.transform.name);
 				items.Add(new ButtonWidget {
-					Label = label,
-					Component = captured,
-					GameObject = captured.gameObject,
-					SpeechFunc = () => SideScreenWalker.GetButtonLabel(captured, captured.transform.name)
+					Label = clearLabel,
+					Component = clearBtn,
+					GameObject = clearBtn.gameObject,
+					SpeechFunc = () => clearLabel
 				});
 			}
 		}
