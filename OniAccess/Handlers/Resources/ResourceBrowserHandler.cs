@@ -43,8 +43,7 @@ namespace OniAccess.Handlers.Resources {
 			var categories = ResourceHelper.GetCategories();
 			if (level == 0) {
 				if (indices[0] < 0 || indices[0] >= categories.Count) return null;
-				var cat = categories[indices[0]];
-				return ResourceHelper.BuildCategoryLabel(cat.Tag, cat.Header);
+				return ResourceHelper.BuildCategoryLabel(categories[indices[0]].Tag);
 			}
 			if (indices[0] < 0 || indices[0] >= categories.Count) return null;
 			var categoryTag = categories[indices[0]].Tag;
@@ -58,7 +57,7 @@ namespace OniAccess.Handlers.Resources {
 			if (level >= 1) {
 				var categories = ResourceHelper.GetCategories();
 				if (indices[0] >= 0 && indices[0] < categories.Count)
-					return categories[indices[0]].Header.elements.LabelText.text;
+					return categories[indices[0]].Tag.ProperNameStripLink();
 			}
 			return null;
 		}

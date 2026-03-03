@@ -1,58 +1,129 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace OniAccess.Handlers.Resources {
 	/// <summary>
 	/// Live data queries for the resource browser. All data is read fresh
 	/// from game singletons on every call — nothing is cached.
+	///
+	/// Data comes from DiscoveredResources.Instance and WorldInventory,
+	/// not from ResourceCategoryScreen (which is only alive when the
+	/// sidebar panel is visible).
 	/// </summary>
 	internal static class ResourceHelper {
 
 		internal struct CategoryEntry {
 			internal Tag Tag;
-			internal ResourceCategoryHeader Header;
 		}
 
 		/// <summary>
 		/// Returns discovered categories sorted alphabetically by name.
 		/// Only includes categories with at least one discovered resource.
+		/// Uses the same three tag sets as AllResourcesScreen:
+		/// MaterialCategories, CalorieCategories, UnitCategories.
+		///
+		/// Resources can be discovered under multiple categories (e.g. food
+		/// under both Edible and Compostable). We assign each resource to
+		/// its primary category only — the first match in priority order:
+		/// CalorieCategories, UnitCategories, MaterialCategories.
 		/// </summary>
 		internal static List<CategoryEntry> GetCategories() {
 			var result = new List<CategoryEntry>();
-			if (ResourceCategoryScreen.Instance == null) return result;
+			if (DiscoveredResources.Instance == null) return result;
 
-			foreach (var kvp in ResourceCategoryScreen.Instance.DisplayedCategories) {
-				if (kvp.Value.ResourcesDiscovered.Count > 0)
-					result.Add(new CategoryEntry { Tag = kvp.Key, Header = kvp.Value });
-			}
+			var seen = new HashSet<Tag>();
+			AddDiscoveredFrom(GameTags.CalorieCategories, result, seen);
+			AddDiscoveredFrom(GameTags.UnitCategories, result, seen);
+			AddDiscoveredFrom(GameTags.MaterialCategories, result, seen);
 
 			result.Sort((a, b) =>
-				a.Header.elements.LabelText.text.CompareTo(
-					b.Header.elements.LabelText.text));
+				a.Tag.ProperNameStripLink().CompareTo(
+					b.Tag.ProperNameStripLink()));
 			return result;
+		}
+
+		private static void AddDiscoveredFrom(
+			TagSet tagSet, List<CategoryEntry> result, HashSet<Tag> seen)
+		{
+			foreach (Tag tag in tagSet) {
+				var resources = DiscoveredResources.Instance
+					.GetDiscoveredResourcesFromTag(tag);
+				bool hasUnseen = false;
+				foreach (var r in resources) {
+					if (seen.Add(r))
+						hasUnseen = true;
+				}
+				if (hasUnseen)
+					result.Add(new CategoryEntry { Tag = tag });
+			}
 		}
 
 		/// <summary>
 		/// Returns discovered resources within a category, sorted alphabetically.
+		/// Excludes resources that belong to a higher-priority category
+		/// (calorie > unit > material) to prevent duplicates across categories.
+		/// Also deduplicates by display name within a category.
 		/// </summary>
 		internal static List<Tag> GetResources(Tag categoryTag) {
-			if (ResourceCategoryScreen.Instance == null) return new List<Tag>();
-			if (!ResourceCategoryScreen.Instance.DisplayedCategories
-				.TryGetValue(categoryTag, out var header))
-				return new List<Tag>();
+			if (DiscoveredResources.Instance == null) return new List<Tag>();
+			var discovered = DiscoveredResources.Instance
+				.GetDiscoveredResourcesFromTag(categoryTag);
 
-			var result = new List<Tag>(header.ResourcesDiscovered.Keys);
+			var measure = GetMeasure(categoryTag);
+			var result = new List<Tag>();
+			var seenNames = new HashSet<string>();
+			foreach (var tag in discovered) {
+				if (GetPrimaryMeasure(tag) != measure) continue;
+				string name = tag.ProperNameStripLink();
+				if (seenNames.Add(name))
+					result.Add(tag);
+			}
+
 			result.Sort((a, b) =>
 				a.ProperNameStripLink().CompareTo(b.ProperNameStripLink()));
 			return result;
 		}
 
 		/// <summary>
-		/// Builds a speech label for a category at level 0.
-		/// Format: "{name}: {total available}[, rising/falling]"
+		/// Returns the primary measure unit for a resource tag by checking
+		/// category sets in priority order: calorie, unit, mass.
 		/// </summary>
-		internal static string BuildCategoryLabel(Tag categoryTag, ResourceCategoryHeader header) {
-			string name = header.elements.LabelText.text;
-			string amount = header.elements.QuantityText.text;
+		private static GameUtil.MeasureUnit GetPrimaryMeasure(Tag resourceTag) {
+			if (DiscoveredResources.Instance == null) return GameUtil.MeasureUnit.mass;
+			foreach (Tag cat in GameTags.CalorieCategories) {
+				if (DiscoveredResources.Instance
+					.GetDiscoveredResourcesFromTag(cat).Contains(resourceTag))
+					return GameUtil.MeasureUnit.kcal;
+			}
+			foreach (Tag cat in GameTags.UnitCategories) {
+				if (DiscoveredResources.Instance
+					.GetDiscoveredResourcesFromTag(cat).Contains(resourceTag))
+					return GameUtil.MeasureUnit.quantity;
+			}
+			return GameUtil.MeasureUnit.mass;
+		}
+
+		/// <summary>
+		/// Builds a speech label for a category at level 0.
+		/// Format: "{name}: {total}[, rising/falling]"
+		/// </summary>
+		internal static string BuildCategoryLabel(Tag categoryTag) {
+			string name = categoryTag.ProperNameStripLink();
+			var measure = GetMeasure(categoryTag);
+			var worldInventory = ClusterManager.Instance.activeWorld.worldInventory;
+
+			float total;
+			if (measure == GameUtil.MeasureUnit.kcal) {
+				total = WorldResourceAmountTracker<RationTracker>.Get()
+					.CountAmount(null, worldInventory);
+			} else {
+				total = 0f;
+				var resources = GetResources(categoryTag);
+				foreach (var tag in resources)
+					total += worldInventory.GetTotalAmount(tag, false);
+			}
+
+			string amount = FormatAmount(total, measure);
 			string label = name + ": " + amount;
 
 			string trend = GetTrendWord(categoryTag);
@@ -64,29 +135,34 @@ namespace OniAccess.Handlers.Resources {
 
 		/// <summary>
 		/// Builds a speech label for a resource at level 1.
-		/// Format: "{name}: {available}[, {reserved} reserved][, rising/falling]"
-		/// When available is negative (overdrawn): "available {amount}"
+		///
+		/// For mass/quantity: shows total amount (what exists), then reserved
+		/// if any. Uses GetTotalAmount (not GetAmount which clamps to 0).
+		/// Format: "{name}: {total}[, {reserved} reserved][, trend]"
+		///
+		/// For kcal: shows calories from RationTracker. Reserved is in mass
+		/// units (mixed with calories is confusing), so it's omitted.
+		/// Format: "{name}: {calories}[, trend]"
 		/// </summary>
 		internal static string BuildResourceLabel(Tag resourceTag, GameUtil.MeasureUnit measure) {
 			string name = resourceTag.ProperNameStripLink();
 			var worldInventory = ClusterManager.Instance.activeWorld.worldInventory;
-			float available = worldInventory.GetAmount(resourceTag, false);
-			float reserved = MaterialNeeds.GetAmount(resourceTag,
-				ClusterManager.Instance.activeWorld.id, false);
-
-			string amountStr = FormatAmount(available, measure);
 
 			string label;
-			if (available < 0f)
-				label = name + ": " +
-					(string)STRINGS.ONIACCESS.STATES.AVAILABLE + " " + amountStr;
-			else
-				label = name + ": " + amountStr;
+			if (measure == GameUtil.MeasureUnit.kcal) {
+				float calories = WorldResourceAmountTracker<RationTracker>.Get()
+					.CountAmountForItemWithID(
+						resourceTag.Name, worldInventory);
+				label = name + ": " + FormatAmount(calories, measure);
+			} else {
+				float total = worldInventory.GetTotalAmount(resourceTag, false);
+				label = name + ": " + FormatAmount(total, measure);
 
-			if (reserved > 0f) {
-				string reservedStr = FormatAmount(reserved, measure);
-				label += ", " + reservedStr + " " +
-					(string)STRINGS.ONIACCESS.RESOURCES.RESERVED;
+				float reserved = MaterialNeeds.GetAmount(resourceTag,
+					ClusterManager.Instance.activeWorld.id, false);
+				if (reserved > 0f)
+					label += ", " + FormatAmount(reserved, measure) + " " +
+						(string)STRINGS.ONIACCESS.RESOURCES.RESERVED;
 			}
 
 			string trend = GetTrendWord(resourceTag);
@@ -113,26 +189,39 @@ namespace OniAccess.Handlers.Resources {
 		}
 
 		/// <summary>
-		/// Returns "rising", "falling", or null (stable).
+		/// Returns "rising", "falling", or null (stable/insufficient data).
+		///
+		/// Avoids Tracker.GetDelta which has a -1 sentinel that produces
+		/// bogus positive deltas when the tracker lacks 150s of history.
+		/// Instead compares recent average (last 30s) to longer-term
+		/// average (last 150s). A meaningful divergence indicates a trend.
 		/// </summary>
 		internal static string GetTrendWord(Tag tag) {
 			var tracker = TrackerTool.Instance.GetResourceStatistic(
 				ClusterManager.Instance.activeWorldId, tag);
 			if (tracker == null) return null;
-			float delta = tracker.GetDelta(150f);
-			if (delta > 0f) return (string)STRINGS.ONIACCESS.RESOURCES.RISING;
-			if (delta < 0f) return (string)STRINGS.ONIACCESS.RESOURCES.FALLING;
+
+			float recent = tracker.GetAverageValue(30f);
+			float longer = tracker.GetAverageValue(150f);
+			float diff = recent - longer;
+
+			// Ignore differences smaller than 1% of the longer-term average,
+			// with a floor of 0.5 to filter noise on small amounts.
+			float threshold = Mathf.Max(0.5f, Mathf.Abs(longer) * 0.01f);
+			if (diff > threshold) return (string)STRINGS.ONIACCESS.RESOURCES.RISING;
+			if (diff < -threshold) return (string)STRINGS.ONIACCESS.RESOURCES.FALLING;
 			return null;
 		}
 
 		/// <summary>
-		/// Returns the measure unit for a category tag.
+		/// Returns the measure unit for a category tag using the same
+		/// tag sets the game uses (GameTags.DisplayAsCalories, DisplayAsUnits).
 		/// </summary>
 		internal static GameUtil.MeasureUnit GetMeasure(Tag categoryTag) {
-			if (ResourceCategoryScreen.Instance != null
-				&& ResourceCategoryScreen.Instance.DisplayedCategories
-					.TryGetValue(categoryTag, out var header))
-				return header.Measure;
+			if (GameTags.DisplayAsCalories.Contains(categoryTag))
+				return GameUtil.MeasureUnit.kcal;
+			if (GameTags.DisplayAsUnits.Contains(categoryTag))
+				return GameUtil.MeasureUnit.quantity;
 			return GameUtil.MeasureUnit.mass;
 		}
 
@@ -150,9 +239,14 @@ namespace OniAccess.Handlers.Resources {
 				if (sb.Length > 0) sb.Append(". ");
 				string name = tag.ProperNameStripLink();
 				var measure = GetMeasureForResource(tag);
-				float available = worldInventory.GetAmount(tag, false);
-				string amount = FormatAmount(available, measure);
-				sb.Append(name).Append(": ").Append(amount);
+				float amount;
+				if (measure == GameUtil.MeasureUnit.kcal) {
+					amount = WorldResourceAmountTracker<RationTracker>.Get()
+						.CountAmountForItemWithID(tag.Name, worldInventory);
+				} else {
+					amount = worldInventory.GetTotalAmount(tag, false);
+				}
+				sb.Append(name).Append(": ").Append(FormatAmount(amount, measure));
 			}
 			return sb.ToString();
 		}
@@ -162,12 +256,7 @@ namespace OniAccess.Handlers.Resources {
 		/// by finding which category it belongs to.
 		/// </summary>
 		internal static GameUtil.MeasureUnit GetMeasureForResource(Tag resourceTag) {
-			if (ResourceCategoryScreen.Instance == null) return GameUtil.MeasureUnit.mass;
-			foreach (var kvp in ResourceCategoryScreen.Instance.DisplayedCategories) {
-				if (kvp.Value.ResourcesDiscovered.ContainsKey(resourceTag))
-					return kvp.Value.Measure;
-			}
-			return GameUtil.MeasureUnit.mass;
+			return GetPrimaryMeasure(resourceTag);
 		}
 
 		/// <summary>
@@ -192,7 +281,7 @@ namespace OniAccess.Handlers.Resources {
 				if (!Grid.IsValidCell(cell)) continue;
 
 				if (!cellMap.TryGetValue(cell, out var entry)) {
-					UnityEngine.GameObject building = null;
+					GameObject building = null;
 					if (p.storage != null)
 						building = p.storage.gameObject;
 					entry = new InstanceEntry(cell, 0f, building);
@@ -209,9 +298,9 @@ namespace OniAccess.Handlers.Resources {
 		internal class InstanceEntry {
 			internal int Cell;
 			internal float Amount;
-			internal UnityEngine.GameObject Building;
+			internal GameObject Building;
 
-			internal InstanceEntry(int cell, float amount, UnityEngine.GameObject building) {
+			internal InstanceEntry(int cell, float amount, GameObject building) {
 				Cell = cell;
 				Amount = amount;
 				Building = building;
