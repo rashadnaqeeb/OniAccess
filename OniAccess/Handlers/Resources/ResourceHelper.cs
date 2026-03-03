@@ -291,7 +291,7 @@ namespace OniAccess.Handlers.Resources {
 			}
 
 			result.AddRange(cellMap.Values);
-			result.Sort((a, b) => a.Cell.CompareTo(b.Cell));
+			result.Sort((a, b) => b.Amount.CompareTo(a.Amount));
 			return result;
 		}
 
