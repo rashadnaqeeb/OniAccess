@@ -432,10 +432,18 @@ namespace OniAccess.Handlers.Screens {
 		internal static bool SuppressNextActivation;
 
 		public override void OnActivate() {
-			_lastTarget = DetailsScreen.Instance != null
+			_pendingActivationSpeech = false;
+			_pendingTabSpeech = false;
+			_pendingSilentRebuild = false;
+
+			var currentTarget = DetailsScreen.Instance != null
 				? DetailsScreen.Instance.target : null;
+			bool sameTarget = currentTarget == _lastTarget && currentTarget != null;
+			_lastTarget = currentTarget;
 			RebuildActiveTabs(_lastTarget);
-			_tabIndex = 0;
+			if (!sameTarget)
+				_tabIndex = 0;
+			if (_tabIndex >= _activeTabs.Count) _tabIndex = 0;
 			SwitchGameTab();
 			if (SuppressNextActivation) {
 				SuppressNextActivation = false;

@@ -97,6 +97,7 @@ namespace STRINGS {
 			public static LocString OPEN_GROUP = "Open group";
 			public static LocString GO_BACK = "Go back";
 			public static LocString JUMP_GROUP = "Jump to next or previous group";
+			public static LocString CYCLE_RECIPE = "Cycle recipe";
 
 			// Help entries for tool-specific keys
 			public class TOOLS_HELP {
@@ -108,6 +109,15 @@ namespace STRINGS {
 				public static LocString SET_PRIORITY = "Set priority";
 				public static LocString OPEN_FILTER = "Change filter";
 			}
+		}
+
+		// Recipe queue screen labels
+		public class RECIPE {
+			// {0} = queue count number or "Forever"
+			public static LocString QUEUE_COUNT = "Queue: {0}";
+			public static LocString SELECTED = "selected";
+			public static LocString RESEARCH_REQUIRED = "Research required";
+			public static LocString MATERIALS_UNDISCOVERED = "Undiscovered materials";
 		}
 
 		// Labels for colony summary statistics
