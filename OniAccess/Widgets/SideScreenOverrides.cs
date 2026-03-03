@@ -25,6 +25,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<TelepadSideScreen>(WalkTelepad);
 			SideScreenWalker.RegisterOverride<ClusterDestinationSideScreen>(WalkClusterDestination);
 			SideScreenWalker.RegisterOverride<CheckboxListGroupSideScreen>(WalkCheckboxListGroup);
+			SideScreenWalker.RegisterOverride<ModuleFlightUtilitySideScreen>(WalkModuleFlightUtility);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -1430,6 +1431,116 @@ namespace OniAccess.Widgets {
 				items[openButtonIndex] = dropdown;
 			else
 				items.Add(dropdown);
+		}
+
+		static void WalkModuleFlightUtility(
+				ModuleFlightUtilitySideScreen screen, List<Widget> items) {
+			Dictionary<IEmptyableCargo, HierarchyReferences> modulePanels;
+			try {
+				modulePanels = Traverse.Create(screen)
+					.Field<Dictionary<IEmptyableCargo, HierarchyReferences>>("modulePanels").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"ModuleFlightUtility: failed to read modulePanels: {ex.Message}");
+				SideScreenWalker.WalkDefault(screen, items);
+				return;
+			}
+			if (modulePanels == null || modulePanels.Count == 0) return;
+
+			foreach (var kv in modulePanels) {
+				var module = kv.Key;
+				var href = kv.Value;
+				if (href == null || !href.gameObject.activeSelf) continue;
+
+				var children = new List<Widget>();
+
+				// Action button (deploy/drill/etc.)
+				var actionButton = href.GetReference<KButton>("button");
+				var capturedModule = module;
+				children.Add(new ButtonWidget {
+					Label = module.GetButtonText,
+					Component = actionButton,
+					GameObject = actionButton.gameObject,
+					SpeechFunc = () => capturedModule.GetButtonText
+				});
+
+				// Repeat button (auto-deploy toggle, only if supported)
+				if (module.CanAutoDeploy) {
+					var repeatButton = href.GetReference<KButton>("repeatButton");
+					var capturedModuleRepeat = module;
+					children.Add(new ToggleWidget {
+						Label = (string)STRINGS.UI.UISIDESCREENS
+							.MODULEFLIGHTUTILITYSIDESCREEN.REPEAT_BUTTON_TOOLTIP,
+						Component = repeatButton,
+						GameObject = repeatButton.gameObject,
+						SpeechFunc = () => {
+							string state = capturedModuleRepeat.AutoDeploy
+								? (string)STRINGS.ONIACCESS.STATES.ON
+								: (string)STRINGS.ONIACCESS.STATES.OFF;
+							return $"{(string)STRINGS.UI.UISIDESCREENS.MODULEFLIGHTUTILITYSIDESCREEN.REPEAT_BUTTON_TOOLTIP}, {state}";
+						}
+					});
+				}
+
+				// Select target button (only if module supports targeting)
+				if (module.CanTargetClusterGridEntities) {
+					var selectTargetButton = href.GetReference<KButton>("selectTargetButton");
+					var capturedSelectBtn = selectTargetButton;
+					children.Add(new ButtonWidget {
+						Label = (string)STRINGS.UI.UISIDESCREENS
+							.MODULEFLIGHTUTILITYSIDESCREEN.SELECT_TARGET_BUTTON,
+						Component = selectTargetButton,
+						GameObject = selectTargetButton.gameObject,
+						SpeechFunc = () => {
+							var lt = capturedSelectBtn.GetComponentInChildren<LocText>();
+							return lt != null ? lt.text : (string)STRINGS.UI.UISIDESCREENS
+								.MODULEFLIGHTUTILITYSIDESCREEN.SELECT_TARGET_BUTTON;
+						}
+					});
+
+					// Clear target button (only if a target is assigned)
+					var clearTargetButton = href.GetReference<KButton>("clearTargetButton");
+					if (clearTargetButton != null && clearTargetButton.gameObject.activeSelf) {
+						children.Add(new ButtonWidget {
+							Label = (string)STRINGS.UI.UISIDESCREENS
+								.MODULEFLIGHTUTILITYSIDESCREEN.CLEAR_TARGET_BUTTON_TOOLTIP,
+							Component = clearTargetButton,
+							GameObject = clearTargetButton.gameObject,
+							SpeechFunc = () => (string)STRINGS.UI.UISIDESCREENS
+								.MODULEFLIGHTUTILITYSIDESCREEN.CLEAR_TARGET_BUTTON_TOOLTIP
+						});
+					}
+				}
+
+				// Duplicant dropdown (only if module uses crew assignment)
+				if (module.ChooseDuplicant) {
+					try {
+						var dropDown = href.GetReference<DropDown>("dropDown");
+						if (dropDown != null && dropDown.gameObject.activeSelf) {
+							var capturedDropDown = dropDown;
+							children.Add(new ButtonWidget {
+								Label = (string)STRINGS.UI.UISIDESCREENS
+									.MODULEFLIGHTUTILITYSIDESCREEN.SELECT_DUPLICANT,
+								Component = dropDown.openButton,
+								GameObject = dropDown.gameObject,
+								SpeechFunc = () => capturedDropDown.selectedLabel.text
+							});
+						}
+					} catch (System.Exception ex) {
+						Util.Log.Warn($"ModuleFlightUtility: failed to read dropDown: {ex.Message}");
+					}
+				}
+
+				string moduleName = module.master.gameObject.GetProperName();
+				var capturedHref = href;
+				var capturedModuleName = module;
+				items.Add(new LabelWidget {
+					Label = moduleName,
+					GameObject = capturedHref.gameObject,
+					SuppressTooltip = true,
+					Children = children,
+					SpeechFunc = () => capturedModuleName.master.gameObject.GetProperName()
+				});
+			}
 		}
 
 		static void WalkCheckboxListGroup(
