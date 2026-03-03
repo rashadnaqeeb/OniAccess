@@ -75,11 +75,11 @@ namespace OniAccess.Handlers.Tiles.Skip {
 		}
 
 		private static string FormatTileCount(int count) {
-			if (count == 1)
-				return string.Format(
-					(string)STRINGS.ONIACCESS.SKIP.TILE_FORMAT, count);
+			string noun = count == 1
+				? (string)STRINGS.ONIACCESS.SKIP.TILE_SINGULAR
+				: (string)STRINGS.ONIACCESS.SKIP.TILE_PLURAL;
 			return string.Format(
-				(string)STRINGS.ONIACCESS.SKIP.TILES_FORMAT, count);
+				(string)STRINGS.ONIACCESS.SKIP.COUNT_FORMAT, count, noun);
 		}
 	}
 }
