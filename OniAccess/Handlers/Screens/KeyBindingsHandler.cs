@@ -175,8 +175,8 @@ namespace OniAccess.Handlers.Screens {
 				// Exited rebind mode -- display was rebuilt, rediscover and announce
 				_wasWaiting = false;
 				DiscoverWidgets(_screen);
-				if (_currentIndex >= _widgets.Count)
-					_currentIndex = _widgets.Count > 0 ? _widgets.Count - 1 : 0;
+				if (CurrentIndex >= _widgets.Count)
+					CurrentIndex = _widgets.Count > 0 ? _widgets.Count - 1 : 0;
 				if (_widgets.Count > 0)
 					SpeakCurrentWidget();
 				return false;
@@ -204,15 +204,15 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
+			var widget = _widgets[CurrentIndex];
 
 			// Reset button: click it, then rediscover and announce
 			if (widget.Component == _resetButton) {
 				ClickButton(_resetButton);
 				// OnReset runs synchronously: resets bindings + calls BuildDisplay()
 				DiscoverWidgets(_screen);
-				_currentIndex = 0;
+				CurrentIndex = 0;
 				Speech.SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.KEY_BINDINGS.BINDINGS_RESET);
 				return;
@@ -267,7 +267,7 @@ namespace OniAccess.Handlers.Screens {
 			if (wrapped) PlayWrapSound();
 
 			DiscoverWidgets(_screen);
-			_currentIndex = 0;
+			CurrentIndex = 0;
 
 			string category = GetCurrentCategoryName();
 			if (_widgets.Count > 0) {

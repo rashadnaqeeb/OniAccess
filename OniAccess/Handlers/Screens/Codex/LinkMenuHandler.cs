@@ -33,16 +33,16 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			if (_currentIndex < 0 || _currentIndex >= _links.Count) return;
-			string text = _links[_currentIndex].text;
+			if (CurrentIndex < 0 || CurrentIndex >= _links.Count) return;
+			string text = _links[CurrentIndex].text;
 			if (!string.IsNullOrEmpty(parentContext))
 				text = parentContext + ", " + text;
 			SpeechPipeline.SpeakInterrupt(text);
 		}
 
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _links.Count) return;
-			string linkId = _links[_currentIndex].id;
+			if (CurrentIndex < 0 || CurrentIndex >= _links.Count) return;
+			string linkId = _links[CurrentIndex].id;
 			HandlerStack.Pop();
 			_parent.ContentTabRef.FollowLink(linkId);
 		}

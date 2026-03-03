@@ -17,6 +17,8 @@ namespace OniAccess.Handlers {
 
 		protected NestedMenuHandler(KScreen screen = null) : base(screen) { }
 
+		protected override int CurrentIndex { get => _indices[_level]; set => _indices[_level] = value; }
+
 		protected int Level { get => _level; set => _level = value; }
 		protected virtual int StartLevel => 0;
 
@@ -96,10 +98,6 @@ namespace OniAccess.Handlers {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			// Base class methods (NavigateNext/Prev/First/Last) update
-			// _currentIndex directly before calling SpeakCurrentItem.
-			// Sync _indices so label lookup reads the correct position.
-			_indices[_level] = _currentIndex;
 			int count = GetItemCount(_level, _indices);
 			if (count == 0) return;
 			string label = GetItemLabel(_level, _indices);
@@ -134,7 +132,6 @@ namespace OniAccess.Handlers {
 		protected override void NavigateNext() {
 			if (_level == 0) {
 				base.NavigateNext();
-				SyncFromCurrentIndex();
 				return;
 			}
 
@@ -144,7 +141,6 @@ namespace OniAccess.Handlers {
 			int nextIndex = _indices[_level] + 1;
 			if (nextIndex < count) {
 				_indices[_level] = nextIndex;
-				SyncCurrentIndex();
 				PlayHoverSound();
 				SpeakCurrentItem();
 			} else {
@@ -155,14 +151,12 @@ namespace OniAccess.Handlers {
 		protected override void NavigatePrev() {
 			if (_level == 0) {
 				base.NavigatePrev();
-				SyncFromCurrentIndex();
 				return;
 			}
 
 			int prevIndex = _indices[_level] - 1;
 			if (prevIndex >= 0) {
 				_indices[_level] = prevIndex;
-				SyncCurrentIndex();
 				PlayHoverSound();
 				SpeakCurrentItem();
 			} else {
@@ -173,7 +167,6 @@ namespace OniAccess.Handlers {
 		protected override void NavigateFirst() {
 			if (_level == 0) {
 				base.NavigateFirst();
-				SyncFromCurrentIndex();
 				return;
 			}
 
@@ -183,7 +176,6 @@ namespace OniAccess.Handlers {
 				int childCount = GetItemCount(_level, _indices);
 				if (childCount > 0) {
 					_indices[_level] = 0;
-					SyncCurrentIndex();
 					PlayHoverSound();
 					SpeakWithParentContext();
 					return;
@@ -194,7 +186,6 @@ namespace OniAccess.Handlers {
 		protected override void NavigateLast() {
 			if (_level == 0) {
 				base.NavigateLast();
-				SyncFromCurrentIndex();
 				return;
 			}
 
@@ -204,7 +195,6 @@ namespace OniAccess.Handlers {
 				int childCount = GetItemCount(_level, _indices);
 				if (childCount > 0) {
 					_indices[_level] = childCount - 1;
-					SyncCurrentIndex();
 					PlayHoverSound();
 					SpeakWithParentContext();
 					return;
@@ -245,10 +235,9 @@ namespace OniAccess.Handlers {
 
 		// ========================================
 		// SEARCH: explicit ISearchable re-implementation
-		// TypeAheadSearch receives this as ISearchable. If these explicit
-		// members are removed, the base class public members are called
-		// instead, which only set _currentIndex without updating _indices
-		// or _level, corrupting nested navigation state.
+		// TypeAheadSearch receives this as ISearchable. These explicit
+		// members route search to the correct level and update _indices
+		// and _level, which the base class public members don't do.
 		// ========================================
 
 		int ISearchable.SearchItemCount => GetSearchItemCount(_indices);
@@ -266,7 +255,6 @@ namespace OniAccess.Handlers {
 		protected void NestedSearchMoveTo(int index, bool parentContext = true) {
 			MapSearchIndex(index, _indices);
 			_level = GetSearchTargetLevel(index, _indices);
-			SyncCurrentIndex();
 			if (parentContext)
 				SpeakWithParentContext();
 			else
@@ -310,7 +298,6 @@ namespace OniAccess.Handlers {
 			int childCount = GetItemCount(_level, _indices);
 			if (childCount > 0) {
 				_indices[_level] = landOnLast ? childCount - 1 : 0;
-				SyncCurrentIndex();
 				if (next <= startParent) PlayWrapSound();
 				else PlayHoverSound();
 				if (next == startParent) SpeakCurrentItem();
@@ -325,7 +312,6 @@ namespace OniAccess.Handlers {
 				childCount = GetItemCount(_level, _indices);
 				if (childCount > 0) {
 					_indices[_level] = landOnLast ? childCount - 1 : 0;
-					SyncCurrentIndex();
 					if (i <= startParent) PlayWrapSound();
 					else PlayHoverSound();
 					if (i == startParent) SpeakCurrentItem();
@@ -348,7 +334,6 @@ namespace OniAccess.Handlers {
 			int childCount = GetItemCount(_level, _indices);
 			if (childCount > 0) {
 				_indices[_level] = landOnLast ? childCount - 1 : 0;
-				SyncCurrentIndex();
 				if (prev >= startParent) PlayWrapSound();
 				else PlayHoverSound();
 				if (prev == startParent) SpeakCurrentItem();
@@ -363,7 +348,6 @@ namespace OniAccess.Handlers {
 				childCount = GetItemCount(_level, _indices);
 				if (childCount > 0) {
 					_indices[_level] = landOnLast ? childCount - 1 : 0;
-					SyncCurrentIndex();
 					if (i >= startParent) PlayWrapSound();
 					else PlayHoverSound();
 					if (i == startParent) SpeakCurrentItem();
@@ -384,7 +368,6 @@ namespace OniAccess.Handlers {
 			_level++;
 			_indices[_level] = 0;
 			_search.Clear();
-			SyncCurrentIndex();
 
 			int count = GetItemCount(_level, _indices);
 			if (count > 0)
@@ -394,7 +377,6 @@ namespace OniAccess.Handlers {
 		private void GoBack() {
 			_level--;
 			_search.Clear();
-			SyncCurrentIndex();
 			SpeakCurrentItem();
 		}
 
@@ -402,7 +384,6 @@ namespace OniAccess.Handlers {
 			_level = StartLevel;
 			for (int i = 0; i < _indices.Length; i++)
 				_indices[i] = 0;
-			_currentIndex = 0;
 			_search.Clear();
 			SuppressSearchThisFrame();
 		}
@@ -410,21 +391,6 @@ namespace OniAccess.Handlers {
 		private void SpeakWithParentContext() {
 			string parentLabel = GetParentLabel(_level, _indices);
 			SpeakCurrentItem(parentLabel);
-		}
-
-		/// <summary>
-		/// Copy _indices[_level] to _currentIndex for base class compatibility.
-		/// </summary>
-		protected void SyncCurrentIndex() {
-			_currentIndex = _indices[_level];
-		}
-
-		/// <summary>
-		/// Copy _currentIndex back to _indices[_level] after base class
-		/// methods (NavigateNext/Prev/First/Last) modify _currentIndex directly.
-		/// </summary>
-		private void SyncFromCurrentIndex() {
-			_indices[_level] = _currentIndex;
 		}
 	}
 }

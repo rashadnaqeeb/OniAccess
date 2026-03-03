@@ -28,7 +28,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 		// ========================================
 
 		public void OnTabActivated(bool announce) {
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 			SuppressSearchThisFrame();
 			if (announce)
@@ -64,8 +64,8 @@ namespace OniAccess.Handlers.Screens.Schedule {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			var dupes = GetDupeList();
-			if (_currentIndex < 0 || _currentIndex >= dupes.Count) return;
-			string label = ScheduleHelper.BuildDupeLabel(dupes[_currentIndex]);
+			if (CurrentIndex < 0 || CurrentIndex >= dupes.Count) return;
+			string label = ScheduleHelper.BuildDupeLabel(dupes[CurrentIndex]);
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
 			SpeechPipeline.SpeakInterrupt(label);
@@ -73,9 +73,9 @@ namespace OniAccess.Handlers.Screens.Schedule {
 
 		protected override void AdjustCurrentItem(int direction, int stepLevel) {
 			var dupes = GetDupeList();
-			if (_currentIndex < 0 || _currentIndex >= dupes.Count) return;
+			if (CurrentIndex < 0 || CurrentIndex >= dupes.Count) return;
 
-			var mi = dupes[_currentIndex];
+			var mi = dupes[CurrentIndex];
 			var schedulable = mi.GetComponent<Schedulable>();
 			var schedules = ScheduleManager.Instance.GetSchedules();
 			if (schedules.Count <= 1) return;

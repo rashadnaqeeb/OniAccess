@@ -40,14 +40,14 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			if (_currentIndex >= 0 && _currentIndex < _selectables.Count)
+			if (CurrentIndex >= 0 && CurrentIndex < _selectables.Count)
 				SpeechPipeline.SpeakInterrupt(
-					TextFilter.FilterForSpeech(GetDisplayText(_currentIndex)));
+					TextFilter.FilterForSpeech(GetDisplayText(CurrentIndex)));
 		}
 
 		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 			SpeechPipeline.SpeakQueued(
 				(string)STRINGS.ONIACCESS.TILE_CURSOR.SELECT_OBJECT);
@@ -62,9 +62,9 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _selectables.Count)
+			if (CurrentIndex < 0 || CurrentIndex >= _selectables.Count)
 				return;
-			var entity = _selectables[_currentIndex];
+			var entity = _selectables[CurrentIndex];
 			// Pop before Select: Select() synchronously triggers DetailsScreen.OnShow
 			// which pushes DetailsScreenHandler. If we pop after, we'd pop that instead.
 			HandlerStack.Pop();

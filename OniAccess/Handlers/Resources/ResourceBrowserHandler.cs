@@ -242,7 +242,6 @@ namespace OniAccess.Handlers.Resources {
 						Level = 0;
 						SetIndex(0, 0);
 						SetIndex(1, 0);
-						SyncCurrentIndex();
 						string label = GetItemLabel(0, new int[MaxLevel + 1]);
 						if (label != null)
 							SpeechPipeline.SpeakQueued(label);
@@ -251,7 +250,6 @@ namespace OniAccess.Handlers.Resources {
 						if (idx >= remaining.Count)
 							idx = remaining.Count - 1;
 						SetIndex(1, idx);
-						SyncCurrentIndex();
 						string label = GetItemLabel(Level, new[] { GetIndex(0), idx });
 						if (label != null)
 							SpeechPipeline.SpeakQueued(label);
@@ -285,7 +283,6 @@ namespace OniAccess.Handlers.Resources {
 				Level = 0;
 				SetIndex(0, 0);
 				SetIndex(1, 0);
-				SyncCurrentIndex();
 				string label = GetItemLabel(0, new int[MaxLevel + 1]);
 				if (label != null)
 					SpeechPipeline.SpeakQueued(label);
@@ -294,7 +291,6 @@ namespace OniAccess.Handlers.Resources {
 				int idx = GetIndex(0) - 1;
 				if (idx < 0) idx = 0;
 				SetIndex(0, idx);
-				SyncCurrentIndex();
 			} else {
 				// Level 1 in regular category: category index shifted down by 1
 				SetIndex(0, GetIndex(0) - 1);

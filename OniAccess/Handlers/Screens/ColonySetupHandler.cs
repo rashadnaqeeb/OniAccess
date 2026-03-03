@@ -191,7 +191,7 @@ namespace OniAccess.Handlers.Screens {
 		private void RediscoverAndReset() {
 			_search.Clear();
 			DiscoverWidgets(_screen);
-			_currentIndex = 0;
+			CurrentIndex = 0;
 		}
 
 		/// <summary>
@@ -1037,8 +1037,8 @@ namespace OniAccess.Handlers.Screens {
 		/// - Other: base behavior
 		/// </summary>
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
+			var widget = _widgets[CurrentIndex];
 
 			// Game mode: MultiToggle click
 			if ((IsClusterCategoryScreen || IsModeSelectScreen) && widget.Component is MultiToggle toggle) {
@@ -1047,7 +1047,7 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			// Cluster selector: open info submenu
-			if (_currentIndex == 0 && widget.Tag is string selectorTag && selectorTag == "cluster_selector") {
+			if (CurrentIndex == 0 && widget.Tag is string selectorTag && selectorTag == "cluster_selector") {
 				if (_clusterKeys != null && _clusterIndex >= 0 && _clusterIndex < _clusterKeys.Count) {
 					_inInfoSubmenu = true;
 					_infoClusterKey = _clusterKeys[_clusterIndex];
@@ -1248,9 +1248,9 @@ namespace OniAccess.Handlers.Screens {
 			// Re-discover widgets and speak the current cluster.
 			if (_pendingClusterRefresh) {
 				_pendingClusterRefresh = false;
-				int savedIndex = _currentIndex;
+				int savedIndex = CurrentIndex;
 				DiscoverWidgets(_screen);
-				_currentIndex = UnityEngine.Mathf.Clamp(savedIndex, 0,
+				CurrentIndex = UnityEngine.Mathf.Clamp(savedIndex, 0,
 					_widgets.Count > 0 ? _widgets.Count - 1 : 0);
 				SpeakCurrentWidget();
 				return false;
@@ -1259,7 +1259,7 @@ namespace OniAccess.Handlers.Screens {
 			// Left/Right cluster cycling when on the cluster selector (index 0)
 			if (!IsClusterCategoryScreen && !IsModeSelectScreen
 				&& !_inInfoSubmenu && !_inCustomize
-				&& _currentIndex == 0 && _widgets.Count > 0
+				&& CurrentIndex == 0 && _widgets.Count > 0
 				&& _widgets[0].Tag is string sTag && sTag == "cluster_selector"
 				&& _clusterKeys != null && _clusterKeys.Count > 0) {
 

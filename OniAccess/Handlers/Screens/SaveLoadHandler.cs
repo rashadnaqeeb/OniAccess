@@ -516,8 +516,8 @@ namespace OniAccess.Handlers.Screens {
 		/// - Save detail: Enter on buttons (Load/Delete) activates them normally
 		/// </summary>
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
+			var widget = _widgets[CurrentIndex];
 
 			switch (_viewLevel) {
 				case ViewLevel.ColonyList:
@@ -563,16 +563,16 @@ namespace OniAccess.Handlers.Screens {
 
 			// Stale widget detection: after delete or dialog rebuild, the current
 			// widget's GameObject may be destroyed. Rediscover and clamp cursor.
-			if (_widgets.Count > 0 && _currentIndex >= 0
-				&& _currentIndex < _widgets.Count) {
-				var go = _widgets[_currentIndex].GameObject;
+			if (_widgets.Count > 0 && CurrentIndex >= 0
+				&& CurrentIndex < _widgets.Count) {
+				var go = _widgets[CurrentIndex].GameObject;
 				if (go == null) {
 					DiscoverWidgets(_screen);
-					if (_currentIndex >= _widgets.Count)
-						_currentIndex = _widgets.Count > 0 ? _widgets.Count - 1 : 0;
-					if (_widgets.Count > 0 && _currentIndex < _widgets.Count) {
+					if (CurrentIndex >= _widgets.Count)
+						CurrentIndex = _widgets.Count > 0 ? _widgets.Count - 1 : 0;
+					if (_widgets.Count > 0 && CurrentIndex < _widgets.Count) {
 						Speech.SpeechPipeline.SpeakInterrupt(
-							GetWidgetSpeechText(_widgets[_currentIndex]));
+							GetWidgetSpeechText(_widgets[CurrentIndex]));
 					}
 					return false;
 				}
@@ -606,7 +606,7 @@ namespace OniAccess.Handlers.Screens {
 		private void TransitionToSaveView() {
 			_viewLevel = ViewLevel.SaveList;
 			DiscoverWidgets(_screen);
-			_currentIndex = 0;
+			CurrentIndex = 0;
 
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
@@ -618,9 +618,9 @@ namespace OniAccess.Handlers.Screens {
 		/// Clicks the row button to sync game selection and populate the detail panel.
 		/// </summary>
 		private void TransitionToSaveDetail() {
-			_saveListCursorIndex = _currentIndex;
+			_saveListCursorIndex = CurrentIndex;
 
-			var widget = _widgets[_currentIndex];
+			var widget = _widgets[CurrentIndex];
 			_selectedSaveEntry = widget.GameObject.GetComponent<HierarchyReferences>();
 
 			// Click the row to trigger ShowColonySave() and populate detail fields
@@ -630,7 +630,7 @@ namespace OniAccess.Handlers.Screens {
 
 			_viewLevel = ViewLevel.SaveDetail;
 			DiscoverWidgets(_screen);
-			_currentIndex = 0;
+			CurrentIndex = 0;
 
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
@@ -648,11 +648,11 @@ namespace OniAccess.Handlers.Screens {
 			// Restore cursor position, clamped to valid range
 			if (_saveListCursorIndex >= _widgets.Count)
 				_saveListCursorIndex = _widgets.Count > 0 ? _widgets.Count - 1 : 0;
-			_currentIndex = _saveListCursorIndex;
+			CurrentIndex = _saveListCursorIndex;
 
-			if (_widgets.Count > 0 && _currentIndex < _widgets.Count) {
+			if (_widgets.Count > 0 && CurrentIndex < _widgets.Count) {
 				Speech.SpeechPipeline.SpeakInterrupt(
-					GetWidgetSpeechText(_widgets[_currentIndex]));
+					GetWidgetSpeechText(_widgets[CurrentIndex]));
 			}
 		}
 
@@ -681,7 +681,7 @@ namespace OniAccess.Handlers.Screens {
 			_selectedSaveEntry = null;
 			_viewLevel = ViewLevel.ColonyList;
 			DiscoverWidgets(_screen);
-			_currentIndex = 0;
+			CurrentIndex = 0;
 
 			Speech.SpeechPipeline.SpeakInterrupt(DisplayName);
 			if (_widgets.Count > 0) {

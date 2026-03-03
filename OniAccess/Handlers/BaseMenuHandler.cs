@@ -17,7 +17,8 @@ namespace OniAccess.Handlers {
 	/// for interaction behavior.
 	/// </summary>
 	public abstract class BaseMenuHandler: BaseScreenHandler, ISearchable {
-		protected int _currentIndex;
+		private int _currentIndex;
+		protected virtual int CurrentIndex { get => _currentIndex; set => _currentIndex = value; }
 		protected readonly TypeAheadSearch _search = new TypeAheadSearch();
 		private int _searchSuppressFrame = -1;
 
@@ -131,13 +132,13 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		protected virtual void NavigateNext() {
 			if (ItemCount == 0) return;
-			int start = _currentIndex;
+			int start = CurrentIndex;
 			for (int i = 0; i < ItemCount; i++) {
 				int candidate = (start + 1 + i) % ItemCount;
 				if (IsItemValid(candidate)) {
 					if (candidate == start) return;
-					bool wrapped = candidate <= _currentIndex;
-					_currentIndex = candidate;
+					bool wrapped = candidate <= CurrentIndex;
+					CurrentIndex = candidate;
 					if (wrapped) PlayWrapSound();
 					else PlayHoverSound();
 					SpeakCurrentItem();
@@ -151,13 +152,13 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		protected virtual void NavigatePrev() {
 			if (ItemCount == 0) return;
-			int start = _currentIndex;
+			int start = CurrentIndex;
 			for (int i = 0; i < ItemCount; i++) {
 				int candidate = (start - 1 - i + ItemCount) % ItemCount;
 				if (IsItemValid(candidate)) {
 					if (candidate == start) return;
-					bool wrapped = candidate >= _currentIndex;
-					_currentIndex = candidate;
+					bool wrapped = candidate >= CurrentIndex;
+					CurrentIndex = candidate;
 					if (wrapped) PlayWrapSound();
 					else PlayHoverSound();
 					SpeakCurrentItem();
@@ -173,7 +174,7 @@ namespace OniAccess.Handlers {
 			if (ItemCount == 0) return;
 			for (int i = 0; i < ItemCount; i++) {
 				if (IsItemValid(i)) {
-					_currentIndex = i;
+					CurrentIndex = i;
 					PlayHoverSound();
 					SpeakCurrentItem();
 					return;
@@ -188,7 +189,7 @@ namespace OniAccess.Handlers {
 			if (ItemCount == 0) return;
 			for (int i = ItemCount - 1; i >= 0; i--) {
 				if (IsItemValid(i)) {
-					_currentIndex = i;
+					CurrentIndex = i;
 					PlayHoverSound();
 					SpeakCurrentItem();
 					return;
@@ -250,7 +251,7 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		public override void OnActivate() {
 			base.OnActivate();
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 			SuppressSearchThisFrame();
 		}
@@ -260,7 +261,7 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		public override void OnDeactivate() {
 			base.OnDeactivate();
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 		}
 
@@ -356,7 +357,7 @@ namespace OniAccess.Handlers {
 
 		public void SearchMoveTo(int index) {
 			if (index < 0 || index >= ItemCount) return;
-			_currentIndex = index;
+			CurrentIndex = index;
 			SpeakCurrentItem();
 		}
 	}

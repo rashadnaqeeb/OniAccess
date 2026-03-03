@@ -71,7 +71,7 @@ namespace OniAccess.Handlers.Notifications {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			string label = GetItemLabel(_currentIndex);
+			string label = GetItemLabel(CurrentIndex);
 			if (label == null) return;
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
@@ -89,15 +89,15 @@ namespace OniAccess.Handlers.Notifications {
 				HandlerStack.Pop();
 				return true;
 			}
-			if (_currentIndex >= ItemCount)
-				_currentIndex = ItemCount - 1;
+			if (CurrentIndex >= ItemCount)
+				CurrentIndex = ItemCount - 1;
 			return base.Tick();
 		}
 
 		protected override void ActivateCurrentItem() {
 			var group = FindGroup();
-			if (group == null || _currentIndex < 0 || _currentIndex >= group.Count) return;
-			var n = group.Members[_currentIndex];
+			if (group == null || CurrentIndex < 0 || CurrentIndex >= group.Count) return;
+			var n = group.Members[CurrentIndex];
 
 			PlayOpenSound();
 			// Pop submenu, then pop parent menu

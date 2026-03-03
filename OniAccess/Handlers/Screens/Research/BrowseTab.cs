@@ -32,7 +32,7 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
 			if (ItemCount > 0) {
-				string label = GetItemLabel(_currentIndex);
+				string label = GetItemLabel(CurrentIndex);
 				if (!string.IsNullOrEmpty(label))
 					SpeechPipeline.SpeakQueued(label);
 			}

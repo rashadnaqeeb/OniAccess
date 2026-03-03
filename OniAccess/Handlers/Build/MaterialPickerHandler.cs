@@ -36,21 +36,21 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			if (_materials != null && _currentIndex >= 0 && _currentIndex < _materials.Count)
-				SpeechPipeline.SpeakInterrupt(_materials[_currentIndex].Label);
+			if (_materials != null && CurrentIndex >= 0 && CurrentIndex < _materials.Count)
+				SpeechPipeline.SpeakInterrupt(_materials[CurrentIndex].Label);
 		}
 
 		public override void OnActivate() {
 			PlayOpenSound();
 			RebuildList();
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 
 			// Position cursor on the currently selected material
 			PositionOnSelected();
 
 			if (_materials.Count > 0)
-				SpeechPipeline.SpeakInterrupt(_materials[_currentIndex].Label);
+				SpeechPipeline.SpeakInterrupt(_materials[CurrentIndex].Label);
 		}
 
 		public override void OnDeactivate() {
@@ -59,10 +59,10 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		protected override void ActivateCurrentItem() {
-			if (_materials == null || _currentIndex < 0 || _currentIndex >= _materials.Count)
+			if (_materials == null || CurrentIndex < 0 || CurrentIndex >= _materials.Count)
 				return;
 
-			var entry = _materials[_currentIndex];
+			var entry = _materials[CurrentIndex];
 			SelectMaterial(entry.Tag);
 			HandlerStack.Pop();
 		}
@@ -130,7 +130,7 @@ namespace OniAccess.Handlers.Build {
 					var currentTag = selected[_selectorIndex];
 					for (int i = 0; i < _materials.Count; i++) {
 						if (_materials[i].Tag == currentTag) {
-							_currentIndex = i;
+							CurrentIndex = i;
 							break;
 						}
 					}

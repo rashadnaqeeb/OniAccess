@@ -44,7 +44,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
 			if (ItemCount > 0) {
-				string label = GetItemLabel(_currentIndex);
+				string label = GetItemLabel(CurrentIndex);
 				if (!string.IsNullOrEmpty(label))
 					SpeechPipeline.SpeakQueued(label);
 			}
@@ -190,7 +190,6 @@ namespace OniAccess.Handlers.Screens.Codex {
 					var entries = CodexHelper.GetEntriesInCategory(topCats[item.catIdx]);
 					Level = (entries[item.entryIdx] is CategoryEntry) ? 2 : 1;
 
-					_currentIndex = GetIndex(Level);
 					_search.Clear();
 					SuppressSearchThisFrame();
 					return true;

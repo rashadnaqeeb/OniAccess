@@ -46,10 +46,10 @@ namespace OniAccess.Handlers.Notifications {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			var groups = _tracker.Groups;
-			if (_currentIndex < 0 || _currentIndex >= groups.Count) return;
-			var group = groups[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= groups.Count) return;
+			var group = groups[CurrentIndex];
 
-			string label = GetItemLabel(_currentIndex);
+			string label = GetItemLabel(CurrentIndex);
 			string tooltip = group.GetTooltipText();
 			if (!string.IsNullOrEmpty(tooltip))
 				label = label + ". " + tooltip;
@@ -77,11 +77,11 @@ namespace OniAccess.Handlers.Notifications {
 
 		private void OnTrackerChanged() {
 			if (ItemCount == 0) {
-				_currentIndex = 0;
+				CurrentIndex = 0;
 				return;
 			}
-			if (_currentIndex >= ItemCount)
-				_currentIndex = ItemCount - 1;
+			if (CurrentIndex >= ItemCount)
+				CurrentIndex = ItemCount - 1;
 		}
 
 		public override bool Tick() {
@@ -107,8 +107,8 @@ namespace OniAccess.Handlers.Notifications {
 
 		protected override void ActivateCurrentItem() {
 			var groups = _tracker.Groups;
-			if (_currentIndex < 0 || _currentIndex >= groups.Count) return;
-			var group = groups[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= groups.Count) return;
+			var group = groups[CurrentIndex];
 
 			if (group.Count == 1) {
 				PlayOpenSound();
@@ -132,8 +132,8 @@ namespace OniAccess.Handlers.Notifications {
 
 		private void DismissCurrent() {
 			var groups = _tracker.Groups;
-			if (_currentIndex < 0 || _currentIndex >= groups.Count) return;
-			var group = groups[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= groups.Count) return;
+			var group = groups[CurrentIndex];
 			if (group.Count == 0) return;
 
 			if (!group.Members[0].showDismissButton) {
@@ -158,9 +158,9 @@ namespace OniAccess.Handlers.Notifications {
 
 		private string BuildCurrentLabel() {
 			var groups = _tracker.Groups;
-			if (_currentIndex < 0 || _currentIndex >= groups.Count) return null;
-			var group = groups[_currentIndex];
-			string label = GetItemLabel(_currentIndex);
+			if (CurrentIndex < 0 || CurrentIndex >= groups.Count) return null;
+			var group = groups[CurrentIndex];
+			string label = GetItemLabel(CurrentIndex);
 			string tooltip = group.GetTooltipText();
 			if (!string.IsNullOrEmpty(tooltip))
 				label = label + ". " + tooltip;

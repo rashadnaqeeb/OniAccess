@@ -122,18 +122,18 @@ namespace OniAccess.Handlers.Screens {
 				_pendingSilentRefresh = false;
 				int oldCount = _widgets.Count;
 				DiscoverWidgets(_screen);
-				_currentIndex = System.Math.Min(_currentIndex, System.Math.Max(0, _widgets.Count - 1));
+				CurrentIndex = System.Math.Min(CurrentIndex, System.Math.Max(0, _widgets.Count - 1));
 				if (_widgets.Count != oldCount)
 					Util.Log.Debug($"{GetType().Name}: deferred refresh changed widget count {oldCount} → {_widgets.Count}");
 				if (_widgets.Count > 0)
-					Speech.SpeechPipeline.SpeakQueued(BuildWidgetText(_widgets[_currentIndex]));
+					Speech.SpeechPipeline.SpeakQueued(BuildWidgetText(_widgets[CurrentIndex]));
 			}
 
 			// Deferred rediscovery: screen UI wasn't ready during OnActivate
 			if (_pendingRediscovery) {
 				_pendingRediscovery = false;
 				bool ready = DiscoverWidgets(_screen);
-				_currentIndex = 0;
+				CurrentIndex = 0;
 				if (ready && _widgets.Count > 0) {
 					Speech.SpeechPipeline.SpeakQueued(BuildWidgetText(_widgets[0]));
 				} else if (_retryCount < MaxDiscoveryRetries) {
@@ -148,7 +148,7 @@ namespace OniAccess.Handlers.Screens {
 			// Detect invalidated widgets — do not reset _retryCount here so the
 			// retry limit still applies if rediscovery keeps finding the same invalid widget.
 			if (!_pendingRediscovery && _widgets.Count > 0) {
-				int idx = System.Math.Min(_currentIndex, _widgets.Count - 1);
+				int idx = System.Math.Min(CurrentIndex, _widgets.Count - 1);
 				if (!IsWidgetValid(_widgets[idx])) {
 					_pendingRediscovery = true;
 					return false;
@@ -180,8 +180,8 @@ namespace OniAccess.Handlers.Screens {
 		/// - TextInput: Begin/Confirm via TextEdit (Enter toggles editing)
 		/// </summary>
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
+			var widget = _widgets[CurrentIndex];
 			if (!IsWidgetValid(widget)) return;
 
 			if (widget is ButtonWidget bw) {
@@ -213,8 +213,8 @@ namespace OniAccess.Handlers.Screens {
 		/// - Dropdown: delegate to CycleDropdown virtual method
 		/// </summary>
 		protected override void AdjustCurrentItem(int direction, int stepLevel) {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
+			var widget = _widgets[CurrentIndex];
 			if (!IsWidgetValid(widget)) return;
 
 			if (widget is SliderWidget sw) {
@@ -263,8 +263,8 @@ namespace OniAccess.Handlers.Screens {
 		/// Appends tooltip text if available.
 		/// </summary>
 		protected void SpeakCurrentWidget() {
-			if (_currentIndex >= 0 && _currentIndex < _widgets.Count) {
-				var w = _widgets[_currentIndex];
+			if (CurrentIndex >= 0 && CurrentIndex < _widgets.Count) {
+				var w = _widgets[CurrentIndex];
 				if (!IsWidgetValid(w)) return;
 				Speech.SpeechPipeline.SpeakInterrupt(BuildWidgetText(w));
 			}
@@ -275,8 +275,8 @@ namespace OniAccess.Handlers.Screens {
 		/// a preceding SpeakInterrupt (e.g., after text-edit confirm/cancel).
 		/// </summary>
 		protected void QueueCurrentWidget() {
-			if (_currentIndex >= 0 && _currentIndex < _widgets.Count) {
-				var w = _widgets[_currentIndex];
+			if (CurrentIndex >= 0 && CurrentIndex < _widgets.Count) {
+				var w = _widgets[CurrentIndex];
 				if (!IsWidgetValid(w)) return;
 				Speech.SpeechPipeline.SpeakQueued(BuildWidgetText(w));
 			}

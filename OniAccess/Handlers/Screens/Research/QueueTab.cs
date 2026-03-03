@@ -32,7 +32,7 @@ namespace OniAccess.Handlers.Screens.Research {
 		// ========================================
 
 		public void OnTabActivated(bool announce) {
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 			SuppressSearchThisFrame();
 			if (announce)
@@ -51,7 +51,7 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)) {
 				var queue = global::Research.Instance.GetResearchQueue();
 				// Index 0 is the point inventory row, queue starts at index 1
-				int queueIndex = _currentIndex - 1;
+				int queueIndex = CurrentIndex - 1;
 				if (queueIndex >= 0 && queueIndex < queue.Count) {
 					_parent.JumpToTreeTab(queue[queueIndex].tech);
 					return true;
@@ -94,14 +94,14 @@ namespace OniAccess.Handlers.Screens.Research {
 
 		protected override void ActivateCurrentItem() {
 			ResearchHelper.PlayClickSound();
-			if (_currentIndex == 0) {
+			if (CurrentIndex == 0) {
 				// Point inventory row — no action
 				SpeakCurrentItem();
 				return;
 			}
 
 			var queue = global::Research.Instance.GetResearchQueue();
-			int queueIndex = _currentIndex - 1;
+			int queueIndex = CurrentIndex - 1;
 			if (queueIndex < 0 || queueIndex >= queue.Count) return;
 
 			var tech = queue[queueIndex].tech;
@@ -118,8 +118,8 @@ namespace OniAccess.Handlers.Screens.Research {
 
 			// Adjust cursor if it now points past the end
 			int maxIndex = ItemCount - 1;
-			if (_currentIndex > maxIndex)
-				_currentIndex = System.Math.Max(0, maxIndex);
+			if (CurrentIndex > maxIndex)
+				CurrentIndex = System.Math.Max(0, maxIndex);
 
 			SpeechPipeline.SpeakInterrupt(message);
 		}
@@ -129,11 +129,11 @@ namespace OniAccess.Handlers.Screens.Research {
 		// ========================================
 
 		string GetCurrentLabel() {
-			if (_currentIndex == 0)
+			if (CurrentIndex == 0)
 				return BuildPointInventoryLabel();
 
 			var queue = global::Research.Instance.GetResearchQueue();
-			int queueIndex = _currentIndex - 1;
+			int queueIndex = CurrentIndex - 1;
 			if (queueIndex < 0 || queueIndex >= queue.Count) {
 				if (queue.Count == 0)
 					return (string)STRINGS.ONIACCESS.RESEARCH.QUEUE_EMPTY;

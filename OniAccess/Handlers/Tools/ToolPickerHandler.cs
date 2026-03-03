@@ -31,13 +31,13 @@ namespace OniAccess.Handlers.Tools {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			if (_currentIndex >= 0 && _currentIndex < ToolHandler.AllTools.Count)
-				SpeechPipeline.SpeakInterrupt(ToolHandler.AllTools[_currentIndex].Label);
+			if (CurrentIndex >= 0 && CurrentIndex < ToolHandler.AllTools.Count)
+				SpeechPipeline.SpeakInterrupt(ToolHandler.AllTools[CurrentIndex].Label);
 		}
 
 		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 			if (ToolHandler.AllTools.Count > 0)
 				SpeechPipeline.SpeakInterrupt(ToolHandler.AllTools[0].Label);
@@ -49,10 +49,10 @@ namespace OniAccess.Handlers.Tools {
 		}
 
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= ToolHandler.AllTools.Count)
+			if (CurrentIndex < 0 || CurrentIndex >= ToolHandler.AllTools.Count)
 				return;
 
-			var tool = ToolHandler.AllTools[_currentIndex];
+			var tool = ToolHandler.AllTools[CurrentIndex];
 			if (tool.RequiresModeFirst) {
 				HandlerStack.Replace(new ToolFilterHandler(tool));
 			} else {

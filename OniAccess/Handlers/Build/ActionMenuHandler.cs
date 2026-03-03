@@ -208,7 +208,6 @@ namespace OniAccess.Handlers.Build {
 
 			if (bld + 1 < bldCount) {
 				SetIndex(2, bld + 1);
-				SyncCurrentIndex();
 				PlayHoverSound();
 				SpeakCurrentItem();
 				return;
@@ -219,7 +218,6 @@ namespace OniAccess.Handlers.Build {
 				if (subs[s].Buildings.Count > 0) {
 					SetIndex(1, s);
 					SetIndex(2, 0);
-					SyncCurrentIndex();
 					PlayHoverSound();
 					SpeakWithSubcategoryContext();
 					return;
@@ -234,7 +232,6 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, 0);
-						SyncCurrentIndex();
 						PlayHoverSound();
 						SpeakWithCategoryContext();
 						return;
@@ -250,7 +247,6 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, 0);
-						SyncCurrentIndex();
 						PlayWrapSound();
 						if (c == ti && s == sub)
 							SpeakCurrentItem();
@@ -277,7 +273,6 @@ namespace OniAccess.Handlers.Build {
 
 			if (bld - 1 >= 0) {
 				SetIndex(2, bld - 1);
-				SyncCurrentIndex();
 				PlayHoverSound();
 				SpeakCurrentItem();
 				return;
@@ -289,7 +284,6 @@ namespace OniAccess.Handlers.Build {
 				if (subs[s].Buildings.Count > 0) {
 					SetIndex(1, s);
 					SetIndex(2, subs[s].Buildings.Count - 1);
-					SyncCurrentIndex();
 					PlayHoverSound();
 					SpeakWithSubcategoryContext();
 					return;
@@ -304,7 +298,6 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, prevSubs[s].Buildings.Count - 1);
-						SyncCurrentIndex();
 						PlayHoverSound();
 						SpeakWithCategoryContext();
 						return;
@@ -320,7 +313,6 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, wrapSubs[s].Buildings.Count - 1);
-						SyncCurrentIndex();
 						PlayWrapSound();
 						if (c == ti && s == sub)
 							SpeakCurrentItem();
@@ -347,7 +339,6 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, 0);
-						SyncCurrentIndex();
 						PlayHoverSound();
 						SpeakWithCategoryContext();
 						return;
@@ -369,7 +360,6 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, subs[s].Buildings.Count - 1);
-						SyncCurrentIndex();
 						PlayHoverSound();
 						SpeakWithCategoryContext();
 						return;
@@ -395,7 +385,6 @@ namespace OniAccess.Handlers.Build {
 				SetIndex(0, nc + 1);
 				SetIndex(1, ns);
 				SetIndex(2, 0);
-				SyncCurrentIndex();
 				if (nc < ti || (nc == ti && ns <= sub)) PlayWrapSound();
 				else PlayHoverSound();
 				if (nc == ti)
@@ -419,7 +408,6 @@ namespace OniAccess.Handlers.Build {
 				SetIndex(0, nc + 1);
 				SetIndex(1, ns);
 				SetIndex(2, 0);
-				SyncCurrentIndex();
 				if (nc > ti || (nc == ti && ns >= sub)) PlayWrapSound();
 				else PlayHoverSound();
 				if (nc == ti)
@@ -662,7 +650,6 @@ namespace OniAccess.Handlers.Build {
 				if (_tree[c].Category == category) {
 					SetIndex(0, c + 1);
 					Level = 0;
-					SyncCurrentIndex();
 					SpeakCurrentItem();
 					return;
 				}

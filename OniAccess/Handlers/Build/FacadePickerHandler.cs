@@ -35,20 +35,20 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			if (_facades != null && _currentIndex >= 0 && _currentIndex < _facades.Count)
-				SpeechPipeline.SpeakInterrupt(_facades[_currentIndex].Label);
+			if (_facades != null && CurrentIndex >= 0 && CurrentIndex < _facades.Count)
+				SpeechPipeline.SpeakInterrupt(_facades[CurrentIndex].Label);
 		}
 
 		public override void OnActivate() {
 			PlayOpenSound();
 			RebuildList();
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 
 			PositionOnSelected();
 
 			if (_facades.Count > 0)
-				SpeechPipeline.SpeakInterrupt(_facades[_currentIndex].Label);
+				SpeechPipeline.SpeakInterrupt(_facades[CurrentIndex].Label);
 		}
 
 		public override void OnDeactivate() {
@@ -57,10 +57,10 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		protected override void ActivateCurrentItem() {
-			if (_facades == null || _currentIndex < 0 || _currentIndex >= _facades.Count)
+			if (_facades == null || CurrentIndex < 0 || CurrentIndex >= _facades.Count)
 				return;
 
-			var entry = _facades[_currentIndex];
+			var entry = _facades[CurrentIndex];
 			var facadePanel = PlanScreen.Instance.ProductInfoScreen.FacadeSelectionPanel;
 			facadePanel.SelectedFacade = entry.Id;
 			HandlerStack.Pop();
@@ -112,7 +112,7 @@ namespace OniAccess.Handlers.Build {
 
 				for (int i = 0; i < _facades.Count; i++) {
 					if (_facades[i].Id == selected) {
-						_currentIndex = i;
+						CurrentIndex = i;
 						break;
 					}
 				}

@@ -51,15 +51,15 @@ namespace OniAccess.Handlers {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			if (_currentIndex >= 0 && _currentIndex < _entries.Count)
-				Speech.SpeechPipeline.SpeakInterrupt(_entries[_currentIndex].ToString());
+			if (CurrentIndex >= 0 && CurrentIndex < _entries.Count)
+				Speech.SpeechPipeline.SpeakInterrupt(_entries[CurrentIndex].ToString());
 		}
 
 		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
 			base.OnActivate();
 			if (_entries.Count > 0)
-				Speech.SpeechPipeline.SpeakQueued(_entries[_currentIndex].ToString());
+				Speech.SpeechPipeline.SpeakQueued(_entries[CurrentIndex].ToString());
 			else
 				Speech.SpeechPipeline.SpeakQueued(STRINGS.ONIACCESS.SPEECH.NO_COMMANDS);
 		}

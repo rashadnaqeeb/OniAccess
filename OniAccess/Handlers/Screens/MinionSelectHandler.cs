@@ -90,7 +90,7 @@ namespace OniAccess.Handlers.Screens {
 
 		private void RediscoverAndSpeakSlot() {
 			DiscoverWidgets(_screen);
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakInterrupt(
 					$"{string.Format(STRINGS.ONIACCESS.INFO.SLOT, _currentSlot + 1)}, {GetWidgetSpeechText(_widgets[0])}");
@@ -659,15 +659,15 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
+			var widget = _widgets[CurrentIndex];
 
 			// Enter dupe mode
 			if (widget.Tag is string tag && tag == "enter_dupe_mode") {
 				_inDupeMode = true;
 				_currentSlot = 0;
 				bool ready = DiscoverWidgets(_screen);
-				_currentIndex = 0;
+				CurrentIndex = 0;
 				if (ready && _widgets.Count > 0) {
 					Speech.SpeechPipeline.SpeakInterrupt(
 						$"{string.Format(STRINGS.ONIACCESS.INFO.SLOT, _currentSlot + 1)}, {GetWidgetSpeechText(_widgets[0])}");
@@ -731,7 +731,7 @@ namespace OniAccess.Handlers.Screens {
 		/// </summary>
 		private void AnnounceAfterReroll() {
 			DiscoverWidgets(_screen);
-			_currentIndex = FindWidgetByTag("reroll");
+			CurrentIndex = FindWidgetByTag("reroll");
 			AnnounceNameAndInterests();
 		}
 
@@ -754,7 +754,7 @@ namespace OniAccess.Handlers.Screens {
 
 		private void AnnounceAfterDupeShuffle() {
 			DiscoverWidgets(_screen);
-			_currentIndex = FindWidgetByTag("dupe_shuffle_name");
+			CurrentIndex = FindWidgetByTag("dupe_shuffle_name");
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
 			}
@@ -773,7 +773,7 @@ namespace OniAccess.Handlers.Screens {
 
 		/// <summary>
 		/// Interrupt-speak name (first widget) then queue interest-tagged widgets.
-		/// Does not change _currentIndex.
+		/// Does not change CurrentIndex.
 		/// </summary>
 		private void AnnounceNameAndInterests() {
 			if (_widgets.Count > 0)
@@ -783,7 +783,7 @@ namespace OniAccess.Handlers.Screens {
 
 		/// <summary>
 		/// Queue-speak name (first widget) and all interest-tagged widgets.
-		/// Does not change _currentIndex. Does not interrupt.
+		/// Does not change CurrentIndex. Does not interrupt.
 		/// </summary>
 		private void QueueNameAndInterests(bool includeName = true) {
 			bool seenInterest = false;
@@ -803,7 +803,7 @@ namespace OniAccess.Handlers.Screens {
 		private void AnnounceAfterFilterChange() {
 			DiscoverWidgets(_screen);
 			// Find the filter widget by tag — index shifts when trait/interest count changes
-			_currentIndex = FindWidgetByTag("interest_filter");
+			CurrentIndex = FindWidgetByTag("interest_filter");
 			Speech.SpeechPipeline.SpeakInterrupt(
 				GetInterestFilterLabel(_containers[_currentSlot] as CharacterContainer));
 			// Queue name + interests after the filter label (don't interrupt)
@@ -895,7 +895,7 @@ namespace OniAccess.Handlers.Screens {
 
 		private void AnnounceAfterModelChange() {
 			DiscoverWidgets(_screen);
-			_currentIndex = FindWidgetByTag("model_filter");
+			CurrentIndex = FindWidgetByTag("model_filter");
 			Speech.SpeechPipeline.SpeakInterrupt(GetModelFilterLabel());
 			QueueNameAndInterests();
 		}
@@ -917,7 +917,7 @@ namespace OniAccess.Handlers.Screens {
 					_inDupeMode = false;
 					_search.Clear();
 					DiscoverWidgets(_screen);
-					_currentIndex = 0;
+					CurrentIndex = 0;
 					if (_widgets.Count > 0)
 						Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
 					return true;
@@ -933,7 +933,7 @@ namespace OniAccess.Handlers.Screens {
 
 		public override bool Tick() {
 			// Colony name not yet populated by BaseNaming.OnSpawn — re-announce
-			if (_pendingColonyNameAnnounce && _currentIndex == 0 && _widgets.Count > 0) {
+			if (_pendingColonyNameAnnounce && CurrentIndex == 0 && _widgets.Count > 0) {
 				var w = _widgets[0];
 				if (w.Tag is string t && t == "colony_name" && w.Component is KInputTextField tf
 					&& !string.IsNullOrEmpty(tf.text)) {

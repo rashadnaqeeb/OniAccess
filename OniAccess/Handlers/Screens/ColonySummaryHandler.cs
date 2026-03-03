@@ -88,8 +88,8 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			if (_currentIndex < 0 || _currentIndex >= _items.Count) return;
-			var item = _items[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
+			var item = _items[CurrentIndex];
 			string speech = BuildSpeech(item);
 			Speech.SpeechPipeline.SpeakInterrupt(speech);
 		}
@@ -485,8 +485,8 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _items.Count) return;
-			var item = _items[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
+			var item = _items[CurrentIndex];
 
 			if (item.Kind == ItemKind.Colony && !_inColonyDetail) {
 				OpenColonyDetail(item.DataIndex);
@@ -515,7 +515,7 @@ namespace OniAccess.Handlers.Screens {
 			Speech.SpeechPipeline.SpeakInterrupt($"{header}, {sectionName}");
 
 			BuildItems();
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			if (_items.Count > 0)
 				Speech.SpeechPipeline.SpeakQueued(BuildSpeech(_items[0]));
 		}
@@ -594,7 +594,7 @@ namespace OniAccess.Handlers.Screens {
 			_colonyData = null;
 			_currentSection = ExplorerSectionMain;
 			BuildItems();
-			_currentIndex = 0;
+			CurrentIndex = 0;
 
 			Speech.SpeechPipeline.SpeakInterrupt(DisplayName);
 			if (_items.Count > 0)
@@ -622,7 +622,7 @@ namespace OniAccess.Handlers.Screens {
 
 		private void RebuildForCurrentSection() {
 			BuildItems();
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			string sectionName = GetSectionName(_currentSection);
 			Speech.SpeechPipeline.SpeakInterrupt(sectionName);
 			if (_items.Count > 0)

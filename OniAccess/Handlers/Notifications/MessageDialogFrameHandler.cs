@@ -142,10 +142,10 @@ namespace OniAccess.Handlers.Notifications {
 		}
 
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
 
 			// Text widgets with codex links: follow link or open chooser
-			if (_widgetLinks.TryGetValue(_currentIndex, out var links)) {
+			if (_widgetLinks.TryGetValue(CurrentIndex, out var links)) {
 				if (links.Count == 1) {
 					FollowLink(links[0].id);
 					return;
@@ -191,16 +191,16 @@ namespace OniAccess.Handlers.Notifications {
 			}
 
 			public override void SpeakCurrentItem(string parentContext = null) {
-				if (_currentIndex < 0 || _currentIndex >= _links.Count) return;
-				string text = _links[_currentIndex].text;
+				if (CurrentIndex < 0 || CurrentIndex >= _links.Count) return;
+				string text = _links[CurrentIndex].text;
 				if (!string.IsNullOrEmpty(parentContext))
 					text = parentContext + ", " + text;
 				SpeechPipeline.SpeakInterrupt(text);
 			}
 
 			protected override void ActivateCurrentItem() {
-				if (_currentIndex < 0 || _currentIndex >= _links.Count) return;
-				string linkId = _links[_currentIndex].id;
+				if (CurrentIndex < 0 || CurrentIndex >= _links.Count) return;
+				string linkId = _links[CurrentIndex].id;
 				HandlerStack.Pop();
 				FollowLink(linkId);
 			}

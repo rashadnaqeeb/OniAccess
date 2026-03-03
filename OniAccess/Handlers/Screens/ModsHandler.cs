@@ -113,8 +113,8 @@ namespace OniAccess.Handlers.Screens {
 		/// Other buttons (Workshop, Close): handled by base.
 		/// </summary>
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
+			var widget = _widgets[CurrentIndex];
 
 			if (widget is ToggleWidget) {
 				var multiToggle = widget.Component as MultiToggle;
@@ -158,14 +158,14 @@ namespace OniAccess.Handlers.Screens {
 		/// Otherwise, clamp to previous index (for Toggle All case).
 		/// </summary>
 		private void RediscoverAndRestore(string targetLabel) {
-			int previousIndex = _currentIndex;
+			int previousIndex = CurrentIndex;
 			DiscoverWidgets(_screen);
 
 			if (targetLabel != null) {
 				// Find widget by label match
 				for (int i = 0; i < _widgets.Count; i++) {
 					if (_widgets[i].Label == targetLabel) {
-						_currentIndex = i;
+						CurrentIndex = i;
 						SpeakCurrentWidget();
 						return;
 					}
@@ -174,7 +174,7 @@ namespace OniAccess.Handlers.Screens {
 
 			// Clamp to previous index
 			if (_widgets.Count > 0) {
-				_currentIndex = System.Math.Min(previousIndex, _widgets.Count - 1);
+				CurrentIndex = System.Math.Min(previousIndex, _widgets.Count - 1);
 				SpeakCurrentWidget();
 			}
 		}

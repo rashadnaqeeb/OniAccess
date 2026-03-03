@@ -50,14 +50,14 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			if (_items != null && _currentIndex >= 0 && _currentIndex < _items.Count)
-				SpeechPipeline.SpeakInterrupt(_items[_currentIndex].Label);
+			if (_items != null && CurrentIndex >= 0 && CurrentIndex < _items.Count)
+				SpeechPipeline.SpeakInterrupt(_items[CurrentIndex].Label);
 		}
 
 		public override void OnActivate() {
 			PlayOpenSound();
 			RebuildItems();
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 
 			if (_items.Count > 0)
@@ -72,10 +72,10 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		protected override void ActivateCurrentItem() {
-			if (_items == null || _currentIndex < 0 || _currentIndex >= _items.Count)
+			if (_items == null || CurrentIndex < 0 || CurrentIndex >= _items.Count)
 				return;
 
-			var item = _items[_currentIndex];
+			var item = _items[CurrentIndex];
 			if (item.SelectorIndex >= 0) {
 				HandlerStack.Push(new MaterialPickerHandler(_def, item.SelectorIndex));
 			} else if (item.SelectorIndex == -2) {

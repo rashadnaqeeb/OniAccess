@@ -95,7 +95,7 @@ namespace OniAccess.Handlers.Screens {
 						_inVictoryLoop = true;
 						_pendingRediscovery = false;
 						DiscoverWidgets(_screen);
-						_currentIndex = 0;
+						CurrentIndex = 0;
 						if (_widgets.Count > 0) {
 							Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
 						}
@@ -105,8 +105,8 @@ namespace OniAccess.Handlers.Screens {
 				}
 			} else {
 				DiscoverWidgets(_screen);
-				if (_widgets.Count > 0 && _currentIndex >= _widgets.Count) {
-					_currentIndex = _widgets.Count - 1;
+				if (_widgets.Count > 0 && CurrentIndex >= _widgets.Count) {
+					CurrentIndex = _widgets.Count - 1;
 				}
 			}
 

@@ -30,7 +30,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 		// ========================================
 
 		public void OnTabActivated(bool announce) {
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 			SuppressSearchThisFrame();
 			var dupes = GetDupeList();
@@ -38,15 +38,15 @@ namespace OniAccess.Handlers.Screens.Skills {
 			if (selected != null) {
 				for (int i = 0; i < dupes.Count; i++) {
 					if (dupes[i] == selected) {
-						_currentIndex = i;
+						CurrentIndex = i;
 						break;
 					}
 				}
 			}
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
-			if (dupes.Count > 0 && _currentIndex < dupes.Count)
-				SpeechPipeline.SpeakQueued(SkillsHelper.BuildDupeLabel(dupes[_currentIndex]));
+			if (dupes.Count > 0 && CurrentIndex < dupes.Count)
+				SpeechPipeline.SpeakQueued(SkillsHelper.BuildDupeLabel(dupes[CurrentIndex]));
 		}
 
 		public void OnTabDeactivated() {
@@ -75,10 +75,10 @@ namespace OniAccess.Handlers.Screens.Skills {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			var dupes = GetDupeList();
-			if (_currentIndex < 0 || _currentIndex >= dupes.Count) return;
+			if (CurrentIndex < 0 || CurrentIndex >= dupes.Count) return;
 			// Auto-select the dupe under the cursor
-			_parent.SetSelectedDupe(dupes[_currentIndex]);
-			string label = SkillsHelper.BuildDupeLabel(dupes[_currentIndex]);
+			_parent.SetSelectedDupe(dupes[CurrentIndex]);
+			string label = SkillsHelper.BuildDupeLabel(dupes[CurrentIndex]);
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
 			SpeechPipeline.SpeakInterrupt(label);

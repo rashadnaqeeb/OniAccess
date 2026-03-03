@@ -45,7 +45,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// ========================================
 
 		public void OnTabActivated(bool announce) {
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 			SuppressSearchThisFrame();
 			if (announce)
@@ -77,7 +77,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// Rebuilds the widget list and resets cursor.
 		/// </summary>
 		internal void OnArticleChanged() {
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 			SuppressSearchThisFrame();
 			RebuildWidgetList();
@@ -100,8 +100,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 				SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.CODEX.NO_ARTICLE);
 				return;
 			}
-			if (_currentIndex < 0 || _currentIndex >= _items.Count) return;
-			string text = _items[_currentIndex].text;
+			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
+			string text = _items[CurrentIndex].text;
 			if (string.IsNullOrEmpty(text)) return;
 			if (!string.IsNullOrEmpty(parentContext))
 				text = parentContext + ", " + text;
@@ -113,18 +113,18 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// ========================================
 
 		protected override void JumpNextGroup() {
-			for (int i = _currentIndex + 1; i < _items.Count; i++) {
+			for (int i = CurrentIndex + 1; i < _items.Count; i++) {
 				if (_items[i].isHeading) {
-					_currentIndex = i;
+					CurrentIndex = i;
 					PlayHoverSound();
 					SpeakCurrentItem();
 					return;
 				}
 			}
 			// Wrap to first heading
-			for (int i = 0; i < _currentIndex; i++) {
+			for (int i = 0; i < CurrentIndex; i++) {
 				if (_items[i].isHeading) {
-					_currentIndex = i;
+					CurrentIndex = i;
 					PlayWrapSound();
 					SpeakCurrentItem();
 					return;
@@ -133,18 +133,18 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		protected override void JumpPrevGroup() {
-			for (int i = _currentIndex - 1; i >= 0; i--) {
+			for (int i = CurrentIndex - 1; i >= 0; i--) {
 				if (_items[i].isHeading) {
-					_currentIndex = i;
+					CurrentIndex = i;
 					PlayHoverSound();
 					SpeakCurrentItem();
 					return;
 				}
 			}
 			// Wrap to last heading
-			for (int i = _items.Count - 1; i > _currentIndex; i--) {
+			for (int i = _items.Count - 1; i > CurrentIndex; i--) {
 				if (_items[i].isHeading) {
-					_currentIndex = i;
+					CurrentIndex = i;
 					PlayWrapSound();
 					SpeakCurrentItem();
 					return;
@@ -157,9 +157,9 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// ========================================
 
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _items.Count) return;
+			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
 
-			var item = _items[_currentIndex];
+			var item = _items[CurrentIndex];
 
 			if (item.video != null) {
 				PlayVideo(item.video);

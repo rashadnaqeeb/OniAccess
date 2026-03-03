@@ -285,7 +285,6 @@ namespace OniAccess.Handlers.Screens {
 
 		private void OnCycleChanged() {
 			ClampIndices();
-			SyncCurrentIndex();
 			PlayHoverSound();
 			SpeakCycleTitleAndCurrentItem();
 		}

@@ -131,8 +131,8 @@ namespace OniAccess.Handlers.Screens {
 			DiscoverWidgets(_screen);
 
 			// Clamp cursor index if widget count changed
-			if (_widgets.Count > 0 && _currentIndex >= _widgets.Count) {
-				_currentIndex = _widgets.Count - 1;
+			if (_widgets.Count > 0 && CurrentIndex >= _widgets.Count) {
+				CurrentIndex = _widgets.Count - 1;
 			}
 
 			// Detect item reveal: itemNameLabel goes from empty to populated

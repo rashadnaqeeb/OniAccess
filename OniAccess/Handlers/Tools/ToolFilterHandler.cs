@@ -46,15 +46,15 @@ namespace OniAccess.Handlers.Tools {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			if (_filterNames != null && _currentIndex >= 0 && _currentIndex < _filterNames.Count)
-				SpeechPipeline.SpeakInterrupt(_filterNames[_currentIndex]);
+			if (_filterNames != null && CurrentIndex >= 0 && CurrentIndex < _filterNames.Count)
+				SpeechPipeline.SpeakInterrupt(_filterNames[CurrentIndex]);
 		}
 
 		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
 			_filterKeys = new List<string>();
 			_filterNames = new List<string>();
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			_search.Clear();
 
 			var menuTraverse = Traverse.Create(ToolMenu.Instance.toolParameterMenu);
@@ -80,11 +80,11 @@ namespace OniAccess.Handlers.Tools {
 						onIndex = idx;
 					idx++;
 				}
-				_currentIndex = onIndex;
+				CurrentIndex = onIndex;
 			}
 
 			if (_filterNames.Count > 0) {
-				SpeechPipeline.SpeakInterrupt(_filterNames[_currentIndex]);
+				SpeechPipeline.SpeakInterrupt(_filterNames[CurrentIndex]);
 			} else {
 				Util.Log.Warn("ToolFilterHandler.OnActivate: no filter parameters available");
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLTIP.CLOSED);
@@ -101,7 +101,7 @@ namespace OniAccess.Handlers.Tools {
 		private static System.Reflection.MethodInfo _onChangeMethod;
 
 		protected override void ActivateCurrentItem() {
-			if (_filterKeys == null || _currentIndex < 0 || _currentIndex >= _filterKeys.Count)
+			if (_filterKeys == null || CurrentIndex < 0 || CurrentIndex >= _filterKeys.Count)
 				return;
 
 			if (_pendingTool != null)
@@ -113,7 +113,7 @@ namespace OniAccess.Handlers.Tools {
 					_changeToSettingMethod = AccessTools.Method(typeof(ToolParameterMenu), "ChangeToSetting");
 				if (_onChangeMethod == null)
 					_onChangeMethod = AccessTools.Method(typeof(ToolParameterMenu), "OnChange");
-				_changeToSettingMethod.Invoke(menu, new object[] { _filterKeys[_currentIndex] });
+				_changeToSettingMethod.Invoke(menu, new object[] { _filterKeys[CurrentIndex] });
 				_onChangeMethod.Invoke(menu, null);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ToolFilterHandler.ActivateCurrentItem: filter apply failed: {ex}");
@@ -122,7 +122,7 @@ namespace OniAccess.Handlers.Tools {
 			if (_owner != null) {
 				bool hadSelection = _owner.HasSelection;
 				_owner.ClearSelection();
-				string announcement = _filterNames[_currentIndex];
+				string announcement = _filterNames[CurrentIndex];
 				if (hadSelection)
 					announcement += ", " + (string)STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED;
 				SpeechPipeline.SpeakInterrupt(announcement);

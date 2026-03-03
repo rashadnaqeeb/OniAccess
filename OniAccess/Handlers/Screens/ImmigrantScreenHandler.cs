@@ -62,7 +62,7 @@ namespace OniAccess.Handlers.Screens {
 
 		private void RediscoverAndSpeakSlot() {
 			DiscoverWidgets(_screen);
-			_currentIndex = 0;
+			CurrentIndex = 0;
 			if (_widgets.Count > 0) {
 				Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
 			}
@@ -482,8 +482,8 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
+			var widget = _widgets[CurrentIndex];
 
 			if (widget.Tag is string tag) {
 				switch (tag) {
@@ -529,7 +529,7 @@ namespace OniAccess.Handlers.Screens {
 					ClickButton(rejectButton);
 					_rejectDialogOpen = true;
 					DiscoverWidgets(_screen);
-					_currentIndex = 0;
+					CurrentIndex = 0;
 					Speech.SpeechPipeline.SpeakInterrupt(
 						(string)STRINGS.UI.IMMIGRANTSCREEN.CONFIRMATIONTITLE);
 				}
@@ -558,7 +558,7 @@ namespace OniAccess.Handlers.Screens {
 					ClickButton(cancelBtn);
 					_rejectDialogOpen = false;
 					DiscoverWidgets(_screen);
-					_currentIndex = 0;
+					CurrentIndex = 0;
 					if (_widgets.Count > 0) {
 						Speech.SpeechPipeline.SpeakInterrupt(GetWidgetSpeechText(_widgets[0]));
 					}
@@ -626,7 +626,7 @@ namespace OniAccess.Handlers.Screens {
 					if (dialogActive != _rejectDialogOpen) {
 						_rejectDialogOpen = dialogActive;
 						DiscoverWidgets(_screen);
-						_currentIndex = 0;
+						CurrentIndex = 0;
 					}
 				}
 			} catch (System.Exception ex) {

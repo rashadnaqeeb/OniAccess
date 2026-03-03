@@ -199,7 +199,7 @@ namespace OniAccess.Handlers.Screens {
 			string sectionName = GetSectionName(_currentSection);
 			Speech.SpeechPipeline.SpeakInterrupt(sectionName);
 			if (_widgets.Count > 0) {
-				_currentIndex = 0;
+				CurrentIndex = 0;
 				Speech.SpeechPipeline.SpeakQueued(GetWidgetSpeechText(_widgets[0]));
 			} else if (_currentSection == SectionNews) {
 				Speech.SpeechPipeline.SpeakQueued(STRINGS.ONIACCESS.PANELS.NO_NEWS);
@@ -227,8 +227,8 @@ namespace OniAccess.Handlers.Screens {
 		/// Buttons section: default KButton.SignalClick behavior.
 		/// </summary>
 		protected override void ActivateCurrentItem() {
-			if (_currentIndex < 0 || _currentIndex >= _widgets.Count) return;
-			var widget = _widgets[_currentIndex];
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
+			var widget = _widgets[CurrentIndex];
 
 			if (_currentSection == SectionDLC && widget.Tag is string dlcFieldName) {
 				var hierRef = Traverse.Create(_screen).Field(dlcFieldName)

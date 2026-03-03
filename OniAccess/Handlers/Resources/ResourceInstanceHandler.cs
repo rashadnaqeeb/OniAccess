@@ -45,8 +45,8 @@ namespace OniAccess.Handlers.Resources {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			var instances = ResourceHelper.GetInstances(_resourceTag);
-			if (_currentIndex < 0 || _currentIndex >= instances.Count) return;
-			string label = BuildInstanceLabel(instances[_currentIndex]);
+			if (CurrentIndex < 0 || CurrentIndex >= instances.Count) return;
+			string label = BuildInstanceLabel(instances[CurrentIndex]);
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
 			SpeechPipeline.SpeakInterrupt(label);
@@ -61,8 +61,8 @@ namespace OniAccess.Handlers.Resources {
 
 		protected override void ActivateCurrentItem() {
 			var instances = ResourceHelper.GetInstances(_resourceTag);
-			if (_currentIndex < 0 || _currentIndex >= instances.Count) return;
-			int cell = instances[_currentIndex].Cell;
+			if (CurrentIndex < 0 || CurrentIndex >= instances.Count) return;
+			int cell = instances[CurrentIndex].Cell;
 
 			// Close screen first so the show patch removes the buried browser
 			// handler via RemoveByScreen (no OnActivate). Then pop this handler.
