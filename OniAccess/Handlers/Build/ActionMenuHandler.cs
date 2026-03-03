@@ -326,48 +326,6 @@ namespace OniAccess.Handlers.Build {
 			}
 		}
 
-		protected override void NavigateFirst() {
-			if (Level < 2) {
-				base.NavigateFirst();
-				return;
-			}
-
-			for (int c = 0; c < _tree.Count; c++) {
-				var subs = _tree[c].Subcategories;
-				for (int s = 0; s < subs.Count; s++) {
-					if (subs[s].Buildings.Count > 0) {
-						SetIndex(0, c + 1);
-						SetIndex(1, s);
-						SetIndex(2, 0);
-						PlayHoverSound();
-						SpeakWithCategoryContext();
-						return;
-					}
-				}
-			}
-		}
-
-		protected override void NavigateLast() {
-			if (Level < 2) {
-				base.NavigateLast();
-				return;
-			}
-
-			for (int c = _tree.Count - 1; c >= 0; c--) {
-				var subs = _tree[c].Subcategories;
-				for (int s = subs.Count - 1; s >= 0; s--) {
-					if (subs[s].Buildings.Count > 0) {
-						SetIndex(0, c + 1);
-						SetIndex(1, s);
-						SetIndex(2, subs[s].Buildings.Count - 1);
-						PlayHoverSound();
-						SpeakWithCategoryContext();
-						return;
-					}
-				}
-			}
-		}
-
 		// ========================================
 		// LEVEL 2 GROUP JUMPING
 		// ========================================

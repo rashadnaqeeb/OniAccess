@@ -170,16 +170,11 @@ namespace OniAccess.Handlers {
 				return;
 			}
 
-			int parentCount = GetItemCount(_level - 1, _indices);
-			for (int i = 0; i < parentCount; i++) {
-				_indices[_level - 1] = i;
-				int childCount = GetItemCount(_level, _indices);
-				if (childCount > 0) {
-					_indices[_level] = 0;
-					PlayHoverSound();
-					SpeakWithParentContext();
-					return;
-				}
+			int count = GetItemCount(_level, _indices);
+			if (count > 0) {
+				_indices[_level] = 0;
+				PlayHoverSound();
+				SpeakCurrentItem();
 			}
 		}
 
@@ -189,16 +184,11 @@ namespace OniAccess.Handlers {
 				return;
 			}
 
-			int parentCount = GetItemCount(_level - 1, _indices);
-			for (int i = parentCount - 1; i >= 0; i--) {
-				_indices[_level - 1] = i;
-				int childCount = GetItemCount(_level, _indices);
-				if (childCount > 0) {
-					_indices[_level] = childCount - 1;
-					PlayHoverSound();
-					SpeakWithParentContext();
-					return;
-				}
+			int count = GetItemCount(_level, _indices);
+			if (count > 0) {
+				_indices[_level] = count - 1;
+				PlayHoverSound();
+				SpeakCurrentItem();
 			}
 		}
 
