@@ -15,6 +15,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<ComplexFabricatorSideScreen>(WalkComplexFabricator);
 			SideScreenWalker.RegisterOverride<AccessControlSideScreen>(WalkAccessControl);
 			SideScreenWalker.RegisterOverride<OwnablesSidescreen>(WalkOwnables);
+			SideScreenWalker.RegisterOverride<AssignableSideScreen>(WalkAssignable);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -880,6 +881,87 @@ namespace OniAccess.Widgets {
 					SpeechFunc = () => capturedCategory.titleLabel.text
 				});
 			}
+		}
+
+		static void WalkAssignable(AssignableSideScreen screen, List<Widget> items) {
+			Traverse tv;
+			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkAssignable: Traverse create failed: {ex.Message}");
+				return;
+			}
+
+			// Dupe rows (currentOwnerText is always "-", skip it)
+			GameObject rowGroup;
+			try { rowGroup = tv.Field<GameObject>("rowGroup").Value; } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkAssignable: rowGroup read failed: {ex.Message}");
+				return;
+			}
+			if (rowGroup == null) return;
+
+			var rowGroupT = rowGroup.transform;
+			for (int i = 0; i < rowGroupT.childCount; i++) {
+				var child = rowGroupT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				var row = child.GetComponent<AssignableSideScreenRow>();
+				if (row == null) continue;
+				try {
+					AddAssignableRow(row, items);
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"WalkAssignable: row '{child.name}' failed: {ex.Message}");
+				}
+			}
+		}
+
+		private static void AddAssignableRow(
+				AssignableSideScreenRow row, List<Widget> items) {
+			var capturedRow = row;
+			var toggle = row.GetComponent<MultiToggle>();
+			LocText assignmentText;
+			try {
+				assignmentText = Traverse.Create(row)
+					.Field<LocText>("assignmentText").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"AddAssignableRow: assignmentText read failed: {ex.Message}");
+				return;
+			}
+			var capturedAssignmentText = assignmentText;
+
+			string label = row.targetIdentity != null
+				? row.targetIdentity.GetProperName() : row.transform.name;
+
+			items.Add(new ButtonWidget {
+				Label = label,
+				Component = toggle,
+				GameObject = row.gameObject,
+				SuppressTooltip = true,
+				SpeechFunc = () => {
+					string name = capturedRow.targetIdentity != null
+						? capturedRow.targetIdentity.GetProperName()
+						: capturedRow.transform.name;
+					string state;
+					switch (capturedRow.currentState) {
+						case AssignableSideScreenRow.AssignableState.Selected:
+							state = (string)STRINGS.ONIACCESS.STATES.ASSIGNED;
+							break;
+						case AssignableSideScreenRow.AssignableState.Unassigned:
+							state = (string)STRINGS.ONIACCESS.STATES.UNASSIGNED;
+							break;
+						case AssignableSideScreenRow.AssignableState.Disabled:
+							state = (string)STRINGS.UI.UISIDESCREENS
+								.ASSIGNABLESIDESCREEN.DISABLED;
+							break;
+						case AssignableSideScreenRow.AssignableState.AssignedToOther:
+							state = capturedAssignmentText != null
+								? capturedAssignmentText.GetParsedText()
+								: (string)STRINGS.ONIACCESS.STATES.UNASSIGNED;
+							break;
+						default:
+							state = (string)STRINGS.ONIACCESS.STATES.UNASSIGNED;
+							break;
+					}
+					return $"{name}, {state}";
+				}
+			});
 		}
 
 		private static void AddOwnableItemRow(

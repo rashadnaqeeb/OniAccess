@@ -182,6 +182,7 @@ namespace STRINGS {
 			public static LocString AVAILABLE = "available";
 			public static LocString LOCKED = "locked";
 			public static LocString ASSIGNED = "assigned";
+			public static LocString UNASSIGNED = "unassigned";
 		}
 
 		// Receptacle (e.g. Display Shelf, Flower Pot) side screen
