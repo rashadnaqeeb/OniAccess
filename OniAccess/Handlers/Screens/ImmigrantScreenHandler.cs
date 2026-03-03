@@ -47,7 +47,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_rejectDialogOpen) return;
 			if (_containers == null || _containers.Count == 0) return;
 			_currentSlot = (_currentSlot + 1) % _containers.Count;
-			if (_currentSlot == 0) PlayWrapSound();
+			if (_currentSlot == 0) PlaySound("HUD_Click");
 			RediscoverAndSpeakSlot();
 		}
 
@@ -56,7 +56,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_containers == null || _containers.Count == 0) return;
 			int prev = _currentSlot;
 			_currentSlot = (_currentSlot - 1 + _containers.Count) % _containers.Count;
-			if (_currentSlot == _containers.Count - 1 && prev == 0) PlayWrapSound();
+			if (_currentSlot == _containers.Count - 1 && prev == 0) PlaySound("HUD_Click");
 			RediscoverAndSpeakSlot();
 		}
 

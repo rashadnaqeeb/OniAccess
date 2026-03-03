@@ -104,7 +104,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (_activeTab == TabId.Content) return;
 			ActiveTab.OnTabDeactivated();
 			_activeTab = TabId.Content;
-			PlayHoverSound();
+			PlaySound("HUD_Mouseover");
 			ActiveTab.OnTabActivated(announce: true);
 		}
 
@@ -114,7 +114,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		private void JumpToCategoriesOnArticle() {
 			ActiveTab.OnTabDeactivated();
 			_activeTab = TabId.Categories;
-			PlayHoverSound();
+			PlaySound("HUD_Mouseover");
 			string entryId = CodexScreen?.activeEntryID;
 			_categoriesTab.OnTabActivatedOnEntry(announce: true, entryId: entryId);
 		}
@@ -142,8 +142,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 			int next = ((int)_activeTab + direction + _tabs.Length) % _tabs.Length;
 			bool wrapped = direction > 0 ? next <= (int)_activeTab : next >= (int)_activeTab;
 			_activeTab = (TabId)next;
-			if (wrapped) PlayWrapSound();
-			else PlayHoverSound();
+			if (wrapped) PlaySound("HUD_Click");
+			else PlaySound("HUD_Mouseover");
 			ActiveTab.OnTabActivated(announce: true);
 		}
 	}

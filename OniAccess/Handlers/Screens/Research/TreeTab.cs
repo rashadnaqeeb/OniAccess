@@ -54,7 +54,7 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
 				var node = _graph.NavigateDown();
 				if (node != null) {
-					BaseScreenHandler.PlayHoverSound();
+					BaseScreenHandler.PlaySound("HUD_Mouseover");
 					SpeechPipeline.SpeakInterrupt(ResearchHelper.BuildTechLabel(node));
 				} else {
 					SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.RESEARCH.DEAD_END);
@@ -64,7 +64,7 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
 				var node = _graph.NavigateUp();
 				if (node != null) {
-					BaseScreenHandler.PlayHoverSound();
+					BaseScreenHandler.PlaySound("HUD_Mouseover");
 					SpeechPipeline.SpeakInterrupt(ResearchHelper.BuildTechLabel(node));
 				} else {
 					SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.RESEARCH.ROOT_NODE);
@@ -74,8 +74,8 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)) {
 				var node = _graph.CycleSibling(1, out bool wrapped);
 				if (node != null) {
-					if (wrapped) BaseScreenHandler.PlayWrapSound();
-					else BaseScreenHandler.PlayHoverSound();
+					if (wrapped) BaseScreenHandler.PlaySound("HUD_Click");
+					else BaseScreenHandler.PlaySound("HUD_Mouseover");
 					SpeechPipeline.SpeakInterrupt(ResearchHelper.BuildTechLabel(node));
 				}
 				return true;
@@ -83,8 +83,8 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
 				var node = _graph.CycleSibling(-1, out bool wrapped);
 				if (node != null) {
-					if (wrapped) BaseScreenHandler.PlayWrapSound();
-					else BaseScreenHandler.PlayHoverSound();
+					if (wrapped) BaseScreenHandler.PlaySound("HUD_Click");
+					else BaseScreenHandler.PlaySound("HUD_Mouseover");
 					SpeechPipeline.SpeakInterrupt(ResearchHelper.BuildTechLabel(node));
 				}
 				return true;

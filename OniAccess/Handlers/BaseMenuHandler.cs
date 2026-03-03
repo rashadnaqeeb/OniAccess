@@ -139,8 +139,8 @@ namespace OniAccess.Handlers {
 					if (candidate == start) return;
 					bool wrapped = candidate <= CurrentIndex;
 					CurrentIndex = candidate;
-					if (wrapped) PlayWrapSound();
-					else PlayHoverSound();
+					if (wrapped) PlaySound("HUD_Click");
+					else PlaySound("HUD_Mouseover");
 					SpeakCurrentItem();
 					return;
 				}
@@ -159,8 +159,8 @@ namespace OniAccess.Handlers {
 					if (candidate == start) return;
 					bool wrapped = candidate >= CurrentIndex;
 					CurrentIndex = candidate;
-					if (wrapped) PlayWrapSound();
-					else PlayHoverSound();
+					if (wrapped) PlaySound("HUD_Click");
+					else PlaySound("HUD_Mouseover");
 					SpeakCurrentItem();
 					return;
 				}
@@ -175,7 +175,7 @@ namespace OniAccess.Handlers {
 			for (int i = 0; i < ItemCount; i++) {
 				if (IsItemValid(i)) {
 					CurrentIndex = i;
-					PlayHoverSound();
+					PlaySound("HUD_Mouseover");
 					SpeakCurrentItem();
 					return;
 				}
@@ -190,7 +190,7 @@ namespace OniAccess.Handlers {
 			for (int i = ItemCount - 1; i >= 0; i--) {
 				if (IsItemValid(i)) {
 					CurrentIndex = i;
-					PlayHoverSound();
+					PlaySound("HUD_Mouseover");
 					SpeakCurrentItem();
 					return;
 				}

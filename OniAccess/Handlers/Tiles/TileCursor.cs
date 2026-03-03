@@ -228,11 +228,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private static void PlayBoundarySound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"TileCursor.PlayBoundarySound: {ex.Message}");
-			}
+			BaseScreenHandler.PlaySound("Negative");
 		}
 	}
 }

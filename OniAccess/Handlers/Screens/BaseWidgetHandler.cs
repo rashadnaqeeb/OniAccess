@@ -298,11 +298,7 @@ namespace OniAccess.Handlers.Screens {
 		protected static void ClickMultiToggle(MultiToggle toggle) => WidgetOps.ClickMultiToggle(toggle);
 
 		private void PlaySliderSound(string soundName) {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound(soundName));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"PlaySliderSound({soundName}) failed: {ex.Message}");
-			}
+			BaseScreenHandler.PlaySound(soundName);
 		}
 
 		protected virtual string FormatSliderValue(KSlider slider) => WidgetOps.FormatSliderValue(slider);

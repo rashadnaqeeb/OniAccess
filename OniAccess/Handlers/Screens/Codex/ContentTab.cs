@@ -116,7 +116,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			for (int i = CurrentIndex + 1; i < _items.Count; i++) {
 				if (_items[i].isHeading) {
 					CurrentIndex = i;
-					PlayHoverSound();
+					PlaySound("HUD_Mouseover");
 					SpeakCurrentItem();
 					return;
 				}
@@ -125,7 +125,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			for (int i = 0; i < CurrentIndex; i++) {
 				if (_items[i].isHeading) {
 					CurrentIndex = i;
-					PlayWrapSound();
+					PlaySound("HUD_Click");
 					SpeakCurrentItem();
 					return;
 				}
@@ -136,7 +136,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			for (int i = CurrentIndex - 1; i >= 0; i--) {
 				if (_items[i].isHeading) {
 					CurrentIndex = i;
-					PlayHoverSound();
+					PlaySound("HUD_Mouseover");
 					SpeakCurrentItem();
 					return;
 				}
@@ -145,7 +145,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			for (int i = _items.Count - 1; i > CurrentIndex; i--) {
 				if (_items[i].isHeading) {
 					CurrentIndex = i;
-					PlayWrapSound();
+					PlaySound("HUD_Click");
 					SpeakCurrentItem();
 					return;
 				}
@@ -190,7 +190,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		internal void FollowLink(string entryId) {
 			var codexScreen = _parent.CodexScreen;
 			if (codexScreen == null) return;
-			PlayOpenSound();
+			PlaySound("HUD_Click_Open");
 			codexScreen.ChangeArticle(entryId);
 		}
 

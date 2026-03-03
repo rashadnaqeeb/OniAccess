@@ -67,7 +67,7 @@ namespace OniAccess.Handlers.Tools {
 
 			int cell = TileCursor.Instance.Cell;
 			if (!tool.CanMoveTo(cell)) {
-				BaseScreenHandler.PlayNegativeSound();
+				BaseScreenHandler.PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.TOOLS.MOVE_TO_UNREACHABLE);
 				return;
@@ -111,19 +111,11 @@ namespace OniAccess.Handlers.Tools {
 		}
 
 		private static void PlayConfirmSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click"));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"MoveToLocationHandler.PlayConfirmSound: {ex.Message}");
-			}
+			BaseScreenHandler.PlaySound("HUD_Click");
 		}
 
 		private static void PlayCancelSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("Tile_Cancel"));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"MoveToLocationHandler.PlayCancelSound: {ex.Message}");
-			}
+			BaseScreenHandler.PlaySound("Tile_Cancel");
 		}
 	}
 }

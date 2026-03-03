@@ -330,11 +330,7 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		private static void PlaySliderSound(string soundName) {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound(soundName));
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"DetailsScreenHandler.PlaySliderSound({soundName}): {ex.Message}");
-			}
+			BaseScreenHandler.PlaySound(soundName);
 		}
 
 		/// <summary>
@@ -556,8 +552,8 @@ namespace OniAccess.Handlers.Screens {
 
 			SwitchGameTab();
 
-			if (wrapped) PlayWrapSound();
-			else PlayHoverSound();
+			if (wrapped) PlaySound("HUD_Click");
+			else PlaySound("HUD_Mouseover");
 
 			SpeechPipeline.SpeakInterrupt(_activeTabs[_tabIndex].DisplayName);
 
@@ -584,8 +580,8 @@ namespace OniAccess.Handlers.Screens {
 
 			SwitchGameTab();
 
-			if (wrapped) PlayWrapSound();
-			else PlayHoverSound();
+			if (wrapped) PlaySound("HUD_Click");
+			else PlaySound("HUD_Mouseover");
 
 			SpeechPipeline.SpeakInterrupt(_activeTabs[_tabIndex].DisplayName);
 

@@ -197,7 +197,7 @@ namespace OniAccess.Handlers {
 				if (beyondDivider < 0 || beyondDivider >= _rows.Count) return;
 				_row = beyondDivider;
 				ClampCol();
-				PlayHoverSound();
+				PlaySound("HUD_Mouseover");
 				_lastSpokenRow = -1;
 				_lastSpokenCol = -1;
 				SpeechPipeline.SpeakInterrupt(
@@ -207,7 +207,7 @@ namespace OniAccess.Handlers {
 
 			_row = newRow;
 			ClampCol();
-			PlayHoverSound();
+			PlaySound("HUD_Mouseover");
 			SpeakCell();
 		}
 
@@ -220,18 +220,18 @@ namespace OniAccess.Handlers {
 			if (ColumnWraps(row.Kind)) {
 				if (newCol < 0) {
 					_col = maxCol;
-					PlayWrapSound();
+					PlaySound("HUD_Click");
 				} else if (newCol > maxCol) {
 					_col = 0;
-					PlayWrapSound();
+					PlaySound("HUD_Click");
 				} else {
 					_col = newCol;
-					PlayHoverSound();
+					PlaySound("HUD_Mouseover");
 				}
 			} else {
 				if (newCol < 0 || newCol > maxCol) return;
 				_col = newCol;
-				PlayHoverSound();
+				PlaySound("HUD_Mouseover");
 			}
 
 			SpeakCell();
@@ -245,7 +245,7 @@ namespace OniAccess.Handlers {
 					&& kind != TableRowKind.ColumnHeader
 					&& !IsRowSkipped(kind)) {
 					_row = i;
-					PlayHoverSound();
+					PlaySound("HUD_Mouseover");
 					SpeakCell();
 					return;
 				}
@@ -257,7 +257,7 @@ namespace OniAccess.Handlers {
 			for (int i = _rows.Count - 1; i >= 0; i--) {
 				if (!IsRowSkipped(_rows[i].Kind)) {
 					_row = i;
-					PlayHoverSound();
+					PlaySound("HUD_Mouseover");
 					SpeakCell();
 					return;
 				}

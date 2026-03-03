@@ -63,7 +63,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 				EnsureGraphCurrent();
 				var node = _graph.NavigateDown();
 				if (node != null) {
-					BaseScreenHandler.PlayHoverSound();
+					BaseScreenHandler.PlaySound("HUD_Mouseover");
 					SpeechPipeline.SpeakInterrupt(
 						SkillsHelper.BuildSkillLabel(node, _parent.SelectedDupe));
 				} else {
@@ -76,7 +76,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 				EnsureGraphCurrent();
 				var node = _graph.NavigateUp();
 				if (node != null) {
-					BaseScreenHandler.PlayHoverSound();
+					BaseScreenHandler.PlaySound("HUD_Mouseover");
 					SpeechPipeline.SpeakInterrupt(
 						SkillsHelper.BuildSkillLabel(node, _parent.SelectedDupe));
 				} else {
@@ -89,8 +89,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 				EnsureGraphCurrent();
 				var node = _graph.CycleSibling(1, out bool wrapped);
 				if (node != null) {
-					if (wrapped) BaseScreenHandler.PlayWrapSound();
-					else BaseScreenHandler.PlayHoverSound();
+					if (wrapped) BaseScreenHandler.PlaySound("HUD_Click");
+					else BaseScreenHandler.PlaySound("HUD_Mouseover");
 					SpeechPipeline.SpeakInterrupt(
 						SkillsHelper.BuildSkillLabel(node, _parent.SelectedDupe));
 				}
@@ -100,8 +100,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 				EnsureGraphCurrent();
 				var node = _graph.CycleSibling(-1, out bool wrapped);
 				if (node != null) {
-					if (wrapped) BaseScreenHandler.PlayWrapSound();
-					else BaseScreenHandler.PlayHoverSound();
+					if (wrapped) BaseScreenHandler.PlaySound("HUD_Click");
+					else BaseScreenHandler.PlaySound("HUD_Mouseover");
 					SpeechPipeline.SpeakInterrupt(
 						SkillsHelper.BuildSkillLabel(node, _parent.SelectedDupe));
 				}

@@ -185,7 +185,7 @@ namespace OniAccess.Handlers.Build {
 						QuickCancel();
 				} else if (!InputUtil.AnyModifierHeld()) {
 					if (IsInPrebuildMode()) {
-						PlayNegativeSound();
+						PlaySound("Negative");
 						string error = GetPrebuildError();
 						SpeechPipeline.SpeakInterrupt(
 							error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
@@ -200,7 +200,7 @@ namespace OniAccess.Handlers.Build {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)
 				&& !InputUtil.AnyModifierHeld()) {
 				if (IsInPrebuildMode()) {
-					PlayNegativeSound();
+					PlaySound("Negative");
 					string error = GetPrebuildError();
 					SpeechPipeline.SpeakInterrupt(
 						error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
@@ -214,7 +214,7 @@ namespace OniAccess.Handlers.Build {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)
 				&& !InputUtil.AnyModifierHeld()) {
 				if (IsInPrebuildMode()) {
-					PlayNegativeSound();
+					PlaySound("Negative");
 					string error = GetPrebuildError();
 					SpeechPipeline.SpeakInterrupt(
 						error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
@@ -271,7 +271,7 @@ namespace OniAccess.Handlers.Build {
 		private void PlaceRegular(bool exitAfter) {
 			int cell = TileCursor.Instance.Cell;
 			if (!Grid.IsVisible(cell)) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 				return;
 			}
@@ -279,7 +279,7 @@ namespace OniAccess.Handlers.Build {
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			string failReason;
 			if (!_def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, out failReason)) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
 				return;
 			}
@@ -321,7 +321,7 @@ namespace OniAccess.Handlers.Build {
 			int cell = TileCursor.Instance.Cell;
 
 			if (!Grid.IsVisible(cell)) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 				return;
 			}
@@ -330,7 +330,7 @@ namespace OniAccess.Handlers.Build {
 				var pos = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
 				string failReason;
 				if (!_def.IsValidPlaceLocation(null, pos, Orientation.Neutral, out failReason)) {
-					PlayNegativeSound();
+					PlaySound("Negative");
 					SpeechPipeline.SpeakInterrupt(
 						failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
 					return;
@@ -350,7 +350,7 @@ namespace OniAccess.Handlers.Build {
 			bool sameRow = startRow == endRow;
 
 			if (!sameCol && !sameRow) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.BUILD_MENU.MUST_BE_STRAIGHT);
 				return;
@@ -364,7 +364,7 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			if (!ValidateUtilityPath(path)) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE);
 				return;
@@ -381,14 +381,14 @@ namespace OniAccess.Handlers.Build {
 		private void UtilityPlaceAndExit() {
 			int cell = TileCursor.Instance.Cell;
 			if (!Grid.IsVisible(cell)) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 				return;
 			}
 			var pos = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
 			string failReason;
 			if (!_def.IsValidPlaceLocation(null, pos, Orientation.Neutral, out failReason)) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
 					failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
 				return;
@@ -560,7 +560,7 @@ namespace OniAccess.Handlers.Build {
 			int cell = TileCursor.Instance.Cell;
 			var go = FindMatchingConstruction(cell);
 			if (go == null) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.BUILD_MENU.NO_CONSTRUCTION);
 				return;

@@ -248,7 +248,7 @@ namespace OniAccess.Handlers.Tools {
 			int cell = TileCursor.Instance.Cell;
 
 			if (!Grid.IsVisible(cell)) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 				return;
 			}
@@ -292,7 +292,7 @@ namespace OniAccess.Handlers.Tools {
 			if (_rectangles.Count == 0 && _pendingFirstCorner == Grid.InvalidCell) {
 				int cell = TileCursor.Instance.Cell;
 				if (!Grid.IsVisible(cell)) {
-					PlayNegativeSound();
+					PlaySound("Negative");
 					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 					return;
 				}
@@ -318,7 +318,7 @@ namespace OniAccess.Handlers.Tools {
 			string summary = BuildConfirmSummary(out int total);
 			if (total == 0) {
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.NO_VALID_CELLS);
-				PlayNegativeSound();
+				PlaySound("Negative");
 				DeactivateToolAndPop();
 				return;
 			}

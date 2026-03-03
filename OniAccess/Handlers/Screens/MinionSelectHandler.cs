@@ -75,7 +75,7 @@ namespace OniAccess.Handlers.Screens {
 			if (!_inDupeMode) return;
 			if (_containers == null || _containers.Length == 0) return;
 			_currentSlot = (_currentSlot + 1) % _containers.Length;
-			if (_currentSlot == 0) PlayWrapSound();
+			if (_currentSlot == 0) PlaySound("HUD_Click");
 			RediscoverAndSpeakSlot();
 		}
 
@@ -84,7 +84,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_containers == null || _containers.Length == 0) return;
 			int prev = _currentSlot;
 			_currentSlot = (_currentSlot - 1 + _containers.Length) % _containers.Length;
-			if (_currentSlot == _containers.Length - 1 && prev == 0) PlayWrapSound();
+			if (_currentSlot == _containers.Length - 1 && prev == 0) PlaySound("HUD_Click");
 			RediscoverAndSpeakSlot();
 		}
 

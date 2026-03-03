@@ -29,7 +29,7 @@ namespace OniAccess.Handlers.Resources {
 			(string)STRINGS.ONIACCESS.RESOURCES.BROWSER_TITLE;
 
 		public override void OnActivate() {
-			PlayOpenSound();
+			PlaySound("HUD_Click_Open");
 			base.OnActivate();
 			string first = GetItemLabel(0, new int[MaxLevel + 1]);
 			if (first != null)
@@ -141,13 +141,13 @@ namespace OniAccess.Handlers.Resources {
 			}
 
 			if (ResourceHelper.GetInstances(resourceTag).Count == 0) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.RESOURCES.NO_INSTANCES);
 				return;
 			}
 
-			PlayOpenSound();
+			PlaySound("HUD_Click_Open");
 			HandlerStack.Push(new ResourceInstanceHandler(resourceTag, measure));
 		}
 
@@ -310,17 +310,9 @@ namespace OniAccess.Handlers.Resources {
 		}
 
 		internal void CloseScreen() {
-			PlayCloseSound();
+			PlaySound("HUD_Click_Close");
 			if (AllResourcesScreen.Instance != null)
 				AllResourcesScreen.Instance.Show(false);
-		}
-
-		private static void PlaySound(string name) {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound(name));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"ResourceBrowserHandler.PlaySound failed: {ex.Message}");
-			}
 		}
 	}
 }

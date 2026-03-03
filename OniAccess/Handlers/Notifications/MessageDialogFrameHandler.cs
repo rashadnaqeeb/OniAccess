@@ -160,7 +160,7 @@ namespace OniAccess.Handlers.Notifications {
 
 		private static void FollowLink(string entryId) {
 			if (ManagementMenu.Instance == null) return;
-			PlayOpenSound();
+			BaseScreenHandler.PlaySound("HUD_Click_Open");
 			ManagementMenu.Instance.OpenCodexToEntry(entryId);
 		}
 

@@ -55,7 +55,7 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		public override void OnActivate() {
-			PlayOpenSound();
+			PlaySound("HUD_Click_Open");
 			RebuildItems();
 			CurrentIndex = 0;
 			_search.Clear();
@@ -67,7 +67,7 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		public override void OnDeactivate() {
-			PlayCloseSound();
+			PlaySound("HUD_Click_Close");
 			base.OnDeactivate();
 		}
 

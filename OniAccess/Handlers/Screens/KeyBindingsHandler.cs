@@ -264,7 +264,7 @@ namespace OniAccess.Handlers.Screens {
 		/// After a category switch: rediscover widgets, announce category + first binding.
 		/// </summary>
 		private void OnCategoryChanged(bool wrapped) {
-			if (wrapped) PlayWrapSound();
+			if (wrapped) PlaySound("HUD_Click");
 
 			DiscoverWidgets(_screen);
 			CurrentIndex = 0;

@@ -207,14 +207,5 @@ namespace OniAccess.Handlers.Tiles {
 			}
 			return labels;
 		}
-
-		private static void PlaySound(string name) {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound(name));
-			} catch (System.Exception ex) {
-				OniAccess.Util.Log.Error(
-					$"EntityPickerHandler.PlaySound failed: {ex.Message}");
-			}
-		}
 	}
 }

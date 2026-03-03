@@ -142,9 +142,5 @@ namespace OniAccess.Handlers.Tools {
 			}
 			return false;
 		}
-
-		private static void PlaySound(string name) {
-			ToolPickerHandler.PlaySound(name);
-		}
 	}
 }

@@ -459,7 +459,7 @@ namespace OniAccess.Handlers.Tiles {
 		private void OpenNotificationMenu() {
 			if (_notificationTracker == null) return;
 			if (_notificationTracker.Groups.Count == 0) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY);
 				return;

@@ -92,43 +92,11 @@ namespace OniAccess.Handlers {
 		// SOUNDS
 		// ========================================
 
-		protected internal static void PlayHoverSound() {
+		protected internal static void PlaySound(string clipName) {
 			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Mouseover"));
+				KFMOD.PlayUISound(GlobalAssets.GetSound(clipName));
 			} catch (System.Exception ex) {
-				Util.Log.Error($"PlayHoverSound failed: {ex.Message}");
-			}
-		}
-
-		protected internal static void PlayWrapSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click"));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"PlayWrapSound failed: {ex.Message}");
-			}
-		}
-
-		protected internal static void PlayOpenSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click_Open"));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"PlayOpenSound failed: {ex.Message}");
-			}
-		}
-
-		protected internal static void PlayCloseSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click_Close"));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"PlayCloseSound failed: {ex.Message}");
-			}
-		}
-
-		protected internal static void PlayNegativeSound() {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("Negative"));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"PlayNegativeSound failed: {ex.Message}");
+				Util.Log.Error($"PlaySound({clipName}) failed: {ex.Message}");
 			}
 		}
 	}

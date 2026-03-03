@@ -106,13 +106,5 @@ namespace OniAccess.Handlers.Tools {
 				Util.Log.Error($"ToolPickerHandler.ActivateTool: {ex}");
 			}
 		}
-
-		internal static void PlaySound(string name) {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound(name));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"PlaySound failed: {ex.Message}");
-			}
-		}
 	}
 }

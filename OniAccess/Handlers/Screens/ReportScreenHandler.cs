@@ -285,7 +285,7 @@ namespace OniAccess.Handlers.Screens {
 
 		private void OnCycleChanged() {
 			ClampIndices();
-			PlayHoverSound();
+			PlaySound("HUD_Mouseover");
 			SpeakCycleTitleAndCurrentItem();
 		}
 
@@ -348,7 +348,7 @@ namespace OniAccess.Handlers.Screens {
 					PauseScreen.Instance.transform.parent.gameObject, data);
 			} catch (Exception ex) {
 				Util.Log.Error($"ReportScreenHandler.ActivateColonySummary failed: {ex.Message}");
-				PlayNegativeSound();
+				PlaySound("Negative");
 			}
 		}
 

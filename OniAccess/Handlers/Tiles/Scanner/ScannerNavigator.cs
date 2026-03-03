@@ -433,7 +433,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			if (count <= 1) return;
 			bool wrapped = (direction > 0 && next <= prev)
 				|| (direction < 0 && next >= prev);
-			if (wrapped) BaseScreenHandler.PlayWrapSound();
+			if (wrapped) BaseScreenHandler.PlaySound("HUD_Click");
 		}
 
 		private static void SpeakEmpty() {

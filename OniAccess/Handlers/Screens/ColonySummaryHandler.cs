@@ -608,7 +608,7 @@ namespace OniAccess.Handlers.Screens {
 		protected override void NavigateTabForward() {
 			int count = SectionCount;
 			_currentSection = (_currentSection + 1) % count;
-			if (_currentSection == 0) PlayWrapSound();
+			if (_currentSection == 0) PlaySound("HUD_Click");
 			RebuildForCurrentSection();
 		}
 
@@ -616,7 +616,7 @@ namespace OniAccess.Handlers.Screens {
 			int count = SectionCount;
 			int prev = _currentSection;
 			_currentSection = (_currentSection - 1 + count) % count;
-			if (_currentSection == count - 1 && prev == 0) PlayWrapSound();
+			if (_currentSection == count - 1 && prev == 0) PlaySound("HUD_Click");
 			RebuildForCurrentSection();
 		}
 

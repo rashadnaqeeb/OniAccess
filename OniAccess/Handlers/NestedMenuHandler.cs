@@ -141,7 +141,7 @@ namespace OniAccess.Handlers {
 			int nextIndex = _indices[_level] + 1;
 			if (nextIndex < count) {
 				_indices[_level] = nextIndex;
-				PlayHoverSound();
+				PlaySound("HUD_Mouseover");
 				SpeakCurrentItem();
 			} else {
 				JumpToNextParent(landOnLast: false);
@@ -157,7 +157,7 @@ namespace OniAccess.Handlers {
 			int prevIndex = _indices[_level] - 1;
 			if (prevIndex >= 0) {
 				_indices[_level] = prevIndex;
-				PlayHoverSound();
+				PlaySound("HUD_Mouseover");
 				SpeakCurrentItem();
 			} else {
 				JumpToPrevParent(landOnLast: true);
@@ -173,7 +173,7 @@ namespace OniAccess.Handlers {
 			int count = GetItemCount(_level, _indices);
 			if (count > 0) {
 				_indices[_level] = 0;
-				PlayHoverSound();
+				PlaySound("HUD_Mouseover");
 				SpeakCurrentItem();
 			}
 		}
@@ -187,7 +187,7 @@ namespace OniAccess.Handlers {
 			int count = GetItemCount(_level, _indices);
 			if (count > 0) {
 				_indices[_level] = count - 1;
-				PlayHoverSound();
+				PlaySound("HUD_Mouseover");
 				SpeakCurrentItem();
 			}
 		}
@@ -288,8 +288,8 @@ namespace OniAccess.Handlers {
 			int childCount = GetItemCount(_level, _indices);
 			if (childCount > 0) {
 				_indices[_level] = landOnLast ? childCount - 1 : 0;
-				if (next <= startParent) PlayWrapSound();
-				else PlayHoverSound();
+				if (next <= startParent) PlaySound("HUD_Click");
+				else PlaySound("HUD_Mouseover");
 				if (next == startParent) SpeakCurrentItem();
 				else SpeakWithParentContext();
 				return true;
@@ -302,8 +302,8 @@ namespace OniAccess.Handlers {
 				childCount = GetItemCount(_level, _indices);
 				if (childCount > 0) {
 					_indices[_level] = landOnLast ? childCount - 1 : 0;
-					if (i <= startParent) PlayWrapSound();
-					else PlayHoverSound();
+					if (i <= startParent) PlaySound("HUD_Click");
+					else PlaySound("HUD_Mouseover");
 					if (i == startParent) SpeakCurrentItem();
 					else SpeakWithParentContext();
 					return true;
@@ -324,8 +324,8 @@ namespace OniAccess.Handlers {
 			int childCount = GetItemCount(_level, _indices);
 			if (childCount > 0) {
 				_indices[_level] = landOnLast ? childCount - 1 : 0;
-				if (prev >= startParent) PlayWrapSound();
-				else PlayHoverSound();
+				if (prev >= startParent) PlaySound("HUD_Click");
+				else PlaySound("HUD_Mouseover");
 				if (prev == startParent) SpeakCurrentItem();
 				else SpeakWithParentContext();
 				return true;
@@ -338,8 +338,8 @@ namespace OniAccess.Handlers {
 				childCount = GetItemCount(_level, _indices);
 				if (childCount > 0) {
 					_indices[_level] = landOnLast ? childCount - 1 : 0;
-					if (i >= startParent) PlayWrapSound();
-					else PlayHoverSound();
+					if (i >= startParent) PlaySound("HUD_Click");
+					else PlaySound("HUD_Mouseover");
 					if (i == startParent) SpeakCurrentItem();
 					else SpeakWithParentContext();
 					return true;

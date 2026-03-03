@@ -126,7 +126,7 @@ namespace OniAccess.Handlers.Screens {
 
 			if (_inCustomize) {
 				_currentSubTab = (_currentSubTab + 1) % SubTabCount;
-				if (_currentSubTab == 0) PlayWrapSound();
+				if (_currentSubTab == 0) PlaySound("HUD_Click");
 				RefreshSubTab();
 				return;
 			}
@@ -140,7 +140,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_inCustomize) {
 				int prev = _currentSubTab;
 				_currentSubTab = (_currentSubTab - 1 + SubTabCount) % SubTabCount;
-				if (_currentSubTab == SubTabCount - 1 && prev == 0) PlayWrapSound();
+				if (_currentSubTab == SubTabCount - 1 && prev == 0) PlaySound("HUD_Click");
 				RefreshSubTab();
 				return;
 			}
@@ -1265,7 +1265,7 @@ namespace OniAccess.Handlers.Screens {
 
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)) {
 					int next = (_clusterIndex + 1) % _clusterKeys.Count;
-					if (next == 0) PlayWrapSound();
+					if (next == 0) PlaySound("HUD_Click");
 					_clusterIndex = next;
 					SelectClusterSilent(_clusterKeys[_clusterIndex]);
 					_speakClusterNameOnly = true;
@@ -1275,7 +1275,7 @@ namespace OniAccess.Handlers.Screens {
 
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)) {
 					int next = (_clusterIndex - 1 + _clusterKeys.Count) % _clusterKeys.Count;
-					if (next == _clusterKeys.Count - 1) PlayWrapSound();
+					if (next == _clusterKeys.Count - 1) PlaySound("HUD_Click");
 					_clusterIndex = next;
 					SelectClusterSilent(_clusterKeys[_clusterIndex]);
 					_speakClusterNameOnly = true;

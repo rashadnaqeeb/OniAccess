@@ -14,11 +14,7 @@ namespace OniAccess.Widgets {
 
 		public override bool Activate() {
 			if (OnClick == null) return false;
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound("HUD_Click_Open"));
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"UserMenuButtonWidget click sound: {ex.Message}");
-			}
+			Handlers.BaseScreenHandler.PlaySound("HUD_Click_Open");
 			try {
 				OnClick();
 			} catch (System.Exception ex) {

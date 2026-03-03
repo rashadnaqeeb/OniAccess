@@ -112,8 +112,8 @@ namespace OniAccess.Handlers.Screens {
 			int next = ((int)_activeTab + direction + _tabs.Length) % _tabs.Length;
 			bool wrapped = direction > 0 ? next <= (int)_activeTab : next >= (int)_activeTab;
 			_activeTab = (TabId)next;
-			if (wrapped) PlayWrapSound();
-			else PlayHoverSound();
+			if (wrapped) PlaySound("HUD_Click");
+			else PlaySound("HUD_Mouseover");
 			ActiveTab.OnTabActivated(announce: true);
 		}
 

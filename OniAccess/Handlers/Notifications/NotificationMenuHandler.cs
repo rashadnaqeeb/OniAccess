@@ -61,7 +61,7 @@ namespace OniAccess.Handlers.Notifications {
 		}
 
 		public override void OnActivate() {
-			PlayOpenSound();
+			PlaySound("HUD_Click_Open");
 			base.OnActivate();
 			_tracker.OnChanged += OnTrackerChanged;
 			if (ItemCount > 0)
@@ -89,7 +89,7 @@ namespace OniAccess.Handlers.Notifications {
 				// All notifications expired while menu was open
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Escape)
 					|| UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
-					PlayCloseSound();
+					PlaySound("HUD_Click_Close");
 					HandlerStack.Pop();
 					return true;
 				}
@@ -111,11 +111,11 @@ namespace OniAccess.Handlers.Notifications {
 			var group = groups[CurrentIndex];
 
 			if (group.Count == 1) {
-				PlayOpenSound();
+				PlaySound("HUD_Click_Open");
 				HandlerStack.Pop();
 				NotificationActivator.Activate(group.Members[0]);
 			} else {
-				PlayOpenSound();
+				PlaySound("HUD_Click_Open");
 				HandlerStack.Push(new NotificationSubmenuHandler(
 					_tracker, group.TitleText));
 			}
@@ -123,7 +123,7 @@ namespace OniAccess.Handlers.Notifications {
 
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (e.TryConsume(Action.Escape)) {
-				PlayCloseSound();
+				PlaySound("HUD_Click_Close");
 				HandlerStack.Pop();
 				return true;
 			}
@@ -137,7 +137,7 @@ namespace OniAccess.Handlers.Notifications {
 			if (group.Count == 0) return;
 
 			if (!group.Members[0].showDismissButton) {
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.NOTIFICATIONS.CANNOT_DISMISS);
 				return;

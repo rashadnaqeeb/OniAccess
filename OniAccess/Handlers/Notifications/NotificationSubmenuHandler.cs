@@ -99,7 +99,7 @@ namespace OniAccess.Handlers.Notifications {
 			if (group == null || CurrentIndex < 0 || CurrentIndex >= group.Count) return;
 			var n = group.Members[CurrentIndex];
 
-			PlayOpenSound();
+			PlaySound("HUD_Click_Open");
 			// Pop submenu, then pop parent menu
 			HandlerStack.Pop();
 			HandlerStack.Pop();

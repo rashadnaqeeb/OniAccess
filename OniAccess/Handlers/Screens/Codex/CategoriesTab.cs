@@ -129,7 +129,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			var codexScreen = _parent.CodexScreen;
 			if (codexScreen == null) return;
 
-			PlayOpenSound();
+			PlaySound("HUD_Click_Open");
 			codexScreen.ChangeArticle(entry.id);
 			_parent.JumpToContentTab();
 		}

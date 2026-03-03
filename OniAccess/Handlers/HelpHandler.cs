@@ -87,13 +87,5 @@ namespace OniAccess.Handlers {
 			PlaySound("HUD_Click_Close");
 			HandlerStack.Pop();
 		}
-
-		private static void PlaySound(string name) {
-			try {
-				KFMOD.PlayUISound(GlobalAssets.GetSound(name));
-			} catch (System.Exception ex) {
-				Util.Log.Error($"HelpHandler.PlaySound failed: {ex.Message}");
-			}
-		}
 	}
 }

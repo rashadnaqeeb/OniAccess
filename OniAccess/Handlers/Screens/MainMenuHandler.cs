@@ -183,14 +183,14 @@ namespace OniAccess.Handlers.Screens {
 
 		protected override void NavigateTabForward() {
 			_currentSection = (_currentSection + 1) % SectionCount;
-			if (_currentSection == 0) PlayWrapSound();
+			if (_currentSection == 0) PlaySound("HUD_Click");
 			RediscoverForCurrentSection();
 		}
 
 		protected override void NavigateTabBackward() {
 			int prev = _currentSection;
 			_currentSection = (_currentSection - 1 + SectionCount) % SectionCount;
-			if (_currentSection == SectionCount - 1 && prev == 0) PlayWrapSound();
+			if (_currentSection == SectionCount - 1 && prev == 0) PlaySound("HUD_Click");
 			RediscoverForCurrentSection();
 		}
 

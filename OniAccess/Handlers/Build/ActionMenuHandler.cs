@@ -167,7 +167,7 @@ namespace OniAccess.Handlers.Build {
 			if (!BuildMenuData.SelectBuilding(entry.Def, category)) {
 				handler.SuppressToolEvents = false;
 				HandlerStack.Pop();
-				PlayNegativeSound();
+				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
 				return;
 			}
@@ -208,7 +208,7 @@ namespace OniAccess.Handlers.Build {
 
 			if (bld + 1 < bldCount) {
 				SetIndex(2, bld + 1);
-				PlayHoverSound();
+				PlaySound("HUD_Mouseover");
 				SpeakCurrentItem();
 				return;
 			}
@@ -218,7 +218,7 @@ namespace OniAccess.Handlers.Build {
 				if (subs[s].Buildings.Count > 0) {
 					SetIndex(1, s);
 					SetIndex(2, 0);
-					PlayHoverSound();
+					PlaySound("HUD_Mouseover");
 					SpeakWithSubcategoryContext();
 					return;
 				}
@@ -232,7 +232,7 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, 0);
-						PlayHoverSound();
+						PlaySound("HUD_Mouseover");
 						SpeakWithCategoryContext();
 						return;
 					}
@@ -247,7 +247,7 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, 0);
-						PlayWrapSound();
+						PlaySound("HUD_Click");
 						if (c == ti && s == sub)
 							SpeakCurrentItem();
 						else if (c == ti)
@@ -273,7 +273,7 @@ namespace OniAccess.Handlers.Build {
 
 			if (bld - 1 >= 0) {
 				SetIndex(2, bld - 1);
-				PlayHoverSound();
+				PlaySound("HUD_Mouseover");
 				SpeakCurrentItem();
 				return;
 			}
@@ -284,7 +284,7 @@ namespace OniAccess.Handlers.Build {
 				if (subs[s].Buildings.Count > 0) {
 					SetIndex(1, s);
 					SetIndex(2, subs[s].Buildings.Count - 1);
-					PlayHoverSound();
+					PlaySound("HUD_Mouseover");
 					SpeakWithSubcategoryContext();
 					return;
 				}
@@ -298,7 +298,7 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, prevSubs[s].Buildings.Count - 1);
-						PlayHoverSound();
+						PlaySound("HUD_Mouseover");
 						SpeakWithCategoryContext();
 						return;
 					}
@@ -313,7 +313,7 @@ namespace OniAccess.Handlers.Build {
 						SetIndex(0, c + 1);
 						SetIndex(1, s);
 						SetIndex(2, wrapSubs[s].Buildings.Count - 1);
-						PlayWrapSound();
+						PlaySound("HUD_Click");
 						if (c == ti && s == sub)
 							SpeakCurrentItem();
 						else if (c == ti)
@@ -343,8 +343,8 @@ namespace OniAccess.Handlers.Build {
 				SetIndex(0, nc + 1);
 				SetIndex(1, ns);
 				SetIndex(2, 0);
-				if (nc < ti || (nc == ti && ns <= sub)) PlayWrapSound();
-				else PlayHoverSound();
+				if (nc < ti || (nc == ti && ns <= sub)) PlaySound("HUD_Click");
+				else PlaySound("HUD_Mouseover");
 				if (nc == ti)
 					SpeakWithSubcategoryContext();
 				else
@@ -366,8 +366,8 @@ namespace OniAccess.Handlers.Build {
 				SetIndex(0, nc + 1);
 				SetIndex(1, ns);
 				SetIndex(2, 0);
-				if (nc > ti || (nc == ti && ns >= sub)) PlayWrapSound();
-				else PlayHoverSound();
+				if (nc > ti || (nc == ti && ns >= sub)) PlaySound("HUD_Click");
+				else PlaySound("HUD_Mouseover");
 				if (nc == ti)
 					SpeakWithSubcategoryContext();
 				else
@@ -536,7 +536,7 @@ namespace OniAccess.Handlers.Build {
 		// ========================================
 
 		public override void OnActivate() {
-			PlayOpenSound();
+			PlaySound("HUD_Click_Open");
 			_tree = BuildMenuData.GetFullBuildTree();
 
 			if (_initialDef != null && _restoreFlatIndex < 0)
@@ -556,7 +556,7 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		public override void OnDeactivate() {
-			PlayCloseSound();
+			PlaySound("HUD_Click_Close");
 			base.OnDeactivate();
 		}
 

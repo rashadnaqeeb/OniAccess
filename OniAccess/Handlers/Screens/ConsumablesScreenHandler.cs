@@ -327,7 +327,7 @@ namespace OniAccess.Handlers.Screens {
 
 			bool newState = !consumer.IsPermitted(id);
 			consumer.SetPermitted(id, newState);
-			PlayWrapSound();
+			PlaySound("HUD_Click");
 			SpeakCell();
 		}
 
@@ -338,7 +338,7 @@ namespace OniAccess.Handlers.Screens {
 				list.Remove(tag);
 			else
 				list.Add(tag);
-			PlayWrapSound();
+			PlaySound("HUD_Click");
 			SpeakCell();
 		}
 
@@ -395,7 +395,7 @@ namespace OniAccess.Handlers.Screens {
 				consumer.SetPermitted(id, newState);
 			}
 
-			PlayWrapSound();
+			PlaySound("HUD_Click");
 			SpeechPipeline.SpeakInterrupt(newState
 				? (string)STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_PERMITTED
 				: (string)STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN);
