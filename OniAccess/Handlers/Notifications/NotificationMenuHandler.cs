@@ -61,6 +61,7 @@ namespace OniAccess.Handlers.Notifications {
 		}
 
 		public override void OnActivate() {
+			PlayOpenSound();
 			base.OnActivate();
 			_tracker.OnChanged += OnTrackerChanged;
 			if (ItemCount > 0)
@@ -88,6 +89,7 @@ namespace OniAccess.Handlers.Notifications {
 				// All notifications expired while menu was open
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Escape)
 					|| UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
+					PlayCloseSound();
 					HandlerStack.Pop();
 					return true;
 				}
@@ -121,6 +123,7 @@ namespace OniAccess.Handlers.Notifications {
 
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (e.TryConsume(Action.Escape)) {
+				PlayCloseSound();
 				HandlerStack.Pop();
 				return true;
 			}
