@@ -180,6 +180,8 @@ namespace STRINGS {
 			public static LocString SLIDER = "slider";
 			// Item availability (e.g. blueprint available to claim)
 			public static LocString AVAILABLE = "available";
+			public static LocString LOCKED = "locked";
+			public static LocString ASSIGNED = "assigned";
 		}
 
 		// Receptacle (e.g. Display Shelf, Flower Pot) side screen

@@ -14,6 +14,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<TreeFilterableSideScreen>(WalkTreeFilter);
 			SideScreenWalker.RegisterOverride<ComplexFabricatorSideScreen>(WalkComplexFabricator);
 			SideScreenWalker.RegisterOverride<AccessControlSideScreen>(WalkAccessControl);
+			SideScreenWalker.RegisterOverride<OwnablesSidescreen>(WalkOwnables);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -837,6 +838,67 @@ namespace OniAccess.Widgets {
 			var portrait = href.GetReference<CrewPortrait>("Portrait");
 			var identity = portrait.identityObject;
 			return identity != null ? identity.GetProperName() : fallback.name;
+		}
+
+		static void WalkOwnables(OwnablesSidescreen screen, List<Widget> items) {
+			OwnablesSidescreenCategoryRow[] categoryRows;
+			try {
+				categoryRows = Traverse.Create(screen)
+					.Field<OwnablesSidescreenCategoryRow[]>("categoryRows").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkOwnables: categoryRows read failed: {ex.Message}");
+				return;
+			}
+			if (categoryRows == null) return;
+
+			foreach (var categoryRow in categoryRows) {
+				if (categoryRow == null || !categoryRow.gameObject.activeSelf) continue;
+
+				OwnablesSidescreenItemRow[] itemRows;
+				try {
+					itemRows = Traverse.Create(categoryRow)
+						.Field<OwnablesSidescreenItemRow[]>("itemRows").Value;
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"WalkOwnables: itemRows read failed: {ex.Message}");
+					continue;
+				}
+
+				var children = new List<Widget>();
+				if (itemRows != null) {
+					foreach (var row in itemRows) {
+						if (row == null || !row.gameObject.activeSelf) continue;
+						AddOwnableItemRow(row, children);
+					}
+				}
+
+				var capturedCategory = categoryRow;
+				items.Add(new LabelWidget {
+					Label = capturedCategory.titleLabel.text,
+					GameObject = capturedCategory.gameObject,
+					SuppressTooltip = true,
+					Children = children,
+					SpeechFunc = () => capturedCategory.titleLabel.text
+				});
+			}
+		}
+
+		private static void AddOwnableItemRow(
+				OwnablesSidescreenItemRow row, List<Widget> children) {
+			var capturedRow = row;
+			children.Add(new ButtonWidget {
+				Label = capturedRow.textLabel.GetParsedText(),
+				Component = capturedRow.toggle,
+				GameObject = capturedRow.gameObject,
+				SuppressTooltip = true,
+				SpeechFunc = () => {
+					string text = capturedRow.textLabel.GetParsedText();
+					if (capturedRow.IsLocked)
+						text += $", {(string)STRINGS.ONIACCESS.STATES.LOCKED}";
+					else if (capturedRow.SlotIsAssigned)
+						text += $", {(string)STRINGS.ONIACCESS.STATES.ASSIGNED}";
+					return text;
+				}
+			});
 		}
 	}
 }
