@@ -262,6 +262,7 @@ namespace OniAccess.Handlers.Resources {
 		private void ClearAllPins() {
 			var pinned = ClusterManager.Instance.activeWorld.worldInventory.pinnedResources;
 			pinned.Clear();
+			PlaySound("HUD_Click_Deselect");
 			SpeechPipeline.SpeakInterrupt(
 				(string)STRINGS.ONIACCESS.RESOURCES.ALL_UNPINNED);
 		}
