@@ -12,12 +12,18 @@ namespace OniAccess.Handlers.Resources {
 	/// index 0 containing all pinned resources. Regular categories follow,
 	/// offset by 1. If nothing is pinned the offset is 0.
 	///
-	/// Shift+P at level 1 toggles pin. Shift+C at any level clears all pins.
+	/// Space at level 1 toggles pin. Shift+C at any level clears all pins.
 	/// Enter at level 1 pushes ResourceInstanceHandler.
 	/// Escape at any level closes AllResourcesScreen.
 	/// </summary>
 	internal sealed class ResourceBrowserHandler: NestedMenuHandler {
 		internal ResourceBrowserHandler(KScreen screen) : base(screen) { }
+
+		private static readonly ConsumedKey[] _consumedKeys = {
+			new ConsumedKey(KKeyCode.Space),
+			new ConsumedKey(KKeyCode.C, Modifier.Shift),
+		};
+		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
 		public override string DisplayName =>
 			(string)STRINGS.ONIACCESS.RESOURCES.BROWSER_TITLE;
@@ -47,7 +53,7 @@ namespace OniAccess.Handlers.Resources {
 		/// 1 when pinned resources exist (synthetic category at index 0), 0 otherwise.
 		/// </summary>
 		private int PinnedOffset =>
-			ResourceHelper.GetPinnedResources().Count > 0 ? 1 : 0;
+			ClusterManager.Instance.activeWorld.worldInventory.pinnedResources.Count > 0 ? 1 : 0;
 
 		private bool IsPinnedCategory(int catIndex) =>
 			PinnedOffset == 1 && catIndex == 0;
@@ -185,7 +191,7 @@ namespace OniAccess.Handlers.Resources {
 		}
 
 		// ========================================
-		// TICK: Shift+P pin, Shift+C clear
+		// TICK: Space pin, Shift+C clear
 		// ========================================
 
 		public override bool Tick() {
@@ -236,7 +242,7 @@ namespace OniAccess.Handlers.Resources {
 						Level = 0;
 						SetIndex(0, 0);
 						SetIndex(1, 0);
-						_currentIndex = 0;
+						SyncCurrentIndex();
 						string label = GetItemLabel(0, new int[MaxLevel + 1]);
 						if (label != null)
 							SpeechPipeline.SpeakQueued(label);
@@ -245,26 +251,54 @@ namespace OniAccess.Handlers.Resources {
 						if (idx >= remaining.Count)
 							idx = remaining.Count - 1;
 						SetIndex(1, idx);
-						_currentIndex = idx;
+						SyncCurrentIndex();
 						string label = GetItemLabel(Level, new[] { GetIndex(0), idx });
 						if (label != null)
 							SpeechPipeline.SpeakQueued(label);
 					}
 				}
 			} else {
+				int oldOffset = PinnedOffset;
 				pinnedList.Add(tag);
 				PlaySound("HUD_Click");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.RESOURCES.PINNED);
+
+				// PinnedOffset 0→1: pinned category inserted at index 0,
+				// so current category index must shift up by 1
+				if (oldOffset == 0 && PinnedOffset == 1)
+					SetIndex(0, GetIndex(0) + 1);
 			}
 		}
 
 		private void ClearAllPins() {
 			var pinned = ClusterManager.Instance.activeWorld.worldInventory.pinnedResources;
+			if (pinned.Count == 0) return;
+
+			bool wasInPinned = IsPinnedCategory(GetIndex(0));
 			pinned.Clear();
 			PlaySound("HUD_Click_Deselect");
 			SpeechPipeline.SpeakInterrupt(
 				(string)STRINGS.ONIACCESS.RESOURCES.ALL_UNPINNED);
+
+			if (wasInPinned) {
+				Level = 0;
+				SetIndex(0, 0);
+				SetIndex(1, 0);
+				SyncCurrentIndex();
+				string label = GetItemLabel(0, new int[MaxLevel + 1]);
+				if (label != null)
+					SpeechPipeline.SpeakQueued(label);
+			} else if (Level == 0) {
+				// Category indices shifted down by 1, adjust
+				int idx = GetIndex(0) - 1;
+				if (idx < 0) idx = 0;
+				SetIndex(0, idx);
+				SyncCurrentIndex();
+			} else {
+				// Level 1 in regular category: category index shifted down by 1
+				SetIndex(0, GetIndex(0) - 1);
+			}
 		}
 
 		// ========================================

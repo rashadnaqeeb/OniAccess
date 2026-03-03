@@ -135,14 +135,11 @@ namespace OniAccess.Handlers.Resources {
 
 		/// <summary>
 		/// Builds a speech label for a resource at level 1.
+		/// Shows total, reserved (if any), available/overdrawn, and trend.
+		/// Format: "{name}: {total}[, {reserved} reserved, {available} available][, trend]"
 		///
-		/// For mass/quantity: shows total amount (what exists), then reserved
-		/// if any. Uses GetTotalAmount (not GetAmount which clamps to 0).
-		/// Format: "{name}: {total}[, {reserved} reserved][, trend]"
-		///
-		/// For kcal: shows calories from RationTracker. Reserved is in mass
-		/// units (mixed with calories is confusing), so it's omitted.
-		/// Format: "{name}: {calories}[, trend]"
+		/// Calorie amounts are converted via CaloriesPerUnit, matching the
+		/// game's ResourceEntry.GetAmounts conversion.
 		/// </summary>
 		internal static string BuildResourceLabel(Tag resourceTag, GameUtil.MeasureUnit measure) {
 			string name = resourceTag.ProperNameStripLink();
