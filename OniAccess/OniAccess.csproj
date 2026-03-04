@@ -10,6 +10,10 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
   <!-- Game DLL references via ONI_MANAGED environment variable -->
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
