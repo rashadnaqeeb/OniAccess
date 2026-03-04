@@ -23,12 +23,14 @@ namespace OniAccess.Handlers.Screens {
 
 		public override void OnActivate() {
 			base.OnActivate();
-			var worldSeedText = Traverse.Create(_screen).Field<LocText>("worldSeed").Value;
-			if (worldSeedText != null) {
-				string coords = worldSeedText.text;
+			try {
+				string coords = CustomGameSettings.Instance.GetSettingsCoordinate();
 				if (!string.IsNullOrEmpty(coords)) {
-					Speech.SpeechPipeline.SpeakQueued(coords);
+					Speech.SpeechPipeline.SpeakQueued(
+						string.Format(STRINGS.UI.FRONTEND.PAUSE_SCREEN.WORLD_SEED, coords));
 				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"PauseMenuHandler: failed to read world seed: {ex}");
 			}
 		}
 
