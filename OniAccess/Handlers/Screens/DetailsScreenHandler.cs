@@ -34,6 +34,7 @@ namespace OniAccess.Handlers.Screens {
 		private bool _suppressDisplayName;
 		private bool _pendingFirstSection;
 		private bool _pendingSilentRebuild;
+		private bool _pendingPreserveRebuild;
 		private bool _pendingTabSpeech;
 		private bool _pendingActivationSpeech;
 
@@ -431,10 +432,19 @@ namespace OniAccess.Handlers.Screens {
 		/// </summary>
 		internal static bool SuppressNextActivation;
 
+		/// <summary>
+		/// When set, the next same-target reactivation preserves the current
+		/// navigation position instead of resetting to the first item.
+		/// Used by RecipeQueueHandler so Escape/OK returns to the recipe
+		/// the user came from.
+		/// </summary>
+		internal static bool PreserveNavigationOnReactivate;
+
 		public override void OnActivate() {
 			_pendingActivationSpeech = false;
 			_pendingTabSpeech = false;
 			_pendingSilentRebuild = false;
+			_pendingPreserveRebuild = false;
 
 			var currentTarget = DetailsScreen.Instance != null
 				? DetailsScreen.Instance.target : null;
@@ -450,11 +460,22 @@ namespace OniAccess.Handlers.Screens {
 				_pendingSilentRebuild = true;
 			} else if (!sameTarget) {
 				_pendingFirstSection = true;
+			} else if (PreserveNavigationOnReactivate) {
+				PreserveNavigationOnReactivate = false;
+				_pendingPreserveRebuild = true;
 			} else {
 				_pendingSilentRebuild = true;
 			}
 			_suppressDisplayName = true;
+			int savedLevel = Level;
+			int saved0 = GetIndex(0), saved1 = GetIndex(1), saved2 = GetIndex(2);
 			base.OnActivate();
+			if (_pendingPreserveRebuild) {
+				Level = savedLevel;
+				SetIndex(0, saved0);
+				SetIndex(1, saved1);
+				SetIndex(2, saved2);
+			}
 			_suppressDisplayName = false;
 		}
 
@@ -511,6 +532,14 @@ namespace OniAccess.Handlers.Screens {
 				if (_sections.Count > 0) {
 					_pendingSilentRebuild = false;
 					ResetNavigation();
+					return false;
+				}
+			} else if (_pendingPreserveRebuild) {
+				RebuildSections();
+				if (_sections.Count > 0) {
+					_pendingPreserveRebuild = false;
+					ClampIndices();
+					SpeakCurrentItem();
 					return false;
 				}
 			} else if (_pendingFirstSection) {
@@ -712,6 +741,16 @@ namespace OniAccess.Handlers.Screens {
 
 		private void ResetNavigation() {
 			ResetState();
+		}
+
+		private void ClampIndices() {
+			int sCount = _sections.Count;
+			if (sCount == 0) return;
+			int s = GetIndex(0);
+			if (s >= sCount) SetIndex(0, sCount - 1);
+			var items = _sections[GetIndex(0)].Items;
+			int i = GetIndex(1);
+			if (i >= items.Count && items.Count > 0) SetIndex(1, items.Count - 1);
 		}
 
 		private void SpeakFirstSection() {

@@ -436,6 +436,7 @@ namespace OniAccess.Handlers.Screens {
 
 		private void CloseScreen() {
 			ResetOwnerToggleState();
+			DetailsScreenHandler.PreserveNavigationOnReactivate = true;
 			HandlerStack.Pop();
 			var ds = DetailsScreen.Instance;
 			if (ds != null)
