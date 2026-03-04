@@ -36,7 +36,10 @@ namespace OniAccess.Handlers.Screens {
 		private List<OwnablesSecondSideScreenRow> GetActiveRows() {
 			var allRows = _itemRowsField.GetValue(OwnablesScreen)
 				as List<OwnablesSecondSideScreenRow>;
-			if (allRows == null) return new List<OwnablesSecondSideScreenRow>();
+			if (allRows == null) {
+				Util.Log.Warn("OwnablesSecondHandler: itemRows value is null or wrong type");
+				return new List<OwnablesSecondSideScreenRow>();
+			}
 			var active = new List<OwnablesSecondSideScreenRow>();
 			foreach (var row in allRows) {
 				if (row.gameObject.activeSelf && row.item != null)
@@ -68,10 +71,11 @@ namespace OniAccess.Handlers.Screens {
 			if (info != null && !string.IsNullOrEmpty(info.description))
 				itemLabel += ", " + TextFilter.FilterForSpeech(info.description);
 
+			bool isCurrentItem = OwnablesScreen.HasItem
+				&& OwnablesScreen.CurrentSlotItem == item;
+
 			if (item.IsAssigned()) {
-				bool assignedToSelf = OwnablesScreen.HasItem
-					&& OwnablesScreen.CurrentSlotItem == item;
-				if (assignedToSelf)
+				if (isCurrentItem)
 					itemLabel += ", " + (string)STRINGS.UI.UISIDESCREENS.OWNABLESSECONDSIDESCREEN.ASSIGNED_TO_SELF_STATUS;
 				else
 					itemLabel += ", " + string.Format(
@@ -83,8 +87,6 @@ namespace OniAccess.Handlers.Screens {
 			Grid.CellToXY(cell, out int x, out int y);
 			itemLabel += $". {x}, {y}";
 
-			bool isCurrentItem = OwnablesScreen.HasItem
-				&& OwnablesScreen.CurrentSlotItem == item;
 			if (isCurrentItem)
 				itemLabel = (string)STRINGS.ONIACCESS.STATES.SELECTED + ", " + itemLabel;
 
