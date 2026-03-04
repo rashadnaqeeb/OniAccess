@@ -171,8 +171,14 @@ namespace OniAccess.Handlers.Tiles {
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
 			if (OverlayScreen.Instance != null) {
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
-				_lastOverlayMode = OverlayScreen.Instance.mode;
-				_overlaySubscribed = true;
+				try {
+					_lastOverlayMode = OverlayScreen.Instance.mode;
+					_overlaySubscribed = true;
+				} catch {
+					// OverlayScreen exists but mode not populated yet during early load.
+					// Tick() will retry via the deferred subscription path.
+					_overlaySubscribed = false;
+				}
 			} else {
 				_overlaySubscribed = false;
 			}

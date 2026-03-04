@@ -15,11 +15,14 @@ namespace OniAccess.Handlers.Tiles {
 
 		public void Tick() {
 			var speedScreen = SpeedControlScreen.Instance;
+			if (speedScreen == null) return;
+			var world = ClusterManager.Instance?.activeWorld;
+			if (world == null || world.AlertManager == null) return;
+
 			bool paused = speedScreen.IsPaused;
 			int speed = speedScreen.GetSpeed();
 			int cycle = GameClock.Instance.GetCycle();
 
-			var world = ClusterManager.Instance.activeWorld;
 			bool red = world.IsRedAlert();
 			bool yellow = world.IsYellowAlert();
 
