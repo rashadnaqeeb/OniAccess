@@ -27,6 +27,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<CheckboxListGroupSideScreen>(WalkCheckboxListGroup);
 			SideScreenWalker.RegisterOverride<ModuleFlightUtilitySideScreen>(WalkModuleFlightUtility);
 			SideScreenWalker.RegisterOverride<RocketModuleSideScreen>(WalkRocketModule);
+			SideScreenWalker.RegisterOverride<DispenserSideScreen>(WalkDispenser);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -484,6 +485,24 @@ namespace OniAccess.Widgets {
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"WalkComplexFabricator: noRecipesDiscoveredLabel read failed: {ex.Message}");
+			}
+
+			// Subtitle (e.g. discovery count)
+			try {
+				var subtitleLabel = tv.Field<LocText>("subtitleLabel").Value;
+				if (subtitleLabel != null && subtitleLabel.gameObject.activeSelf) {
+					var capturedSubtitle = subtitleLabel;
+					string text = capturedSubtitle.GetParsedText();
+					if (SideScreenWalker.HasVisibleContent(text)) {
+						items.Add(new LabelWidget {
+							Label = text,
+							GameObject = capturedSubtitle.gameObject,
+							SpeechFunc = () => capturedSubtitle.GetParsedText()
+						});
+					}
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkComplexFabricator: subtitleLabel read failed: {ex.Message}");
 			}
 
 			// Recipe toggles
@@ -1498,7 +1517,9 @@ namespace OniAccess.Widgets {
 
 					// Clear target button (only if a target is assigned)
 					var clearTargetButton = href.GetReference<KButton>("clearTargetButton");
-					if (clearTargetButton != null && clearTargetButton.gameObject.activeSelf) {
+					var selector = module.master.GetComponent<EntityClusterDestinationSelector>();
+					if (clearTargetButton != null && selector != null
+							&& selector.GetClusterEntityTarget() != null) {
 						children.Add(new ButtonWidget {
 							Label = (string)STRINGS.UI.UISIDESCREENS
 								.MODULEFLIGHTUTILITYSIDESCREEN.CLEAR_TARGET_BUTTON_TOOLTIP,
@@ -1678,6 +1699,64 @@ namespace OniAccess.Widgets {
 				GameObject = downBtn.gameObject,
 				SpeechFunc = () => downLabel
 			});
+		}
+
+		static void WalkDispenser(DispenserSideScreen screen, List<Widget> items) {
+			Traverse tv;
+			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkDispenser: Traverse create failed: {ex.Message}");
+				return;
+			}
+
+			// Dispense / Cancel button
+			try {
+				var dispenseButton = tv.Field<KButton>("dispenseButton").Value;
+				if (dispenseButton != null && dispenseButton.gameObject.activeSelf) {
+					var captured = dispenseButton;
+					items.Add(new ButtonWidget {
+						Label = SideScreenWalker.GetButtonLabel(captured, captured.transform.name),
+						Component = captured,
+						GameObject = captured.gameObject,
+						SpeechFunc = () => {
+							var lt = captured.GetComponentInChildren<LocText>();
+							return lt != null ? lt.text
+								: SideScreenWalker.GetButtonLabel(captured, captured.transform.name);
+						}
+					});
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkDispenser: dispenseButton read failed: {ex.Message}");
+			}
+
+			// Item rows (display-only selection indicators)
+			try {
+				var rows = tv.Field<Dictionary<Tag, GameObject>>("rows").Value;
+				if (rows == null) return;
+				foreach (var kv in rows) {
+					var rowGO = kv.Value;
+					if (rowGO == null || !rowGO.activeSelf) continue;
+					var href = rowGO.GetComponent<HierarchyReferences>();
+					if (href == null) continue;
+					var labelLt = href.GetReference<LocText>("Label");
+					if (labelLt == null) continue;
+					var capturedLt = labelLt;
+					var capturedGO = rowGO;
+					items.Add(new LabelWidget {
+						Label = capturedLt.text,
+						GameObject = capturedGO,
+						SuppressTooltip = true,
+						SpeechFunc = () => {
+							var mt = capturedGO.GetComponent<MultiToggle>();
+							string state = mt != null && mt.CurrentState == 0
+								? (string)STRINGS.ONIACCESS.STATES.SELECTED : "";
+							string name = capturedLt.text;
+							return string.IsNullOrEmpty(state) ? name : $"{state}, {name}";
+						}
+					});
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkDispenser: rows read failed: {ex.Message}");
+			}
 		}
 	}
 }
