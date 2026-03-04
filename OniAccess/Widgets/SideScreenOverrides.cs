@@ -26,6 +26,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<ClusterDestinationSideScreen>(WalkClusterDestination);
 			SideScreenWalker.RegisterOverride<CheckboxListGroupSideScreen>(WalkCheckboxListGroup);
 			SideScreenWalker.RegisterOverride<ModuleFlightUtilitySideScreen>(WalkModuleFlightUtility);
+			SideScreenWalker.RegisterOverride<RocketModuleSideScreen>(WalkRocketModule);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -1607,6 +1608,71 @@ namespace OniAccess.Widgets {
 					SpeechFunc = () => capturedGroupLabel.GetParsedText()
 				});
 			}
+		}
+		static void WalkRocketModule(RocketModuleSideScreen screen, List<Widget> items) {
+			// Module name
+			var nameLabel = screen.moduleNameLabel;
+			items.Add(new LabelWidget {
+				Label = nameLabel.GetParsedText(),
+				GameObject = nameLabel.gameObject,
+				SpeechFunc = () => nameLabel.GetParsedText()
+			});
+
+			// Module description
+			var descLabel = screen.moduleDescriptionLabel;
+			items.Add(new LabelWidget {
+				Label = descLabel.GetParsedText(),
+				GameObject = descLabel.gameObject,
+				SpeechFunc = () => descLabel.GetParsedText()
+			});
+
+			// Add Module
+			var addBtn = screen.addNewModuleButton;
+			items.Add(new ButtonWidget {
+				Label = SideScreenWalker.GetButtonLabel(addBtn, addBtn.transform.name),
+				Component = addBtn,
+				GameObject = addBtn.gameObject,
+				SpeechFunc = () => SideScreenWalker.GetButtonLabel(addBtn, addBtn.transform.name)
+			});
+
+			// Change Module
+			var changeBtn = screen.changeModuleButton;
+			items.Add(new ButtonWidget {
+				Label = SideScreenWalker.GetButtonLabel(changeBtn, changeBtn.transform.name),
+				Component = changeBtn,
+				GameObject = changeBtn.gameObject,
+				SpeechFunc = () => SideScreenWalker.GetButtonLabel(changeBtn, changeBtn.transform.name)
+			});
+
+			// Deconstruct / Cancel Deconstruct (dynamic label via removeButtonLabel)
+			var removeBtn = screen.removeModuleButton;
+			var removeLt = screen.removeButtonLabel;
+			items.Add(new ButtonWidget {
+				Label = removeLt.GetParsedText(),
+				Component = removeBtn,
+				GameObject = removeBtn.gameObject,
+				SpeechFunc = () => removeLt.GetParsedText()
+			});
+
+			// Move up (icon-only button, no child LocText)
+			var upBtn = screen.moveModuleUpButton;
+			string upLabel = (string)STRINGS.ONIACCESS.BUTTONS.MOVE_UP;
+			items.Add(new ButtonWidget {
+				Label = upLabel,
+				Component = upBtn,
+				GameObject = upBtn.gameObject,
+				SpeechFunc = () => upLabel
+			});
+
+			// Move down (icon-only button, no child LocText)
+			var downBtn = screen.moveModuleDownButton;
+			string downLabel = (string)STRINGS.ONIACCESS.BUTTONS.MOVE_DOWN;
+			items.Add(new ButtonWidget {
+				Label = downLabel,
+				Component = downBtn,
+				GameObject = downBtn.gameObject,
+				SpeechFunc = () => downLabel
+			});
 		}
 	}
 }

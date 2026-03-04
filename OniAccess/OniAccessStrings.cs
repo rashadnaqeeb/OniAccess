@@ -223,6 +223,8 @@ namespace STRINGS {
 			public static LocString MANAGE = "Manage";
 			public static LocString VIEW_OTHER_COLONIES = "View other colonies";
 			public static LocString TOGGLE_ALL = "Toggle all";
+			public static LocString MOVE_UP = "Move up";
+			public static LocString MOVE_DOWN = "Move down";
 		}
 
 		// World generation progress screen
