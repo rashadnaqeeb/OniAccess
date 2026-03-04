@@ -142,7 +142,7 @@ namespace OniAccess.Handlers.Tiles {
 				string rations = string.Format(
 					(string)STRINGS.ONIACCESS.GAME_STATE.RATIONS, formatted);
 				string trend = GetTrend(
-					TrackerTool.Instance.GetWorldTracker<KCalTracker>(worldId));
+					TrackerTool.Instance.GetWorldTracker<KCalTracker>(worldId), 500f);
 				if (trend != null)
 					rations += ", " + trend;
 				parts.Add(rations);
@@ -156,7 +156,7 @@ namespace OniAccess.Handlers.Tiles {
 				string stressStr = string.Format(
 					(string)STRINGS.ONIACCESS.GAME_STATE.STRESS, (int)stress);
 				string trend = GetTrend(
-					TrackerTool.Instance.GetWorldTracker<StressTracker>(worldId));
+					TrackerTool.Instance.GetWorldTracker<StressTracker>(worldId), 1f);
 				if (trend != null)
 					stressStr += ", " + trend;
 				parts.Add(stressStr);
@@ -185,7 +185,8 @@ namespace OniAccess.Handlers.Tiles {
 						string ebank = string.Format(
 							(string)STRINGS.ONIACCESS.GAME_STATE.ELECTROBANKS, formatted);
 						string trend = GetTrend(
-							TrackerTool.Instance.GetWorldTracker<ElectrobankJoulesTracker>(worldId));
+							TrackerTool.Instance.GetWorldTracker<ElectrobankJoulesTracker>(worldId),
+							10000f);
 						if (trend != null)
 							ebank += ", " + trend;
 						parts.Add(ebank);
@@ -199,12 +200,12 @@ namespace OniAccess.Handlers.Tiles {
 				SpeechPipeline.SpeakInterrupt(string.Join(", ", parts));
 		}
 
-		private static string GetTrend(WorldTracker tracker) {
+		private static string GetTrend(WorldTracker tracker, float threshold) {
 			if (tracker == null) return null;
 			float delta = tracker.GetDelta(600f);
-			if (delta > 0.5f)
+			if (delta > threshold)
 				return (string)STRINGS.ONIACCESS.RESOURCES.RISING;
-			if (delta < -0.5f)
+			if (delta < -threshold)
 				return (string)STRINGS.ONIACCESS.RESOURCES.FALLING;
 			return null;
 		}
