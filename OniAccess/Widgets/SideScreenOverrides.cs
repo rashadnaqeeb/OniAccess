@@ -32,6 +32,9 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<CounterSideScreen>(WalkCounter);
 			SideScreenWalker.RegisterOverride<LogicBitSelectorSideScreen>(WalkLogicBitSelector);
 			SideScreenWalker.RegisterOverride<RemoteWorkTerminalSidescreen>(WalkRemoteWorkTerminal);
+			SideScreenWalker.RegisterOverride<LureSideScreen>(WalkLure);
+			SideScreenWalker.RegisterOverride<CometDetectorSideScreen>(WalkCometDetector);
+			SideScreenWalker.RegisterOverride<NToggleSideScreen>(WalkNToggle);
 			SideScreenWalker.RegisterOverride<GeneticAnalysisStationSideScreen>(WalkGeneticAnalysis);
 			SideScreenWalker.RegisterOverride<RelatedEntitiesSideScreen>(WalkRelatedEntities);
 			SideScreenWalker.RegisterOverride<GeoTunerSideScreen>(WalkGeoTuner);
@@ -2003,6 +2006,154 @@ namespace OniAccess.Widgets {
 				} catch (System.Exception ex) {
 					Util.Log.Warn($"WalkGeoTuner: row '{child.name}' failed: {ex.Message}");
 				}
+			}
+		}
+
+		static void WalkLure(LureSideScreen screen, List<Widget> items) {
+			CreatureLure lure;
+			try {
+				lure = Traverse.Create(screen).Field<CreatureLure>("target_lure").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkLure: target_lure read failed: {ex.Message}");
+				return;
+			}
+			if (lure == null) return;
+
+			var container = screen.toggle_container;
+			if (container == null) return;
+			var containerT = container.transform;
+
+			for (int i = 0; i < containerT.childCount; i++) {
+				var child = containerT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				var mt = child.GetComponent<MultiToggle>();
+				if (mt == null) continue;
+
+				var href = child.GetComponent<HierarchyReferences>();
+				var labelLt = href != null ? href.GetReference<LocText>("Label") : null;
+				var capturedLure = lure;
+				var capturedMt = mt;
+				var capturedGO = child.gameObject;
+				var capturedLt = labelLt;
+
+				Tag rowTag = Tag.Invalid;
+				foreach (var kv in screen.toggles_by_tag) {
+					if (kv.Value == mt) { rowTag = kv.Key; break; }
+				}
+				var capturedTag = rowTag;
+
+				string label = capturedLt != null ? capturedLt.GetParsedText() : child.name;
+				items.Add(new ToggleWidget {
+					Label = label,
+					Component = capturedMt,
+					GameObject = capturedGO,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string name = capturedLt != null ? capturedLt.GetParsedText() : capturedGO.name;
+						bool selected = capturedLure.activeBaitSetting == capturedTag;
+						return selected
+							? $"{(string)STRINGS.ONIACCESS.STATES.SELECTED}, {name}"
+							: name;
+					}
+				});
+			}
+		}
+
+		static void WalkCometDetector(CometDetectorSideScreen screen, List<Widget> items) {
+			var containerT = screen.rowContainer;
+			if (containerT == null || containerT.childCount == 0) return;
+
+			var members = new List<SideScreenWalker.RadioMember>();
+			for (int i = 0; i < containerT.childCount; i++) {
+				var child = containerT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				var mt = child.GetComponent<MultiToggle>();
+				if (mt == null) continue;
+				var href = child.GetComponent<HierarchyReferences>();
+				var labelLt = href != null ? href.GetReference<LocText>("label") : null;
+				string label = labelLt != null ? labelLt.GetParsedText() : child.name;
+				members.Add(new SideScreenWalker.RadioMember {
+					Label = label,
+					MultiToggleRef = mt
+				});
+			}
+			if (members.Count == 0) return;
+
+			string groupLabel = screen.GetTitle();
+			if (string.IsNullOrEmpty(groupLabel)) groupLabel = members[0].Label;
+			var radioMembers = members;
+			var capturedGroupLabel = groupLabel;
+
+			items.Add(new DropdownWidget {
+				Label = groupLabel,
+				Component = members[0].MultiToggleRef,
+				SuppressTooltip = true,
+				GameObject = containerT.gameObject,
+				Tag = radioMembers,
+				SpeechFunc = () => {
+					string selected = null;
+					for (int k = 0; k < radioMembers.Count; k++) {
+						if (radioMembers[k].MultiToggleRef.CurrentState == 1) {
+							selected = radioMembers[k].Label;
+							break;
+						}
+					}
+					if (selected == null) selected = radioMembers[0].Label;
+					return $"{capturedGroupLabel}, {selected}";
+				}
+			});
+		}
+
+		static void WalkNToggle(NToggleSideScreen screen, List<Widget> items) {
+			INToggleSideScreenControl target;
+			List<KToggle> buttons;
+			try {
+				var tv = Traverse.Create(screen);
+				target = tv.Field<INToggleSideScreenControl>("target").Value;
+				buttons = tv.Field<List<KToggle>>("buttonList").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkNToggle: field read failed: {ex.Message}");
+				return;
+			}
+			if (target == null || buttons == null) return;
+
+			var capturedTarget = target;
+			for (int i = 0; i < buttons.Count; i++) {
+				var btn = buttons[i];
+				if (btn == null || !btn.gameObject.activeSelf) continue;
+
+				var labelLt = btn.GetComponentInChildren<LocText>();
+				int capturedIdx = i;
+				var capturedBtn = btn;
+				var capturedLt = labelLt;
+
+				string label = capturedLt != null ? capturedLt.text : $"Option {i + 1}";
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = capturedBtn,
+					GameObject = capturedBtn.gameObject,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string name = capturedLt != null ? capturedLt.text : $"Option {capturedIdx + 1}";
+						bool isSelected = capturedTarget.SelectedOption == capturedIdx
+							&& capturedTarget.QueuedOption == capturedIdx;
+						bool isQueued = capturedTarget.QueuedOption == capturedIdx;
+
+						if (isSelected)
+							return $"{(string)STRINGS.ONIACCESS.STATES.SELECTED}, {name}";
+						if (isQueued)
+							return $"{(string)STRINGS.ONIACCESS.STATES.QUEUED}, {name}";
+						return name;
+					}
+				});
+			}
+
+			string desc = capturedTarget.Description;
+			if (!string.IsNullOrEmpty(desc)) {
+				items.Add(new LabelWidget {
+					Label = desc,
+					SpeechFunc = () => capturedTarget.Description
+				});
 			}
 		}
 
