@@ -327,12 +327,10 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			if (!UtilityStartSet) {
-				var pos = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
-				string failReason;
-				if (!_def.IsValidPlaceLocation(null, pos, Orientation.Neutral, out failReason)) {
+				if (!IsValidUtilityCell(cell)) {
 					PlaySound("Negative");
 					SpeechPipeline.SpeakInterrupt(
-						failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
+						(string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
 					return;
 				}
 				_utilityStartCell = cell;
@@ -385,12 +383,10 @@ namespace OniAccess.Handlers.Build {
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 				return;
 			}
-			var pos = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
-			string failReason;
-			if (!_def.IsValidPlaceLocation(null, pos, Orientation.Neutral, out failReason)) {
+			if (!IsValidUtilityCell(cell)) {
 				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
-					failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
+					(string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
 				return;
 			}
 
@@ -441,11 +437,31 @@ namespace OniAccess.Handlers.Build {
 
 		private bool ValidateUtilityPath(List<int> path) {
 			foreach (int cell in path) {
-				var pos = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
-				string failReason;
-				if (!_def.IsValidPlaceLocation(null, pos, Orientation.Neutral, out failReason))
+				if (!IsValidUtilityCell(cell))
 					return false;
 			}
+			return true;
+		}
+
+		/// <summary>
+		/// Mirrors BaseUtilityBuildTool.CheckValidPathPiece: allows cells
+		/// with existing utilities that have KAnimGraphTileVisualizer
+		/// (i.e. built conduits/wires), unlike IsValidPlaceLocation which
+		/// rejects any occupied cell.
+		/// </summary>
+		private bool IsValidUtilityCell(int cell) {
+			if (_def.BuildLocationRule == BuildLocationRule.NotInTiles) {
+				if (Grid.Objects[cell, 9] != null)
+					return false;
+				if (Grid.HasDoor[cell])
+					return false;
+			}
+			var objLayerGo = Grid.Objects[cell, (int)_def.ObjectLayer];
+			if (objLayerGo != null && objLayerGo.GetComponent<KAnimGraphTileVisualizer>() == null)
+				return false;
+			var tileLayerGo = Grid.Objects[cell, (int)_def.TileLayer];
+			if (tileLayerGo != null && tileLayerGo.GetComponent<KAnimGraphTileVisualizer>() == null)
+				return false;
 			return true;
 		}
 
