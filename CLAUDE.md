@@ -46,7 +46,7 @@ Use the game's localized text (`STRINGS` namespace, `LocText` components), UI st
 ### Never cache game state
 Do not copy game data into mod-side dictionaries, lists, or string fields for later use. Always re-query the game when you need a value. A sighted player can see when the screen contradicts itself; a blind player trusts speech absolutely. Stale data is worse than no data. The only acceptable "cache" is holding a reference to a live Unity component (e.g., a `KSlider` or `LocText`) and reading its properties at speech time.
 
-### No inline string literals
+### No inline non-punctuation string literals
 All user-facing text must come from a `LocString` reference. Never inline string literals for text that gets spoken. Prefer the game's `STRINGS` namespace — search `docs/CODEBASE_INDEX.md` and `ONI-Decompiled/` for existing localized text before adding to `OniAccessStrings.cs`. The game already has strings for common labels ("Embark", "Close", "Cancel", etc.). Only add mod-authored strings when no game equivalent exists.
 
 ### Concise announcements
