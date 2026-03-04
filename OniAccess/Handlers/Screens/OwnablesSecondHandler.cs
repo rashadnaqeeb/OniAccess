@@ -13,9 +13,12 @@ namespace OniAccess.Handlers.Screens {
 
 		private static readonly FieldInfo _itemRowsField = typeof(OwnablesSecondSideScreen)
 			.GetField("itemRows", BindingFlags.NonPublic | BindingFlags.Instance);
+		private static readonly FieldInfo _sideScreensField = typeof(DetailsScreen)
+			.GetField("sideScreens", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		static OwnablesSecondHandler() {
 			if (_itemRowsField == null) Util.Log.Warn("OwnablesSecondHandler: itemRows field not found");
+			if (_sideScreensField == null) Util.Log.Warn("OwnablesSecondHandler: sideScreens field not found");
 		}
 
 		public override string DisplayName => null;
@@ -116,9 +119,26 @@ namespace OniAccess.Handlers.Screens {
 		private void CloseScreen() {
 			DetailsScreenHandler.PreserveNavigationOnReactivate = true;
 			HandlerStack.Pop();
+			// SetSelectedSlot(null) clears lastSelectedSlot (deselects the
+			// parent toggle) and internally calls ClearSecondarySideScreen.
+			var parent = FindParentScreen();
+			if (parent != null)
+				parent.SetSelectedSlot(null);
+			else
+				DetailsScreen.Instance?.ClearSecondarySideScreen();
+		}
+
+		private OwnablesSidescreen FindParentScreen() {
 			var ds = DetailsScreen.Instance;
-			if (ds != null)
-				ds.ClearSecondarySideScreen();
+			if (ds == null) return null;
+			var refs = _sideScreensField.GetValue(ds)
+				as List<DetailsScreen.SideScreenRef>;
+			if (refs == null) return null;
+			foreach (var r in refs) {
+				if (r.screenInstance is OwnablesSidescreen ownables)
+					return ownables;
+			}
+			return null;
 		}
 
 		// ========================================
