@@ -515,6 +515,7 @@ namespace OniAccess.Handlers.Tiles {
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolFilterHandler) return;
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.MoveToLocationHandler) return;
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.CopySettingsHandler) return;
+			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.PlaceToolHandler) return;
 			if (HandlerStack.ActiveHandler is Build.BuildToolHandler) return;
 			if (HandlerStack.ActiveHandler is Build.ActionMenuHandler) return;
 			if (tool is CopySettingsTool) {
@@ -523,6 +524,10 @@ namespace OniAccess.Handlers.Tiles {
 			}
 			if (tool is MoveToLocationTool) {
 				HandlerStack.Push(new OniAccess.Handlers.Tools.MoveToLocationHandler());
+				return;
+			}
+			if (tool is PlaceTool) {
+				HandlerStack.Push(new OniAccess.Handlers.Tools.PlaceToolHandler());
 				return;
 			}
 			HandlerStack.Push(new OniAccess.Handlers.Tools.ToolHandler());

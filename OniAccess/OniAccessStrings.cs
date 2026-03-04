@@ -448,6 +448,10 @@ namespace STRINGS {
 			// {0} = source building name
 			public static LocString COPY_SETTINGS_ACTIVATION = "{0}, copy settings";
 			public static LocString COPY_SETTINGS_NO_TARGET = "no matching building";
+			// {0} = item being placed
+			public static LocString PLACE_ACTIVATION = "place, {0}";
+			public static LocString PLACE_CONFIRMED = "placed";
+			public static LocString PLACE_INVALID = "invalid location";
 			public static LocString DONE = "done";
 		}
 
