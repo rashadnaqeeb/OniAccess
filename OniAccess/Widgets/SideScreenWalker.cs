@@ -419,7 +419,7 @@ namespace OniAccess.Widgets {
 			var checkImage = href.GetReference<Image>("Check");
 			if (checkImage == null) return false;
 
-			if (labelLt != null) claimedLabels.Add(labelLt);
+			claimedLabels.Add(labelLt);
 
 			var capturedLabel = labelLt;
 			var capturedCheck = checkImage;
@@ -741,13 +741,13 @@ namespace OniAccess.Widgets {
 			var lt = button.GetComponentInChildren<LocText>();
 			if (lt != null) {
 				string text = lt.GetParsedText();
-				if (!string.IsNullOrEmpty(text))
+				if (HasVisibleContent(text))
 					return text;
 			}
 			var screen = button.GetComponentInParent<SideScreenContent>();
 			if (screen != null) {
 				string title = screen.GetTitle();
-				if (!string.IsNullOrEmpty(title))
+				if (HasVisibleContent(title))
 					return title;
 			}
 			return fallback;
@@ -892,7 +892,7 @@ namespace OniAccess.Widgets {
 				if (claimedLabels.Contains(lt)) continue;
 
 				string text = lt.GetParsedText();
-				if (string.IsNullOrEmpty(text)) continue;
+				if (!HasVisibleContent(text)) continue;
 
 				// Skip LocTexts inside interactive widgets (they're labels)
 				if (lt.GetComponentInParent<KToggle>() != null) continue;

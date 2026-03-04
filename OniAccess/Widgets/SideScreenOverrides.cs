@@ -278,12 +278,14 @@ namespace OniAccess.Widgets {
 					var capturedLabel = allCheckBoxLabel;
 					items.Add(new ToggleWidget {
 						Label = capturedLabel != null
-							? capturedLabel.GetParsedText() : "All",
+							? capturedLabel.GetParsedText()
+							: (string)STRINGS.UI.UISIDESCREENS.TREEFILTERABLESIDESCREEN.ALLBUTTON,
 						Component = capturedBox,
 						GameObject = capturedBox.gameObject,
 						SpeechFunc = () => {
 							string lbl = capturedLabel != null
-								? capturedLabel.GetParsedText() : "All";
+								? capturedLabel.GetParsedText()
+								: (string)STRINGS.UI.UISIDESCREENS.TREEFILTERABLESIDESCREEN.ALLBUTTON;
 							return $"{lbl}, {WidgetOps.GetMultiToggleState(capturedBox)}";
 						}
 					});
@@ -578,7 +580,7 @@ namespace OniAccess.Widgets {
 							.GetReference<RectTransform>("TechRequired");
 						if (techRequired != null && techRequired.gameObject.activeSelf) {
 							speech += $", {(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE}";
-						} else if (capturedLabelLt != null && capturedLabelLt.color.r >= 0.1f) {
+						} else if (capturedLabelLt != null && capturedLabelLt.color.r > 0.0f) {
 							speech += $", {(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE}";
 						}
 
@@ -914,11 +916,11 @@ namespace OniAccess.Widgets {
 
 				var capturedCategory = categoryRow;
 				items.Add(new LabelWidget {
-					Label = capturedCategory.titleLabel.text,
+					Label = capturedCategory.titleLabel.GetParsedText(),
 					GameObject = capturedCategory.gameObject,
 					SuppressTooltip = true,
 					Children = children,
-					SpeechFunc = () => capturedCategory.titleLabel.text
+					SpeechFunc = () => capturedCategory.titleLabel.GetParsedText()
 				});
 			}
 		}
@@ -1099,7 +1101,8 @@ namespace OniAccess.Widgets {
 						try {
 							selectedId = Traverse.Create(capturedScreen)
 								.Field<string>("selectedStage").Value;
-						} catch {
+						} catch (System.Exception ex) {
+							Util.Log.Warn($"WalkArtableSelection: selectedStage read failed: {ex.Message}");
 							selectedId = "";
 						}
 						bool isSelected = capturedStageId == selectedId;
@@ -1174,7 +1177,8 @@ namespace OniAccess.Widgets {
 						try {
 							chosenState = Traverse.Create(capturedTarget)
 								.Field<string>("chosenState").Value;
-						} catch {
+						} catch (System.Exception ex) {
+							Util.Log.Warn($"WalkMonument: chosenState read failed: {ex.Message}");
 							chosenState = "";
 						}
 						string speech = capturedPart.Name;
@@ -1358,7 +1362,10 @@ namespace OniAccess.Widgets {
 				LocText groupLabel;
 				try {
 					groupLabel = groupHref.GetReference<LocText>("Label");
-				} catch { continue; }
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"WalkTelepad: victory group reference failed: {ex.Message}");
+					continue;
+				}
 				if (groupLabel == null) continue;
 
 				var children = new List<Widget>();
@@ -1373,7 +1380,10 @@ namespace OniAccess.Widgets {
 					try {
 						rowLabel = rowHref.GetReference<LocText>("Label");
 						rowCheck = rowHref.GetReference<Image>("Check");
-					} catch { continue; }
+					} catch (System.Exception ex) {
+						Util.Log.Warn($"WalkTelepad: victory row reference failed: {ex.Message}");
+						continue;
+					}
 					if (rowLabel == null || rowCheck == null) continue;
 					if (rowLabel == groupLabel) continue;
 
@@ -1406,8 +1416,14 @@ namespace OniAccess.Widgets {
 				ClusterDestinationSideScreen screen, List<Widget> items) {
 			SideScreenWalker.WalkDefault(screen, items);
 
-			var rocketSelector = Traverse.Create(screen)
-				.Property<RocketClusterDestinationSelector>("targetRocketSelector").Value;
+			RocketClusterDestinationSelector rocketSelector;
+			try {
+				rocketSelector = Traverse.Create(screen)
+					.Property<RocketClusterDestinationSelector>("targetRocketSelector").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkClusterDestination: targetRocketSelector read failed: {ex.Message}");
+				return;
+			}
 			if (rocketSelector == null) return;
 
 			var pads = LaunchPad.GetLaunchPadsForDestination(
@@ -1576,23 +1592,37 @@ namespace OniAccess.Widgets {
 
 		static void WalkCheckboxListGroup(
 				CheckboxListGroupSideScreen screen, List<Widget> items) {
-			var t = Traverse.Create(screen);
-
-			var descriptionLabel = t.Field<LocText>("descriptionLabel").Value;
-			if (descriptionLabel != null && descriptionLabel.enabled) {
-				string desc = descriptionLabel.GetParsedText();
-				if (!string.IsNullOrEmpty(desc)) {
-					var capturedDesc = descriptionLabel;
-					items.Add(new LabelWidget {
-						Label = desc,
-						GameObject = descriptionLabel.gameObject,
-						SpeechFunc = () => capturedDesc.GetParsedText()
-					});
-				}
+			Traverse t;
+			try { t = Traverse.Create(screen); } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkCheckboxListGroup: Traverse create failed: {ex.Message}");
+				return;
 			}
 
-			var groups = t.Field<List<CheckboxListGroupSideScreen.CheckboxContainer>>(
-				"activeChecklistGroups").Value;
+			try {
+				var descriptionLabel = t.Field<LocText>("descriptionLabel").Value;
+				if (descriptionLabel != null && descriptionLabel.enabled) {
+					string desc = descriptionLabel.GetParsedText();
+					if (!string.IsNullOrEmpty(desc)) {
+						var capturedDesc = descriptionLabel;
+						items.Add(new LabelWidget {
+							Label = desc,
+							GameObject = descriptionLabel.gameObject,
+							SpeechFunc = () => capturedDesc.GetParsedText()
+						});
+					}
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkCheckboxListGroup: descriptionLabel read failed: {ex.Message}");
+			}
+
+			List<CheckboxListGroupSideScreen.CheckboxContainer> groups;
+			try {
+				groups = t.Field<List<CheckboxListGroupSideScreen.CheckboxContainer>>(
+					"activeChecklistGroups").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkCheckboxListGroup: activeChecklistGroups read failed: {ex.Message}");
+				return;
+			}
 			if (groups == null) return;
 
 			foreach (var group in groups) {
@@ -1739,7 +1769,7 @@ namespace OniAccess.Widgets {
 						GameObject = captured.gameObject,
 						SpeechFunc = () => {
 							var lt = captured.GetComponentInChildren<LocText>();
-							return lt != null ? lt.text
+							return lt != null ? lt.GetParsedText()
 								: SideScreenWalker.GetButtonLabel(captured, captured.transform.name);
 						}
 					});
@@ -1762,14 +1792,14 @@ namespace OniAccess.Widgets {
 					var capturedLt = labelLt;
 					var capturedGO = rowGO;
 					items.Add(new LabelWidget {
-						Label = capturedLt.text,
+						Label = capturedLt.GetParsedText(),
 						GameObject = capturedGO,
 						SuppressTooltip = true,
 						SpeechFunc = () => {
 							var mt = capturedGO.GetComponent<MultiToggle>();
 							string state = mt != null && mt.CurrentState == 0
 								? (string)STRINGS.ONIACCESS.STATES.SELECTED : "";
-							string name = capturedLt.text;
+							string name = capturedLt.GetParsedText();
 							return string.IsNullOrEmpty(state) ? name : $"{state}, {name}";
 						}
 					});
@@ -1856,14 +1886,14 @@ namespace OniAccess.Widgets {
 					var capturedLt = labelLt;
 					var capturedMt = mt;
 					items.Add(new ButtonWidget {
-						Label = capturedLt.text,
+						Label = capturedLt.GetParsedText(),
 						Component = capturedMt,
 						GameObject = child.gameObject,
 						SuppressTooltip = true,
 						SpeechFunc = () => {
 							string state = capturedMt.CurrentState == 1
 								? $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}" : "";
-							return $"{capturedLt.text}{state}";
+							return $"{capturedLt.GetParsedText()}{state}";
 						}
 					});
 				} catch (System.Exception ex) {
@@ -1919,12 +1949,12 @@ namespace OniAccess.Widgets {
 					var capturedProgressLt = progressLt;
 					var capturedToggle = toggle;
 					items.Add(new ToggleWidget {
-						Label = capturedLabelLt.text,
+						Label = capturedLabelLt.GetParsedText(),
 						Component = capturedToggle,
 						GameObject = child.gameObject,
 						SuppressTooltip = true,
 						SpeechFunc = () => {
-							string name = capturedLabelLt.text;
+							string name = capturedLabelLt.GetParsedText();
 							string progress = capturedProgressLt != null
 								? capturedProgressLt.GetParsedText() : "";
 							return string.IsNullOrEmpty(progress)
@@ -1995,12 +2025,12 @@ namespace OniAccess.Widgets {
 					var capturedAmountLt = amountLt;
 					var capturedMt = mt;
 					items.Add(new ButtonWidget {
-						Label = capturedLabelLt.text,
+						Label = capturedLabelLt.GetParsedText(),
 						Component = capturedMt,
 						GameObject = child.gameObject,
 						SuppressTooltip = true,
 						SpeechFunc = () => {
-							string name = capturedLabelLt.text;
+							string name = capturedLabelLt.GetParsedText();
 							string selected = capturedMt.CurrentState == 1
 								? $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}" : "";
 							string amount = "";
@@ -2137,14 +2167,16 @@ namespace OniAccess.Widgets {
 				var capturedBtn = btn;
 				var capturedLt = labelLt;
 
-				string label = capturedLt != null ? capturedLt.text : $"Option {i + 1}";
+				if (capturedLt == null)
+					Util.Log.Warn($"WalkNToggle: no LocText on button {btn.transform.name}, using transform name");
+				string label = capturedLt != null ? capturedLt.GetParsedText() : btn.transform.name;
 				items.Add(new ButtonWidget {
 					Label = label,
 					Component = capturedBtn,
 					GameObject = capturedBtn.gameObject,
 					SuppressTooltip = true,
 					SpeechFunc = () => {
-						string name = capturedLt != null ? capturedLt.text : $"Option {capturedIdx + 1}";
+						string name = capturedLt != null ? capturedLt.GetParsedText() : capturedBtn.transform.name;
 						bool isSelected = capturedTarget.SelectedOption == capturedIdx
 							&& capturedTarget.QueuedOption == capturedIdx;
 						bool isQueued = capturedTarget.QueuedOption == capturedIdx;
