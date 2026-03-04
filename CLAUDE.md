@@ -21,6 +21,11 @@ When a build fails on a type or method signature, look it up in `ONI-Decompiled/
 - `docs/` - design documentation
 - `docs/CODEBASE_INDEX.md` - complete namespace reference for decompiled ONI source
 - `.planning/` - project planning files
+- `changes.md` - changelog for user-facing features and bug fixes
+
+## Changelog
+
+When committing a new feature or bug fix, add an entry to `changes.md`. Keep entries short — one line per change, written from the player's perspective (what changed for them, not implementation details).
 
 ## Code Style
 
