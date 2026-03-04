@@ -38,6 +38,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<GeneticAnalysisStationSideScreen>(WalkGeneticAnalysis);
 			SideScreenWalker.RegisterOverride<RelatedEntitiesSideScreen>(WalkRelatedEntities);
 			SideScreenWalker.RegisterOverride<GeoTunerSideScreen>(WalkGeoTuner);
+			SideScreenWalker.RegisterOverride<BaseGameImpactorImperativeSideScreen>(WalkBaseGameImpactorImperative);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -1612,9 +1613,11 @@ namespace OniAccess.Widgets {
 
 					LocText itemLabel;
 					Image itemCheck;
+					ToolTip itemTooltip;
 					try {
 						itemLabel = checkboxRef.GetReference<LocText>("Text");
 						itemCheck = checkboxRef.GetReference<Image>("Check");
+						itemTooltip = checkboxRef.GetReference<ToolTip>("Tooltip");
 					} catch (System.Exception ex) {
 						Util.Log.Warn($"WalkCheckboxListGroup: checkbox reference failed: {ex.Message}");
 						continue;
@@ -1623,6 +1626,7 @@ namespace OniAccess.Widgets {
 
 					var capturedLabel = itemLabel;
 					var capturedCheck = itemCheck;
+					var capturedTooltip = itemTooltip;
 					children.Add(new LabelWidget {
 						Label = capturedLabel.GetParsedText(),
 						GameObject = checkboxRef.gameObject,
@@ -1630,7 +1634,13 @@ namespace OniAccess.Widgets {
 							string status = capturedCheck.enabled
 								? (string)STRINGS.ONIACCESS.STATES.CONDITION_MET
 								: (string)STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET;
-							return $"{status}, {capturedLabel.GetParsedText()}";
+							string speech = $"{status}, {capturedLabel.GetParsedText()}";
+							if (capturedTooltip != null) {
+								string ttText = WidgetOps.ReadAllTooltipText(capturedTooltip);
+								if (!string.IsNullOrEmpty(ttText))
+									speech += $", {ttText}";
+							}
+							return speech;
 						}
 					});
 				}
@@ -2200,6 +2210,51 @@ namespace OniAccess.Widgets {
 						speech += $", {signalState}";
 						return speech;
 					}
+				});
+			}
+		}
+
+		static void WalkBaseGameImpactorImperative(
+				BaseGameImpactorImperativeSideScreen screen, List<Widget> items) {
+			var t = Traverse.Create(screen);
+
+			LocText healthBarLabel;
+			ToolTip healthBarTooltip;
+			try {
+				healthBarLabel = t.Field<LocText>("healthBarLabel").Value;
+				healthBarTooltip = t.Field<ToolTip>("healthBarTooltip").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkBaseGameImpactorImperative: health bar fields failed: {ex.Message}");
+				healthBarLabel = null;
+				healthBarTooltip = null;
+			}
+			if (healthBarLabel != null && healthBarTooltip != null) {
+				var capturedLabel = healthBarLabel;
+				var capturedTooltip = healthBarTooltip;
+				items.Add(new LabelWidget {
+					Label = capturedLabel.GetParsedText(),
+					GameObject = capturedTooltip.gameObject,
+					SpeechFunc = () => WidgetOps.ReadAllTooltipText(capturedTooltip)
+				});
+			}
+
+			LocText timeBarLabel;
+			ToolTip timeBarTooltip;
+			try {
+				timeBarLabel = t.Field<LocText>("timeBarLabel").Value;
+				timeBarTooltip = t.Field<ToolTip>("timeBarTooltip").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkBaseGameImpactorImperative: time bar fields failed: {ex.Message}");
+				timeBarLabel = null;
+				timeBarTooltip = null;
+			}
+			if (timeBarLabel != null && timeBarTooltip != null) {
+				var capturedLabel = timeBarLabel;
+				var capturedTooltip = timeBarTooltip;
+				items.Add(new LabelWidget {
+					Label = capturedLabel.GetParsedText(),
+					GameObject = capturedTooltip.gameObject,
+					SpeechFunc = () => WidgetOps.ReadAllTooltipText(capturedTooltip)
 				});
 			}
 		}
