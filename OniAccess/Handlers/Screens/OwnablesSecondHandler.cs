@@ -39,7 +39,7 @@ namespace OniAccess.Handlers.Screens {
 			if (allRows == null) return new List<OwnablesSecondSideScreenRow>();
 			var active = new List<OwnablesSecondSideScreenRow>();
 			foreach (var row in allRows) {
-				if (row.gameObject.activeSelf)
+				if (row.gameObject.activeSelf && row.item != null)
 					active.Add(row);
 			}
 			return active;
@@ -52,7 +52,7 @@ namespace OniAccess.Handlers.Screens {
 				bool hasItem = OwnablesScreen.HasItem;
 				string label = (string)STRINGS.UI.UISIDESCREENS.OWNABLESSECONDSIDESCREEN.NONE_ROW_LABEL;
 				if (!hasItem)
-					label += ", " + (string)STRINGS.ONIACCESS.STATES.SELECTED;
+					label = (string)STRINGS.ONIACCESS.STATES.SELECTED + ", " + label;
 				return label;
 			}
 
@@ -61,19 +61,28 @@ namespace OniAccess.Handlers.Screens {
 			if (rowIdx < 0 || rowIdx >= rows.Count) return null;
 			var row = rows[rowIdx];
 
-			string name = row.nameLabel.GetParsedText();
-			string status = row.statusLabel.gameObject.activeSelf
-				? row.statusLabel.GetParsedText() : null;
+			var item = row.item;
+			string itemLabel = TextFilter.FilterForSpeech(item.GetProperName());
 
-			string itemLabel = TextFilter.FilterForSpeech(name);
-			if (!string.IsNullOrEmpty(status))
-				itemLabel += ", " + TextFilter.FilterForSpeech(status);
+			var info = item.gameObject.GetComponent<InfoDescription>();
+			if (info != null && !string.IsNullOrEmpty(info.description))
+				itemLabel += ", " + TextFilter.FilterForSpeech(info.description);
 
-			bool isAssigned = row.item != null
-				&& OwnablesScreen.HasItem
-				&& OwnablesScreen.CurrentSlotItem == row.item;
-			if (isAssigned)
-				itemLabel += ", " + (string)STRINGS.ONIACCESS.STATES.SELECTED;
+			if (item.IsAssigned()) {
+				bool assignedToSelf = OwnablesScreen.HasItem
+					&& OwnablesScreen.CurrentSlotItem == item;
+				if (assignedToSelf)
+					itemLabel += ", " + (string)STRINGS.UI.UISIDESCREENS.OWNABLESSECONDSIDESCREEN.ASSIGNED_TO_SELF_STATUS;
+				else
+					itemLabel += ", " + string.Format(
+						(string)STRINGS.UI.UISIDESCREENS.OWNABLESSECONDSIDESCREEN.ASSIGNED_TO_OTHER_STATUS,
+						item.assignee.GetProperName());
+			}
+
+			bool isCurrentItem = OwnablesScreen.HasItem
+				&& OwnablesScreen.CurrentSlotItem == item;
+			if (isCurrentItem)
+				itemLabel = (string)STRINGS.ONIACCESS.STATES.SELECTED + ", " + itemLabel;
 
 			return itemLabel;
 		}
