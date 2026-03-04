@@ -308,6 +308,18 @@ namespace STRINGS {
 			public static LocString PLAYING = "Video playing";
 		}
 
+		// Dupe cycle navigator ([ / ] / \ keys)
+		public class DUPES {
+			public static LocString NO_DUPLICANTS = "no duplicants";
+			public static LocString IDLE = "idle";
+			public static LocString INCAPACITATED = "incapacitated";
+			public static LocString HEALTH_CRITICAL = "critical health";
+			public static LocString HEALTH_INJURED = "injured";
+			public static LocString SICK = "sick";
+			public static LocString HELP_CYCLE = "Cycle through duplicants";
+			public static LocString HELP_JUMP = "Jump cursor to current duplicant, or open details";
+		}
+
 		// Game clock and speed announcements
 		public class GAME_STATE {
 			// {0} = speed name (e.g. "1x", "2x", "3x")

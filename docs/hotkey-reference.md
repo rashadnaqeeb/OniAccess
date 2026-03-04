@@ -214,8 +214,9 @@ These are only relevant if debug mode is active, but listed for completeness to 
 | Cycle coordinate mode | Shift+K | tile | Cycles Off -> Append -> Prepend -> Off. Attaches coordinates to glance announcements |
 | Read tooltip summary | I | tile | Overwrites Disinfect tool hotkey (tools are activated through the mod's tool menu). Speaks first block of hover tooltip |
 | Browse hover tooltip | Shift+I | tile | Opens tooltip browser with full hover tooltip broken into navigable sections |
-| Open tool menu | [ | tile | Overwrites Building Utility 2 (context-dependent action). Opens tool picker from tile cursor |
-| User menu (entity actions) | ] | details screen | Overwrites Building Utility 3 (context-dependent action that appears in the user menu itself). Opens action overlay on details screen |
+| Cycle dupe backward | [ | tile | Overwrites Building Utility 2. Cycles through duplicants on current world, speaks name + task + critical statuses |
+| Cycle dupe forward | ] | tile | Overwrites Building Utility 3. Cycles through duplicants on current world |
+| Jump to current dupe | \ | tile | Overwrites Building Utility 1 (Copy Settings). Moves cursor to current dupe's tile; if already there, opens details screen |
 
 Further hotkeys assigned per-phase as features are built.
 

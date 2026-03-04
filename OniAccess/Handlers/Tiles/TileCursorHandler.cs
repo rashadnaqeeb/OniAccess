@@ -24,6 +24,7 @@ namespace OniAccess.Handlers.Tiles {
 		private GameStateMonitor _monitor;
 		private NotificationTracker _notificationTracker;
 		private NotificationAnnouncer _notificationAnnouncer;
+		private DupeNavigator _dupeNavigator;
 		private bool _hasActivated;
 		private bool _overlaySubscribed;
 		private int _queueNextOverlayTtl;
@@ -92,6 +93,10 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Alpha8, Modifier.Alt),
 			new ConsumedKey(KKeyCode.Alpha9, Modifier.Alt),
 			new ConsumedKey(KKeyCode.Alpha0, Modifier.Alt),
+			// Dupe cycling keybinds
+			new ConsumedKey(KKeyCode.LeftBracket),
+			new ConsumedKey(KKeyCode.RightBracket),
+			new ConsumedKey(KKeyCode.Backslash),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -125,6 +130,8 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Ctrl+R", (string)STRINGS.ONIACCESS.GAME_STATE.TOGGLE_RED_ALERT),
 			new HelpEntry("Ctrl+B", (string)STRINGS.ONIACCESS.RULER.HELP_PLACE),
 			new HelpEntry("Ctrl+Shift+B", (string)STRINGS.ONIACCESS.RULER.HELP_CLEAR),
+			new HelpEntry("[/]", (string)STRINGS.ONIACCESS.DUPES.HELP_CYCLE),
+			new HelpEntry("\\", (string)STRINGS.ONIACCESS.DUPES.HELP_JUMP),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;
@@ -144,6 +151,7 @@ namespace OniAccess.Handlers.Tiles {
 				_scanner = new ScannerNavigator();
 				_bookmarks = new CursorBookmarks();
 				_monitor = new GameStateMonitor();
+				_dupeNavigator = new DupeNavigator();
 				if (NotificationManager.Instance != null) {
 					_notificationTracker = new NotificationTracker();
 					_notificationTracker.Attach();
@@ -182,6 +190,7 @@ namespace OniAccess.Handlers.Tiles {
 			TileCursor.Destroy();
 			CursorRuler.Destroy();
 			_scanner = null;
+			_dupeNavigator = null;
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 			_overlaySubscribed = false;
@@ -322,6 +331,23 @@ namespace OniAccess.Handlers.Tiles {
 				_monitor.SpeakColonyStatus();
 				return true;
 			}
+			// Dupe cycling
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftBracket)
+				&& !InputUtil.AnyModifierHeld()) {
+				_dupeNavigator.CycleDupe(-1);
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightBracket)
+				&& !InputUtil.AnyModifierHeld()) {
+				_dupeNavigator.CycleDupe(1);
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backslash)
+				&& !InputUtil.AnyModifierHeld()) {
+				_dupeNavigator.JumpOrSelect();
+				return true;
+			}
+
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.N)
 				&& InputUtil.ShiftHeld()) {
 				OpenNotificationMenu();
