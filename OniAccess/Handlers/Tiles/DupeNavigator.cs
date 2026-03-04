@@ -76,11 +76,31 @@ namespace OniAccess.Handlers.Tiles {
 				var chore = mi.GetComponent<ChoreDriver>().GetCurrentChore();
 				if (chore == null)
 					return (string)STRINGS.ONIACCESS.DUPES.IDLE;
-				return GameUtil.GetChoreName(chore, null);
+				string name = chore.choreType.Name;
+				string target = GetChoreTarget(chore, mi);
+				if (target != null)
+					return $"{name}, {target}";
+				return name;
 			} catch (System.Exception ex) {
 				Log.Warn($"DupeNavigator.BuildTaskPart: {ex}");
 				return (string)STRINGS.ONIACCESS.DUPES.IDLE;
 			}
+		}
+
+		private static string GetChoreTarget(Chore chore, MinionIdentity mi) {
+			var fetchArea = chore as FetchAreaChore;
+			if (fetchArea != null && fetchArea.smi.deliveries.Count > 0) {
+				var dest = fetchArea.smi.deliveries[0].destination;
+				if (dest != null)
+					return dest.gameObject.GetProperName();
+			}
+			var fetchChore = chore as FetchChore;
+			if (fetchChore != null && fetchChore.destination != null)
+				return fetchChore.destination.gameObject.GetProperName();
+			string target = chore.gameObject.GetProperName();
+			if (target == mi.GetProperName())
+				return null;
+			return target;
 		}
 
 		// Each entry maps a check to a spoken label. Add/remove/reorder
