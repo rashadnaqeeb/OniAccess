@@ -130,7 +130,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Ctrl+R", (string)STRINGS.ONIACCESS.GAME_STATE.TOGGLE_RED_ALERT),
 			new HelpEntry("Ctrl+B", (string)STRINGS.ONIACCESS.RULER.HELP_PLACE),
 			new HelpEntry("Ctrl+Shift+B", (string)STRINGS.ONIACCESS.RULER.HELP_CLEAR),
-			new HelpEntry("[/]", (string)STRINGS.ONIACCESS.DUPES.HELP_CYCLE),
+			new HelpEntry((string)STRINGS.ONIACCESS.DUPES.KEY_BRACKETS, (string)STRINGS.ONIACCESS.DUPES.HELP_CYCLE),
 			new HelpEntry("\\", (string)STRINGS.ONIACCESS.DUPES.HELP_JUMP),
 		}.AsReadOnly();
 

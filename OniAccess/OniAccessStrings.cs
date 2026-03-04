@@ -316,6 +316,8 @@ namespace STRINGS {
 			public static LocString HEALTH_CRITICAL = "critical health";
 			public static LocString HEALTH_INJURED = "injured";
 			public static LocString SICK = "sick";
+			public static LocString KEY_BRACKETS = "Left bracket / Right bracket";
+
 			public static LocString HELP_CYCLE = "Cycle through duplicants";
 			public static LocString HELP_JUMP = "Jump cursor to current duplicant, or open details";
 		}
