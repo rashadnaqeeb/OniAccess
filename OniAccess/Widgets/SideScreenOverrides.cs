@@ -31,6 +31,10 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<IncubatorSideScreen>(WalkIncubator);
 			SideScreenWalker.RegisterOverride<CounterSideScreen>(WalkCounter);
 			SideScreenWalker.RegisterOverride<LogicBitSelectorSideScreen>(WalkLogicBitSelector);
+			SideScreenWalker.RegisterOverride<RemoteWorkTerminalSidescreen>(WalkRemoteWorkTerminal);
+			SideScreenWalker.RegisterOverride<GeneticAnalysisStationSideScreen>(WalkGeneticAnalysis);
+			SideScreenWalker.RegisterOverride<RelatedEntitiesSideScreen>(WalkRelatedEntities);
+			SideScreenWalker.RegisterOverride<GeoTunerSideScreen>(WalkGeoTuner);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -1819,6 +1823,186 @@ namespace OniAccess.Widgets {
 					}
 				};
 				break;
+			}
+		}
+
+		static void WalkRemoteWorkTerminal(
+				RemoteWorkTerminalSidescreen screen, List<Widget> items) {
+			var containerT = screen.rowContainer;
+			if (containerT == null) return;
+
+			for (int i = 0; i < containerT.childCount; i++) {
+				var child = containerT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				var href = child.GetComponent<HierarchyReferences>();
+				if (href == null) continue;
+				try {
+					var labelLt = href.GetReference<LocText>("label");
+					var mt = child.GetComponent<MultiToggle>();
+					if (labelLt == null || mt == null) continue;
+					var capturedLt = labelLt;
+					var capturedMt = mt;
+					items.Add(new ButtonWidget {
+						Label = capturedLt.text,
+						Component = capturedMt,
+						GameObject = child.gameObject,
+						SuppressTooltip = true,
+						SpeechFunc = () => {
+							string state = capturedMt.CurrentState == 1
+								? $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}" : "";
+							return $"{capturedLt.text}{state}";
+						}
+					});
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"WalkRemoteWorkTerminal: row '{child.name}' failed: {ex.Message}");
+				}
+			}
+		}
+
+		static void WalkGeneticAnalysis(
+				GeneticAnalysisStationSideScreen screen, List<Widget> items) {
+			Traverse tv;
+			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkGeneticAnalysis: Traverse create failed: {ex.Message}");
+				return;
+			}
+
+			try {
+				var message = tv.Field<LocText>("message").Value;
+				if (message != null && message.gameObject.activeSelf) {
+					string text = message.GetParsedText();
+					if (!string.IsNullOrEmpty(text)) {
+						var capturedMsg = message;
+						items.Add(new LabelWidget {
+							Label = text,
+							GameObject = message.gameObject,
+							SpeechFunc = () => capturedMsg.GetParsedText()
+						});
+					}
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkGeneticAnalysis: message read failed: {ex.Message}");
+			}
+
+			GameObject rowContainer;
+			try { rowContainer = tv.Field<GameObject>("rowContainer").Value; } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkGeneticAnalysis: rowContainer read failed: {ex.Message}");
+				return;
+			}
+			if (rowContainer == null) return;
+
+			var rowContainerT = rowContainer.transform;
+			for (int i = 0; i < rowContainerT.childCount; i++) {
+				var child = rowContainerT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				var href = child.GetComponent<HierarchyReferences>();
+				if (href == null) continue;
+				try {
+					var labelLt = href.GetReference<LocText>("Label");
+					var progressLt = href.GetReference<LocText>("ProgressLabel");
+					var toggle = child.GetComponent<KToggle>();
+					if (labelLt == null || toggle == null) continue;
+					var capturedLabelLt = labelLt;
+					var capturedProgressLt = progressLt;
+					var capturedToggle = toggle;
+					items.Add(new ToggleWidget {
+						Label = capturedLabelLt.text,
+						Component = capturedToggle,
+						GameObject = child.gameObject,
+						SuppressTooltip = true,
+						SpeechFunc = () => {
+							string name = capturedLabelLt.text;
+							string progress = capturedProgressLt != null
+								? capturedProgressLt.GetParsedText() : "";
+							return string.IsNullOrEmpty(progress)
+								? name : $"{name}, {progress}";
+						}
+					});
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"WalkGeneticAnalysis: row '{child.name}' failed: {ex.Message}");
+				}
+			}
+		}
+
+		static void WalkRelatedEntities(
+				RelatedEntitiesSideScreen screen, List<Widget> items) {
+			var containerT = screen.rowContainer;
+			if (containerT == null) return;
+
+			for (int i = 0; i < containerT.childCount; i++) {
+				var child = containerT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				var href = child.GetComponent<HierarchyReferences>();
+				if (href == null) continue;
+				try {
+					var labelLt = href.GetReference<LocText>("label");
+					var statusLt = href.GetReference<LocText>("status");
+					var button = child.GetComponent<KButton>();
+					if (labelLt == null || button == null) continue;
+					var capturedLabelLt = labelLt;
+					var capturedStatusLt = statusLt;
+					var capturedButton = button;
+					items.Add(new ButtonWidget {
+						Label = STRINGS.UI.StripLinkFormatting(capturedLabelLt.text),
+						Component = capturedButton,
+						GameObject = child.gameObject,
+						SuppressTooltip = true,
+						SpeechFunc = () => {
+							string name = STRINGS.UI.StripLinkFormatting(capturedLabelLt.text);
+							if (capturedStatusLt != null
+									&& capturedStatusLt.gameObject.activeSelf) {
+								string status = capturedStatusLt.GetParsedText();
+								if (!string.IsNullOrEmpty(status))
+									return $"{name}, {status}";
+							}
+							return name;
+						}
+					});
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"WalkRelatedEntities: row '{child.name}' failed: {ex.Message}");
+				}
+			}
+		}
+
+		static void WalkGeoTuner(GeoTunerSideScreen screen, List<Widget> items) {
+			var containerT = screen.rowContainer;
+			if (containerT == null) return;
+
+			for (int i = 0; i < containerT.childCount; i++) {
+				var child = containerT.GetChild(i);
+				if (!child.gameObject.activeSelf) continue;
+				var href = child.GetComponent<HierarchyReferences>();
+				if (href == null) continue;
+				try {
+					var labelLt = href.GetReference<LocText>("label");
+					var amountLt = href.GetReference<LocText>("amount");
+					var mt = child.GetComponent<MultiToggle>();
+					if (labelLt == null || mt == null) continue;
+					var capturedLabelLt = labelLt;
+					var capturedAmountLt = amountLt;
+					var capturedMt = mt;
+					items.Add(new ButtonWidget {
+						Label = capturedLabelLt.text,
+						Component = capturedMt,
+						GameObject = child.gameObject,
+						SuppressTooltip = true,
+						SpeechFunc = () => {
+							string name = capturedLabelLt.text;
+							string selected = capturedMt.CurrentState == 1
+								? $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}" : "";
+							string amount = "";
+							if (capturedAmountLt != null
+									&& capturedAmountLt.transform.parent.gameObject.activeSelf) {
+								string raw = capturedAmountLt.GetParsedText();
+								if (!string.IsNullOrEmpty(raw))
+									amount = $", {string.Format((string)STRINGS.ONIACCESS.GEOTUNER.TUNER_COUNT, raw)}";
+							}
+							return $"{name}{selected}{amount}";
+						}
+					});
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"WalkGeoTuner: row '{child.name}' failed: {ex.Message}");
+				}
 			}
 		}
 

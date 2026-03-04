@@ -224,6 +224,11 @@ namespace STRINGS {
 			public static LocString UNAVAILABLE = "unavailable";
 		}
 
+		public class GEOTUNER {
+			// {0} = number of geotuners targeting this geyser
+			public static LocString TUNER_COUNT = "{0} tuners";
+		}
+
 		// Button labels for actions not covered by game strings
 		public class BUTTONS {
 			public static LocString ACCEPT = "Accept";
