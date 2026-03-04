@@ -13,8 +13,8 @@ Copy the mod DLL to your local mods directory. The build script handles this aut
 - **Arrow keys** navigate everything -- tile cursor in gameplay, list items in menus
 - **Enter** activates or inspects
 - **Escape** closes screens
-- **Tab** opens the action/build menu from gameplay
-- Speech is interrupt-based: moving quickly cuts off the previous announcement
+- **Tab / Shift+Tab** cycles between sections or tabs within a screen
+- **Ctrl+Tab / Ctrl+Shift+Tab** jumps between tab groups in screens that have multiple sections
 
 ## Hotkey reference
 
@@ -96,38 +96,14 @@ Copy the mod DLL to your local mods directory. The build script handles this aut
 - **Auto-move cursor** (Shift+Home): When the scanner is active, automatically teleports the cursor on item cycle.
 - **Mod toggle** (Ctrl+Shift+F12): Disables all speech. The game behaves as if the mod isn't installed.
 
-## Supported screens
-
-- Main Menu
-- Colony Setup (mode, cluster, destination selection)
-- Duplicant Selection (new game)
-- Tile Cursor (primary gameplay)
-- Entity Inspection (details screen with tabs: Status, Personality, Chores, Properties, Config, Errands, Material, Blueprint, Actions)
-- Action/Build Menu (3-level hierarchy: categories > subcategories > buildings)
-- Tool Mode (dig, cancel, deconstruct, prioritize, etc. with rectangle selection)
-- Priority Screen (L) -- 2D grid
-- Vitals Screen (V) -- 2D grid
-- Consumables Screen (F) -- 2D grid
-- Research Screen (R) -- Browse, Queue, Tree tabs
-- Skills Screen (J) -- Duplicants, Skills, Tree tabs
-- Schedule Screen (.)
-- Report Screen (E)
-- Codex/Database (U)
-- Starmap (Z)
-- Diagnostics (N)
-- Printing Pod / Immigration
-- Notification Menu (Shift+N)
-- Pause Menu
-- Options/Settings
-- Context Help (F12)
-
 ## Known limitations
 
-This section will be updated as the mod matures.
+- Diagnostics screen is not supported.
+- Base game starmap is not  accessible
+- Spaced Out DLC content is not yet supported but will be.
 
 ## Troubleshooting
 
 - **Player log location**: `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`
 - **Mod log lines** are prefixed with `[OniAccess]`
-- If speech stops working, try toggling the mod off and on with Ctrl+Shift+F12
 - If a screen isn't being read, check that your screen reader is running and try F12 to see if the mod recognizes the current context
