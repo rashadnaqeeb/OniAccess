@@ -37,6 +37,12 @@ namespace OniAccess.Handlers.Screens {
 			.GetField("selectedMaterialOption", BindingFlags.NonPublic | BindingFlags.Instance);
 		private static readonly FieldInfo _categoryIdField = typeof(SelectedRecipeQueueScreen)
 			.GetField("selectedRecipeCategoryID", BindingFlags.NonPublic | BindingFlags.Instance);
+		private static readonly FieldInfo _ownerSelectedToggleField = typeof(ComplexFabricatorSideScreen)
+			.GetField("selectedToggle", BindingFlags.NonPublic | BindingFlags.Instance);
+		private static readonly FieldInfo _ownerSelectedCategoryField = typeof(ComplexFabricatorSideScreen)
+			.GetField("selectedRecipeCategory", BindingFlags.NonPublic | BindingFlags.Instance);
+		private static readonly FieldInfo _ownerRecipeTogglesField = typeof(ComplexFabricatorSideScreen)
+			.GetField("recipeToggles", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		static RecipeQueueHandler() {
 			if (_containersField == null) Util.Log.Warn("RecipeQueueHandler: materialSelectionContainers field not found");
@@ -45,6 +51,9 @@ namespace OniAccess.Handlers.Screens {
 			if (_ownerScreenField == null) Util.Log.Warn("RecipeQueueHandler: ownerScreen field not found");
 			if (_selectedMaterialField == null) Util.Log.Warn("RecipeQueueHandler: selectedMaterialOption field not found");
 			if (_categoryIdField == null) Util.Log.Warn("RecipeQueueHandler: selectedRecipeCategoryID field not found");
+			if (_ownerSelectedToggleField == null) Util.Log.Warn("RecipeQueueHandler: ComplexFabricatorSideScreen.selectedToggle field not found");
+			if (_ownerSelectedCategoryField == null) Util.Log.Warn("RecipeQueueHandler: ComplexFabricatorSideScreen.selectedRecipeCategory field not found");
+			if (_ownerRecipeTogglesField == null) Util.Log.Warn("RecipeQueueHandler: ComplexFabricatorSideScreen.recipeToggles field not found");
 		}
 
 		private enum ItemKind { RecipeInfo, IngredientSlot, QueueCount, Confirm }
@@ -192,10 +201,7 @@ namespace OniAccess.Handlers.Screens {
 
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (e.TryConsume(Action.Escape)) {
-				HandlerStack.Pop();
-				var ds = DetailsScreen.Instance;
-				if (ds != null)
-					ds.ClearSecondarySideScreen();
+				CloseScreen();
 				return true;
 			}
 			return base.HandleKeyDown(e);
@@ -429,6 +435,7 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		private void CloseScreen() {
+			ResetOwnerToggleState();
 			HandlerStack.Pop();
 			var ds = DetailsScreen.Instance;
 			if (ds != null)
@@ -454,7 +461,22 @@ namespace OniAccess.Handlers.Screens {
 		private void CycleRecipe(int direction) {
 			var ownerScreen = GetOwnerScreen();
 			if (ownerScreen == null) return;
+			var toggles = _ownerRecipeTogglesField.GetValue(ownerScreen) as List<GameObject>;
+			if (toggles == null || toggles.Count <= 1) {
+				PlaySound("Slider_Boundary_Low");
+				return;
+			}
 			ownerScreen.CycleRecipe(direction);
+		}
+
+		private void ResetOwnerToggleState() {
+			var ownerScreen = GetOwnerScreen();
+			if (ownerScreen == null) return;
+			var toggle = _ownerSelectedToggleField.GetValue(ownerScreen) as KToggle;
+			if (toggle != null)
+				toggle.isOn = false;
+			_ownerSelectedToggleField.SetValue(ownerScreen, null);
+			_ownerSelectedCategoryField.SetValue(ownerScreen, "");
 		}
 
 		// ========================================
