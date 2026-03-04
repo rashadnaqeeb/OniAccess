@@ -49,6 +49,11 @@ function Find-DecompiledFile {
     $found = Get-ChildItem -Path $decompiledDir -Recurse -Filter "$TypeName.cs" | Select-Object -First 1
     if ($found) { return $found.FullName }
 
+    # Check nested class index (inner classes that don't have their own file)
+    if ($script:nestedClassIndex.ContainsKey($TypeName)) {
+        return $script:nestedClassIndex[$TypeName]
+    }
+
     return $null
 }
 
@@ -179,7 +184,7 @@ function Resolve-Types {
         if ($ScreenTypes.Count -gt 0) {
             return $ScreenTypes
         }
-        return @()
+        # Fall through to $varTypes — the variable may have a typed declaration
     }
 
     # Typed variable (from parameter, local declaration, or field-type chaining)
@@ -193,18 +198,28 @@ function Resolve-Types {
     return @()
 }
 
-# --- Pre-build subclass index: baseType -> [subclass file paths] ---
-# Only indexes direct inheritance (: BaseType) which is enough for Traverse validation.
+# --- Pre-build subclass index and nested class index ---
+# subclassIndex: baseType -> [subclass file paths] (direct inheritance only)
+# nestedClassIndex: className -> filePath (for inner/nested classes not in their own file)
 $script:subclassIndex = @{}
+$script:nestedClassIndex = @{}
 foreach ($f in Get-ChildItem -Path $asmDir -Filter "*.cs") {
-    $firstLines = Get-Content -Path $f.FullName -TotalCount 15 -ErrorAction SilentlyContinue
-    $header = $firstLines -join ' '
-    if ($header -match 'class\s+\w+(?:<[^>]+>)?\s*:\s*(\w+)') {
+    $content = Get-Content -Path $f.FullName -Raw -ErrorAction SilentlyContinue
+    if (-not $content) { continue }
+    $firstLines = ($content -split "`n" | Select-Object -First 15) -join ' '
+    if ($firstLines -match 'class\s+\w+(?:<[^>]+>)?\s*:\s*(\w+)') {
         $base = $Matches[1]
         if (-not $script:subclassIndex.ContainsKey($base)) {
             $script:subclassIndex[$base] = @()
         }
         $script:subclassIndex[$base] += $f.FullName
+    }
+    # Index all nested class declarations (class keyword not at file level)
+    foreach ($cm in [regex]::Matches($content, '(?m)^\s+(?:public|private|protected|internal)\s+(?:sealed\s+)?class\s+(\w+)')) {
+        $nested = $cm.Groups[1].Value
+        if (-not $script:nestedClassIndex.ContainsKey($nested)) {
+            $script:nestedClassIndex[$nested] = $f.FullName
+        }
     }
 }
 
@@ -334,13 +349,23 @@ foreach ($file in $csFiles) {
     }
 
     # --- Extract typed local declarations and field declarations ---
-    # TypeName varName = ... (locals)
+    # TypeName varName = ... (locals with initializer)
     foreach ($m in [regex]::Matches($rawContent,
         '(?m)^\s+(\w+(?:<[^>]+>)?)\s+(\w+)\s*=\s*',
         [System.Text.RegularExpressions.RegexOptions]::Multiline)) {
         $typeName = $m.Groups[1].Value
         $varName = $m.Groups[2].Value
         if ($typeName -notin @('var', 'return', 'throw', 'new', 'if', 'else', 'for', 'foreach', 'while', 'switch', 'case', 'try', 'catch', 'finally')) {
+            Add-VarType $varTypes $varName $typeName
+        }
+    }
+    # TypeName varName; (uninitialized locals)
+    foreach ($m in [regex]::Matches($rawContent,
+        '(?m)^\s+(\w+(?:<[^>]+>)?)\s+(\w+)\s*;',
+        [System.Text.RegularExpressions.RegexOptions]::Multiline)) {
+        $typeName = $m.Groups[1].Value
+        $varName = $m.Groups[2].Value
+        if ($typeName -notin @('var', 'return', 'throw', 'new', 'if', 'else', 'for', 'foreach', 'while', 'switch', 'case', 'try', 'catch', 'finally', 'using', 'namespace', 'class', 'struct', 'interface', 'enum')) {
             Add-VarType $varTypes $varName $typeName
         }
     }
@@ -425,6 +450,26 @@ foreach ($file in $csFiles) {
                             Add-VarType $varTypes $vn $propType
                         }
                     }
+                }
+            }
+        }
+    }
+
+    # --- foreach loop variable type inference: foreach (var x in collection) ---
+    # When collection has type List<T> or similar generic, extract T as the element type.
+    foreach ($m in [regex]::Matches($rawContent, 'foreach\s*\(\s*(?:var|\w+)\s+(\w+)\s+in\s+(\w+)\s*\)')) {
+        $loopVar = $m.Groups[1].Value
+        $collVar = $m.Groups[2].Value
+        if ($varTypes.ContainsKey($collVar)) {
+            foreach ($ct in $varTypes[$collVar]) {
+                # Extract element type from List<T>, IList<T>, IEnumerable<T>, etc.
+                if ($ct -match '<(\w+(?:\.\w+)*)>') {
+                    $elemType = $Matches[1]
+                    # Handle qualified names like SimpleInfoScreen.StatusItemEntry -> StatusItemEntry
+                    if ($elemType -match '\.(\w+)$') {
+                        $elemType = $Matches[1]
+                    }
+                    Add-VarType $varTypes $loopVar $elemType
                 }
             }
         }
