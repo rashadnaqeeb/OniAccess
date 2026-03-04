@@ -79,6 +79,10 @@ namespace OniAccess.Handlers.Screens {
 						item.assignee.GetProperName());
 			}
 
+			int cell = Grid.PosToCell(item.transform.position);
+			Grid.CellToXY(cell, out int x, out int y);
+			itemLabel += $". {x}, {y}";
+
 			bool isCurrentItem = OwnablesScreen.HasItem
 				&& OwnablesScreen.CurrentSlotItem == item;
 			if (isCurrentItem)
