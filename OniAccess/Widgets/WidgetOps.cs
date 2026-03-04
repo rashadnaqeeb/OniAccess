@@ -162,9 +162,10 @@ namespace OniAccess.Widgets {
 				return ((int)slider.value).ToString();
 			}
 
-			if (slider.minValue >= 0f && slider.maxValue <= 100f) {
-				float percent = slider.maxValue <= 1f ? slider.value * 100f : slider.value;
-				return GameUtil.GetFormattedPercent(percent);
+			// Only treat as percentage when maxValue is well above 1 — a max of
+			// 1.0 or 10.0 is ambiguous (e.g., gas/liquid valve flow in kg/s).
+			if (slider.minValue >= 0f && slider.maxValue > 1f && slider.maxValue <= 100f) {
+				return GameUtil.GetFormattedPercent(slider.value);
 			}
 
 			return slider.value.ToString("F1");

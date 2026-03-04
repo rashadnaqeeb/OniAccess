@@ -1078,7 +1078,7 @@ namespace OniAccess.Widgets {
 						string speech = capturedStage.Name;
 						if (isSelected)
 							speech += $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
-						speech += $", {decor} decor";
+						speech += $", {decor} {(string)STRINGS.DUPLICANTS.STATS.DECOR.NAME}";
 						return speech;
 					}
 				});
@@ -1095,15 +1095,14 @@ namespace OniAccess.Widgets {
 				});
 			}
 
-			string clearLabel = (string)STRINGS.UI.UISIDESCREENS
-				.OWNABLESSECONDSIDESCREEN.NONE_ROW_LABEL;
 			var clearBtn = screen.clearButton;
 			if (clearBtn != null && clearBtn.gameObject.activeSelf) {
+				string clearLabel = SideScreenWalker.GetButtonLabel(clearBtn, clearBtn.transform.name);
 				items.Add(new ButtonWidget {
 					Label = clearLabel,
 					Component = clearBtn,
 					GameObject = clearBtn.gameObject,
-					SpeechFunc = () => clearLabel
+					SpeechFunc = () => SideScreenWalker.GetButtonLabel(clearBtn, clearBtn.transform.name)
 				});
 			}
 		}
@@ -1570,7 +1569,10 @@ namespace OniAccess.Widgets {
 				LocText groupLabel;
 				try {
 					groupLabel = group.container.GetReference<LocText>("Text");
-				} catch { continue; }
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"WalkCheckboxListGroup: group label reference failed: {ex.Message}");
+					continue;
+				}
 				if (groupLabel == null) continue;
 
 				var children = new List<Widget>();
@@ -1582,7 +1584,10 @@ namespace OniAccess.Widgets {
 					try {
 						itemLabel = checkboxRef.GetReference<LocText>("Text");
 						itemCheck = checkboxRef.GetReference<Image>("Check");
-					} catch { continue; }
+					} catch (System.Exception ex) {
+						Util.Log.Warn($"WalkCheckboxListGroup: checkbox reference failed: {ex.Message}");
+						continue;
+					}
 					if (itemLabel == null || itemCheck == null) continue;
 
 					var capturedLabel = itemLabel;
