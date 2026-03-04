@@ -6,7 +6,8 @@
     <AssemblyName>OniAccess</AssemblyName>
     <RootNamespace>OniAccess</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Version>0.1.0</Version>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <!-- Game DLL references via ONI_MANAGED environment variable -->
