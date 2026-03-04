@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using Klei.AI;
 using OniAccess.Speech;
+using OniAccess.Util;
 using UnityEngine;
 
 namespace OniAccess.Handlers.Tiles {
@@ -93,6 +96,117 @@ namespace OniAccess.Handlers.Tiles {
 			float hours = GameClock.Instance.GetTimePlayedInSeconds() / 3600f;
 			SpeechPipeline.SpeakInterrupt(
 				string.Format((string)STRINGS.UI.ASTEROIDCLOCK.TIME_PLAYED, hours.ToString("0.00")));
+		}
+
+		public void SpeakColonyStatus() {
+			var parts = new List<string>();
+			int worldId = ClusterManager.Instance.activeWorldId;
+			var inventory = ClusterManager.Instance.activeWorld.worldInventory;
+
+			// Dupes
+			try {
+				int local = Components.LiveMinionIdentities.GetWorldItems(worldId).Count;
+				if (DlcManager.FeatureClusterSpaceEnabled()) {
+					int total = Components.LiveMinionIdentities.Count;
+					parts.Add(string.Format(
+						(string)STRINGS.ONIACCESS.GAME_STATE.DUPES_CLUSTER, local, total));
+				} else {
+					parts.Add(string.Format(
+						(string)STRINGS.ONIACCESS.GAME_STATE.DUPES, local));
+				}
+			} catch (System.Exception ex) {
+				Log.Error($"SpeakColonyStatus dupes: {ex}");
+			}
+
+			// Sick
+			try {
+				int sick = 0;
+				var minions = Components.LiveMinionIdentities.GetWorldItems(worldId);
+				foreach (var minion in minions) {
+					if (!minion.IsNullOrDestroyed()
+						&& minion.GetComponent<MinionModifiers>().sicknesses.IsInfected())
+						sick++;
+				}
+				if (sick > 0)
+					parts.Add(string.Format(
+						(string)STRINGS.ONIACCESS.GAME_STATE.SICK, sick));
+			} catch (System.Exception ex) {
+				Log.Error($"SpeakColonyStatus sick: {ex}");
+			}
+
+			// Rations
+			try {
+				float kcal = WorldResourceAmountTracker<RationTracker>.Get()
+					.CountAmount(null, inventory);
+				string formatted = GameUtil.GetFormattedCalories(kcal);
+				string rations = string.Format(
+					(string)STRINGS.ONIACCESS.GAME_STATE.RATIONS, formatted);
+				string trend = GetTrend(
+					TrackerTool.Instance.GetWorldTracker<KCalTracker>(worldId));
+				if (trend != null)
+					rations += ", " + trend;
+				parts.Add(rations);
+			} catch (System.Exception ex) {
+				Log.Error($"SpeakColonyStatus rations: {ex}");
+			}
+
+			// Stress
+			try {
+				float stress = Mathf.Round(GameUtil.GetMaxStressInActiveWorld());
+				string stressStr = string.Format(
+					(string)STRINGS.ONIACCESS.GAME_STATE.STRESS, (int)stress);
+				string trend = GetTrend(
+					TrackerTool.Instance.GetWorldTracker<StressTracker>(worldId));
+				if (trend != null)
+					stressStr += ", " + trend;
+				parts.Add(stressStr);
+			} catch (System.Exception ex) {
+				Log.Error($"SpeakColonyStatus stress: {ex}");
+			}
+
+			// Electrobanks
+			try {
+				if (Game.IsDlcActiveForCurrentSave("DLC3_ID")
+					&& WorldResourceAmountTracker<ElectrobankTracker>.Get() != null) {
+					bool hasBionics = false;
+					var minions = Components.LiveMinionIdentities.GetWorldItems(worldId);
+					foreach (var minion in minions) {
+						if (!minion.IsNullOrDestroyed()
+							&& minion.model == BionicMinionConfig.MODEL) {
+							hasBionics = true;
+							break;
+						}
+					}
+					if (hasBionics) {
+						float totalUnits;
+						float joules = WorldResourceAmountTracker<ElectrobankTracker>.Get()
+							.CountAmount(null, out totalUnits, inventory, true);
+						string formatted = GameUtil.GetFormattedJoules(joules);
+						string ebank = string.Format(
+							(string)STRINGS.ONIACCESS.GAME_STATE.ELECTROBANKS, formatted);
+						string trend = GetTrend(
+							TrackerTool.Instance.GetWorldTracker<ElectrobankJoulesTracker>(worldId));
+						if (trend != null)
+							ebank += ", " + trend;
+						parts.Add(ebank);
+					}
+				}
+			} catch (System.Exception ex) {
+				Log.Error($"SpeakColonyStatus electrobanks: {ex}");
+			}
+
+			if (parts.Count > 0)
+				SpeechPipeline.SpeakInterrupt(string.Join(", ", parts));
+		}
+
+		private static string GetTrend(WorldTracker tracker) {
+			if (tracker == null) return null;
+			float delta = tracker.GetDelta(600f);
+			if (delta > 0.5f)
+				return (string)STRINGS.ONIACCESS.RESOURCES.RISING;
+			if (delta < -0.5f)
+				return (string)STRINGS.ONIACCESS.RESOURCES.FALLING;
+			return null;
 		}
 
 		private static void PlaySpeedChangeSound(float speed) {

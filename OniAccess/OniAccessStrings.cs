@@ -321,6 +321,19 @@ namespace STRINGS {
 			public static LocString RED_ALERT_OFF = "Red Alert off";
 			public static LocString YELLOW_ALERT_OFF = "Yellow Alert off";
 			public static LocString TOGGLE_RED_ALERT = "Toggle red alert";
+			public static LocString READ_COLONY_STATUS = "Read colony status";
+			// {0} = dupe count
+			public static LocString DUPES = "{0} dupes";
+			// {0} = local world dupe count, {1} = total dupe count
+			public static LocString DUPES_CLUSTER = "{0}/{1} dupes";
+			// {0} = sick count
+			public static LocString SICK = "{0} sick";
+			// {0} = formatted kcal string from GameUtil.GetFormattedCalories
+			public static LocString RATIONS = "{0}";
+			// {0} = stress percentage (int)
+			public static LocString STRESS = "{0}% stress";
+			// {0} = formatted joules string from GameUtil.GetFormattedJoules
+			public static LocString ELECTROBANKS = "{0}";
 		}
 
 		// Tooltip summary readout at cursor

@@ -64,6 +64,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Q, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Return),
 			new ConsumedKey(KKeyCode.N, Modifier.Shift),
+			new ConsumedKey(KKeyCode.S),
 			// Red alert keybind
 			new ConsumedKey(KKeyCode.R, Modifier.Ctrl),
 			// Ruler keybinds
@@ -111,6 +112,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Alt+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE),
 			new HelpEntry("Ctrl+F", (string)STRINGS.ONIACCESS.SCANNER.HELP.SEARCH),
 			new HelpEntry("Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS),
+			new HelpEntry("S", (string)STRINGS.ONIACCESS.GAME_STATE.READ_COLONY_STATUS),
 			new HelpEntry("Shift+Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_TIME_PLAYED),
 			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED),
 			new HelpEntry("Shift+N", (string)STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP),
@@ -314,6 +316,11 @@ namespace OniAccess.Handlers.Tiles {
 					_monitor.SpeakCycleStatus();
 					return true;
 				}
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.S)
+				&& !InputUtil.AnyModifierHeld()) {
+				_monitor.SpeakColonyStatus();
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.N)
 				&& InputUtil.ShiftHeld()) {
