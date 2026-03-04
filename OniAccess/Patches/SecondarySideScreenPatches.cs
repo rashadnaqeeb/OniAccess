@@ -34,6 +34,8 @@ namespace OniAccess.Patches {
 				}
 			} else if (__result is OwnablesSecondSideScreen ownablesScreen) {
 				HandlerStack.Push(new OwnablesSecondHandler(ownablesScreen));
+			} else if (__result is AssignmentGroupControllerSideScreen agcScreen) {
+				HandlerStack.Push(new AssignmentGroupControllerHandler(agcScreen));
 			} else {
 				Util.Log.Debug(
 					$"SetSecondarySideScreen: unhandled type {__result.GetType().Name}");
@@ -54,6 +56,9 @@ namespace OniAccess.Patches {
 				HandlerStack.Pop();
 			} else if (HandlerStack.ActiveHandler is OwnablesSecondHandler) {
 				Util.Log.Debug("ClearSecondarySideScreen: popping OwnablesSecondHandler");
+				HandlerStack.Pop();
+			} else if (HandlerStack.ActiveHandler is AssignmentGroupControllerHandler) {
+				Util.Log.Debug("ClearSecondarySideScreen: popping AssignmentGroupControllerHandler");
 				HandlerStack.Pop();
 			}
 		}

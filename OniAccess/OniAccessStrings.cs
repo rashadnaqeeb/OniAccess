@@ -111,6 +111,15 @@ namespace STRINGS {
 			}
 		}
 
+		// Crew assignment screen labels
+		public class CREW_SCREEN {
+			public static LocString AVAILABLE = "Available";
+			// {0} = number of assigned dupes (int)
+			public static LocString ASSIGNED_COUNT_FORMAT = "{0} assigned";
+			// {0} = total assigned count after toggle (int)
+			public static LocString TOTAL_FORMAT = "{0} total";
+		}
+
 		// Recipe queue screen labels
 		public class RECIPE {
 			// {0} = queue count number or "Forever"
