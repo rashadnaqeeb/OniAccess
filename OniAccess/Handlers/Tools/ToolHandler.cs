@@ -84,6 +84,11 @@ namespace OniAccess.Handlers.Tools {
 		public override void OnActivate() {
 			Instance = this;
 
+			if (PlayerController.Instance == null) {
+				Util.Log.Warn("ToolHandler.OnActivate: PlayerController.Instance is null (game shutting down?)");
+				return;
+			}
+
 			var activeTool = PlayerController.Instance.ActiveTool;
 			_toolInfo = FindToolInfo(activeTool);
 
