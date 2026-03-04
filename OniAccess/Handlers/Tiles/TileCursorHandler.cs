@@ -514,8 +514,13 @@ namespace OniAccess.Handlers.Tiles {
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolHandler) return;
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolFilterHandler) return;
 			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.MoveToLocationHandler) return;
+			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.CopySettingsHandler) return;
 			if (HandlerStack.ActiveHandler is Build.BuildToolHandler) return;
 			if (HandlerStack.ActiveHandler is Build.ActionMenuHandler) return;
+			if (tool is CopySettingsTool) {
+				HandlerStack.Push(new OniAccess.Handlers.Tools.CopySettingsHandler());
+				return;
+			}
 			if (tool is MoveToLocationTool) {
 				HandlerStack.Push(new OniAccess.Handlers.Tools.MoveToLocationHandler());
 				return;

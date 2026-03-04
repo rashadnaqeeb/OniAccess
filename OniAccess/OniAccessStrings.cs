@@ -105,6 +105,8 @@ namespace STRINGS {
 				public static LocString SET_CORNER = "Set rectangle corner";
 				public static LocString CLEAR_RECT = "Clear rectangle at cursor";
 				public static LocString CONFIRM_TOOL = "Apply tool at cursor and dismiss";
+				public static LocString APPLY_SETTINGS = "Apply settings";
+				public static LocString APPLY_AND_EXIT = "Apply settings and exit";
 				public static LocString CANCEL_TOOL = "Cancel tool";
 				public static LocString SET_PRIORITY = "Set priority";
 				public static LocString OPEN_FILTER = "Change filter";
@@ -443,6 +445,10 @@ namespace STRINGS {
 			public static LocString MOVE_TO_ACTIVATION = "move to, {0}";
 			public static LocString MOVE_TO_CONFIRMED = "destination set";
 			public static LocString MOVE_TO_UNREACHABLE = "unreachable";
+			// {0} = source building name
+			public static LocString COPY_SETTINGS_ACTIVATION = "{0}, copy settings";
+			public static LocString COPY_SETTINGS_NO_TARGET = "no matching building";
+			public static LocString DONE = "done";
 		}
 
 		// Temperature warning labels on tile cursor
