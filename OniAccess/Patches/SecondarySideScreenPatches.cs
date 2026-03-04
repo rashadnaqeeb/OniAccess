@@ -32,6 +32,8 @@ namespace OniAccess.Patches {
 				} else {
 					HandlerStack.Push(new RecipeQueueHandler(recipeScreen));
 				}
+			} else if (__result is OwnablesSecondSideScreen ownablesScreen) {
+				HandlerStack.Push(new OwnablesSecondHandler(ownablesScreen));
 			} else {
 				Util.Log.Debug(
 					$"SetSecondarySideScreen: unhandled type {__result.GetType().Name}");
@@ -49,6 +51,9 @@ namespace OniAccess.Patches {
 			if (ds == null || !ds.gameObject.activeInHierarchy) return;
 			if (HandlerStack.ActiveHandler is RecipeQueueHandler) {
 				Util.Log.Debug("ClearSecondarySideScreen: popping RecipeQueueHandler");
+				HandlerStack.Pop();
+			} else if (HandlerStack.ActiveHandler is OwnablesSecondHandler) {
+				Util.Log.Debug("ClearSecondarySideScreen: popping OwnablesSecondHandler");
 				HandlerStack.Pop();
 			}
 		}

@@ -1,0 +1,148 @@
+using System.Collections.Generic;
+using System.Reflection;
+
+using OniAccess.Handlers.Screens;
+using OniAccess.Speech;
+
+namespace OniAccess.Handlers.Screens {
+	public class OwnablesSecondHandler : BaseMenuHandler {
+		private OwnablesSecondSideScreen OwnablesScreen =>
+			(OwnablesSecondSideScreen)_screen;
+
+		private bool _pendingActivation;
+
+		private static readonly FieldInfo _itemRowsField = typeof(OwnablesSecondSideScreen)
+			.GetField("itemRows", BindingFlags.NonPublic | BindingFlags.Instance);
+
+		static OwnablesSecondHandler() {
+			if (_itemRowsField == null) Util.Log.Warn("OwnablesSecondHandler: itemRows field not found");
+		}
+
+		public override string DisplayName => null;
+
+		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
+
+		public OwnablesSecondHandler(OwnablesSecondSideScreen screen) : base(screen) {
+			HelpEntries = BuildHelpEntries();
+		}
+
+		// ========================================
+		// LIST DESCRIPTION
+		// ========================================
+
+		private List<OwnablesSecondSideScreenRow> GetActiveRows() {
+			var allRows = _itemRowsField.GetValue(OwnablesScreen)
+				as List<OwnablesSecondSideScreenRow>;
+			if (allRows == null) return new List<OwnablesSecondSideScreenRow>();
+			var active = new List<OwnablesSecondSideScreenRow>();
+			foreach (var row in allRows) {
+				if (row.gameObject.activeSelf)
+					active.Add(row);
+			}
+			return active;
+		}
+
+		public override int ItemCount => 1 + GetActiveRows().Count;
+
+		public override string GetItemLabel(int index) {
+			if (index == 0) {
+				bool hasItem = OwnablesScreen.HasItem;
+				string label = (string)STRINGS.UI.UISIDESCREENS.OWNABLESSECONDSIDESCREEN.NONE_ROW_LABEL;
+				if (!hasItem)
+					label += ", " + (string)STRINGS.ONIACCESS.STATES.SELECTED;
+				return label;
+			}
+
+			var rows = GetActiveRows();
+			int rowIdx = index - 1;
+			if (rowIdx < 0 || rowIdx >= rows.Count) return null;
+			var row = rows[rowIdx];
+
+			string name = row.nameLabel.GetParsedText();
+			string status = row.statusLabel.gameObject.activeSelf
+				? row.statusLabel.GetParsedText() : null;
+
+			string itemLabel = TextFilter.FilterForSpeech(name);
+			if (!string.IsNullOrEmpty(status))
+				itemLabel += ", " + TextFilter.FilterForSpeech(status);
+
+			bool isAssigned = row.item != null
+				&& OwnablesScreen.HasItem
+				&& OwnablesScreen.CurrentSlotItem == row.item;
+			if (isAssigned)
+				itemLabel += ", " + (string)STRINGS.ONIACCESS.STATES.SELECTED;
+
+			return itemLabel;
+		}
+
+		public override void SpeakCurrentItem(string parentContext = null) {
+			SpeechPipeline.SpeakInterrupt(GetItemLabel(CurrentIndex));
+		}
+
+		// ========================================
+		// ACTIVATION
+		// ========================================
+
+		protected override void ActivateCurrentItem() {
+			if (CurrentIndex == 0) {
+				OwnablesScreen.noneRow.onClick?.Invoke();
+			} else {
+				var rows = GetActiveRows();
+				int rowIdx = CurrentIndex - 1;
+				if (rowIdx >= 0 && rowIdx < rows.Count) {
+					var row = rows[rowIdx];
+					row.OnRowClicked?.Invoke(row);
+				}
+			}
+			// Row list may change after click; clamp index
+			int newCount = ItemCount;
+			if (CurrentIndex >= newCount && newCount > 0)
+				CurrentIndex = newCount - 1;
+			SpeakCurrentItem();
+		}
+
+		// ========================================
+		// ESCAPE
+		// ========================================
+
+		public override bool HandleKeyDown(KButtonEvent e) {
+			if (e.TryConsume(Action.Escape)) {
+				CloseScreen();
+				return true;
+			}
+			return base.HandleKeyDown(e);
+		}
+
+		private void CloseScreen() {
+			DetailsScreenHandler.PreserveNavigationOnReactivate = true;
+			HandlerStack.Pop();
+			var ds = DetailsScreen.Instance;
+			if (ds != null)
+				ds.ClearSecondarySideScreen();
+		}
+
+		// ========================================
+		// LIFECYCLE
+		// ========================================
+
+		public override void OnActivate() {
+			base.OnActivate();
+			_pendingActivation = true;
+		}
+
+		public override bool Tick() {
+			if (_pendingActivation) {
+				_pendingActivation = false;
+				string slotName = OwnablesScreen.SlotType?.Name;
+				string label = slotName ?? "";
+				// Announce slot context + first item
+				string firstItem = GetItemLabel(0);
+				if (!string.IsNullOrEmpty(firstItem))
+					label += ": " + firstItem;
+				SpeechPipeline.SpeakInterrupt(label);
+				return false;
+			}
+			return base.Tick();
+		}
+	}
+}
