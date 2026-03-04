@@ -36,6 +36,12 @@ namespace OniAccess.Patches {
 				HandlerStack.Push(new OwnablesSecondHandler(ownablesScreen));
 			} else if (__result is AssignmentGroupControllerSideScreen agcScreen) {
 				HandlerStack.Push(new AssignmentGroupControllerHandler(agcScreen));
+			} else if (__result is SelectModuleSideScreen moduleScreen) {
+				if (HandlerStack.ActiveHandler is SelectModuleHandler) {
+					HandlerStack.Replace(new SelectModuleHandler(moduleScreen));
+				} else {
+					HandlerStack.Push(new SelectModuleHandler(moduleScreen));
+				}
 			} else {
 				Util.Log.Debug(
 					$"SetSecondarySideScreen: unhandled type {__result.GetType().Name}");
@@ -59,6 +65,9 @@ namespace OniAccess.Patches {
 				HandlerStack.Pop();
 			} else if (HandlerStack.ActiveHandler is AssignmentGroupControllerHandler) {
 				Util.Log.Debug("ClearSecondarySideScreen: popping AssignmentGroupControllerHandler");
+				HandlerStack.Pop();
+			} else if (HandlerStack.ActiveHandler is SelectModuleHandler) {
+				Util.Log.Debug("ClearSecondarySideScreen: popping SelectModuleHandler");
 				HandlerStack.Pop();
 			}
 		}

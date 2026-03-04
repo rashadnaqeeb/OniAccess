@@ -126,6 +126,13 @@ namespace STRINGS {
 			public static LocString QUEUE_COUNT = "Queue: {0}";
 		}
 
+		// Select module side screen section headers
+		public class MODULE_SCREEN {
+			public static LocString MODULES = "Modules";
+			public static LocString MATERIALS = "Materials";
+			public static LocString FACADE = "Skin";
+		}
+
 		// Labels for colony summary statistics
 		public class COLONY_STATS {
 			// Label preceding the most recent cycle's value (e.g. "Population, last cycle 12")
