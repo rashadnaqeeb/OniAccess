@@ -101,6 +101,22 @@ The disconnect tool restricts selection to a straight line (adjacent cells only)
 
 Switching overlays while a tool is active automatically changes the tool's filter to match. For example, switching to the plumbing overlay while deconstructing changes the filter to target pipes.
 
+### Base game tool hotkeys
+
+The game assigns letter keys to activate tools directly from the colony view. Since the mod activates tools through its own build menu, these hotkeys are extra but still work. **I** and **K** are overwritten by the mod (tooltip and coordinates). All of these can be remapped from the game's Input Bindings options menu -- the number row is a good alternative if you want them back.
+
+- **G** -- Dig
+- **C** -- Cancel construction
+- **X** -- Deconstruct
+- **P** -- Prioritize
+- **M** -- Mop
+- **K** -- Sweep (overwritten by mod -- coordinates)
+- **I** -- Disinfect (overwritten by mod -- tooltip)
+- **T** -- Attack
+- **N** -- Capture / Wrangle
+- **Y** -- Harvest
+- **B** -- Copy building
+
 ## Building
 
 **Tab** from the colony view opens the build menu. It has three levels: categories (Tools, Housing, Food, Power, etc.), subcategories, and individual buildings.
@@ -254,6 +270,21 @@ Drill into a category to see individual resources. Each resource shows: total am
 ## Type-ahead search
 
 Most menu screens support type-ahead: start typing to filter. Matches are ranked in five tiers from start-of-string exact matches down to substring matches. Typing a single letter repeatedly cycles through items starting with that letter. The buffer clears after 1.5 seconds of inactivity. Backspace edits the query. Escape clears the search.
+
+## Management screen hotkeys
+
+These are base game hotkeys that open management screens from the colony view. They are not mod keys, but the game does not allow remapping them.
+
+- **L** -- Priorities
+- **F** -- Consumables
+- **V** -- Vitals
+- **R** -- Research
+- **.** -- Schedule
+- **J** -- Skills
+- **E** -- Colony report
+- **U** -- Database (Codex)
+- **Z** -- Starmap
+- **N** -- Diagnostics
 
 ## Known limitations
 
