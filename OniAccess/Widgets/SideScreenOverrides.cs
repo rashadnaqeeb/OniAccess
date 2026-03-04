@@ -28,6 +28,9 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<ModuleFlightUtilitySideScreen>(WalkModuleFlightUtility);
 			SideScreenWalker.RegisterOverride<RocketModuleSideScreen>(WalkRocketModule);
 			SideScreenWalker.RegisterOverride<DispenserSideScreen>(WalkDispenser);
+			SideScreenWalker.RegisterOverride<IncubatorSideScreen>(WalkIncubator);
+			SideScreenWalker.RegisterOverride<CounterSideScreen>(WalkCounter);
+			SideScreenWalker.RegisterOverride<LogicBitSelectorSideScreen>(WalkLogicBitSelector);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -1756,6 +1759,113 @@ namespace OniAccess.Widgets {
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"WalkDispenser: rows read failed: {ex.Message}");
+			}
+		}
+
+		static void WalkIncubator(IncubatorSideScreen screen, List<Widget> items) {
+			SideScreenWalker.WalkDefault(screen, items);
+			SingleEntityReceptacle receptacle;
+			try {
+				receptacle = Traverse.Create(screen)
+					.Field<SingleEntityReceptacle>("targetReceptacle").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkIncubator: targetReceptacle read failed: {ex.Message}");
+				return;
+			}
+			if (receptacle == null) return;
+			var incubator = receptacle.GetComponent<EggIncubator>();
+			if (incubator == null) return;
+
+			var toggleGO = screen.continuousToggle.gameObject;
+			for (int i = 0; i < items.Count; i++) {
+				if (items[i].GameObject != toggleGO) continue;
+				var capturedIncubator = incubator;
+				string label = (string)STRINGS.UI.CRAFT_CONTINUOUS;
+				items[i] = new ToggleWidget {
+					Label = label,
+					Component = screen.continuousToggle,
+					GameObject = toggleGO,
+					SpeechFunc = () => {
+						string state = capturedIncubator.autoReplaceEntity
+							? (string)STRINGS.ONIACCESS.STATES.ON
+							: (string)STRINGS.ONIACCESS.STATES.OFF;
+						return $"{label}, {state}";
+					}
+				};
+				break;
+			}
+		}
+
+		static void WalkCounter(CounterSideScreen screen, List<Widget> items) {
+			SideScreenWalker.WalkDefault(screen, items);
+			var toggleGO = screen.advancedModeToggle.gameObject;
+			for (int i = 0; i < items.Count; i++) {
+				if (items[i].GameObject != toggleGO) continue;
+				string existingLabel = items[i].Label;
+				var capturedScreen = screen;
+				items[i] = new ToggleWidget {
+					Label = existingLabel,
+					Component = screen.advancedModeToggle,
+					GameObject = toggleGO,
+					SpeechFunc = () => {
+						var labelLt = SideScreenWalker.FindChildLocText(
+							capturedScreen.advancedModeToggle.transform, null);
+						string lbl = SideScreenWalker.ReadLocText(
+							labelLt, capturedScreen.advancedModeToggle.transform.name);
+						string state = capturedScreen.targetLogicCounter.advancedMode
+							? (string)STRINGS.ONIACCESS.STATES.ON
+							: (string)STRINGS.ONIACCESS.STATES.OFF;
+						return $"{lbl}, {state}";
+					}
+				};
+				break;
+			}
+		}
+
+		static void WalkLogicBitSelector(LogicBitSelectorSideScreen screen, List<Widget> items) {
+			ILogicRibbonBitSelector target;
+			try {
+				target = Traverse.Create(screen)
+					.Field<ILogicRibbonBitSelector>("target").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkLogicBitSelector: target read failed: {ex.Message}");
+				return;
+			}
+			if (target == null) return;
+
+			var toggles = screen.toggles_by_int;
+			if (toggles == null || toggles.Count == 0) return;
+
+			var capturedTarget = target;
+			foreach (var kv in toggles) {
+				int bit = kv.Key;
+				var toggle = kv.Value;
+				if (toggle == null || !toggle.gameObject.activeSelf) continue;
+
+				int capturedBit = bit;
+				string label = string.Format(
+					(string)STRINGS.UI.UISIDESCREENS.LOGICBITSELECTORSIDESCREEN.BIT,
+					bit + 1);
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = toggle,
+					GameObject = toggle.gameObject,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						bool selected = capturedTarget.GetBitSelection() == capturedBit;
+						bool active = capturedTarget.IsBitActive(capturedBit);
+						string signalState = active
+							? (string)STRINGS.UI.UISIDESCREENS.LOGICBITSELECTORSIDESCREEN.STATE_ACTIVE
+							: (string)STRINGS.UI.UISIDESCREENS.LOGICBITSELECTORSIDESCREEN.STATE_INACTIVE;
+						string speech = string.Format(
+							(string)STRINGS.UI.UISIDESCREENS.LOGICBITSELECTORSIDESCREEN.BIT,
+							capturedBit + 1);
+						if (selected)
+							speech += $", {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
+						speech += $", {signalState}";
+						return speech;
+					}
+				});
 			}
 		}
 	}
