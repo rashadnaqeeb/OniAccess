@@ -492,6 +492,8 @@ namespace STRINGS {
 			public static LocString ORDER_EMPTY_PIPE = "empty pipe";
 			// {0} = order type label (e.g. "dig"), {1} = priority level (int)
 			public static LocString ORDER_PRIORITY = "{0} priority {1}";
+			// {0} = order label (e.g. "dig priority 5")
+			public static LocString ORDER_UNREACHABLE = "unreachable {0}";
 
 			// Point-of-interest marker on a tile
 			public static LocString TILE_OF_INTEREST = "P O I";

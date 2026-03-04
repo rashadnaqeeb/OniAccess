@@ -32,16 +32,20 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var go = Grid.Objects[cell, (int)ObjectLayer.DigPlacer];
 			if (go == null) return;
 			if (go.GetComponent<Diggable>() == null) return;
-			parts.Add(FormatOrder(
-				(string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG, go));
+			string label = MaybeUnreachable(
+				(string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG,
+				go, Db.Get().BuildingStatusItems.DigUnreachable);
+			parts.Add(FormatOrder(label, go));
 		}
 
 		private static void CollectMopOrder(int cell, List<string> parts) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.MopPlacer];
 			if (go == null) return;
 			if (go.GetComponent<Moppable>() == null) return;
-			parts.Add(FormatOrder(
-				(string)STRINGS.ONIACCESS.GLANCE.ORDER_MOP, go));
+			string label = MaybeUnreachable(
+				(string)STRINGS.ONIACCESS.GLANCE.ORDER_MOP,
+				go, Db.Get().BuildingStatusItems.MopUnreachable);
+			parts.Add(FormatOrder(label, go));
 		}
 
 		private static void CollectSweepOrder(int cell, List<string> parts) {
@@ -54,9 +58,11 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			while (item != null) {
 				var clearable = item.gameObject.GetComponent<Clearable>();
 				if (clearable != null && IsMarkedForClear(clearable)) {
-					parts.Add(FormatOrder(
+					string label = MaybeUnreachable(
 						(string)STRINGS.ONIACCESS.GLANCE.ORDER_SWEEP,
-						item.gameObject));
+						item.gameObject,
+						Db.Get().MiscStatusItems.PickupableUnreachable);
+					parts.Add(FormatOrder(label, item.gameObject));
 					return;
 				}
 				item = item.nextItem;
@@ -179,6 +185,15 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			return group.HasStatusItemID("EmptyLiquidConduit")
 				|| group.HasStatusItemID("EmptyGasConduit")
 				|| group.HasStatusItemID("EmptySolidConduit");
+		}
+
+		private static string MaybeUnreachable(
+				string label, GameObject go, StatusItem statusItem) {
+			var selectable = go.GetComponent<KSelectable>();
+			if (selectable != null && selectable.HasStatusItem(statusItem))
+				return string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.ORDER_UNREACHABLE, label);
+			return label;
 		}
 
 		private static string FormatOrder(string label, GameObject go) {
