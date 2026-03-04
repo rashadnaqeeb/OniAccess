@@ -196,9 +196,10 @@ namespace OniAccess.Widgets {
 		public static string GetButtonLabel(KButton button, string fallback = null) {
 			var locText = button.GetComponentInChildren<LocText>();
 			if (locText != null) {
-				string parsed = locText.GetParsedText();
+				string parsed = Speech.TextFilter.FilterForSpeech(locText.GetParsedText());
 				if (!string.IsNullOrEmpty(parsed)) return parsed;
-				if (!string.IsNullOrEmpty(locText.text)) return locText.text;
+				string raw = Speech.TextFilter.FilterForSpeech(locText.text);
+				if (!string.IsNullOrEmpty(raw)) return raw;
 			}
 			return fallback;
 		}
