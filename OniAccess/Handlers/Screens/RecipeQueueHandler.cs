@@ -4,6 +4,7 @@ using System.Reflection;
 using UnityEngine;
 
 using OniAccess.Input;
+using OniAccess.Patches;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens {
@@ -467,7 +468,12 @@ namespace OniAccess.Handlers.Screens {
 				PlaySound("Slider_Boundary_Low");
 				return;
 			}
-			ownerScreen.CycleRecipe(direction);
+			SecondarySideScreenPatches.SuppressClearPop = true;
+			try {
+				ownerScreen.CycleRecipe(direction);
+			} finally {
+				SecondarySideScreenPatches.SuppressClearPop = false;
+			}
 		}
 
 		private void ResetOwnerToggleState() {

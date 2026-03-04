@@ -542,15 +542,12 @@ namespace OniAccess.Widgets {
 
 						string speech = $"{name}, {queueStatus}";
 
-						// Availability via label color
-						if (capturedLabelLt != null && capturedLabelLt.color.r >= 0.1f) {
-							speech += $", {(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE}";
-						}
-
-						// Tech required
+						// Tech required (checked first — implies unavailable)
 						var techRequired = capturedHref
 							.GetReference<RectTransform>("TechRequired");
 						if (techRequired != null && techRequired.gameObject.activeSelf) {
+							speech += $", {(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE}";
+						} else if (capturedLabelLt != null && capturedLabelLt.color.r >= 0.1f) {
 							speech += $", {(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE}";
 						}
 

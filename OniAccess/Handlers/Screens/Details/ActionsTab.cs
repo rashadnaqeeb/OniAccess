@@ -52,6 +52,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			} catch (System.Exception ex) {
 				Util.Log.Warn(
 					$"ActionsTab: selected read failed: {ex.Message}");
+				return;
 			}
 
 			List<KIconButtonMenu.ButtonInfo> buttonInfos;

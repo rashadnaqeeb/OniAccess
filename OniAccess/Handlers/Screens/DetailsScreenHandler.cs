@@ -459,6 +459,7 @@ namespace OniAccess.Handlers.Screens {
 				SuppressNextActivation = false;
 				_pendingSilentRebuild = true;
 			} else if (!sameTarget) {
+				PreserveNavigationOnReactivate = false;
 				_pendingFirstSection = true;
 			} else if (PreserveNavigationOnReactivate) {
 				PreserveNavigationOnReactivate = false;
@@ -751,6 +752,15 @@ namespace OniAccess.Handlers.Screens {
 			var items = _sections[GetIndex(0)].Items;
 			int i = GetIndex(1);
 			if (i >= items.Count && items.Count > 0) SetIndex(1, items.Count - 1);
+			if (Level >= 2) {
+				var children = (GetIndex(1) < items.Count)
+					? items[GetIndex(1)].Children : null;
+				int cc = children?.Count ?? 0;
+				if (cc == 0)
+					Level = 1;
+				else if (GetIndex(2) >= cc)
+					SetIndex(2, cc - 1);
+			}
 		}
 
 		private void SpeakFirstSection() {
