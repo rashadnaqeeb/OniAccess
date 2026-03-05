@@ -284,7 +284,6 @@ These are base game hotkeys that open management screens from the colony view. T
 - **E** -- Colony report
 - **U** -- Database (Codex)
 - **Z** -- Starmap
-- **N** -- Diagnostics
 
 ## Known limitations
 

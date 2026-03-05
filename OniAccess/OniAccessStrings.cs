@@ -327,7 +327,6 @@ namespace STRINGS {
 				public static LocString COLONY_REPORT = "Colony report";
 				public static LocString DATABASE = "Database";
 				public static LocString STARMAP = "Starmap";
-				public static LocString DIAGNOSTICS = "Diagnostics";
 			}
 		}
 

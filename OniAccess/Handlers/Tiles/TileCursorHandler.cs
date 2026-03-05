@@ -143,7 +143,6 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("E", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.COLONY_REPORT),
 			new HelpEntry("U", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.DATABASE),
 			new HelpEntry("Z", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.STARMAP),
-			new HelpEntry("N", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.DIAGNOSTICS),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;
