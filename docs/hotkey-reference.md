@@ -175,10 +175,10 @@ These are only relevant if debug mode is active, but listed for completeness to 
 
 | Key | Action | Notes |
 |-----|--------|-------|
-| F12 | Steam Screenshot | CONFLICTS with mod's Context Help -- see note below |
+| F12 | Steam Screenshot | No longer conflicts -- mod help moved to Shift+/ (?) |
 | Shift+Tab | Steam Overlay | |
 
-**NOTE:** F12 is bound to Steam Screenshot by default. The mod currently assigns F12 to Context Help. Users may need to rebind Steam's screenshot key, or the mod could use a different key. This is configurable in Steam settings.
+**NOTE:** F12 is bound to Steam Screenshot by default. The mod uses Shift+/ (?) for Context Help, so there is no conflict.
 
 ## Keys NOT Used by ONI (safe for mod)
 
@@ -209,7 +209,7 @@ These are only relevant if debug mode is active, but listed for completeness to 
 | Action | Key | Phase | Rationale |
 |--------|-----|-------|-----------|
 | Toggle mod on/off | Ctrl+Shift+F12 | 1 | No game conflict, works in all contexts. NOTE: Ctrl+Shift+F12 is Debug Trigger Error in debug mode -- low risk since debug mode is rare |
-| Context help | F12 | 1 | Not used by overlays (F1-F11), not used by game. NOTE: Conflicts with Steam Screenshot -- users may need to rebind in Steam |
+| Context help | Shift+/ (?) | 1 | Universal "press ? for help" convention. No game or Steam conflict |
 | Read coordinates | K | tile | Overwrites Clear (Sweep) tool hotkey (tools are activated through the mod's tool menu). Reads current cell X,Y position |
 | Cycle coordinate mode | Shift+K | tile | Cycles Off -> Append -> Prepend -> Off. Attaches coordinates to glance announcements |
 | Read tooltip summary | I | tile | Overwrites Disinfect tool hotkey (tools are activated through the mod's tool menu). Speaks first block of hover tooltip |
@@ -230,5 +230,5 @@ This section documents known conflicts and context-dependent double bindings.
 | N | Capture (Wrangle) -- Tool context | ManageDiagnostics -- Management context | Context-dependent, only one active at a time |
 | Insert | Empty Pipe -- Tool context | NVDA modifier -- Screen reader | Avoid binding; Empty Pipe rarely used |
 | Ctrl+Shift+F12 | Mod toggle | Debug Trigger Error -- Debug context | Low risk; debug mode is opt-in and rare |
-| F12 | Mod Context Help | Steam Screenshot -- Steam overlay | Users can rebind Steam screenshot in Steam settings |
+| Shift+/ (?) | Mod Context Help | / is Toggle Open in Building context | Building context is not active when help opens; no real conflict |
 | Shift+F1 through Shift+F4 | Overlay 12-15 -- Root context | Debug Visual Test (Shift+F1), etc. -- Debug context | Debug keys only active in debug mode |

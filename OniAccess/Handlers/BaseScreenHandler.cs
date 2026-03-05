@@ -33,7 +33,7 @@ namespace OniAccess.Handlers {
 		public abstract string DisplayName { get; }
 
 		/// <summary>
-		/// Help entries for F12 navigable help list. Subclasses compose from
+		/// Help entries for ? navigable help list. Subclasses compose from
 		/// screen-type-specific entry lists (MenuHelpEntries, ListNavHelpEntries, etc.).
 		/// </summary>
 		public abstract IReadOnlyList<HelpEntry> HelpEntries { get; }
@@ -74,7 +74,7 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
-		/// Per-frame key detection. F12 help is handled centrally by KeyPoller.
+		/// Per-frame key detection. ? help is handled centrally by KeyPoller.
 		/// Subclasses override for screen-specific key handling.
 		/// </summary>
 		public virtual bool Tick() => false;

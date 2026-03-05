@@ -1,5 +1,6 @@
 # Changelog
 
+- Help key changed from F12 to ? (Shift+/) to avoid conflict with Steam Screenshot
 - Extension cells below Pitcher Pump and Water Trap now announce as "intake pipe" or "lure" instead of repeating the building name
 - Utility ports now use descriptive labels: filters say "filtered gas output" instead of "gas output 1", overflow valves say "overflow output", preferential flow valves say "priority input"
 - Gas, liquid, and solid filter side screens now present a flat alphabetical list of elements instead of confusing folded categories

@@ -25,7 +25,7 @@ namespace OniAccess.Input {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
 				&& InputUtil.CtrlHeld() && InputUtil.ShiftHeld()) {
 				ModToggle.Toggle();
-				return; // Don't process F12 further this frame
+				return; // Don't process Ctrl+Shift+F12 further this frame
 			}
 
 			// When mod is off, don't process anything else
@@ -50,11 +50,11 @@ namespace OniAccess.Input {
 			// are cleaned up, not just the top.
 			HandlerStack.RemoveStaleHandlers();
 
-			// F12 (no modifiers): open help with entries from all reachable handlers.
+			// Shift+/ (?): open help with entries from all reachable handlers.
 			// Centralized here to prevent double-push when layered non-capturing
-			// handlers both detect F12 in the same frame.
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
-				&& !InputUtil.AnyModifierHeld()
+			// handlers both detect the key in the same frame.
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Slash)
+				&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld()
 				&& !(HandlerStack.ActiveHandler is HelpHandler)) {
 				var entries = HandlerStack.CollectHelpEntries();
 				HandlerStack.Push(new HelpHandler(entries));

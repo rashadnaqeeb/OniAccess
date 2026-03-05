@@ -31,7 +31,7 @@ namespace OniAccess.Handlers {
 		bool CapturesAllInput { get; }
 
 		/// <summary>
-		/// Help entries for F12 navigable help list. Each handler owns its help text.
+		/// Help entries for ? navigable help list. Each handler owns its help text.
 		/// </summary>
 		System.Collections.Generic.IReadOnlyList<HelpEntry> HelpEntries { get; }
 

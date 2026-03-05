@@ -2,7 +2,7 @@ namespace OniAccess.Handlers {
 	/// <summary>
 	/// Simple data class for help list entries.
 	/// Each handler provides its own list of these via IAccessHandler.HelpEntries.
-	/// Displayed in the F12 navigable help list.
+	/// Displayed in the ? navigable help list.
 	/// </summary>
 	public sealed class HelpEntry {
 		public string KeyName { get; }

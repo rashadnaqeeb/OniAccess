@@ -1,13 +1,14 @@
 using System.Collections.Generic;
+using OniAccess.Input;
 
 namespace OniAccess.Handlers {
 	/// <summary>
-	/// Handler for F12 help mode. Extends BaseMenuHandler for 1D navigation
+	/// Handler for ? help mode. Extends BaseMenuHandler for 1D navigation
 	/// with type-ahead search, Home/End, and wrap sounds. No KScreen.
 	/// Speaks help entries one at a time with Up/Down arrow navigation.
-	/// Escape or F12 returns to the previous handler.
+	/// Escape or ? returns to the previous handler.
 	///
-	/// Per locked decision: F12 opens a navigable list (arrow keys step through entries),
+	/// Per locked decision: ? opens a navigable list (arrow keys step through entries),
 	/// not a speech dump. Show only the active handler's keys.
 	/// </summary>
 	public class HelpHandler: BaseMenuHandler {
@@ -24,7 +25,7 @@ namespace OniAccess.Handlers {
 				new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE),
 				new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
 				new HelpEntry("Escape", STRINGS.ONIACCESS.HELP.CLOSE),
-				new HelpEntry("F12", STRINGS.ONIACCESS.HELP.CLOSE),
+				new HelpEntry("?", STRINGS.ONIACCESS.HELP.CLOSE),
 			}.AsReadOnly();
 
 		/// <summary>
@@ -65,7 +66,8 @@ namespace OniAccess.Handlers {
 		}
 
 		public override bool Tick() {
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)) {
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Slash)
+			&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld()) {
 				Close();
 				return true;
 			}

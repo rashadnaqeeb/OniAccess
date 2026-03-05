@@ -52,7 +52,7 @@ namespace OniAccess {
 			StatusFilter.Initialize();
 
 			// Create persistent KeyPoller MonoBehaviour for unbound key detection
-			// (F12, arrows -- keys ONI doesn't generate KButtonEvents for)
+			// (Shift+/, arrows -- keys ONI doesn't generate KButtonEvents for)
 			var go = new GameObject("OniAccess_Input");
 			UnityEngine.Object.DontDestroyOnLoad(go);
 			go.AddComponent<KeyPoller>();

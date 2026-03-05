@@ -9,13 +9,13 @@ The build script handles this automatically for development. Full install instru
 ## Quick start
 
 - **Ctrl+Shift+F12** toggles the mod on/off
-- **F12** opens context-sensitive help listing every key available on the current screen
+- **?** (Shift+/) opens context-sensitive help listing every key available on the current screen
 - Arrow keys navigate everything -- tile cursor in gameplay, items in menus
 - Enter activates, Escape closes, Tab cycles sections
 
 ## Context help and mod toggle
 
-**F12** opens an interactive help list tailored to whatever screen you're on. The list changes depending on context -- the help you see in the colony view is different from the help inside a details screen or the build menu. The list is navigable and supports type-ahead search, so you can type part of a key name to jump to it.
+**?** (Shift+/) opens an interactive help list tailored to whatever screen you're on. The list changes depending on context -- the help you see in the colony view is different from the help inside a details screen or the build menu. The list is navigable and supports type-ahead search, so you can type part of a key name to jump to it.
 
 **Ctrl+Shift+F12** toggles the entire mod off. All speech stops and every key passes through to the game as if the mod weren't installed. Press it again to re-enable. This is the only key that works while the mod is disabled.
 
@@ -295,4 +295,4 @@ These are base game hotkeys that open management screens from the colony view. T
 
 - **Player log location**: `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`
 - **Mod log lines** are prefixed with `[OniAccess]`
-- If a screen isn't being read, check that your screen reader is running and try F12 to see if the mod recognizes the current context.
+- If a screen isn't being read, check that your screen reader is running and try ? (Shift+/) to see if the mod recognizes the current context.
