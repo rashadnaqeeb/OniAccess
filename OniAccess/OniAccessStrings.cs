@@ -540,6 +540,10 @@ namespace STRINGS {
 			// {0} = port type label, {1} = port number (int, when building has multiple ports of same type)
 			public static LocString NUMBERED_PORT = "{0} {1}";
 
+			// Building extension cells: {0} = building name
+			public static LocString INTAKE_PIPE = "{0} intake pipe";
+			public static LocString LURE = "{0} lure";
+
 			// Decor overlay value. {0} = sign prefix ("+" or ""), {1} = decor value (int)
 			public static LocString OVERLAY_DECOR = "{0}{1} decor";
 			// Disease overlay: tile is clean

@@ -46,11 +46,20 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (selectable == null) return;
 
 			var building = go.GetComponent<Building>();
-			if (building != null)
+			bool isExtension = building != null
+				&& !building.PlacementCellsContainCell(cell);
+
+			if (building != null && !isExtension)
 				ReadPorts(go, building, cell, tokens);
 
-			var constructable = go.GetComponent<Constructable>();
 			string displayName = GetBuildingName(go, selectable);
+
+			if (isExtension) {
+				tokens.Add(ExtensionLabel(go, displayName));
+				return;
+			}
+
+			var constructable = go.GetComponent<Constructable>();
 			if (constructable != null) {
 				tokens.Add(string.Format(
 					(string)STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION,
@@ -66,6 +75,16 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				int origin = Grid.PosToCell(building.transform.GetPosition());
 				ReadCellOfInterest(go, building, origin, cell, tokens);
 			}
+		}
+
+		private static string ExtensionLabel(GameObject go, string buildingName) {
+			if (go.GetComponent<LiquidPumpingStation>() != null)
+				return string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.INTAKE_PIPE, buildingName);
+			if (go.GetSMI<WaterTrapTrail.Instance>() != null)
+				return string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.LURE, buildingName);
+			return buildingName;
 		}
 
 		/// <summary>
