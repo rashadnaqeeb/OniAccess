@@ -105,16 +105,13 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (queueIndex < 0 || queueIndex >= queue.Count) return;
 
 			var tech = queue[queueIndex].tech;
-			int oldCount = queue.Count;
+			bool hadOthers = queue.Count > 1;
 
 			global::Research.Instance.CancelResearch(tech);
 
-			int newCount = global::Research.Instance.GetResearchQueue().Count;
-			int removed = oldCount - newCount;
-
 			string message = string.Format(STRINGS.ONIACCESS.RESEARCH.CANCELED, tech.Name);
-			if (removed > 1)
-				message += ", " + string.Format(STRINGS.ONIACCESS.RESEARCH.CASCADE_REMOVED, removed - 1);
+			if (hadOthers)
+				message += ", " + STRINGS.ONIACCESS.RESEARCH.QUEUE_CLEARED;
 
 			// Adjust cursor if it now points past the end
 			int maxIndex = ItemCount - 1;

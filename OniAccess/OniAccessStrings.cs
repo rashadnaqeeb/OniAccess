@@ -896,8 +896,7 @@ namespace STRINGS {
 			public static LocString QUEUED = "{0} queued";
 			// {0} = tech name
 			public static LocString CANCELED = "{0} canceled";
-			// {0} = number of additional techs removed (int)
-			public static LocString CASCADE_REMOVED = "{0} dependent techs also removed";
+			public static LocString QUEUE_CLEARED = "queue cleared";
 			public static LocString QUEUE_EMPTY = "no research queued";
 			public static LocString NO_BANKED_POINTS = "no banked research points";
 			public static LocString DEAD_END = "no further techs";
@@ -908,7 +907,7 @@ namespace STRINGS {
 			public static LocString BUCKET_COMPLETED = "Completed";
 			// Help entries
 			public static LocString JUMP_TO_TREE_HELP = "Jump to tech in tree view";
-			public static LocString QUEUE_CANCEL_HELP = "Queue or cancel research";
+			public static LocString QUEUE_CANCEL_HELP = "Select or cancel research";
 			public static LocString CANCEL_HELP = "Cancel selected research";
 			// {0} = current points (float), {1} = required points (float), {2} = research type name
 			public static LocString PROGRESS_ENTRY = "{0} of {1} {2}";

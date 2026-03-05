@@ -247,15 +247,15 @@ The research screen has three tabs: Browse, Queue, and Tree.
 
 ### Browse tab
 
-Techs grouped into three buckets: Available, Locked, and Completed. Each tech announces its name, state, research cost (or progress if partially complete), what it unlocks, and prerequisites if locked. Enter queues a tech for research. Space jumps to it in the Tree tab.
+Techs grouped into three buckets: Available, Locked, and Completed. Each tech announces its name, state, research cost (or progress if partially complete), what it unlocks, and prerequisites if locked. Enter selects a tech for research. Space jumps to it in the Tree tab.
 
 ### Queue tab
 
-Shows banked research points at the top, then queued techs in order. Enter cancels the selected tech (and any dependents that would become unreachable).
+Shows banked research points at the top, then queued techs in order. Enter cancels all techs. The queue is really not a queue in the traditional sense. it exists to allow you to queue a research while missing the prerequisites, but doesn't allow you to queue multiple things in any other context. cancel one thing and it cancels everything.
 
 ### Tree tab
 
-Navigates the tech tree as a graph. Up moves to a prerequisite, Down to a dependent, Left/Right cycles siblings. Enter queues a tech. Announces "root node" or "dead end" at boundaries.
+Navigates the tech tree as a graph. Up moves to a prerequisite, Down to a dependent, Left/Right cycles siblings. Enter selects a tech. Announces "root node" or "dead end" at boundaries.
 
 All three tabs support type-ahead search across the full tech database.
 
