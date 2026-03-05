@@ -1,5 +1,7 @@
 # Changelog
 
+- Fixed dig tool announcing gas or liquid element behind buildings
+- Fixed dig tool announcing "N/A" hardness for gas and liquid elements
 - Fixed details screen speaking extraneous periods in Category line (e.g., "Category:. . Toilet" now reads "Category:. Toilet")
 - Tile cursor now announces "unreachable" for dig, mop, and sweep orders that no duplicant can reach
 - Fixed utility placement (wires, pipes) rejecting cells with existing utilities, so you can now start drags on existing lines and drag over them to reconnect
