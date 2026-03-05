@@ -532,6 +532,11 @@ namespace STRINGS {
 			public static LocString WIRE = "wire";
 			public static LocString UNKNOWN_ELEMENT = "unknown";
 
+			// Semantic port qualifiers: {0} = base port label (e.g. "gas output")
+			public static LocString FILTERED_PORT = "filtered {0}";
+			public static LocString OVERFLOW_PORT = "overflow {0}";
+			public static LocString PRIORITY_PORT = "priority {0}";
+
 			// {0} = port type label, {1} = port number (int, when building has multiple ports of same type)
 			public static LocString NUMBERED_PORT = "{0} {1}";
 

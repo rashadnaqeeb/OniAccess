@@ -260,14 +260,24 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var orientation = building.Orientation;
 			var conduitType = OverlayModeToConduitType(activeMode);
 
-			// Collect all input labels matching this cell
-			var inputs = new List<string>();
+			// Count generic (unlabeled) inputs/outputs for numbered fallback.
+			// Ports with semantic labels (filtered, overflow, priority) are
+			// excluded from the count because they don't need numbering.
+			int genericInputs = (def.InputConduitType == conduitType ? 1 : 0)
+				+ CountGenericSecondaryPorts<ISecondaryInput>(go, conduitType);
+			int genericOutputs = (def.OutputConduitType == conduitType ? 1 : 0)
+				+ CountGenericSecondaryPorts<ISecondaryOutput>(go, conduitType);
+
+			// Enumerate inputs. Primary port first, then secondaries.
+			int inputOrdinal = 0;
 			if (def.InputConduitType != ConduitType.None
 				&& def.InputConduitType == conduitType) {
+				inputOrdinal++;
 				var rotated = Rotatable.GetRotatedCellOffset(
 					def.UtilityInputOffset, orientation);
 				if (Grid.OffsetCell(origin, rotated) == cell)
-					inputs.Add(ConduitInputLabel(conduitType));
+					AddPortLabel(ConduitInputLabel(conduitType),
+						inputOrdinal, genericInputs, tokens);
 			}
 			if (conduitType != ConduitType.None) {
 				foreach (var sec in go.GetComponents<ISecondaryInput>()) {
@@ -275,19 +285,29 @@ namespace OniAccess.Handlers.Tiles.Sections {
 						continue;
 					var offset = sec.GetSecondaryConduitOffset(conduitType);
 					var rotated = Rotatable.GetRotatedCellOffset(offset, orientation);
-					if (Grid.OffsetCell(origin, rotated) == cell)
-						inputs.Add(ConduitInputLabel(conduitType));
+					string semantic = SemanticInputLabel(sec, conduitType);
+					if (semantic != null) {
+						if (Grid.OffsetCell(origin, rotated) == cell)
+							tokens.Add(semantic);
+					} else {
+						inputOrdinal++;
+						if (Grid.OffsetCell(origin, rotated) == cell)
+							AddPortLabel(ConduitInputLabel(conduitType),
+								inputOrdinal, genericInputs, tokens);
+					}
 				}
 			}
 
-			// Collect all output labels matching this cell
-			var outputs = new List<string>();
+			// Enumerate outputs. Primary port first, then secondaries.
+			int outputOrdinal = 0;
 			if (def.OutputConduitType != ConduitType.None
 				&& def.OutputConduitType == conduitType) {
+				outputOrdinal++;
 				var rotated = Rotatable.GetRotatedCellOffset(
 					def.UtilityOutputOffset, orientation);
 				if (Grid.OffsetCell(origin, rotated) == cell)
-					outputs.Add(ConduitOutputLabel(conduitType));
+					AddPortLabel(ConduitOutputLabel(conduitType),
+						outputOrdinal, genericOutputs, tokens);
 			}
 			if (conduitType != ConduitType.None) {
 				foreach (var sec in go.GetComponents<ISecondaryOutput>()) {
@@ -295,20 +315,18 @@ namespace OniAccess.Handlers.Tiles.Sections {
 						continue;
 					var offset = sec.GetSecondaryConduitOffset(conduitType);
 					var rotated = Rotatable.GetRotatedCellOffset(offset, orientation);
-					if (Grid.OffsetCell(origin, rotated) == cell)
-						outputs.Add(ConduitOutputLabel(conduitType));
+					string semantic = SemanticOutputLabel(sec, conduitType);
+					if (semantic != null) {
+						if (Grid.OffsetCell(origin, rotated) == cell)
+							tokens.Add(semantic);
+					} else {
+						outputOrdinal++;
+						if (Grid.OffsetCell(origin, rotated) == cell)
+							AddPortLabel(ConduitOutputLabel(conduitType),
+								outputOrdinal, genericOutputs, tokens);
+					}
 				}
 			}
-
-			// Count total inputs/outputs across all cells to decide numbering.
-			// Primary gives 1 port; each secondary component gives 1 more.
-			int totalInputs = (def.InputConduitType == conduitType ? 1 : 0)
-				+ CountSecondaryPorts<ISecondaryInput>(go, conduitType);
-			int totalOutputs = (def.OutputConduitType == conduitType ? 1 : 0)
-				+ CountSecondaryPorts<ISecondaryOutput>(go, conduitType);
-
-			AddNumberedLabels(inputs, totalInputs, tokens);
-			AddNumberedLabels(outputs, totalOutputs, tokens);
 
 			// Power ports (never have duplicates, no numbering needed)
 			if (activeMode == OverlayModes.Power.ID) {
@@ -333,32 +351,54 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			}
 		}
 
-		private static int CountSecondaryPorts<T>(
+		private static int CountGenericSecondaryPorts<T>(
 				GameObject go, ConduitType conduitType) where T : class {
 			if (conduitType == ConduitType.None) return 0;
 			int count = 0;
 			foreach (var comp in go.GetComponents<T>()) {
 				if (comp is ISecondaryInput input
-					&& input.HasSecondaryConduitType(conduitType))
+					&& input.HasSecondaryConduitType(conduitType)
+					&& SemanticInputLabel(input, conduitType) == null)
 					count++;
 				else if (comp is ISecondaryOutput output
-					&& output.HasSecondaryConduitType(conduitType))
+					&& output.HasSecondaryConduitType(conduitType)
+					&& SemanticOutputLabel(output, conduitType) == null)
 					count++;
 			}
 			return count;
 		}
 
-		private static void AddNumberedLabels(
-				List<string> labels, int totalOfKind, List<string> tokens) {
-			if (labels.Count == 0) return;
-			if (totalOfKind <= 1) {
-				tokens.AddRange(labels);
-			} else {
-				for (int i = 0; i < labels.Count; i++)
-					tokens.Add(string.Format(
-						(string)STRINGS.ONIACCESS.GLANCE.NUMBERED_PORT,
-						labels[i], i + 1));
-			}
+		private static string SemanticOutputLabel(
+				ISecondaryOutput port, ConduitType conduitType) {
+			if (port is ElementFilter)
+				return string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.FILTERED_PORT,
+					ConduitOutputLabel(conduitType));
+			if (port is ConduitOverflow)
+				return string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.OVERFLOW_PORT,
+					ConduitOutputLabel(conduitType));
+			return null;
+		}
+
+		private static string SemanticInputLabel(
+				ISecondaryInput port, ConduitType conduitType) {
+			if (port is ConduitPreferentialFlow)
+				return string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.PRIORITY_PORT,
+					ConduitInputLabel(conduitType));
+			return null;
+		}
+
+		private static void AddPortLabel(
+				string label, int ordinal, int totalOfKind,
+				List<string> tokens) {
+			if (totalOfKind <= 1)
+				tokens.Add(label);
+			else
+				tokens.Add(string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.NUMBERED_PORT,
+					label, ordinal));
 		}
 
 		private static void ReadAutomationPorts(

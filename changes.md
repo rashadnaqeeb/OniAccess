@@ -1,5 +1,6 @@
 # Changelog
 
+- Utility ports now use descriptive labels: filters say "filtered gas output" instead of "gas output 1", overflow valves say "overflow output", preferential flow valves say "priority input"
 - Gas, liquid, and solid filter side screens now present a flat alphabetical list of elements instead of confusing folded categories
 - Door access control now says "passing from right to left" instead of just "left" to clarify the direction of travel
 - Action buttons now include their tooltip in speech (e.g. wash basin direction buttons explain the travel direction)
