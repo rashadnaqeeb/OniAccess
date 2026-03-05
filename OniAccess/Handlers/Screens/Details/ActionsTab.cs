@@ -71,7 +71,9 @@ namespace OniAccess.Handlers.Screens.Details {
 				var captured = info;
 				items.Add(new UserMenuButtonWidget {
 					Label = captured.text,
-					SpeechFunc = () => captured.text,
+					SpeechFunc = () => string.IsNullOrEmpty(captured.tooltipText)
+						? captured.text
+						: $"{captured.text}, {captured.tooltipText}",
 					OnClick = captured.onClick,
 					IsInteractableFunc = () => captured.isInteractable
 				});

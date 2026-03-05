@@ -1,5 +1,7 @@
 # Changelog
 
+- Door access control now says "passing from right to left" instead of just "left" to clarify the direction of travel
+- Action buttons now include their tooltip in speech (e.g. wash basin direction buttons explain the travel direction)
 - Pressing backslash on the details screen activates copy settings for the selected building, with an error message if the entity has no copyable settings
 - Fixed switching tools (e.g. pressing X for deconstruct while in build mode) not activating the new tool's handler
 - Tile cursor help (F12) now lists the 10 base game management screen hotkeys (Priorities, Consumables, Vitals, etc.)

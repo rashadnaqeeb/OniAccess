@@ -774,11 +774,15 @@ namespace STRINGS {
 			public static LocString ALLOWED = "allowed";
 			public static LocString BLOCKED = "blocked";
 			public static LocString LOCKED = "Door locked, access control disabled";
-			// Default traversal direction labels
-			public static LocString DEFAULT_LEFT = "default left";
-			public static LocString DEFAULT_RIGHT = "default right";
-			public static LocString DEFAULT_UP = "default up";
-			public static LocString DEFAULT_DOWN = "default down";
+			// Traversal direction labels: named by travel direction
+			public static LocString PASS_LEFT = "passing from right to left";
+			public static LocString PASS_RIGHT = "passing from left to right";
+			public static LocString PASS_UP = "passing from bottom to top";
+			public static LocString PASS_DOWN = "passing from top to bottom";
+			public static LocString DEFAULT_PASS_LEFT = "default, passing from right to left";
+			public static LocString DEFAULT_PASS_RIGHT = "default, passing from left to right";
+			public static LocString DEFAULT_PASS_UP = "default, passing from bottom to top";
+			public static LocString DEFAULT_PASS_DOWN = "default, passing from top to bottom";
 		}
 
 		// Entity details screen (inspecting a selected building, duplicant, or item)
