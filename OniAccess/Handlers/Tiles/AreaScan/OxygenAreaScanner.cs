@@ -30,22 +30,26 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 				if (o2Count > 0) {
 					int pct = (int)Math.Round(100.0 * o2Count / totalCells);
 					if (pct == 0) pct = 1;
+					string name = ElementLoader.FindElementByHash(SimHashes.Oxygen).name;
 					tokens.Add(string.Format(
 						STRINGS.ONIACCESS.BIG_CURSOR.OXYGEN_ENTRY,
-						pct, AreaScanUtil.FormatMass(o2Mass)));
+						name, pct, AreaScanUtil.FormatMass(o2Mass)));
 				}
 				if (po2Count > 0) {
 					int pct = (int)Math.Round(100.0 * po2Count / totalCells);
 					if (pct == 0) pct = 1;
-					tokens.Add(string.Format(
-						STRINGS.ONIACCESS.BIG_CURSOR.POLLUTED_O2_ENTRY,
-						pct, AreaScanUtil.FormatMass(po2Mass)));
-				}
-
-				if (o2Count == 0 && po2Count == 0)
+					string name = ElementLoader.FindElementByHash(SimHashes.ContaminatedOxygen).name;
 					tokens.Add(string.Format(
 						STRINGS.ONIACCESS.BIG_CURSOR.OXYGEN_ENTRY,
-						0, AreaScanUtil.FormatMass(0f)));
+						name, pct, AreaScanUtil.FormatMass(po2Mass)));
+				}
+
+				if (o2Count == 0 && po2Count == 0) {
+					string name = ElementLoader.FindElementByHash(SimHashes.Oxygen).name;
+					tokens.Add(string.Format(
+						STRINGS.ONIACCESS.BIG_CURSOR.OXYGEN_ENTRY,
+						name, 0, AreaScanUtil.FormatMass(0f)));
+				}
 
 				return string.Join(", ", tokens);
 			} catch (Exception ex) {
