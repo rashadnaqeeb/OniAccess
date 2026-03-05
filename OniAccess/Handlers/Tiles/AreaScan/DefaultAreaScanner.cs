@@ -25,6 +25,7 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 
 			int solid = 0, liquid = 0, gas = 0, vacuum = 0;
 			var buildings = new Dictionary<string, int>();
+			var seenBuildings = new HashSet<UnityEngine.GameObject>();
 			int dupeCount = 0;
 			int critterCount = 0;
 			var orders = new Dictionary<string, int>();
@@ -41,7 +42,7 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 				else if (element.IsVacuum)
 					vacuum++;
 
-				CountBuilding(cell, buildings);
+				CountBuilding(cell, buildings, seenBuildings);
 				CountEntities(cell, ref dupeCount, ref critterCount);
 				CountOrders(cell, orders);
 			}
@@ -92,17 +93,12 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 				STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_PCT, label, pct));
 		}
 
-		private static void CountBuilding(int cell, Dictionary<string, int> buildings) {
-			CountBuildingLayer(cell, (int)ObjectLayer.Building, buildings);
-			CountBuildingLayer(cell, (int)ObjectLayer.FoundationTile, buildings);
-		}
-
-		private static void CountBuildingLayer(int cell, int layer,
-				Dictionary<string, int> buildings) {
-			var go = Grid.Objects[cell, layer];
+		private static void CountBuilding(int cell, Dictionary<string, int> buildings,
+				HashSet<UnityEngine.GameObject> seen) {
+			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
 			if (go == null) return;
-			// Skip plants — they're on the building layer but aren't buildings
 			if (go.GetComponent<Growing>() != null) return;
+			if (!seen.Add(go)) return;
 			string name = GetBuildingName(go);
 			if (name == null) return;
 			if (buildings.ContainsKey(name))
