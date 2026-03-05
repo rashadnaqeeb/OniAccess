@@ -208,6 +208,7 @@ namespace OniAccess.Tests {
 			results.Add(CleanTooltipLeadingWhitespaceTrimmed());
 			results.Add(CleanTooltipDoubledPeriodCollapsed());
 			results.Add(CleanTooltipIndentedBulletAfterNewline());
+			results.Add(CleanTooltipColonNewlineDropsPeriod());
 			results.Add(CleanTooltipNullAndEmptyPassthrough());
 
 			// --- AppendTooltip ---
@@ -2024,6 +2025,15 @@ namespace OniAccess.Tests {
 			string result = WidgetOps.CleanTooltipEntry("Label:\n    \u2022 Value");
 			bool ok = result == "Label:. Value";
 			return Assert("CleanTooltipIndentedBulletAfterNewline", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) CleanTooltipColonNewlineDropsPeriod() {
+			// Room entry: "<b>Effects:</b>. Morale: +2" — after CleanTooltipEntry converts
+			// newlines and FilterForSpeech strips bold tags, ":." must collapse to ":".
+			string cleaned = WidgetOps.CleanTooltipEntry("<b>Effects:</b>\nMorale: +2");
+			string result = TextFilter.FilterForSpeech(cleaned);
+			bool ok = result == "Effects: Morale: +2";
+			return Assert("CleanTooltipColonNewlineDropsPeriod", ok, $"got \"{result}\"");
 		}
 
 		private static (string, bool, string) CleanTooltipNullAndEmptyPassthrough() {

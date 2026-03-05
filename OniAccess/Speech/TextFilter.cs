@@ -127,6 +127,10 @@ namespace OniAccess.Speech {
 			// 4. Strip all remaining rich text tags
 			text = RichTextTagsRegex.Replace(text, "");
 
+			// 4b. A colon followed by a period (e.g. "<b>Effects:</b>. Morale")
+			// leaves ":." after tag stripping. The colon is already punctuation.
+			text = text.Replace(":.", ":");
+
 			// 5. Extract numeric bracket content (e.g., [45%] -> 45%)
 			text = NumericBracketRegex.Replace(text, "$1");
 
