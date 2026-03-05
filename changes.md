@@ -1,5 +1,6 @@
 # Changelog
 
+- Type-ahead search now sorts matches by position within each tier, so "washroom" ranks before "fried mushroom" when searching "room"
 - Materials overlay area scan now reports only element percentages, without median mass
 - Ctrl+Shift+Down resets big cursor to 1x1 instantly
 - Fixed cursor skip stopping on random unexplored tiles instead of treating the entire fog-of-war region as one block

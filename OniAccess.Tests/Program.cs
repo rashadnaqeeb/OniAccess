@@ -77,6 +77,7 @@ namespace OniAccess.Tests {
 			results.Add(MatchTierSubstring());
 			results.Add(MatchTierNoMatch());
 			results.Add(SearchTierOrdering());
+			results.Add(SearchTierPositionSorting());
 
 			// --- ScannerSearch ---
 			results.Add(ScannerSearchPrefixMatch());
@@ -772,44 +773,44 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) MatchTierStartWholeWord() {
-			// "wood" at start of "wood club" = tier 0
-			int tier = TypeAheadSearch.MatchTier("wood club", "wood");
-			bool ok = tier == 0;
-			return Assert("MatchTierStartWholeWord", ok, $"tier={tier}");
+			// "wood" at start of "wood club" = tier 0, position 0
+			int tier = TypeAheadSearch.MatchTier("wood club", "wood", out int pos);
+			bool ok = tier == 0 && pos == 0;
+			return Assert("MatchTierStartWholeWord", ok, $"tier={tier} pos={pos}");
 		}
 
 		private static (string, bool, string) MatchTierStartPrefix() {
-			// "wood" at start of "wooden club" = tier 1
-			int tier = TypeAheadSearch.MatchTier("wooden club", "wood");
-			bool ok = tier == 1;
-			return Assert("MatchTierStartPrefix", ok, $"tier={tier}");
+			// "wood" at start of "wooden club" = tier 1, position 0
+			int tier = TypeAheadSearch.MatchTier("wooden club", "wood", out int pos);
+			bool ok = tier == 1 && pos == 0;
+			return Assert("MatchTierStartPrefix", ok, $"tier={tier} pos={pos}");
 		}
 
 		private static (string, bool, string) MatchTierMidWholeWord() {
-			// "wood" as whole word mid-string in "pine wood" = tier 2
-			int tier = TypeAheadSearch.MatchTier("pine wood", "wood");
-			bool ok = tier == 2;
-			return Assert("MatchTierMidWholeWord", ok, $"tier={tier}");
+			// "wood" as whole word mid-string in "pine wood" = tier 2, position 5
+			int tier = TypeAheadSearch.MatchTier("pine wood", "wood", out int pos);
+			bool ok = tier == 2 && pos == 5;
+			return Assert("MatchTierMidWholeWord", ok, $"tier={tier} pos={pos}");
 		}
 
 		private static (string, bool, string) MatchTierMidPrefix() {
-			// "wood" as prefix of mid-string word in "a wooden thing" = tier 3
-			int tier = TypeAheadSearch.MatchTier("a wooden thing", "wood");
-			bool ok = tier == 3;
-			return Assert("MatchTierMidPrefix", ok, $"tier={tier}");
+			// "wood" as prefix of mid-string word in "a wooden thing" = tier 3, position 2
+			int tier = TypeAheadSearch.MatchTier("a wooden thing", "wood", out int pos);
+			bool ok = tier == 3 && pos == 2;
+			return Assert("MatchTierMidPrefix", ok, $"tier={tier} pos={pos}");
 		}
 
 		private static (string, bool, string) MatchTierSubstring() {
-			// "wood" inside "plywood" = tier 4
-			int tier = TypeAheadSearch.MatchTier("plywood", "wood");
-			bool ok = tier == 4;
-			return Assert("MatchTierSubstring", ok, $"tier={tier}");
+			// "wood" inside "plywood" = tier 4, position 3
+			int tier = TypeAheadSearch.MatchTier("plywood", "wood", out int pos);
+			bool ok = tier == 4 && pos == 3;
+			return Assert("MatchTierSubstring", ok, $"tier={tier} pos={pos}");
 		}
 
 		private static (string, bool, string) MatchTierNoMatch() {
-			int tier = TypeAheadSearch.MatchTier("banana", "wood");
-			bool ok = tier == -1;
-			return Assert("MatchTierNoMatch", ok, $"tier={tier}");
+			int tier = TypeAheadSearch.MatchTier("banana", "wood", out int pos);
+			bool ok = tier == -1 && pos == -1;
+			return Assert("MatchTierNoMatch", ok, $"tier={tier} pos={pos}");
 		}
 
 		private static (string, bool, string) SearchTierOrdering() {
@@ -841,6 +842,28 @@ namespace OniAccess.Tests {
 			}
 			return Assert("SearchTierOrdering", ok,
 				$"ResultCount={search.ResultCount}");
+		}
+
+		private static (string, bool, string) SearchTierPositionSorting() {
+			// "room" matches "washroom" at position 4 and "fried mushroom" at position 10
+			// Both are tier 4 (substring). Washroom should rank first (earlier match position).
+			var items = new[] { "Fried Mushroom", "Washroom" };
+			string nameByIndex(int i) => i >= 0 && i < items.Length ? items[i] : null;
+
+			var search = new TypeAheadSearch();
+			search.AddChar('r');
+			search.AddChar('o');
+			search.AddChar('o');
+			search.AddChar('m');
+			search.Search(items.Length, nameByIndex);
+
+			bool ok = search.ResultCount == 2 && search.SelectedOriginalIndex == 1;
+			if (ok) {
+				search.NavigateResults(1);
+				ok = search.SelectedOriginalIndex == 0;
+			}
+			return Assert("SearchTierPositionSorting", ok,
+				$"ResultCount={search.ResultCount}, First={search.SelectedOriginalIndex}");
 		}
 
 		// ========================================

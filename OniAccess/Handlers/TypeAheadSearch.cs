@@ -27,6 +27,7 @@ namespace OniAccess.Handlers {
 		private const int TierCount = 5;
 		private List<int>[] _tierIndices;
 		private List<string>[] _tierNames;
+		private List<int>[] _tierPositions;
 		private List<int> _workIndices = new List<int>();
 		private List<string> _workNames = new List<string>();
 
@@ -45,9 +46,11 @@ namespace OniAccess.Handlers {
 			_moveToIndexCached = i => _searchable.SearchMoveTo(i);
 			_tierIndices = new List<int>[TierCount];
 			_tierNames = new List<string>[TierCount];
+			_tierPositions = new List<int>[TierCount];
 			for (int t = 0; t < TierCount; t++) {
 				_tierIndices[t] = new List<int>();
 				_tierNames[t] = new List<string>();
+				_tierPositions[t] = new List<int>();
 			}
 		}
 
@@ -235,25 +238,32 @@ namespace OniAccess.Handlers {
 			for (int t = 0; t < TierCount; t++) {
 				_tierIndices[t].Clear();
 				_tierNames[t].Clear();
+				_tierPositions[t].Clear();
 			}
 			string lowerBuffer = bufferStr.ToLowerInvariant();
 
 			for (int i = 0; i < itemCount; i++) {
 				string name = nameByIndex(i);
 				if (string.IsNullOrEmpty(name)) continue;
-				int tier = MatchTier(name.ToLowerInvariant(), lowerBuffer);
+				int tier = MatchTier(name.ToLowerInvariant(), lowerBuffer, out int pos);
 				if (tier >= 0) {
 					_tierIndices[tier].Add(i);
 					_tierNames[tier].Add(name);
+					_tierPositions[tier].Add(pos);
 				}
 			}
 
-			// Merge tiers into working lists (best tier first)
+			// Sort each tier by match position, then merge (best tier first)
 			_workIndices.Clear();
 			_workNames.Clear();
 			for (int t = 0; t < TierCount; t++) {
-				_workIndices.AddRange(_tierIndices[t]);
-				_workNames.AddRange(_tierNames[t]);
+				var indices = _tierIndices[t];
+				var names = _tierNames[t];
+				var positions = _tierPositions[t];
+				if (indices.Count > 1)
+					SortByPosition(indices, names, positions);
+				_workIndices.AddRange(indices);
+				_workNames.AddRange(names);
 			}
 
 			if (_workIndices.Count == 0) {
@@ -348,6 +358,27 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
+		/// Insertion-sort three parallel lists by the positions list (stable, in-place).
+		/// </summary>
+		private static void SortByPosition(List<int> indices, List<string> names, List<int> positions) {
+			for (int i = 1; i < positions.Count; i++) {
+				int pos = positions[i];
+				int idx = indices[i];
+				string name = names[i];
+				int j = i - 1;
+				while (j >= 0 && positions[j] > pos) {
+					positions[j + 1] = positions[j];
+					indices[j + 1] = indices[j];
+					names[j + 1] = names[j];
+					j--;
+				}
+				positions[j + 1] = pos;
+				indices[j + 1] = idx;
+				names[j + 1] = name;
+			}
+		}
+
+		/// <summary>
 		/// Returns the match tier for a prefix against a name (both lowercase), or -1 for no match.
 		/// 0 = start of string, whole word ("wood" in "wood club")
 		/// 1 = start of string, prefix ("wood" in "wooden club")
@@ -356,17 +387,18 @@ namespace OniAccess.Handlers {
 		/// 4 = substring anywhere ("wood" in "plywood")
 		/// </summary>
 		internal static int MatchTier(string lowerName, string lowerPrefix) {
-			int prefixLen = lowerPrefix.Length;
-			if (prefixLen > lowerName.Length) {
-				// Prefix longer than name: only substring match possible if name contains prefix
-				// but that can't happen since prefix is longer. Check contained anyway for safety.
-				return lowerName.Contains(lowerPrefix) ? 4 : -1;
-			}
+			return MatchTier(lowerName, lowerPrefix, out _);
+		}
 
-			int bestTier = -1;
+		internal static int MatchTier(string lowerName, string lowerPrefix, out int position) {
+			position = -1;
+			int prefixLen = lowerPrefix.Length;
+			if (prefixLen > lowerName.Length)
+				return -1;
 
 			// Check start of string
 			if (string.Compare(lowerName, 0, lowerPrefix, 0, prefixLen, System.StringComparison.Ordinal) == 0) {
+				position = 0;
 				bool wholeWord = lowerName.Length == prefixLen || lowerName[prefixLen] == ' ' || lowerName[prefixLen] == ',';
 				return wholeWord ? 0 : 1;
 			}
@@ -375,22 +407,22 @@ namespace OniAccess.Handlers {
 			for (int i = 1; i < lowerName.Length; i++) {
 				char prev = lowerName[i - 1];
 				if (prev != ' ' && prev != ',') continue;
-				// Skip separator characters to find the actual word start
 				if (lowerName[i] == ' ') continue;
 				if (lowerName.Length - i < prefixLen) break;
 				if (string.Compare(lowerName, i, lowerPrefix, 0, prefixLen, System.StringComparison.Ordinal) == 0) {
 					int afterMatch = i + prefixLen;
 					bool wholeWord = afterMatch >= lowerName.Length || lowerName[afterMatch] == ' ' || lowerName[afterMatch] == ',';
-					bestTier = wholeWord ? 2 : 3;
-					break;
+					position = i;
+					return wholeWord ? 2 : 3;
 				}
 			}
 
-			if (bestTier >= 0) return bestTier;
-
 			// Substring anywhere
-			if (lowerName.IndexOf(lowerPrefix, System.StringComparison.Ordinal) >= 0)
+			int idx = lowerName.IndexOf(lowerPrefix, System.StringComparison.Ordinal);
+			if (idx >= 0) {
+				position = idx;
 				return 4;
+			}
 
 			return -1;
 		}
