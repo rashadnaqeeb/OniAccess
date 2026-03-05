@@ -86,6 +86,7 @@ namespace STRINGS {
 			public static LocString TYPE_SEARCH = "Type-ahead search";
 			public static LocString SWITCH_PANEL = "Switch panel";
 			public static LocString SWITCH_SECTION = "Switch section";
+			public static LocString COPY_SETTINGS = "Copy settings";
 			public static LocString SWITCH_DUPE_SLOT = "Switch duplicant slot";
 			public static LocString SWITCH_OPTION = "Switch option";
 			public static LocString MOVE_CURSOR = "Move tile cursor";
@@ -466,6 +467,7 @@ namespace STRINGS {
 			// {0} = source building name
 			public static LocString COPY_SETTINGS_ACTIVATION = "{0}, copy settings";
 			public static LocString COPY_SETTINGS_NO_TARGET = "no matching building";
+			public static LocString COPY_SETTINGS_UNAVAILABLE = "no copyable settings";
 			// {0} = item being placed
 			public static LocString PLACE_ACTIVATION = "place, {0}";
 			public static LocString PLACE_CONFIRMED = "placed";

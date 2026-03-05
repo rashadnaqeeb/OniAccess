@@ -217,6 +217,7 @@ These are only relevant if debug mode is active, but listed for completeness to 
 | Cycle dupe backward | [ | tile | Overwrites Building Utility 2. Cycles through duplicants on current world, speaks name + task + critical statuses |
 | Cycle dupe forward | ] | tile | Overwrites Building Utility 3. Cycles through duplicants on current world |
 | Jump to current dupe | \ | tile | Overwrites Building Utility 1 (Copy Settings). Moves cursor to current dupe's tile; if already there, opens details screen |
+| Copy settings | \ | details | Activates copy settings tool for the selected building (original game function). Error if entity has no copyable settings |
 
 Further hotkeys assigned per-phase as features are built.
 

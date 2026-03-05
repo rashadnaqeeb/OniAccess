@@ -1,5 +1,6 @@
 # Changelog
 
+- Pressing backslash on the details screen activates copy settings for the selected building, with an error message if the entity has no copyable settings
 - Fixed switching tools (e.g. pressing X for deconstruct while in build mode) not activating the new tool's handler
 - Tile cursor help (F12) now lists the 10 base game management screen hotkeys (Priorities, Consumables, Vitals, etc.)
 - Build menu now announces material costs inline (e.g. "copper 400 kg") so you can compare buildings without opening the info screen

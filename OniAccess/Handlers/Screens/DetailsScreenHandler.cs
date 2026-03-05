@@ -70,6 +70,7 @@ namespace OniAccess.Handlers.Screens {
 			_tabs = BuildTabs();
 			var list = new List<HelpEntry>();
 			list.AddRange(NestedNavHelpEntries);
+			list.Add(new HelpEntry("\\", STRINGS.ONIACCESS.HELP.COPY_SETTINGS));
 			list.Add(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
 			list.Add(new HelpEntry("Ctrl+Tab/Ctrl+Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_SECTION));
 			HelpEntries = list.AsReadOnly();
@@ -553,12 +554,33 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backslash)
+				&& !Input.InputUtil.AnyModifierHeld()) {
+				ActivateCopySettings();
+				return true;
+			}
+
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab) && Input.InputUtil.CtrlHeld()) {
 				AdvanceSection(Input.InputUtil.ShiftHeld() ? -1 : 1);
 				return true;
 			}
 
 			return base.Tick();
+		}
+
+		private void ActivateCopySettings() {
+			var ds = DetailsScreen.Instance;
+			if (ds == null) return;
+			var target = ds.target;
+			if (target == null) return;
+			if (target.GetComponent<CopyBuildingSettings>() == null) {
+				PlaySound("Negative");
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_UNAVAILABLE);
+				return;
+			}
+			CopySettingsTool.Instance.SetSourceObject(target);
+			PlayerController.Instance.ActivateTool(CopySettingsTool.Instance);
 		}
 
 		private EditableTitleBar GetEditableTitleBar() {
