@@ -317,15 +317,15 @@ namespace STRINGS {
 			// {0} = count (int), {1} = order type (string)
 			public static LocString ORDER_COUNT = "{0} {1}";
 			// {0} = formatted temperature (string)
-			public static LocString AVG_TEMPERATURE = "avg {0}";
+			public static LocString AVG_TEMPERATURE = "average {0}";
 			// {0} = formatted lux (string)
-			public static LocString AVG_LUX = "avg {0}";
+			public static LocString AVG_LUX = "average {0}";
 			// {0} = sign+value (string, e.g. "+12" or "-5")
-			public static LocString AVG_DECOR = "avg {0} decor";
+			public static LocString AVG_DECOR = "average {0} decor";
 			// {0} = formatted rads (string)
-			public static LocString AVG_RADS = "avg {0}";
+			public static LocString AVG_RADS = "average {0}";
 			// {0} = germ type name (string), {1} = formatted germ count (string)
-			public static LocString AVG_DISEASE = "avg {0} {1}";
+			public static LocString AVG_DISEASE = "{0} {1}";
 			public static LocString DISEASE_CLEAR = "no germs";
 			// {0} = percent (int), {1} = formatted mass (string)
 			public static LocString OXYGEN_ENTRY = "O2 {0}%, {1}";
