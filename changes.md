@@ -1,5 +1,6 @@
 # Changelog
 
+- Fixed opening the starmap (Z) or other non-tool screens while in build or tool mode causing errors
 - Big cursor: Shift+Up/Down cycles cursor size (1x1, 3x3, 5x5, 9x9, 21x21). Arrow keys move by the full cursor width, and landing speaks an area scan summary instead of a single tile
 - Area scan adapts to the active overlay: element breakdown for Materials, average temperature/lux/decor/rads for their overlays, O2/PO2 percentages for Oxygen, germ averages for Disease, room types for Rooms, plant growth for Crops
 - With a big cursor active, Space in tool mode sets both corners at once, creating a rectangle the size of the cursor area

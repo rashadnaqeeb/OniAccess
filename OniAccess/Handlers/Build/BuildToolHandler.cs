@@ -166,7 +166,7 @@ namespace OniAccess.Handlers.Build {
 				HandlerStack.Push(new Tools.MoveToLocationHandler());
 			else if (tool is PlaceTool)
 				HandlerStack.Push(new Tools.PlaceToolHandler());
-			else
+			else if (tool is DragTool)
 				HandlerStack.Push(new Tools.ToolHandler());
 		}
 

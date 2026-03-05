@@ -568,7 +568,8 @@ namespace OniAccess.Handlers.Tiles {
 				HandlerStack.Push(new OniAccess.Handlers.Tools.PlaceToolHandler());
 				return;
 			}
-			HandlerStack.Push(new OniAccess.Handlers.Tools.ToolHandler());
+			if (tool is DragTool)
+				HandlerStack.Push(new OniAccess.Handlers.Tools.ToolHandler());
 		}
 
 		private void ReadTooltipSummary() {
