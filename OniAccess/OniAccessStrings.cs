@@ -298,6 +298,7 @@ namespace STRINGS {
 		// Big cursor area survey
 		public class BIG_CURSOR {
 			public static LocString HELP_CYCLE_SIZE = "Increase or decrease cursor size";
+			public static LocString HELP_RESET_SIZE = "Reset cursor to 1x1";
 			// {0} = dimension (int), e.g. "3x3"
 			public static LocString SIZE_FORMAT = "{0}x{0}";
 			// {0} = percent (int)

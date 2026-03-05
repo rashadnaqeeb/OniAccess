@@ -80,6 +80,12 @@ namespace OniAccess.Handlers.Tiles {
 			return string.Format(STRINGS.ONIACCESS.BIG_CURSOR.SIZE_FORMAT, CursorSize);
 		}
 
+		public string ResetRadius() {
+			if (_radiusStepIndex == 0) return null;
+			_radiusStepIndex = 0;
+			return string.Format(STRINGS.ONIACCESS.BIG_CURSOR.SIZE_FORMAT, CursorSize);
+		}
+
 		/// <summary>
 		/// Returns the two corner cells of the cursor area for rectangle selection.
 		/// When Radius == 0, both corners are the current cell.

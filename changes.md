@@ -1,5 +1,6 @@
 # Changelog
 
+- Ctrl+Shift+Down resets big cursor to 1x1 instantly
 - Fixed cursor skip stopping on random unexplored tiles instead of treating the entire fog-of-war region as one block
 - Fixed opening the starmap (Z) or other non-tool screens while in build or tool mode causing errors
 - Big cursor: Shift+Up/Down cycles cursor size (1x1, 3x3, 5x5, 9x9, 21x21). Arrow keys move by the full cursor width, and landing speaks an area scan summary instead of a single tile
