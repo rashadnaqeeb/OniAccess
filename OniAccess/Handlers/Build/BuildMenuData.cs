@@ -254,17 +254,54 @@ namespace OniAccess.Handlers.Build {
 			string name = def.Name;
 			if (!IsUtilityBuilding(def))
 				name += ", " + def.WidthInCells + "x" + def.HeightInCells;
+
+			string cost = state != PlanScreen.RequirementsState.Materials
+				? FormatCost(def) : null;
 			string effect = STRINGS.UI.StripLinkFormatting(def.Effect);
-			string label = string.IsNullOrEmpty(effect) ? name : name + ", " + effect;
+
+			var sb = new System.Text.StringBuilder(name);
+			if (cost != null)
+				sb.Append(", ").Append(cost);
+			if (!string.IsNullOrEmpty(effect))
+				sb.Append(", ").Append(effect);
 
 			if (state == PlanScreen.RequirementsState.Complete)
-				return label;
+				return sb.ToString();
 			if (state == PlanScreen.RequirementsState.Materials)
-				return label + ", " + FormatMissingMaterials(def);
+				return sb.Append(", ").Append(FormatMissingMaterials(def)).ToString();
 			string reason = PlanScreen.GetTooltipForRequirementsState(def, state);
 			if (string.IsNullOrEmpty(reason))
-				return label;
-			return label + ", " + reason;
+				return sb.ToString();
+			return sb.Append(", ").Append(reason).ToString();
+		}
+
+		private static string FormatCost(BuildingDef def) {
+			var ingredients = def.CraftRecipe.Ingredients;
+			if (ingredients.Count == 0) return null;
+
+			bool allSameAmount = true;
+			float sharedAmount = ingredients[0].amount;
+			for (int i = 1; i < ingredients.Count; i++) {
+				if (ingredients[i].amount != sharedAmount) {
+					allSameAmount = false;
+					break;
+				}
+			}
+
+			var sb = new System.Text.StringBuilder();
+			for (int i = 0; i < ingredients.Count; i++) {
+				if (i > 0) sb.Append(", ");
+				sb.Append(ingredients[i].tag.ProperName());
+				if (!allSameAmount) {
+					sb.Append(' ');
+					sb.Append(GameUtil.GetFormattedMass(ingredients[i].amount));
+				}
+			}
+			if (allSameAmount) {
+				sb.Append(' ');
+				sb.Append(GameUtil.GetFormattedMass(sharedAmount));
+			}
+			return sb.ToString();
 		}
 
 		private static string FormatMissingMaterials(BuildingDef def) {
