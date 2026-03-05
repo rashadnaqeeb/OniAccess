@@ -38,6 +38,24 @@ Most overlays prepend one extra reading before the standard information. Tempera
 
 Skip also stops at the alignment ruler if one is placed, and at world boundaries.
 
+### Big cursor
+
+**Shift+Up/Down** cycles the cursor size: 1x1 (default), 3x3, 5x5, 9x9, 21x21. The size resets to 1x1 on world load.
+
+When the cursor is larger than 1x1, arrow keys move by the full cursor width (e.g., 5 tiles at 5x5), tiling areas edge-to-edge. The cursor stops where the full area fits inside the world. Ctrl+Arrow skip is unaffected by cursor size.
+
+Landing on a tile speaks an area scan summary instead of the single-tile glance. The scan adapts to the active overlay:
+
+- **Default / utility overlays**: solid/liquid/gas/vacuum percentages, buildings by type, dupes, critters, pending orders by type
+- **Materials**: full element breakdown by percentage
+- **Oxygen**: O2 and polluted O2 percentages with total mass
+- **Temperature / Light / Decor / Radiation**: area average
+- **Disease**: average germ count per type
+- **Rooms**: room types intersecting the area
+- **Crops**: plant count by type with average growth percentage
+
+All scans report unexplored percentage first if any tiles in the area haven't been revealed. Coordinate reading (K) always reports the center cell.
+
 ### Coordinates
 
 **K** reads the cursor's X,Y position relative to the Printing Pod. **Shift+K** cycles coordinate mode between Off, Append, and Prepend. In Append or Prepend mode, coordinates are included in every tile announcement automatically. The setting persists across sessions.
@@ -87,9 +105,9 @@ Selecting a tool (Dig, Deconstruct, Mop, etc.) enters tool mode. The cursor stil
 
 **Space** sets the first corner. Move to the opposite corner and press **Space** again to complete the rectangle. A drag sound plays whose pitch reflects the selection size. The confirmation announces dimensions and valid cell count. You can place multiple rectangles before confirming.
 
-**Enter** confirms all pending rectangles. If no rectangle is set, Enter confirms a single cell under the cursor. **Delete** clears the rectangle under the cursor.
+**Enter** confirms all pending rectangles. If no rectangle is set, Enter confirms a single cell under the cursor. **Shift+Space** clears the rectangle under the cursor.
 
-The disconnect tool restricts selection to a straight line (adjacent cells only).
+With a big cursor active, **Space** sets both corners at once, creating a rectangle the size of the cursor area. You can move and press Space again to add more rectangles. The disconnect tool always uses single-cell selection regardless of cursor size.
 
 ### Priority
 

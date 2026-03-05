@@ -1,5 +1,8 @@
 # Changelog
 
+- Big cursor: Shift+Up/Down cycles cursor size (1x1, 3x3, 5x5, 9x9, 21x21). Arrow keys move by the full cursor width, and landing speaks an area scan summary instead of a single tile
+- Area scan adapts to the active overlay: element breakdown for Materials, average temperature/lux/decor/rads for their overlays, O2/PO2 percentages for Oxygen, germ averages for Disease, room types for Rooms, plant growth for Crops
+- With a big cursor active, Space in tool mode sets both corners at once, creating a rectangle the size of the cursor area
 - Clear rectangle in tool mode changed from Delete to Shift+Space, matching build tool mode
 - Help key changed from F12 to ? (Shift+/) to avoid conflict with Steam Screenshot
 - Extension cells below Pitcher Pump and Water Trap now announce as "intake pipe" or "lure" instead of repeating the building name

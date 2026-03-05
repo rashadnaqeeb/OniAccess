@@ -255,6 +255,20 @@ namespace OniAccess.Handlers.Tools {
 				return;
 			}
 
+			// Big cursor: set both corners at once from the cursor area.
+			// Line-mode tools (DisconnectTool) require adjacency, so they
+			// ignore the radius and use normal two-corner selection.
+			if (TileCursor.Instance.Radius > 0
+				&& (_toolInfo == null || !_toolInfo.IsLineMode)) {
+				var (c1, c2) = TileCursor.Instance.GetAreaCorners();
+				var bigRect = new RectCorners { Cell1 = c1, Cell2 = c2 };
+				_rectangles.Add(bigRect);
+				_pendingFirstCorner = Grid.InvalidCell;
+				PlayDragSound(ComputeArea(bigRect));
+				SpeechPipeline.SpeakInterrupt(BuildRectSummary(bigRect));
+				return;
+			}
+
 			if (_pendingFirstCorner == Grid.InvalidCell) {
 				_pendingFirstCorner = cell;
 				_lastDragCell = cell;

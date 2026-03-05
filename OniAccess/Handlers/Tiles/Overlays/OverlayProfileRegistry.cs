@@ -1,15 +1,17 @@
 using System.Collections.Generic;
+using OniAccess.Handlers.Tiles.AreaScan;
 
 namespace OniAccess.Handlers.Tiles.Overlays {
 	/// <summary>
 	/// Maps overlay mode IDs to OverlayProfile instances.
-	/// Falls back to the default composer for overlays without
+	/// Falls back to the default composer/scanner for overlays without
 	/// a custom profile.
 	/// </summary>
 	public sealed class OverlayProfileRegistry {
 		private readonly Dictionary<HashedString, OverlayProfile> _profiles
 			= new Dictionary<HashedString, OverlayProfile>();
 		private readonly GlanceComposer _defaultComposer;
+		private readonly IAreaScanner _defaultScanner = new DefaultAreaScanner();
 		private readonly string _defaultName;
 
 		public OverlayProfileRegistry(GlanceComposer defaultComposer, string defaultName) {
@@ -27,6 +29,13 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 			return _defaultComposer;
 		}
 
+		public IAreaScanner GetAreaScanner(HashedString modeId) {
+			if (_profiles.TryGetValue(modeId, out var profile)
+				&& profile.AreaScanner != null)
+				return profile.AreaScanner;
+			return _defaultScanner;
+		}
+
 		public string GetOverlayName(HashedString modeId) {
 			if (_profiles.TryGetValue(modeId, out var profile))
 				return profile.OverlayName;
@@ -34,8 +43,8 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 		}
 
 		/// <summary>
-		/// Construct the full registry with all overlay names and
-		/// custom profiles for Light, Radiation, Decor, Disease.
+		/// Construct the full registry with all overlay profiles,
+		/// glance composers, and area scanners.
 		/// </summary>
 		public static OverlayProfileRegistry Build() {
 			var defaultComposer = GlanceComposer.CreateDefault();
@@ -52,26 +61,33 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 			// Custom profiles: overlay section prepended to defaults
 			RegisterCustomProfile(registry, OverlayModes.Light.ID,
 				(string)STRINGS.UI.OVERLAYS.LIGHTING.BUTTON,
-				GlanceComposer.Light, defaultSections);
+				GlanceComposer.Light, defaultSections,
+				new LightAreaScanner());
 
 			RegisterCustomProfile(registry, OverlayModes.Radiation.ID,
 				(string)STRINGS.UI.OVERLAYS.RADIATION.BUTTON,
-				GlanceComposer.Radiation, defaultSections);
+				GlanceComposer.Radiation, defaultSections,
+				new RadiationAreaScanner());
 
 			RegisterCustomProfile(registry, OverlayModes.Decor.ID,
 				(string)STRINGS.UI.OVERLAYS.DECOR.BUTTON,
-				GlanceComposer.Decor, defaultSections);
+				GlanceComposer.Decor, defaultSections,
+				new DecorAreaScanner());
 
 			RegisterCustomProfile(registry, OverlayModes.Disease.ID,
 				(string)STRINGS.UI.OVERLAYS.DISEASE.BUTTON,
-				GlanceComposer.Disease, defaultSections);
+				GlanceComposer.Disease, defaultSections,
+				new DiseaseAreaScanner());
 
-			// Name-only entries for all other overlays (use default composer)
 			RegisterNameOnly(registry, OverlayModes.Oxygen.ID,
-				(string)STRINGS.UI.OVERLAYS.OXYGEN.BUTTON, defaultComposer);
+				(string)STRINGS.UI.OVERLAYS.OXYGEN.BUTTON, defaultComposer,
+				new OxygenAreaScanner());
 			RegisterCustomProfile(registry, OverlayModes.Temperature.ID,
 				(string)STRINGS.UI.OVERLAYS.TEMPERATURE.BUTTON,
-				GlanceComposer.Temperature, defaultSections);
+				GlanceComposer.Temperature, defaultSections,
+				new TemperatureAreaScanner());
+
+			// Utility overlays fall back to default area scanner (null)
 			RegisterCustomProfile(registry, OverlayModes.Power.ID,
 				(string)STRINGS.UI.OVERLAYS.ELECTRICAL.BUTTON,
 				GlanceComposer.Power, defaultSections);
@@ -91,14 +107,18 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 			RegisterCustomProfile(registry, OverlayModes.Logic.ID,
 				(string)STRINGS.UI.OVERLAYS.LOGIC.BUTTON,
 				GlanceComposer.Automation, defaultSections);
+
 			RegisterNameOnly(registry, OverlayModes.Crop.ID,
-				(string)STRINGS.UI.OVERLAYS.CROPS.BUTTON, defaultComposer);
+				(string)STRINGS.UI.OVERLAYS.CROPS.BUTTON, defaultComposer,
+				new CropsAreaScanner());
 			RegisterNameOnly(registry, OverlayModes.Rooms.ID,
-				(string)STRINGS.UI.OVERLAYS.ROOMS.BUTTON, defaultComposer);
+				(string)STRINGS.UI.OVERLAYS.ROOMS.BUTTON, defaultComposer,
+				new RoomsAreaScanner());
 			RegisterNameOnly(registry, OverlayModes.Suit.ID,
 				(string)STRINGS.UI.OVERLAYS.SUIT.BUTTON, defaultComposer);
 			RegisterNameOnly(registry, OverlayModes.TileMode.ID,
-				(string)STRINGS.UI.OVERLAYS.TILEMODE.BUTTON, defaultComposer);
+				(string)STRINGS.UI.OVERLAYS.TILEMODE.BUTTON, defaultComposer,
+				new MaterialsAreaScanner());
 
 			return registry;
 		}
@@ -106,18 +126,22 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 		private static void RegisterCustomProfile(
 				OverlayProfileRegistry registry, HashedString modeId,
 				string name, ICellSection overlaySection,
-				ICellSection[] defaultSections) {
+				ICellSection[] defaultSections,
+				IAreaScanner areaScanner = null) {
 			var sections = new List<ICellSection>(defaultSections.Length + 1);
 			sections.Add(overlaySection);
 			sections.AddRange(defaultSections);
 			var composer = new GlanceComposer(sections.AsReadOnly());
-			registry.Register(modeId, new OverlayProfile(name, composer));
+			registry.Register(modeId,
+				new OverlayProfile(name, composer, areaScanner));
 		}
 
 		private static void RegisterNameOnly(
 				OverlayProfileRegistry registry, HashedString modeId,
-				string name, GlanceComposer composer) {
-			registry.Register(modeId, new OverlayProfile(name, composer));
+				string name, GlanceComposer composer,
+				IAreaScanner areaScanner = null) {
+			registry.Register(modeId,
+				new OverlayProfile(name, composer, areaScanner));
 		}
 	}
 }

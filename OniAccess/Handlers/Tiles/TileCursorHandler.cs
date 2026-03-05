@@ -45,6 +45,8 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.DownArrow),
 			new ConsumedKey(KKeyCode.LeftArrow),
 			new ConsumedKey(KKeyCode.RightArrow),
+			new ConsumedKey(KKeyCode.UpArrow, Modifier.Shift),
+			new ConsumedKey(KKeyCode.DownArrow, Modifier.Shift),
 			new ConsumedKey(KKeyCode.UpArrow, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.DownArrow, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.LeftArrow, Modifier.Ctrl),
@@ -102,6 +104,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Arrow keys", (string)STRINGS.ONIACCESS.HELP.MOVE_CURSOR),
+			new HelpEntry("Shift+Up/Down", (string)STRINGS.ONIACCESS.BIG_CURSOR.HELP_CYCLE_SIZE),
 			new HelpEntry("Ctrl+Arrow keys", (string)STRINGS.ONIACCESS.SKIP.HELP_SKIP),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_ACTION_MENU),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.SELECT_ENTITY),
@@ -271,6 +274,24 @@ namespace OniAccess.Handlers.Tiles {
 				return true;
 			}
 
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
+				&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld()) {
+				string result = TileCursor.Instance.IncreaseRadius();
+				if (result != null) {
+					PlaySound("HUD_Click_Deselect");
+					SpeechPipeline.SpeakInterrupt(result);
+				}
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)
+				&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld()) {
+				string result = TileCursor.Instance.DecreaseRadius();
+				if (result != null) {
+					PlaySound("HUD_Click_Deselect");
+					SpeechPipeline.SpeakInterrupt(result);
+				}
+				return true;
+			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
 				&& InputUtil.CtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Up));

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace OniAccess.Handlers.Tiles {
@@ -9,17 +11,22 @@ namespace OniAccess.Handlers.Tiles {
 	/// Owns a cell index for tile-by-tile world navigation.
 	/// Arrow key movement, world bounds clamping, KInputManager mouse lock,
 	/// camera follow, coordinate reading. Speech content is delegated to
-	/// GlanceComposer which runs the section pipeline.
+	/// GlanceComposer (single cell) or IAreaScanner (big cursor).
 	/// </summary>
 	public class TileCursor {
 		public static TileCursor Instance { get; private set; }
 
+		private static readonly int[] RadiusSteps = { 0, 1, 2, 4, 10 };
+		private int _radiusStepIndex;
 		private int _cell;
 		private bool _wasPanning;
 		private string _lastRoomName;
 		private readonly Overlays.OverlayProfileRegistry _registry;
 
 		public GlanceComposer ActiveToolComposer { get; set; }
+
+		public int Radius => RadiusSteps[_radiusStepIndex];
+		public int CursorSize => Radius * 2 + 1;
 
 		public TileCursor(Overlays.OverlayProfileRegistry registry) {
 			_registry = registry;
@@ -49,17 +56,87 @@ namespace OniAccess.Handlers.Tiles {
 			SnapCameraToCell(_cell);
 		}
 
+		// ========================================
+		// RADIUS
+		// ========================================
+
 		/// <summary>
-		/// Move one cell in the given direction. Returns the speech string
-		/// for the new cell, or null if the move was blocked by world bounds.
+		/// Step to the next larger radius. Returns the size announcement
+		/// (e.g. "3x3") or null if already at maximum.
+		/// </summary>
+		public string IncreaseRadius() {
+			if (_radiusStepIndex >= RadiusSteps.Length - 1) return null;
+			_radiusStepIndex++;
+			return string.Format(STRINGS.ONIACCESS.BIG_CURSOR.SIZE_FORMAT, CursorSize);
+		}
+
+		/// <summary>
+		/// Step to the next smaller radius. Returns the size announcement
+		/// (e.g. "1x1") or null if already at minimum.
+		/// </summary>
+		public string DecreaseRadius() {
+			if (_radiusStepIndex <= 0) return null;
+			_radiusStepIndex--;
+			return string.Format(STRINGS.ONIACCESS.BIG_CURSOR.SIZE_FORMAT, CursorSize);
+		}
+
+		/// <summary>
+		/// Returns the two corner cells of the cursor area for rectangle selection.
+		/// When Radius == 0, both corners are the current cell.
+		/// Corners are clamped to world bounds.
+		/// </summary>
+		public (int corner1, int corner2) GetAreaCorners() {
+			if (Radius == 0) return (_cell, _cell);
+			int cx = Grid.CellColumn(_cell);
+			int cy = Grid.CellRow(_cell);
+			var world = ClusterManager.Instance.activeWorld;
+			int minX = Math.Max(cx - Radius, (int)world.minimumBounds.x);
+			int maxX = Math.Min(cx + Radius, (int)world.maximumBounds.x);
+			int minY = Math.Max(cy - Radius, (int)world.minimumBounds.y);
+			int maxY = Math.Min(cy + Radius, (int)world.maximumBounds.y);
+			return (Grid.XYToCell(minX, minY), Grid.XYToCell(maxX, maxY));
+		}
+
+		// ========================================
+		// MOVEMENT
+		// ========================================
+
+		/// <summary>
+		/// Move in the given direction. Steps by CursorSize when Radius > 0.
+		/// Returns the speech string for the new position, or null if blocked.
 		/// </summary>
 		public string Move(Direction direction) {
-			int candidate = GetNeighbor(_cell, direction);
-			if (candidate == Grid.InvalidCell || !IsInWorldBounds(candidate)) {
-				PlayBoundarySound();
-				return null;
+			if (Radius == 0) {
+				int candidate = GetNeighbor(_cell, direction);
+				if (candidate == Grid.InvalidCell || !IsInWorldBounds(candidate)) {
+					PlayBoundarySound();
+					return null;
+				}
+				_cell = candidate;
+			} else {
+				int cx = Grid.CellColumn(_cell);
+				int cy = Grid.CellRow(_cell);
+				int step = CursorSize;
+				int targetX = cx, targetY = cy;
+				switch (direction) {
+					case Direction.Up: targetY = cy + step; break;
+					case Direction.Down: targetY = cy - step; break;
+					case Direction.Left: targetX = cx - step; break;
+					case Direction.Right: targetX = cx + step; break;
+				}
+				var world = ClusterManager.Instance.activeWorld;
+				int minX = (int)world.minimumBounds.x + Radius;
+				int maxX = (int)world.maximumBounds.x - Radius;
+				int minY = (int)world.minimumBounds.y + Radius;
+				int maxY = (int)world.maximumBounds.y - Radius;
+				targetX = Math.Max(minX, Math.Min(maxX, targetX));
+				targetY = Math.Max(minY, Math.Min(maxY, targetY));
+				if (targetX == cx && targetY == cy) {
+					PlayBoundarySound();
+					return null;
+				}
+				_cell = Grid.XYToCell(targetX, targetY);
 			}
-			_cell = candidate;
 			LockMouseToCell(_cell);
 			SnapCameraToCell(_cell);
 			return BuildCellSpeech();
@@ -135,6 +212,17 @@ namespace OniAccess.Handlers.Tiles {
 		// ========================================
 
 		private string BuildCellSpeech() {
+			if (Radius > 0) {
+				HashedString scanMode = OverlayScreen.Instance != null
+					? OverlayScreen.Instance.GetMode()
+					: OverlayModes.None.ID;
+				var scanner = _registry.GetAreaScanner(scanMode);
+				int totalCells = CursorSize * CursorSize;
+				int[] cells = CollectVisibleAreaCells(out int unexploredCount);
+				string content = scanner.Scan(cells, totalCells, unexploredCount);
+				return AttachCoordinates(content);
+			}
+
 			if (!Grid.IsVisible(_cell))
 				return AttachCoordinates((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 
@@ -146,15 +234,38 @@ namespace OniAccess.Handlers.Tiles {
 				composer = _registry.GetComposer(mode);
 			}
 
-			string content = composer.Compose(_cell);
-			if (content == null)
-				content = string.Format(STRINGS.ONIACCESS.GLANCE.ELEMENT_MASS,
+			string content2 = composer.Compose(_cell);
+			if (content2 == null)
+				content2 = string.Format(STRINGS.ONIACCESS.GLANCE.ELEMENT_MASS,
 					Grid.Element[_cell].name, Sections.ElementSection.FormatGlanceMass(Grid.Mass[_cell]));
 
 			if (mode == OverlayModes.Rooms.ID)
-				content = PrependRoomName(content);
+				content2 = PrependRoomName(content2);
 
-			return AttachCoordinates(content);
+			return AttachCoordinates(content2);
+		}
+
+		/// <summary>
+		/// Collects visible cells in the cursor area. Cells outside world
+		/// bounds or not yet explored are excluded from the returned array.
+		/// </summary>
+		private int[] CollectVisibleAreaCells(out int unexploredCount) {
+			int cx = Grid.CellColumn(_cell);
+			int cy = Grid.CellRow(_cell);
+			var list = new List<int>(CursorSize * CursorSize);
+			unexploredCount = 0;
+			for (int dy = -Radius; dy <= Radius; dy++) {
+				for (int dx = -Radius; dx <= Radius; dx++) {
+					int cell = Grid.XYToCell(cx + dx, cy + dy);
+					if (!IsInWorldBounds(cell)) continue;
+					if (!Grid.IsVisible(cell)) {
+						unexploredCount++;
+						continue;
+					}
+					list.Add(cell);
+				}
+			}
+			return list.ToArray();
 		}
 
 		internal static int GetNeighbor(int cell, Direction direction) {

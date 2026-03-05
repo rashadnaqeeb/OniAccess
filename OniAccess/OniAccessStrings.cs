@@ -295,6 +295,58 @@ namespace STRINGS {
 			public static LocString BINDINGS_RESET = "All bindings reset to defaults";
 		}
 
+		// Big cursor area survey
+		public class BIG_CURSOR {
+			public static LocString HELP_CYCLE_SIZE = "Increase or decrease cursor size";
+			// {0} = dimension (int), e.g. "3x3"
+			public static LocString SIZE_FORMAT = "{0}x{0}";
+			// {0} = percent (int)
+			public static LocString UNEXPLORED_PCT = "{0}% unexplored";
+			// {0} = element name (string), {1} = percent (int)
+			public static LocString ELEMENT_PCT = "{0} {1}%";
+			// {0} = count (int), {1} = building name (string)
+			public static LocString BUILDING_COUNT = "{0} {1}";
+			// {0} = count (int)
+			public static LocString DUPE_SINGULAR = "{0} dupe";
+			// {0} = count (int)
+			public static LocString DUPE_PLURAL = "{0} dupes";
+			// {0} = count (int)
+			public static LocString CRITTER_SINGULAR = "{0} critter";
+			// {0} = count (int)
+			public static LocString CRITTER_PLURAL = "{0} critters";
+			// {0} = count (int), {1} = order type (string)
+			public static LocString ORDER_COUNT = "{0} {1}";
+			// {0} = formatted temperature (string)
+			public static LocString AVG_TEMPERATURE = "avg {0}";
+			// {0} = formatted lux (string)
+			public static LocString AVG_LUX = "avg {0}";
+			// {0} = sign+value (string, e.g. "+12" or "-5")
+			public static LocString AVG_DECOR = "avg {0} decor";
+			// {0} = formatted rads (string)
+			public static LocString AVG_RADS = "avg {0}";
+			// {0} = germ type name (string), {1} = formatted germ count (string)
+			public static LocString AVG_DISEASE = "avg {0} {1}";
+			public static LocString DISEASE_CLEAR = "no germs";
+			// {0} = percent (int), {1} = formatted mass (string)
+			public static LocString OXYGEN_ENTRY = "O2 {0}%, {1}";
+			// {0} = percent (int), {1} = formatted mass (string)
+			public static LocString POLLUTED_O2_ENTRY = "polluted O2 {0}%, {1}";
+			// {0} = count (int), {1} = plant name (string), {2} = avg growth percent (int)
+			public static LocString PLANT_ENTRY = "{0} {1}, {2}% grown";
+			public static LocString NO_PLANTS = "no plants";
+			// {0} = comma-separated room list (string)
+			public static LocString ROOMS_LIST = "{0}";
+			// {0} = count (int)
+			public static LocString UNCATEGORIZED_ROOMS = "{0} uncategorized";
+			public static LocString NO_ROOMS = "no rooms";
+			public static LocString EMPTY = "empty";
+			public static LocString SCAN_ERROR = "scan error";
+			public static LocString SOLID = "solid";
+			public static LocString LIQUID = "liquid";
+			public static LocString GAS = "gas";
+			public static LocString VACUUM = "vacuum";
+		}
+
 		// Tile cursor navigation and coordinate display
 		public class TILE_CURSOR {
 			// Announced when cursor enters an unexplored map tile
