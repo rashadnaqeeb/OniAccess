@@ -1,5 +1,6 @@
 # Changelog
 
+- Fixed switching tools (e.g. pressing X for deconstruct while in build mode) not activating the new tool's handler
 - Tile cursor help (F12) now lists the 10 base game management screen hotkeys (Priorities, Consumables, Vitals, etc.)
 - Build menu now announces material costs inline (e.g. "copper 400 kg") so you can compare buildings without opening the info screen
 - Fixed dig tool announcing gas or liquid element behind buildings

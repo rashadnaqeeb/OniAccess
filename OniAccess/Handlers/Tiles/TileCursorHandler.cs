@@ -523,13 +523,19 @@ namespace OniAccess.Handlers.Tiles {
 			var tool = data as InterfaceTool;
 			if (tool == null || tool is SelectTool) return;
 			if (tool is BuildTool || tool is UtilityBuildTool || tool is WireBuildTool) return;
-			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolHandler) return;
-			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.ToolFilterHandler) return;
-			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.MoveToLocationHandler) return;
-			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.CopySettingsHandler) return;
-			if (HandlerStack.ActiveHandler is OniAccess.Handlers.Tools.PlaceToolHandler) return;
+
+			// Build handlers manage their own tool transitions and push
+			// replacement handlers when needed. Don't interfere.
 			if (HandlerStack.ActiveHandler is Build.BuildToolHandler) return;
 			if (HandlerStack.ActiveHandler is Build.ActionMenuHandler) return;
+
+			// Pop any tool handlers above us so we can push the correct one.
+			HandlerStack.PopAbove(this);
+
+			PushToolHandler(tool);
+		}
+
+		private void PushToolHandler(InterfaceTool tool) {
 			if (tool is CopySettingsTool) {
 				HandlerStack.Push(new OniAccess.Handlers.Tools.CopySettingsHandler());
 				return;

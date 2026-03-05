@@ -149,7 +149,25 @@ namespace OniAccess.Handlers.Build {
 				string error = GetPrebuildError();
 				if (!string.IsNullOrEmpty(error))
 					SpeechPipeline.SpeakInterrupt(error);
+				return;
 			}
+
+			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.CANCELED);
+			PlayDeactivateSound();
+			QueueOverlayAndPop();
+			PushToolHandlerFor(data as InterfaceTool);
+		}
+
+		private void PushToolHandlerFor(InterfaceTool tool) {
+			if (tool == null) return;
+			if (tool is CopySettingsTool)
+				HandlerStack.Push(new Tools.CopySettingsHandler());
+			else if (tool is MoveToLocationTool)
+				HandlerStack.Push(new Tools.MoveToLocationHandler());
+			else if (tool is PlaceTool)
+				HandlerStack.Push(new Tools.PlaceToolHandler());
+			else
+				HandlerStack.Push(new Tools.ToolHandler());
 		}
 
 		private bool IsInPrebuildMode() =>

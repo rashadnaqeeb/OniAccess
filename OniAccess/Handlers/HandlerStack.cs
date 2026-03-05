@@ -146,6 +146,30 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
+		/// Pop all handlers above the given handler, calling OnDeactivate on each.
+		/// Does not reactivate intermediates. Does not pop the target handler itself.
+		/// Returns false if the handler is not on the stack.
+		/// </summary>
+		public static bool PopAbove(IAccessHandler target) {
+			int targetIndex = _stack.IndexOf(target);
+			if (targetIndex < 0) return false;
+
+			for (int i = _stack.Count - 1; i > targetIndex; i--) {
+				var removed = _stack[i];
+				_stack.RemoveAt(i);
+				if (i < _pushFrames.Count)
+					_pushFrames.RemoveAt(i);
+				try {
+					removed.OnDeactivate();
+				} catch (System.Exception ex) {
+					Util.Log.Error($"HandlerStack.PopAbove: OnDeactivate of {removed.DisplayName} failed: {ex}");
+				}
+				Util.Log.Debug($"HandlerStack.PopAbove: removed {removed.DisplayName}");
+			}
+			return true;
+		}
+
+		/// <summary>
 		/// Deactivate all handlers top-to-bottom and clear the stack.
 		/// Used by ModToggle toggle OFF.
 		/// </summary>
