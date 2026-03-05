@@ -304,6 +304,8 @@ namespace STRINGS {
 			public static LocString UNEXPLORED_PCT = "{0}% unexplored";
 			// {0} = element name (string), {1} = percent (int)
 			public static LocString ELEMENT_PCT = "{0} {1}%";
+			// {0} = element name (string), {1} = percent (int), {2} = formatted mass (string)
+			public static LocString ELEMENT_MASS_PCT = "{0} {1}%: {2}";
 			// {0} = count (int), {1} = building name (string)
 			public static LocString BUILDING_COUNT = "{0} {1}";
 			// {0} = count (int)
@@ -327,8 +329,6 @@ namespace STRINGS {
 			// {0} = germ type name (string), {1} = formatted germ count (string)
 			public static LocString AVG_DISEASE = "{0} {1}";
 			public static LocString DISEASE_CLEAR = "no germs";
-			// {0} = element name (string), {1} = percent (int), {2} = formatted mass (string)
-			public static LocString OXYGEN_ENTRY = "{0} {1}%, {2}";
 			// {0} = count (int), {1} = plant name (string), {2} = avg growth percent (int)
 			public static LocString PLANT_ENTRY = "{0} {1}, {2}% grown";
 			public static LocString NO_PLANTS = "no plants";

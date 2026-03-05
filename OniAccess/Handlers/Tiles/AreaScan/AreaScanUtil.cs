@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OniAccess.Handlers.Tiles.AreaScan {
 	/// <summary>
@@ -16,6 +17,14 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 			if (pct == 0) pct = 1;
 			tokens.Add(string.Format(
 				STRINGS.ONIACCESS.BIG_CURSOR.UNEXPLORED_PCT, pct));
+		}
+
+		internal static float Median(List<float> values) {
+			values.Sort();
+			int n = values.Count;
+			if (n % 2 == 1)
+				return values[n / 2];
+			return (values[n / 2 - 1] + values[n / 2]) / 2f;
 		}
 
 		internal static string FormatMass(float kg) {

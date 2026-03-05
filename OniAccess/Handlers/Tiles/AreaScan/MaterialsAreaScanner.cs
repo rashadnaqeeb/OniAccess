@@ -15,21 +15,30 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 
 				if (cells.Length == 0) return string.Join(", ", tokens);
 
-				var counts = new Dictionary<string, int>();
+				var masses = new Dictionary<string, List<float>>();
 				for (int i = 0; i < cells.Length; i++) {
-					string name = Grid.Element[cells[i]].name;
-					if (counts.ContainsKey(name))
-						counts[name]++;
-					else
-						counts[name] = 1;
+					int cell = cells[i];
+					var element = Grid.Element[cell];
+					string name = element.name;
+					if (!masses.ContainsKey(name))
+						masses[name] = new List<float>();
+					if (!element.IsVacuum)
+						masses[name].Add(Grid.Mass[cell]);
 				}
 
-				foreach (var kv in counts.OrderByDescending(kv => kv.Value)) {
-					int pct = (int)Math.Round(100.0 * kv.Value / totalCells);
+				foreach (var kv in masses.OrderByDescending(kv => kv.Value.Count)) {
+					int pct = (int)Math.Round(100.0 * kv.Value.Count / totalCells);
 					if (pct == 0) pct = 1;
-					tokens.Add(string.Format(
-						STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_PCT,
-						kv.Key, pct));
+					if (kv.Value.Count > 0) {
+						float median = AreaScanUtil.Median(kv.Value);
+						tokens.Add(string.Format(
+							STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_MASS_PCT,
+							kv.Key, pct, AreaScanUtil.FormatMass(median)));
+					} else {
+						tokens.Add(string.Format(
+							STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_PCT,
+							kv.Key, pct));
+					}
 				}
 
 				return string.Join(", ", tokens);

@@ -10,44 +10,41 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 
 				if (cells.Length == 0) return string.Join(", ", tokens);
 
-				int o2Count = 0;
-				float o2Mass = 0f;
-				int po2Count = 0;
-				float po2Mass = 0f;
+				var o2Masses = new List<float>();
+				var po2Masses = new List<float>();
 
 				for (int i = 0; i < cells.Length; i++) {
 					int cell = cells[i];
 					var element = Grid.Element[cell];
-					if (element.id == SimHashes.Oxygen) {
-						o2Count++;
-						o2Mass += Grid.Mass[cell];
-					} else if (element.id == SimHashes.ContaminatedOxygen) {
-						po2Count++;
-						po2Mass += Grid.Mass[cell];
-					}
+					if (element.id == SimHashes.Oxygen)
+						o2Masses.Add(Grid.Mass[cell]);
+					else if (element.id == SimHashes.ContaminatedOxygen)
+						po2Masses.Add(Grid.Mass[cell]);
 				}
 
-				if (o2Count > 0) {
-					int pct = (int)Math.Round(100.0 * o2Count / totalCells);
+				if (o2Masses.Count > 0) {
+					int pct = (int)Math.Round(100.0 * o2Masses.Count / totalCells);
 					if (pct == 0) pct = 1;
 					string name = ElementLoader.FindElementByHash(SimHashes.Oxygen).name;
+					float median = AreaScanUtil.Median(o2Masses);
 					tokens.Add(string.Format(
-						STRINGS.ONIACCESS.BIG_CURSOR.OXYGEN_ENTRY,
-						name, pct, AreaScanUtil.FormatMass(o2Mass)));
+						STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_MASS_PCT,
+						name, pct, AreaScanUtil.FormatMass(median)));
 				}
-				if (po2Count > 0) {
-					int pct = (int)Math.Round(100.0 * po2Count / totalCells);
+				if (po2Masses.Count > 0) {
+					int pct = (int)Math.Round(100.0 * po2Masses.Count / totalCells);
 					if (pct == 0) pct = 1;
 					string name = ElementLoader.FindElementByHash(SimHashes.ContaminatedOxygen).name;
+					float median = AreaScanUtil.Median(po2Masses);
 					tokens.Add(string.Format(
-						STRINGS.ONIACCESS.BIG_CURSOR.OXYGEN_ENTRY,
-						name, pct, AreaScanUtil.FormatMass(po2Mass)));
+						STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_MASS_PCT,
+						name, pct, AreaScanUtil.FormatMass(median)));
 				}
 
-				if (o2Count == 0 && po2Count == 0) {
+				if (o2Masses.Count == 0 && po2Masses.Count == 0) {
 					string name = ElementLoader.FindElementByHash(SimHashes.Oxygen).name;
 					tokens.Add(string.Format(
-						STRINGS.ONIACCESS.BIG_CURSOR.OXYGEN_ENTRY,
+						STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_MASS_PCT,
 						name, 0, AreaScanUtil.FormatMass(0f)));
 				}
 
