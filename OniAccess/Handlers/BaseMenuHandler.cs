@@ -219,10 +219,19 @@ namespace OniAccess.Handlers {
 
 			// A-Z (no modifiers) — start or continue search
 			if (!ctrlHeld && !altHeld) {
-				for (var k = UnityEngine.KeyCode.A; k <= UnityEngine.KeyCode.Z; k++) {
-					if (UnityEngine.Input.GetKeyDown(k))
-						return _search.HandleKey(k, ctrlHeld, altHeld, this);
+				string inputStr = UnityEngine.Input.inputString;
+				bool consumed = false;
+				for (int i = 0; i < inputStr.Length; i++) {
+					char c = inputStr[i];
+					if (c >= 'a' && c <= 'z') {
+						var kc = UnityEngine.KeyCode.A + (c - 'a');
+						consumed |= _search.HandleKey(kc, ctrlHeld, altHeld, this);
+					} else if (c >= 'A' && c <= 'Z') {
+						var kc = UnityEngine.KeyCode.A + (c - 'A');
+						consumed |= _search.HandleKey(kc, ctrlHeld, altHeld, this);
+					}
 				}
+				if (consumed) return true;
 			}
 
 			// Navigation keys captured by search when active
