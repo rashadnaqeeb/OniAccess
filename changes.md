@@ -1,5 +1,6 @@
 # Changelog
 
+- Materials overlay area scan now reports only element percentages, without median mass
 - Ctrl+Shift+Down resets big cursor to 1x1 instantly
 - Fixed cursor skip stopping on random unexplored tiles instead of treating the entire fog-of-war region as one block
 - Fixed opening the starmap (Z) or other non-tool screens while in build or tool mode causing errors

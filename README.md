@@ -47,7 +47,7 @@ When the cursor is larger than 1x1, arrow keys move by the full cursor width (e.
 Landing on a tile speaks an area scan summary instead of the single-tile glance. The scan adapts to the active overlay:
 
 - **Default / utility overlays**: solid/liquid/gas/vacuum percentages, buildings by type, dupes, critters, pending orders by type
-- **Materials**: element breakdown by percentage with median mass per element
+- **Materials**: element breakdown by percentage
 - **Oxygen**: O2 and polluted O2 percentages with median mass
 - **Temperature / Light / Decor / Radiation**: area average
 - **Disease**: average germ count per type
