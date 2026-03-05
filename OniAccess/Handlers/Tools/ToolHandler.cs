@@ -333,7 +333,8 @@ namespace OniAccess.Handlers.Tools {
 		private void SubmitRectangles() {
 			var activeTool = PlayerController.Instance.ActiveTool as DragTool;
 			if (activeTool == null) {
-				Util.Log.Error("ToolHandler.SubmitRectangles: ActiveTool is not a DragTool");
+				string toolName = PlayerController.Instance.ActiveTool?.GetType().Name ?? "null";
+				Util.Log.Error($"ToolHandler.SubmitRectangles: ActiveTool is {toolName}, not a DragTool");
 				return;
 			}
 
