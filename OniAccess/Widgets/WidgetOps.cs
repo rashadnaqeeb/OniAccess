@@ -98,10 +98,12 @@ namespace OniAccess.Widgets {
 			// TextFilter would otherwise collapse these to plain spaces.
 			text = text.Replace("\n", ". ");
 
-			// Clean up leading bullets/whitespace and any doubled periods.
-			// Loop ". . " collapse because consecutive newlines produce
-			// chains (e.g. "\n\n\n" → ". . . ") that need multiple passes.
-			text = text.TrimStart(' ', '\t');
+			// Collapse runs of whitespace so indented lines (e.g. "\n    • X")
+			// don't leave gaps that prevent ". . " deduplication below.
+			while (text.Contains("  "))
+				text = text.Replace("  ", " ");
+			text = text.Replace("\t", " ");
+			text = text.TrimStart(' ', '.');
 			while (text.Contains(". . "))
 				text = text.Replace(". . ", ". ");
 			text = text.Replace("..", ".");

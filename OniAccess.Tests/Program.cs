@@ -207,6 +207,7 @@ namespace OniAccess.Tests {
 			results.Add(CleanTooltipBulletWithSurroundingSpaces());
 			results.Add(CleanTooltipLeadingWhitespaceTrimmed());
 			results.Add(CleanTooltipDoubledPeriodCollapsed());
+			results.Add(CleanTooltipIndentedBulletAfterNewline());
 			results.Add(CleanTooltipNullAndEmptyPassthrough());
 
 			// --- AppendTooltip ---
@@ -1993,7 +1994,7 @@ namespace OniAccess.Tests {
 
 		private static (string, bool, string) CleanTooltipBulletWithSpace() {
 			string result = WidgetOps.CleanTooltipEntry("\u2022 text");
-			bool ok = result == ". text";
+			bool ok = result == "text";
 			return Assert("CleanTooltipBulletWithSpace", ok, $"got \"{result}\"");
 		}
 
@@ -2015,6 +2016,14 @@ namespace OniAccess.Tests {
 			string result = WidgetOps.CleanTooltipEntry("a.\nb");
 			bool ok = result == "a. b";
 			return Assert("CleanTooltipDoubledPeriodCollapsed", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) CleanTooltipIndentedBulletAfterNewline() {
+			// Game text like "\n<b>Category</b>:\n    • Toilet" — the indent between
+			// the colon's newline and the bullet must not prevent period deduplication.
+			string result = WidgetOps.CleanTooltipEntry("Label:\n    \u2022 Value");
+			bool ok = result == "Label:. Value";
+			return Assert("CleanTooltipIndentedBulletAfterNewline", ok, $"got \"{result}\"");
 		}
 
 		private static (string, bool, string) CleanTooltipNullAndEmptyPassthrough() {

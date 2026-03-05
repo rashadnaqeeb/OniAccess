@@ -1,5 +1,6 @@
 # Changelog
 
+- Fixed details screen speaking extraneous periods in Category line (e.g., "Category:. . Toilet" now reads "Category:. Toilet")
 - Tile cursor now announces "unreachable" for dig, mop, and sweep orders that no duplicant can reach
 - Fixed utility placement (wires, pipes) rejecting cells with existing utilities, so you can now start drags on existing lines and drag over them to reconnect
 - Fixed copy building key (B) announcing "tool tool" instead of the building name
