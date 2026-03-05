@@ -16,7 +16,6 @@ namespace OniAccess.Handlers {
 	/// </summary>
 	public class TypeAheadSearch {
 		private StringBuilder _buffer = new StringBuilder(32);
-		private float _lastTime = 0f;
 
 		// Filtered results state
 		private bool _isSearchActive;
@@ -41,13 +40,7 @@ namespace OniAccess.Handlers {
 		// Stored reference to the current searchable context, set each HandleKey call
 		private ISearchable _searchable;
 
-		// Injectable time source for testability (avoids Unity dependency in offline tests)
-		private readonly System.Func<float> _getTime;
-
-		public TypeAheadSearch() : this(null) { }
-
-		internal TypeAheadSearch(System.Func<float> timeSource) {
-			_getTime = timeSource ?? DefaultGetTime;
+		public TypeAheadSearch() {
 			_getLabelCached = i => _searchable.GetSearchLabel(i);
 			_moveToIndexCached = i => _searchable.SearchMoveTo(i);
 			_tierIndices = new List<int>[TierCount];
@@ -57,13 +50,6 @@ namespace OniAccess.Handlers {
 				_tierNames[t] = new List<string>();
 			}
 		}
-
-		private static float DefaultGetTime() => Time.realtimeSinceStartup;
-
-		/// <summary>
-		/// Time in seconds before the search buffer resets on new input.
-		/// </summary>
-		public float Timeout { get; set; } = 1.5f;
 
 		/// <summary>
 		/// Current search buffer contents.
@@ -99,11 +85,7 @@ namespace OniAccess.Handlers {
 		/// Resets the buffer if timeout has elapsed since last input.
 		/// </summary>
 		public string AddChar(char c) {
-			if (_getTime() - _lastTime > Timeout)
-				_buffer.Clear();
-
 			_buffer.Append(c);
-			_lastTime = _getTime();
 			return _buffer.ToString();
 		}
 
@@ -115,7 +97,6 @@ namespace OniAccess.Handlers {
 				return false;
 
 			_buffer.Length--;
-			_lastTime = _getTime();
 			return true;
 		}
 

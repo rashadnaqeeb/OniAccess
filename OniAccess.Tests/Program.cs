@@ -70,7 +70,6 @@ namespace OniAccess.Tests {
 			results.Add(SearchNavigateWraps());
 			results.Add(SearchJumpFirstLast());
 			results.Add(SearchNoMatch());
-			results.Add(SearchBufferTimeoutResets());
 			results.Add(MatchTierStartWholeWord());
 			results.Add(MatchTierStartPrefix());
 			results.Add(MatchTierMidWholeWord());
@@ -613,7 +612,7 @@ namespace OniAccess.Tests {
 		// ========================================
 
 		private static (string, bool, string) SearchWordStartMatch() {
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 			search.AddChar('a');
 			search.Search(SearchItems.Length, NameByIndex);
 
@@ -624,7 +623,7 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) SearchMultiWordMatch() {
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 			search.AddChar('c');
 			search.Search(SearchItems.Length, NameByIndex);
 
@@ -642,7 +641,7 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) SearchCaseInsensitive() {
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 			search.AddChar('B'); // uppercase input
 			search.Search(SearchItems.Length, NameByIndex);
 
@@ -654,7 +653,7 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) SearchMultiCharNarrowing() {
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 
 			search.AddChar('a');
 			search.Search(SearchItems.Length, NameByIndex);
@@ -676,7 +675,7 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) SearchRepeatLetterCycles() {
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 			search.AddChar('b');
 			search.Search(SearchItems.Length, NameByIndex);
 			int firstIdx = search.SelectedOriginalIndex; // Banana(2)
@@ -694,7 +693,7 @@ namespace OniAccess.Tests {
 		private static (string, bool, string) SearchRepeatLetterSkipsSubstring() {
 			// 'a' matches Apple(0,tier1), Apricot(1,tier1), Banana(2,tier4 substring).
 			// Cycling should stay within Apple/Apricot, never reach Banana.
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 			search.AddChar('a');
 			search.Search(SearchItems.Length, NameByIndex);
 			int first = search.SelectedOriginalIndex; // Apple(0)
@@ -713,7 +712,7 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) SearchBackspace() {
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 			search.AddChar('a');
 			search.AddChar('p');
 			search.Search(SearchItems.Length, NameByIndex);
@@ -731,7 +730,7 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) SearchNavigateWraps() {
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 			search.AddChar('a');
 			search.Search(SearchItems.Length, NameByIndex);
 			// 3 results: Apple(0), Apricot(1), Banana(2). Cursor at 0.
@@ -746,7 +745,7 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) SearchJumpFirstLast() {
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 			search.AddChar('a');
 			search.Search(SearchItems.Length, NameByIndex);
 			// 3 results: Apple(0), Apricot(1), Banana(2)
@@ -763,32 +762,13 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) SearchNoMatch() {
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 			search.AddChar('z');
 			search.Search(SearchItems.Length, NameByIndex);
 
 			bool ok = search.ResultCount == 0 && search.IsSearchActive;
 			return Assert("SearchNoMatch", ok,
 				$"ResultCount={search.ResultCount}, IsSearchActive={search.IsSearchActive}");
-		}
-
-		private static (string, bool, string) SearchBufferTimeoutResets() {
-			float fakeTime = 0f;
-			var search = new TypeAheadSearch(() => fakeTime);
-
-			search.AddChar('a');
-			search.AddChar('p');
-			// Buffer is "ap"
-
-			// Advance past the 1.5s timeout
-			fakeTime = 2f;
-			search.AddChar('b');
-			// Timeout elapsed, buffer should have been cleared before adding 'b'
-			// So buffer is now just "b", not "apb"
-
-			bool ok = search.Buffer == "b";
-			return Assert("SearchBufferTimeoutResets", ok,
-				$"buffer=\"{search.Buffer}\", expected \"b\"");
 		}
 
 		private static (string, bool, string) MatchTierStartWholeWord() {
@@ -839,7 +819,7 @@ namespace OniAccess.Tests {
 			var items = new[] { "Plywood", "A Wooden Thing", "Pine Wood", "Wooden Axe", "Wood Club" };
 			string nameByIndex(int i) => i >= 0 && i < items.Length ? items[i] : null;
 
-			var search = new TypeAheadSearch(() => 0f);
+			var search = new TypeAheadSearch();
 			search.AddChar('w');
 			search.AddChar('o');
 			search.AddChar('o');
