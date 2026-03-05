@@ -1,5 +1,6 @@
 # Changelog
 
+- Tile cursor help (F12) now lists the 10 base game management screen hotkeys (Priorities, Consumables, Vitals, etc.)
 - Build menu now announces material costs inline (e.g. "copper 400 kg") so you can compare buildings without opening the info screen
 - Fixed dig tool announcing gas or liquid element behind buildings
 - Fixed dig tool announcing "N/A" hardness for gas and liquid elements

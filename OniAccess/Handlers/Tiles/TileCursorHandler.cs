@@ -117,8 +117,9 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Alt+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE),
 			new HelpEntry("Ctrl+F", (string)STRINGS.ONIACCESS.SCANNER.HELP.SEARCH),
 			new HelpEntry("Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS),
-			new HelpEntry("S", (string)STRINGS.ONIACCESS.GAME_STATE.READ_COLONY_STATUS),
 			new HelpEntry("Shift+Q", (string)STRINGS.ONIACCESS.GAME_STATE.READ_TIME_PLAYED),
+			new HelpEntry("S", (string)STRINGS.ONIACCESS.GAME_STATE.READ_COLONY_STATUS),
+			new HelpEntry("Ctrl+R", (string)STRINGS.ONIACCESS.GAME_STATE.TOGGLE_RED_ALERT),
 			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED),
 			new HelpEntry("Shift+N", (string)STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP),
 			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.RESOURCES.HELP_OPEN),
@@ -127,11 +128,22 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Ctrl+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK),
 			new HelpEntry("Shift+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK),
 			new HelpEntry("Alt+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_BOOKMARK),
-			new HelpEntry("Ctrl+R", (string)STRINGS.ONIACCESS.GAME_STATE.TOGGLE_RED_ALERT),
 			new HelpEntry("Ctrl+B", (string)STRINGS.ONIACCESS.RULER.HELP_PLACE),
 			new HelpEntry("Ctrl+Shift+B", (string)STRINGS.ONIACCESS.RULER.HELP_CLEAR),
 			new HelpEntry((string)STRINGS.ONIACCESS.DUPES.KEY_BRACKETS, (string)STRINGS.ONIACCESS.DUPES.HELP_CYCLE),
 			new HelpEntry("\\", (string)STRINGS.ONIACCESS.DUPES.HELP_JUMP),
+			// Base game management screen hotkeys. The mod does not consume these keys;
+			// they are listed here so blind players can discover them via the help screen.
+			new HelpEntry("L", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.PRIORITIES),
+			new HelpEntry("F", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.CONSUMABLES),
+			new HelpEntry("V", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.VITALS),
+			new HelpEntry("R", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.RESEARCH),
+			new HelpEntry((string)STRINGS.ONIACCESS.TILE_CURSOR.KEY_PERIOD, (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.SCHEDULE),
+			new HelpEntry("J", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.SKILLS),
+			new HelpEntry("E", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.COLONY_REPORT),
+			new HelpEntry("U", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.DATABASE),
+			new HelpEntry("Z", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.STARMAP),
+			new HelpEntry("N", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.DIAGNOSTICS),
 		}.AsReadOnly();
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW;

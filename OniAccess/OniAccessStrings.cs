@@ -310,6 +310,25 @@ namespace STRINGS {
 			public static LocString NOTHING_TO_SELECT = "nothing to select";
 			// Prompt when multiple objects occupy the cursor tile
 			public static LocString SELECT_OBJECT = "select an object";
+
+			// Spelled-out name of the period/full-stop key (the punctuation mark).
+			// Localizers: this is the keyboard key ".", not an abbreviation.
+			public static LocString KEY_PERIOD = "period";
+
+			// Help descriptions for base game management screen hotkeys.
+			// These are not mod keys — listed here so blind players can discover them.
+			public class MANAGEMENT_HELP {
+				public static LocString PRIORITIES = "Priorities";
+				public static LocString CONSUMABLES = "Consumables";
+				public static LocString VITALS = "Vitals";
+				public static LocString RESEARCH = "Research";
+				public static LocString SCHEDULE = "Schedule";
+				public static LocString SKILLS = "Skills";
+				public static LocString COLONY_REPORT = "Colony report";
+				public static LocString DATABASE = "Database";
+				public static LocString STARMAP = "Starmap";
+				public static LocString DIAGNOSTICS = "Diagnostics";
+			}
 		}
 
 		public class VIDEO {
