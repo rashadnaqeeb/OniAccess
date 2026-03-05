@@ -64,10 +64,12 @@ namespace OniAccess.Handlers.Tiles.Skip {
 					return FormatTileCount(steps) + ", " + speech;
 				}
 
-				object sig = strategy.GetSignature(current);
-				if (!object.Equals(startSignature, sig)) {
-					string cellSpeech = cursor.JumpTo(current);
-					return FormatTileCount(steps) + ", " + cellSpeech;
+				if (!startedUnexplored) {
+					object sig = strategy.GetSignature(current);
+					if (!object.Equals(startSignature, sig)) {
+						string cellSpeech = cursor.JumpTo(current);
+						return FormatTileCount(steps) + ", " + cellSpeech;
+					}
 				}
 			}
 
