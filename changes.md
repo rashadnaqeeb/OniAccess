@@ -1,5 +1,6 @@
 # Changelog
 
+- Gas, liquid, and solid filter side screens now present a flat alphabetical list of elements instead of confusing folded categories
 - Door access control now says "passing from right to left" instead of just "left" to clarify the direction of travel
 - Action buttons now include their tooltip in speech (e.g. wash basin direction buttons explain the travel direction)
 - Pressing backslash on the details screen activates copy settings for the selected building, with an error message if the entity has no copyable settings

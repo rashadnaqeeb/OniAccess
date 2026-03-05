@@ -39,6 +39,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<RelatedEntitiesSideScreen>(WalkRelatedEntities);
 			SideScreenWalker.RegisterOverride<GeoTunerSideScreen>(WalkGeoTuner);
 			SideScreenWalker.RegisterOverride<BaseGameImpactorImperativeSideScreen>(WalkBaseGameImpactorImperative);
+			SideScreenWalker.RegisterOverride<FilterSideScreen>(WalkFilterSideScreen);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -2287,6 +2288,89 @@ namespace OniAccess.Widgets {
 					Label = capturedLabel.GetParsedText(),
 					GameObject = capturedTooltip.gameObject,
 					SpeechFunc = () => WidgetOps.ReadAllTooltipText(capturedTooltip)
+				});
+			}
+		}
+		static void WalkFilterSideScreen(FilterSideScreen screen, List<Widget> items) {
+			Traverse tv;
+			try { tv = Traverse.Create(screen); } catch (System.Exception ex) {
+				Util.Log.Warn($"WalkFilterSideScreen: Traverse create failed: {ex.Message}");
+				return;
+			}
+
+			LocText selectionLabel;
+			SingleItemSelectionRow voidRow;
+			SortedDictionary<Tag, SingleItemSelectionSideScreenBase.Category> cats;
+			try {
+				selectionLabel = screen.currentSelectionLabel;
+				voidRow = tv.Field<SingleItemSelectionRow>("voidRow").Value;
+				cats = tv.Field<SortedDictionary<Tag, SingleItemSelectionSideScreenBase.Category>>("categories").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkFilterSideScreen: field read failed: {ex.Message}");
+				return;
+			}
+
+			// Current selection label
+			if (selectionLabel != null) {
+				var capturedLabel = selectionLabel;
+				items.Add(new LabelWidget {
+					Label = capturedLabel.GetParsedText(),
+					GameObject = capturedLabel.gameObject,
+					SpeechFunc = () => capturedLabel.GetParsedText()
+				});
+			}
+
+			// None row
+			if (voidRow != null) {
+				var capturedVoidRow = voidRow;
+				string noneLabel = (string)STRINGS.UI.UISIDESCREENS.FILTERSIDESCREEN.NO_SELECTION;
+				items.Add(new ButtonWidget {
+					Label = noneLabel,
+					Component = capturedVoidRow.button,
+					GameObject = capturedVoidRow.gameObject,
+					SuppressTooltip = true,
+					SpeechFunc = () => capturedVoidRow.IsSelected
+						? $"{(string)STRINGS.ONIACCESS.STATES.SELECTED}, {noneLabel}"
+						: noneLabel
+				});
+			}
+
+			// All element rows from all categories, sorted alphabetically
+			if (cats == null) return;
+			var allRows = new List<System.Tuple<Tag, SingleItemSelectionRow>>();
+			foreach (var kv in cats) {
+				if (kv.Key == GameTags.Void) continue;
+				var cat = kv.Value;
+				if (!cat.IsVisible) continue;
+				List<SingleItemSelectionRow> catItems;
+				try {
+					catItems = Traverse.Create(cat)
+						.Field<List<SingleItemSelectionRow>>("items").Value;
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"WalkFilterSideScreen: category items read failed: {ex.Message}");
+					continue;
+				}
+				if (catItems == null) continue;
+				foreach (var row in catItems) {
+					if (!row.gameObject.activeSelf) continue;
+					allRows.Add(new System.Tuple<Tag, SingleItemSelectionRow>(row.tag, row));
+				}
+			}
+
+			allRows.Sort((a, b) => a.Item1.ProperName().CompareTo(b.Item1.ProperName()));
+
+			foreach (var pair in allRows) {
+				var capturedRow = pair.Item2;
+				var capturedTag = pair.Item1;
+				string label = capturedTag.ProperName();
+				items.Add(new ButtonWidget {
+					Label = label,
+					Component = capturedRow.button,
+					GameObject = capturedRow.gameObject,
+					SuppressTooltip = true,
+					SpeechFunc = () => capturedRow.IsSelected
+						? $"{(string)STRINGS.ONIACCESS.STATES.SELECTED}, {capturedTag.ProperName()}"
+						: capturedTag.ProperName()
 				});
 			}
 		}
