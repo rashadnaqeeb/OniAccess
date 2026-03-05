@@ -312,7 +312,13 @@ namespace OniAccess.Handlers.Tools {
 					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 					return;
 				}
-				_rectangles.Add(new RectCorners { Cell1 = cell, Cell2 = cell });
+				if (TileCursor.Instance.Radius > 0
+					&& (_toolInfo == null || !_toolInfo.IsLineMode)) {
+					var (c1, c2) = TileCursor.Instance.GetAreaCorners();
+					_rectangles.Add(new RectCorners { Cell1 = c1, Cell2 = c2 });
+				} else {
+					_rectangles.Add(new RectCorners { Cell1 = cell, Cell2 = cell });
+				}
 			}
 
 			if (_rectangles.Count == 0) {
