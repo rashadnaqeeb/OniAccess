@@ -10,7 +10,7 @@ using OniAccess.Speech;
 namespace OniAccess.Handlers.Tools {
 	/// <summary>
 	/// Non-modal handler for tool mode. Sits on top of TileCursorHandler,
-	/// intercepts tool-specific keys (Space, Enter, Escape, 0-9, F, Delete)
+	/// intercepts tool-specific keys (Space, Shift+Space, Enter, Escape, 0-9, F)
 	/// and passes everything else through to the tile cursor.
 	///
 	/// Manages rectangle selection state. On confirm, submits each rectangle
@@ -46,9 +46,8 @@ namespace OniAccess.Handlers.Tools {
 
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Space),
+			new ConsumedKey(KKeyCode.Space, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Return),
-			new ConsumedKey(KKeyCode.Delete),
-			new ConsumedKey(KKeyCode.Backspace),
 			new ConsumedKey(KKeyCode.F),
 			new ConsumedKey(KKeyCode.Alpha0),
 			new ConsumedKey(KKeyCode.Alpha1),
@@ -72,7 +71,7 @@ namespace OniAccess.Handlers.Tools {
 			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_TOOL),
 			new HelpEntry("0-9", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY),
 			new HelpEntry("F", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_FILTER),
-			new HelpEntry("Delete", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT),
+			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT),
 		}.AsReadOnly();
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
@@ -197,22 +196,20 @@ namespace OniAccess.Handlers.Tools {
 				}
 			}
 
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)
-				&& !InputUtil.AnyModifierHeld()) {
-				SetCorner();
-				return true;
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)) {
+				if (InputUtil.ShiftHeld()) {
+					ClearRectAtCursor();
+					return true;
+				}
+				if (!InputUtil.AnyModifierHeld()) {
+					SetCorner();
+					return true;
+				}
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)
 				&& !InputUtil.AnyModifierHeld()) {
 				ConfirmOrCancel();
-				return true;
-			}
-
-			if ((UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Delete)
-				|| UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backspace))
-				&& !InputUtil.AnyModifierHeld()) {
-				ClearRectAtCursor();
 				return true;
 			}
 
