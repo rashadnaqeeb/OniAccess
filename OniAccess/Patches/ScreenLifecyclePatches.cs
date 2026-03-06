@@ -280,4 +280,11 @@ namespace OniAccess.Patches {
 				HandlerStack.Pop();
 		}
 	}
+
+	/// StarmapScreen declares OnShow directly. Patch it for show/hide lifecycle.
+	[HarmonyPatch(typeof(StarmapScreen), "OnShow")]
+	internal static class StarmapScreen_OnShow_Patch {
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
+	}
 }

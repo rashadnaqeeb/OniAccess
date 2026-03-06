@@ -1,0 +1,159 @@
+using System.Collections.Generic;
+
+using OniAccess.Handlers.Screens.Starmap;
+using OniAccess.Input;
+using OniAccess.Speech;
+
+namespace OniAccess.Handlers.Screens {
+	/// <summary>
+	/// Handler for non-DLC StarmapScreen. Three tabs:
+	/// Rockets (list/detail), Destinations (nested by distance tier),
+	/// Destination Details (flat detail list with analyze action).
+	///
+	/// Shared state: active rocket and selected destination persist
+	/// across tab switches.
+	///
+	/// Lifecycle: Show-patch on StarmapScreen.OnShow(bool).
+	/// </summary>
+	public class StarmapScreenHandler : BaseScreenHandler {
+		private enum TabId { Rockets, Destinations, Details }
+
+		private readonly RocketsTab _rocketsTab;
+		private readonly DestinationsTab _destinationsTab;
+		private readonly DestinationDetailsTab _detailsTab;
+		private readonly IStarmapTab[] _tabs;
+
+		private TabId _activeTab;
+		private Spacecraft _activeRocket;
+		private SpaceDestination _selectedDestination;
+
+		public StarmapScreenHandler(KScreen screen) : base(screen) {
+			_rocketsTab = new RocketsTab(this);
+			_destinationsTab = new DestinationsTab(this);
+			_detailsTab = new DestinationDetailsTab(this);
+			_tabs = new IStarmapTab[] { _rocketsTab, _destinationsTab, _detailsTab };
+		}
+
+		public override string DisplayName =>
+			(string)STRINGS.ONIACCESS.STARMAP.HANDLER_NAME;
+
+		public override bool CapturesAllInput => true;
+
+		internal Spacecraft ActiveRocket => _activeRocket;
+		internal SpaceDestination SelectedDestination => _selectedDestination;
+
+		private static readonly List<HelpEntry> _helpEntries = new List<HelpEntry> {
+			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
+			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
+			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
+			new HelpEntry("Enter", STRINGS.ONIACCESS.HELP.SELECT_ITEM),
+			new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL),
+			new HelpEntry("Space", STRINGS.ONIACCESS.STARMAP.LAUNCH_HELP),
+		};
+
+		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
+
+		// ========================================
+		// LIFECYCLE
+		// ========================================
+
+		public override void OnActivate() {
+			base.OnActivate();
+
+			// Detect pre-selected rocket (opened from CommandModule side screen)
+			DetectPreSelectedRocket();
+
+			_activeTab = TabId.Rockets;
+			_rocketsTab.OnTabActivated(announce: false);
+		}
+
+		public override void OnDeactivate() {
+			ActiveTab.OnTabDeactivated();
+			base.OnDeactivate();
+		}
+
+		// ========================================
+		// INPUT
+		// ========================================
+
+		public override bool Tick() {
+			if (base.Tick()) return true;
+
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)) {
+				int dir = InputUtil.ShiftHeld() ? -1 : 1;
+				CycleTab(dir);
+				return true;
+			}
+
+			return ActiveTab.HandleInput();
+		}
+
+		public override bool HandleKeyDown(KButtonEvent e) {
+			return ActiveTab.HandleKeyDown(e);
+		}
+
+		// ========================================
+		// TAB MANAGEMENT
+		// ========================================
+
+		internal void JumpToDetailsTab() {
+			ActiveTab.OnTabDeactivated();
+			_activeTab = TabId.Details;
+			_detailsTab.OnDestinationChanged();
+			PlaySound("HUD_Mouseover");
+			ActiveTab.OnTabActivated(announce: true);
+		}
+
+		internal void SetActiveRocket(Spacecraft rocket) {
+			_activeRocket = rocket;
+		}
+
+		internal void SelectDestination(SpaceDestination dest) {
+			_selectedDestination = dest;
+		}
+
+		private IStarmapTab ActiveTab => _tabs[(int)_activeTab];
+
+		private void CycleTab(int direction) {
+			ActiveTab.OnTabDeactivated();
+			int next = ((int)_activeTab + direction + _tabs.Length) % _tabs.Length;
+			bool wrapped = direction > 0
+				? next <= (int)_activeTab
+				: next >= (int)_activeTab;
+			_activeTab = (TabId)next;
+			if (wrapped) PlaySound("HUD_Click");
+			else PlaySound("HUD_Mouseover");
+			ActiveTab.OnTabActivated(announce: true);
+		}
+
+		// ========================================
+		// OPENING CONTEXT
+		// ========================================
+
+		private void DetectPreSelectedRocket() {
+			// Follow the game's pattern: check SelectTool.Instance.selected
+			// for a CommandModule component
+			try {
+				var selected = SelectTool.Instance?.selected;
+				if (selected == null) return;
+
+				var cmd = selected.GetComponent<CommandModule>();
+				var lcm = selected.GetComponent<LaunchConditionManager>();
+				if (cmd == null || lcm == null) return;
+
+				var spacecraft = SpacecraftManager.instance
+					.GetSpacecraftFromLaunchConditionManager(lcm);
+				if (spacecraft == null) return;
+
+				_activeRocket = spacecraft;
+				var dest = SpacecraftManager.instance
+					.GetSpacecraftDestination(lcm);
+				if (dest != null)
+					_selectedDestination = dest;
+			} catch (System.Exception ex) {
+				Util.Log.Warn(
+					$"StarmapScreenHandler.DetectPreSelectedRocket: {ex}");
+			}
+		}
+	}
+}

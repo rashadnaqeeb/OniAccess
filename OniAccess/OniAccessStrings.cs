@@ -1310,6 +1310,40 @@ namespace STRINGS {
 			public static LocString HELP_TOGGLE_CRITERION = "Toggle criterion";
 		}
 
+		// Starmap screen (non-DLC rocket management)
+		public class STARMAP {
+			public static LocString HANDLER_NAME = "Starmap";
+			public static LocString ROCKETS_TAB = "Rockets";
+			public static LocString DESTINATIONS_TAB = "Destinations";
+			public static LocString DETAILS_TAB = "Destination details";
+			// {0} = rocket name
+			public static LocString DESTINATIONS_TAB_WITH_ROCKET = "Destinations, assigning to {0}";
+			public static LocString NO_ROCKETS = "no rockets";
+			public static LocString NO_DESTINATION_SELECTED = "no destination selected";
+			// {0} = rocket name
+			public static LocString ROCKET_DETAIL_HEADER = "{0} details";
+			// {0} = destination name, {1} = rocket name
+			public static LocString DESTINATION_ASSIGNED = "{0} assigned to {1}";
+			// {0} = rocket name
+			public static LocString LAUNCHED = "{0} launched";
+			public static LocString NO_ROCKET_SELECTED = "no rocket selected";
+			public static LocString ROCKET_NOT_GROUNDED = "rocket not grounded";
+			public static LocString ANALYZING_THIS = "telescope analyzing this destination";
+			public static LocString ANALYSIS_STARTED = "analysis started";
+			public static LocString ANALYSIS_SUSPENDED = "analysis suspended";
+			public static LocString RESEARCH_COMPLETE_PREFIX = "complete:";
+			public static LocString RESEARCH_INCOMPLETE_PREFIX = "incomplete:";
+			public static LocString CAN_CARRY = "can carry";
+			public static LocString NEEDS_BAY = "needs";
+			public static LocString REMAINING = "remaining";
+			public static LocString COMPLETE = "complete";
+			public static LocString DATA_POINTS = "points";
+			public static LocString RARE_RESOURCE = "rare";
+			// Help entries
+			public static LocString LAUNCH_HELP = "Launch rocket";
+			public static LocString ANALYZE_HELP = "Analyze or suspend analysis";
+		}
+
 		// Resource browser and pinned resource readout
 		public class RESOURCES {
 			public static LocString BROWSER_TITLE = "Resources";

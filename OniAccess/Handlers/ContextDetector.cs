@@ -307,6 +307,11 @@ namespace OniAccess.Handlers {
 			Register<MessageDialogFrame>(screen =>
 				new Notifications.MessageDialogFrameHandler(screen));
 
+			// StarmapScreen (KModalScreen -- non-DLC starmap/rocket management)
+			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
+			Register<StarmapScreen>(screen => new StarmapScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(StarmapScreen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 
