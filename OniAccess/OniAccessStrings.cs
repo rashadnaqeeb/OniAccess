@@ -905,6 +905,7 @@ namespace STRINGS {
 			public static LocString ADJUST_ROW = "Adjust all priorities in row";
 			public static LocString ADJUST_COLUMN = "Adjust all priorities in column";
 			public static LocString SET_COLUMN = "Set all priorities in column";
+			public static LocString ADJUST_CELL = "Adjust priority of current cell";
 		}
 
 		// Vitals table screen (health, stress, calories)

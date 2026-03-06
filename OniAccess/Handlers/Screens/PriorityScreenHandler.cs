@@ -28,6 +28,7 @@ namespace OniAccess.Handlers.Screens {
 			new HelpEntry("0-5", STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_PRIORITY),
 			new HelpEntry("Shift+0-5", STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_COLUMN),
 			new HelpEntry("Ctrl+Left/Right", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_ROW),
+			new HelpEntry("Shift+Up/Down", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_CELL),
 			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_COLUMN),
 		};
 
@@ -337,6 +338,37 @@ namespace OniAccess.Handlers.Screens {
 				_choreGroups[_col].Name + ", " + string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_SET, GetPriorityName(value)));
 		}
 
+		void AdjustCell(int delta) {
+			if (_row < 0 || _row >= _rows.Count) return;
+			var row = _rows[_row];
+
+			if (row.Kind == TableRowKind.Toolbar || row.Kind == TableRowKind.ColumnHeader
+				|| row.Kind == TableRowKind.WorldDivider) return;
+
+			if (row.Kind == TableRowKind.StoredMinion) {
+				string msg = string.Format(
+					STRINGS.UI.JOBSSCREEN.CANNOT_ADJUST_PRIORITY,
+					row.Identity.GetProperName(),
+					((StoredMinionIdentity)row.Identity).GetStorageReason());
+				SpeechPipeline.SpeakInterrupt(TextFilter.FilterForSpeech(msg));
+				return;
+			}
+
+			var manager = GetPriorityManager(row);
+			var group = _choreGroups[_col];
+			if (manager.IsChoreGroupDisabled(group)) {
+				string traitName = GetDisablingTraitName(row.Identity, group);
+				SpeechPipeline.SpeakInterrupt(
+					string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT, traitName));
+				return;
+			}
+
+			int current = manager.GetPersonalPriority(group);
+			int newVal = UnityEngine.Mathf.Clamp(current + delta, 0, 5);
+			manager.SetPersonalPriority(group, newVal);
+			SpeakCell();
+		}
+
 		void AdjustColumn(int delta) {
 			if (_col < 0 || _col >= _choreGroups.Count) return;
 			var group = _choreGroups[_col];
@@ -363,6 +395,17 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		public override bool Tick() {
+			if (InputUtil.ShiftHeld()) {
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)) {
+					AdjustCell(1);
+					return true;
+				}
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
+					AdjustCell(-1);
+					return true;
+				}
+			}
+
 			if (base.Tick()) return true;
 
 			bool ctrlHeld = InputUtil.CtrlHeld();
