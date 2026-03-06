@@ -1,5 +1,6 @@
 # Changelog
 
+- Type-ahead search now supports spaces for multi-word queries (e.g., "blue c" to find "Blue Cheese"). Space only enters the search buffer after typing at least one letter, so handler actions like pin toggle still work normally
 - Encyclopedia type-ahead now includes top-level categories in search results, listed after article matches
 - Type-ahead search now sorts matches by position within each tier, so "washroom" ranks before "fried mushroom" when searching "room"
 - Materials overlay area scan now reports only element percentages, without median mass

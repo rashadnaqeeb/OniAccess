@@ -234,6 +234,10 @@ namespace OniAccess.Handlers {
 				if (consumed) return true;
 			}
 
+			// Space captured by search when active (otherwise passes through to handler)
+			if (_search.IsSearchActive && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space))
+				return _search.HandleKey(UnityEngine.KeyCode.Space, ctrlHeld, altHeld, this);
+
 			// Navigation keys captured by search when active
 			for (int i = 0; i < _searchNavKeys.Length; i++) {
 				if (UnityEngine.Input.GetKeyDown(_searchNavKeys[i]))

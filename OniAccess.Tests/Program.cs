@@ -78,6 +78,8 @@ namespace OniAccess.Tests {
 			results.Add(MatchTierNoMatch());
 			results.Add(SearchTierOrdering());
 			results.Add(SearchTierPositionSorting());
+			results.Add(SearchSpaceMultiWord());
+			results.Add(SearchTrailingSpaceIgnored());
 
 			// --- ScannerSearch ---
 			results.Add(ScannerSearchPrefixMatch());
@@ -864,6 +866,37 @@ namespace OniAccess.Tests {
 			}
 			return Assert("SearchTierPositionSorting", ok,
 				$"ResultCount={search.ResultCount}, First={search.SelectedOriginalIndex}");
+		}
+
+		private static (string, bool, string) SearchSpaceMultiWord() {
+			// "blue c" should match "Blue Cheese" but not "Banana"
+			var search = new TypeAheadSearch();
+			search.AddChar('b');
+			search.AddChar('l');
+			search.AddChar('u');
+			search.AddChar('e');
+			search.AddChar(' ');
+			search.AddChar('c');
+			search.Search(SearchItems.Length, NameByIndex);
+
+			bool ok = search.ResultCount == 1 && search.SelectedOriginalIndex == 3;
+			return Assert("SearchSpaceMultiWord", ok,
+				$"ResultCount={search.ResultCount}, SelectedOriginalIndex={search.SelectedOriginalIndex}");
+		}
+
+		private static (string, bool, string) SearchTrailingSpaceIgnored() {
+			// "blue " (trailing space) should still match "Blue Cheese"
+			var search = new TypeAheadSearch();
+			search.AddChar('b');
+			search.AddChar('l');
+			search.AddChar('u');
+			search.AddChar('e');
+			search.AddChar(' ');
+			search.Search(SearchItems.Length, NameByIndex);
+
+			bool ok = search.ResultCount == 1 && search.SelectedOriginalIndex == 3;
+			return Assert("SearchTrailingSpaceIgnored", ok,
+				$"ResultCount={search.ResultCount}, SelectedOriginalIndex={search.SelectedOriginalIndex}");
 		}
 
 		// ========================================

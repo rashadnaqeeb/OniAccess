@@ -155,6 +155,13 @@ namespace OniAccess.Handlers {
 						}
 						RunSearch();
 						return true;
+					case KeyCode.Space:
+						if (!ctrlHeld && !altHeld) {
+							AddChar(' ');
+							RunSearch();
+							return true;
+						}
+						return false;
 					default:
 						// A-Z without Ctrl/Alt: add to search buffer
 						if (!ctrlHeld && !altHeld &&
@@ -240,7 +247,16 @@ namespace OniAccess.Handlers {
 				_tierNames[t].Clear();
 				_tierPositions[t].Clear();
 			}
-			string lowerBuffer = bufferStr.ToLowerInvariant();
+			string trimmed = bufferStr.TrimEnd();
+			if (trimmed.Length == 0) {
+				_resultIndices.Clear();
+				_resultNames.Clear();
+				_resultCursor = 0;
+				_isSearchActive = true;
+				Speech.SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.SEARCH.NO_MATCH, bufferStr));
+				return;
+			}
+			string lowerBuffer = trimmed.ToLowerInvariant();
 
 			for (int i = 0; i < itemCount; i++) {
 				string name = nameByIndex(i);
