@@ -445,7 +445,7 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			var failures = new List<string>();
 			foreach (var condition in lcm.GetLaunchConditionList()) {
 				var status = condition.EvaluateCondition();
-				if (status != ProcessCondition.Status.Ready) {
+				if (status == ProcessCondition.Status.Failure) {
 					string msg = condition.GetStatusMessage(status);
 					string tooltip = condition.GetStatusTooltip(status);
 					if (!string.IsNullOrEmpty(tooltip))
@@ -475,36 +475,29 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			var network = AttachableBuilding.GetAttachedNetwork(
 				cmd.GetComponent<AttachableBuilding>());
 
-			bool hasMatchingBay = false;
-			string bayName = "";
-
+			CargoBay.CargoType targetType;
+			string prefabId;
 			if (element.IsGas) {
-				bayName = Assets.GetPrefab("GasCargoBay".ToTag()).GetProperName();
-				foreach (var m in network)
-					if (m.GetComponent<CargoBay>() != null
-							&& m.GetComponent<CargoBay>().storageType
-								== CargoBay.CargoType.Gasses) {
-						hasMatchingBay = true;
-						break;
-					}
+				targetType = CargoBay.CargoType.Gasses;
+				prefabId = "GasCargoBay";
 			} else if (element.IsLiquid) {
-				bayName = Assets.GetPrefab("LiquidCargoBay".ToTag()).GetProperName();
-				foreach (var m in network)
-					if (m.GetComponent<CargoBay>() != null
-							&& m.GetComponent<CargoBay>().storageType
-								== CargoBay.CargoType.Liquids) {
-						hasMatchingBay = true;
-						break;
-					}
+				targetType = CargoBay.CargoType.Liquids;
+				prefabId = "LiquidCargoBay";
 			} else if (element.IsSolid) {
-				bayName = Assets.GetPrefab("CargoBay".ToTag()).GetProperName();
-				foreach (var m in network)
-					if (m.GetComponent<CargoBay>() != null
-							&& m.GetComponent<CargoBay>().storageType
-								== CargoBay.CargoType.Solids) {
-						hasMatchingBay = true;
-						break;
-					}
+				targetType = CargoBay.CargoType.Solids;
+				prefabId = "CargoBay";
+			} else {
+				return "";
+			}
+
+			string bayName = Assets.GetPrefab(prefabId.ToTag()).GetProperName();
+			bool hasMatchingBay = false;
+			foreach (var m in network) {
+				var bay = m.GetComponent<CargoBay>();
+				if (bay != null && bay.storageType == targetType) {
+					hasMatchingBay = true;
+					break;
+				}
 			}
 
 			if (string.IsNullOrEmpty(bayName))

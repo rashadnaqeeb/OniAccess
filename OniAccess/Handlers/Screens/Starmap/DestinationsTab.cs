@@ -46,6 +46,8 @@ namespace OniAccess.Handlers.Screens.Starmap {
 				string label = GetItemLabel(CurrentIndex);
 				if (!string.IsNullOrEmpty(label))
 					SpeechPipeline.SpeakQueued(label);
+			} else {
+				SpeechPipeline.SpeakQueued(STRINGS.ONIACCESS.STARMAP.NO_DESTINATIONS);
 			}
 		}
 
@@ -107,22 +109,20 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			var dest = dests[indices[1]];
 			_parent.SelectDestination(dest);
 
+			string destName = StarmapHelper.IsAnalyzed(dest)
+				? dest.GetDestinationType().Name
+				: (string)STRINGS.UI.STARMAP.UNKNOWN_DESTINATION;
+
 			// Assign to active rocket if grounded
 			var rocket = _parent.ActiveRocket;
 			if (rocket != null
 					&& rocket.state == Spacecraft.MissionState.Grounded) {
 				SpacecraftManager.instance.SetSpacecraftDestination(
 					rocket.launchConditions, dest);
-				string destName = StarmapHelper.IsAnalyzed(dest)
-					? dest.GetDestinationType().Name
-					: (string)STRINGS.UI.STARMAP.UNKNOWN_DESTINATION;
 				SpeechPipeline.SpeakInterrupt(string.Format(
 					STRINGS.ONIACCESS.STARMAP.DESTINATION_ASSIGNED,
 					destName, rocket.GetRocketName()));
 			} else {
-				string destName = StarmapHelper.IsAnalyzed(dest)
-					? dest.GetDestinationType().Name
-					: (string)STRINGS.UI.STARMAP.UNKNOWN_DESTINATION;
 				SpeechPipeline.SpeakInterrupt(destName);
 			}
 

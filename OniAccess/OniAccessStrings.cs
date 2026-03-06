@@ -1317,8 +1317,9 @@ namespace STRINGS {
 			public static LocString DESTINATIONS_TAB = "Destinations";
 			public static LocString DETAILS_TAB = "Destination details";
 			// {0} = rocket name
-			public static LocString DESTINATIONS_TAB_WITH_ROCKET = "Destinations, assigning to {0}";
+			public static LocString DESTINATIONS_TAB_WITH_ROCKET = "assigning to {0}";
 			public static LocString NO_ROCKETS = "no rockets";
+			public static LocString NO_DESTINATIONS = "no destinations";
 			public static LocString NO_DESTINATION_SELECTED = "no destination selected";
 			// {0} = rocket name
 			public static LocString ROCKET_DETAIL_HEADER = "{0} details";
@@ -1328,7 +1329,7 @@ namespace STRINGS {
 			public static LocString LAUNCHED = "{0} launched";
 			public static LocString NO_ROCKET_SELECTED = "no rocket selected";
 			public static LocString ROCKET_NOT_GROUNDED = "rocket not grounded";
-			public static LocString ANALYZING_THIS = "telescope analyzing this destination";
+			public static LocString ANALYZING_THIS = "telescope analyzing";
 			public static LocString ANALYSIS_STARTED = "analysis started";
 			public static LocString ANALYSIS_SUSPENDED = "analysis suspended";
 			public static LocString RESEARCH_COMPLETE_PREFIX = "complete:";

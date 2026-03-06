@@ -36,6 +36,9 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
 			if (ItemCount > 0) {
+				var rockets = StarmapHelper.GetSpacecraft();
+				if (CurrentIndex >= 0 && CurrentIndex < rockets.Count)
+					_parent.SetActiveRocket(rockets[CurrentIndex]);
 				string label = GetItemLabel(CurrentIndex);
 				if (!string.IsNullOrEmpty(label))
 					SpeechPipeline.SpeakQueued(label);
