@@ -65,6 +65,7 @@ namespace STRINGS {
 			public static LocString PRINTING_POD = "Printing pod";
 			public static LocString ERROR_SCREEN = "Error";
 			public static LocString DIAGNOSTICS = "Diagnostics";
+			public static LocString WORLD_SELECTOR = "World list";
 		}
 
 		// Supply closet (Klei rewards) screen messages
@@ -1308,6 +1309,14 @@ namespace STRINGS {
 			public static LocString HELP_OPEN_BROWSER = "Open diagnostics browser";
 			public static LocString HELP_TOGGLE_PIN = "Cycle pin state";
 			public static LocString HELP_TOGGLE_CRITERION = "Toggle criterion";
+		}
+
+		// World selector (Spaced Out DLC world list)
+		public class WORLD_SELECTOR {
+			public static LocString ACTIVE_PREFIX = "active";
+			public static LocString OPEN = "Open world list";
+			// {0} = world name
+			public static LocString DISCOVERED = "{0} discovered";
 		}
 
 		// Starmap screen (non-DLC rocket management)

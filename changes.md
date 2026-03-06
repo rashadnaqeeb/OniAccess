@@ -1,5 +1,9 @@
 # Changelog
 
+- W opens a navigable world list to switch between asteroids and rockets (Spaced Out DLC)
+- Switching worlds now announces the destination world name, whether via the world list, number hotkeys, or starmap
+- Off-screen world diagnostic degradation is announced with the world name and status
+- Newly discovered worlds are announced by name
 - Fix: placing a building, canceling it with Shift+Space, then placing again on the same tile now works correctly
 - Backspace returns to your previous position after a scanner teleport (Home key)
 - Shift+Home announces distance to the current scanner item; auto-move toggle moved to Shift+End

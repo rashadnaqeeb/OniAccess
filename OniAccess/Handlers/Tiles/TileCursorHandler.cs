@@ -125,6 +125,8 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.LeftBracket),
 			new ConsumedKey(KKeyCode.RightBracket),
 			new ConsumedKey(KKeyCode.Backslash),
+			// W overwrites PanUp (camera pan — mod cursor replaces camera navigation)
+			new ConsumedKey(KKeyCode.W),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -166,6 +168,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Ctrl+Shift+B", (string)STRINGS.ONIACCESS.RULER.HELP_CLEAR),
 			new HelpEntry((string)STRINGS.ONIACCESS.DUPES.KEY_BRACKETS, (string)STRINGS.ONIACCESS.DUPES.HELP_CYCLE),
 			new HelpEntry("\\", (string)STRINGS.ONIACCESS.DUPES.HELP_JUMP),
+			new HelpEntry("W", (string)STRINGS.ONIACCESS.WORLD_SELECTOR.OPEN),
 			// Base game management screen hotkeys. The mod does not consume these keys;
 			// they are listed here so blind players can discover them via the help screen.
 			new HelpEntry("L", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.PRIORITIES),
@@ -436,6 +439,12 @@ namespace OniAccess.Handlers.Tiles {
 				return true;
 			}
 
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.W)
+				&& !InputUtil.AnyModifierHeld()) {
+				OpenWorldSelector();
+				return true;
+			}
+
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.N)
 				&& InputUtil.ShiftHeld()) {
 				OpenNotificationMenu();
@@ -670,6 +679,12 @@ namespace OniAccess.Handlers.Tiles {
 			}
 			HandlerStack.Push(
 				new Notifications.NotificationMenuHandler(_notificationTracker));
+		}
+
+		private void OpenWorldSelector() {
+			if (!DlcManager.FeatureClusterSpaceEnabled()) return;
+			if (ClusterManager.Instance == null) return;
+			HandlerStack.Push(new WorldSelectorHandler());
 		}
 
 		private void OnActiveToolChanged(object data) {
