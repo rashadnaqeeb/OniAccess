@@ -40,7 +40,7 @@ Skip also stops at the alignment ruler if one is placed, and at world boundaries
 
 ### Big cursor
 
-**Shift+Up/Down** cycles the cursor size: 1x1 (default), 3x3, 5x5, 9x9, 21x21. The size resets to 1x1 on world load.
+**Shift+Up/Down** cycles the cursor size: 1x1 (default), 3x3, 5x5, 9x9, 21x21. **Ctrl+Shift+Down** resets to 1x1. The size also resets on world load.
 
 When the cursor is larger than 1x1, arrow keys move by the full cursor width (e.g., 5 tiles at 5x5), tiling areas edge-to-edge. The cursor stops where the full area fits inside the world. Ctrl+Arrow skip is unaffected by cursor size.
 
@@ -172,6 +172,8 @@ These readouts are available from the colony view:
 **Shift+D** -- open the diagnostics browser (see below).
 
 **Ctrl+R** -- toggle red alert.
+
+**W** -- open the world selector (Spaced Out DLC). Lists all discovered asteroids with type-ahead search. Switching worlds moves the cursor to the new asteroid.
 
 The mod also announces automatically without input: pause/unpause (with speed on unpause), speed changes, new cycles, and red/yellow alert transitions. During initial game load, notifications are suppressed until you first unpause.
 
@@ -311,7 +313,7 @@ These are base game hotkeys that open management screens from the colony view. T
 ## Known limitations
 
 - Base game starmap is not accessible.
-- Spaced Out DLC content is not yet supported but will be.
+- Spaced Out DLC support is partial -- world switching works, but most DLC-specific screens are not yet accessible.
 
 ## Troubleshooting
 
