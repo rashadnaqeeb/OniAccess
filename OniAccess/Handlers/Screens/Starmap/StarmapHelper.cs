@@ -140,10 +140,14 @@ namespace OniAccess.Handlers.Screens.Starmap {
 				var evalStatus = condition.EvaluateCondition();
 				string msg = condition.GetStatusMessage(evalStatus);
 				string tooltip = condition.GetStatusTooltip(evalStatus);
-				string label = msg;
-				if (evalStatus != ProcessCondition.Status.Ready
-						&& !string.IsNullOrEmpty(tooltip))
-					label = $"{msg}: {tooltip}";
+				string detail = !string.IsNullOrEmpty(tooltip) ? tooltip : msg;
+				string label;
+				if (evalStatus == ProcessCondition.Status.Ready)
+					label = $"{STRINGS.ONIACCESS.STARMAP.CHECK_READY}: {detail}";
+				else if (evalStatus == ProcessCondition.Status.Warning)
+					label = $"{STRINGS.ONIACCESS.STARMAP.CHECK_WARNING}: {detail}";
+				else
+					label = $"{STRINGS.ONIACCESS.STARMAP.CHECK_NOT_READY}: {detail}";
 				checkItems.Add(label);
 			}
 			if (checkItems.Count > 0)
@@ -280,7 +284,7 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			string headerName;
 			var headerItems = new List<string>();
 			if (analyzed)
-				headerName = $"{destType.Name}, {destType.typeName}";
+				headerName = destType.Name;
 			else
 				headerName = (string)UI.STARMAP.UNKNOWN_DESTINATION;
 			headerItems.Add(DisplayDistance(dest.OneBasedDistance * 10000f));
@@ -350,6 +354,11 @@ namespace OniAccess.Handlers.Screens.Starmap {
 				var compItems = new List<string>();
 				foreach (var kvp in dest.recoverableElements) {
 					var element = ElementLoader.FindElementByHash(kvp.Key);
+					if (element == null) continue;
+					string elemName = element.name;
+					if (string.IsNullOrEmpty(elemName))
+						elemName = element.tag.ProperName();
+					if (string.IsNullOrEmpty(elemName)) continue;
 					float pct = totalMass > 0f
 						? dest.GetResourceValue(kvp.Key, kvp.Value) / totalMass * 100f
 						: 0f;
@@ -357,7 +366,7 @@ namespace OniAccess.Handlers.Screens.Starmap {
 						? (string)UI.STARMAP.COMPOSITION_SMALL_AMOUNT
 						: GameUtil.GetFormattedPercent(pct);
 					string compat = GetCargoCompatibility(element, activeRocket);
-					compItems.Add($"{element.name}: {pctStr}{compat}");
+					compItems.Add($"{elemName}: {pctStr}{compat}");
 				}
 				foreach (var opp in dest.researchOpportunities) {
 					if (!opp.completed && opp.discoveredRareResource != SimHashes.Void)

@@ -1339,6 +1339,10 @@ namespace STRINGS {
 			public static LocString COMPLETE = "complete";
 			public static LocString DATA_POINTS = "points";
 			public static LocString RARE_RESOURCE = "rare";
+			// Launch checklist status prefixes
+			public static LocString CHECK_READY = "ready";
+			public static LocString CHECK_WARNING = "warning";
+			public static LocString CHECK_NOT_READY = "not ready";
 			// Help entries
 			public static LocString LAUNCH_HELP = "Launch rocket";
 			public static LocString ANALYZE_HELP = "Analyze or suspend analysis";
