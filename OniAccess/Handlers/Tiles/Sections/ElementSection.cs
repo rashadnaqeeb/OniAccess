@@ -5,12 +5,14 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// Speaks Grid.Element[cell].name with a glance-friendly mass.
 	/// Suppressed when a foreground building (ObjectLayer.Building) or foundation
 	/// tile (ObjectLayer.FoundationTile) is present, unless the Oxygen overlay
-	/// is active. Still speaks when only a Backwall (drywall, tempshift plate)
-	/// is present, since sighted players see the element through background buildings.
+	/// is active or the element is a liquid. Liquids pooling on buildings are
+	/// gameplay-relevant and visible to sighted players, so they are always spoken.
+	/// Still speaks when only a Backwall (drywall, tempshift plate) is present,
+	/// since sighted players see the element through background buildings.
 	/// </summary>
 	public class ElementSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
-			if (OverlayScreen.Instance.GetMode() != OverlayModes.Oxygen.ID) {
+			if (OverlayScreen.Instance.GetMode() != OverlayModes.Oxygen.ID && !Grid.Element[cell].IsLiquid) {
 				if (Grid.Objects[cell, (int)ObjectLayer.Building] != null)
 					return System.Array.Empty<string>();
 				if (Grid.Objects[cell, (int)ObjectLayer.FoundationTile] != null)
