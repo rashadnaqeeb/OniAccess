@@ -17,6 +17,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 		internal CategoriesTab(CodexScreenHandler parent) : base(screen: null) {
 			_parent = parent;
+			_search.GroupOf = GetSearchGroup;
 		}
 
 		public string TabName => (string)STRINGS.ONIACCESS.CODEX.CATEGORIES_TAB;
@@ -175,6 +176,11 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// ========================================
 		// Helpers
 		// ========================================
+
+		private int GetSearchGroup(int flatIndex) {
+			var all = GetAllSearchableEntries();
+			return (flatIndex >= 0 && flatIndex < all.Count && all[flatIndex].isCategory) ? 1 : 0;
+		}
 
 		/// <summary>
 		/// Position the cursor on the leaf entry matching entryId.

@@ -34,6 +34,13 @@ namespace OniAccess.Handlers {
 		// Optional callback for full announcements (called with original index)
 		private System.Action<int> _announceResult;
 
+		/// <summary>
+		/// Optional grouping function: maps an original item index to a group number.
+		/// During merge, all group-0 items (sorted by tier+position) appear before
+		/// group-1 items, etc. When null, all items are in a single group.
+		/// </summary>
+		public System.Func<int, int> GroupOf { get; set; }
+
 		// Cached delegates for RunSearch (avoids allocation per call)
 		private readonly System.Func<int, string> _getLabelCached;
 		private readonly System.Action<int> _moveToIndexCached;
@@ -269,17 +276,34 @@ namespace OniAccess.Handlers {
 				}
 			}
 
-			// Sort each tier by match position, then merge (best tier first)
+			// Sort each tier by match position
+			for (int t = 0; t < TierCount; t++) {
+				if (_tierIndices[t].Count > 1)
+					SortByPosition(_tierIndices[t], _tierNames[t], _tierPositions[t]);
+			}
+
+			// Merge tiers: if GroupOf is set, output group 0 first, then group 1, etc.
 			_workIndices.Clear();
 			_workNames.Clear();
-			for (int t = 0; t < TierCount; t++) {
-				var indices = _tierIndices[t];
-				var names = _tierNames[t];
-				var positions = _tierPositions[t];
-				if (indices.Count > 1)
-					SortByPosition(indices, names, positions);
-				_workIndices.AddRange(indices);
-				_workNames.AddRange(names);
+			if (GroupOf == null) {
+				for (int t = 0; t < TierCount; t++) {
+					_workIndices.AddRange(_tierIndices[t]);
+					_workNames.AddRange(_tierNames[t]);
+				}
+			} else {
+				int maxGroup = 0;
+				for (int t = 0; t < TierCount; t++)
+					for (int i = 0; i < _tierIndices[t].Count; i++) {
+						int g = GroupOf(_tierIndices[t][i]);
+						if (g > maxGroup) maxGroup = g;
+					}
+				for (int g = 0; g <= maxGroup; g++)
+					for (int t = 0; t < TierCount; t++)
+						for (int i = 0; i < _tierIndices[t].Count; i++)
+							if (GroupOf(_tierIndices[t][i]) == g) {
+								_workIndices.Add(_tierIndices[t][i]);
+								_workNames.Add(_tierNames[t][i]);
+							}
 			}
 
 			if (_workIndices.Count == 0) {
