@@ -60,11 +60,19 @@ namespace OniAccess.Handlers.Screens {
 		public override void OnActivate() {
 			base.OnActivate();
 
-			// Detect pre-selected rocket (opened from CommandModule side screen)
+			// Detect opening context
 			DetectPreSelectedRocket();
+			if (_selectedDestination == null)
+				DetectTelescopeTarget();
 
-			_activeTab = TabId.Rockets;
-			_rocketsTab.OnTabActivated(announce: false);
+			if (_selectedDestination != null && _activeRocket == null) {
+				_activeTab = TabId.Details;
+				_detailsTab.OnDestinationChanged();
+				_detailsTab.OnTabActivated(announce: false);
+			} else {
+				_activeTab = TabId.Rockets;
+				_rocketsTab.OnTabActivated(announce: false);
+			}
 		}
 
 		public override void OnDeactivate() {
@@ -131,8 +139,6 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		private void DetectPreSelectedRocket() {
-			// Follow the game's pattern: check SelectTool.Instance.selected
-			// for a CommandModule component
 			try {
 				var selected = SelectTool.Instance?.selected;
 				if (selected == null) return;
@@ -153,6 +159,20 @@ namespace OniAccess.Handlers.Screens {
 			} catch (System.Exception ex) {
 				Util.Log.Warn(
 					$"StarmapScreenHandler.DetectPreSelectedRocket: {ex}");
+			}
+		}
+
+		private void DetectTelescopeTarget() {
+			try {
+				if (!SpacecraftManager.instance.HasAnalysisTarget()) return;
+				int targetId = SpacecraftManager.instance
+					.GetStarmapAnalysisDestinationID();
+				var dest = SpacecraftManager.instance.GetDestination(targetId);
+				if (dest != null)
+					_selectedDestination = dest;
+			} catch (System.Exception ex) {
+				Util.Log.Warn(
+					$"StarmapScreenHandler.DetectTelescopeTarget: {ex}");
 			}
 		}
 	}
