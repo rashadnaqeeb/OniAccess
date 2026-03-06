@@ -59,6 +59,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.End),
 			new ConsumedKey(KKeyCode.Home),
 			new ConsumedKey(KKeyCode.Home, Modifier.Shift),
+			new ConsumedKey(KKeyCode.End, Modifier.Shift),
 			new ConsumedKey(KKeyCode.PageUp, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.PageDown, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.PageUp, Modifier.Shift),
@@ -138,7 +139,8 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Shift+K", (string)STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE),
 			new HelpEntry("End", (string)STRINGS.ONIACCESS.SCANNER.HELP.REFRESH),
 			new HelpEntry("Home", (string)STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT),
-			new HelpEntry("Shift+Home", (string)STRINGS.ONIACCESS.SCANNER.HELP.TOGGLE_AUTO_MOVE),
+			new HelpEntry("Shift+End", (string)STRINGS.ONIACCESS.SCANNER.HELP.TOGGLE_AUTO_MOVE),
+			new HelpEntry("Shift+Home", (string)STRINGS.ONIACCESS.SCANNER.HELP.ORIENT_ITEM),
 			new HelpEntry("Ctrl+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_CATEGORY),
 			new HelpEntry("Shift+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_SUBCATEGORY),
 			new HelpEntry("PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM),
@@ -486,14 +488,19 @@ namespace OniAccess.Handlers.Tiles {
 				HandlerStack.Push(new SearchInputHandler(_scanner));
 				return true;
 			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)
-				&& !InputUtil.AnyModifierHeld()) {
-				_scanner.Refresh();
-				return true;
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)) {
+				if (InputUtil.ShiftHeld()) {
+					SpeechPipeline.SpeakInterrupt(_scanner.ToggleAutoMove());
+					return true;
+				}
+				if (!InputUtil.AnyModifierHeld()) {
+					_scanner.Refresh();
+					return true;
+				}
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Home)) {
 				if (InputUtil.ShiftHeld()) {
-					SpeechPipeline.SpeakInterrupt(_scanner.ToggleAutoMove());
+					SpeechPipeline.SpeakInterrupt(_scanner.OrientItem());
 					return true;
 				}
 				if (!InputUtil.AnyModifierHeld()) {

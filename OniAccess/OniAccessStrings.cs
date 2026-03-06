@@ -736,6 +736,8 @@ namespace STRINGS {
 			public static LocString AUTO_MOVE_ON = "auto-move on";
 			public static LocString AUTO_MOVE_OFF = "auto-move off";
 
+			public static LocString HERE = "here";
+
 			// Search
 			public class SEARCH {
 				public static LocString PROMPT = "search";
@@ -750,6 +752,7 @@ namespace STRINGS {
 				public static LocString CYCLE_SUBCATEGORY = "Scanner: cycle subcategory";
 				public static LocString CYCLE_ITEM = "Scanner: cycle item";
 				public static LocString CYCLE_INSTANCE = "Scanner: cycle instance";
+				public static LocString ORIENT_ITEM = "Distance to current item";
 				public static LocString SEARCH = "Search scanner";
 			}
 		}

@@ -234,6 +234,24 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				: (string)STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_OFF;
 		}
 
+		public string OrientItem() {
+			if (_snapshot == null || _snapshot.CategoryCount == 0)
+				return (string)STRINGS.ONIACCESS.SCANNER.EMPTY;
+			var entry = CurrentEntry();
+			if (entry == null)
+				return (string)STRINGS.ONIACCESS.SCANNER.EMPTY;
+			int cursorCell = TileCursor.Instance.Cell;
+			if (!entry.Backend.ValidateEntry(entry, cursorCell)) {
+				RemoveCurrentAndAdvance();
+				return (string)STRINGS.ONIACCESS.SCANNER.INVALID;
+			}
+			string distance = AnnouncementFormatter.FormatDistance(
+				cursorCell, entry.Cell);
+			if (distance.Length == 0)
+				return (string)STRINGS.ONIACCESS.SCANNER.HERE;
+			return distance;
+		}
+
 		public void Teleport() {
 			if (_snapshot == null || _snapshot.CategoryCount == 0) return;
 

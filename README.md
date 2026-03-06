@@ -83,7 +83,7 @@ The scanner catalogs everything on the current asteroid into a four-level hierar
 
 Each item announces its name, distance from you (vertical then horizontal), and position within the list. Items are sorted by distance from your cursor. If an entity has been destroyed since the last scan, it's silently removed and the next result is shown.
 
-**Home** teleports the cursor to the current instance. **Shift+Home** toggles auto-move: when enabled, the cursor teleports automatically as you cycle. When auto-move is on, distances are measured from where you were when you scanned rather than the cursor's current position.
+**Home** teleports the cursor to the current instance. **Shift+Home** announces the distance from the cursor to the current item. **Shift+End** toggles auto-move: when enabled, the cursor teleports automatically as you cycle. When auto-move is on, distances are measured from where you were when you scanned rather than the cursor's current position.
 
 ### Clustering
 

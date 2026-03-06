@@ -1,5 +1,6 @@
 # Changelog
 
+- Shift+Home announces distance to the current scanner item; auto-move toggle moved to Shift+End
 - Shift+Up/Down adjusts a single cell's priority in the priorities table, complementing Ctrl+Up/Down which adjusts the entire column
 - Numpad number keys now work everywhere the main keyboard number keys do: priority setting, schedule brush selection, and cursor bookmarks
 - D reads current diagnostic alerts (breathability, food, stress, etc.) sorted by severity
