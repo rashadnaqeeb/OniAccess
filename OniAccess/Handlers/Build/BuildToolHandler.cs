@@ -312,6 +312,7 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			bool hasMaterials = HasSufficientMaterials();
+			_buildToolLastDragCell.SetValue(BuildTool.Instance, -1);
 			BuildTool.Instance.OnLeftClickDown(pos);
 			BuildTool.Instance.OnLeftClickUp(pos);
 			// OnePerWorld buildings auto-dismiss the tool, triggering
@@ -491,6 +492,9 @@ namespace OniAccess.Handlers.Build {
 				return false;
 			return true;
 		}
+
+		private static readonly FieldInfo _buildToolLastDragCell = AccessTools.Field(
+			typeof(BuildTool), "lastDragCell");
 
 		private static readonly MethodInfo _onDragTool = AccessTools.Method(
 			typeof(BaseUtilityBuildTool), "OnDragTool");

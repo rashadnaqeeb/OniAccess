@@ -1,5 +1,6 @@
 # Changelog
 
+- Fix: placing a building, canceling it with Shift+Space, then placing again on the same tile now works correctly
 - Backspace returns to your previous position after a scanner teleport (Home key)
 - Shift+Home announces distance to the current scanner item; auto-move toggle moved to Shift+End
 - Shift+Up/Down adjusts a single cell's priority in the priorities table, complementing Ctrl+Up/Down which adjusts the entire column
