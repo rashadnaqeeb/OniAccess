@@ -1,5 +1,8 @@
 # Changelog
 
+- D reads current diagnostic alerts (breathability, food, stress, etc.) sorted by severity
+- Shift+D opens a full diagnostics browser with pin state cycling and criteria toggles
+- Diagnostic alerts are now automatically announced when conditions worsen
 - Liquids pooling on buildings are now spoken instead of being suppressed with the gas element
 - Type-ahead search now supports spaces for multi-word queries (e.g., "blue c" to find "Blue Cheese"). Space only enters the search buffer after typing at least one letter, so handler actions like pin toggle still work normally
 - Encyclopedia type-ahead now includes top-level categories in search results, listed after article matches

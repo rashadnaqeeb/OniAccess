@@ -64,6 +64,7 @@ namespace STRINGS {
 			public static LocString DETAILS_SCREEN = "Entity details";
 			public static LocString PRINTING_POD = "Printing pod";
 			public static LocString ERROR_SCREEN = "Error";
+			public static LocString DIAGNOSTICS = "Diagnostics";
 		}
 
 		// Supply closet (Klei rewards) screen messages
@@ -1276,6 +1277,32 @@ namespace STRINGS {
 			public static LocString TILE_PLURAL = "tiles";
 			public static LocString NO_CHANGE_BOUNDARY = "no change till map boundary";
 			public static LocString HELP_SKIP = "Skip cursor to next change";
+		}
+
+		// Colony diagnostics readout and browser
+		public class DIAGNOSTICS {
+			public static LocString NO_ALERTS = "no alerts";
+			// Opinion words spoken when message is empty
+			public static LocString OPINION_CRITICAL = "critical";
+			public static LocString OPINION_BAD = "bad";
+			public static LocString OPINION_WARNING = "warning";
+			public static LocString OPINION_CONCERN = "concern";
+			public static LocString OPINION_SUGGESTION = "suggestion";
+			public static LocString OPINION_NORMAL = "normal";
+			public static LocString OPINION_GOOD = "good";
+			// Pin state labels
+			public static LocString PIN_ALWAYS = "always";
+			public static LocString PIN_ALERT_ONLY = "alert only";
+			public static LocString PIN_NEVER = "never";
+			public static LocString PIN_TUTORIAL_DISABLED = "tutorial disabled";
+			// Criterion toggle states
+			public static LocString ENABLED = "enabled";
+			public static LocString DISABLED = "disabled";
+			// Help entries
+			public static LocString HELP_READ = "Read diagnostic alerts";
+			public static LocString HELP_OPEN_BROWSER = "Open diagnostics browser";
+			public static LocString HELP_TOGGLE_PIN = "Cycle pin state";
+			public static LocString HELP_TOGGLE_CRITERION = "Toggle criterion";
 		}
 
 		// Resource browser and pinned resource readout

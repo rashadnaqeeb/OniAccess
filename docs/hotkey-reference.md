@@ -45,7 +45,7 @@ ONI organizes bindings into groups. Each group represents a context where those 
 | W | PanUp | The mod cursor should NOT use WASD -- conflict with camera |
 | A | PanLeft | Same |
 | S | PanDown | Same |
-| D | PanRight | Same |
+| D | PanRight | Overwritten by mod: D = read diagnostics, Shift+D = open diagnostics browser. Camera pan is replaced by mod cursor. |
 
 ## Management Screen Hotkeys
 

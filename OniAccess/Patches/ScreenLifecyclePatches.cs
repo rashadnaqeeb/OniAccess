@@ -224,6 +224,14 @@ namespace OniAccess.Patches {
 			ShowDispatch.Handle(__instance, show);
 	}
 
+	/// AllDiagnosticsScreen declares OnShow directly (ShowOptimizedKScreen subclass).
+	/// Opened via sidebar "See All" button or mod's Shift+D hotkey.
+	[HarmonyPatch(typeof(AllDiagnosticsScreen), "OnShow")]
+	internal static class AllDiagnosticsScreen_OnShow_Patch {
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
+	}
+
 	/// CodexScreen extends KScreen directly. ManagementMenu toggles it via Show().
 	/// CodexScreen does not override Show or OnShow, so we must target the base
 	/// KScreen.OnShow where the method actually lives and filter by instance type.

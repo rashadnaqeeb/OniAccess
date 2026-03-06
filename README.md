@@ -167,6 +167,10 @@ These readouts are available from the colony view:
 
 **Backtick (`)** -- cycle game speed (1x, 2x, 3x).
 
+**D** -- diagnostic alerts sorted by severity (worst first). Only diagnostics pinned to the sidebar are included. Each announces name, status, and current value.
+
+**Shift+D** -- open the diagnostics browser (see below).
+
 **Ctrl+R** -- toggle red alert.
 
 The mod also announces automatically without input: pause/unpause (with speed on unpause), speed changes, new cycles, and red/yellow alert transitions. During initial game load, notifications are suppressed until you first unpause.
@@ -277,17 +281,17 @@ Navigates the tech tree as a graph. Up moves to a prerequisite, Down to a depend
 
 All three tabs support type-ahead search across the full tech database.
 
-## Resource browser
+## Resource and diagnostics browsers
 
-**Shift+I** opens the resource browser. Categories are listed at the top level, with a synthetic "Pinned" category if any resources are pinned. Each category shows its total amount and trend.
+Both browsers use the same nested navigation: Up/Down moves within a level, Enter drills in, Backspace goes back, Ctrl+Up/Down jumps between groups, and type-ahead search filters items at the current level.
 
-Drill into a category to see individual resources. Each resource shows: total amount, reserved amount, available (or overdrawn), and trend. **Space** toggles pin status. **Shift+C** clears all pins.
+**Shift+I** opens the resource browser. Categories are listed at the top level, with a synthetic "Pinned" category if any resources are pinned. Each category shows its total amount and trend. Drill into a category to see individual resources with total, reserved, available (or overdrawn), and trend. **Space** toggles pin status. **Shift+C** clears all pins. **Enter** on a resource lists all world instances with amount and location; Enter on an instance jumps the cursor there.
 
-**Enter** on a resource shows all world instances, each with amount, container name, and location. Enter on an instance jumps the cursor there. Instances are sorted by amount.
+**Shift+D** opens the diagnostics browser, listing all colony diagnostics sorted alphabetically. Each diagnostic announces its name, status (normal, warning, bad, etc.), value, and pin state. Enter drills into individual criteria. **Space** at the top level cycles pin state (Always, Never, Alert Only). **Space** on a criterion toggles it on or off. Diagnostic conditions that worsen are also announced automatically without needing the browser open.
 
 ## Type-ahead search
 
-Most menu screens support type-ahead: start typing to filter. Matches are ranked in five tiers from start-of-string exact matches down to substring matches. Typing a single letter repeatedly cycles through items starting with that letter. The buffer clears after 1.5 seconds of inactivity. Backspace edits the query. Escape clears the search.
+Most menu screens support type-ahead: start typing to filter. Matches are ranked in five tiers from start-of-string exact matches down to substring matches. Typing a single letter repeatedly cycles through items starting with that letter. Backspace edits the query. Escape clears the search.
 
 ## Management screen hotkeys
 
@@ -305,7 +309,6 @@ These are base game hotkeys that open management screens from the colony view. T
 
 ## Known limitations
 
-- Diagnostics screen is not supported.
 - Base game starmap is not accessible.
 - Spaced Out DLC content is not yet supported but will be.
 

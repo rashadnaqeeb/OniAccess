@@ -296,6 +296,12 @@ namespace OniAccess.Handlers {
 			Register<AllResourcesScreen>(screen => new ResourceBrowserHandler(screen));
 			_showPatchedTypes.Add(typeof(AllResourcesScreen));
 
+			// AllDiagnosticsScreen (ShowOptimizedKScreen -- full diagnostics panel)
+			// Show patch pushes/pops via ContextDetector since it uses Show() toggle
+			Register<AllDiagnosticsScreen>(screen =>
+				new Screens.DiagnosticBrowserHandler(screen));
+			_showPatchedTypes.Add(typeof(AllDiagnosticsScreen));
+
 			// MessageDialogFrame (KScreen -- message popup from notification click)
 			// OnActivate is declared on MessageDialogFrame, so generic KScreen_Activate_Patch fires.
 			Register<MessageDialogFrame>(screen =>

@@ -39,6 +39,9 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.I),
 			new ConsumedKey(KKeyCode.I, Modifier.Shift),
 			new ConsumedKey(KKeyCode.P, Modifier.Shift),
+			// D overwrites PanRight (camera pan — mod cursor replaces camera navigation)
+			new ConsumedKey(KKeyCode.D),
+			new ConsumedKey(KKeyCode.D, Modifier.Shift),
 			new ConsumedKey(KKeyCode.K),
 			new ConsumedKey(KKeyCode.K, Modifier.Shift),
 			new ConsumedKey(KKeyCode.UpArrow),
@@ -126,6 +129,8 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("S", (string)STRINGS.ONIACCESS.GAME_STATE.READ_COLONY_STATUS),
 			new HelpEntry("Ctrl+R", (string)STRINGS.ONIACCESS.GAME_STATE.TOGGLE_RED_ALERT),
 			new HelpEntry("`", (string)STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED),
+			new HelpEntry("D", (string)STRINGS.ONIACCESS.DIAGNOSTICS.HELP_READ),
+			new HelpEntry("Shift+D", (string)STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER),
 			new HelpEntry("Shift+N", (string)STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP),
 			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.RESOURCES.HELP_OPEN),
 			new HelpEntry("Shift+P", (string)STRINGS.ONIACCESS.RESOURCES.HELP_READ_PINNED),
@@ -380,6 +385,16 @@ namespace OniAccess.Handlers.Tiles {
 				_monitor.SpeakColonyStatus();
 				return true;
 			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.D)) {
+				if (InputUtil.ShiftHeld()) {
+					OpenDiagnosticBrowser();
+					return true;
+				}
+				if (!InputUtil.AnyModifierHeld()) {
+					ReadDiagnostics();
+					return true;
+				}
+			}
 			// Dupe cycling
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftBracket)
 				&& !InputUtil.AnyModifierHeld()) {
@@ -536,6 +551,79 @@ namespace OniAccess.Handlers.Tiles {
 		private void ReadPinnedResources() {
 			string speech = Resources.ResourceHelper.BuildPinnedSpeech();
 			SpeechPipeline.SpeakInterrupt(speech);
+		}
+
+		private void ReadDiagnostics() {
+			if (ColonyDiagnosticUtility.Instance == null) return;
+			int worldId = ClusterManager.Instance.activeWorldId;
+			var settings = ColonyDiagnosticUtility.Instance.diagnosticDisplaySettings;
+			if (!settings.ContainsKey(worldId)) return;
+
+			var parts = new System.Collections.Generic.List<string>();
+			// Collect qualifying diagnostics, then sort worst-first
+			var qualifying = new System.Collections.Generic.List<ColonyDiagnostic>();
+			foreach (var kvp in settings[worldId]) {
+				if (ColonyDiagnosticUtility.Instance.IsDiagnosticTutorialDisabled(kvp.Key))
+					continue;
+				if (kvp.Value == ColonyDiagnosticUtility.DisplaySetting.Never)
+					continue;
+				var diag = ColonyDiagnosticUtility.Instance.GetDiagnostic(kvp.Key, worldId);
+				if (diag == null) continue;
+				if (kvp.Value == ColonyDiagnosticUtility.DisplaySetting.AlertOnly
+					&& diag.LatestResult.opinion >= ColonyDiagnostic.DiagnosticResult.Opinion.Normal)
+					continue;
+				qualifying.Add(diag);
+			}
+			qualifying.Sort((a, b) => a.LatestResult.opinion.CompareTo(b.LatestResult.opinion));
+
+			foreach (var diag in qualifying) {
+				string message = diag.LatestResult.Message;
+				string value = diag.presentationSetting == ColonyDiagnostic.PresentationSetting.CurrentValue
+					? diag.GetCurrentValueString()
+					: diag.GetAverageValueString();
+
+				var entry = diag.name + ": ";
+				if (!string.IsNullOrWhiteSpace(message))
+					entry += message;
+				else
+					entry += OpinionWord(diag.LatestResult.opinion);
+				if (!string.IsNullOrEmpty(value))
+					entry += ", " + value;
+				parts.Add(entry);
+			}
+
+			if (parts.Count == 0) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.DIAGNOSTICS.NO_ALERTS);
+				return;
+			}
+			SpeechPipeline.SpeakInterrupt(string.Join(". ", parts));
+		}
+
+		private void OpenDiagnosticBrowser() {
+			if (AllDiagnosticsScreen.Instance != null)
+				AllDiagnosticsScreen.Instance.Show(true);
+		}
+
+		internal static string OpinionWord(ColonyDiagnostic.DiagnosticResult.Opinion opinion) {
+			switch (opinion) {
+				case ColonyDiagnostic.DiagnosticResult.Opinion.DuplicantThreatening:
+					return (string)STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_CRITICAL;
+				case ColonyDiagnostic.DiagnosticResult.Opinion.Bad:
+					return (string)STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_BAD;
+				case ColonyDiagnostic.DiagnosticResult.Opinion.Warning:
+					return (string)STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_WARNING;
+				case ColonyDiagnostic.DiagnosticResult.Opinion.Concern:
+					return (string)STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_CONCERN;
+				case ColonyDiagnostic.DiagnosticResult.Opinion.Suggestion:
+					return (string)STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_SUGGESTION;
+				case ColonyDiagnostic.DiagnosticResult.Opinion.Normal:
+					return (string)STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_NORMAL;
+				case ColonyDiagnostic.DiagnosticResult.Opinion.Good:
+					return (string)STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_GOOD;
+				default:
+					return (string)STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_NORMAL;
+			}
 		}
 
 		private void OpenNotificationMenu() {
