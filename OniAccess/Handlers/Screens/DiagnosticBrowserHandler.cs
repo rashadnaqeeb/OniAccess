@@ -115,8 +115,8 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		private string BuildDiagnosticLabel(ColonyDiagnostic diag) {
-			var opinion = diag.LatestResult.opinion;
-			string opinionWord = TileCursorHandler.OpinionWord(opinion);
+			string message = diag.LatestResult.Message;
+			bool hasMessage = !string.IsNullOrWhiteSpace(message);
 
 			string value = diag.presentationSetting == ColonyDiagnostic.PresentationSetting.CurrentValue
 				? diag.GetCurrentValueString()
@@ -124,7 +124,11 @@ namespace OniAccess.Handlers.Screens {
 
 			string pinState = GetPinStateLabel(diag.id);
 
-			string label = diag.name + ", " + opinionWord;
+			string label = diag.name + ", ";
+			if (hasMessage)
+				label += message;
+			else
+				label += TileCursorHandler.OpinionWord(diag.LatestResult.opinion);
 			if (!string.IsNullOrEmpty(value))
 				label += ", " + value;
 			label += ", " + pinState;

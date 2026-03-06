@@ -111,6 +111,7 @@ namespace OniAccess.Tests {
 			results.Add(TextFilterMismatchedTags());
 			results.Add(TextFilterSpriteNameCaseInsensitive());
 			results.Add(TextFilterReplacesMasculineOrdinalDegree());
+			results.Add(TextFilterStripsBullet());
 			results.Add(TextFilterPreservesNumericBrackets());
 			results.Add(TextFilterStripsControlChars());
 			results.Add(TextFilterCombinedMarkup());
@@ -1058,6 +1059,12 @@ namespace OniAccess.Tests {
 			string result = TextFilter.FilterForSpeech("21.9 \u00BAC");
 			bool ok = result == "21.9 \u00B0C";
 			return Assert("TextFilterReplacesMasculineOrdinalDegree", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TextFilterStripsBullet() {
+			string result = TextFilter.FilterForSpeech("\u2022 One or more Duplicants are missing a bed");
+			bool ok = result == "One or more Duplicants are missing a bed";
+			return Assert("TextFilterStripsBullet", ok, $"got \"{result}\"");
 		}
 
 		private static (string, bool, string) TextFilterPreservesNumericBrackets() {

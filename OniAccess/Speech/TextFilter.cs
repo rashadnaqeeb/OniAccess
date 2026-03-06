@@ -96,6 +96,11 @@ namespace OniAccess.Speech {
 			// Screen readers mispronounce º; ONI uses it in temperature strings.
 			text = text.Replace('\u00BA', '\u00B0');
 
+			// Strip bullet (•, U+2022). ONI uses it as a list prefix in diagnostic
+			// messages and tooltips. Screen readers announce it as "bullet" which
+			// breaks speech flow.
+			text = text.Replace("\u2022", "");
+
 			// Resolve game template placeholders: {Hotkey/ActionName} → key name,
 			// (ClickType/click) → "click" or "press" depending on controller.
 			// LocText normally does this at render time; we read raw data.
