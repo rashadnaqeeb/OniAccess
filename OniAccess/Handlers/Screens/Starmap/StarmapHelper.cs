@@ -107,106 +107,82 @@ namespace OniAccess.Handlers.Screens.Starmap {
 		// ROCKET DETAIL DATA
 		// ========================================
 
-		internal struct DetailItem {
-			public string Label;
-			public DetailItemKind Kind;
+		internal struct RocketCategory {
+			public string Name;
+			public List<string> Items;
 		}
 
-		internal enum DetailItemKind {
-			Info,
-			ChecklistReady,
-			ChecklistWarning,
-			ChecklistFailure,
-		}
-
-		internal static List<DetailItem> BuildRocketDetails(Spacecraft rocket) {
-			var items = new List<DetailItem>();
+		internal static List<RocketCategory> BuildRocketCategories(Spacecraft rocket) {
+			var categories = new List<RocketCategory>();
 			var lcm = rocket.launchConditions;
 			var cmd = lcm.GetComponent<CommandModule>();
 
-			// Mission status
+			// Mission Status
+			var statusItems = new List<string>();
 			string status = Speech.TextFilter.FilterForSpeech(GetStatusText(rocket));
-			items.Add(new DetailItem {
-				Label = $"{UI.STARMAP.ROCKETSTATUS.STATUS}: {status}",
-				Kind = DetailItemKind.Info
-			});
-
-			// In-flight timing
+			statusItems.Add($"{UI.STARMAP.ROCKETSTATUS.STATUS}: {status}");
 			if (rocket.state != Spacecraft.MissionState.Grounded) {
 				float duration = rocket.GetDuration();
 				float timeLeft = rocket.GetTimeLeft();
 				float pct = duration == 0f ? 0f : (1f - timeLeft / duration) * 100f;
 				string timePrefix = rocket.controlStationBuffTimeRemaining > 0f
 					? UI.STARMAP.ROCKETSTATUS.BOOSTED_TIME_MODIFIER.text : "";
-				items.Add(new DetailItem {
-					Label = $"{UI.STARMAP.ROCKETSTATUS.TIMEREMAINING}: {timePrefix}{GameUtil.GetFormattedCycles(timeLeft)}, {GameUtil.GetFormattedPercent(pct)} {STRINGS.ONIACCESS.STARMAP.COMPLETE}",
-					Kind = DetailItemKind.Info
-				});
+				statusItems.Add($"{UI.STARMAP.ROCKETSTATUS.TIMEREMAINING}: {timePrefix}{GameUtil.GetFormattedCycles(timeLeft)}, {GameUtil.GetFormattedPercent(pct)} {STRINGS.ONIACCESS.STARMAP.COMPLETE}");
 			}
+			categories.Add(new RocketCategory {
+				Name = (string)UI.STARMAP.LISTTITLES.MISSIONSTATUS,
+				Items = statusItems
+			});
 
-			// Launch checklist
+			// Launch Checklist
+			var checkItems = new List<string>();
 			foreach (var condition in lcm.GetLaunchConditionList()) {
 				var evalStatus = condition.EvaluateCondition();
 				string msg = condition.GetStatusMessage(evalStatus);
 				string tooltip = condition.GetStatusTooltip(evalStatus);
-				var kind = evalStatus == ProcessCondition.Status.Ready
-					? DetailItemKind.ChecklistReady
-					: evalStatus == ProcessCondition.Status.Warning
-						? DetailItemKind.ChecklistWarning
-						: DetailItemKind.ChecklistFailure;
 				string label = msg;
 				if (evalStatus != ProcessCondition.Status.Ready
 						&& !string.IsNullOrEmpty(tooltip))
 					label = $"{msg}: {tooltip}";
-				items.Add(new DetailItem { Label = label, Kind = kind });
+				checkItems.Add(label);
 			}
+			if (checkItems.Count > 0)
+				categories.Add(new RocketCategory {
+					Name = (string)UI.STARMAP.LISTTITLES.LAUNCHCHECKLIST,
+					Items = checkItems
+				});
 
-			// Range
-			items.Add(new DetailItem {
-				Label = $"{UI.STARMAP.ROCKETSTATS.TOTAL_OXIDIZABLE_FUEL}: {GameUtil.GetFormattedMass(cmd.rocketStats.GetTotalOxidizableFuel())}",
-				Kind = DetailItemKind.Info
-			});
-			items.Add(new DetailItem {
-				Label = $"{UI.STARMAP.ROCKETSTATS.ENGINE_EFFICIENCY}: {GameUtil.GetFormattedEngineEfficiency(cmd.rocketStats.GetEngineEfficiency())}",
-				Kind = DetailItemKind.Info
-			});
-			items.Add(new DetailItem {
-				Label = $"{UI.STARMAP.ROCKETSTATS.OXIDIZER_EFFICIENCY}: {GameUtil.GetFormattedPercent(cmd.rocketStats.GetAverageOxidizerEfficiency())}",
-				Kind = DetailItemKind.Info
-			});
+			// Max Range
+			var rangeItems = new List<string>();
+			rangeItems.Add($"{UI.STARMAP.ROCKETSTATS.TOTAL_OXIDIZABLE_FUEL}: {GameUtil.GetFormattedMass(cmd.rocketStats.GetTotalOxidizableFuel())}");
+			rangeItems.Add($"{UI.STARMAP.ROCKETSTATS.ENGINE_EFFICIENCY}: {GameUtil.GetFormattedEngineEfficiency(cmd.rocketStats.GetEngineEfficiency())}");
+			rangeItems.Add($"{UI.STARMAP.ROCKETSTATS.OXIDIZER_EFFICIENCY}: {GameUtil.GetFormattedPercent(cmd.rocketStats.GetAverageOxidizerEfficiency())}");
 			float booster = cmd.rocketStats.GetBoosterThrust() * 1000f;
 			if (booster != 0f)
-				items.Add(new DetailItem {
-					Label = $"{UI.STARMAP.ROCKETSTATS.SOLID_BOOSTER}: {GameUtil.GetFormattedDistance(booster)}",
-					Kind = DetailItemKind.Info
-				});
-			items.Add(new DetailItem {
-				Label = $"{UI.STARMAP.ROCKETSTATS.TOTAL_THRUST}: {GameUtil.GetFormattedDistance(cmd.rocketStats.GetTotalThrust() * 1000f)}",
-				Kind = DetailItemKind.Info
-			});
-			items.Add(new DetailItem {
-				Label = $"{UI.STARMAP.ROCKETSTATS.TOTAL_RANGE}: {GameUtil.GetFormattedDistance(cmd.rocketStats.GetRocketMaxDistance() * 1000f)}",
-				Kind = DetailItemKind.Info
+				rangeItems.Add($"{UI.STARMAP.ROCKETSTATS.SOLID_BOOSTER}: {GameUtil.GetFormattedDistance(booster)}");
+			rangeItems.Add($"{UI.STARMAP.ROCKETSTATS.TOTAL_THRUST}: {GameUtil.GetFormattedDistance(cmd.rocketStats.GetTotalThrust() * 1000f)}");
+			rangeItems.Add($"{UI.STARMAP.ROCKETSTATS.TOTAL_RANGE}: {GameUtil.GetFormattedDistance(cmd.rocketStats.GetRocketMaxDistance() * 1000f)}");
+			categories.Add(new RocketCategory {
+				Name = (string)UI.STARMAP.LISTTITLES.MAXRANGE,
+				Items = rangeItems
 			});
 
 			// Mass
-			items.Add(new DetailItem {
-				Label = $"{UI.STARMAP.ROCKETSTATS.DRY_MASS}: {GameUtil.GetFormattedMass(cmd.rocketStats.GetDryMass(), GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}",
-				Kind = DetailItemKind.Info
-			});
-			items.Add(new DetailItem {
-				Label = $"{UI.STARMAP.ROCKETSTATS.WET_MASS}: {GameUtil.GetFormattedMass(cmd.rocketStats.GetWetMass(), GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}",
-				Kind = DetailItemKind.Info
-			});
-			items.Add(new DetailItem {
-				Label = $"{UI.STARMAP.ROCKETSTATUS.TOTAL}: {GameUtil.GetFormattedMass(cmd.rocketStats.GetTotalMass(), GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}",
-				Kind = DetailItemKind.Info
+			var massItems = new List<string>();
+			massItems.Add($"{UI.STARMAP.ROCKETSTATS.DRY_MASS}: {GameUtil.GetFormattedMass(cmd.rocketStats.GetDryMass(), GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
+			massItems.Add($"{UI.STARMAP.ROCKETSTATS.WET_MASS}: {GameUtil.GetFormattedMass(cmd.rocketStats.GetWetMass(), GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
+			massItems.Add($"{UI.STARMAP.ROCKETSTATUS.TOTAL}: {GameUtil.GetFormattedMass(cmd.rocketStats.GetTotalMass(), GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
+			categories.Add(new RocketCategory {
+				Name = (string)UI.STARMAP.LISTTITLES.MASS,
+				Items = massItems
 			});
 
-			// Fuel tanks
+			// Fuel, Oxidizer, Storage from module network
 			var network = AttachableBuilding.GetAttachedNetwork(
 				cmd.GetComponent<AttachableBuilding>());
 			Tag engineFuelTag = cmd.rocketStats.GetEngineFuelTag();
+
+			var fuelItems = new List<string>();
 			foreach (var module in network) {
 				var tank = module.GetComponent<IFuelTank>();
 				if (!tank.IsNullOrDestroyed()) {
@@ -217,30 +193,33 @@ namespace OniAccess.Handlers.Screens.Starmap {
 						var elem = ElementLoader.FindElementByHash(
 							ElementLoader.GetElementID(engineFuelTag));
 						string elemName = elem != null ? elem.name : engineFuelTag.Name;
-						items.Add(new DetailItem {
-							Label = $"{module.GetProperName()} ({elemName}): {GameUtil.GetFormattedMass(mass, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}",
-							Kind = DetailItemKind.Info
-						});
+						fuelItems.Add($"{module.GetProperName()} ({elemName}): {GameUtil.GetFormattedMass(mass, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
 					}
 				}
 			}
+			if (fuelItems.Count > 0)
+				categories.Add(new RocketCategory {
+					Name = (string)UI.STARMAP.LISTTITLES.FUEL,
+					Items = fuelItems
+				});
 
-			// Oxidizer tanks
+			var oxItems = new List<string>();
 			foreach (var module in network) {
 				var oxTank = module.GetComponent<OxidizerTank>();
 				if (oxTank != null) {
 					foreach (var kvp in oxTank.GetOxidizersAvailable()) {
-						if (kvp.Value > 0f) {
-							items.Add(new DetailItem {
-								Label = $"{module.GetProperName()} ({kvp.Key.Name}): {GameUtil.GetFormattedMass(kvp.Value, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}",
-								Kind = DetailItemKind.Info
-							});
-						}
+						if (kvp.Value > 0f)
+							oxItems.Add($"{module.GetProperName()} ({kvp.Key.Name}): {GameUtil.GetFormattedMass(kvp.Value, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
 					}
 				}
 			}
+			if (oxItems.Count > 0)
+				categories.Add(new RocketCategory {
+					Name = (string)UI.STARMAP.LISTTITLES.OXIDIZER,
+					Items = oxItems
+				});
 
-			// Storage bays
+			var storageItems = new List<string>();
 			foreach (var module in network) {
 				var bay = module.GetComponent<CargoBay>();
 				if (bay != null) {
@@ -248,151 +227,185 @@ namespace OniAccess.Handlers.Screens.Starmap {
 					if (storage != null) {
 						float used = storage.MassStored();
 						float cap = storage.capacityKg;
-						items.Add(new DetailItem {
-							Label = $"{module.GetProperName()}: {GameUtil.GetFormattedMass(used)} / {GameUtil.GetFormattedMass(cap)}",
-							Kind = DetailItemKind.Info
-						});
+						storageItems.Add($"{module.GetProperName()}: {GameUtil.GetFormattedMass(used)} / {GameUtil.GetFormattedMass(cap)}");
 					}
 				}
 			}
+			if (storageItems.Count > 0)
+				categories.Add(new RocketCategory {
+					Name = (string)UI.STARMAP.LISTTITLES.STORAGE,
+					Items = storageItems
+				});
 
 			// Passengers
 			var minionStorage = lcm.GetComponent<MinionStorage>();
 			if (minionStorage != null) {
-				int count = minionStorage.GetStoredMinionInfo().Count;
-				items.Add(new DetailItem {
-					Label = $"{UI.STARMAP.LISTTITLES.PASSENGERS}: {count}",
-					Kind = DetailItemKind.Info
-				});
+				var stored = minionStorage.GetStoredMinionInfo();
+				if (stored.Count > 0)
+					categories.Add(new RocketCategory {
+						Name = (string)UI.STARMAP.LISTTITLES.PASSENGERS,
+						Items = new List<string> { stored.Count.ToString() }
+					});
 			}
 
-			// Module list
-			foreach (var module in network) {
-				items.Add(new DetailItem {
-					Label = module.GetProperName(),
-					Kind = DetailItemKind.Info
+			// Modules
+			var moduleItems = new List<string>();
+			foreach (var module in network)
+				moduleItems.Add(module.GetProperName());
+			if (moduleItems.Count > 0)
+				categories.Add(new RocketCategory {
+					Name = (string)UI.STARMAP.LISTTITLES.MODULES,
+					Items = moduleItems
 				});
-			}
 
-			return items;
+			return categories;
 		}
 
 		// ========================================
 		// DESTINATION DETAIL DATA
 		// ========================================
 
-		internal static List<string> BuildDestinationDetails(
+		internal struct DestinationSection {
+			public string Name;
+			public List<string> Items;
+		}
+
+		internal static List<DestinationSection> BuildDestinationSections(
 				SpaceDestination dest, Spacecraft activeRocket) {
-			var items = new List<string>();
+			var sections = new List<DestinationSection>();
 			var destType = dest.GetDestinationType();
 			bool analyzed = IsAnalyzed(dest);
 
-			// Name/type
-			if (analyzed) {
-				items.Add(destType.Name);
-				items.Add(destType.typeName);
-			} else {
-				items.Add((string)UI.STARMAP.UNKNOWN_DESTINATION);
-				items.Add((string)UI.STARMAP.UNKNOWN_TYPE);
-			}
-
-			// Distance
-			items.Add($"{DisplayDistance(dest.OneBasedDistance * 10000f)}");
-
-			// Locked-in status
+			// Header: identity info
+			string headerName;
+			var headerItems = new List<string>();
+			if (analyzed)
+				headerName = $"{destType.Name}, {destType.typeName}";
+			else
+				headerName = (string)UI.STARMAP.UNKNOWN_DESTINATION;
+			headerItems.Add(DisplayDistance(dest.OneBasedDistance * 10000f));
+			if (analyzed && !string.IsNullOrEmpty(destType.description))
+				headerItems.Add(destType.description);
 			if (activeRocket != null
 					&& activeRocket.state != Spacecraft.MissionState.Grounded) {
 				var rocketDest = SpacecraftManager.instance.GetSpacecraftDestination(
 					activeRocket.launchConditions);
 				if (rocketDest != null && rocketDest.id == dest.id)
-					items.Add((string)UI.STARMAP.ROCKETSTATUS.LOCKEDIN);
+					headerItems.Add((string)UI.STARMAP.ROCKETSTATUS.LOCKEDIN);
 			}
+			sections.Add(new DestinationSection {
+				Name = headerName, Items = headerItems
+			});
 
-			// Description
-			if (analyzed && !string.IsNullOrEmpty(destType.description))
-				items.Add(destType.description);
-
-			// Analysis progress
+			// Analysis
+			var analysisItems = new List<string>();
 			float score = SpacecraftManager.instance.GetDestinationAnalysisScore(dest.id);
 			float analysisPct = score
 				/ (float)TUNING.ROCKETRY.DESTINATION_ANALYSIS.COMPLETE * 100f;
-			if (!analyzed) {
-				items.Add(string.Format(UI.STARMAP.ANALYSIS_AMOUNT,
+			if (!analyzed)
+				analysisItems.Add(string.Format(UI.STARMAP.ANALYSIS_AMOUNT,
 					GameUtil.GetFormattedPercent(analysisPct)));
-			} else {
-				items.Add((string)UI.STARMAP.ANALYSIS_COMPLETE);
-			}
-
-			// Analysis target indicator
+			else
+				analysisItems.Add((string)UI.STARMAP.ANALYSIS_COMPLETE);
 			int currentTarget = SpacecraftManager.instance
 				.GetStarmapAnalysisDestinationID();
 			if (currentTarget == dest.id)
-				items.Add(STRINGS.ONIACCESS.STARMAP.ANALYZING_THIS);
+				analysisItems.Add(STRINGS.ONIACCESS.STARMAP.ANALYZING_THIS);
+			sections.Add(new DestinationSection {
+				Name = (string)UI.STARMAP.LISTTITLES.ANALYSIS,
+				Items = analysisItems
+			});
 
-			if (!analyzed) {
-				// Add analyze action item at end
-				AddAnalyzeAction(items, dest);
-				return items;
-			}
+			if (analyzed) {
+				// Research
+				if (dest.researchOpportunities.Count > 0) {
+					var researchItems = new List<string>();
+					foreach (var opp in dest.researchOpportunities) {
+						string prefix = opp.completed
+							? STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE_PREFIX
+							: STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE_PREFIX;
+						string rare = opp.discoveredRareResource != SimHashes.Void
+							? $" {STRINGS.ONIACCESS.STARMAP.RARE_RESOURCE} " : " ";
+						researchItems.Add($"{prefix}{rare}{opp.description}, {opp.dataValue} {STRINGS.ONIACCESS.STARMAP.DATA_POINTS}");
+					}
+					sections.Add(new DestinationSection {
+						Name = (string)UI.STARMAP.LISTTITLES.RESEARCH,
+						Items = researchItems
+					});
+				}
 
-			// Research opportunities
-			foreach (var opp in dest.researchOpportunities) {
-				string prefix = opp.completed
-					? STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE_PREFIX
-					: STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE_PREFIX;
-				string rare = opp.discoveredRareResource != SimHashes.Void
-					? $" {STRINGS.ONIACCESS.STARMAP.RARE_RESOURCE} " : " ";
-				items.Add($"{prefix}{rare}{opp.description}, {opp.dataValue} {STRINGS.ONIACCESS.STARMAP.DATA_POINTS}");
-			}
+				// Mass
+				var massItems = new List<string>();
+				massItems.Add($"{UI.STARMAP.CURRENT_MASS}: {GameUtil.GetFormattedMass(dest.CurrentMass, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
+				massItems.Add($"{UI.STARMAP.MAXIMUM_MASS}: {GameUtil.GetFormattedMass(destType.maxiumMass, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
+				massItems.Add($"{UI.STARMAP.MINIMUM_MASS}: {GameUtil.GetFormattedMass(destType.minimumMass, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
+				massItems.Add($"{UI.STARMAP.REPLENISH_RATE}: {GameUtil.GetFormattedMass(destType.replishmentPerCycle, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Kilogram)}");
+				sections.Add(new DestinationSection {
+					Name = (string)UI.STARMAP.LISTTITLES.MASS,
+					Items = massItems
+				});
 
-			// Mass
-			items.Add($"{UI.STARMAP.CURRENT_MASS}: {GameUtil.GetFormattedMass(dest.CurrentMass, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
-			items.Add($"{UI.STARMAP.MAXIMUM_MASS}: {GameUtil.GetFormattedMass(destType.maxiumMass, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
-			items.Add($"{UI.STARMAP.MINIMUM_MASS}: {GameUtil.GetFormattedMass(destType.minimumMass, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Tonne)}");
-			items.Add($"{UI.STARMAP.REPLENISH_RATE}: {GameUtil.GetFormattedMass(destType.replishmentPerCycle, GameUtil.TimeSlice.None, GameUtil.MetricMassFormat.Kilogram)}");
+				// Composition (elements)
+				float totalMass = dest.GetTotalMass();
+				var compItems = new List<string>();
+				foreach (var kvp in dest.recoverableElements) {
+					var element = ElementLoader.FindElementByHash(kvp.Key);
+					float pct = totalMass > 0f
+						? dest.GetResourceValue(kvp.Key, kvp.Value) / totalMass * 100f
+						: 0f;
+					string pctStr = pct <= 1f
+						? (string)UI.STARMAP.COMPOSITION_SMALL_AMOUNT
+						: GameUtil.GetFormattedPercent(pct);
+					string compat = GetCargoCompatibility(element, activeRocket);
+					compItems.Add($"{element.name}: {pctStr}{compat}");
+				}
+				foreach (var opp in dest.researchOpportunities) {
+					if (!opp.completed && opp.discoveredRareResource != SimHashes.Void)
+						compItems.Add($"{UI.STARMAP.COMPOSITION_UNDISCOVERED}: {UI.STARMAP.COMPOSITION_UNDISCOVERED_AMOUNT}");
+				}
+				if (compItems.Count > 0)
+					sections.Add(new DestinationSection {
+						Name = (string)UI.STARMAP.LISTTITLES.WORLDCOMPOSITION,
+						Items = compItems
+					});
 
-			// Element composition
-			float totalMass = dest.GetTotalMass();
-			foreach (var kvp in dest.recoverableElements) {
-				var element = ElementLoader.FindElementByHash(kvp.Key);
-				float pct = totalMass > 0f
-					? dest.GetResourceValue(kvp.Key, kvp.Value) / totalMass * 100f
-					: 0f;
-				string pctStr = pct <= 1f
-					? (string)UI.STARMAP.COMPOSITION_SMALL_AMOUNT
-					: GameUtil.GetFormattedPercent(pct);
-				string compat = GetCargoCompatibility(element, activeRocket);
-				items.Add($"{element.name}: {pctStr}{compat}");
-			}
+				// Resources (entities)
+				var entityItems = new List<string>();
+				foreach (var kvp in dest.GetRecoverableEntities()) {
+					var prefab = Assets.GetPrefab(kvp.Key);
+					string name = prefab.GetProperName();
+					string compat = GetEntityCompatibility(activeRocket);
+					entityItems.Add($"{name}{compat}");
+				}
+				if (entityItems.Count > 0)
+					sections.Add(new DestinationSection {
+						Name = (string)UI.STARMAP.LISTTITLES.RESOURCES,
+						Items = entityItems
+					});
 
-			// Undiscovered elements (rare resources not yet found)
-			foreach (var opp in dest.researchOpportunities) {
-				if (!opp.completed && opp.discoveredRareResource != SimHashes.Void)
-					items.Add($"{UI.STARMAP.COMPOSITION_UNDISCOVERED}: {UI.STARMAP.COMPOSITION_UNDISCOVERED_AMOUNT}");
-			}
-
-			// Recoverable entities
-			foreach (var kvp in dest.GetRecoverableEntities()) {
-				var prefab = Assets.GetPrefab(kvp.Key);
-				string name = prefab.GetProperName();
-				string compat = GetEntityCompatibility(activeRocket);
-				items.Add($"{name}{compat}");
-			}
-
-			// Artifact drop rates
-			var dropTable = destType.artifactDropTable;
-			if (dropTable != null) {
-				foreach (var rate in dropTable.rates) {
-					string tierName = Strings.Get(rate.first.name_key);
-					float dropPct = rate.second / dropTable.totalWeight * 100f;
-					items.Add($"{tierName}: {GameUtil.GetFormattedPercent(dropPct)}");
+				// Artifacts
+				var dropTable = destType.artifactDropTable;
+				if (dropTable != null && dropTable.rates.Count > 0) {
+					var artifactItems = new List<string>();
+					foreach (var rate in dropTable.rates) {
+						string tierName = Strings.Get(rate.first.name_key);
+						float dropPct = rate.second / dropTable.totalWeight * 100f;
+						artifactItems.Add($"{tierName}: {GameUtil.GetFormattedPercent(dropPct)}");
+					}
+					sections.Add(new DestinationSection {
+						Name = (string)UI.STARMAP.LISTTITLES.ARTIFACTS,
+						Items = artifactItems
+					});
 				}
 			}
 
-			// Analyze action
-			AddAnalyzeAction(items, dest);
+			// Analyze action (leaf at level 0 — empty Items)
+			sections.Add(new DestinationSection {
+				Name = GetAnalyzeActionLabel(dest),
+				Items = new List<string>()
+			});
 
-			return items;
+			return sections;
 		}
 
 		internal static string GetAnalyzeActionLabel(SpaceDestination dest) {
@@ -401,10 +414,6 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			if (dest.id == SpacecraftManager.instance.GetStarmapAnalysisDestinationID())
 				return (string)UI.STARMAP.SUSPEND_DESTINATION_ANALYSIS;
 			return (string)UI.STARMAP.ANALYZE_DESTINATION;
-		}
-
-		private static void AddAnalyzeAction(List<string> items, SpaceDestination dest) {
-			items.Add(GetAnalyzeActionLabel(dest));
 		}
 
 		// ========================================
@@ -525,8 +534,8 @@ namespace OniAccess.Handlers.Screens.Starmap {
 		// FORMATTING
 		// ========================================
 
-		private static string DisplayDistance(float distance) {
-			return GameUtil.GetFormattedDistance(distance);
+		private static string DisplayDistance(float distanceInKm) {
+			return $"{distanceInKm:0} {STRINGS.UI.UNITSUFFIXES.DISTANCE.KILOMETER}";
 		}
 
 		internal static void PlaySound(string clipName) {

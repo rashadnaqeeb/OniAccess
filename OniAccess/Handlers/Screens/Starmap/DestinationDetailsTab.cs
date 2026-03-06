@@ -4,13 +4,14 @@ using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens.Starmap {
 	/// <summary>
-	/// Tab 3: Destination Details. Flat BaseMenuHandler showing all details
-	/// for the selected destination. Last item is the analyze/suspend action.
-	/// Rebuilt when the selected destination changes.
+	/// Tab 3: Destination Details. Two-level NestedMenuHandler.
+	/// Level 0 = sections (identity, analysis, research, mass,
+	///           composition, resources, artifacts) plus analyze action.
+	/// Level 1 = items within section.
+	/// The analyze action is a leaf at level 0 (empty Items).
 	/// </summary>
-	internal class DestinationDetailsTab : BaseMenuHandler, IStarmapTab {
+	internal class DestinationDetailsTab : NestedMenuHandler, IStarmapTab {
 		private readonly StarmapScreenHandler _parent;
-		private List<string> _items;
 
 		internal DestinationDetailsTab(StarmapScreenHandler parent)
 				: base(screen: null) {
@@ -22,29 +23,24 @@ namespace OniAccess.Handlers.Screens.Starmap {
 
 		public override string DisplayName => TabName;
 
-		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
-			= new List<HelpEntry>(MenuHelpEntries) {
-				new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-				new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
-				new HelpEntry("Enter", STRINGS.ONIACCESS.STARMAP.ANALYZE_HELP),
-			}.AsReadOnly();
+		public override IReadOnlyList<HelpEntry> HelpEntries => NestedNavHelpEntries;
 
 		// ========================================
 		// IStarmapTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {
-			Rebuild();
-			CurrentIndex = 0;
-			_search.Clear();
-			SuppressSearchThisFrame();
+			ResetState();
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
-			if (ItemCount > 0)
-				SpeechPipeline.SpeakQueued(GetItemLabel(CurrentIndex));
-			else
+			if (ItemCount > 0) {
+				string label = GetItemLabel(CurrentIndex);
+				if (!string.IsNullOrEmpty(label))
+					SpeechPipeline.SpeakQueued(label);
+			} else {
 				SpeechPipeline.SpeakQueued(
 					STRINGS.ONIACCESS.STARMAP.NO_DESTINATION_SELECTED);
+			}
 		}
 
 		public void OnTabDeactivated() {
@@ -59,42 +55,64 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			return base.HandleKeyDown(e);
 		}
 
+		internal void OnDestinationChanged() {
+			ResetState();
+		}
+
 		// ========================================
-		// BaseMenuHandler
+		// NestedMenuHandler abstracts
 		// ========================================
 
-		public override int ItemCount =>
-			_items != null ? _items.Count : 0;
+		protected override int MaxLevel => 1;
+		protected override int SearchLevel => 0;
+		protected override int StartLevel => 0;
 
-		public override string GetItemLabel(int index) {
-			if (_items == null || index < 0 || index >= _items.Count)
-				return null;
-			// Re-query the analyze action (last item) live to avoid stale state
-			if (index == _items.Count - 1) {
-				var dest = _parent.SelectedDestination;
-				if (dest != null)
+		protected override int GetItemCount(int level, int[] indices) {
+			var dest = _parent.SelectedDestination;
+			if (dest == null) return 0;
+			var sections = StarmapHelper.BuildDestinationSections(
+				dest, _parent.ActiveRocket);
+			if (level == 0)
+				return sections.Count;
+			if (indices[0] < 0 || indices[0] >= sections.Count) return 0;
+			return sections[indices[0]].Items.Count;
+		}
+
+		protected override string GetItemLabel(int level, int[] indices) {
+			var dest = _parent.SelectedDestination;
+			if (dest == null) return null;
+			var sections = StarmapHelper.BuildDestinationSections(
+				dest, _parent.ActiveRocket);
+			if (level == 0) {
+				if (indices[0] < 0 || indices[0] >= sections.Count) return null;
+				// Re-query the action label live (last item)
+				if (indices[0] == sections.Count - 1)
 					return StarmapHelper.GetAnalyzeActionLabel(dest);
+				return sections[indices[0]].Name;
 			}
-			return _items[index];
+			if (indices[0] < 0 || indices[0] >= sections.Count) return null;
+			var section = sections[indices[0]];
+			if (indices[1] < 0 || indices[1] >= section.Items.Count) return null;
+			return section.Items[indices[1]];
 		}
 
-		public override void SpeakCurrentItem(string parentContext = null) {
-			string label = GetItemLabel(CurrentIndex);
-			if (string.IsNullOrEmpty(label)) return;
-			if (!string.IsNullOrEmpty(parentContext))
-				label = parentContext + ", " + label;
-			SpeechPipeline.SpeakInterrupt(label);
+		protected override string GetParentLabel(int level, int[] indices) {
+			if (level >= 1) {
+				var dest = _parent.SelectedDestination;
+				if (dest == null) return null;
+				var sections = StarmapHelper.BuildDestinationSections(
+					dest, _parent.ActiveRocket);
+				if (indices[0] >= 0 && indices[0] < sections.Count)
+					return sections[indices[0]].Name;
+			}
+			return null;
 		}
 
-		protected override void ActivateCurrentItem() {
+		protected override void ActivateLeafItem(int[] indices) {
 			var dest = _parent.SelectedDestination;
 			if (dest == null) return;
 
-			// Only the last item is the analyze action
-			if (_items == null || CurrentIndex != _items.Count - 1) return;
-
 			if (StarmapHelper.IsAnalyzed(dest)) {
-				// Analysis complete, no action
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.UI.STARMAP.ANALYSIS_COMPLETE);
 				return;
@@ -103,43 +121,41 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			int currentTarget = SpacecraftManager.instance
 				.GetStarmapAnalysisDestinationID();
 			if (currentTarget == dest.id) {
-				// Currently analyzing — suspend
 				SpacecraftManager.instance.SetStarmapAnalysisDestinationID(-1);
 				StarmapHelper.PlaySound("HUD_Click");
 				SpeechPipeline.SpeakInterrupt(
 					STRINGS.ONIACCESS.STARMAP.ANALYSIS_SUSPENDED);
 			} else {
-				// Start analyzing
 				SpacecraftManager.instance
 					.SetStarmapAnalysisDestinationID(dest.id);
 				StarmapHelper.PlaySound("HUD_Click");
 				SpeechPipeline.SpeakInterrupt(
 					STRINGS.ONIACCESS.STARMAP.ANALYSIS_STARTED);
 			}
-
-			// Rebuild to reflect new state
-			int savedIndex = CurrentIndex;
-			Rebuild();
-			CurrentIndex = System.Math.Min(savedIndex, ItemCount - 1);
 		}
 
 		// ========================================
-		// INTERNAL
+		// Search: section names at level 0
 		// ========================================
 
-		internal void OnDestinationChanged() {
-			Rebuild();
-			CurrentIndex = 0;
-		}
-
-		private void Rebuild() {
+		protected override int GetSearchItemCount(int[] indices) {
 			var dest = _parent.SelectedDestination;
-			if (dest == null) {
-				_items = null;
-				return;
-			}
-			_items = StarmapHelper.BuildDestinationDetails(
+			if (dest == null) return 0;
+			return StarmapHelper.BuildDestinationSections(
+				dest, _parent.ActiveRocket).Count;
+		}
+
+		protected override string GetSearchItemLabel(int flatIndex) {
+			var dest = _parent.SelectedDestination;
+			if (dest == null) return null;
+			var sections = StarmapHelper.BuildDestinationSections(
 				dest, _parent.ActiveRocket);
+			if (flatIndex < 0 || flatIndex >= sections.Count) return null;
+			return sections[flatIndex].Name;
+		}
+
+		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
+			outIndices[0] = flatIndex;
 		}
 	}
 }

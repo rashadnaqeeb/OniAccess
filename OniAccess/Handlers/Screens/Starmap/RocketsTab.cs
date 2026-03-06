@@ -4,15 +4,14 @@ using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens.Starmap {
 	/// <summary>
-	/// Tab 1: Rockets. Dual-view (list/detail) BaseMenuHandler.
-	/// List view shows all spacecraft. Detail view shows full rocket info.
-	/// Enter in list selects rocket as active and shows detail.
-	/// Escape in detail returns to list. Space launches.
+	/// Tab 1: Rockets. Three-level NestedMenuHandler.
+	/// Level 0 = rocket list (search level).
+	/// Level 1 = detail categories (Status, Checklist, Range, etc.).
+	/// Level 2 = items within category.
+	/// Space launches the active rocket from any level.
 	/// </summary>
-	internal class RocketsTab : BaseMenuHandler, IStarmapTab {
+	internal class RocketsTab : NestedMenuHandler, IStarmapTab {
 		private readonly StarmapScreenHandler _parent;
-		private bool _inDetail;
-		private List<StarmapHelper.DetailItem> _detailItems;
 
 		internal RocketsTab(StarmapScreenHandler parent) : base(screen: null) {
 			_parent = parent;
@@ -22,30 +21,27 @@ namespace OniAccess.Handlers.Screens.Starmap {
 
 		public override string DisplayName => TabName;
 
-		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
-			= new List<HelpEntry>(MenuHelpEntries) {
-				new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-				new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
-				new HelpEntry("Enter", STRINGS.ONIACCESS.HELP.SELECT_ITEM),
-				new HelpEntry("Space", STRINGS.ONIACCESS.STARMAP.LAUNCH_HELP),
-			}.AsReadOnly();
+		private static readonly List<HelpEntry> _helpEntries = new List<HelpEntry>(NestedNavHelpEntries) {
+			new HelpEntry("Space", STRINGS.ONIACCESS.STARMAP.LAUNCH_HELP),
+		};
+
+		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
 
 		// ========================================
 		// IStarmapTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {
-			_inDetail = false;
-			_detailItems = null;
-			CurrentIndex = 0;
-			_search.Clear();
-			SuppressSearchThisFrame();
+			ResetState();
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
-			if (ItemCount > 0)
-				SpeechPipeline.SpeakQueued(GetItemLabel(CurrentIndex));
-			else
+			if (ItemCount > 0) {
+				string label = GetItemLabel(CurrentIndex);
+				if (!string.IsNullOrEmpty(label))
+					SpeechPipeline.SpeakQueued(label);
+			} else {
 				SpeechPipeline.SpeakQueued(STRINGS.ONIACCESS.STARMAP.NO_ROCKETS);
+			}
 		}
 
 		public void OnTabDeactivated() {
@@ -63,91 +59,95 @@ namespace OniAccess.Handlers.Screens.Starmap {
 		}
 
 		public new bool HandleKeyDown(KButtonEvent e) {
-			if (base.HandleKeyDown(e)) return true;
-
-			if (_inDetail && e.TryConsume(global::Action.Escape)) {
-				ReturnToList();
-				return true;
-			}
-
-			return false;
+			return base.HandleKeyDown(e);
 		}
 
 		// ========================================
-		// BaseMenuHandler
+		// NestedMenuHandler abstracts
 		// ========================================
 
-		public override int ItemCount {
-			get {
-				if (_inDetail)
-					return _detailItems != null ? _detailItems.Count : 0;
+		protected override int MaxLevel => 2;
+		protected override int SearchLevel => 0;
+		protected override int StartLevel => 0;
+
+		protected override int GetItemCount(int level, int[] indices) {
+			if (level == 0)
 				return StarmapHelper.GetSpacecraft().Count;
-			}
-		}
-
-		public override string GetItemLabel(int index) {
-			if (_inDetail) {
-				if (_detailItems == null || index < 0 || index >= _detailItems.Count)
-					return null;
-				return _detailItems[index].Label;
-			}
 			var rockets = StarmapHelper.GetSpacecraft();
-			if (index < 0 || index >= rockets.Count) return null;
-			return StarmapHelper.BuildRocketListLabel(rockets[index]);
+			if (indices[0] < 0 || indices[0] >= rockets.Count) return 0;
+			var categories = StarmapHelper.BuildRocketCategories(rockets[indices[0]]);
+			if (level == 1)
+				return categories.Count;
+			if (indices[1] < 0 || indices[1] >= categories.Count) return 0;
+			return categories[indices[1]].Items.Count;
 		}
 
-		public override void SpeakCurrentItem(string parentContext = null) {
-			string label = GetItemLabel(CurrentIndex);
-			if (string.IsNullOrEmpty(label)) return;
-			if (!string.IsNullOrEmpty(parentContext))
-				label = parentContext + ", " + label;
-			SpeechPipeline.SpeakInterrupt(label);
+		protected override string GetItemLabel(int level, int[] indices) {
+			if (level == 0) {
+				var rockets = StarmapHelper.GetSpacecraft();
+				if (indices[0] < 0 || indices[0] >= rockets.Count) return null;
+				return StarmapHelper.BuildRocketListLabel(rockets[indices[0]]);
+			}
+			var rocketList = StarmapHelper.GetSpacecraft();
+			if (indices[0] < 0 || indices[0] >= rocketList.Count) return null;
+			var categories = StarmapHelper.BuildRocketCategories(rocketList[indices[0]]);
+			if (level == 1) {
+				if (indices[1] < 0 || indices[1] >= categories.Count) return null;
+				return categories[indices[1]].Name;
+			}
+			if (indices[1] < 0 || indices[1] >= categories.Count) return null;
+			var cat = categories[indices[1]];
+			if (indices[2] < 0 || indices[2] >= cat.Items.Count) return null;
+			return cat.Items[indices[2]];
+		}
+
+		protected override string GetParentLabel(int level, int[] indices) {
+			if (level == 1) {
+				var rockets = StarmapHelper.GetSpacecraft();
+				if (indices[0] >= 0 && indices[0] < rockets.Count)
+					return rockets[indices[0]].GetRocketName();
+			}
+			if (level == 2) {
+				var rockets = StarmapHelper.GetSpacecraft();
+				if (indices[0] >= 0 && indices[0] < rockets.Count) {
+					var categories = StarmapHelper.BuildRocketCategories(
+						rockets[indices[0]]);
+					if (indices[1] >= 0 && indices[1] < categories.Count)
+						return categories[indices[1]].Name;
+				}
+			}
+			return null;
+		}
+
+		protected override void ActivateLeafItem(int[] indices) {
+			// Detail items have no action
 		}
 
 		protected override void ActivateCurrentItem() {
-			if (_inDetail) return;
-
-			var rockets = StarmapHelper.GetSpacecraft();
-			if (CurrentIndex < 0 || CurrentIndex >= rockets.Count) return;
-
-			var rocket = rockets[CurrentIndex];
-			_parent.SetActiveRocket(rocket);
-
-			_inDetail = true;
-			_detailItems = StarmapHelper.BuildRocketDetails(rocket);
-			CurrentIndex = 0;
-
-			SpeechPipeline.SpeakInterrupt(
-				string.Format(STRINGS.ONIACCESS.STARMAP.ROCKET_DETAIL_HEADER,
-					rocket.GetRocketName()));
-			if (_detailItems.Count > 0)
-				SpeechPipeline.SpeakQueued(_detailItems[0].Label);
+			if (Level == 0) {
+				var rockets = StarmapHelper.GetSpacecraft();
+				if (CurrentIndex >= 0 && CurrentIndex < rockets.Count)
+					_parent.SetActiveRocket(rockets[CurrentIndex]);
+			}
+			base.ActivateCurrentItem();
 		}
 
 		// ========================================
-		// PRIVATE
+		// Search: rockets at level 0
 		// ========================================
 
-		private void ReturnToList() {
-			_inDetail = false;
-			_detailItems = null;
+		protected override int GetSearchItemCount(int[] indices) {
+			return StarmapHelper.GetSpacecraft().Count;
+		}
 
-			// Try to position on the previously selected rocket
-			var activeRocket = _parent.ActiveRocket;
+		protected override string GetSearchItemLabel(int flatIndex) {
 			var rockets = StarmapHelper.GetSpacecraft();
-			CurrentIndex = 0;
-			if (activeRocket != null) {
-				for (int i = 0; i < rockets.Count; i++) {
-					if (rockets[i].id == activeRocket.id) {
-						CurrentIndex = i;
-						break;
-					}
-				}
-			}
+			if (flatIndex < 0 || flatIndex >= rockets.Count) return null;
+			return StarmapHelper.BuildRocketListLabel(rockets[flatIndex]);
+		}
 
-			SpeechPipeline.SpeakInterrupt(TabName);
-			if (ItemCount > 0)
-				SpeechPipeline.SpeakQueued(GetItemLabel(CurrentIndex));
+		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
+			outIndices[0] = flatIndex;
 		}
 	}
 }

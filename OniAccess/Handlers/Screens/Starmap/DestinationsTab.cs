@@ -67,7 +67,7 @@ namespace OniAccess.Handlers.Screens.Starmap {
 
 		protected override int MaxLevel => 1;
 		protected override int SearchLevel => 1;
-		protected override int StartLevel => 1;
+		protected override int StartLevel => 0;
 
 		protected override int GetItemCount(int level, int[] indices) {
 			if (level == 0)
