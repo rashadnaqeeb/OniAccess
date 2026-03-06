@@ -236,6 +236,7 @@ The priority screen is a 2D grid with duplicants as rows and chore groups as col
 
 - **0-5** -- set priority (0=disabled, 1=very low through 5=very high)
 - **Shift+0-5** -- set the entire column (all dupes for that chore)
+- **Shift+Up/Down** -- adjust priority of the current cell by 1
 - **Ctrl+Left/Right** -- adjust all priorities in the current row by 1
 - **Ctrl+Up/Down** -- adjust all priorities in the current column by 1
 
