@@ -754,6 +754,7 @@ namespace STRINGS {
 				public static LocString CYCLE_INSTANCE = "Scanner: cycle instance";
 				public static LocString ORIENT_ITEM = "Distance to current item";
 				public static LocString SEARCH = "Search scanner";
+				public static LocString TELEPORT_BACK = "Return to pre-teleport position";
 			}
 		}
 

@@ -56,6 +56,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.LeftArrow, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.RightArrow, Modifier.Ctrl),
 			// Scanner keybinds
+			new ConsumedKey(KKeyCode.Backspace),
 			new ConsumedKey(KKeyCode.End),
 			new ConsumedKey(KKeyCode.Home),
 			new ConsumedKey(KKeyCode.Home, Modifier.Shift),
@@ -139,6 +140,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Shift+K", (string)STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE),
 			new HelpEntry("End", (string)STRINGS.ONIACCESS.SCANNER.HELP.REFRESH),
 			new HelpEntry("Home", (string)STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT),
+			new HelpEntry("Backspace", (string)STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT_BACK),
 			new HelpEntry("Shift+End", (string)STRINGS.ONIACCESS.SCANNER.HELP.TOGGLE_AUTO_MOVE),
 			new HelpEntry("Shift+Home", (string)STRINGS.ONIACCESS.SCANNER.HELP.ORIENT_ITEM),
 			new HelpEntry("Ctrl+PageUp/Down", (string)STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_CATEGORY),
@@ -507,6 +509,11 @@ namespace OniAccess.Handlers.Tiles {
 					_scanner.Teleport();
 					return true;
 				}
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backspace)
+				&& !InputUtil.AnyModifierHeld()) {
+				_scanner.TeleportBack();
+				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.PageUp)) {
 				if (InputUtil.CtrlHeld())
