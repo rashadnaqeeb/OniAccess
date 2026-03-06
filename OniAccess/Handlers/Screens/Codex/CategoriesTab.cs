@@ -135,6 +135,9 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		protected override int GetSearchTargetLevel(int flatIndex, int[] mappedIndices) {
+			var all = GetAllSearchableEntries();
+			if (flatIndex >= 0 && flatIndex < all.Count && all[flatIndex].isCategory)
+				return 0;
 			// If the mapped level-1 entry is a CategoryEntry (sub-category),
 			// search should land at level 2. Otherwise level 1.
 			var topCats = CodexHelper.GetTopCategories();
@@ -151,17 +154,17 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// ========================================
 
 		protected override int GetSearchItemCount(int[] indices) {
-			return GetAllLeafEntries().Count;
+			return GetAllSearchableEntries().Count;
 		}
 
 		protected override string GetSearchItemLabel(int flatIndex) {
-			var all = GetAllLeafEntries();
+			var all = GetAllSearchableEntries();
 			if (flatIndex < 0 || flatIndex >= all.Count) return null;
 			return CodexHelper.GetEntryName(all[flatIndex].entry);
 		}
 
 		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
-			var all = GetAllLeafEntries();
+			var all = GetAllSearchableEntries();
 			if (flatIndex < 0 || flatIndex >= all.Count) return;
 			var item = all[flatIndex];
 			outIndices[0] = item.catIdx;
@@ -178,8 +181,9 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// Returns false if the entry isn't found in the category tree.
 		/// </summary>
 		private bool NavigateToEntry(string entryId) {
-			var all = GetAllLeafEntries();
+			var all = GetAllSearchableEntries();
 			for (int i = 0; i < all.Count; i++) {
+				if (all[i].isCategory) continue;
 				if (all[i].entry.id == entryId) {
 					var item = all[i];
 					SetIndex(0, item.catIdx);
@@ -218,9 +222,10 @@ namespace OniAccess.Handlers.Screens.Codex {
 			internal int catIdx;
 			internal int entryIdx;
 			internal int subIdx;
+			internal bool isCategory;
 		}
 
-		private List<FlatEntry> GetAllLeafEntries() {
+		private List<FlatEntry> GetAllSearchableEntries() {
 			var result = new List<FlatEntry>();
 			var topCats = CodexHelper.GetTopCategories();
 			for (int c = 0; c < topCats.Count; c++) {
@@ -245,6 +250,13 @@ namespace OniAccess.Handlers.Screens.Codex {
 						});
 					}
 				}
+			}
+			for (int c = 0; c < topCats.Count; c++) {
+				result.Add(new FlatEntry {
+					entry = topCats[c],
+					catIdx = c,
+					isCategory = true
+				});
 			}
 			return result;
 		}
