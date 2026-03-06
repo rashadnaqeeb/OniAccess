@@ -450,21 +450,20 @@ namespace OniAccess.Handlers.Screens.Schedule {
 		// ========================================
 
 		private bool TrySelectBrush() {
-			for (int i = 0; i < 4; i++) {
-				var key = UnityEngine.KeyCode.Alpha1 + i;
-				if (UnityEngine.Input.GetKeyDown(key)) {
-					_brushGroupId = ScheduleHelper.BrushGroupIds[i];
-					string name = ScheduleHelper.GetGroupName(_brushGroupId);
-					SpeechPipeline.SpeakInterrupt(name);
+			int digit = InputUtil.GetDigitKeyDown();
+			if (digit >= 1 && digit <= 4) {
+				int i = digit - 1;
+				_brushGroupId = ScheduleHelper.BrushGroupIds[i];
+				string name = ScheduleHelper.GetGroupName(_brushGroupId);
+				SpeechPipeline.SpeakInterrupt(name);
 
-					// Sync the game's paint selection
-					var screen = _parent.ScheduleScreen;
-					if (screen != null) {
-						screen.SelectedPaint = _brushGroupId;
-						screen.RefreshAllPaintButtons();
-					}
-					return true;
+				// Sync the game's paint selection
+				var screen = _parent.ScheduleScreen;
+				if (screen != null) {
+					screen.SelectedPaint = _brushGroupId;
+					screen.RefreshAllPaintButtons();
 				}
+				return true;
 			}
 			return false;
 		}

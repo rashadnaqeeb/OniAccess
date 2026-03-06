@@ -369,14 +369,13 @@ namespace OniAccess.Handlers.Screens {
 			bool shiftHeld = InputUtil.ShiftHeld();
 
 			if (!ctrlHeld) {
-				for (int n = 0; n <= 5; n++) {
-					if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Alpha0 + n)) {
-						if (shiftHeld)
-							SetColumnPriority(n);
-						else
-							SetCellPriority(n);
-						return true;
-					}
+				int digit = InputUtil.GetDigitKeyDown();
+				if (digit >= 0 && digit <= 5) {
+					if (shiftHeld)
+						SetColumnPriority(digit);
+					else
+						SetCellPriority(digit);
+					return true;
 				}
 			}
 

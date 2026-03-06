@@ -252,6 +252,8 @@ namespace OniAccess.Tests {
 			// --- CursorBookmarks.DigitKeyToIndex ---
 			results.Add(DigitKeyAlpha1Through9());
 			results.Add(DigitKeyAlpha0MapsToNine());
+			results.Add(DigitKeyKeypad1Through9());
+			results.Add(DigitKeyKeypad0MapsToNine());
 			results.Add(DigitKeyNonDigitReturnsNegativeOne());
 
 			int passed = 0, failed = 0;
@@ -2585,6 +2587,25 @@ namespace OniAccess.Tests {
 			int result = CursorBookmarks.DigitKeyToIndex(KeyCode.Alpha0);
 			bool ok = result == 9;
 			return Assert("DigitKeyAlpha0MapsToNine", ok, $"got {result}");
+		}
+
+		private static (string, bool, string) DigitKeyKeypad1Through9() {
+			var failures = new List<string>();
+			for (int i = 0; i < 9; i++) {
+				KeyCode key = KeyCode.Keypad1 + i;
+				int result = CursorBookmarks.DigitKeyToIndex(key);
+				if (result != i)
+					failures.Add($"Keypad{i + 1}→{result} (expected {i})");
+			}
+			bool ok = failures.Count == 0;
+			return Assert("DigitKeyKeypad1Through9", ok,
+				ok ? "all correct" : string.Join("; ", failures));
+		}
+
+		private static (string, bool, string) DigitKeyKeypad0MapsToNine() {
+			int result = CursorBookmarks.DigitKeyToIndex(KeyCode.Keypad0);
+			bool ok = result == 9;
+			return Assert("DigitKeyKeypad0MapsToNine", ok, $"got {result}");
 		}
 
 		private static (string, bool, string) DigitKeyNonDigitReturnsNegativeOne() {

@@ -75,6 +75,10 @@ namespace OniAccess.Handlers.Tiles {
 				return (int)(key - KeyCode.Alpha1);
 			if (key == KeyCode.Alpha0)
 				return 9;
+			if (key >= KeyCode.Keypad1 && key <= KeyCode.Keypad9)
+				return (int)(key - KeyCode.Keypad1);
+			if (key == KeyCode.Keypad0)
+				return 9;
 			return -1;
 		}
 

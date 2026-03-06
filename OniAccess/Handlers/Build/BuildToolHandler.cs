@@ -48,6 +48,16 @@ namespace OniAccess.Handlers.Build {
 			new ConsumedKey(KKeyCode.Alpha7),
 			new ConsumedKey(KKeyCode.Alpha8),
 			new ConsumedKey(KKeyCode.Alpha9),
+			new ConsumedKey(KKeyCode.Keypad0),
+			new ConsumedKey(KKeyCode.Keypad1),
+			new ConsumedKey(KKeyCode.Keypad2),
+			new ConsumedKey(KKeyCode.Keypad3),
+			new ConsumedKey(KKeyCode.Keypad4),
+			new ConsumedKey(KKeyCode.Keypad5),
+			new ConsumedKey(KKeyCode.Keypad6),
+			new ConsumedKey(KKeyCode.Keypad7),
+			new ConsumedKey(KKeyCode.Keypad8),
+			new ConsumedKey(KKeyCode.Keypad9),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -255,11 +265,10 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			if (!InputUtil.AnyModifierHeld()) {
-				for (int i = 0; i <= 9; i++) {
-					if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Alpha0 + i)) {
-						SetPriority(i);
-						return true;
-					}
+				int digit = InputUtil.GetDigitKeyDown();
+				if (digit >= 0) {
+					SetPriority(digit);
+					return true;
 				}
 			}
 			return false;

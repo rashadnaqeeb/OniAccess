@@ -28,6 +28,18 @@ namespace OniAccess.Input {
 				|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightAlt);
 		}
 
+		/// <summary>
+		/// Returns 0-9 if an Alpha or Keypad digit key was pressed this frame, -1 otherwise.
+		/// </summary>
+		public static int GetDigitKeyDown() {
+			for (int i = 0; i <= 9; i++) {
+				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Alpha0 + i)
+					|| UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Keypad0 + i))
+					return i;
+			}
+			return -1;
+		}
+
 		private static readonly float[] WholeSteps = { 1f, 10f, 100f, 1000f };
 		private static readonly float[] FractionalSteps = { 0.01f, 0.1f, 0.25f, 0.5f };
 

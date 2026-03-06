@@ -99,6 +99,26 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Alpha8, Modifier.Alt),
 			new ConsumedKey(KKeyCode.Alpha9, Modifier.Alt),
 			new ConsumedKey(KKeyCode.Alpha0, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Keypad1, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Keypad2, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Keypad3, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Keypad4, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Keypad5, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Keypad6, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Keypad7, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Keypad8, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Keypad9, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Keypad0, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Keypad1, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Keypad2, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Keypad3, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Keypad4, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Keypad5, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Keypad6, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Keypad7, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Keypad8, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Keypad9, Modifier.Alt),
+			new ConsumedKey(KKeyCode.Keypad0, Modifier.Alt),
 			// Dupe cycling keybinds
 			new ConsumedKey(KKeyCode.LeftBracket),
 			new ConsumedKey(KKeyCode.RightBracket),
@@ -442,9 +462,9 @@ namespace OniAccess.Handlers.Tiles {
 				SpeechPipeline.SpeakInterrupt(CursorBookmarks.JumpHome());
 				return true;
 			}
-			for (var kc = UnityEngine.KeyCode.Alpha0; kc <= UnityEngine.KeyCode.Alpha9; kc++) {
-				if (!UnityEngine.Input.GetKeyDown(kc)) continue;
-				int idx = CursorBookmarks.DigitKeyToIndex(kc);
+			int bmDigit = InputUtil.GetDigitKeyDown();
+			if (bmDigit >= 0) {
+				int idx = bmDigit == 0 ? 9 : bmDigit - 1;
 				if (InputUtil.ShiftHeld()) {
 					SpeechPipeline.SpeakInterrupt(_bookmarks.Goto(idx));
 					return true;

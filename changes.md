@@ -1,5 +1,6 @@
 # Changelog
 
+- Numpad number keys now work everywhere the main keyboard number keys do: priority setting, schedule brush selection, and cursor bookmarks
 - D reads current diagnostic alerts (breathability, food, stress, etc.) sorted by severity
 - Shift+D opens a full diagnostics browser with pin state cycling and criteria toggles
 - Diagnostic alerts are now automatically announced when conditions worsen
