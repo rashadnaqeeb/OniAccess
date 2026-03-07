@@ -120,6 +120,7 @@ namespace OniAccess.Handlers.Screens {
 
 		protected override void ActivateCurrentItem() {
 			if (ItemCount == 0) return;
+			RefreshSections();
 			var w = GetCurrentWidget();
 			if (w is ToggleWidget && Level > 0) {
 				var indices = new int[] { GetIndex(0), GetIndex(1), GetIndex(2) };
@@ -254,6 +255,7 @@ namespace OniAccess.Handlers.Screens {
 
 		protected override void HandleLeftRight(int direction, int stepLevel) {
 			if (Level > 0) {
+				RefreshSections();
 				var w = GetCurrentWidget();
 				if (w is SliderWidget) {
 					AdjustSlider(w, direction, stepLevel);
@@ -290,7 +292,7 @@ namespace OniAccess.Handlers.Screens {
 			PlaySliderSound(sw.GetBoundarySound(direction));
 
 			if (changed) {
-				RebuildSections();
+				RefreshSections();
 				var fresh = GetCurrentWidget();
 				if (fresh != null)
 					SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
@@ -307,7 +309,7 @@ namespace OniAccess.Handlers.Screens {
 					Util.Log.Warn(
 						$"AdjustPriority sound failed: {ex.Message}");
 				}
-				RebuildSections();
+				RefreshSections();
 				var fresh = GetCurrentWidget();
 				if (fresh != null)
 					SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
@@ -397,6 +399,7 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		public override void SpeakCurrentItem(string parentContext = null) {
+			RefreshSections();
 			if (Level == 0) {
 				base.SpeakCurrentItem(parentContext);
 				return;
@@ -686,6 +689,92 @@ namespace OniAccess.Handlers.Screens {
 					$"DetailsScreenHandler: tab '{_activeTabs[_tabIndex].DisplayName}' " +
 					$"Populate failed: {ex}");
 			}
+		}
+
+		/// <summary>
+		/// Rebuilds sections from live game widgets and restores the navigation
+		/// position by label identity. Prevents stale widget references from
+		/// causing crashes when side screens refresh their children between
+		/// user actions.
+		/// </summary>
+		private void RefreshSections() {
+			int savedLevel = Level;
+			string sectionHeader = null;
+			string itemLabel = null;
+			string childLabel = null;
+
+			int s = GetIndex(0);
+			if (s >= 0 && s < _sections.Count) {
+				sectionHeader = _sections[s].Header;
+				var items = _sections[s].Items;
+				int i = GetIndex(1);
+				if (i >= 0 && i < items.Count) {
+					itemLabel = items[i].Label;
+					var children = items[i].Children;
+					int c = GetIndex(2);
+					if (children != null && c >= 0 && c < children.Count)
+						childLabel = children[c].Label;
+				}
+			}
+
+			RebuildSections();
+
+			if (sectionHeader == null) {
+				ClampIndices();
+				return;
+			}
+
+			int newSection = -1;
+			for (int si = 0; si < _sections.Count; si++) {
+				if (_sections[si].Header == sectionHeader) { newSection = si; break; }
+			}
+			if (newSection < 0) {
+				Util.Log.Debug($"RefreshSections: section '{sectionHeader}' not found, clamping");
+				ClampIndices();
+				return;
+			}
+			SetIndex(0, newSection);
+
+			if (itemLabel == null || savedLevel < 1) {
+				Level = savedLevel;
+				ClampIndices();
+				return;
+			}
+
+			var newItems = _sections[newSection].Items;
+			int newItem = -1;
+			for (int ii = 0; ii < newItems.Count; ii++) {
+				if (newItems[ii].Label == itemLabel) { newItem = ii; break; }
+			}
+			if (newItem < 0) {
+				Util.Log.Debug($"RefreshSections: item '{itemLabel}' not found, clamping");
+				Level = savedLevel;
+				ClampIndices();
+				return;
+			}
+			SetIndex(1, newItem);
+
+			if (childLabel == null || savedLevel < 2) {
+				Level = savedLevel;
+				ClampIndices();
+				return;
+			}
+
+			var newChildren = newItems[newItem].Children;
+			int newChild = -1;
+			if (newChildren != null) {
+				for (int ci = 0; ci < newChildren.Count; ci++) {
+					if (newChildren[ci].Label == childLabel) { newChild = ci; break; }
+				}
+			}
+			if (newChild < 0) {
+				Util.Log.Debug($"RefreshSections: child '{childLabel}' not found, clamping");
+				Level = savedLevel;
+				ClampIndices();
+				return;
+			}
+			SetIndex(2, newChild);
+			Level = savedLevel;
 		}
 
 		// ========================================
