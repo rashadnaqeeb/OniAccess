@@ -23,6 +23,7 @@ namespace OniAccess.Patches {
 
 		private static void Postfix(object __instance) {
 			if (!ModToggle.IsEnabled) return;
+			if (!LoadGate.IsReady) return;
 			try {
 				var diagnostic = Traverse.Create(__instance)
 					.Field<ColonyDiagnostic>("diagnostic").Value;

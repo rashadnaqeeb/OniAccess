@@ -4,6 +4,7 @@ using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Handlers.Tiles.Skip;
 using OniAccess.Input;
 using OniAccess.Speech;
+using OniAccess.Util;
 
 namespace OniAccess.Handlers.Tiles {
 	/// <summary>
@@ -205,6 +206,7 @@ namespace OniAccess.Handlers.Tiles {
 					_notificationTracker.Attach();
 					_notificationAnnouncer = new NotificationAnnouncer(_notificationTracker);
 				}
+				LoadGate.Reset();
 				SpeechPipeline.SpeakQueued(DisplayName);
 				try {
 					TileCursor.Instance.Initialize();
@@ -283,6 +285,7 @@ namespace OniAccess.Handlers.Tiles {
 			_scanner.CheckWorldSwitch();
 			_monitor.Tick();
 			_notificationAnnouncer?.Tick();
+			LoadGate.Tick();
 
 			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null)

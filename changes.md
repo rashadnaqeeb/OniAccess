@@ -1,5 +1,6 @@
 # Changelog
 
+- Fix: spurious diagnostic, resource, and world announcements during save load are now suppressed
 - Fix: notification submenu now shows message titles instead of internal UI object names and coordinates
 - Activating an achievement notification announces "opening achievements" and each unlocked achievement name
 - Fix: deconstruct tool now works on Gravitas buildings and other demolishable structures (Gene Shuffler, Cryo Tank, etc.)

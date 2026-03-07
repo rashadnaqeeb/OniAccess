@@ -44,6 +44,7 @@ namespace OniAccess.Patches {
 	internal static class WorldSelector_TriggerVisualNotification_Patch {
 		private static void Postfix(int worldID, ColonyDiagnostic.DiagnosticResult.Opinion result) {
 			if (!ModToggle.IsEnabled) return;
+			if (!LoadGate.IsReady) return;
 			try {
 				var world = ClusterManager.Instance.GetWorld(worldID);
 				if (world == null) return;
@@ -74,6 +75,7 @@ namespace OniAccess.Patches {
 
 		private static void Postfix(WorldContainer __instance, bool __state) {
 			if (!ModToggle.IsEnabled) return;
+			if (!LoadGate.IsReady) return;
 			if (__state) return;
 			if (!DlcManager.FeatureClusterSpaceEnabled()) return;
 			try {

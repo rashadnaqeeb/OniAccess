@@ -246,6 +246,14 @@ namespace OniAccess.Tests {
 			results.Add(AnnouncerFirstGroupInterruptsRestQueue());
 			results.Add(AnnouncerBatchWindowResetsOnNewArrival());
 
+			// --- LoadGate ---
+			results.Add(LoadGateStartsNotReady());
+			results.Add(LoadGateStaysGatedWhilePaused());
+			results.Add(LoadGateNotReadyAtPointNineSeconds());
+			results.Add(LoadGateReadyAt1Second());
+			results.Add(LoadGateResetRequiresFullCycle());
+			results.Add(LoadGateStartingUnpausedStillWaits());
+
 			// --- GridUtil.ValidateCluster ---
 			results.Add(ValidateClusterAllPrunedReturnsFalse());
 			results.Add(ValidateClusterClosestCellSelected());
@@ -2641,6 +2649,131 @@ namespace OniAccess.Tests {
 			int result = CursorBookmarks.DigitKeyToIndex(KeyCode.A);
 			bool ok = result == -1;
 			return Assert("DigitKeyNonDigitReturnsNegativeOne", ok, $"got {result}");
+		}
+
+		// ========================================
+		// LoadGate
+		// ========================================
+
+		private static void SetupLoadGate(float time, bool paused) {
+			LoadGate.Reset();
+			LoadGate.TimeSource = () => time;
+			LoadGate.IsPaused = () => paused;
+		}
+
+		private static void CleanupLoadGate() {
+			LoadGate.Reset();
+			LoadGate.TimeSource = () => 0f;
+			LoadGate.IsPaused = () => false;
+		}
+
+		private static (string, bool, string) LoadGateStartsNotReady() {
+			SetupLoadGate(0f, true);
+			bool ok = !LoadGate.IsReady;
+			CleanupLoadGate();
+			return Assert("LoadGateStartsNotReady", ok, $"IsReady={LoadGate.IsReady}");
+		}
+
+		private static (string, bool, string) LoadGateStaysGatedWhilePaused() {
+			float time = 0f;
+			LoadGate.Reset();
+			LoadGate.TimeSource = () => time;
+			LoadGate.IsPaused = () => true;
+			time = 100f;
+			LoadGate.Tick();
+			LoadGate.Tick();
+			bool ok = !LoadGate.IsReady;
+			CleanupLoadGate();
+			return Assert("LoadGateStaysGatedWhilePaused", ok, $"IsReady after paused ticks");
+		}
+
+		private static (string, bool, string) LoadGateNotReadyAtPointNineSeconds() {
+			float time = 0f;
+			bool paused = true;
+			LoadGate.Reset();
+			LoadGate.TimeSource = () => time;
+			LoadGate.IsPaused = () => paused;
+			// Unpause at time 10
+			paused = false;
+			time = 10f;
+			LoadGate.Tick();
+			// Advance to 10.9s (0.9s after unpause)
+			time = 10.9f;
+			LoadGate.Tick();
+			bool ok = !LoadGate.IsReady;
+			CleanupLoadGate();
+			return Assert("LoadGateNotReadyAtPointNineSeconds", ok, $"IsReady={LoadGate.IsReady}");
+		}
+
+		private static (string, bool, string) LoadGateReadyAt1Second() {
+			float time = 0f;
+			bool paused = true;
+			LoadGate.Reset();
+			LoadGate.TimeSource = () => time;
+			LoadGate.IsPaused = () => paused;
+			// Unpause at time 10
+			paused = false;
+			time = 10f;
+			LoadGate.Tick();
+			// Advance to 11s (1s after unpause)
+			time = 11f;
+			LoadGate.Tick();
+			bool ok = LoadGate.IsReady;
+			CleanupLoadGate();
+			return Assert("LoadGateReadyAt1Second", ok, $"IsReady={LoadGate.IsReady}");
+		}
+
+		private static (string, bool, string) LoadGateResetRequiresFullCycle() {
+			float time = 0f;
+			bool paused = false;
+			LoadGate.Reset();
+			LoadGate.TimeSource = () => time;
+			LoadGate.IsPaused = () => paused;
+			// Open the gate: first tick records unpause, second tick after 1s opens
+			LoadGate.Tick();
+			time = 1f;
+			LoadGate.Tick();
+			bool openedFirst = LoadGate.IsReady;
+			// Reset and verify gated again
+			LoadGate.Reset();
+			bool gatedAfterReset = !LoadGate.IsReady;
+			// Tick while paused -- should stay gated
+			paused = true;
+			LoadGate.Tick();
+			bool stillGated = !LoadGate.IsReady;
+			// Unpause and wait full 1s
+			paused = false;
+			time = 10f;
+			LoadGate.Tick();
+			time = 11f;
+			LoadGate.Tick();
+			bool reopened = LoadGate.IsReady;
+			bool ok = openedFirst && gatedAfterReset && stillGated && reopened;
+			CleanupLoadGate();
+			return Assert("LoadGateResetRequiresFullCycle", ok,
+				$"opened={openedFirst}, gated={gatedAfterReset}, still={stillGated}, reopened={reopened}");
+		}
+
+		private static (string, bool, string) LoadGateStartingUnpausedStillWaits() {
+			float time = 0f;
+			LoadGate.Reset();
+			LoadGate.TimeSource = () => time;
+			LoadGate.IsPaused = () => false;
+			// First tick at time 0 records unpause
+			LoadGate.Tick();
+			bool notYet = !LoadGate.IsReady;
+			// 0.9s later -- not ready
+			time = 0.9f;
+			LoadGate.Tick();
+			bool still = !LoadGate.IsReady;
+			// 1s -- ready
+			time = 1f;
+			LoadGate.Tick();
+			bool ready = LoadGate.IsReady;
+			bool ok = notYet && still && ready;
+			CleanupLoadGate();
+			return Assert("LoadGateStartingUnpausedStillWaits", ok,
+				$"notYet={notYet}, still={still}, ready={ready}");
 		}
 	}
 }

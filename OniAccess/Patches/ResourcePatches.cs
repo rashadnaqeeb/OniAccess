@@ -1,5 +1,6 @@
 using HarmonyLib;
 using OniAccess.Speech;
+using OniAccess.Util;
 
 namespace OniAccess.Patches {
 	/// <summary>
@@ -20,6 +21,7 @@ namespace OniAccess.Patches {
 		private static void Postfix(Tag tag, bool __state) {
 			if (!__state) return;
 			if (!ModToggle.IsEnabled) return;
+			if (!LoadGate.IsReady) return;
 			string name = tag.ProperNameStripLink();
 			SpeechPipeline.SpeakQueued(string.Format(
 				(string)STRINGS.ONIACCESS.RESOURCES.DISCOVERED, name));
