@@ -17,8 +17,6 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		private int _instanceIndex;
 		private int _lastWorldId = -1;
 		private bool _autoMove = ConfigManager.Config.AutoMoveCursor;
-		private int _preTeleportCell = Grid.InvalidCell;
-
 		// Backends
 		private readonly GridScanner _gridScanner;
 		private readonly ElementClusterBackend _elementBackend = new ElementClusterBackend();
@@ -267,17 +265,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				return;
 			}
 
-			_preTeleportCell = cursorCell;
 			string speech = TileCursor.Instance.JumpTo(entry.Cell);
-			if (speech != null)
-				SpeechPipeline.SpeakInterrupt(speech);
-		}
-
-		public void TeleportBack() {
-			if (_preTeleportCell == Grid.InvalidCell) return;
-			int savedCell = _preTeleportCell;
-			_preTeleportCell = Grid.InvalidCell;
-			string speech = TileCursor.Instance.JumpTo(savedCell);
 			if (speech != null)
 				SpeechPipeline.SpeakInterrupt(speech);
 		}

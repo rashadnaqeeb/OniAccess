@@ -29,6 +29,7 @@ namespace OniAccess.Handlers.Tiles {
 		private PathabilityChecker _pathabilityChecker;
 		private bool _hasActivated;
 		private bool _overlaySubscribed;
+		private int _preJumpCell = Grid.InvalidCell;
 		private int _queueNextOverlayTtl;
 		private HashedString _lastOverlayMode;
 
@@ -448,6 +449,7 @@ namespace OniAccess.Handlers.Tiles {
 					return true;
 				}
 				if (!InputUtil.AnyModifierHeld()) {
+					_preJumpCell = TileCursor.Instance.Cell;
 					_dupeNavigator.JumpOrSelect();
 					return true;
 				}
@@ -529,13 +531,20 @@ namespace OniAccess.Handlers.Tiles {
 					return true;
 				}
 				if (!InputUtil.AnyModifierHeld()) {
+					_preJumpCell = TileCursor.Instance.Cell;
 					_scanner.Teleport();
 					return true;
 				}
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backspace)
 				&& !InputUtil.AnyModifierHeld()) {
-				_scanner.TeleportBack();
+				if (_preJumpCell != Grid.InvalidCell) {
+					int savedCell = _preJumpCell;
+					_preJumpCell = Grid.InvalidCell;
+					string speech = TileCursor.Instance.JumpTo(savedCell);
+					if (speech != null)
+						SpeechPipeline.SpeakInterrupt(speech);
+				}
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.PageUp)) {
