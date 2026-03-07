@@ -1,5 +1,6 @@
 # Changelog
 
+- Fix: navigating recipes or side screen items no longer crashes when the game refreshes widgets between actions
 - Fix: foundation tiles no longer double-announce (element was spoken on top of the building)
 - Cluster map scanner now supports Ctrl+F search to filter entities by name
 - Cluster map: hidden and peeked hexes now announce "unexplored" or "unseen" instead of verbose tooltip text
