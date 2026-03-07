@@ -53,7 +53,7 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 				(string)STRINGS.ONIACCESS.TILE_CURSOR.OVERLAY_NONE);
 
 			var defaultSections = new[] {
-				GlanceComposer.Element, GlanceComposer.Building,
+				GlanceComposer.Building, GlanceComposer.Element,
 				GlanceComposer.Entity, GlanceComposer.Order,
 				GlanceComposer.Debris
 			};

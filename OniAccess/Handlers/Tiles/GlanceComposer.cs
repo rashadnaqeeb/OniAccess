@@ -72,7 +72,7 @@ namespace OniAccess.Handlers.Tiles {
 		/// </summary>
 		public static GlanceComposer CreateDefault() {
 			return new GlanceComposer(new List<ICellSection> {
-				Element, Building, Entity, Order, Debris
+				Building, Element, Entity, Order, Debris
 			}.AsReadOnly());
 		}
 	}
