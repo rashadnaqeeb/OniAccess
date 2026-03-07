@@ -45,7 +45,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			AddWorldPanel(panel, "worldElementsPanel", sections);
 			AddWorldPanel(panel, "worldGeysersPanel", sections);
 			AddWorldPanel(panel, "worldTraitsPanel", sections);
-			AddWorldPanel(panel, "worldBiomesPanel", sections);
+			AddBiomeSection(panel, target, sections);
 			AddWorldPanel(panel, "worldLifePanel", sections);
 			AddStorage(panel, sections);
 			AddCollapsibleSection(panel, "stressPanel", sections);
@@ -594,6 +594,53 @@ namespace OniAccess.Handlers.Screens.Details {
 					return string.Join(", ", parts);
 				}
 			});
+		}
+
+		// ========================================
+		// BIOMES (read from game data, not UI labels)
+		// ========================================
+
+		/// <summary>
+		/// Read biome data directly from WorldContainer instead of the UI labels.
+		/// The game's bigIconLabelRow DescriptionLabel truncates long text via
+		/// TMPro overflow, and GetParsedText() returns the truncated version.
+		/// </summary>
+		private static void AddBiomeSection(
+				SimpleInfoScreen panel, GameObject target,
+				List<DetailSection> sections) {
+			CollapsibleDetailContentPanel gameSection;
+			try {
+				gameSection = Traverse.Create(panel)
+					.Field<CollapsibleDetailContentPanel>("worldBiomesPanel").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"StatusTab: worldBiomesPanel read failed: {ex.Message}");
+				return;
+			}
+			if (gameSection == null || !gameSection.gameObject.activeSelf) return;
+
+			var worldContainer = target.GetComponent<WorldContainer>();
+			if (worldContainer == null || worldContainer.Biomes == null) return;
+
+			var section = new DetailSection();
+			var headerLabel = gameSection.HeaderLabel;
+			if (headerLabel != null && !string.IsNullOrEmpty(headerLabel.text))
+				section.Header = headerLabel.text;
+
+			foreach (var biome in worldContainer.Biomes) {
+				string nameKey = "STRINGS.SUBWORLDS." + biome.ToUpper() + ".NAME";
+				string descKey = "STRINGS.SUBWORLDS." + biome.ToUpper() + ".DESC";
+				string name = Strings.Get(nameKey);
+				string desc = Strings.Get(descKey);
+
+				section.Items.Add(new LabelWidget {
+					Label = name,
+					SpeechFunc = () => string.IsNullOrEmpty(desc)
+						? name : $"{name}, {desc}"
+				});
+			}
+
+			if (section.Items.Count > 0)
+				sections.Add(section);
 		}
 
 		// ========================================
