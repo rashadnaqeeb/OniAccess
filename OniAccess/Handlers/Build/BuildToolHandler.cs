@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using OniAccess.Handlers.Tiles;
+using OniAccess.Handlers.Tiles.Sections;
 using OniAccess.Handlers.Tiles.ToolProfiles;
 using OniAccess.Input;
 using OniAccess.Speech;
@@ -38,6 +40,7 @@ namespace OniAccess.Handlers.Build {
 			new ConsumedKey(KKeyCode.R),
 			new ConsumedKey(KKeyCode.Tab),
 			new ConsumedKey(KKeyCode.I),
+			new ConsumedKey(KKeyCode.P),
 			new ConsumedKey(KKeyCode.Alpha0),
 			new ConsumedKey(KKeyCode.Alpha1),
 			new ConsumedKey(KKeyCode.Alpha2),
@@ -70,6 +73,7 @@ namespace OniAccess.Handlers.Build {
 			new HelpEntry("R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO),
+			new HelpEntry("P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
 			new HelpEntry("0-9", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY),
 			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_CANCEL_CONSTRUCTION),
 			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.CLOSE),
@@ -261,6 +265,12 @@ namespace OniAccess.Handlers.Build {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)
 				&& !InputUtil.AnyModifierHeld()) {
 				OpenInfoPanel();
+				return true;
+			}
+
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.P)
+				&& !InputUtil.AnyModifierHeld()) {
+				AnnouncePortLayout();
 				return true;
 			}
 
@@ -650,6 +660,191 @@ namespace OniAccess.Handlers.Build {
 
 		private void OpenInfoPanel() {
 			HandlerStack.Push(new BuildInfoHandler(_def));
+		}
+
+		// ========================================
+		// PORT LAYOUT
+		// ========================================
+
+		private enum PortGroup { Gas, Liquid, Solid, Power, Logic, Radbolt }
+
+		private void AnnouncePortLayout() {
+			var orientation = BuildMenuData.GetCurrentOrientation();
+			var ports = new List<(string label, CellOffset offset, PortGroup group)>();
+
+			CollectConduitPorts(ports);
+			CollectSecondaryConduitPorts(ports);
+			CollectPowerPorts(ports);
+			CollectLogicPorts(ports);
+			CollectRadboltPorts(ports);
+
+			if (ports.Count == 0) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.NO_PORTS);
+				return;
+			}
+
+			var groupStrings = new List<string>();
+			foreach (var group in ports.Select(p => p.group).Distinct()) {
+				var items = ports.Where(p => p.group == group);
+				var formatted = items.Select(p =>
+					FormatPort(p.label, Rotatable.GetRotatedCellOffset(p.offset, orientation)));
+				groupStrings.Add(string.Join(", ", formatted));
+			}
+
+			SpeechPipeline.SpeakInterrupt(
+				string.Join(". ", groupStrings) + ".");
+		}
+
+		private void CollectConduitPorts(
+				List<(string label, CellOffset offset, PortGroup group)> ports) {
+			if (_def.InputConduitType != ConduitType.None)
+				ports.Add((
+					BuildingSection.ConduitInputLabel(_def.InputConduitType),
+					_def.UtilityInputOffset,
+					ConduitTypeToGroup(_def.InputConduitType)));
+			if (_def.OutputConduitType != ConduitType.None)
+				ports.Add((
+					BuildingSection.ConduitOutputLabel(_def.OutputConduitType),
+					_def.UtilityOutputOffset,
+					ConduitTypeToGroup(_def.OutputConduitType)));
+		}
+
+		private void CollectSecondaryConduitPorts(
+				List<(string label, CellOffset offset, PortGroup group)> ports) {
+			var go = _def.BuildingComplete;
+			for (int ct = 1; ct <= 3; ct++) {
+				var conduitType = (ConduitType)ct;
+				var group = ConduitTypeToGroup(conduitType);
+
+				int genericInputs = CountGenericSecondary<ISecondaryInput>(go, conduitType);
+				int genericOutputs = CountGenericSecondary<ISecondaryOutput>(go, conduitType);
+				// Account for primary port in numbering
+				if (_def.InputConduitType == conduitType) genericInputs++;
+				if (_def.OutputConduitType == conduitType) genericOutputs++;
+
+				int inputOrd = _def.InputConduitType == conduitType ? 1 : 0;
+				foreach (var sec in go.GetComponents<ISecondaryInput>()) {
+					if (!sec.HasSecondaryConduitType(conduitType)) continue;
+					var offset = sec.GetSecondaryConduitOffset(conduitType);
+					string semantic = BuildingSection.SemanticInputLabel(sec, conduitType);
+					if (semantic != null) {
+						ports.Add((semantic, offset, group));
+					} else {
+						inputOrd++;
+						string label = BuildingSection.ConduitInputLabel(conduitType);
+						if (genericInputs > 1)
+							label = string.Format(
+								(string)STRINGS.ONIACCESS.GLANCE.NUMBERED_PORT,
+								label, inputOrd);
+						ports.Add((label, offset, group));
+					}
+				}
+
+				int outputOrd = _def.OutputConduitType == conduitType ? 1 : 0;
+				foreach (var sec in go.GetComponents<ISecondaryOutput>()) {
+					if (!sec.HasSecondaryConduitType(conduitType)) continue;
+					var offset = sec.GetSecondaryConduitOffset(conduitType);
+					string semantic = BuildingSection.SemanticOutputLabel(sec, conduitType);
+					if (semantic != null) {
+						ports.Add((semantic, offset, group));
+					} else {
+						outputOrd++;
+						string label = BuildingSection.ConduitOutputLabel(conduitType);
+						if (genericOutputs > 1)
+							label = string.Format(
+								(string)STRINGS.ONIACCESS.GLANCE.NUMBERED_PORT,
+								label, outputOrd);
+						ports.Add((label, offset, group));
+					}
+				}
+			}
+		}
+
+		private static int CountGenericSecondary<T>(
+				UnityEngine.GameObject go, ConduitType conduitType) where T : class {
+			int count = 0;
+			foreach (var comp in go.GetComponents<T>()) {
+				if (comp is ISecondaryInput input
+					&& input.HasSecondaryConduitType(conduitType)
+					&& BuildingSection.SemanticInputLabel(input, conduitType) == null)
+					count++;
+				else if (comp is ISecondaryOutput output
+					&& output.HasSecondaryConduitType(conduitType)
+					&& BuildingSection.SemanticOutputLabel(output, conduitType) == null)
+					count++;
+			}
+			return count;
+		}
+
+		private void CollectPowerPorts(
+				List<(string label, CellOffset offset, PortGroup group)> ports) {
+			if (_def.RequiresPowerInput)
+				ports.Add((
+					(string)STRINGS.ONIACCESS.GLANCE.POWER_INPUT,
+					_def.PowerInputOffset, PortGroup.Power));
+			if (_def.RequiresPowerOutput)
+				ports.Add((
+					(string)STRINGS.ONIACCESS.GLANCE.POWER_OUTPUT,
+					_def.PowerOutputOffset, PortGroup.Power));
+		}
+
+		private void CollectLogicPorts(
+				List<(string label, CellOffset offset, PortGroup group)> ports) {
+			if (_def.LogicInputPorts != null)
+				foreach (var port in _def.LogicInputPorts)
+					ports.Add((port.description, port.cellOffset, PortGroup.Logic));
+			if (_def.LogicOutputPorts != null)
+				foreach (var port in _def.LogicOutputPorts)
+					ports.Add((port.description, port.cellOffset, PortGroup.Logic));
+		}
+
+		private void CollectRadboltPorts(
+				List<(string label, CellOffset offset, PortGroup group)> ports) {
+			if (_def.UseHighEnergyParticleInputPort)
+				ports.Add((
+					(string)STRINGS.ONIACCESS.GLANCE.RADBOLT_INPUT,
+					_def.HighEnergyParticleInputOffset, PortGroup.Radbolt));
+			if (_def.UseHighEnergyParticleOutputPort)
+				ports.Add((
+					(string)STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT,
+					_def.HighEnergyParticleOutputOffset, PortGroup.Radbolt));
+		}
+
+		private static string FormatPort(string label, CellOffset rotated) {
+			string offsetDesc = FormatOffset(rotated);
+			return string.Format(
+				(string)STRINGS.ONIACCESS.BUILD_MENU.PORT_AT,
+				label, offsetDesc);
+		}
+
+		private static string FormatOffset(CellOffset offset) {
+			if (offset.x == 0 && offset.y == 0)
+				return (string)STRINGS.ONIACCESS.BUILD_MENU.PORT_HERE;
+
+			var parts = new List<string>();
+			if (offset.x < 0)
+				parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT, -offset.x));
+			else if (offset.x > 0)
+				parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, offset.x));
+			if (offset.y > 0)
+				parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, offset.y));
+			else if (offset.y < 0)
+				parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN, -offset.y));
+			return string.Join(" ", parts);
+		}
+
+		private static PortGroup ConduitTypeToGroup(ConduitType type) {
+			switch (type) {
+				case ConduitType.Gas: return PortGroup.Gas;
+				case ConduitType.Liquid: return PortGroup.Liquid;
+				case ConduitType.Solid: return PortGroup.Solid;
+				default: return PortGroup.Gas;
+			}
 		}
 
 		// ========================================

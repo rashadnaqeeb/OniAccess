@@ -390,7 +390,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			return count;
 		}
 
-		private static string SemanticOutputLabel(
+		internal static string SemanticOutputLabel(
 				ISecondaryOutput port, ConduitType conduitType) {
 			if (port is ElementFilter)
 				return string.Format(
@@ -403,7 +403,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			return null;
 		}
 
-		private static string SemanticInputLabel(
+		internal static string SemanticInputLabel(
 				ISecondaryInput port, ConduitType conduitType) {
 			if (port is ConduitPreferentialFlow)
 				return string.Format(
@@ -505,7 +505,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			return ConduitType.None;
 		}
 
-		private static string ConduitInputLabel(ConduitType type) {
+		internal static string ConduitInputLabel(ConduitType type) {
 			switch (type) {
 				case ConduitType.Gas: return (string)STRINGS.ONIACCESS.GLANCE.GAS_INPUT;
 				case ConduitType.Liquid: return (string)STRINGS.ONIACCESS.GLANCE.LIQUID_INPUT;
@@ -514,7 +514,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			}
 		}
 
-		private static string ConduitOutputLabel(ConduitType type) {
+		internal static string ConduitOutputLabel(ConduitType type) {
 			switch (type) {
 				case ConduitType.Gas: return (string)STRINGS.ONIACCESS.GLANCE.GAS_OUTPUT;
 				case ConduitType.Liquid: return (string)STRINGS.ONIACCESS.GLANCE.LIQUID_OUTPUT;

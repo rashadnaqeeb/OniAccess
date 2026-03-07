@@ -1300,6 +1300,11 @@ namespace STRINGS {
 			// Material attribute modifier. {0} = attribute name, {1} = sign ("+" or ""), {2} = modifier value
 			public static LocString ATTR_MODIFIER = "{0} {1}{2}";
 			public static LocString FACADE_DEFAULT = "default";
+			public static LocString HELP_PORTS = "ports";
+			public static LocString NO_PORTS = "no ports";
+			// {0} = port name, {1} = offset description
+			public static LocString PORT_AT = "{0}, {1}";
+			public static LocString PORT_HERE = "here";
 		}
 
 		// Cursor skip (jump to next tile change)
