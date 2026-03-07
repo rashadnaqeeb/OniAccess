@@ -72,9 +72,11 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		private static void CollectDeconstructOrder(int cell, List<string> parts) {
 			var buildingGo = Grid.Objects[cell, (int)ObjectLayer.Building];
 			var foundationGo = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
+			var backwallGo = Grid.Objects[cell, (int)ObjectLayer.Backwall];
 			CollectDeconstructOnLayer(buildingGo, parts);
 			if (foundationGo != null && foundationGo != buildingGo)
 				CollectDeconstructOnLayer(foundationGo, parts);
+			CollectDeconstructOnLayer(backwallGo, parts);
 		}
 
 		private static void CollectDeconstructOnLayer(
