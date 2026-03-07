@@ -1,5 +1,6 @@
 # Changelog
 
+- Build tool cursor now represents the bottom-left corner of the building. Extent announcements use "right" and "up" only (e.g. "extends 2 right, 1 up"), and port offsets are relative to the corner you're standing on
 - P key in build tool announces all ports with their offset from the cursor (e.g. "liquid input, here, liquid output, 1 up. power input, 1 right."). Offsets update when the building is rotated
 - Shift+R in build tool rotates the building backward (counterclockwise for 4-way rotation)
 - Geysers are now a top-level scanner category (after Zones) with subcategories: Gas, Liquid, Molten, Geothermal

@@ -68,6 +68,26 @@ namespace OniAccess.Handlers.Build {
 		public override string DisplayName => BuildMenuData.BuildNameAnnouncement(_def);
 		public override bool CapturesAllInput => false;
 
+		/// <summary>
+		/// Computes the cell offset from bottom-left corner to the game's
+		/// placement origin for a given building and orientation.
+		/// </summary>
+		internal static CellOffset BottomLeftToOriginOffset(BuildingDef def, Orientation orientation) {
+			int minX = 0, minY = 0;
+			foreach (var offset in def.PlacementOffsets) {
+				var rotated = Rotatable.GetRotatedCellOffset(offset, orientation);
+				if (rotated.x < minX) minX = rotated.x;
+				if (rotated.y < minY) minY = rotated.y;
+			}
+			return new CellOffset(-minX, -minY);
+		}
+
+		private int GetOriginCell() {
+			var orientation = BuildMenuData.GetCurrentOrientation();
+			var shift = BottomLeftToOriginOffset(_def, orientation);
+			return Grid.OffsetCell(TileCursor.Instance.Cell, shift);
+		}
+
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Space", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE_AND_EXIT),
@@ -326,7 +346,8 @@ namespace OniAccess.Handlers.Build {
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 				return;
 			}
-			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
+			int originCell = GetOriginCell();
+			var pos = Grid.CellToPosCBC(originCell, _def.SceneLayer);
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			string failReason;
 			if (!_def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, out failReason)) {
@@ -589,8 +610,8 @@ namespace OniAccess.Handlers.Build {
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			var parts = new List<string> { BuildMenuData.GetOrientationName(orientation, _def.PermittedRotations) };
 
-			int cell = TileCursor.Instance.Cell;
-			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
+			int originCell = GetOriginCell();
+			var pos = Grid.CellToPosCBC(originCell, _def.SceneLayer);
 			string failReason;
 			if (!_def.IsValidPlaceLocation(
 					BuildTool.Instance.visualizer, pos, orientation, out failReason))
@@ -604,8 +625,9 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		/// <summary>
-		/// Builds an extent description like "extends 1 left, 1 right, 1 up"
-		/// for buildings larger than 1x1.
+		/// Builds an extent description like "extends 2 right, 1 up"
+		/// for buildings larger than 1x1. Extents are relative to the
+		/// bottom-left corner (the cursor position).
 		/// </summary>
 		internal static string BuildExtentText(Orientation orientation) {
 			var handler = Instance;
@@ -622,19 +644,16 @@ namespace OniAccess.Handlers.Build {
 				if (rotated.y > maxY) maxY = rotated.y;
 			}
 
+			int right = maxX - minX;
+			int up = maxY - minY;
+
 			var parts = new List<string>();
-			if (minX < 0)
+			if (right > 0)
 				parts.Add(string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT, -minX));
-			if (maxX > 0)
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, right));
+			if (up > 0)
 				parts.Add(string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, maxX));
-			if (maxY > 0)
-				parts.Add(string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, maxY));
-			if (minY < 0)
-				parts.Add(string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN, -minY));
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, up));
 
 			if (parts.Count == 0) return null;
 			return string.Format(
@@ -717,11 +736,20 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
+			// Bottom-left of the rotated footprint, for offset adjustment
+			int minX = 0, minY = 0;
+			foreach (var offset in _def.PlacementOffsets) {
+				var rotated = Rotatable.GetRotatedCellOffset(offset, orientation);
+				if (rotated.x < minX) minX = rotated.x;
+				if (rotated.y < minY) minY = rotated.y;
+			}
+			var bottomLeft = new CellOffset(minX, minY);
+
 			var groupStrings = new List<string>();
 			foreach (var group in ports.Select(p => p.group).Distinct()) {
 				var items = ports.Where(p => p.group == group);
 				var formatted = items.Select(p =>
-					FormatPort(p.label, Rotatable.GetRotatedCellOffset(p.offset, orientation)));
+					FormatPort(p.label, Rotatable.GetRotatedCellOffset(p.offset, orientation), bottomLeft));
 				groupStrings.Add(string.Join(", ", formatted));
 			}
 
@@ -844,30 +872,31 @@ namespace OniAccess.Handlers.Build {
 					_def.HighEnergyParticleOutputOffset, PortGroup.Radbolt));
 		}
 
-		private static string FormatPort(string label, CellOffset rotated) {
-			string offsetDesc = FormatOffset(rotated);
+		private static string FormatPort(string label, CellOffset rotated, CellOffset bottomLeft) {
+			string offsetDesc = FormatOffset(rotated, bottomLeft);
 			return string.Format(
 				(string)STRINGS.ONIACCESS.BUILD_MENU.PORT_AT,
 				label, offsetDesc);
 		}
 
-		private static string FormatOffset(CellOffset offset) {
-			if (offset.x == 0 && offset.y == 0)
+		private static string FormatOffset(CellOffset offset, CellOffset bottomLeft) {
+			var adjusted = new CellOffset(offset.x - bottomLeft.x, offset.y - bottomLeft.y);
+			if (adjusted.x == 0 && adjusted.y == 0)
 				return (string)STRINGS.ONIACCESS.BUILD_MENU.PORT_HERE;
 
 			var parts = new List<string>();
-			if (offset.x < 0)
+			if (adjusted.x < 0)
 				parts.Add(string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT, -offset.x));
-			else if (offset.x > 0)
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT, -adjusted.x));
+			else if (adjusted.x > 0)
 				parts.Add(string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, offset.x));
-			if (offset.y > 0)
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, adjusted.x));
+			if (adjusted.y > 0)
 				parts.Add(string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, offset.y));
-			else if (offset.y < 0)
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, adjusted.y));
+			else if (adjusted.y < 0)
 				parts.Add(string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN, -offset.y));
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN, -adjusted.y));
 			return string.Join(" ", parts);
 		}
 
