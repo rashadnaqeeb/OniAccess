@@ -357,6 +357,10 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			bool hasMaterials = HasSufficientMaterials();
+			// Move the visualizer to the origin cell so the game's
+			// TryBuild check (Grid.PosToCell(visualizer) == cell) passes
+			// for buildings with LogicPorts/LogicGateBase.
+			BuildTool.Instance.visualizer.transform.SetPosition(pos);
 			_buildToolLastDragCell.SetValue(BuildTool.Instance, -1);
 			BuildTool.Instance.OnLeftClickDown(pos);
 			BuildTool.Instance.OnLeftClickUp(pos);
