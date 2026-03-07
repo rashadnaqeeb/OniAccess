@@ -406,8 +406,6 @@ namespace STRINGS {
 				public static LocString HERE = "here";
 				// {0} = cost (int)
 				public static LocString REACHABLE = "reachable, cost {0}";
-				public static LocString UNREACHABLE_SOLID = "unreachable, solid tile";
-				public static LocString UNREACHABLE_NO_FLOOR = "unreachable, nothing to stand on";
 				// {0} = offset description (e.g. "3 right 1 up")
 				public static LocString UNREACHABLE_NEAREST = "unreachable, nearest reachable {0}";
 				public static LocString UNREACHABLE_NO_NEARBY = "unreachable, no reachable tiles nearby";

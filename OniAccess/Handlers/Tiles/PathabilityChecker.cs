@@ -27,13 +27,6 @@ namespace OniAccess.Handlers.Tiles {
 					return (string)STRINGS.ONIACCESS.DUPES.PATHABILITY.HERE;
 
 				var navigator = mi.GetComponent<Navigator>();
-
-				if (Grid.IsSolidCell(cursorCell))
-					return (string)STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_SOLID;
-
-				if (!HasAnyValidNavType(cursorCell, navigator.NavGrid))
-					return (string)STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NO_FLOOR;
-
 				int cost = navigator.GetNavigationCost(cursorCell);
 				if (cost != -1)
 					return string.Format(
@@ -50,15 +43,6 @@ namespace OniAccess.Handlers.Tiles {
 				Log.Error($"PathabilityChecker.Check: {ex}");
 				return (string)STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NO_NEARBY;
 			}
-		}
-
-		private static bool HasAnyValidNavType(int cell, NavGrid navGrid) {
-			var navTable = navGrid.NavTable;
-			for (int i = 0; i < (int)NavType.NumNavTypes; i++) {
-				if (navTable.IsValid(cell, (NavType)i))
-					return true;
-			}
-			return false;
 		}
 
 		/// <summary>
