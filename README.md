@@ -183,6 +183,8 @@ The mod also announces automatically without input: pause/unpause (with speed on
 
 **Backslash** is a two-stage key. First press jumps the cursor to the current dupe's location. Second press (when already on their tile) selects them and opens their details screen.
 
+**Shift+Backslash** checks if the current dupe can reach the cursor tile, reporting path cost if reachable or the nearest reachable tile toward the dupe if not.
+
 ## Details screen
 
 The details screen has three sections: main tabs (Status, Personality, etc.), side screens (building-specific config panels), and action buttons. **Tab/Shift+Tab** cycles within the current section. **Ctrl+Tab/Ctrl+Shift+Tab** jumps between sections.
