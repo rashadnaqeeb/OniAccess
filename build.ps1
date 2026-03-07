@@ -20,7 +20,8 @@ $ErrorActionPreference = "Stop"
 # Checks ONI_MANAGED env var first, then auto-detects from Steam's library folders.
 if (-not $env:ONI_MANAGED) {
     $SteamPaths = @()
-    $DefaultSteam = "C:\Program Files (x86)\Steam"
+    $RegSteam = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Valve\Steam" -Name InstallPath -ErrorAction SilentlyContinue).InstallPath
+    $DefaultSteam = if ($RegSteam) { $RegSteam } else { "C:\Program Files (x86)\Steam" }
     if (Test-Path "$DefaultSteam\steamapps") {
         $SteamPaths += $DefaultSteam
     }
@@ -50,8 +51,9 @@ if (-not $env:ONI_MANAGED) {
 
 $ProjectDir  = "$PSScriptRoot\OniAccess"
 $BuildOutput = "$ProjectDir\bin\Debug\net472\OniAccess.dll"
-$ModDir      = "$env:USERPROFILE\Documents\Klei\OxygenNotIncluded\mods\local\OniAccess"
-$ModsJson    = "$env:USERPROFILE\Documents\Klei\OxygenNotIncluded\mods\mods.json"
+$DocsDir     = [Environment]::GetFolderPath("MyDocuments")
+$ModDir      = "$DocsDir\Klei\OxygenNotIncluded\mods\local\OniAccess"
+$ModsJson    = "$DocsDir\Klei\OxygenNotIncluded\mods\mods.json"
 
 # --- Build ---
 if (-not $NoBuild) {
