@@ -1379,6 +1379,8 @@ namespace STRINGS {
 			public static LocString NO_PATH = "no path";
 			public static LocString SET_START_FIRST = "set start with space";
 			public static LocString START_SET = "start set";
+			public static LocString UNEXPLORED = "unexplored";
+			public static LocString UNSEEN = "unseen";
 
 			// Compass directions for hex coordinate reading
 			public class COMPASS {

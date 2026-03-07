@@ -14,7 +14,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			var revealLevel = ClusterGrid.Instance.GetCellRevealLevel(location);
 			switch (revealLevel) {
 				case ClusterRevealLevel.Hidden:
-					return (string)STRINGS.UI.CLUSTERMAP.TOOLTIP_HIDDEN_HEX;
+					return (string)STRINGS.ONIACCESS.CLUSTER_MAP.UNEXPLORED;
 				case ClusterRevealLevel.Peeked:
 					return AnnouncePeeked(location);
 				default:
@@ -29,7 +29,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			var revealLevel = ClusterGrid.Instance.GetCellRevealLevel(location);
 			switch (revealLevel) {
 				case ClusterRevealLevel.Hidden:
-					return (string)STRINGS.UI.CLUSTERMAP.TOOLTIP_HIDDEN_HEX;
+					return (string)STRINGS.ONIACCESS.CLUSTER_MAP.UNEXPLORED;
 				case ClusterRevealLevel.Peeked:
 					return AnnouncePeeked(location);
 				default:
@@ -39,12 +39,12 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 
 		private static string AnnouncePeeked(AxialI location) {
 			if (!ClusterGrid.Instance.IsValidCell(location))
-				return (string)STRINGS.UI.CLUSTERMAP.TOOLTIP_HIDDEN_HEX;
+				return (string)STRINGS.ONIACCESS.CLUSTER_MAP.UNEXPLORED;
 			// Check if there are peeked entities (asteroids/POIs show as "unknown")
 			var entities = ClusterGrid.Instance.GetHiddenEntitiesOfLayerAtCell(location);
 			if (entities != null && entities.Count > 0)
 				return (string)STRINGS.UI.CLUSTERMAP.TOOLTIP_PEEKED_HEX_WITH_OBJECT;
-			return (string)STRINGS.UI.CLUSTERMAP.TOOLTIP_HIDDEN_HEX;
+			return (string)STRINGS.ONIACCESS.CLUSTER_MAP.UNSEEN;
 		}
 
 		private static string AnnounceVisible(AxialI location) {

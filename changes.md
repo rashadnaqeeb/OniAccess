@@ -1,5 +1,6 @@
 # Changelog
 
+- Cluster map: hidden and peeked hexes now announce "unexplored" or "unseen" instead of verbose tooltip text
 - Cluster map (Spaced Out DLC starmap): full keyboard navigation with hex cursor, entity selection, scanner, pathfinder, and coordinate reading
 - W opens a navigable world list to switch between asteroids and rockets (Spaced Out DLC)
 - Switching worlds now announces the destination world name, whether via the world list, number hotkeys, or starmap
