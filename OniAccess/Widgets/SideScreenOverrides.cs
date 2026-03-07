@@ -2335,8 +2335,16 @@ namespace OniAccess.Widgets {
 				});
 			}
 
-			// All element rows from all categories, sorted alphabetically
+			// Unfold every category so items are activeInHierarchy. Folded
+			// categories hide their entries container, which prevents clicking
+			// (OnSpawn never fires so button.onClick has no handler).
 			if (cats == null) return;
+			foreach (var kv in cats) {
+				if (kv.Key == GameTags.Void) continue;
+				if (!kv.Value.IsVisible) continue;
+				kv.Value.SetUnfoldedState(
+					SingleItemSelectionSideScreenBase.Category.UnfoldedStates.Unfolded);
+			}
 			var allRows = new List<System.Tuple<Tag, SingleItemSelectionRow>>();
 			foreach (var kv in cats) {
 				if (kv.Key == GameTags.Void) continue;
@@ -2352,7 +2360,7 @@ namespace OniAccess.Widgets {
 				}
 				if (catItems == null) continue;
 				foreach (var row in catItems) {
-					if (!row.gameObject.activeSelf) continue;
+					if (!row.gameObject.activeInHierarchy) continue;
 					allRows.Add(new System.Tuple<Tag, SingleItemSelectionRow>(row.tag, row));
 				}
 			}
