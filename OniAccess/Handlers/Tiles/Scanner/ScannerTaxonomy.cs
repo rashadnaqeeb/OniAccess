@@ -66,6 +66,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			public const string Infrastructure = "Infrastructure";
 			public const string Rocketry = "Rocketry";
 			public const string Geysers = "Geysers";
+			public const string Gravitas = "Gravitas";
 
 			// Networks
 			public const string Power = "Power";
@@ -121,6 +122,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 					Subcategories.Temperature, Subcategories.Wellness,
 					Subcategories.Morale, Subcategories.Infrastructure,
 					Subcategories.Rocketry, Subcategories.Geysers,
+				Subcategories.Gravitas,
 				}},
 				{ Categories.Networks, new[] {
 					Subcategories.All, Subcategories.Power, Subcategories.Liquid,

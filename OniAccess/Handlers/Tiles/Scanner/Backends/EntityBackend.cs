@@ -20,6 +20,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 		public IEnumerable<ScanEntry> Scan(int worldId) {
 			foreach (var entry in ScanBuildings(worldId))
 				yield return entry;
+			foreach (var entry in ScanGravitasProps(worldId))
+				yield return entry;
 			foreach (var entry in ScanDebris(worldId))
 				yield return entry;
 			foreach (var entry in ScanDuplicants(worldId))
@@ -79,6 +81,38 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 					Subcategory = subcategory,
 					ItemName = name,
 				};
+			}
+		}
+
+		private IEnumerable<ScanEntry> ScanGravitasProps(int worldId) {
+			var world = ClusterManager.Instance.GetWorld(worldId);
+			var bounds = world.WorldOffset;
+			var size = world.WorldSize;
+			int minX = bounds.x;
+			int minY = bounds.y;
+			int maxX = minX + size.x;
+			int maxY = minY + size.y;
+			var seen = new HashSet<int>();
+
+			for (int y = minY; y < maxY; y++) {
+				for (int x = minX; x < maxX; x++) {
+					int cell = Grid.XYToCell(x, y);
+					var go = Grid.Objects[cell, (int)ObjectLayer.Building];
+					if (go == null) continue;
+					if (go.GetComponent<Building>() != null) continue;
+					if (go.GetComponent<KPrefabID>()?.HasTag(GameTags.Gravitas) != true) continue;
+					if (!seen.Add(go.GetInstanceID())) continue;
+					if (!Grid.IsVisible(cell)) continue;
+
+					yield return new ScanEntry {
+						Cell = Grid.PosToCell(go.transform.GetPosition()),
+						Backend = this,
+						BackendData = go,
+						Category = ScannerTaxonomy.Categories.Buildings,
+						Subcategory = ScannerTaxonomy.Subcategories.Gravitas,
+						ItemName = go.GetComponent<KSelectable>()?.GetName() ?? go.name,
+					};
+				}
 			}
 		}
 

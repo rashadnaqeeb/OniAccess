@@ -526,6 +526,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ ScannerTaxonomy.Subcategories.Infrastructure, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.INFRASTRUCTURE },
 				{ ScannerTaxonomy.Subcategories.Rocketry, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROCKETRY },
 				{ ScannerTaxonomy.Subcategories.Geysers, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GEYSERS },
+				{ ScannerTaxonomy.Subcategories.Gravitas, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GRAVITAS },
 				{ ScannerTaxonomy.Subcategories.Power, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.POWER },
 				{ ScannerTaxonomy.Subcategories.Liquid, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.LIQUID },
 				{ ScannerTaxonomy.Subcategories.Gas, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GAS },

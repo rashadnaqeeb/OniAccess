@@ -699,6 +699,7 @@ namespace STRINGS {
 				public static LocString INFRASTRUCTURE = "Infrastructure";
 				public static LocString ROCKETRY = "Rocketry";
 				public static LocString GEYSERS = "Geysers";
+				public static LocString GRAVITAS = "Gravitas";
 
 				// Networks
 				public static LocString POWER = "Power";
