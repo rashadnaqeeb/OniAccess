@@ -1,5 +1,6 @@
 # Changelog
 
+- Geysers are now a top-level scanner category (after Zones) with subcategories: Gas, Liquid, Molten, Geothermal
 - Buried geysers no longer appear in the tile cursor or scanner until exposed by digging
 - Backspace returns to pre-jump position after both \ dupe jump and Home scanner teleport
 - Shift+\ checks if the current dupe can reach the cursor tile, reporting cost if reachable or the nearest reachable tile if not

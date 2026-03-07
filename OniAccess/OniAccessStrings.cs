@@ -680,6 +680,7 @@ namespace STRINGS {
 				public static LocString AUTOMATION = "Automation";
 				public static LocString DEBRIS = "Debris";
 				public static LocString ZONES = "Zones";
+				public static LocString GEYSERS = "Geysers";
 				public static LocString LIFE = "Life";
 				public static LocString SEARCH = "Search";
 			}
@@ -719,7 +720,6 @@ namespace STRINGS {
 				public static LocString MORALE = "Morale";
 				public static LocString INFRASTRUCTURE = "Infrastructure";
 				public static LocString ROCKETRY = "Rocketry";
-				public static LocString GEYSERS = "Geysers";
 				public static LocString GRAVITAS = "Gravitas";
 
 				// Networks
@@ -745,6 +745,9 @@ namespace STRINGS {
 				public static LocString ORDERS = "Orders";
 				public static LocString ROOMS = "Rooms";
 				public static LocString BIOMES = "Biomes";
+
+				// Geysers
+				public static LocString GEOTHERMAL = "Geothermal";
 
 				// Life
 				public static LocString DUPLICANTS = "Duplicants";

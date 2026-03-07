@@ -482,6 +482,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ ScannerTaxonomy.Categories.Automation, STRINGS.ONIACCESS.SCANNER.CATEGORIES.AUTOMATION },
 				{ ScannerTaxonomy.Categories.Debris, STRINGS.ONIACCESS.SCANNER.CATEGORIES.DEBRIS },
 				{ ScannerTaxonomy.Categories.Zones, STRINGS.ONIACCESS.SCANNER.CATEGORIES.ZONES },
+				{ ScannerTaxonomy.Categories.Geysers, STRINGS.ONIACCESS.SCANNER.CATEGORIES.GEYSERS },
 				{ ScannerTaxonomy.Categories.Life, STRINGS.ONIACCESS.SCANNER.CATEGORIES.LIFE },
 			};
 		}
@@ -513,8 +514,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ ScannerTaxonomy.Subcategories.Morale, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MORALE },
 				{ ScannerTaxonomy.Subcategories.Infrastructure, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.INFRASTRUCTURE },
 				{ ScannerTaxonomy.Subcategories.Rocketry, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROCKETRY },
-				{ ScannerTaxonomy.Subcategories.Geysers, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GEYSERS },
 				{ ScannerTaxonomy.Subcategories.Gravitas, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GRAVITAS },
+				{ ScannerTaxonomy.Subcategories.Geothermal, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GEOTHERMAL },
 				{ ScannerTaxonomy.Subcategories.Power, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.POWER },
 				{ ScannerTaxonomy.Subcategories.Liquid, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.LIQUID },
 				{ ScannerTaxonomy.Subcategories.Gas, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GAS },

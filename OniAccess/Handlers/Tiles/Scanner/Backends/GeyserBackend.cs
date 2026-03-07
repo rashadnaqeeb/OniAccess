@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 	/// <summary>
-	/// Backend for Buildings > Geysers. Iterates Components.Geysers and
-	/// Components.GeothermalVents. Each geyser is one instance.
+	/// Backend for the Geysers category. Iterates Components.Geysers and
+	/// Components.GeothermalVents, subcategorized by geyser shape.
 	/// </summary>
 	public class GeyserBackend: IScannerBackend {
 
@@ -15,7 +15,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				if (!Grid.IsVisible(cell)) continue;
 				var uncoverable = go.GetComponent<Uncoverable>();
 				if (uncoverable != null && !uncoverable.IsUncovered) continue;
-				yield return MakeEntry(go, cell);
+				yield return MakeEntry(go, cell, ShapeSubcategory(geyser));
 			}
 
 			foreach (var vent in Components.GeothermalVents.GetItems(worldId)) {
@@ -24,7 +24,7 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				if (!Grid.IsVisible(cell)) continue;
 				var uncoverable = go.GetComponent<Uncoverable>();
 				if (uncoverable != null && !uncoverable.IsUncovered) continue;
-				yield return MakeEntry(go, cell);
+				yield return MakeEntry(go, cell, ScannerTaxonomy.Subcategories.Geothermal);
 			}
 		}
 
@@ -41,16 +41,25 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 			return GetGeyserName(go) ?? entry.ItemName;
 		}
 
-		private ScanEntry MakeEntry(GameObject go, int cell) {
+		private ScanEntry MakeEntry(GameObject go, int cell, string subcategory) {
 			string name = GetGeyserName(go) ?? go.name;
 			return new ScanEntry {
 				Cell = cell,
 				Backend = this,
 				BackendData = go,
-				Category = ScannerTaxonomy.Categories.Buildings,
-				Subcategory = ScannerTaxonomy.Subcategories.Geysers,
+				Category = ScannerTaxonomy.Categories.Geysers,
+				Subcategory = subcategory,
 				ItemName = name,
 			};
+		}
+
+		private static string ShapeSubcategory(Geyser geyser) {
+			switch (geyser.configuration.geyserType.shape) {
+				case GeyserConfigurator.GeyserShape.Gas: return ScannerTaxonomy.Subcategories.Gas;
+				case GeyserConfigurator.GeyserShape.Liquid: return ScannerTaxonomy.Subcategories.Liquid;
+				case GeyserConfigurator.GeyserShape.Molten: return ScannerTaxonomy.Subcategories.Molten;
+				default: return ScannerTaxonomy.Subcategories.Gas;
+			}
 		}
 
 		private static string GetGeyserName(GameObject go) {

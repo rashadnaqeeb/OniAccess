@@ -16,6 +16,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			public const string Automation = "Automation";
 			public const string Debris = "Debris";
 			public const string Zones = "Zones";
+			public const string Geysers = "Geysers";
 			public const string Life = "Life";
 		}
 
@@ -28,6 +29,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			Categories.Automation,
 			Categories.Debris,
 			Categories.Zones,
+			Categories.Geysers,
 			Categories.Life,
 		};
 
@@ -65,7 +67,6 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			public const string Morale = "Morale";
 			public const string Infrastructure = "Infrastructure";
 			public const string Rocketry = "Rocketry";
-			public const string Geysers = "Geysers";
 			public const string Gravitas = "Gravitas";
 
 			// Networks
@@ -91,6 +92,9 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			public const string Orders = "Orders";
 			public const string Rooms = "Rooms";
 			public const string Biomes = "Biomes";
+
+			// Geysers
+			public const string Geothermal = "Geothermal";
 
 			// Life
 			public const string Duplicants = "Duplicants";
@@ -121,7 +125,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 					Subcategories.Storage, Subcategories.Refining,
 					Subcategories.Temperature, Subcategories.Wellness,
 					Subcategories.Morale, Subcategories.Infrastructure,
-					Subcategories.Rocketry, Subcategories.Geysers,
+					Subcategories.Rocketry,
 				Subcategories.Gravitas,
 				}},
 				{ Categories.Networks, new[] {
@@ -139,6 +143,10 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ Categories.Zones, new[] {
 					Subcategories.All, Subcategories.Orders, Subcategories.Rooms,
 					Subcategories.Biomes,
+				}},
+				{ Categories.Geysers, new[] {
+					Subcategories.All, Subcategories.Gas, Subcategories.Liquid,
+					Subcategories.Molten, Subcategories.Geothermal,
 				}},
 				{ Categories.Life, new[] {
 					Subcategories.All, Subcategories.Duplicants,
