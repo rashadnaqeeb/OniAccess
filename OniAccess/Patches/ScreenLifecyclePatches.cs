@@ -287,4 +287,11 @@ namespace OniAccess.Patches {
 		private static void Postfix(KScreen __instance, bool show) =>
 			ShowDispatch.Handle(__instance, show);
 	}
+
+	/// ClusterMapScreen declares OnShow directly. Patch it for show/hide lifecycle.
+	[HarmonyPatch(typeof(ClusterMapScreen), "OnShow")]
+	internal static class ClusterMapScreen_OnShow_Patch {
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
+	}
 }

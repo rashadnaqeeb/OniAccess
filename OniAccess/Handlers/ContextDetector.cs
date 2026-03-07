@@ -312,6 +312,12 @@ namespace OniAccess.Handlers {
 			Register<StarmapScreen>(screen => new StarmapScreenHandler(screen));
 			_showPatchedTypes.Add(typeof(StarmapScreen));
 
+			// ClusterMapScreen (KScreen -- DLC starmap/hex grid)
+			// Show patch pushes/pops via ContextDetector since ManagementMenu uses Show()
+			Register<ClusterMapScreen>(screen =>
+				new Screens.ClusterMap.ClusterMapHandler(screen));
+			_showPatchedTypes.Add(typeof(ClusterMapScreen));
+
 			Util.Log.Debug("ContextDetector.RegisterMenuHandlers: Phase 3 handlers registered");
 		}
 

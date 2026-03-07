@@ -1358,6 +1358,63 @@ namespace STRINGS {
 			public static LocString ANALYZE_HELP = "Analyze or suspend analysis";
 		}
 
+		// Cluster map (Spaced Out DLC starmap) handler
+		public class CLUSTER_MAP {
+			public static LocString HANDLER_NAME = "Starmap";
+			public static LocString SELECT_OBJECT = "select object";
+			public static LocString NOTHING_TO_SELECT = "nothing to select";
+			public static LocString SELECT_DESTINATION = "select destination";
+			// {0} = path length
+			public static LocString DESTINATION_SET = "destination set, {0} hexes";
+			public static LocString DESTINATION_CANCELLED = "destination cancelled";
+			// {0} = hex distance, {1} = compass direction
+			public static LocString HEX_COORDINATES = "{0} {1}";
+			public static LocString AT_CENTER = "center";
+			// {0} = path length
+			public static LocString PATH_RESULT = "path: {0}";
+			// {0} = total path, {1} = fog count
+			public static LocString PATH_THROUGH_FOG = "path: {0}, {1} through fog";
+			// {0} = total path, {1} = fog count, {2} = visible-only path
+			public static LocString PATH_FOG_WITH_ALT = "path: {0}, {1} through fog. Without scanner: {2}";
+			public static LocString NO_PATH = "no path";
+			public static LocString SET_START_FIRST = "set start with space";
+			public static LocString START_SET = "start set";
+
+			// Compass directions for hex coordinate reading
+			public class COMPASS {
+				public static LocString NORTH = "north";
+				public static LocString NORTHEAST = "northeast";
+				public static LocString EAST = "east";
+				public static LocString SOUTHEAST = "southeast";
+				public static LocString SOUTH = "south";
+				public static LocString SOUTHWEST = "southwest";
+				public static LocString WEST = "west";
+				public static LocString NORTHWEST = "northwest";
+			}
+
+			// Scanner categories for cluster map entities
+			public class CATEGORIES {
+				public static LocString ALL = "All";
+				public static LocString ASTEROIDS = "Asteroids";
+				public static LocString ROCKETS = "Rockets";
+				public static LocString POIS = "Points of interest";
+				public static LocString METEORS = "Meteor showers";
+				public static LocString UNKNOWN = "Unknown";
+			}
+
+			// Help entries
+			public class HELP {
+				public static LocString HEX_MOVE = "Move cursor on hex grid";
+				public static LocString HEX_MOVE_ARROWS = "Move cursor (diagonal varies by row)";
+				public static LocString READ_COORDS = "Read hex coordinates";
+				public static LocString READ_TOOLTIP = "Read entity details";
+				public static LocString SELECT_ENTITY = "Select entity";
+				public static LocString SWITCH_WORLD = "Switch to asteroid";
+				public static LocString PATHFIND_START = "Set pathfinder start";
+				public static LocString PATHFIND_CALC = "Calculate path to cursor";
+			}
+		}
+
 		// Resource browser and pinned resource readout
 		public class RESOURCES {
 			public static LocString BROWSER_TITLE = "Resources";
