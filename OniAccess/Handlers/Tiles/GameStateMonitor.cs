@@ -106,6 +106,29 @@ namespace OniAccess.Handlers.Tiles {
 			int worldId = ClusterManager.Instance.activeWorldId;
 			var inventory = ClusterManager.Instance.activeWorld.worldInventory;
 
+			// Demolior
+			try {
+				if (Game.IsDlcActiveForCurrentSave("DLC4_ID")) {
+					var eventInstance = GameplayEventManager.Instance
+						.GetGameplayEventInstance(Db.Get().GameplayEvents.LargeImpactor.Id);
+					if (eventInstance != null) {
+						var smi = (LargeImpactorEvent.StatesInstance)eventInstance.smi;
+						if (smi?.impactorInstance != null) {
+							var status = smi.impactorInstance.GetSMI<LargeImpactorStatus.Instance>();
+							if (status != null) {
+								int percent = status.Health * 100 / status.def.MAX_HEALTH;
+								string cycles = GameUtil.GetFormattedCycles(
+									status.TimeRemainingBeforeCollision);
+								parts.Add(string.Format(
+									(string)STRINGS.ONIACCESS.DEMOLIOR.STATUS, percent, cycles));
+							}
+						}
+					}
+				}
+			} catch (System.Exception ex) {
+				Log.Error($"SpeakColonyStatus demolior: {ex}");
+			}
+
 			// Dupes
 			try {
 				int local = Components.LiveMinionIdentities.GetWorldItems(worldId).Count;

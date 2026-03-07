@@ -1,5 +1,6 @@
 # Changelog
 
+- Demolior (DLC4 large impactor): spoken announcements for discovery, impact, destruction, and damage milestones; S key reports Demolior health and time remaining; activating the Demolior notification focuses the camera on the impact zone
 - Fix: spurious diagnostic, resource, and world announcements during save load are now suppressed
 - Fix: notification submenu now shows message titles instead of internal UI object names and coordinates
 - Activating an achievement notification announces "opening achievements" and each unlocked achievement name

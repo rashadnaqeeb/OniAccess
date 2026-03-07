@@ -18,7 +18,8 @@ namespace OniAccess.Handlers.Notifications {
 				if (notification.customClickCallback != null) {
 					notification.customClickCallback(notification.customClickData);
 				} else {
-					if (notification.clickFocus != null) {
+					if (notification.clickFocus != null
+						|| notification.customNotificationID == "LargeImpactNotification") {
 						FocusCamera(notification);
 					} else if (notification.Notifier != null) {
 						var selectable = notification.Notifier.GetComponent<KSelectable>();
@@ -38,6 +39,22 @@ namespace OniAccess.Handlers.Notifications {
 		}
 
 		private static void FocusCamera(Notification notification) {
+			try {
+				if (notification.customNotificationID == "LargeImpactNotification") {
+					var eventInstance = GameplayEventManager.Instance
+						.GetGameplayEventInstance(Db.Get().GameplayEvents.LargeImpactor.Id);
+					var smi = (LargeImpactorEvent.StatesInstance)eventInstance.smi;
+					var stamp = smi.impactorInstance.GetComponent<LargeImpactorCrashStamp>();
+					int cell = Grid.XYToCell(stamp.stampLocation.x, stamp.stampLocation.y);
+					int midSkyCell = Grid.FindMidSkyCellAlignedWithCellInWorld(
+						cell, eventInstance.worldId);
+					GameUtil.FocusCamera(midSkyCell);
+					return;
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"NotificationActivator LargeImpactor focus: {ex.Message}");
+			}
+
 			var transform = notification.clickFocus;
 			var position = transform.GetPosition();
 			position.z = -40f;

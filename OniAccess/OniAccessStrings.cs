@@ -430,6 +430,17 @@ namespace STRINGS {
 			public static LocString ELECTROBANKS = "{0}";
 		}
 
+		public class DEMOLIOR {
+			// {0} = formatted cycles until impact
+			public static LocString DISCOVERED = "Demolior detected, impact in {0}";
+			public static LocString IMPACTED = "Demolior has impacted the colony";
+			public static LocString DESTROYED = "Demolior destroyed";
+			// {0} = health percentage (int)
+			public static LocString HEALTH = "Demolior {0}%";
+			// {0} = health percentage (int), {1} = formatted cycles until impact
+			public static LocString STATUS = "Demolior {0}%, {1}";
+		}
+
 		// Tooltip summary readout at cursor
 		public class TOOLTIP {
 			public static LocString NO_TOOLTIP = "no tooltip";
