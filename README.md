@@ -21,7 +21,7 @@ The build script handles this automatically for development. Full install instru
 
 ## Tile cursor
 
-The tile cursor is your primary way of exploring the map. Arrow keys move one tile at a time. Each tile announces its element (with mass), any building, entities, active orders, and debris -- in that order. Gases are suppressed when a building or foundation covers the cell.
+The tile cursor is your primary way of exploring the map. Arrow keys move one tile at a time. Each tile announces any building, its element (with mass), entities, active orders, and debris -- in that order. Gases are suppressed when a building or foundation covers the cell.
 
 Most overlays prepend one extra reading before the standard information. Temperature adds the temperature (with a warning near phase transitions), Light adds lux, Radiation adds rads, Decor adds the value with sign, and Disease adds germ counts by type or "clean." The utility overlays (Power, Plumbing, Ventilation, Conveyor) add network/conduit data, and Automation adds signal state. Rooms prepends the room name, announced once per room rather than every tile.
 
@@ -107,11 +107,11 @@ Selecting a tool (Dig, Deconstruct, Mop, etc.) enters tool mode. The cursor stil
 
 **Enter** confirms all pending rectangles. If no rectangle is set, Enter confirms a single cell under the cursor. **Shift+Space** clears the rectangle under the cursor.
 
-With a big cursor active, **Space** sets both corners at once, creating a rectangle the size of the cursor area. You can move and press Space again to add more rectangles. The disconnect tool always uses single-cell selection regardless of cursor size.
+With a big cursor active, **Space** sets both corners at once, creating a rectangle the size of the cursor area. You can move and press Space again to add more rectangles. **Enter** also applies the full cursor rectangle but confirms immediately, closing the tool. The disconnect tool always uses single-cell selection regardless of cursor size.
 
 ### Priority
 
-**0-9** sets the priority for future placements. 0 is emergency (top priority/yellow alert), 1-9 are normal priorities. The priority is announced when you activate a tool and when you change it. Confirmation messages include the priority (e.g., "marked 12 items for digging at priority 5").
+**0-9** sets the priority for future placements. 0 is emergency (top priority/yellow alert), 1-9 are normal priorities. The priority is announced when you activate a tool and when you change it.
 
 ### Filters
 
