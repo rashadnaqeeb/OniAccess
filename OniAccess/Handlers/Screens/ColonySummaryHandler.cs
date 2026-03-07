@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using Database;
 using HarmonyLib;
+using OniAccess.Handlers.Notifications;
 
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
@@ -69,6 +71,7 @@ namespace OniAccess.Handlers.Screens {
 		private KButton _quitToMainMenuButton;
 		private Traverse _explorerGridField;
 		private Traverse _screenTraverse;
+		private UnityEngine.Coroutine _achievementCoroutine;
 
 		private int SectionCount => _inColonyDetail ? DetailSectionCount : ExplorerSectionCount;
 
@@ -117,6 +120,26 @@ namespace OniAccess.Handlers.Screens {
 
 			if (_items.Count > 0)
 				Speech.SpeechPipeline.SpeakQueued(BuildSpeech(_items[0]));
+
+			var pendingIds = NotificationActivator.PendingAchievementIds;
+			if (pendingIds != null) {
+				NotificationActivator.PendingAchievementIds = null;
+				var names = new List<string>();
+				for (int i = 0; i < pendingIds.Count; i++) {
+					var ach = Db.Get().ColonyAchievements.Get(pendingIds[i]);
+					if (ach != null) names.Add(ach.Name);
+				}
+				if (names.Count > 0)
+					_achievementCoroutine = _screen.StartCoroutine(AnnounceAchievements(names));
+			}
+		}
+
+		public override void OnDeactivate() {
+			if (_achievementCoroutine != null) {
+				_screen.StopCoroutine(_achievementCoroutine);
+				_achievementCoroutine = null;
+			}
+			base.OnDeactivate();
 		}
 
 		private void CacheButtons() {
@@ -147,6 +170,17 @@ namespace OniAccess.Handlers.Screens {
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ColonySummaryHandler.LoadColonyData: {ex.Message}");
 			}
+		}
+
+		private IEnumerator AnnounceAchievements(List<string> names) {
+			for (int i = 0; i < names.Count; i++) {
+				float delay = i == 0 ? 1.5f + i * 2.0f : 2.0f;
+				yield return SequenceUtil.WaitForSecondsRealtime(delay);
+				string text = string.Format(
+					(string)STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED, names[i]);
+				Speech.SpeechPipeline.SpeakInterrupt(text);
+			}
+			_achievementCoroutine = null;
 		}
 
 		// ========================================
