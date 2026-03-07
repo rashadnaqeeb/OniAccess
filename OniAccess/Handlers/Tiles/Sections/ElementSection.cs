@@ -3,21 +3,22 @@ using System.Collections.Generic;
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Speaks Grid.Element[cell].name with a glance-friendly mass.
-	/// Suppressed when a foreground building (ObjectLayer.Building) or foundation
-	/// tile (ObjectLayer.FoundationTile) is present, unless the Oxygen overlay
-	/// is active, the element is a liquid, or the element is a solid.
-	/// Liquids pooling on buildings indicate submersion; solids indicate
-	/// entombment. Both are gameplay-critical.
+	/// Suppressed when a foundation tile is present (the tile IS the solid
+	/// element, so announcing both is redundant), or when a foreground
+	/// building is present and the element is gas. Exceptions:
+	/// - Oxygen overlay: always speak the element.
+	/// - Liquid on a building: submersion, gameplay-critical.
+	/// - Solid on a building (not foundation tile): entombment, gameplay-critical.
 	/// Still speaks when only a Backwall (drywall, tempshift plate) is present,
 	/// since sighted players see the element through background buildings.
 	/// </summary>
 	public class ElementSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var element = Grid.Element[cell];
-			if (OverlayScreen.Instance.GetMode() != OverlayModes.Oxygen.ID && !element.IsLiquid && !element.IsSolid) {
-				if (Grid.Objects[cell, (int)ObjectLayer.Building] != null)
-					return System.Array.Empty<string>();
+			if (OverlayScreen.Instance.GetMode() != OverlayModes.Oxygen.ID && !element.IsLiquid) {
 				if (Grid.Objects[cell, (int)ObjectLayer.FoundationTile] != null)
+					return System.Array.Empty<string>();
+				if (!element.IsSolid && Grid.Objects[cell, (int)ObjectLayer.Building] != null)
 					return System.Array.Empty<string>();
 			}
 			if (element == null) return System.Array.Empty<string>();
