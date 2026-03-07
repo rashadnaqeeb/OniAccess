@@ -62,9 +62,9 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		/// <summary>
-		/// Expands outward from the cursor in concentric rings, finding
-		/// the nearest cell the dupe can reach. Ties are broken by
-		/// proximity to the dupe (closer to dupe wins).
+		/// Expands outward from the cursor in concentric rings, searching
+		/// only the half-plane toward the dupe. Finds the nearest reachable
+		/// cell; ties broken by proximity to the dupe.
 		/// </summary>
 		private static string FindNearestReachable(
 			int cursorCell, int dupeCell, Navigator navigator) {
@@ -72,6 +72,11 @@ namespace OniAccess.Handlers.Tiles {
 			int cursorY = Grid.CellRow(cursorCell);
 			int dupeX = Grid.CellColumn(dupeCell);
 			int dupeY = Grid.CellRow(dupeCell);
+
+			// Direction vector from cursor to dupe (unnormalized is fine
+			// for dot product sign checks)
+			int toDupeX = dupeX - cursorX;
+			int toDupeY = dupeY - cursorY;
 
 			int bestCell = Grid.InvalidCell;
 			int bestDist = int.MaxValue;
@@ -84,6 +89,10 @@ namespace OniAccess.Handlers.Tiles {
 				for (int dx = -ring; dx <= ring; dx++) {
 					for (int dy = -ring; dy <= ring; dy++) {
 						if (Math.Abs(dx) != ring && Math.Abs(dy) != ring)
+							continue;
+
+						// Only search the dupe's half-plane
+						if (dx * toDupeX + dy * toDupeY <= 0)
 							continue;
 
 						int x = cursorX + dx;
