@@ -1150,6 +1150,7 @@ namespace STRINGS {
 			public static LocString NEXT_MESSAGE = "next message";
 			public static LocString DONT_SHOW_AGAIN = "don't show again";
 			public static LocString PLAY_VIDEO = "play video";
+			public static LocString OPENING_ACHIEVEMENTS = "opening achievements";
 		}
 
 		// In-game encyclopedia (Codex) browser

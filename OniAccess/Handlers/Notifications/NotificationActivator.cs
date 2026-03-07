@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 
+using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Notifications {
 	/// <summary>
@@ -71,8 +72,10 @@ namespace OniAccess.Handlers.Notifications {
 		/// NotificationScreen.ShowMessage behavior.
 		/// </summary>
 		private static void ShowMessage(MessageNotification mn) {
-			mn.message.OnClick();
 			if (!mn.message.ShowDialog()) {
+				if (mn.message is AchievementEarnedMessage)
+					AnnounceAchievements();
+				mn.message.OnClick();
 				Messenger.Instance.RemoveMessage(mn.message);
 				mn.Clear();
 				return;
@@ -125,6 +128,18 @@ namespace OniAccess.Handlers.Notifications {
 
 			Messenger.Instance.RemoveMessage(mn.message);
 			mn.Clear();
+		}
+
+		private static void AnnounceAchievements() {
+			SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.NOTIFICATIONS.OPENING_ACHIEVEMENTS);
+			var tracker = SaveGame.Instance?.GetComponent<ColonyAchievementTracker>();
+			if (tracker == null) return;
+			var pending = tracker.achievementsToDisplay;
+			for (int i = 0; i < pending.Count; i++) {
+				var achievement = Db.Get().ColonyAchievements.Get(pending[i]);
+				if (achievement != null)
+					SpeechPipeline.SpeakQueued(achievement.Name);
+			}
 		}
 
 		/// <summary>

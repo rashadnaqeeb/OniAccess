@@ -1,5 +1,7 @@
 # Changelog
 
+- Fix: notification submenu now shows message titles instead of internal UI object names and coordinates
+- Activating an achievement notification announces "opening achievements" and each unlocked achievement name
 - Fix: deconstruct tool now works on Gravitas buildings and other demolishable structures (Gene Shuffler, Cryo Tank, etc.)
 - Gravitas ruins (doors, walls, desks, and other props) now appear in the scanner under Buildings > Gravitas
 - Tile cursor now reports deconstruction orders on backwalls

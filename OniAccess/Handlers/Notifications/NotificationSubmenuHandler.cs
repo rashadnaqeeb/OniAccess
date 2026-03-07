@@ -49,6 +49,8 @@ namespace OniAccess.Handlers.Notifications {
 			var group = FindGroup();
 			if (group == null || index < 0 || index >= group.Count) return null;
 			var n = group.Members[index];
+			if (n is MessageNotification mn)
+				return mn.message.GetTitle();
 			string name = StripBullet(n.NotifierName);
 			if (string.IsNullOrEmpty(name))
 				return string.Format(
