@@ -5,6 +5,7 @@ using System.Reflection;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Build;
 using OniAccess.Handlers.Notifications;
+using OniAccess.Handlers.Screens.ClusterMap;
 using OniAccess.Handlers.Tiles;
 using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Speech;
@@ -259,6 +260,21 @@ namespace OniAccess.Tests {
 			results.Add(ValidateClusterClosestCellSelected());
 			results.Add(ValidateClusterStaleCellsRemoved());
 			results.Add(ValidateClusterSingleSurvivor());
+
+			// --- ClusterScanSnapshot ---
+			results.Add(ClusterSnapshotCategoryOrder());
+			results.Add(ClusterSnapshotAllSharesReferences());
+			results.Add(ClusterSnapshotItemSortBySortKeyThenDistance());
+			results.Add(ClusterSnapshotSkipAllCategory());
+			results.Add(ClusterSnapshotRemovePrunesFromAllAndNamed());
+			results.Add(ClusterSnapshotRemoveLastPrunesCategory());
+
+			// --- ClusterMapTaxonomy ---
+			results.Add(ClusterTaxonomySortIndicesRoundTrip());
+
+			// --- HexCoordinates ---
+			results.Add(HexCompassAllOctants());
+			results.Add(HexFormatSameHexReturnsHere());
 
 			// --- CursorBookmarks.DigitKeyToIndex ---
 			results.Add(DigitKeyAlpha1Through9());
@@ -2774,6 +2790,219 @@ namespace OniAccess.Tests {
 			CleanupLoadGate();
 			return Assert("LoadGateStartingUnpausedStillWaits", ok,
 				$"notYet={notYet}, still={still}, ready={ready}");
+		}
+		// ========================================
+		// ClusterScanSnapshot tests
+		// ========================================
+
+		private static ClusterScanEntry MakeClusterEntry(
+				int r, int q, string category, string itemName, int sortKey = 0) {
+			return new ClusterScanEntry {
+				Location = new AxialI(r, q),
+				Category = category,
+				ItemName = itemName,
+				SortKey = sortKey,
+			};
+		}
+
+		private static (string, bool, string) ClusterSnapshotCategoryOrder() {
+			var entries = new List<ClusterScanEntry> {
+				MakeClusterEntry(1, 0, ClusterMapTaxonomy.Categories.Meteors, "Comet"),
+				MakeClusterEntry(2, 0, ClusterMapTaxonomy.Categories.Asteroids, "Swamp"),
+				MakeClusterEntry(3, 0, ClusterMapTaxonomy.Categories.POIs, "Beacon"),
+				MakeClusterEntry(4, 0, ClusterMapTaxonomy.Categories.Rockets, "Ship"),
+			};
+			var origin = new AxialI(0, 0);
+			var snap = new ClusterScanSnapshot(entries, origin);
+
+			// Index 0 = All, then Asteroids, Rockets, POIs, Meteors
+			var names = new List<string>();
+			for (int i = 0; i < snap.CategoryCount; i++)
+				names.Add(snap.GetCategory(i).Name);
+
+			bool ok = snap.CategoryCount == 5
+				&& names[0] == ClusterMapTaxonomy.Categories.All
+				&& names[1] == ClusterMapTaxonomy.Categories.Asteroids
+				&& names[2] == ClusterMapTaxonomy.Categories.Rockets
+				&& names[3] == ClusterMapTaxonomy.Categories.POIs
+				&& names[4] == ClusterMapTaxonomy.Categories.Meteors;
+			return Assert("ClusterSnapshotCategoryOrder", ok,
+				$"got [{string.Join(", ", names)}]");
+		}
+
+		private static (string, bool, string) ClusterSnapshotAllSharesReferences() {
+			var entries = new List<ClusterScanEntry> {
+				MakeClusterEntry(1, 0, ClusterMapTaxonomy.Categories.Asteroids, "Swamp"),
+				MakeClusterEntry(2, 0, ClusterMapTaxonomy.Categories.Asteroids, "Swamp"),
+			};
+			var origin = new AxialI(0, 0);
+			var snap = new ClusterScanSnapshot(entries, origin);
+
+			// "All" category is at index 0, "Asteroids" at index 1
+			var allCat = snap.GetCategory(0);
+			var namedCat = snap.GetCategory(1);
+			bool sameRef = allCat.Items[0] == namedCat.Items[0];
+			bool ok = sameRef && allCat.Items[0].Instances.Count == 2;
+			return Assert("ClusterSnapshotAllSharesReferences", ok,
+				$"sameRef={sameRef}, instances={allCat.Items[0].Instances.Count}");
+		}
+
+		private static (string, bool, string) ClusterSnapshotItemSortBySortKeyThenDistance() {
+			var origin = new AxialI(0, 0);
+			// "Far" has lower sort key (0) -> should come first
+			// "Near" has higher sort key (5) -> should come second despite being closer
+			var entries = new List<ClusterScanEntry> {
+				MakeClusterEntry(5, 0, ClusterMapTaxonomy.Categories.Asteroids, "Near", sortKey: 5),
+				MakeClusterEntry(10, 0, ClusterMapTaxonomy.Categories.Asteroids, "Far", sortKey: 0),
+			};
+			var snap = new ClusterScanSnapshot(entries, origin);
+			var asteroids = snap.GetCategory(1); // index 0 is All
+			bool sortKeyWins = asteroids.Items[0].ItemName == "Far"
+				&& asteroids.Items[1].ItemName == "Near";
+
+			// Same sort key, different distances: closer first
+			var entries2 = new List<ClusterScanEntry> {
+				MakeClusterEntry(10, 0, ClusterMapTaxonomy.Categories.Asteroids, "FarAst", sortKey: 1),
+				MakeClusterEntry(1, 0, ClusterMapTaxonomy.Categories.Asteroids, "CloseAst", sortKey: 1),
+			};
+			var snap2 = new ClusterScanSnapshot(entries2, origin);
+			var ast2 = snap2.GetCategory(1);
+			bool distanceBreaksTie = ast2.Items[0].ItemName == "CloseAst"
+				&& ast2.Items[1].ItemName == "FarAst";
+
+			bool ok = sortKeyWins && distanceBreaksTie;
+			return Assert("ClusterSnapshotItemSortBySortKeyThenDistance", ok,
+				$"sortKeyWins={sortKeyWins}, distanceBreaksTie={distanceBreaksTie}");
+		}
+
+		private static (string, bool, string) ClusterSnapshotSkipAllCategory() {
+			var entries = new List<ClusterScanEntry> {
+				MakeClusterEntry(1, 0, ClusterMapTaxonomy.Categories.Asteroids, "Swamp"),
+				MakeClusterEntry(2, 0, ClusterMapTaxonomy.Categories.Rockets, "Ship"),
+			};
+			var origin = new AxialI(0, 0);
+			var snap = new ClusterScanSnapshot(entries, origin, skipAllCategory: true);
+
+			bool noAll = true;
+			for (int i = 0; i < snap.CategoryCount; i++) {
+				if (snap.GetCategory(i).Name == ClusterMapTaxonomy.Categories.All)
+					noAll = false;
+			}
+			bool ok = noAll && snap.CategoryCount == 2;
+			return Assert("ClusterSnapshotSkipAllCategory", ok,
+				$"noAll={noAll}, count={snap.CategoryCount}");
+		}
+
+		private static (string, bool, string) ClusterSnapshotRemovePrunesFromAllAndNamed() {
+			var entries = new List<ClusterScanEntry> {
+				MakeClusterEntry(1, 0, ClusterMapTaxonomy.Categories.Asteroids, "Swamp"),
+				MakeClusterEntry(2, 0, ClusterMapTaxonomy.Categories.Asteroids, "Swamp"),
+				MakeClusterEntry(3, 0, ClusterMapTaxonomy.Categories.Rockets, "Ship"),
+			};
+			var origin = new AxialI(0, 0);
+			var snap = new ClusterScanSnapshot(entries, origin);
+
+			// Remove one Swamp instance — item should survive with 1 instance
+			var allCat = snap.GetCategory(0);
+			var swampItem = allCat.Items[0].ItemName == "Swamp"
+				? allCat.Items[0] : allCat.Items[1];
+			var entryToRemove = swampItem.Instances[0];
+			snap.RemoveInstance(swampItem, entryToRemove);
+
+			bool itemSurvived = swampItem.Instances.Count == 1;
+			// Both All and Asteroids should still have the Swamp item
+			bool allHasSwamp = false;
+			for (int i = 0; i < allCat.Items.Count; i++) {
+				if (allCat.Items[i].ItemName == "Swamp") allHasSwamp = true;
+			}
+			bool ok = itemSurvived && allHasSwamp && snap.CategoryCount == 3;
+			return Assert("ClusterSnapshotRemovePrunesFromAllAndNamed", ok,
+				$"survived={itemSurvived}, allHasSwamp={allHasSwamp}, cats={snap.CategoryCount}");
+		}
+
+		private static (string, bool, string) ClusterSnapshotRemoveLastPrunesCategory() {
+			var entries = new List<ClusterScanEntry> {
+				MakeClusterEntry(1, 0, ClusterMapTaxonomy.Categories.Rockets, "Ship"),
+			};
+			var origin = new AxialI(0, 0);
+			var snap = new ClusterScanSnapshot(entries, origin);
+
+			// All(1 item) + Rockets(1 item) = 2 categories
+			bool startedWith2 = snap.CategoryCount == 2;
+			var allCat = snap.GetCategory(0);
+			var shipItem = allCat.Items[0];
+			snap.RemoveInstance(shipItem, shipItem.Instances[0]);
+
+			// Both categories should be pruned
+			bool ok = startedWith2 && snap.CategoryCount == 0;
+			return Assert("ClusterSnapshotRemoveLastPrunesCategory", ok,
+				$"startedWith2={startedWith2}, remaining={snap.CategoryCount}");
+		}
+
+		// ========================================
+		// ClusterMapTaxonomy tests
+		// ========================================
+
+		private static (string, bool, string) ClusterTaxonomySortIndicesRoundTrip() {
+			string[] expected = {
+				ClusterMapTaxonomy.Categories.All,
+				ClusterMapTaxonomy.Categories.Asteroids,
+				ClusterMapTaxonomy.Categories.Rockets,
+				ClusterMapTaxonomy.Categories.POIs,
+				ClusterMapTaxonomy.Categories.Meteors,
+				ClusterMapTaxonomy.Categories.Unknown,
+			};
+			var failures = new List<string>();
+			for (int i = 0; i < expected.Length; i++) {
+				int idx = ClusterMapTaxonomy.CategorySortIndex(expected[i]);
+				if (idx != i)
+					failures.Add($"{expected[i]}→{idx}, expected {i}");
+			}
+			// Unknown category name should return length (sort to end)
+			int unknownIdx = ClusterMapTaxonomy.CategorySortIndex("BogusCategory");
+			if (unknownIdx != expected.Length)
+				failures.Add($"BogusCategory→{unknownIdx}, expected {expected.Length}");
+			bool ok = failures.Count == 0;
+			return Assert("ClusterTaxonomySortIndicesRoundTrip", ok,
+				ok ? "all correct" : string.Join("; ", failures));
+		}
+
+		// ========================================
+		// HexCoordinates tests
+		// ========================================
+
+		private static (string, bool, string) HexCompassAllOctants() {
+			var origin = new AxialI(0, 0);
+			// AxialToWorld: x = sqrt(3)*r + sqrt(3)/2*q, y = -1.5*q
+			// Pure cardinal axes need r = -q/2 for north/south (x cancels to 0)
+			var cases = new (AxialI target, string expected)[] {
+				(new AxialI(2, -4), "north"),       // x=0, y=+6
+				(new AxialI(4, -2), "northeast"),   // x=+5.2, y=+3
+				(new AxialI(4, 0), "east"),          // x=+6.9, y=0
+				(new AxialI(2, 4), "southeast"),     // x=+6.9, y=-6
+				(new AxialI(-2, 4), "south"),        // x=0, y=-6
+				(new AxialI(-4, 2), "southwest"),    // x=-5.2, y=-3
+				(new AxialI(-4, 0), "west"),         // x=-6.9, y=0
+				(new AxialI(-2, -4), "northwest"),   // x=-6.9, y=+6
+			};
+			var failures = new List<string>();
+			foreach (var (target, expected) in cases) {
+				string result = HexCoordinates.GetCompassDirection(origin, target);
+				if (result != expected)
+					failures.Add($"({target.r},{target.q})→\"{result}\", expected \"{expected}\"");
+			}
+			bool ok = failures.Count == 0;
+			return Assert("HexCompassAllOctants", ok,
+				ok ? "all correct" : string.Join("; ", failures));
+		}
+
+		private static (string, bool, string) HexFormatSameHexReturnsHere() {
+			var loc = new AxialI(3, 5);
+			string result = HexCoordinates.Format(loc, loc);
+			string expected = (string)STRINGS.ONIACCESS.SCANNER.HERE;
+			bool ok = result == expected;
+			return Assert("HexFormatSameHexReturnsHere", ok,
+				$"got \"{result}\", expected \"{expected}\"");
 		}
 	}
 }
