@@ -24,6 +24,7 @@ namespace OniAccess.Handlers.Tools {
 		private readonly List<RectCorners> _rectangles = new List<RectCorners>();
 		private ModToolInfo _toolInfo;
 		private string _lastFilterKey;
+		private bool _skipFirstTick;
 
 		private struct RectCorners {
 			public int Cell1;
@@ -123,6 +124,7 @@ namespace OniAccess.Handlers.Tools {
 				_lastFilterKey = FilterKeyForOverlay(mode);
 			}
 
+			_skipFirstTick = true;
 			SpeechPipeline.SpeakInterrupt(DisplayName);
 		}
 
@@ -197,6 +199,11 @@ namespace OniAccess.Handlers.Tools {
 		// ========================================
 
 		public override bool Tick() {
+			if (_skipFirstTick) {
+				_skipFirstTick = false;
+				return false;
+			}
+
 			if (_pendingFirstCorner != Grid.InvalidCell) {
 				int cell = TileCursor.Instance.Cell;
 				if (cell != _lastDragCell) {
