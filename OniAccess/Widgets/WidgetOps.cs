@@ -40,16 +40,32 @@ namespace OniAccess.Widgets {
 		}
 
 		/// <summary>
-		/// Append tooltip text to speech text, skipping the tooltip if it
-		/// duplicates an existing comma-separated segment of the speech.
+		/// Append tooltip text to speech text, dropping any tooltip sentence
+		/// that duplicates an existing comma-separated segment of the speech.
 		/// </summary>
 		public static string AppendTooltip(string speech, string tooltip) {
 			if (tooltip == null) return speech;
 			if (string.IsNullOrEmpty(speech)) return tooltip;
-			foreach (string segment in speech.Split(new[] { ", " }, System.StringSplitOptions.None)) {
-				if (segment == tooltip) return speech;
+
+			// Strip rich text from the tooltip before comparing. At this point
+			// the tooltip has been through CleanTooltipEntry (newlines → periods)
+			// but still contains raw HTML tags (sprites, links, colors).
+			tooltip = Speech.TextFilter.FilterForSpeech(tooltip);
+			if (string.IsNullOrEmpty(tooltip)) return speech;
+
+			var speechSegments = new System.Collections.Generic.HashSet<string>(
+				speech.Split(new[] { ", " }, System.StringSplitOptions.None));
+
+			var tooltipSentences = tooltip.Split(new[] { ". " }, System.StringSplitOptions.None);
+			var novel = new System.Collections.Generic.List<string>();
+			foreach (var sentence in tooltipSentences) {
+				string trimmed = sentence.TrimEnd('.', ' ');
+				if (!string.IsNullOrWhiteSpace(trimmed) && !speechSegments.Contains(trimmed))
+					novel.Add(trimmed);
 			}
-			return $"{speech}, {tooltip}";
+
+			if (novel.Count == 0) return speech;
+			return $"{speech}, {string.Join(", ", novel)}";
 		}
 
 		/// <summary>
@@ -88,6 +104,18 @@ namespace OniAccess.Widgets {
 		internal static string CleanTooltipEntry(string text) {
 			if (string.IsNullOrEmpty(text)) return text;
 
+			// Strip Private Use Area characters (U+E000–U+F8FF) and the object
+			// replacement character (U+FFFC). TMPro substitutes sprite tags with
+			// PUA codepoints (e.g. U+E00F for germs); screen readers announce
+			// these as stray symbols.
+			var sb = new System.Text.StringBuilder(text.Length);
+			foreach (char c in text) {
+				if (c >= '\uE000' && c <= '\uF8FF') continue;
+				if (c == '\uFFFC') continue;
+				sb.Append(c);
+			}
+			text = sb.ToString();
+
 			// Replace bullets (with surrounding whitespace variants)
 			text = text.Replace(" \u2022 ", ". ");
 			text = text.Replace("\u2022 ", ". ");
@@ -103,10 +131,12 @@ namespace OniAccess.Widgets {
 			while (text.Contains("  "))
 				text = text.Replace("  ", " ");
 			text = text.Replace("\t", " ");
+			text = text.Replace(" ,", ",");
 			text = text.TrimStart(' ', '.');
 			while (text.Contains(". . "))
 				text = text.Replace(". . ", ". ");
 			text = text.Replace("..", ".");
+			text = text.TrimEnd();
 
 			return text;
 		}

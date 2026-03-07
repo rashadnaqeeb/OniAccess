@@ -213,6 +213,7 @@ namespace OniAccess.Tests {
 			results.Add(CleanTooltipIndentedBulletAfterNewline());
 			results.Add(CleanTooltipColonNewlineDropsPeriod());
 			results.Add(CleanTooltipNullAndEmptyPassthrough());
+			results.Add(CleanTooltipStripsReplacementChar());
 
 			// --- AppendTooltip ---
 			results.Add(AppendTooltipNullReturnsSpeech());
@@ -221,6 +222,8 @@ namespace OniAccess.Tests {
 			results.Add(AppendTooltipNonMatchingAppends());
 			results.Add(AppendTooltipSubstringNotSuppressed());
 			results.Add(AppendTooltipSingleSegmentDuplicate());
+			results.Add(AppendTooltipSentenceDedup());
+			results.Add(AppendTooltipAllSentencesDuplicate());
 
 			// --- NavigableGraph ---
 			results.Add(GraphNavigateDownSetsSiblingContext());
@@ -2089,6 +2092,16 @@ namespace OniAccess.Tests {
 				$"null→\"{rNull}\", empty→\"{rEmpty}\"");
 		}
 
+		private static (string, bool, string) CleanTooltipStripsReplacementChar() {
+			string r1 = WidgetOps.CleanTooltipEntry("Nutrient Bar \uFFFC");
+			string r2 = WidgetOps.CleanTooltipEntry("Nutrient Bar \uE00F");
+			string r3 = WidgetOps.CleanTooltipEntry("Nutrient Bar \uE00F, 21.9 °C");
+			bool ok = r1 == "Nutrient Bar" && r2 == "Nutrient Bar"
+				&& r3 == "Nutrient Bar, 21.9 °C";
+			return Assert("CleanTooltipStripsReplacementChar", ok,
+				$"fffc=\"{r1}\", pua=\"{r2}\", comma=\"{r3}\"");
+		}
+
 		// ========================================
 		// AppendTooltip
 		// ========================================
@@ -2129,6 +2142,22 @@ namespace OniAccess.Tests {
 			string result = WidgetOps.AppendTooltip("hello", "hello");
 			bool ok = result == "hello";
 			return Assert("AppendTooltipSingleSegmentDuplicate", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) AppendTooltipSentenceDedup() {
+			// Storage item: tooltip has raw markup that gets filtered, then
+			// first sentence (item name) is deduped against speech segments
+			string result = WidgetOps.AppendTooltip(
+				"Nutrient Bar, 21.9 °C, 12.6 kg",
+				"Nutrient Bar. <sprite=\"oni_sprite_assets\" name=\"germs\"> 2,125 germs [<link=\"FP\">Food Poisoning</link>].");
+			bool ok = result == "Nutrient Bar, 21.9 °C, 12.6 kg, 2,125 germs";
+			return Assert("AppendTooltipSentenceDedup", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) AppendTooltipAllSentencesDuplicate() {
+			string result = WidgetOps.AppendTooltip("a, b", "a. b");
+			bool ok = result == "a, b";
+			return Assert("AppendTooltipAllSentencesDuplicate", ok, $"got \"{result}\"");
 		}
 
 		// ========================================
