@@ -400,6 +400,18 @@ namespace STRINGS {
 
 			public static LocString HELP_CYCLE = "Cycle through duplicants";
 			public static LocString HELP_JUMP = "Jump cursor to current duplicant, or open details";
+			public static LocString HELP_CHECK_PATH = "Check if current duplicant can reach cursor tile";
+
+			public class PATHABILITY {
+				public static LocString HERE = "here";
+				// {0} = cost (int)
+				public static LocString REACHABLE = "reachable, cost {0}";
+				public static LocString UNREACHABLE_SOLID = "unreachable, solid tile";
+				public static LocString UNREACHABLE_NO_FLOOR = "unreachable, nothing to stand on";
+				// {0} = offset description (e.g. "3 right 1 up")
+				public static LocString UNREACHABLE_NEAREST = "unreachable, nearest reachable {0}";
+				public static LocString UNREACHABLE_NO_NEARBY = "unreachable, no reachable tiles nearby";
+			}
 		}
 
 		// Game clock and speed announcements

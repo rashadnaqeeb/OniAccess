@@ -26,6 +26,7 @@ namespace OniAccess.Handlers.Tiles {
 		private NotificationTracker _notificationTracker;
 		private NotificationAnnouncer _notificationAnnouncer;
 		private DupeNavigator _dupeNavigator;
+		private PathabilityChecker _pathabilityChecker;
 		private bool _hasActivated;
 		private bool _overlaySubscribed;
 		private int _queueNextOverlayTtl;
@@ -126,6 +127,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.LeftBracket),
 			new ConsumedKey(KKeyCode.RightBracket),
 			new ConsumedKey(KKeyCode.Backslash),
+			new ConsumedKey(KKeyCode.Backslash, Modifier.Shift),
 			// W overwrites PanUp (camera pan — mod cursor replaces camera navigation)
 			new ConsumedKey(KKeyCode.W),
 		};
@@ -169,6 +171,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Ctrl+Shift+B", (string)STRINGS.ONIACCESS.RULER.HELP_CLEAR),
 			new HelpEntry((string)STRINGS.ONIACCESS.DUPES.KEY_BRACKETS, (string)STRINGS.ONIACCESS.DUPES.HELP_CYCLE),
 			new HelpEntry("\\", (string)STRINGS.ONIACCESS.DUPES.HELP_JUMP),
+			new HelpEntry("Shift+\\", (string)STRINGS.ONIACCESS.DUPES.HELP_CHECK_PATH),
 			new HelpEntry("W", (string)STRINGS.ONIACCESS.WORLD_SELECTOR.OPEN),
 			// Base game management screen hotkeys. The mod does not consume these keys;
 			// they are listed here so blind players can discover them via the help screen.
@@ -201,6 +204,7 @@ namespace OniAccess.Handlers.Tiles {
 				_bookmarks = new CursorBookmarks();
 				_monitor = new GameStateMonitor();
 				_dupeNavigator = new DupeNavigator();
+				_pathabilityChecker = new PathabilityChecker();
 				if (NotificationManager.Instance != null) {
 					_notificationTracker = new NotificationTracker();
 					_notificationTracker.Attach();
@@ -247,6 +251,7 @@ namespace OniAccess.Handlers.Tiles {
 			CursorRuler.Destroy();
 			_scanner = null;
 			_dupeNavigator = null;
+			_pathabilityChecker = null;
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 			_overlaySubscribed = false;
@@ -436,10 +441,16 @@ namespace OniAccess.Handlers.Tiles {
 				_dupeNavigator.CycleDupe(1);
 				return true;
 			}
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backslash)
-				&& !InputUtil.AnyModifierHeld()) {
-				_dupeNavigator.JumpOrSelect();
-				return true;
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backslash)) {
+				if (InputUtil.ShiftHeld()) {
+					SpeechPipeline.SpeakInterrupt(
+						_pathabilityChecker.Check(_dupeNavigator));
+					return true;
+				}
+				if (!InputUtil.AnyModifierHeld()) {
+					_dupeNavigator.JumpOrSelect();
+					return true;
+				}
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.W)

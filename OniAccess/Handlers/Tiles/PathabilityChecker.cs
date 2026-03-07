@@ -1,0 +1,136 @@
+using System;
+using System.Collections.Generic;
+using OniAccess.Speech;
+using OniAccess.Util;
+
+namespace OniAccess.Handlers.Tiles {
+	/// <summary>
+	/// Checks whether the currently selected dupe can reach the cursor tile.
+	/// When unreachable, searches toward the dupe to find the nearest
+	/// reachable cell and reports its offset from the cursor.
+	/// </summary>
+	public class PathabilityChecker {
+		private const int MaxSearchRadius = 20;
+
+		public string Check(DupeNavigator dupeNav) {
+			var mi = dupeNav.GetCurrentDupe();
+			if (mi == null) {
+				BaseScreenHandler.PlaySound("Negative");
+				return (string)STRINGS.ONIACCESS.DUPES.NO_DUPLICANTS;
+			}
+
+			try {
+				int cursorCell = TileCursor.Instance.Cell;
+				int dupeCell = Grid.PosToCell(mi);
+
+				if (cursorCell == dupeCell)
+					return (string)STRINGS.ONIACCESS.DUPES.PATHABILITY.HERE;
+
+				var navigator = mi.GetComponent<Navigator>();
+
+				if (Grid.IsSolidCell(cursorCell))
+					return (string)STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_SOLID;
+
+				if (!HasAnyValidNavType(cursorCell, navigator.NavGrid))
+					return (string)STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NO_FLOOR;
+
+				int cost = navigator.GetNavigationCost(cursorCell);
+				if (cost != -1)
+					return string.Format(
+						(string)STRINGS.ONIACCESS.DUPES.PATHABILITY.REACHABLE, cost);
+
+				string nearest = FindNearestReachable(cursorCell, dupeCell, navigator);
+				if (nearest != null)
+					return string.Format(
+						(string)STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NEAREST,
+						nearest);
+
+				return (string)STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NO_NEARBY;
+			} catch (Exception ex) {
+				Log.Error($"PathabilityChecker.Check: {ex}");
+				return (string)STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NO_NEARBY;
+			}
+		}
+
+		private static bool HasAnyValidNavType(int cell, NavGrid navGrid) {
+			var navTable = navGrid.NavTable;
+			for (int i = 0; i < (int)NavType.NumNavTypes; i++) {
+				if (navTable.IsValid(cell, (NavType)i))
+					return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Searches outward from the cursor in a cone toward the dupe,
+		/// finding the nearest cell the dupe can reach.
+		/// </summary>
+		private static string FindNearestReachable(
+			int cursorCell, int dupeCell, Navigator navigator) {
+			int cursorX = Grid.CellColumn(cursorCell);
+			int cursorY = Grid.CellRow(cursorCell);
+			int dupeX = Grid.CellColumn(dupeCell);
+			int dupeY = Grid.CellRow(dupeCell);
+
+			float dirX = dupeX - cursorX;
+			float dirY = dupeY - cursorY;
+			float mag = (float)Math.Sqrt(dirX * dirX + dirY * dirY);
+			if (mag < 0.001f) return null;
+			dirX /= mag;
+			dirY /= mag;
+
+			float perpX = -dirY;
+			float perpY = dirX;
+
+			int bestCell = Grid.InvalidCell;
+			float bestDist = float.MaxValue;
+
+			for (int forward = 1; forward <= (int)mag + MaxSearchRadius; forward++) {
+				if (bestCell != Grid.InvalidCell && forward * forward > bestDist)
+					break;
+
+				for (int perp = -MaxSearchRadius; perp <= MaxSearchRadius; perp++) {
+					float fx = cursorX + dirX * forward + perpX * perp;
+					float fy = cursorY + dirY * forward + perpY * perp;
+					int x = (int)Math.Round(fx);
+					int y = (int)Math.Round(fy);
+
+					if (x < 0 || x >= Grid.WidthInCells
+						|| y < 0 || y >= Grid.HeightInCells)
+						continue;
+
+					int cell = Grid.XYToCell(x, y);
+					if (!TileCursor.IsInWorldBounds(cell)) continue;
+
+					float dist = (x - cursorX) * (x - cursorX)
+						+ (y - cursorY) * (y - cursorY);
+					if (dist >= bestDist) continue;
+
+					if (navigator.GetNavigationCost(cell) != -1) {
+						bestCell = cell;
+						bestDist = dist;
+					}
+				}
+			}
+
+			if (bestCell == Grid.InvalidCell) return null;
+
+			int dx = Grid.CellColumn(bestCell) - cursorX;
+			int dy = Grid.CellRow(bestCell) - cursorY;
+			return FormatOffset(dx, dy);
+		}
+
+		private static string FormatOffset(int dx, int dy) {
+			var parts = new List<string>(2);
+			if (dx != 0)
+				parts.Add(Math.Abs(dx) + " " + (dx > 0
+					? (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT
+					: (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT));
+			if (dy != 0)
+				parts.Add(Math.Abs(dy) + " " + (dy > 0
+					? (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_UP
+					: (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN));
+			return parts.Count > 0 ? string.Join(" ", parts) : null;
+		}
+	}
+}

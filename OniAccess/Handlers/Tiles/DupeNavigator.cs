@@ -12,6 +12,18 @@ namespace OniAccess.Handlers.Tiles {
 	public class DupeNavigator {
 		private int _dupeIndex;
 
+		/// <summary>
+		/// Returns the dupe at the current cycle index, or null if no dupes
+		/// exist on the active world.
+		/// </summary>
+		public MinionIdentity GetCurrentDupe() {
+			var dupes = GetWorldDupes();
+			if (dupes.Count == 0) return null;
+			if (_dupeIndex >= dupes.Count)
+				_dupeIndex = dupes.Count - 1;
+			return dupes[_dupeIndex];
+		}
+
 		public void CycleDupe(int direction) {
 			try {
 				var dupes = GetWorldDupes();
