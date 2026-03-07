@@ -13,6 +13,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				var go = geyser.gameObject;
 				int cell = Grid.PosToCell(go.transform.GetPosition());
 				if (!Grid.IsVisible(cell)) continue;
+				var uncoverable = go.GetComponent<Uncoverable>();
+				if (uncoverable != null && !uncoverable.IsUncovered) continue;
 				yield return MakeEntry(go, cell);
 			}
 
@@ -20,6 +22,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				var go = vent.gameObject;
 				int cell = Grid.PosToCell(go.transform.GetPosition());
 				if (!Grid.IsVisible(cell)) continue;
+				var uncoverable = go.GetComponent<Uncoverable>();
+				if (uncoverable != null && !uncoverable.IsUncovered) continue;
 				yield return MakeEntry(go, cell);
 			}
 		}
@@ -27,6 +31,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 		public bool ValidateEntry(ScanEntry entry, int cursorCell) {
 			var go = (GameObject)entry.BackendData;
 			if (go == null || go.IsNullOrDestroyed()) return false;
+			var uncoverable = go.GetComponent<Uncoverable>();
+			if (uncoverable != null && !uncoverable.IsUncovered) return false;
 			return Grid.IsVisible(entry.Cell);
 		}
 

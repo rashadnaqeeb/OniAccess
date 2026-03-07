@@ -45,6 +45,9 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var selectable = go.GetComponent<KSelectable>();
 			if (selectable == null) return;
 
+			var uncoverable = go.GetComponent<Uncoverable>();
+			if (uncoverable != null && !uncoverable.IsUncovered) return;
+
 			var building = go.GetComponent<Building>();
 			bool isExtension = building != null
 				&& !building.PlacementCellsContainCell(cell);

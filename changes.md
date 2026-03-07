@@ -1,5 +1,6 @@
 # Changelog
 
+- Buried geysers no longer appear in the tile cursor or scanner until exposed by digging
 - Backspace returns to pre-jump position after both \ dupe jump and Home scanner teleport
 - Shift+\ checks if the current dupe can reach the cursor tile, reporting cost if reachable or the nearest reachable tile if not
 - Demolior (DLC4 large impactor): spoken announcements for discovery, impact, destruction, and damage milestones; S key reports Demolior health and time remaining; activating the Demolior notification focuses the camera on the impact zone
