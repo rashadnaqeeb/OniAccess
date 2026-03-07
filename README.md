@@ -310,10 +310,23 @@ These are base game hotkeys that open management screens from the colony view. T
 - **U** -- Database (Codex)
 - **Z** -- Starmap
 
-## Known limitations
+## Cluster map (Spaced Out DLC)
 
-- Base game starmap is not accessible.
-- Spaced Out DLC support is partial -- world switching works, but most DLC-specific screens are not yet accessible.
+**Z** opens the starmap, which is a hex grid of asteroids, rockets, POIs, and other space entities. The cursor starts on the asteroid you opened from.
+
+Six keys map to hex directions matching the keyboard layout: **U** (northwest), **O** (northeast), **J** (west), **L** (east), **N** (southwest), **.** (southeast). Arrow keys also work: Left/Right are always west/east, Up/Down alternate diagonals based on row parity so they zigzag north or south. Each hex announces its entities and fog-of-war state (unexplored, unknown object detected, or entity names).
+
+**K** reads hex distance and compass direction from the starting asteroid. **I** reads detailed entity status items, only available on rockets and showers.
+
+**Enter** selects an entity (or opens a picker if multiple share the hex). **Ctrl+Enter** switches your active world to the asteroid at the cursor. When the map is in destination-selection mode (from a rocket's "Select Destination" side screen), Enter confirms the destination and Escape cancels.
+
+### Pathfinder
+
+**Space** sets a start point. **D** calculates the shortest path from start to cursor and announces the hex count. If a shorter path exists through fog, both distances are reported.
+
+### Scanner
+
+The cluster map has its own scanner with the same keys as the tile scanner (End, PageUp/Down, etc.) but a simpler three-level hierarchy: category (Asteroids, Rockets, POIs, Meteor Showers, Unknown), item, instance. Peeked entities that the game deliberately hides are grouped under "Unknown." Ctrl+F searches across all entities.
 
 ## Troubleshooting
 
