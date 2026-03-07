@@ -1,5 +1,6 @@
 # Changelog
 
+- Fix: deconstruct tool now works on Gravitas buildings and other demolishable structures (Gene Shuffler, Cryo Tank, etc.)
 - Gravitas ruins (doors, walls, desks, and other props) now appear in the scanner under Buildings > Gravitas
 - Tile cursor now reports deconstruction orders on backwalls
 - Fix: navigating recipes or side screen items no longer crashes when the game refreshes widgets between actions

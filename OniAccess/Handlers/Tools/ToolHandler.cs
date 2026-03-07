@@ -797,7 +797,8 @@ namespace OniAccess.Handlers.Tools {
 			for (int i = 0; i < 45; i++) {
 				var go = Grid.Objects[cell, i];
 				if (go == null) continue;
-				if (go.GetComponent<Deconstructable>() == null) continue;
+				if (go.GetComponent<Deconstructable>() == null
+					&& go.GetComponent<Demolishable>() == null) continue;
 				string layer = GetFilterLayer(go);
 				if (IsFilterLayerActive(targets, layer)) return 1;
 			}

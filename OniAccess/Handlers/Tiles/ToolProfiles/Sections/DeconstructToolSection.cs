@@ -38,11 +38,14 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 					if (!tool.IsActiveLayer(filterLayer)) continue;
 				}
 				var deconstructable = go.GetComponent<Deconstructable>();
-				if (deconstructable == null) continue;
+				var demolishable = go.GetComponent<Demolishable>();
+				if (deconstructable == null && demolishable == null) continue;
 				var sel = go.GetComponent<KSelectable>();
 				if (sel == null) continue;
 
-				if (deconstructable.IsMarkedForDeconstruction()) {
+				bool marked = (deconstructable != null && deconstructable.IsMarkedForDeconstruction())
+					|| (demolishable != null && demolishable.chore != null);
+				if (marked) {
 					var pri = go.GetComponent<Prioritizable>();
 					if (pri != null)
 						tokens.Add(string.Format(
