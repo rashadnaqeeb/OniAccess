@@ -574,23 +574,20 @@ namespace OniAccess.Handlers.Screens.Details {
 			var capturedValue = valueLabel;
 			var capturedDesc = descLabel;
 
-			// Use .text instead of GetParsedText() — TMPro truncates rendered
-			// text with "…" when it overflows the label area (biome descriptions).
-			// TextFilter strips rich text tags in the speech pipeline.
 			section.Items.Add(new LabelWidget {
-				Label = capturedName.text,
+				Label = capturedName.GetParsedText(),
 				GameObject = go,
 				SpeechFunc = () => {
-					var parts = new List<string> { capturedName.text };
+					var parts = new List<string> { capturedName.GetParsedText() };
 					if (capturedValue != null
 							&& capturedValue.gameObject.activeSelf) {
-						string val = capturedValue.text;
+						string val = capturedValue.GetParsedText();
 						if (!string.IsNullOrEmpty(val))
 							parts.Add(val);
 					}
 					if (capturedDesc != null
 							&& capturedDesc.gameObject.activeSelf) {
-						string desc = capturedDesc.text;
+						string desc = capturedDesc.GetParsedText();
 						if (!string.IsNullOrEmpty(desc))
 							parts.Add(desc);
 					}
