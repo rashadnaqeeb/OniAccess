@@ -62,8 +62,9 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		/// <summary>
-		/// Searches outward from the cursor in a cone toward the dupe,
-		/// finding the nearest cell the dupe can reach.
+		/// Expands outward from the cursor in concentric rings, finding
+		/// the nearest cell the dupe can reach. Ties are broken by
+		/// proximity to the dupe (closer to dupe wins).
 		/// </summary>
 		private static string FindNearestReachable(
 			int cursorCell, int dupeCell, Navigator navigator) {
@@ -72,52 +73,48 @@ namespace OniAccess.Handlers.Tiles {
 			int dupeX = Grid.CellColumn(dupeCell);
 			int dupeY = Grid.CellRow(dupeCell);
 
-			float dirX = dupeX - cursorX;
-			float dirY = dupeY - cursorY;
-			float mag = (float)Math.Sqrt(dirX * dirX + dirY * dirY);
-			if (mag < 0.001f) return null;
-			dirX /= mag;
-			dirY /= mag;
-
-			float perpX = -dirY;
-			float perpY = dirX;
-
 			int bestCell = Grid.InvalidCell;
-			float bestDist = float.MaxValue;
+			int bestDist = int.MaxValue;
+			int bestDupeDist = int.MaxValue;
 
-			for (int forward = 1; forward <= (int)mag + MaxSearchRadius; forward++) {
-				if (bestCell != Grid.InvalidCell && forward * forward > bestDist)
+			for (int ring = 1; ring <= MaxSearchRadius; ring++) {
+				if (bestCell != Grid.InvalidCell && ring > bestDist)
 					break;
 
-				for (int perp = -MaxSearchRadius; perp <= MaxSearchRadius; perp++) {
-					float fx = cursorX + dirX * forward + perpX * perp;
-					float fy = cursorY + dirY * forward + perpY * perp;
-					int x = (int)Math.Round(fx);
-					int y = (int)Math.Round(fy);
+				for (int dx = -ring; dx <= ring; dx++) {
+					for (int dy = -ring; dy <= ring; dy++) {
+						if (Math.Abs(dx) != ring && Math.Abs(dy) != ring)
+							continue;
 
-					if (x < 0 || x >= Grid.WidthInCells
-						|| y < 0 || y >= Grid.HeightInCells)
-						continue;
+						int x = cursorX + dx;
+						int y = cursorY + dy;
+						if (x < 0 || x >= Grid.WidthInCells
+							|| y < 0 || y >= Grid.HeightInCells)
+							continue;
 
-					int cell = Grid.XYToCell(x, y);
-					if (!TileCursor.IsInWorldBounds(cell)) continue;
+						int cell = Grid.XYToCell(x, y);
+						if (!TileCursor.IsInWorldBounds(cell)) continue;
 
-					float dist = (x - cursorX) * (x - cursorX)
-						+ (y - cursorY) * (y - cursorY);
-					if (dist >= bestDist) continue;
+						int dist = Math.Abs(dx) + Math.Abs(dy);
+						if (dist > bestDist) continue;
 
-					if (navigator.GetNavigationCost(cell) != -1) {
-						bestCell = cell;
-						bestDist = dist;
+						if (navigator.GetNavigationCost(cell) != -1) {
+							int dupeDist = Math.Abs(x - dupeX) + Math.Abs(y - dupeY);
+							if (dist < bestDist || dupeDist < bestDupeDist) {
+								bestCell = cell;
+								bestDist = dist;
+								bestDupeDist = dupeDist;
+							}
+						}
 					}
 				}
 			}
 
 			if (bestCell == Grid.InvalidCell) return null;
 
-			int dx = Grid.CellColumn(bestCell) - cursorX;
-			int dy = Grid.CellRow(bestCell) - cursorY;
-			return FormatOffset(dx, dy);
+			int fdx = Grid.CellColumn(bestCell) - cursorX;
+			int fdy = Grid.CellRow(bestCell) - cursorY;
+			return FormatOffset(fdx, fdy);
 		}
 
 		private static string FormatOffset(int dx, int dy) {
