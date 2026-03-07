@@ -1,5 +1,7 @@
 # Changelog
 
+- P key in build tool announces all ports with their offset from the cursor (e.g. "liquid input, here, liquid output, 1 up. power input, 1 right."). Offsets update when the building is rotated
+- Shift+R in build tool rotates the building backward (counterclockwise for 4-way rotation)
 - Geysers are now a top-level scanner category (after Zones) with subcategories: Gas, Liquid, Molten, Geothermal
 - Buried geysers no longer appear in the tile cursor or scanner until exposed by digging
 - Backspace returns to pre-jump position after both \ dupe jump and Home scanner teleport

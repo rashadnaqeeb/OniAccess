@@ -1275,6 +1275,7 @@ namespace STRINGS {
 			public static LocString HELP_PLACE = "Place building or set start";
 			public static LocString HELP_PLACE_AND_EXIT = "Place building and exit";
 			public static LocString HELP_ROTATE = "Rotate building";
+			public static LocString HELP_ROTATE_REVERSE = "Rotate building backward";
 			public static LocString HELP_BUILDING_LIST = "Return to building list";
 			public static LocString HELP_INFO = "Open info panel";
 			public static LocString HELP_CANCEL_CONSTRUCTION = "Cancel construction at cursor";

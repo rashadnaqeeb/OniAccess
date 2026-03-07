@@ -38,6 +38,7 @@ namespace OniAccess.Handlers.Build {
 			new ConsumedKey(KKeyCode.Space, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Return),
 			new ConsumedKey(KKeyCode.R),
+			new ConsumedKey(KKeyCode.R, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Tab),
 			new ConsumedKey(KKeyCode.I),
 			new ConsumedKey(KKeyCode.P),
@@ -71,6 +72,7 @@ namespace OniAccess.Handlers.Build {
 			new HelpEntry("Space", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE_AND_EXIT),
 			new HelpEntry("R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE),
+			new HelpEntry("Shift+R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE_REVERSE),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO),
 			new HelpEntry("P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
@@ -243,17 +245,29 @@ namespace OniAccess.Handlers.Build {
 				return true;
 			}
 
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)
-				&& !InputUtil.AnyModifierHeld()) {
-				if (IsInPrebuildMode()) {
-					PlaySound("Negative");
-					string error = GetPrebuildError();
-					SpeechPipeline.SpeakInterrupt(
-						error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
-				} else {
-					Rotate();
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)) {
+				if (InputUtil.ShiftHeld()) {
+					if (IsInPrebuildMode()) {
+						PlaySound("Negative");
+						string error = GetPrebuildError();
+						SpeechPipeline.SpeakInterrupt(
+							error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+					} else {
+						RotateReverse();
+					}
+					return true;
 				}
-				return true;
+				if (!InputUtil.AnyModifierHeld()) {
+					if (IsInPrebuildMode()) {
+						PlaySound("Negative");
+						string error = GetPrebuildError();
+						SpeechPipeline.SpeakInterrupt(
+							error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+					} else {
+						Rotate();
+					}
+					return true;
+				}
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)
@@ -553,6 +567,25 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			BuildTool.Instance.TryRotate();
+			AnnounceRotation();
+		}
+
+		private void RotateReverse() {
+			if (_isUtility || _def.PermittedRotations == PermittedRotations.Unrotatable) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.NOT_ROTATABLE);
+				return;
+			}
+
+			// R360 cycles through 4 orientations; 3 forward steps = 1 reverse step.
+			// All other types are 2-state toggles where forward = reverse.
+			int steps = _def.PermittedRotations == PermittedRotations.R360 ? 3 : 1;
+			for (int i = 0; i < steps; i++)
+				BuildTool.Instance.TryRotate();
+			AnnounceRotation();
+		}
+
+		private void AnnounceRotation() {
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			var parts = new List<string> { BuildMenuData.GetOrientationName(orientation, _def.PermittedRotations) };
 
