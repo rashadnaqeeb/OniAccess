@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens.ClusterMap {
@@ -44,6 +45,39 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			_instanceIndex = 0;
 			SpeechPipeline.SpeakInterrupt(
 				(string)STRINGS.ONIACCESS.SCANNER.REFRESHED);
+		}
+
+		public void SearchRefresh(string query, AxialI cursor) {
+			var entries = ScanGrid(cursor);
+			string q = query.ToLowerInvariant();
+			var filtered = new List<ClusterScanEntry>();
+
+			foreach (var entry in entries) {
+				int sortKey = ScannerSearch.MatchSortKey(entry.ItemName, q);
+				if (sortKey < 0) continue;
+				filtered.Add(new ClusterScanEntry {
+					Location = entry.Location,
+					Category = (string)STRINGS.ONIACCESS.SCANNER.CATEGORIES.SEARCH,
+					ItemName = entry.ItemName,
+					SortKey = sortKey,
+				});
+			}
+
+			if (filtered.Count == 0) {
+				SpeechPipeline.SpeakInterrupt(string.Format(
+					(string)STRINGS.ONIACCESS.SEARCH.NO_MATCH, query));
+				return;
+			}
+
+			_snapshot = new ClusterScanSnapshot(filtered, cursor, skipAllCategory: true);
+			_categoryIndex = 0;
+			_itemIndex = 0;
+			_instanceIndex = 0;
+
+			SpeechPipeline.SpeakInterrupt(query);
+			string item = FormatCurrentItem(cursor);
+			if (item != null)
+				SpeechPipeline.SpeakQueued(item);
 		}
 
 		public void CycleCategory(int direction, AxialI cursor) {

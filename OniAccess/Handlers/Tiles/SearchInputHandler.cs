@@ -1,15 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
-using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Tiles {
 	public class SearchInputHandler: IAccessHandler {
-		private readonly ScannerNavigator _scanner;
+		private readonly Action<string> _onSearch;
 		private readonly StringBuilder _query = new StringBuilder();
 
-		public SearchInputHandler(ScannerNavigator scanner) {
-			_scanner = scanner;
+		public SearchInputHandler(Action<string> onSearch) {
+			_onSearch = onSearch;
 		}
 
 		public string DisplayName => (string)STRINGS.ONIACCESS.SCANNER.SEARCH.PROMPT;
@@ -28,7 +28,7 @@ namespace OniAccess.Handlers.Tiles {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)) {
 				HandlerStack.Pop();
 				if (_query.Length > 0)
-					_scanner.SearchRefresh(_query.ToString());
+					_onSearch(_query.ToString());
 				return true;
 			}
 

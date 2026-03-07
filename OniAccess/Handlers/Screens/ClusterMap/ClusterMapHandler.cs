@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OniAccess.Handlers.Tiles;
 using OniAccess.Input;
 using OniAccess.Speech;
 
@@ -83,6 +84,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			new HelpEntry("Ctrl+PageUp/Down", STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_CATEGORY),
 			new HelpEntry("PageUp/Down", STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM),
 			new HelpEntry("Alt+PageUp/Down", STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE),
+			new HelpEntry("Ctrl+F", STRINGS.ONIACCESS.SCANNER.HELP.SEARCH),
 		}.AsReadOnly();
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
@@ -207,6 +209,12 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			}
 
 			// --- Scanner keys ---
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F)
+				&& InputUtil.CtrlHeld()) {
+				HandlerStack.Push(new SearchInputHandler(
+					q => _scanner.SearchRefresh(q, _cursorLocation)));
+				return true;
+			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)) {
 				if (InputUtil.ShiftHeld()) {
 					SpeechPipeline.SpeakInterrupt(_scanner.ToggleAutoMove());

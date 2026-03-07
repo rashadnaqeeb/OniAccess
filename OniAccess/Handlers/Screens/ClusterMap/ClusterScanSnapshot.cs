@@ -21,9 +21,11 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 		public readonly List<ClusterScanCategory> Categories;
 		public readonly AxialI Origin;
 
-		public ClusterScanSnapshot(List<ClusterScanEntry> entries, AxialI origin) {
+		public ClusterScanSnapshot(
+				List<ClusterScanEntry> entries, AxialI origin,
+				bool skipAllCategory = false) {
 			Origin = origin;
-			Categories = Build(entries, origin);
+			Categories = Build(entries, origin, skipAllCategory);
 		}
 
 		public int CategoryCount => Categories.Count;
@@ -40,7 +42,8 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 		}
 
 		private static List<ClusterScanCategory> Build(
-				List<ClusterScanEntry> entries, AxialI origin) {
+				List<ClusterScanEntry> entries, AxialI origin,
+				bool skipAllCategory = false) {
 			// Group: category -> itemName -> instances
 			var grouped = new Dictionary<string,
 				Dictionary<string, List<ClusterScanEntry>>>();
@@ -78,6 +81,9 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			namedCategories.Sort((a, b) =>
 				ClusterMapTaxonomy.CategorySortIndex(a.Name)
 					.CompareTo(ClusterMapTaxonomy.CategorySortIndex(b.Name)));
+
+			if (skipAllCategory)
+				return namedCategories;
 
 			// Build "All" category from shared item references
 			var allItems = new List<ClusterScanItem>();

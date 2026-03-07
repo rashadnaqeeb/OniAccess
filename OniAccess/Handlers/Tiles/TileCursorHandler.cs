@@ -496,7 +496,7 @@ namespace OniAccess.Handlers.Tiles {
 			// Scanner keybinds
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F)
 				&& InputUtil.CtrlHeld()) {
-				HandlerStack.Push(new SearchInputHandler(_scanner));
+				HandlerStack.Push(new SearchInputHandler(q => _scanner.SearchRefresh(q)));
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.End)) {
