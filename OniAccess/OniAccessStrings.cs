@@ -509,9 +509,9 @@ namespace STRINGS {
 			public static LocString RECT_CLEARED = "rectangle cleared";
 			// Tool activation announcements.
 			// {0} = tool name, {1} = filter or priority text, {2} = priority text
-			public static LocString ACTIVATION_PLAIN = "{0} tool";
-			public static LocString ACTIVATION = "{0} tool, {1}";
-			public static LocString ACTIVATION_WITH_FILTER = "{0} tool, {1}, {2}";
+			public static LocString ACTIVATION_PLAIN = "{0}";
+			public static LocString ACTIVATION = "{0}, {1}";
+			public static LocString ACTIVATION_WITH_FILTER = "{0}, {1}, {2}";
 			public static LocString FALLBACK_LABEL = "tool";
 			// {0} = entity name being moved to
 			public static LocString MOVE_TO_ACTIVATION = "move to, {0}";
