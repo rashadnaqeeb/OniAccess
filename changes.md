@@ -1,5 +1,6 @@
 # Changelog
 
+- Tile cursor now reports deconstruction orders on backwalls
 - Fix: navigating recipes or side screen items no longer crashes when the game refreshes widgets between actions
 - Fix: foundation tiles no longer double-announce (element was spoken on top of the building)
 - Cluster map scanner now supports Ctrl+F search to filter entities by name
