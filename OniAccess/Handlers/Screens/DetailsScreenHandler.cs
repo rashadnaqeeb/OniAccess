@@ -384,6 +384,11 @@ namespace OniAccess.Handlers.Screens {
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (_textEdit.HandleKeyDown(e))
 				return true;
+			if (e.IsAction(Action.Escape)) {
+				e.TryConsume(Action.Escape);
+				DetailsScreen.Instance.DeselectAndClose();
+				return true;
+			}
 			return base.HandleKeyDown(e);
 		}
 
