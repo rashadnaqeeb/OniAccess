@@ -339,6 +339,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 				return;
 			}
 			if (selectables.Count == 1) {
+				PlaySound("Select_empty");
 				ClusterMapSelectTool.Instance.Select(
 					selectables[0].GetComponent<KSelectable>());
 				return;
