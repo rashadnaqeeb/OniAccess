@@ -17,12 +17,12 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 
 		/// <summary>
 		/// Format hex distance and compass direction from origin to target.
-		/// Returns "center" if same hex. Format: "5 northeast".
+		/// Returns "here" if same hex. Format: "5 northeast".
 		/// </summary>
 		public static string Format(AxialI origin, AxialI target) {
 			int distance = AxialUtil.GetDistance(origin, target);
 			if (distance == 0)
-				return (string)STRINGS.ONIACCESS.CLUSTER_MAP.AT_CENTER;
+				return (string)STRINGS.ONIACCESS.SCANNER.HERE;
 			string direction = GetCompassDirection(origin, target);
 			return string.Format(
 				(string)STRINGS.ONIACCESS.CLUSTER_MAP.HEX_COORDINATES,

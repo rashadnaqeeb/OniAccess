@@ -1369,7 +1369,6 @@ namespace STRINGS {
 			public static LocString DESTINATION_CANCELLED = "destination cancelled";
 			// {0} = hex distance, {1} = compass direction
 			public static LocString HEX_COORDINATES = "{0} {1}";
-			public static LocString AT_CENTER = "center";
 			// {0} = path length
 			public static LocString PATH_RESULT = "path: {0}";
 			// {0} = total path, {1} = fog count
