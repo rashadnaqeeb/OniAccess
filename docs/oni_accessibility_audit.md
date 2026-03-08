@@ -8,18 +8,20 @@
 
 > **Scope:** Covers DLC content as well as the base game. DLC-exclusive elements are marked where applicable. This document describes what exists in the UI, not how to make it accessible.
 
+> **Status key:** DONE = fully accessible via OniAccess, PARTIAL = accessible with minor gaps, NOT STARTED = no coverage, N/A = not applicable.
+
 ---
 
 # Phase 1: Application Launch and Main Menus
 
-## 1.1 Splash and Title Screen
+## 1.1 Splash and Title Screen — N/A
 
 The game opens with a Klei Entertainment logo animation, followed by the main title screen. The title screen has a background animation of duplicants and colony elements.
 
 - Klei logo splash (animated, non-interactive, auto-advances)
 - Main title screen with animated background
 
-## 1.2 Main Menu
+## 1.2 Main Menu — DONE
 
 The main menu presents the primary navigation options for the game. These are buttons arranged vertically.
 
@@ -33,7 +35,7 @@ The main menu presents the primary navigation options for the game. These are bu
 
 > **Note:** The mod manager is a separate screen allowing toggling of installed Steam Workshop and local mods, with options buttons for individual mods that support configuration.
 
-## 1.3 Options Menu
+## 1.3 Options Menu — DONE
 
 Accessible from main menu and in-game pause menu. Contains multiple tabs.
 
@@ -45,11 +47,11 @@ Accessible from main menu and in-game pause menu. Contains multiple tabs.
 
 > **Note:** The controls rebinding screen lists every action and its current key. Each row has the action name and a clickable binding field that enters listening mode for a new key.
 
-## 1.4 Load Game Screen
+## 1.4 Load Game Screen — DONE
 
 A scrollable list of save files. Each entry shows colony name, cycle number, duplicant count, date saved, and the save file size. Buttons to load, delete, or view details.
 
-## 1.5 Colony Summaries Screen
+## 1.5 Colony Summaries Screen — DONE
 
 Lists all colonies with their achievement progress. Achievements are divided into locked and unlocked categories with descriptions and completion criteria.
 
@@ -57,7 +59,7 @@ Lists all colonies with their achievement progress. Achievements are divided int
 
 # Phase 2: New Game Setup
 
-## 2.1 Game Mode Selection
+## 2.1 Game Mode Selection — DONE
 
 The first step in creating a new game. Two primary modes presented as large selectable cards.
 
@@ -66,7 +68,7 @@ The first step in creating a new game. Two primary modes presented as large sele
 
 > **Note:** These are presets for more granular settings available in the next step.
 
-## 2.2 Asteroid and World Selection
+## 2.2 Asteroid and World Selection — DONE
 
 The second setup screen. The player selects which asteroid cluster to start on. This is the core world generation choice.
 
@@ -75,7 +77,7 @@ The second setup screen. The player selects which asteroid cluster to start on. 
 - **World Traits display:** after selecting a seed, the randomly assigned traits for that world are shown (such as Frozen Core, Magma Channels, Metal Rich, etc.)
 - **Game Settings button:** opens the detailed settings panel
 
-## 2.3 Game Settings Panel
+## 2.3 Game Settings Panel — DONE
 
 A detailed settings screen allowing granular control over difficulty parameters. Each setting is a dropdown or slider with multiple named difficulty levels.
 
@@ -88,7 +90,7 @@ A detailed settings screen allowing granular control over difficulty parameters.
 - **Meteor Showers:** various intensity levels
 - **Sandbox Mode toggle:** can be enabled at game start, unlocking sandbox tools
 
-## 2.4 Duplicant Selection Screen
+## 2.4 Duplicant Selection Screen — DONE
 
 The final pre-game screen. Three duplicant slots are presented. For each slot, a randomly generated duplicant is shown with their stats, traits, and interests. The player can reroll any individual duplicant indefinitely.
 
@@ -117,7 +119,7 @@ Once the game starts, the player is presented with the main gameplay interface. 
 
 ## 3.1 Top Bar
 
-### 3.1.1 Management Tabs (Top Left)
+### 3.1.1 Management Tabs (Top Left) — DONE
 
 A row of icon buttons that open management screens. These are the primary colony management panels.
 
@@ -130,7 +132,7 @@ A row of icon buttons that open management screens. These are the primary colony
 - **Skills**: full-screen duplicant skills assignment. See section 5.2 for details.
 - **Starmap**: full-screen space map. See section 8 for details.
 
-### 3.1.2 Overlay Buttons (Top Left, beside management tabs)
+### 3.1.2 Overlay Buttons (Top Left, beside management tabs) — DONE
 
 A row of icon buttons that toggle visual overlays on the game world. Each overlay changes what information is displayed on the map. The overlays are listed here in their toolbar order. Some only appear after relevant research is completed.
 
@@ -150,7 +152,7 @@ A row of icon buttons that toggle visual overlays on the game world. Each overla
 14. **Conveyor Overlay (Shift+F3)**: shows conveyor rail networks, loaders, receptacles, and items in transit.
 15. **Radiation Overlay (Shift+F4, Spaced Out DLC)**: shows radiation levels per cell in rads/cycle.
 
-### 3.1.3 Resource Panel (Top Right)
+### 3.1.3 Resource Panel (Top Right) — DONE
 
 A summary bar showing current stockpiles of key resources. Clicking expands to a detailed resources list.
 
@@ -158,7 +160,7 @@ A summary bar showing current stockpiles of key resources. Clicking expands to a
 - **Expanded view:** a categorized, scrollable list of every resource in the colony with quantities. Categories include Edible, Agriculture, Filtration, Consumable Ore, Metal Ore, Refined Metal, Minerals, Industrial Gases, Liquids, and others.
 - Each resource entry shows name, total mass, and can be clicked to highlight where that resource exists in the world.
 
-### 3.1.4 Time Controls and Cycle Display (Top Center-Right)
+### 3.1.4 Time Controls and Cycle Display (Top Center-Right) — DONE
 
 - Current cycle number (day counter)
 - Time of day indicator (visual segment showing position in the current cycle)
@@ -167,7 +169,7 @@ A summary bar showing current stockpiles of key resources. Clicking expands to a
 
 ## 3.2 Bottom Bar
 
-### 3.2.1 Build Menu (Bottom Left)
+### 3.2.1 Build Menu (Bottom Left) — DONE
 
 The primary construction interface. A row of category buttons, each opening a submenu of buildings. Buildings are arranged in a scrollable submenu panel within each category.
 
@@ -196,7 +198,7 @@ When selecting a building to place:
 - Rotation button (O key): rotates building orientation
 - Placement ghost on the grid: shows where the building will be placed, turning red if placement is invalid
 
-### 3.2.2 Tool Commands (Bottom Right)
+### 3.2.2 Tool Commands (Bottom Right) — DONE
 
 A row of tool buttons for issuing orders to duplicants and interacting with the world.
 
@@ -215,12 +217,12 @@ A row of tool buttons for issuing orders to duplicants and interacting with the 
 - **Toggle**: enables/disables buildings
 - **Relocate**: marks movable objects for relocation
 
-### 3.2.3 Alert Controls (Bottom Center)
+### 3.2.3 Alert Controls (Bottom Center) — DONE
 
 - **Red Alert**: forces all duplicants to work continuously, ignoring schedules and personal needs
 - **Yellow Alert**: can be placed on individual buildings/tasks to mark them as urgent
 
-## 3.3 Notification System (Left Side)
+## 3.3 Notification System (Left Side) — DONE
 
 Notifications appear as a scrollable stack on the left side of the screen. They are categorized by severity.
 
@@ -232,7 +234,7 @@ Notifications appear as a scrollable stack on the left side of the screen. They 
 
 > **Note:** Notifications are transient and stack. Old ones scroll up and eventually disappear. There is no notification history log outside of the Daily Reports screen.
 
-## 3.4 The Game World Grid
+## 3.4 The Game World Grid — DONE
 
 The core play area is a 2D tile grid representing the asteroid cross-section. Every cell has properties the player can inspect.
 
@@ -253,42 +255,42 @@ The core play area is a 2D tile grid representing the asteroid cross-section. Ev
 
 When any entity in the game world is clicked, a detail panel opens on the right side of the screen. These panels have multiple tabs and contextual side screens.
 
-## 4.1 Building Detail Panel
+## 4.1 Building Detail Panel — DONE
 
 Appears when any placed building is selected. Contains tabbed information.
 
-### 4.1.1 Status Tab
+### 4.1.1 Status Tab — DONE
 
 - Building name and current status (idle, working, waiting, entombed, overheated, flooded, broken, etc.)
 - Status items: list of current conditions affecting the building
 - Operational toggle (enable/disable)
 - Priority sub-priority setting (1 through 9, or yellow alert)
 
-### 4.1.2 Information Tab
+### 4.1.2 Information Tab — DONE
 
 - Building description
 - Effects: what the building does (outputs, inputs, power draw, etc.)
 - Requirements: room requirements, skill requirements, temperature limits
 - Construction properties: size, materials used, mass
 
-### 4.1.3 Contents Tab (where applicable)
+### 4.1.3 Contents Tab (where applicable) — DONE
 
 - For storage buildings: list of stored items with mass and temperature
 - For pipe-connected buildings: pipe input/output contents
 - For generators: fuel level and output wattage
 
-### 4.1.4 Errands Tab
+### 4.1.4 Errands Tab — DONE
 
 - List of pending errands for this building
 - Which duplicant is assigned to each errand
 - Errand priority level
 
-### 4.1.5 Config Tab
+### 4.1.5 Config Tab — DONE
 
 - Equipment and assignables for the building
 - Material and blueprint options (reconstruct with different material, change cosmetic skin)
 
-### 4.1.6 Contextual Side Screens
+### 4.1.6 Contextual Side Screens — DONE
 
 Many buildings have specialized side screens that appear alongside the detail panel. Examples:
 
@@ -305,7 +307,7 @@ Many buildings have specialized side screens that appear alongside the detail pa
 - **Telescopes**: destination analysis progress
 - **Painting/Sculpture buildings**: art style preview and reassignment
 
-## 4.2 Duplicant Detail Panel
+## 4.2 Duplicant Detail Panel — DONE
 
 Appears when a duplicant is selected. Multiple tabs with comprehensive duplicant information.
 
@@ -349,7 +351,7 @@ Appears when a duplicant is selected. Multiple tabs with comprehensive duplicant
 - Currently worn equipment (Atmo Suit, Jet Suit, Lead Suit, Oxygen Mask)
 - Assigned bed, mess table, toilet, locker
 
-## 4.3 Critter Detail Panel
+## 4.3 Critter Detail Panel — DONE
 
 - Species name and variant (morph)
 - Age and lifecycle state (baby, adult, old)
@@ -359,7 +361,7 @@ Appears when a duplicant is selected. Multiple tabs with comprehensive duplicant
 - Current status effects (confined, overcrowded, hungry, etc.)
 - Reproduction and incubation status
 
-## 4.4 Plant Detail Panel
+## 4.4 Plant Detail Panel — DONE
 
 - Species name
 - Growth stage and progress
@@ -368,13 +370,13 @@ Appears when a duplicant is selected. Multiple tabs with comprehensive duplicant
 - Harvest readiness
 - Disease/wilt status
 
-## 4.5 Geyser/Vent Detail Panel
+## 4.5 Geyser/Vent Detail Panel — DONE
 
 - Type (Steam Geyser, Natural Gas Geyser, etc.)
 - Analysis progress (requires field research)
 - Once analyzed: output element, average output rate, active period, dormant period, eruption cycle
 
-## 4.6 Tile/Cell Detail Panel
+## 4.6 Tile/Cell Detail Panel — DONE
 
 - Element name and state (solid, liquid, gas)
 - Mass (kg)
@@ -387,7 +389,7 @@ Appears when a duplicant is selected. Multiple tabs with comprehensive duplicant
 
 # Phase 5: Full-Screen Management Screens
 
-## 5.1 Research Tree
+## 5.1 Research Tree — DONE
 
 A large, scrollable, pannable tree diagram of all technologies. Opens as a full-screen overlay. The tree has approximately 10 tiers of depth, read left to right.
 
@@ -399,7 +401,7 @@ A large, scrollable, pannable tree diagram of all technologies. Opens as a full-
 
 > **Note:** The tree is navigated by dragging to pan and scrolling to zoom, making it inherently visual and spatial. This is one of the most complex screens to make accessible.
 
-## 5.2 Skills Screen
+## 5.2 Skills Screen — DONE
 
 Full-screen duplicant skill assignment. Shows each duplicant and available skill trees.
 
@@ -410,7 +412,7 @@ Full-screen duplicant skill assignment. Shows each duplicant and available skill
 - Skill points are earned passively via duplicant experience
 - Hat/role indicator changes based on assigned skills
 
-## 5.3 Codex/Database
+## 5.3 Codex/Database — DONE
 
 An in-game encyclopedia accessible from the top bar. A categorized reference of all game content.
 
@@ -421,7 +423,7 @@ An in-game encyclopedia accessible from the top bar. A categorized reference of 
 
 ---
 
-# Phase 6: Printing Pod (Recurring Event)
+# Phase 6: Printing Pod (Recurring Event) — DONE
 
 Every 3 cycles, the Printing Pod becomes ready and triggers a notification. When interacted with, it opens a selection screen.
 
@@ -437,14 +439,14 @@ Every 3 cycles, the Printing Pod becomes ready and triggers a notification. When
 
 Unlocked via research. Uses a dedicated overlay (Shift+F2) and its own layer of wire networks.
 
-## 7.1 Automation Overlay
+## 7.1 Automation Overlay — DONE
 
 - Shows all automation wires, gates, sensors, and building ports
 - Wire color indicates signal: green (active/on) or red (inactive/off)
 - Building ports are visible with arrows indicating input vs output
 - Ribbon wires show 4-bit state
 
-## 7.2 Sensors
+## 7.2 Sensors — DONE
 
 Each sensor has a configurable threshold and an above/below toggle. Sensor types include:
 
@@ -458,7 +460,7 @@ Each sensor has a configurable threshold and an above/below toggle. Sensor types
 - Smart Battery (built-in output port)
 - Various storage buildings (built-in output port for content level)
 
-## 7.3 Logic Gates
+## 7.3 Logic Gates — DONE
 
 - AND, OR, XOR, NOT: standard boolean logic
 - Buffer Gate: delays signal turn-off by configurable time
@@ -471,7 +473,7 @@ Each sensor has a configurable threshold and an above/below toggle. Sensor types
 
 # Phase 8: Rocketry and Starmap
 
-## 8.1 Starmap (Base Game)
+## 8.1 Starmap (Base Game) — DONE
 
 Full-screen interface showing space destinations arranged by distance from the home asteroid.
 
@@ -481,7 +483,7 @@ Full-screen interface showing space destinations arranged by distance from the h
 - Right panel shows selected destination details and mission controls
 - Rocket mission configuration: select crew, cargo, research targets
 
-## 8.2 Starmap (Spaced Out DLC)
+## 8.2 Starmap (Spaced Out DLC) — DONE
 
 Completely redesigned. A hex-grid map representing nearby space. Significantly more complex.
 
@@ -492,7 +494,7 @@ Completely redesigned. A hex-grid map representing nearby space. Significantly m
 - Planetoid switching: clicking a planetoid switches the main view to that colony
 - Resource transfer between planetoids via rockets
 
-## 8.3 Rocket Interior (Spaced Out DLC)
+## 8.3 Rocket Interior (Spaced Out DLC) — DONE
 
 In Spaced Out, rockets have modular interiors that function as tiny bases.
 
@@ -502,7 +504,7 @@ In Spaced Out, rockets have modular interiors that function as tiny bases.
 - Rocket status: fuel level, oxidizer level, cargo manifest, crew list
 - Orbital controls: commands for harvesting space POIs, deploying rovers
 
-## 8.4 Multi-World Management (Spaced Out DLC)
+## 8.4 Multi-World Management (Spaced Out DLC) — DONE
 
 - World selector: a panel allowing switching between discovered planetoids
 - Each planetoid has its own independent tile grid, duplicants, buildings, and resources
@@ -511,7 +513,7 @@ In Spaced Out, rockets have modular interiors that function as tiny bases.
 
 ---
 
-# Phase 9: Sandbox Mode
+# Phase 9: Sandbox Mode — NOT STARTED
 
 Sandbox mode can be toggled with Shift+S once unlocked. It adds a new toolbar of special creative tools.
 
@@ -528,7 +530,7 @@ Sandbox mode can be toggled with Shift+S once unlocked. It adds a new toolbar of
 
 ---
 
-# Phase 10: Building Placement Interaction Model
+# Phase 10: Building Placement Interaction Model — DONE
 
 One of the most fundamental interaction patterns in the game. When a building is selected from the build menu:
 
@@ -545,7 +547,7 @@ One of the most fundamental interaction patterns in the game. When a building is
 
 ---
 
-# Phase 11: Room System
+# Phase 11: Room System — DONE
 
 Rooms are created by fully enclosing an area with tiles and doors. The Room Overlay (F11) shows recognized rooms.
 
@@ -569,7 +571,7 @@ Rooms are created by fully enclosing an area with tiles and doors. The Room Over
 
 ---
 
-# Phase 12: In-Game Pause Menu
+# Phase 12: In-Game Pause Menu — DONE
 
 Accessed by pressing Escape during gameplay.
 
@@ -586,7 +588,7 @@ Accessed by pressing Escape during gameplay.
 
 ---
 
-# Phase 13: Bionic Booster Pack DLC Additions
+# Phase 13: Bionic Booster Pack DLC Additions — DONE
 
 This DLC adds bionic duplicants with different needs and UI elements.
 
@@ -598,7 +600,7 @@ This DLC adds bionic duplicants with different needs and UI elements.
 
 ---
 
-# Phase 14: Story Traits and Special Events
+# Phase 14: Story Traits and Special Events — DONE
 
 - **World Story Traits**: selected during world generation. These add special narrative events and buildings to the world, such as the Mysterious Hermit, Crashed Satellite, or others. Each triggers unique popup notifications and special buildings that can be interacted with.
 - **Meteor Showers**: periodic events with warning notifications. Require Bunker Doors and Tiles for protection. The notification system shows incoming shower warnings.
