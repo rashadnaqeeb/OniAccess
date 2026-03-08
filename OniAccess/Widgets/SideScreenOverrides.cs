@@ -1737,20 +1737,23 @@ namespace OniAccess.Widgets {
 			}
 		}
 		static void WalkRocketModule(RocketModuleSideScreen screen, List<Widget> items) {
+			var reorderable = Traverse.Create(screen).Field<ReorderableBuilding>("reorderable").Value;
+
 			// Module name
 			var nameLabel = screen.moduleNameLabel;
 			items.Add(new LabelWidget {
-				Label = SideScreenWalker.ReadLocText(nameLabel, nameLabel.transform.name),
+				Label = reorderable.GetProperName(),
 				GameObject = nameLabel.gameObject,
-				SpeechFunc = () => SideScreenWalker.ReadLocText(nameLabel, nameLabel.transform.name)
+				SpeechFunc = () => reorderable.GetProperName()
 			});
 
 			// Module description
 			var descLabel = screen.moduleDescriptionLabel;
+			string desc = reorderable.GetComponent<Building>().Desc;
 			items.Add(new LabelWidget {
-				Label = SideScreenWalker.ReadLocText(descLabel, descLabel.transform.name),
+				Label = desc,
 				GameObject = descLabel.gameObject,
-				SpeechFunc = () => SideScreenWalker.ReadLocText(descLabel, descLabel.transform.name)
+				SpeechFunc = () => reorderable.GetComponent<Building>().Desc
 			});
 
 			// Add Module
