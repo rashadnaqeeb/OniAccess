@@ -1,5 +1,7 @@
 # Changelog
 
+- Fix: cluster map cursor no longer resets to the active world when returning from a details screen or entity picker
+- Cluster map: H key jumps cursor to the active world's hex location
 - Fix: rocket module side screen now speaks the module name and description instead of silence
 - Module flight utility side screen: duplicant dropdown is now cyclable with left/right arrows
 - Module flight utility side screen: duplicate module names are numbered (e.g. "Cargo Bay 1", "Cargo Bay 2")

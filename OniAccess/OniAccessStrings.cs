@@ -1448,6 +1448,7 @@ namespace STRINGS {
 				public static LocString SWITCH_WORLD = "Switch to asteroid";
 				public static LocString PATHFIND_START = "Set pathfinder start";
 				public static LocString PATHFIND_CALC = "Calculate path to cursor";
+				public static LocString JUMP_HOME = "Jump to active world";
 			}
 		}
 

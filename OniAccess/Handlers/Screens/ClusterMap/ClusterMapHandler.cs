@@ -19,6 +19,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 		private readonly ClusterScanNavigator _scanner = new ClusterScanNavigator();
 		private AxialI _pathStart;
 		private bool _hasPathStart;
+		private bool _activated;
 
 		public ClusterMapHandler(KScreen screen) : base(screen) {
 		}
@@ -41,6 +42,8 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			new ConsumedKey(KKeyCode.DownArrow),
 			new ConsumedKey(KKeyCode.LeftArrow),
 			new ConsumedKey(KKeyCode.RightArrow),
+			// Jump home
+			new ConsumedKey(KKeyCode.H),
 			// Entity selection
 			new ConsumedKey(KKeyCode.Return),
 			new ConsumedKey(KKeyCode.Return, Modifier.Ctrl),
@@ -72,6 +75,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			new HelpEntry("Arrow keys", STRINGS.ONIACCESS.CLUSTER_MAP.HELP.HEX_MOVE_ARROWS),
 			new HelpEntry("K", STRINGS.ONIACCESS.CLUSTER_MAP.HELP.READ_COORDS),
 			new HelpEntry("I", STRINGS.ONIACCESS.CLUSTER_MAP.HELP.READ_TOOLTIP),
+			new HelpEntry("H", STRINGS.ONIACCESS.CLUSTER_MAP.HELP.JUMP_HOME),
 			new HelpEntry("Enter", STRINGS.ONIACCESS.CLUSTER_MAP.HELP.SELECT_ENTITY),
 			new HelpEntry("Ctrl+Enter", STRINGS.ONIACCESS.CLUSTER_MAP.HELP.SWITCH_WORLD),
 			new HelpEntry("Space", STRINGS.ONIACCESS.CLUSTER_MAP.HELP.PATHFIND_START),
@@ -94,18 +98,26 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 		// ========================================
 
 		public override void OnActivate() {
-			_cursorLocation = FindStartLocation();
+			if (!_activated) {
+				_activated = true;
+				_cursorLocation = FindStartLocation();
 
-			var mode = ClusterMapScreen.Instance.GetMode();
-			if (mode == ClusterMapScreen.Mode.SelectDestination) {
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_DESTINATION);
+				var mode = ClusterMapScreen.Instance.GetMode();
+				if (mode == ClusterMapScreen.Mode.SelectDestination) {
+					SpeechPipeline.SpeakInterrupt(
+						(string)STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_DESTINATION);
+				} else {
+					base.OnActivate();
+				}
 			} else {
-				base.OnActivate();
+				SpeechPipeline.SpeakInterrupt(DisplayName);
 			}
 
-			// Announce what's at the starting hex
 			SpeechPipeline.SpeakQueued(HexAnnouncer.AnnounceHex(_cursorLocation));
+		}
+
+		public override void OnDeactivate() {
+			_activated = false;
 		}
 
 		// ========================================
@@ -168,6 +180,15 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 				&& !InputUtil.AnyModifierHeld()) {
 				MoveHex(HexCursor.ArrowToHexDirection(
 					_cursorLocation, HexCursor.Direction.Right));
+				return true;
+			}
+
+			// --- H: jump to active world ---
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.H)
+				&& !InputUtil.AnyModifierHeld()) {
+				_cursorLocation = FindStartLocation();
+				SpeechPipeline.SpeakInterrupt(
+					HexAnnouncer.AnnounceHex(_cursorLocation));
 				return true;
 			}
 
