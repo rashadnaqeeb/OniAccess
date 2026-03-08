@@ -1,9 +1,10 @@
 namespace OniAccess.Util {
 	/// <summary>
-	/// Formats a grid cell as coordinates relative to the Printing Pod (0,0).
-	/// Falls back to world center if no telepad exists yet, but keeps
-	/// retrying until a telepad is found so early callers (before
-	/// Telepad.OnSpawn) don't lock in the wrong origin.
+	/// Formats a grid cell as coordinates relative to an origin point:
+	/// the Printing Pod on colonies, or the Rocket Control Station
+	/// inside rocket interiors. Falls back to world center if neither
+	/// exists yet, but keeps retrying so early callers don't lock in
+	/// the wrong origin.
 	/// </summary>
 	internal static class GridCoordinates {
 		private static int? _originCell;
@@ -37,7 +38,9 @@ namespace OniAccess.Util {
 			if (_originCell != null && _telepadFound)
 				return _originCell.Value;
 			var world = ClusterManager.Instance.activeWorld;
-			int cell = FindTelepadCell(world);
+			int cell = world.IsModuleInterior
+				? FindRocketControlStationCell(world)
+				: FindTelepadCell(world);
 			if (cell != Grid.InvalidCell) {
 				_originCell = cell;
 				_telepadFound = true;
@@ -48,6 +51,17 @@ namespace OniAccess.Util {
 			cell = FindWorldCenter(world);
 			_originCell = cell;
 			return cell;
+		}
+
+		private static int FindRocketControlStationCell(WorldContainer world) {
+			try {
+				var stations = Components.RocketControlStations.GetWorldItems(world.id);
+				if (stations != null && stations.Count > 0)
+					return Grid.PosToCell(stations[0].transform.GetPosition());
+			} catch (System.Exception ex) {
+				Log.Warn($"GridCoordinates.FindRocketControlStationCell: {ex.Message}");
+			}
+			return Grid.InvalidCell;
 		}
 
 		private static int FindTelepadCell(WorldContainer world) {

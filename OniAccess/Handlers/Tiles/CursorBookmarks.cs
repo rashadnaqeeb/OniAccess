@@ -60,10 +60,9 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public static string JumpHome() {
-			var telepad = GameUtil.GetActiveTelepad();
-			if (telepad == null)
+			int cell = FindHomeCell();
+			if (cell == Grid.InvalidCell)
 				return (string)STRINGS.ONIACCESS.BOOKMARKS.NO_HOME;
-			int cell = Grid.PosToCell(telepad.transform.GetPosition());
 			string speech = TileCursor.Instance.JumpTo(cell);
 			if (speech != null)
 				KMonoBehaviour.PlaySound(GlobalAssets.GetSound("Click_Notification"));
@@ -80,6 +79,24 @@ namespace OniAccess.Handlers.Tiles {
 			if (key == KeyCode.Keypad0)
 				return 9;
 			return -1;
+		}
+
+		private static int FindHomeCell() {
+			var world = ClusterManager.Instance.activeWorld;
+			if (world.IsModuleInterior) {
+				try {
+					var stations = Components.RocketControlStations.GetWorldItems(world.id);
+					if (stations != null && stations.Count > 0)
+						return Grid.PosToCell(stations[0].transform.GetPosition());
+				} catch (System.Exception ex) {
+					Util.Log.Warn($"CursorBookmarks.FindHomeCell: {ex.Message}");
+				}
+				return Grid.InvalidCell;
+			}
+			var telepad = GameUtil.GetActiveTelepad();
+			if (telepad == null)
+				return Grid.InvalidCell;
+			return Grid.PosToCell(telepad.transform.GetPosition());
 		}
 
 		private static void PlayRecallSound(int index) {
