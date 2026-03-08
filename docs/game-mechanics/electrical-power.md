@@ -21,6 +21,23 @@ Circuit membership is determined by physical wire connectivity through `UtilityN
 | Heavy-Watt Wire | 20,000 W |
 | Heavi-Watt Conductive Wire | 50,000 W |
 
+## Wire Physical Properties
+
+All wire types have 10 HP (`BaseWireConfig.cs` passes `hitpoints: 10` to `BuildingTemplates.CreateBuildingDef`). Wires cannot be repaired (`BaseTimeUntilRepair = -1f`; the default 600f enables repair, -1f disables it). Damaged wires must be deconstructed and rebuilt. All wires have thermal conductivity 0.05 (very low heat transfer).
+
+| Wire | Material | Mass | Decor | Placement |
+|------|----------|------|-------|-----------|
+| Wire | Any Metal | 25 kg | -5 (radius 1) | Anywhere (behind tiles) |
+| Conductive Wire | Refined Metal | 25 kg | None | Anywhere (behind tiles) |
+| Heavy-Watt Wire | Any Metal | 100 kg | -25 (radius 6) | Not in tiles |
+| Heavi-Watt Conductive Wire | Refined Metal | 100 kg | -20 (radius 4) | Not in tiles |
+
+Heavy-Watt variants use `BuildLocationRule.NotInTiles` -- they cannot be placed inside wall or floor tiles, forcing visible routing. Heavi-Watt Conductive Wire additionally requires the Electrical Engineering skill (`requiredSkillPerk = CanPowerTinker`).
+
+Construction time is 3 seconds for all wire types.
+
+**Sources:** `WireConfig.cs`, `WireRefinedConfig.cs`, `WireHighWattageConfig.cs`, `WireRefinedHighWattageConfig.cs`, `BaseWireConfig.cs`, `TUNING/BUILDINGS.cs` (CONSTRUCTION_MASS_KG, DECOR), `BuildingDef.cs` (BaseTimeUntilRepair default)
+
 ## Power Distribution Algorithm
 
 The `CircuitManager.Sim200msLast()` method runs the main distribution every 200ms:

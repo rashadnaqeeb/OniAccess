@@ -11,6 +11,23 @@ How fluid pipes and solid conveyor rails work. All three conduit systems are sim
 | Liquid pipes | 10 kg |
 | Gas pipes | 1 kg |
 
+### Pipe Physical Properties
+
+All pipe types have 10 HP (`hitpoints: 10` in `BuildingTemplates.CreateBuildingDef`). Melting point is 1600 for all types. All pipes are non-floodable, non-overheatable, and non-entombable.
+
+| Pipe | Material | Mass | Build Time | Decor | Thermal Conductivity |
+|------|----------|------|------------|-------|---------------------|
+| Liquid Pipe | Plumbable or Metal | 100 kg | 3s | None | 1.0 (default) |
+| Gas Pipe | Raw Mineral or Metal | 25 kg | 3s | None | 1.0 (default) |
+| Insulated Liquid Pipe | Plumbable | 400 kg | 10s | -5 (radius 1) | 0.03125 (1/32) |
+| Insulated Gas Pipe | Raw Mineral | 400 kg | 10s | -5 (radius 1) | 0.03125 (1/32) |
+
+Insulated pipes cost 4x the mass of standard pipes (TIER4 vs TIER2/TIER0) and take over 3x longer to build, but reduce thermal conductivity to 1/32 of default. This makes them essential for transporting fluids at extreme temperatures without exchanging heat with the environment.
+
+**Repair behavior:** Liquid pipes (both standard and insulated) have `BaseTimeUntilRepair = -1f`, meaning they cannot be repaired and must be deconstructed and rebuilt when damaged. Gas pipes (both standard and insulated) have `BaseTimeUntilRepair = 0f`, meaning duplicants will queue a repair errand immediately when damaged.
+
+**Sources:** `LiquidConduitConfig.cs`, `GasConduitConfig.cs`, `InsulatedLiquidConduitConfig.cs`, `InsulatedGasConduitConfig.cs`, `TUNING/BUILDINGS.cs` (CONSTRUCTION_MASS_KG, DECOR), `TUNING/MATERIALS.cs`, `BuildingDef.cs` (BaseTimeUntilRepair default of 600f)
+
 ### Network Construction
 
 When pipes are built or modified, the system constructs a flow graph:
