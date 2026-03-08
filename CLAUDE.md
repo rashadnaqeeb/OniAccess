@@ -19,6 +19,7 @@ When a build fails on a type or method signature, look it up in `ONI-Decompiled/
 - `OniAccess/` - mod source code (C#, .NET Framework 4.7.2, Harmony patches)
 - `ONI-Decompiled/` - decompiled game source for reference (read-only, not part of build)
 - `docs/` - design documentation
+- `docs/game-mechanics/` - 46 topic files with exact values sourced from decompiled code; check here when answering game mechanics questions (filenames mostly match topics)
 - `docs/CODEBASE_INDEX.md` - complete namespace reference for decompiled ONI source
 - `.planning/` - project planning files
 - `changes.md` - changelog for user-facing features and bug fixes
