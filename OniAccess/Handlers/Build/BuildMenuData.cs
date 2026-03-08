@@ -154,7 +154,14 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		public static string GetOrientationName(
-				Orientation orientation, PermittedRotations permitted) {
+				Orientation orientation, BuildingDef def) {
+			return GetOrientationName(
+				orientation, def.PermittedRotations, IsHorizontalFlowBuilding(def));
+		}
+
+		internal static string GetOrientationName(
+				Orientation orientation, PermittedRotations permitted,
+				bool horizontalFlow = false) {
 			switch (permitted) {
 				case PermittedRotations.R90:
 					return orientation == Orientation.Neutral
@@ -169,6 +176,14 @@ namespace OniAccess.Handlers.Build {
 						? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN
 						: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP;
 				default:
+					if (horizontalFlow) {
+						orientation = orientation switch {
+							Orientation.R90 => Orientation.Neutral,
+							Orientation.R180 => Orientation.R90,
+							Orientation.R270 => Orientation.R180,
+							_ => Orientation.R270,
+						};
+					}
 					switch (orientation) {
 						case Orientation.R90: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT;
 						case Orientation.R180: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN;
@@ -176,6 +191,21 @@ namespace OniAccess.Handlers.Build {
 						default: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP;
 					}
 			}
+		}
+
+		internal static bool IsHorizontalFlowBuilding(BuildingDef def) {
+			if (def.WidthInCells <= def.HeightInCells)
+				return false;
+			if (def.InputConduitType != ConduitType.None || def.OutputConduitType != ConduitType.None)
+				return true;
+			if (def.ObjectLayer == ObjectLayer.LogicGate)
+				return true;
+			if (def.BuildLocationRule == BuildLocationRule.WireBridge
+				|| def.BuildLocationRule == BuildLocationRule.HighWattBridgeTile)
+				return true;
+			if (def.UseHighEnergyParticleInputPort && def.UseHighEnergyParticleOutputPort)
+				return true;
+			return false;
 		}
 
 		/// <summary>
@@ -206,7 +236,7 @@ namespace OniAccess.Handlers.Build {
 			string name = def.Name;
 			if (def.PermittedRotations == PermittedRotations.Unrotatable)
 				return name;
-			string dir = GetOrientationName(GetCurrentOrientation(), def.PermittedRotations);
+			string dir = GetOrientationName(GetCurrentOrientation(), def);
 			if (def.PermittedRotations == PermittedRotations.R90)
 				return name + ", " + dir;
 			return name + ", " + string.Format(

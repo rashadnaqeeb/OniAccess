@@ -612,7 +612,7 @@ namespace OniAccess.Handlers.Build {
 
 		private void AnnounceRotation() {
 			var orientation = BuildMenuData.GetCurrentOrientation();
-			var parts = new List<string> { BuildMenuData.GetOrientationName(orientation, _def.PermittedRotations) };
+			var parts = new List<string> { BuildMenuData.GetOrientationName(orientation, _def) };
 
 			int originCell = GetOriginCell();
 			var pos = Grid.CellToPosCBC(originCell, _def.SceneLayer);
