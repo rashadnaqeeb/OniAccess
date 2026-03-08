@@ -155,7 +155,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				}
 
 				var plain = child.GetComponent<DetailLabel>();
-				if (plain != null) {
+				if (plain != null && !string.IsNullOrEmpty(plain.label.text)) {
 					var captured = plain;
 					section.Items.Add(new LabelWidget {
 						Label = captured.label.text,
@@ -342,7 +342,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				}
 
 				var detailLabel = child.GetComponent<DetailLabel>();
-				if (detailLabel != null) {
+				if (detailLabel != null && !string.IsNullOrEmpty(detailLabel.label.text)) {
 					var captured = detailLabel;
 					section.Items.Add(new LabelWidget {
 						Label = captured.label.text,
@@ -545,7 +545,7 @@ namespace OniAccess.Handlers.Screens.Details {
 
 				// Fall back to plain DetailLabel (some world panels may use SetLabel)
 				var detailLabel = child.GetComponent<DetailLabel>();
-				if (detailLabel != null) {
+				if (detailLabel != null && !string.IsNullOrEmpty(detailLabel.label.text)) {
 					var captured = detailLabel;
 					section.Items.Add(new LabelWidget {
 						Label = captured.label.text,
