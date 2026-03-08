@@ -346,6 +346,11 @@ namespace OniAccess.Handlers.Build {
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 				return;
 			}
+			if (!(PlayerController.Instance.ActiveTool is BuildTool)) {
+				PlaySound("Negative");
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+				return;
+			}
 			int originCell = GetOriginCell();
 			var pos = Grid.CellToPosCBC(originCell, _def.SceneLayer);
 			var orientation = BuildMenuData.GetCurrentOrientation();
@@ -590,6 +595,7 @@ namespace OniAccess.Handlers.Build {
 					(string)STRINGS.ONIACCESS.BUILD_MENU.NOT_ROTATABLE);
 				return;
 			}
+			if (!(PlayerController.Instance.ActiveTool is BuildTool)) return;
 
 			BuildTool.Instance.TryRotate();
 			AnnounceRotation();
@@ -601,6 +607,7 @@ namespace OniAccess.Handlers.Build {
 					(string)STRINGS.ONIACCESS.BUILD_MENU.NOT_ROTATABLE);
 				return;
 			}
+			if (!(PlayerController.Instance.ActiveTool is BuildTool)) return;
 
 			// R360 cycles through 4 orientations; 3 forward steps = 1 reverse step.
 			// All other types are 2-state toggles where forward = reverse.
@@ -614,12 +621,14 @@ namespace OniAccess.Handlers.Build {
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			var parts = new List<string> { BuildMenuData.GetOrientationName(orientation, _def) };
 
-			int originCell = GetOriginCell();
-			var pos = Grid.CellToPosCBC(originCell, _def.SceneLayer);
-			string failReason;
-			if (!_def.IsValidPlaceLocation(
-					BuildTool.Instance.visualizer, pos, orientation, out failReason))
-				parts.Add(failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
+			if (PlayerController.Instance.ActiveTool is BuildTool) {
+				int originCell = GetOriginCell();
+				var pos = Grid.CellToPosCBC(originCell, _def.SceneLayer);
+				string failReason;
+				if (!_def.IsValidPlaceLocation(
+						BuildTool.Instance.visualizer, pos, orientation, out failReason))
+					parts.Add(failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
+			}
 
 			string extent = BuildExtentText(orientation);
 			if (extent != null)
