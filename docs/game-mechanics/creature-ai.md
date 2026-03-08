@@ -27,9 +27,8 @@ Creature AI is driven by `CreatureBrain`, which extends `Brain`. Each creature h
 | 15 | RanchedStates | Being groomed (adults only) |
 | 16 | LayEggStates | Laying eggs (adults only) |
 | 17 | EatStates | Eating |
-| 18 | PlayStates | Using recreation |
-| 19 | CritterCondoStates | Using condo (adults only) |
-| 20 | IdleStates | Default wandering |
+| 18 | CritterCondoStates | Using condo (adults only) |
+| 19 | IdleStates | Default wandering |
 
 All behaviors are `GameStateMachine`-based, with type-safe state definitions and tag-driven transitions.
 
@@ -45,20 +44,20 @@ Creature diets are defined as arrays of `Diet.Info` entries, each specifying:
 **Example (Hatch diets):**
 - Basic Rock Diet: Sand, Sandstone, Clay, Dirt, etc. -> produces excrement at configured ratio
 - Metal Diet: Ore tags -> produces refined metals (CopperOre -> Copper)
-- Hard Rock Diet: Granite, Obsidian, Igneous Rock -> produces excrement
+- Hard Rock Diet: Sedimentary Rock, Igneous Rock, Obsidian, Granite -> produces excrement
 
 The `CreatureCalorieMonitor` tracks hunger as an Amount (0 to species-specific max):
 
 **State machine:**
 ```
-hungry.outOfCalories -> hungry.hungry -> satisfied -> eating
+normal -> hungry.hungry -> hungry.outofcalories (wild | tame | starvedtodeath)
 ```
 
-- **Satisfied:** Calories above hunger threshold. Base metabolism burns calories over time.
+- **Normal:** Calories above hunger threshold (default: 90% of max). Base metabolism burns calories over time.
 - **Hungry:** Below threshold. Creature seeks food. Metabolism rate may change.
-- **Out of Calories:** Starvation. Creature takes damage over time until fed or dead.
-  - Wild creatures: lifespan penalty, reduced reproduction
-  - Tame creatures: die from starvation
+- **Out of Calories:** Starvation. Splits into wild vs tame paths.
+  - Wild creatures: survive indefinitely (no starvation death)
+  - Tame creatures: die after `deathTimer` seconds (default 6000s / 10 cycles) at zero calories
 
 **Metabolism modifiers:**
 - Tame creatures burn calories faster than wild ones
@@ -70,7 +69,7 @@ hungry.outOfCalories -> hungry.hungry -> satisfied -> eating
 Reproduction is handled by `FertilityMonitor` (egg-laying) and `IncubationMonitor` (egg hatching).
 
 **Fertility cycle:**
-1. Fertility amount increases from 0 to 100 over time (base rate: 0.008375 per update)
+1. Fertility amount increases from 0 to 100 over time. Rate is species-specific: `100 / (baseFertileCycles * 600)` per second
 2. Rate modified by happiness, temperature comfort, and feeding status
 3. At 100%: creature lays an egg and fertility resets to 0
 
@@ -81,7 +80,7 @@ Reproduction is handled by `FertilityMonitor` (egg-laying) and `IncubationMonito
 
 **Incubation:**
 - Eggs have an incubation amount (0 to 100)
-- Base rate: 0.01675 per update
+- Base rate is species-specific (`baseIncubationRate` per second)
 - Incubators apply a speed multiplier
 - Lullabied eggs receive a bonus
 - Temperature outside viable range pauses incubation
@@ -94,7 +93,7 @@ Reproduction is handled by `FertilityMonitor` (egg-laying) and `IncubationMonito
 
 **Wildness amount:** 0 (fully tame) to 100 (fully wild), starting at 100 for wild-spawned creatures.
 
-**Taming:** Each grooming interaction by a rancher reduces wildness. Rate depends on rancher skill. When wildness reaches 0, the creature becomes domesticated.
+**Taming:** Grooming applies a "Ranched" effect that reduces wildness at -11/120 per second. Eating from a fish feeder applies a separate modifier of -1/30 per second. Wild creatures have a natural wildness increase of +1/120 per second. When wildness reaches 0, the creature becomes domesticated.
 
 **Wild vs tame effects:**
 
@@ -105,13 +104,13 @@ Reproduction is handled by `FertilityMonitor` (egg-laying) and `IncubationMonito
 | Reproduction | Slower fertility rate | Faster fertility rate |
 | Starvation | Survives longer | Dies sooner |
 
-Wild creatures revert wildness upward if not groomed. The wildness amount ticks up at a base rate, so continuous grooming is required to maintain domestication.
+The wild effect (applied while `GameTags.Creatures.Wild` is present) ticks wildness upward at +1/120 per second. Continuous grooming offsets this to drive wildness to 0. Once tame (wildness = 0), the wild tag is removed and the natural increase stops, but wildness can increase again if the creature transitions back to the wild state.
 
 ## Age and Lifespan
 
 `AgeMonitor` tracks creature aging:
 
-- Age amount increases continuously (base rate: 0.1675 per update)
+- Age amount increases at 0.0016667 per second (1 cycle of age per 600-second game cycle)
 - Maximum age is species-specific, with separate wild and domestic values
 - At max age: creature dies of old age
 - Baby creatures track a separate `Maturity` amount; at 100%, they grow into adults
@@ -124,17 +123,21 @@ Wild creatures revert wildness upward if not groomed. The wildness amount ticks 
 
 | State | Happiness Value | Effect |
 |-------|----------------|--------|
-| Happy | >= 4 | Increased reproduction rate |
-| Neutral | -1 to 4 | Normal behavior |
-| Glum | -10 to -1 | Reduced reproduction |
-| Miserable | <= -10 | No reproduction, severe penalties |
+| Happy | >= 4 | +900% fertility rate (tame only) |
+| Neutral | > -1 and < 4 | Normal behavior |
+| Glum | > -10 and <= -1 | Reduced metabolism (-15 wild, -80 tame) |
+| Miserable | <= -10 | Metabolism penalty, fertility and scale growth halted |
 
 **Happiness modifiers:**
-- Correct temperature: +1 per comfortable state
-- Overcrowded: -1 per excess creature in room
-- Fed (tame): +1 when not hungry
-- Groomed: +1 from recent grooming
+- Groomed (Ranched effect): +5
+- Baby bonus: +5
+- Fish feeder bonus: +5
+- Tame penalty: -1 (always applied while tame)
+- Overcrowded: -1 per excess creature beyond room capacity
+- Confined (no room): -10
+- Out of calories (tame): -10
 - Temperature stress: -1 (uncomfortable), -2 (deadly range)
+- Condo interaction: +1
 
 The `CritterEmoteMonitor` displays creature emotions as thought bubbles. Emotes have 30-second cooldowns and prioritize negative emotions over positive ones. Expression intervals range from 37.5 to 75 seconds.
 
@@ -145,12 +148,14 @@ The `CritterEmoteMonitor` displays creature emotions as thought bubbles. Emotes 
 **States:**
 ```
 comfortable <-> hot.uncomfortable <-> hot.deadly
-            <-> cold.uncomfortable <-> cold.deadly -> dead
+            <-> cold.uncomfortable <-> cold.deadly
+                                       dead (via GameTags.Dead tag transition)
 ```
 
 - Internal temperature: creature's `PrimaryElement.Temperature`
-- External temperature: average of occupied cells (or internal temp if in vacuum)
-- Deadly state inflicts configurable damage per second with 1-second cooldown
+- External temperature: average of occupied cells (uses internal temp for vacuum cells)
+- Deadly state inflicts `damagePerSecond` (default 0.25) with 1-second cooldown after initial `secondsUntilDamageStarts` delay (default 1s)
+- Deadly thresholds compare against external temperature (skipped in vacuum); uncomfortable thresholds compare against internal temperature
 - Each temperature state applies a happiness modifier
 
 ## Threat Response
@@ -166,11 +171,12 @@ comfortable <-> hot.uncomfortable <-> hot.deadly
 
 **Response states:**
 ```
-safe.passive -> threatened.creature (flee or fight based on species)
-safe.seeking -> threatened.duplicant (flee or fight based on species)
+safe.passive (faction cannot attack -- does nothing)
+safe.seeking -> threatened.creature (for critters: flee or fight based on WillFight)
+safe.seeking -> threatened.duplicant.ShoudFlee / .ShouldFight (for duplicants)
 ```
 
-Flee threshold is configurable per species. Some creatures always fight (e.g., adult Hatches when attacked), some always flee (e.g., Pufts).
+`WillFight()` returns false if the threat is a Predator-faction creature, or if health has deteriorated to or past `fleethresholdState` (enum order: Perfect, Alright, Scuffed, Injured, Critical, Incapacitated, Dead). Default threshold is `Injured`, so creatures flee once injured. Hatches set it to `Dead`, meaning they fight at any health level.
 
 ## Scale Growth and Molting
 
@@ -191,9 +197,8 @@ Visual scale levels update in 5 stages as growth progresses.
 **Triggers:** Starvation (calories reach 0), temperature damage (HP reaches 0), old age (age reaches max), drowning, explicit kill.
 
 **Process:**
-1. Creature enters dying state, plays death animation
-2. Tags `GameTags.Dead` and `GameTags.Corpse` are applied
-3. Creature drops to ground state
-4. No carrying mechanics for creature corpses (unlike duplicants)
+1. Creature enters `dying_creature` state via `ToggleBehaviour(GameTags.Creatures.Die)`
+2. On completion, enters `dead_creature` state: `GameTags.Dead` is applied and death animation loops
+3. Duplicants follow a separate path (`dying_duplicant` -> `die` -> `dead`) which adds `GameTags.Corpse` and supports carrying
 
 Creature deaths are silent (no notification), unlike duplicant deaths which trigger alerts and sound effects.

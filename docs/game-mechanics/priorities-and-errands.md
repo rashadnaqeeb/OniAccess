@@ -27,7 +27,7 @@ A chore's priority class is stored in `masterPriority.priority_class`. The defau
 
 ## Building Priority (masterPriority.priority_value)
 
-The 1--9 slider the player sets on buildings and errands via the priority overlay (P key). Stored in `Prioritizable.masterPrioritySetting`. Default is 5. This is the second-highest sort key after priority class -- a priority-9 basic errand beats a priority-1 basic errand, but any `topPriority` errand beats all `basic` errands regardless of this value.
+The 1--9 slider the player sets on buildings and errands via the priority overlay (P key). Stored in `Prioritizable.masterPrioritySetting`. Default is 5. This is the third sort key (after priority class and personal priority) -- a priority-9 basic errand beats a priority-1 basic errand within the same personal priority tier, but any `topPriority` errand beats all `basic` errands regardless of this value.
 
 The `!!` (yellow alert) button sets `priority_class = topPriority` with `priority_value = 1`.
 
@@ -225,7 +225,7 @@ Duplicants do not continuously re-evaluate errands. The `BrainScheduler` calls `
 
 The brain tick happens even while a duplicant is mid-work. If a higher-interrupt-priority chore becomes available (e.g., a personal need triggers), the brain tick will detect it and switch via `ChoreDriver.SetChore()`. However, the `GameTags.PreventChoreInterruption` tag on a duplicant's prefab ID blocks all chore switching for the duration -- `Brain.UpdateChores()` returns immediately when this tag is present. Similarly, `GameTags.PerformingWorkRequest` defers the switch until the current work request completes.
 
-The practical effect: errand re-evaluation is not instant. A newly created chore or priority change takes effect on the duplicant's next brain tick, not immediately. The scheduler processes minion brains in batches of up to 1000 per frame (tunable via `BrainScheduler.MinionBrainGroup.Tuning.idealProbeSize`).
+The practical effect: errand re-evaluation is not instant. A newly created chore or priority change takes effect on the duplicant's next brain tick, not immediately. The scheduler processes minion brains in batches of up to 1000 per frame (tunable via `BrainScheduler.DupeBrainGroup.Tuning.idealProbeSize`).
 
 ## Priority Changes Mid-Work
 
@@ -289,7 +289,7 @@ Die, Entombed, SuitMarker, Slip, Checkpoint, TravelTubeEntrance, WashHands, Heal
 
 ### Grouped Chore Types (appear in the Jobs screen)
 
-These chores have explicit_priority = 5000 and belong to one or more ChoreGroups. The player can set personal priorities for the group(s) they belong to:
+These chores belong to one or more ChoreGroups. The player can set personal priorities for the group(s) they belong to. Most have `explicit_priority = 5000`; the exceptions are `RocketControl` and `ArmTrap`, whose explicit priority equals their implicit priority (they pass no `explicit_priority` parameter to `Add`):
 
 | Chore Type | Groups |
 |------------|--------|

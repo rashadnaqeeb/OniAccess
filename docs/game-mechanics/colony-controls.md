@@ -159,6 +159,7 @@ Time values are stored in seconds and displayed as percentage of a 600-second cy
 | OxygenCreated | Net oxygen produced/consumed | kg |
 | EnergyCreated | Energy generated vs. consumed | Joules |
 | EnergyWasted | Energy wasted (generated but not consumed) | Joules |
+| ContaminatedOxygenFlatulence | Polluted oxygen from flatulence | kg (hidden if zero) |
 | ContaminatedOxygenToilet | Polluted oxygen from toilets | kg (hidden if zero) |
 | ContaminatedOxygenSublimation | Polluted oxygen from sublimation | kg (hidden if zero) |
 
@@ -309,7 +310,7 @@ Source: `Notification.cs`, `Notifier.cs`, `NotificationManager.cs`, `Notificatio
 
 1. A game system creates a `Notification` with title, type, tooltip function, and optional parameters (delay, click callback, expiry)
 2. The system calls `Notifier.Add(notification)` on the relevant entity's `Notifier` component
-3. `Notifier.Add()` sets the notification's `NotifierName` (from the entity's `KSelectable` name, prefixed with "-- "), sets `clickFocus` to the entity's transform (if `AutoClickFocus` is true), and forwards to `NotificationManager.Instance.AddNotification()`
+3. `Notifier.Add()` sets the notification's `NotifierName` (from the entity's `KSelectable` name, prefixed with "• "), sets `clickFocus` to the entity's transform (if `AutoClickFocus` is true), and forwards to `NotificationManager.Instance.AddNotification()`
 4. `NotificationManager` places the notification in `pendingNotifications`
 5. On each `Update()`, pending notifications with elapsed delay (`IsReady()` checks `Time.time >= GameTime + Delay`) are promoted to the active `notifications` list and fire the `notificationAdded` event
 6. `NotificationScreen` groups notifications by title text. If multiple notifications share the same title, they are merged into one entry showing a count suffix (e.g., "Scalding! (3)"). `Bad` and `DuplicantThreatening` duplicates play an escalating ding sound
@@ -352,6 +353,6 @@ The `MinionVitalsPanel` displays tracked Amounts and Attributes for the selected
 | Decor | Current decor exposure |
 | RadiationBalance | Accumulated radiation (Spaced Out) |
 
-For critters, additional amounts appear: Wildness, Incubation, Viability, Fertility, Age, ScaleGrowth, MilkProduction, ElementGrowth, and various battery types.
+For critters, additional amounts/attributes appear: Happiness (CritterAttribute), Wildness, Incubation, Viability, PowerCharge, Fertility, Beckoning, Age, Metabolism (CritterAttribute), ScaleGrowth, MilkProduction, ElementGrowth, CritterTemperature, InternalBattery, InternalChemicalBattery, InternalBioBattery, InternalElectroBank.
 
 Source: `MinionVitalsPanel.Init()`.

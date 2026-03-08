@@ -240,7 +240,7 @@ Source: `BuildLocationRule` enum, `BuildingDef.IsValidBuildLocation()`, `Buildin
 
 `CheckWallFoundation()` checks the column of cells along one side of the building (left or right, determined by orientation). Each cell must be solid or contain a building under construction that `IsFoundation`.
 
-`CheckBackWallFoundation()` checks every cell the building occupies: each must be non-solid AND contain a building in object layer 2 (the Building layer).
+`CheckBackWallFoundation()` checks every cell the building occupies: each must be non-solid AND contain a building in object layer 2 (the Backwall layer).
 
 Source: `BuildingDef.CheckBaseFoundation()`, `BuildingDef.CheckWallFoundation()`, `BuildingDef.CheckBackWallFoundation()`
 

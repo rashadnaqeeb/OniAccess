@@ -14,22 +14,22 @@ Every solid element has a `hardness` byte (0-255). The game groups hardness into
 | Very Firm | 50-149 | "Very Firm" | CanDigVeryFirm |
 | Nearly Impenetrable | 150-199 | "Nearly Impenetrable" | CanDigNearlyImpenetrable |
 | Super Duper Hard | 200-250 | (no distinct label, shows "Nearly Impenetrable") | CanDigSuperDuperHard |
-| Radioactive Materials | 251-254 | (no distinct label) | CanDigRadioactiveMaterials |
+| Radioactive Materials | 251-254 | (no distinct label, shows "Nearly Impenetrable") | CanDigRadioactiveMaterials |
 | Impenetrable | 255 | "Impenetrable" | CanDigUnobtanium (impossible) |
 
 Source: `GameUtil.Hardness` constants (GameUtil.cs:107-121), `GameUtil.AppendHardnessString()` (GameUtil.cs:1918-1966), `Diggable.OnSolidChanged()` (Diggable.cs:155-237).
 
-Note on display labels: `AppendHardnessString` uses only five visual thresholds (0, 10, 25, 50, 150, 255), so hardness 200+ and 251+ elements display as "Nearly Impenetrable" even though they require higher-tier skills. The distinction only matters for skill gating, not for the label shown to the player.
+Note on display labels: `AppendHardnessString` uses only six display labels (Very Soft, Soft, Firm, Very Firm, Nearly Impenetrable, Impenetrable), so hardness 200+ and 251+ elements display as "Nearly Impenetrable" even though they require higher-tier skills. The distinction only matters for skill gating, not for the label shown to the player.
 
 ## Skill Requirements by Tier
 
 `Diggable.OnSolidChanged()` checks the element hardness and adds a `HasSkillPerk` precondition to the dig chore. The thresholds:
 
 - **hardness < 50**: No skill required. Any duplicant can dig.
-- **hardness >= 50**: Requires `CanDigVeryFirm` (Mining skill tier 1, "Apprentice Miner").
-- **hardness >= 150**: Requires `CanDigNearlyImpenetrable` (Mining tier 2, "Miner").
-- **hardness >= 200**: Requires `CanDigSuperDuperHard` (Mining tier 3, "Master Miner").
-- **hardness >= 251**: Requires `CanDigRadioactiveMaterials` (Mining tier 4, "Atomic Miner", DLC1 only).
+- **hardness >= 50**: Requires `CanDigVeryFirm` (Mining1, "Hard Digging").
+- **hardness >= 150**: Requires `CanDigNearlyImpenetrable` (Mining2, "Superhard Digging").
+- **hardness >= 200**: Requires `CanDigSuperDuperHard` (Mining3, "Super-Duperhard Digging").
+- **hardness >= 251**: Requires `CanDigRadioactiveMaterials` (Mining4, "Hazmat Digging", DLC1 only).
 - **hardness == 255**: Adds `CanDigUnobtanium` precondition, which no skill tree grants. The dig errand is immediately cancelled in `OnSpawn()`.
 
 Source: Diggable.cs:88-91 (OnSpawn cancel), Diggable.cs:155-237 (OnSolidChanged skill checks).
@@ -40,12 +40,12 @@ Each mining skill level provides a digging attribute bonus (+2 per tier) and unl
 
 | Skill | Name | Attribute Bonus | Unlocks |
 |-------|------|-----------------|---------|
-| Mining1 | Apprentice Miner | Digging +2 | CanDigVeryFirm |
-| Mining2 | Miner | Digging +2 | CanDigNearlyImpenetrable |
-| Mining3 | Master Miner | Digging +2 | CanDigSuperDuperHard |
-| Mining4 | Atomic Miner | (none) | CanDigRadioactiveMaterials |
+| Mining1 | Hard Digging | Digging +2 | CanDigVeryFirm |
+| Mining2 | Superhard Digging | Digging +2 | CanDigNearlyImpenetrable |
+| Mining3 | Super-Duperhard Digging | Digging +2 | CanDigSuperDuperHard |
+| Mining4 | Hazmat Digging | (none) | CanDigRadioactiveMaterials |
 
-Source: Skills.cs:115-130, SkillPerks.cs:223-230, TUNING/ROLES.cs:19-23 (ATTRIBUTE_BONUS values = 2).
+Source: Skills.cs:115-130, SkillPerks.cs:223-230, TUNING/ROLES.cs:19-23 (ATTRIBUTE_BONUS_FIRST/SECOND/THIRD, all = 2).
 
 ## Dig Time Formula
 
@@ -118,7 +118,7 @@ Neutronium forms the impenetrable borders at the bottom of the map and around ge
 
 ## Entombment
 
-ONI has two distinct entombment systems for different entity types.
+ONI has separate entombment systems for different entity types.
 
 ### Item Entombment (EntombedItemManager)
 

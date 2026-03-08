@@ -21,7 +21,7 @@ There are 5 germ types in the game:
 | Slimelung | SlimeLung | Inhalation | 100 germs |
 | Zombie Spores | ZombieSpores | Inhalation + Contact | 1 germ |
 | Pollen | PollenGerms | Inhalation | 2 germs |
-| Radiation Poisoning | RadiationSickness | Contact | 1 germ |
+| Radiation Poisoning | RadiationSickness | None (sickness_id is null) | 1 germ |
 
 ## Growth and Die-Off: The Half-Life System
 
@@ -30,20 +30,20 @@ Germ populations change over time based on **half-life values** that depend on w
 Each disease defines growth rules per element via `ElementGrowthRule`:
 - A set of temperature ranges with associated half-lives
 - Different rates for different elements
-- 4-tier temperature interpolation: `minGrowth`, `lowGrowth`, `maxGrowth`, `lowGrowth` (symmetric curve)
+- 4-tier temperature interpolation: `minViable`, `minGrowth`, `maxGrowth`, `maxViable` (symmetric curve)
 
 **Temperature affects growth through ranges:**
 
 | Range | Effect |
 |-------|--------|
-| Below `minTemp` | Lethal: rapid die-off (short positive half-life) |
-| `minTemp` to `lowTemp` | Slow growth or slow die-off |
-| `lowTemp` to `highTemp` | Optimal: maximum growth (most negative half-life) |
-| `highTemp` to `maxTemp` | Slow growth or slow die-off |
-| Above `maxTemp` | Lethal: rapid die-off |
+| Below `minViable` | Lethal: rapid die-off (short positive half-life) |
+| `minViable` to `minGrowth` | Slow growth or slow die-off |
+| `minGrowth` to `maxGrowth` | Optimal: maximum growth (most negative half-life) |
+| `maxGrowth` to `maxViable` | Slow growth or slow die-off |
+| Above `maxViable` | Lethal: rapid die-off |
 
 **Example growth rates (half-life in seconds):**
-- Food Poisoning on Contaminated Water: -12,000s (grows, doubles every ~3.3 hours)
+- Food Poisoning on Polluted Water: -12,000s (grows, doubles every ~3.3 hours)
 - Food Poisoning on any liquid (generic liquid state rule): 12,000s (dies, halves every ~3.3 hours)
 - Food Poisoning on Chlorine: 10s (dies extremely fast)
 - Slimelung on Polluted Oxygen: -300s (grows quickly)
@@ -89,9 +89,9 @@ None -> Contact -> Exposed -> Contracted -> Sick
 - **Digestion:** Eating contaminated food (germs proportional to food fraction eaten)
 - **Contact:** Physical touch with contaminated surfaces
 
-**Exposed:** Accumulation exceeds threshold. For inhalation, requires continuous exposure (5+ ticks for Tier 1, up to 20+ for Tier 4).
+**Exposed:** Accumulation exceeds threshold. For inhalation, requires continuous exposure (10+ ticks for Tier 1, 15+ for Tier 2, 20+ for Tier 3). Tier is clamped to [1, 3].
 
-**Contracted:** Happens during **sleep**. If a duplicant sleeps while Exposed, they either clear the exposure (back to None) or become Contracted. Contracted duplicants become Sick on the next sleep.
+**Contracted:** Happens via `GermExposureTracker`, which accumulates exposure weights and randomly selects exposed duplicants to contract. On **sleep**, Exposed is cleared (back to None), while Contracted advances to Sick and the duplicant becomes infected.
 
 **Minimum exposure period:** 540 seconds (9 minutes) between same-germ exposures, preventing rapid stacking.
 
@@ -113,9 +113,10 @@ Exposure tier bonuses: Tier 1 = +3.0, Tier 2 = +1.5, Tier 3 = +0.0
 | Rating | Chance |
 |--------|--------|
 | 0 | 50% |
-| 5 | ~42% |
-| 10 | ~20% |
-| 20 | <1% |
+| 2 | ~27% |
+| 5 | ~7.6% |
+| 10 | ~0.7% |
+| 20 | <0.01% |
 
 ## Sickness Effects
 
@@ -135,7 +136,7 @@ Each disease causes different gameplay effects when contracted:
 - Visible spore cloud effect
 
 **Allergies** (60 seconds, requires Allergies trait):
-- +25% stress per cycle, +10 Sneezyness
+- +15% stress per cycle, +10 Sneezyness
 - Contracts immediately (no sleep required)
 - Non-allergic duplicants get harmless "Smelled Flowers" instead
 
@@ -158,7 +159,7 @@ Conduit systems track disease separately via `ConduitDiseaseManager`. When fluid
 
 ## Special Element Interactions
 
-- **Contaminated Oxygen:** Growth medium for both Food Poisoning (-12,000s) and Slimelung (-300s)
+- **Contaminated Oxygen:** Growth medium for Slimelung (-300s). Food Poisoning survives longer than on other gases (12,000s die-off vs 1,200s for generic gas) but does not grow
 - **Pickled food:** Kills Food Poisoning germs extremely fast (10s half-life)
 - **Chlorine:** Universal sterilizer for most germs
 - **Creatures:** Living creatures (element SimHashes.Creature) become walking disease vectors

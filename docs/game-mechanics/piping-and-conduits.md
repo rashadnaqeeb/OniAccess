@@ -22,7 +22,7 @@ All pipe types have 10 HP (`hitpoints: 10` in `BuildingTemplates.CreateBuildingD
 | Insulated Liquid Pipe | Plumbable | 400 kg | 10s | -5 (radius 1) | 0.03125 (1/32) |
 | Insulated Gas Pipe | Raw Mineral | 400 kg | 10s | -5 (radius 1) | 0.03125 (1/32) |
 
-Insulated pipes cost 4x the mass of standard pipes (TIER4 vs TIER2/TIER0) and take over 3x longer to build, but reduce thermal conductivity to 1/32 of default. This makes them essential for transporting fluids at extreme temperatures without exchanging heat with the environment.
+Insulated pipes use TIER4 mass (400 kg) versus TIER2 (100 kg) for standard liquid pipes and TIER0 (25 kg) for standard gas pipes, and take over 3x longer to build (10s vs 3s), but reduce thermal conductivity to 1/32 of default. This makes them essential for transporting fluids at extreme temperatures without exchanging heat with the environment.
 
 **Repair behavior:** Liquid pipes (both standard and insulated) have `BaseTimeUntilRepair = -1f`, meaning they cannot be repaired and must be deconstructed and rebuilt when damaged. Gas pipes (both standard and insulated) have `BaseTimeUntilRepair = 0f`, meaning duplicants will queue a repair errand immediately when damaged.
 
@@ -59,8 +59,8 @@ The pipe system runs **every 1.0 seconds** of game time, with up to **4 passes p
    - Transfer mass: `min(available_mass, target_capacity)`
    - Mix temperature (weighted average by mass)
    - Transfer disease proportionally
-2. Consolidate mass changes
-3. Repeat if any conduit made progress (up to 4 passes)
+2. If any conduit made progress, repeat (up to 4 passes total)
+3. Consolidate mass changes (`ConsolidateMass()` merges `added_mass`/`removed_mass` into `initial_mass`)
 
 ### No Element Mixing
 
@@ -92,7 +92,7 @@ mass            = initial_mass + added_mass - removed_mass
 movable_mass    = initial_mass - removed_mass
 ```
 
-`ConsolidateMass()` commits changes between passes.
+`ConsolidateMass()` commits changes after all passes complete, merging `added_mass`/`removed_mass` into `initial_mass`. Between passes, the `movable_mass` property prevents mass added during the current tick from being moved again.
 
 ### Blockage Behavior
 
@@ -161,7 +161,7 @@ Valves are inline conduit buildings that control flow. All valve types are 1x2 t
 
 **Automation integration:** The output port sends GREEN (1) when the limit is reached, RED (0) otherwise. Sending a GREEN signal to the reset input port resets `Amount` to 0, allowing the valve to pass another batch.
 
-**Solid variant difference:** `SolidLimitValve` counts in units (via `displayUnitsInsteadOfMass = true`) rather than kilograms. Each transferred item increments `Amount` by `transferredMass / MassPerUnit`.
+**Solid variant difference:** The solid variant (configured by `SolidLimitValveConfig`, same `LimitValve` class) counts in units (via `displayUnitsInsteadOfMass = true`) rather than kilograms. Each transferred item increments `Amount` by `transferredMass / MassPerUnit`.
 
 **Sources:** `LimitValve.cs`, `LimitValveTuning.cs`, `GasLimitValveConfig.cs`, `LiquidLimitValveConfig.cs`, `SolidLimitValveConfig.cs`
 
@@ -171,7 +171,7 @@ ONI has no check valve building. One-way flow is an inherent property of the pip
 
 ### How Valves Interact with Conduit Flow
 
-Manual valves and shutoff valves participate directly in the `ConduitFlow` update loop. `ValveBase.ConduitUpdate()` is registered via `Conduit.GetFlowManager(conduitType).AddConduitUpdater()` and runs alongside the normal flow passes. The valve reads from its input cell and writes to its output cell using the same `AddElement()` / `RemoveElement()` API that bridges use. This means:
+Manual valves and shutoff valves participate directly in the `ConduitFlow` update loop. `ValveBase.ConduitUpdate()` is registered via `Conduit.GetFlowManager(conduitType).AddConduitUpdater()` and runs after the normal flow passes and consolidation. The valve reads from its input cell and writes to its output cell using the same `AddElement()` / `RemoveElement()` API that bridges use. This means:
 
 - Valves obey the **no element mixing** rule: if the output cell contains a different element, `AddElement()` returns 0 and nothing transfers
 - Valves do not store fluid internally -- they transfer directly from input to output each tick

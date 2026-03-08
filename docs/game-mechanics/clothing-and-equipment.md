@@ -54,7 +54,7 @@ All values from `TUNING.EQUIPMENT.SUITS`:
 | Strength | -- | -- | +10 | -- |
 | Mass (kg) | 200 | 200 | 200 | 15 |
 
-The **Exosuit Expertise** skill perk (`ExosuitExpertise`) negates the Athletics penalty: when the wearer has this perk, an offsetting modifier of +6 (or +2 for mask) is applied on equip.
+The **Exosuit Expertise** skill perk (`ExosuitExpertise`) applies an offsetting Athletics modifier on equip: +6 for Atmo Suit, Jet Suit, and Lead Suit, +2 for Oxygen Mask. This fully negates the penalty for Atmo and Jet suits but only partially offsets the Lead Suit's -8 penalty (net -2 with perk).
 
 ### Effect Immunities
 

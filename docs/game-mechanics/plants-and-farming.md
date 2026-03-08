@@ -343,11 +343,11 @@ All temperatures in Kelvin. Consumption rates in kg/s. Growth times from `CROP_T
 | Tinker | Yes |
 | Special | Transforms into Super Worm Plant (yields Spindly Grubfruit) when tended by a Sweetle critter. Uses `TransformingPlant` on `CropTended` event from `DivergentSpecies`. |
 
-### Frost Blossom / Hard Skin Berry Plant (HardSkinBerryPlant) -- Frosty Planet DLC
+### Pikeapple Bush (HardSkinBerryPlant) -- Frosty Planet DLC
 
 | Property | Value |
 |----------|-------|
-| Crop | Frost Bun (`HardSkinBerry`) |
+| Crop | Pikeapple (`HardSkinBerry`) |
 | Growth time | 1800s (3 cycles domestic, 12 cycles wild) |
 | Yield | 1 unit per harvest |
 | Temperature | 118.15 / 218.15 / 259.15 / 269.15 K |
@@ -358,11 +358,11 @@ All temperatures in Kelvin. Consumption rates in kg/s. Growth times from `CROP_T
 | Light | None |
 | Tinker | Yes |
 
-### Ice Root / Carrot Plant (CarrotPlant) -- Frosty Planet DLC
+### Plume Squash Plant (CarrotPlant) -- Frosty Planet DLC
 
 | Property | Value |
 |----------|-------|
-| Crop | Carrot (`Carrot`) |
+| Crop | Plume Squash (`Carrot`) |
 | Growth time | 5400s (9 cycles domestic, 36 cycles wild) |
 | Yield | 1 unit per harvest |
 | Temperature | 118.15 / 218.15 / 259.15 / 269.15 K |
@@ -381,14 +381,14 @@ Sorted by domestic growth time (cycles = cropDuration / 600):
 |-------|------|---------------:|------------:|
 | Thimble Reed | Reed Fiber | 2.0 | 8.0 |
 | Mealwood | Meal Lice | 3.0 | 12.0 |
-| Frost Blossom | Frost Bun | 3.0 | 12.0 |
+| Pikeapple Bush | Pikeapple | 3.0 | 12.0 |
 | Worm Plant | Grubfruit | 4.0 | 16.0 |
 | Bristle Blossom | Bristle Berry | 6.0 | 24.0 |
 | Dasha Salt Vine | Salt | 6.0 | 24.0 |
 | Bog Bucket | Bog Jelly | 6.6 | 26.4 |
 | Dusk Cap | Mushroom | 7.5 | 30.0 |
 | Pincha Pepper | Peppernut | 8.0 | 32.0 |
-| Carrot Plant | Carrot | 9.0 | 36.0 |
+| Plume Squash Plant | Plume Squash | 9.0 | 36.0 |
 | Waterweed | Lettuce | 12.0 | 48.0 |
 | Balm Lily | Balm Lily Flower | 12.0 | 48.0 |
 | Sleet Wheat | Wheat Grain (x18) | 18.0 | 72.0 |

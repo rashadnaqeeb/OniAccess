@@ -4,7 +4,7 @@ The Spaced Out DLC cluster map is a hexagonal grid of cells where asteroids, roc
 
 ## Hex Grid Geometry
 
-The cluster map uses axial coordinates (`AxialI` with Q and R components) on a hexagonal grid. The grid is generated from a `numRings` parameter: all cells where `|x| + |y| + |z| < numRings` in cube coordinates (where `x + y + z = 0`) are valid.
+The cluster map uses axial coordinates (`AxialI` with Q and R components) on a hexagonal grid. The grid is generated from a `numRings` parameter: all cells where `max(|x|, |y|, |z|) < numRings` in cube coordinates (where `x + y + z = 0`) are valid.
 
 Default `numRings` is 12 for Spaced Out clusters (`ClusterLayout` constructor), stored as `m_numRings` in `ClusterManager` (default 9 for vanilla fallback). Total valid cells for a grid with N rings = `3N^2 - 3N + 1` (so 12 rings = 397 cells).
 
@@ -45,7 +45,7 @@ Each hex cell has a reveal state tracked by `ClusterFogOfWarManager`:
 
 - **Starting asteroid**: The starting world's cell and all cells within radius 1 are revealed at game start. For non-Spaced Out mode, radius 2 is used instead.
 - **Discovering an asteroid**: When an asteroid is at or adjacent to a revealed cell, the reveal radius is forced to at least 1 (so the asteroid and all its neighbors become visible).
-- **Telescope**: A duplicant working a telescope earns reveal points over time. Rate = `POINTS_TO_REVEAL / DEFAULT_CYCLES_PER_REVEAL / 600f` per second of work. With `DEFAULT_CYCLES_PER_REVEAL = 0.5f`, that is `100 / 0.5 / 600 = 0.333` points per second, so one cycle of continuous work reveals ~200 points (two cells). Telescope range is configurable per building; both `ClusterTelescopeConfig` and `ClusterTelescopeEnclosedConfig` set `analyzeClusterRadius = 4`, meaning they can reveal cells within 4 hexes of the asteroid they are built on.
+- **Telescope**: A duplicant working a telescope earns reveal points over time. Rate = `POINTS_TO_REVEAL / DEFAULT_CYCLES_PER_REVEAL / 600f` per second of work. With `DEFAULT_CYCLES_PER_REVEAL = 0.5f`, that is `100 / 0.5 / 600 = 0.333` points per second, so one cycle of continuous work reveals ~200 points (two cells). Telescope range is configurable per building; `ClusterTelescopeConfig` uses the default `analyzeClusterRadius = 3` (3 hexes), while `ClusterTelescopeEnclosedConfig` sets `analyzeClusterRadius = 4` (4 hexes).
 - **Rockets**: Rockets with `revealsFogOfWarAsItTravels = true` force-reveal each cell they enter as they fly.
 - **Peeking**: When a cell is revealed, all cells within `AUTOMATIC_PEEK_RADIUS = 2` are peeked (set to 0.01 reveal points). Peeked cells show POI silhouettes (POIs have `IsVisibleInFOW = ClusterRevealLevel.Peeked`).
 
@@ -215,7 +215,7 @@ The Temporal Tear is managed by `ClusterPOIManager`. It:
 
 ## Meteor Showers on the Cluster Map
 
-Meteor showers exist as `ClusterMapMeteorShower` entities on the `EntityLayer.Meteor` layer. Telescopes can identify unidentified meteor showers within their `analyzeClusterRadius` (4 hexes). Identification takes 20 seconds of continuous telescope work.
+Meteor showers exist as `ClusterMapMeteorShower` entities on the `EntityLayer.Meteor` layer. Telescopes can identify unidentified meteor showers within their `analyzeClusterRadius` (3 hexes for standard, 4 for enclosed). Identification takes 20 seconds of continuous telescope work.
 
 ## Discovery and Visibility States
 

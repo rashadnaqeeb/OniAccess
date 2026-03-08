@@ -76,7 +76,7 @@ Erosion multiplies the base noise value, creating gradual transitions where band
 The world boundary is drawn with Unobtanium (Neutronium):
 - Applied to all four edges (left, right, top, bottom)
 - Base thickness configured via `WorldBorderThickness`
-- Thickness varies per row/column via random walk (+-2 cells per step, bounded by `WorldBorderRange`)
+- Thickness varies per row/column via random walk (-2 to +1 cells per step, bounded by `WorldBorderRange`)
 - Only overwrites non-void cells unless force mode is enabled
 - Border cells are marked to prevent template/POI placement from overwriting them
 
@@ -94,7 +94,7 @@ Geysers are placed via the template rules system:
 **Example geyser types:**
 | Type | Element | Temperature | Output |
 |------|---------|-------------|--------|
-| Steam Vent | Steam | 383 K | 500-1000 kg/cycle |
+| Steam Vent | Steam | 383 K | 1000-2000 kg/cycle |
 | Hot Water | Water | 368 K | 2000-4000 kg/cycle |
 | Magma Volcano | Magma | 2000 K | 400-800 kg/cycle |
 | Liquid CO2 | Liquid CO2 | 218 K | 100-200 kg/cycle |

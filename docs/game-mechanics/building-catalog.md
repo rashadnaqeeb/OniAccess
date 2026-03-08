@@ -16,10 +16,10 @@ Per-building specs -- power, inputs, outputs, rates, and temperatures for indivi
 - **Output temperature:** 343.15 K (70 C), fixed -- does not use entity temperature or input temperature
 - **Self-heating:** 1 kDTU/s
 - **Exhaust heat:** 0.25 kDTU/s
-- **Overheat:** 800 K (default, not set explicitly -- uses melting_point param)
+- **Overheat:** 348.15 K (75 C) -- default OverheatTemperature, not explicitly set
 - **Storage:** 2 kg internal, max gas mass 1.8 kg before output pressure stalls
 
-### Algae Terrarium (AirFilter)
+### Deodorizer (AirFilter)
 - **ID:** `AirFilter`
 - **Source:** `AirFilterConfig.cs`
 - **Dimensions:** 1w x 1h
@@ -98,7 +98,7 @@ Per-building specs -- power, inputs, outputs, rates, and temperatures for indivi
 - **Output:** same gas, cooled by 14 C (temperature delta -14)
 - **Max environment delta:** -50 C (building heats surroundings by the removed energy)
 - **Self-heating:** 0 kDTU/s (all heat goes to environment via AirConditioner component)
-- **Overheat:** default (1600 K melting point of construction metal)
+- **Overheat:** 348.15 K (75 C) -- default OverheatTemperature, not explicitly set
 - **Notes:** Gas equivalent of the Aquatuner. Same AirConditioner component with identical -14 C delta and -50 C max environment delta. The 240 W is converted entirely to heat dumped into the building's tile. Lower throughput than the Aquatuner (1 kg/s gas vs 10 kg/s liquid) means less total heat moved per second
 
 ### Space Heater
@@ -111,7 +111,7 @@ Per-building specs -- power, inputs, outputs, rates, and temperatures for indivi
 - **Exhaust heat:** 2-4 kDTU/s (scales linearly with power slider)
 - **Total heat output:** 18-36 kDTU/s
 - **Overheat:** 398.15 K (125 C)
-- **Effect range:** -4,-4 to 5,5 (9x9 area for warmth provider)
+- **Effect range:** -4,-4 to 5,5 (10x10 area for warmth provider)
 - **Notes:** Player sets power consumption via slider (120 W min, 240 W max). Heat output scales proportionally. Monitors nearby gas cells and stops when average temperature reaches target. Also provides Cold Immunity to dupes adjacent to the building
 
 ### Ice-E Fan
@@ -266,10 +266,10 @@ Per-building specs -- power, inputs, outputs, rates, and temperatures for indivi
 - **Overheat:** not overheatable
 - **Output temperature:** 353.15 K (80 C), heated
 - **Operated by:** automatic (not dupe-operated)
-- **Ceramic recipe:** 100 kg Clay + 25 kg fuel (Lumber/Carbon/Peat) -> 100 kg Ceramic (40s)
-- **Refined Carbon recipe:** variable input (200 kg Lumber, 200 kg Carbon, 125 kg Peat, or 300 kg other wood) -> 100 kg Refined Carbon (40s)
+- **Ceramic recipe:** 100 kg Clay + 25 kg fuel (Lumber/Fabricated Wood/Carbon/Peat) -> 100 kg Ceramic (40s)
+- **Refined Carbon recipe:** variable input (200 kg Lumber, 200 kg Fabricated Wood, 125 kg Carbon, or 300 kg Peat) -> 100 kg Refined Carbon (40s)
 - **Storage:** 2400 kg ceramic output capacity
-- **Notes:** No power required. Both recipes take 40s. Output is heated to 353.15 K regardless of input temperature. Fuel for ceramic recipe accepts any BasicWoods tag plus Carbon and Peat
+- **Notes:** No power required. Both recipes take 40s. Output is heated to 353.15 K regardless of input temperature. Fuel for ceramic recipe accepts BasicWoods (Lumber, Fabricated Wood) plus Carbon and Peat
 
 ### Glass Forge
 - **ID:** `GlassForge`
@@ -368,7 +368,7 @@ Key ratios derived from the building specs above:
 | 290 | 16.85 | Liquid Cooled Fan min cooled temperature |
 | 313.15 | 40 | Polluted Water output (Nat Gas Gen, Petrol Gen) |
 | 343.15 | 70 | Electrolyzer O2/H2 output, Space Heater target temperature |
-| 348.15 | 75 | Oil Refinery Petroleum/Nat Gas output |
+| 348.15 | 75 | Oil Refinery Petroleum/Nat Gas output, Electrolyzer overheat, Thermo Regulator overheat |
 | 353.15 | 80 | Kiln output temperature |
 | 368.15 | 95 | Steam Turbine Water output |
 | 373.15 | 100 | Steam Turbine max building temp |

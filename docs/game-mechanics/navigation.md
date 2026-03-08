@@ -110,14 +110,16 @@ The game constructs navigation meshes from the world grid. Each nav grid defines
 | NavType | Description |
 |---------|-------------|
 | Floor | Walking on solid ground |
-| Ladder | Climbing ladders |
-| Pole | Climbing fire poles |
-| Tube | Traveling through transit tubes |
-| Hover | Jet suit flight |
-| Swim | Swimming in liquid |
 | LeftWall | Walking on left wall surface |
 | RightWall | Walking on right wall surface |
 | Ceiling | Walking on ceiling (creatures only) |
+| Ladder | Climbing ladders |
+| Hover | Jet suit flight |
+| Swim | Swimming in liquid |
+| Pole | Climbing fire poles |
+| Tube | Traveling through transit tubes |
+| Solid | Inside a diggable solid cell (used by digging creatures) |
+| Teleport | Transitional state used during falls and teleportation |
 
 ## Pathfinding
 
@@ -141,7 +143,7 @@ The pathfinding system uses a cost-based graph search over the navigation grid. 
 | Fall initiation | 14 | Starting to fall |
 | Fall landing | 1 | Touching down |
 
-**Submerged penalty:** Duplicants without a protective suit (atmo suit, jet suit, lead suit) pay **2x the base transition cost** when traveling through liquid cells. This makes the pathfinder strongly prefer dry routes.
+**Submerged penalty:** Duplicants without a protective suit (atmo suit, jet suit, lead suit) pay an additional **2x the base transition cost** as a penalty when traveling through liquid cells, making the effective cost **3x normal**. This makes the pathfinder strongly prefer dry routes.
 
 **Creature underwater limit:** Creatures have a `MaxUnderwaterTravelCost` attribute that caps how far they can path through submerged cells.
 
@@ -166,6 +168,7 @@ Swimming activates when a duplicant is substantially submerged (`SubmergedMonito
 |------|-----------|
 | Metal Tile | 1.5x |
 | Plastic Tile | 1.5x |
+| Tile (basic) | 1.25x |
 | Wood Tile | 1.25x |
 | Floor Switch | 1.25x |
 | Carpet Tile | 0.75x |

@@ -106,7 +106,7 @@ The `MinimumOperatingTemperature` component prevents equipment from working when
 2. **HomeostasisWithoutCaloriesImpact** - Regulates temperature without calorie cost
 3. **FullHomeostasis** - Burns calories to regulate temperature
 
-Cold regulation heats the creature via `WarmingKW`. Hot regulation cools via evaporative `CoolingKW`. A **3-second transition delay** between heating and cooling states prevents oscillation.
+Cold regulation heats the creature via `WarmingKW`. Hot regulation cools via `CoolingKW`. A **3-second transition delay** between heating and cooling states prevents oscillation.
 
 **Internal temperature monitoring** (`TemperatureMonitor`) uses 4-second averaging:
 - Hypothermia threshold: 307.15 K (34 C internal)
@@ -124,6 +124,6 @@ For detailed coverage of duplicant body temperature regulation, heat exchange pa
 | Constant | Value | Context |
 |----------|-------|---------|
 | MIN_MASS_FOR_TEMPERATURE_TRANSFER | 0.01 kg | Below this, heat capacity = 0 |
-| STATE_TRANSITION_TEMPERATURE_BUFFER | 3 K | Prevents state transition flickering |
+| STATE_TRANSITION_TEMPERATURE_BUFER | 3 K | Prevents state transition flickering (typo is in game code) |
 | OVERHEAT_DAMAGE_INTERVAL | 7.5 s | Time between overheat damage ticks |
 | Temperature reset on repair | 293.15 K | Buildings reset to 20 C when fixed |

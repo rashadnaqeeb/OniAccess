@@ -90,7 +90,7 @@ Each event holds a weighted list of `BombardmentInfo` entries (comet prefab + we
 
 ### Spaced Out Cluster Shower Events
 
-All cluster showers use `BOMBARDMENT_ON.UNLIMITED` (10,000s) and `BOMBARDMENT_OFF.NONE` (1s), meaning they bombard continuously for their entire duration with no snooze breaks.
+All cluster showers below use `BOMBARDMENT_ON.UNLIMITED` (10,000s) and `BOMBARDMENT_OFF.NONE` (1s), meaning they bombard continuously for their entire duration with no snooze breaks.
 
 | Event ID | Duration (s) | Sec/Meteor | Comets (weight) |
 |----------|-------------|------------|-----------------|
@@ -105,7 +105,12 @@ All cluster showers use `BOMBARDMENT_ON.UNLIMITED` (10,000s) and `BOMBARDMENT_OF
 | ClusterCopperShower | 150 | 2.5 | Copper (2), Rock (1) |
 | ClusterIronShower | 300 | 4.5 | Iron (4), Dust (1), Light Dust (2) |
 | ClusterUraniumShower | 150 | 4.5 | Uranium (2.5), Dust (1), Light Dust (2) |
-| MeteorShowerDustEvent | 9000 | 1.25 | Rock (1), Dust (6) |
+
+MeteorShowerDustEvent uses standard bombardment cycling, not unlimited:
+
+| Event ID | Duration (s) | Sec/Meteor | Bombard On (s) | Bombard Off (s) | Comets (weight) |
+|----------|-------------|------------|----------------|-----------------|-----------------|
+| MeteorShowerDustEvent | 9000 | 1.25 | 100-400 | 300-1200 | Rock (1), Dust (6) |
 
 ### Special Shower Events
 
@@ -293,7 +298,7 @@ Tile mass per cell = `addTileMass / addTiles`, where `addTileMass` is 95-98% of 
 ### Bunker Tile
 
 - 1000 HP
-- Built from 200 kg Steel (`TIER2` construction mass)
+- Built from 100 kg Steel (`TIER2` construction mass)
 - `strengthMultiplier = 10` on `SimCellOccupier` (10x harder to damage as terrain)
 - Tagged `GameTags.Bunker`
 

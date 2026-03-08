@@ -329,8 +329,8 @@ Two building types use Fossil as construction material (require DLC4 "Bionic Boo
 
 | Building | ID | Size | Placement | Decor | Construction | Required Skill |
 |---|---|---|---|---|---|---|
-| Fossil Sculpture | FossilSculpture | 3x3 | Floor | +35, radius 6 | TIER4 (200 kg) Fossil | `CanArtGreat` |
-| Ceiling Fossil Sculpture | CeilingFossilSculpture | 3x2 | Ceiling | +35, radius 6 | TIER4 (200 kg) Fossil | `CanArtGreat` |
+| Fossil Sculpture | FossilSculpture | 3x3 | Floor | +35, radius 6 | TIER4 (400 kg) Fossil | `CanArtGreat` |
+| Ceiling Fossil Sculpture | CeilingFossilSculpture | 3x2 | Ceiling | +35, radius 6 | TIER4 (400 kg) Fossil | `CanArtGreat` |
 
 Both are artable buildings (can be worked by a Master Artist to improve their appearance). The floor version is a `Sculpture`; the ceiling version is a `LongRangeSculpture`.
 

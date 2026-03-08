@@ -31,7 +31,7 @@ After flood-filling, the prober scans each cell in new cavities that are within 
 - If the entity has the `Plant` tag (and not `RoomProberBuilding`), it is added to the `plants` list.
 - Multi-cell buildings are deduplicated by instance ID so they appear only once in the list regardless of how many cells they occupy.
 
-Creatures, eggs, fish, and other entities are tracked separately through `CavityInfo.AddEntity()` calls from entity movement handlers, not from the flood fill scan.
+Creatures, eggs, and fish are tracked separately through `OvercrowdingMonitor.AddToCavity()` calls when entities enter a cavity, not from the flood fill scan. Other entities are added via `CavityInfo.AddEntity()`.
 
 ### Boundary Rules
 

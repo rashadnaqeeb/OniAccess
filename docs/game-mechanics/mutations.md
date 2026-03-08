@@ -52,7 +52,7 @@ Currently no mutations use `requiredPrefabIDs` or `restrictedPrefabIDs`, so all 
 
 ## Sterility
 
-All non-original mutations force `SeedProducer.ProductionType.Sterile` on the plant (`PlantMutation.ApplyFunctionalTo`). A mutated plant cannot produce seeds through normal harvest. The only way to get mutant seeds is from the original (non-mutated) plant's mutation roll.
+All non-original mutations force `SeedProducer.ProductionType.Sterile` on the plant if its current production type is `Harvest` (`PlantMutation.ApplyFunctionalTo` only converts `Harvest`, not `HarvestOnly` or other types). A mutated plant cannot produce seeds through normal harvest. The only way to get mutant seeds is from the original (non-mutated) plant's mutation roll.
 
 ## Radiation Thresholds
 
@@ -69,7 +69,7 @@ Mutant seeds spawn as unidentified (tagged `GameTags.UnidentifiedSeed`). They di
 - Building ID: `GeneticAnalysisStation`
 - Power: 480 W
 - Work time: 150 seconds (modified by Research Speed attribute)
-- Required skill perk: `CanIdentifyMutantSeeds` (granted by Farming 3 / Crop Tending skill)
+- Required skill perk: `CanIdentifyMutantSeeds` (granted by Farming 3 / Improved Farming II skill)
 - Accepts seeds tagged `UnidentifiedSeed` via auto-delivery (capacity 5 kg)
 
 Once analysis completes, `PlantSubSpeciesCatalog.IdentifySubSpecies` is called. All existing seeds and plants of that subspecies across the colony update their names to show the identified mutation. A `GeneticAnalysisCompleteMessage` is queued.

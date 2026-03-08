@@ -13,7 +13,7 @@ These are the core duplicant attributes. All start at base value 0 and gain leve
 | `Construction` | Construction | Building | Construction speed (+25%/point) |
 | `Digging` | Excavation | Mining | Digging speed (+25%/point), attack damage (+5%/point) |
 | `Machinery` | Machinery | Technicals | Machine operating speed (+10%/point), tune-up effect duration (+2.5%/point) |
-| `Athletics` | Athletics | Suits/Hauling | Movement speed (+10%/point) |
+| `Athletics` | Athletics | Suits | Movement speed (+10%/point) |
 | `Learning` | Science | Research | Research speed (+40%/point), training speed (+10%/point), geotuning speed (+5%/point) |
 | `Cooking` | Cuisine | Cooking | Cooking speed (+5%/point) |
 | `Caring` | Medicine | MedicalAid | Compounding speed (+10%/point), doctoring speed (+20%/point) |
@@ -298,15 +298,15 @@ At generation, each duplicant receives 1-3 interests (aptitudes) tied to skill g
 
 ### Attribute Bonuses from Interests
 
-Interests are distributed as starting attribute bonuses during duplicant generation. The bonus values come from `DUPLICANTSTATS.APTITUDE_ATTRIBUTE_BONUSES`:
+Each interest grants a starting attribute bonus during duplicant generation. The bonus per interest depends on how many total interests the duplicant has, from `DUPLICANTSTATS.APTITUDE_ATTRIBUTE_BONUSES`:
 
-| Interest Priority | Attribute Bonus |
+| Total Interest Count | Bonus Per Interest |
 |---|---|
-| Primary (1st) | +7 |
-| Secondary (2nd) | +3 |
-| Tertiary (3rd) | +1 |
+| 1 interest | +7 |
+| 2 interests | +3 each |
+| 3 interests | +1 each |
 
-These bonuses are applied to the attribute associated with each interest's skill group.
+All interests receive the same bonus. A duplicant with 2 interests gets +3 to both relevant attributes, not +7 and +3.
 
 ### Morale Bonus from Interests
 
@@ -453,7 +453,7 @@ The generation system prevents certain negative traits from appearing when a dup
 A duplicant's effective attribute value at any moment is the sum of:
 
 1. **Base value**: 0 for all trainable attributes
-2. **Interest bonus**: +7/+3/+1 from primary/secondary/tertiary aptitudes
+2. **Interest bonus**: +7/+3/+1 per interest depending on whether the duplicant has 1/2/3 total interests
 3. **Attribute level**: +1 per level gained through work experience (max +20)
 4. **Skill perks**: +2 per skill tier with an attribute perk for that attribute
 5. **Trait modifiers**: Positive/negative from innate traits

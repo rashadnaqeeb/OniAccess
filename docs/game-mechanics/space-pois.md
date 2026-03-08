@@ -89,7 +89,7 @@ Managed by `ArtifactPOIStates`:
 2. Charge resets to 0 after spawning
 3. Recharges by `600 / rechargeTime` per in-game day (fractional, since charge is normalized 0-1)
 4. The first harvest from a POI yields its designated artifact (if any, e.g., TeaPot for Russell's Teapot). Subsequent harvests yield random unique space artifacts via `ArtifactSelector`
-5. Russell's Teapot self-destructs after its artifact is picked up (`destroyOnHarvest: true`)
+5. Russell's Teapot self-destructs after its artifact is spawned at the hex cell (`destroyOnHarvest: true`), not after pickup
 
 Harvestable POIs with `canProvideArtifacts: true` also get an artifact component using the `defaultArtifactPoiType` ("HarvestablePOIArtifacts"), which shares the same recharge and spawning mechanics.
 
@@ -139,7 +139,7 @@ In the base game, space destinations are abstract `SpaceDestination` objects dis
 |---|---|---|
 | Satellite | 6,000 | 18 |
 | Asteroids (most) | 12,000 | 6-90 |
-| Dwarf Planets | 18,000 | 24-42 |
+| Dwarf Planets | 18,000 | 24-90 |
 | Planets | 20,000 | 24-84 |
 | Giants | 20,000 | 60-78 |
 

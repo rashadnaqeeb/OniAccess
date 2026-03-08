@@ -56,7 +56,7 @@ All base game engines use `RocketEngine` and the thrust-vs-mass range system.
 
 ### DLC Engines (Cluster)
 
-All DLC engines use `RocketEngineCluster` and the burden/power/fuel-per-distance system. All generate power via `ModuleGenerator` while burning.
+All DLC engines use `RocketEngineCluster` and the burden/power/fuel-per-distance system. Most generate power via `ModuleGenerator` while burning (exceptions: CO2 Engine and Radbolt Engine produce 0 W and have no `ModuleGenerator`).
 
 | Engine | ID | Fuel | Oxidizer | Max Modules | Max Height | Burden | Engine Power | Fuel/Distance | Power (W) |
 |---|---|---|---|---|---|---|---|---|---|
@@ -69,7 +69,7 @@ All DLC engines use `RocketEngineCluster` and the burden/power/fuel-per-distance
 | Radbolt Engine | `HEPEngine` | Radbolts (HEP) | No | 4 | 20 (MEDIUM) | 5 | 34 | 0.333 | 0 |
 | Hydrogen Engine | `HydrogenEngineCluster` | Liquid Hydrogen | Yes | 7 | 35 (VERY_TALL) | 7 | 55 | 0.09375 | 600 |
 
-The Radbolt Engine exhausts Fallout at 873 K with radiation disease and emits radiation while burning.
+The Radbolt Engine exhausts Fallout at 873.15 K (600 C) with radiation disease and emits radiation while burning.
 
 ### Engine Exhaust During Launch
 
@@ -379,15 +379,15 @@ Rare item: Gene Shuffler Recharge (33% chance, 1-2 units).
 
 Artifacts have tiers with decor bonuses:
 
-| Tier | Decor Amount | Decor Radius |
-|---|---|---|
-| TIER_NONE | 0 | 0 |
-| TIER0 | 10 | 1 |
-| TIER1 | 15 | 2 |
-| TIER2 | 20 | 3 |
-| TIER3 | 25 | 4 |
-| TIER4 | 30 | 5 |
-| TIER5 | 35 | 6 |
+| Tier | Decor Bonus Tier | Decor Amount | Decor Radius |
+|---|---|---|---|
+| TIER_NONE | NONE | 0 | 0 |
+| TIER0 | BONUS.TIER0 | 10 | 1 |
+| TIER1 | BONUS.TIER2 | 20 | 3 |
+| TIER2 | BONUS.TIER4 | 30 | 5 |
+| TIER3 | BONUS.TIER5 | 35 | 6 |
+| TIER4 | BONUS.TIER6 | 50 | 7 |
+| TIER5 | BONUS.TIER7 | 80 | 7 |
 
 Drop rate tables (weights, not percentages; divide by total for probability):
 

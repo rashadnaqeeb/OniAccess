@@ -51,22 +51,28 @@ The `CircuitManager.Sim200msLast()` method runs the main distribution every 200m
    - Mark as Powered if remaining need < 0.01 joules
 3. This ordering ensures low-power devices (sensors, doors) stay powered during brownouts
 
-**Phase 2: Battery Charging (Three passes)**
+**Phase 2: Battery Charging (Five passes in two loops)**
+
+First loop (batteries and input transformers sorted by `Capacity - JoulesAvailable` ascending, generators sorted by joules available ascending):
 1. Charge input transformers from regular generators
 2. Charge input transformers from output transformers
-3. Charge input transformers from regular batteries
+3. Charge regular batteries from regular generators
+4. Charge regular batteries from output transformers
 
-Batteries are sorted by (Capacity - JoulesAvailable) ascending, so emptier batteries charge first. Available joules are divided equally among batteries needing charge.
+Second loop (regular batteries re-sorted by joules available ascending):
+5. Charge input transformers from regular batteries
+
+The ascending sort by (Capacity - JoulesAvailable) places batteries with the least remaining space (most full) first. The charging algorithm divides available joules equally among batteries that still need charge.
 
 ## Overload Detection
 
 Per `ElectricalUtilityNetwork.UpdateOverloadTime`:
 
-1. For each wire tier independently, check if `watts_used > max_wattage + 0.5W`
+1. Scan wire tiers from lowest to highest capacity, find the first tier where wires exist and `watts_used > max_wattage + 0.5W`
 2. The 0.5W fudge factor prevents false positives from floating-point rounding
-3. If overloaded: accumulate `timeOverloaded += dt`
-4. After **6 seconds** continuous overload: deal 1 damage to a random wire in that tier
-5. If not overloaded: decay timer at `0.95 * dt` per frame (slow decay, not instant reset)
+3. If an overloaded tier is found: accumulate `timeOverloaded += dt`
+4. After **6 seconds** continuous overload: deal 1 damage to a random wire or bridge in that tier
+5. If no tier is overloaded: decay timer at `0.95 * dt` per frame (slow decay, not instant reset)
 
 A sustained overload of just 0.6W over threshold takes 6 seconds to cause first damage. Bouncing in/out rapidly will not accumulate meaningful damage.
 
@@ -110,7 +116,7 @@ The basic Battery is the only one that can break (`Breakable = true`). All three
 `BatterySmart` extends `Battery` with hysteresis-based automation output. It has two configurable thresholds (0-100%, whole numbers):
 
 - **Activate threshold** (`activateValue`): when charge percentage drops to or below this value, sets `activated = true`
-- **Deactivate threshold** (`deactivateValue`): when charge percentage rises to or at this value, sets `activated = false`
+- **Deactivate threshold** (`deactivateValue`): when charge percentage rises to or above this value, sets `activated = false`
 - Output signal: sends logic HIGH (1) when `activated && operational`, LOW (0) otherwise
 
 The logic update runs every 200ms via `EnergySim200ms`. Charge percentage is rounded to the nearest integer before comparison (`Mathf.RoundToInt(PercentFull * 100f)`).
@@ -126,9 +132,12 @@ Smart Battery has `powerSortOrder = 1000` (set both in its config and in `BaseBa
 The `Battery` component implements both `IEnergyConsumer` (for charging) and `IEnergyProducer` (for discharging). Each 200ms tick (`EnergySim200ms`):
 
 1. **Charge capacity reset:** `ChargeCapacity = chargeWattage * dt`. Default `chargeWattage` is `float.PositiveInfinity`, so batteries accept unlimited charge rate per tick
-2. **Leakage applied:** `ConsumeEnergy(joulesLostPerSecond * dt)` reduces stored joules. This runs regardless of whether the battery is charging or discharging
-3. **Meter updated:** the visual fill meter is set to `PercentFull`
-4. **Sound events:** battery sounds trigger at specific thresholds:
+2. **Meter updated:** the visual fill meter is set to `PercentFull`
+3. **Sound events:** battery sounds trigger at specific thresholds (see below)
+4. **Previous joules snapshot:** `PreviousJoulesAvailable` is saved for next tick's sound comparisons
+5. **Leakage applied:** `ConsumeEnergy(joulesLostPerSecond * dt)` reduces stored joules. This runs regardless of whether the battery is charging or discharging
+
+Battery sounds trigger at specific thresholds:
    - Discharged sound at 0% (was above 0% previous tick)
    - Full sound at 99.9%+ (was below 99.9% previous tick)
    - Warning sound below 25% (was at or above 25% previous tick)
@@ -178,7 +187,7 @@ When an electrobank's charge reaches 0, it auto-replaces itself with an Empty va
 
 ### Electrobank Charger
 
-The Electrobank Charger is a 2x2 building that converts circuit power into charged electrobanks. It consumes **480 W** from the circuit and charges at **400 J/tick** internally. Once the internal accumulator reaches 120,000 J, it replaces the empty electrobank with a charged one and resets. Built from 100 kg Refined Metal with 30 HP, 30 s build time, and 1 kDTU/s self-heat.
+The Electrobank Charger is a 2x2 building that converts circuit power into charged electrobanks. It consumes **480 W** from the circuit and charges at **400 J/s** internally (updated every sim tick). Once the internal accumulator reaches 120,000 J, it replaces the empty electrobank with a charged one and resets. Built from 100 kg Refined Metal with 30 HP, 30 s build time, and 1 kDTU/s self-heat.
 
 Duplicants deliver empty electrobanks to the charger's storage (capacity: 1 item at a time, 20 kg). The charger has a logic input for operational control.
 
@@ -227,9 +236,9 @@ All power transfers are logged to `ReportManager` for the colony statistics scre
 | Material | Any Metal, 200 kg | Refined Metal, 200 kg |
 | Build time | 30 seconds | 30 seconds |
 | Self-heating | 1 kDTU/s | 1 kDTU/s |
-| Overheat temp | 800 C | 800 C |
+| Overheat temp | 75 C base + material modifier | 75 C base + material modifier |
 | HP | 30 | 30 |
-| Decor | -1 (Tier 1 penalty) | -1 (Tier 1 penalty) |
+| Decor | -10 (radius 2) | -10 (radius 2) |
 | Noise | Tier 5 (Noisy) | Tier 5 (Noisy) |
 | Rotation | Horizontal flip | Horizontal flip |
 

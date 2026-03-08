@@ -26,13 +26,17 @@ Configurable simulation parameters:
 - `ConstructedFactor` - Enhancement for constructed tiles
 - `MaxMass` - Maximum mass threshold for absorption calculations
 
-## Emission Shapes
+## Emission Types
 
-Emitters can cast radiation in several patterns:
-- Directional (single ray)
-- Cone (fan of rays)
-- Circle (360-degree rays)
-- Custom angle/direction parameters
+`RadiationEmitter.RadiationEmitterType` enum:
+- `Constant` - steady emission
+- `Pulsing` - pulsed emission
+- `PulsingAveraged` - averaged pulsed emission
+- `SimplePulse` - simple pulse
+- `RadialBeams` - radial beam pattern
+- `Attractor` - radiation attractor
+
+Angular spread is controlled by `emitAngle` (default 360 degrees) and `emitDirection` fields, independent of emitter type.
 
 ## Material Shielding
 
@@ -88,9 +92,9 @@ emitRads = payload * 0.5 * 600 / 9    (radiation burst)
 fallout = payload * 0.001 kg           (Fallout element creation)
 radiationPoisoning = payload * 0.5 / 0.01   (disease units)
 ```
-Creates radioactive contamination (Fallout element) in a 6x6 cell explosion radius.
+Creates radioactive contamination (Fallout element) with an explosion emit radius of 6 cells (`EXPLOSION_EMIT_RADIUS = 6`).
 
-**HEP Payload Decay:** Particles lose 0.1 payload per cell crossed, giving a maximum travel distance of ~10 cells before payload reaches 0.
+**HEP Payload Decay:** Particles lose 0.1 payload per cell crossed. Maximum travel distance depends on initial payload (e.g., payload of 50 travels 500 cells). Maximum payload is 500 (`MAX_PAYLOAD`). Particles are destroyed when payload reaches 0 or they leave the map.
 
 ## Plant Mutations
 

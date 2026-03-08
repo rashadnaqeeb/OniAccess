@@ -129,10 +129,10 @@ Solid elements with the `Unstable` flag (0x08 in the state bitfield) enter a sep
 **Physics:** Uses `GravityComponent` for per-frame position updates:
 1. Accumulate velocity from gravity acceleration
 2. Update position
-3. Check if new position overlaps a solid cell (ground detection)
+3. Check if the cell below is solid or impassable (ground detection)
 4. On landing: convert back to grid cell via `SimMessages.AddRemoveSubstance()` with `do_vertical_solid_displacement: true`
 
-**Ground detection:** Uses collider bounds to project a check point below the object. Landing is detected when position minus ground offset minus 0.07 units (epsilon buffer) intersects a solid cell.
+**Ground detection:** Each frame, `UnstableGroundManager.Update()` checks `Grid.CellBelow(cell)`. Landing occurs when the cell below is solid or has the impassable property flag.
 
 **Vertical displacement:** The `do_vertical_solid_displacement` flag tells the native sim to push overlapping solids upward when mass is added at the landing cell. This prevents debris from merging into existing terrain.
 
@@ -160,14 +160,14 @@ This molar mass comparison is why molten metal sinks through water rather than p
 
 **Particle mass scaling:** Particle visual size scales linearly from 25% (near-zero mass) to 100% (at `particleMassToSplit` threshold, ~75 kg).
 
-**Render limit:** Maximum 16,249 particles can render simultaneously (limited by Unity's 65,536-vertex mesh cap at 4 vertices per particle). Beyond this, excess particles still simulate but don't render.
+**Render limit:** Maximum 16,249 particles can render simultaneously (hardcoded cap; Unity limits meshes to 65,535 vertices, or 16,383 quads at 4 vertices each, but the game uses a lower value). Beyond this, excess particles still simulate but don't render.
 
 **Liquid drag:** Objects falling through liquid experience drag. Each object gets a deterministic variance factor based on its instance ID:
 ```
 variance = (instanceID % 1000) / 1000 * 0.25
 maxVelocity = tuning.maxVelocityInLiquid * (1.0 + variance)
 ```
-Objects lose 8-16% of excess velocity per frame in liquid, with the exact rate varying per object to prevent lockstep movement of grouped items.
+Objects lose roughly 8-13% of excess velocity per frame in liquid (depending on the physics timestep and per-object variance), with the exact rate varying per object to prevent lockstep movement of grouped items.
 
 ## Digging and Cell-to-Item Conversion
 

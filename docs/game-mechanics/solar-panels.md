@@ -15,7 +15,7 @@ A 7-wide, 3-tall stationary generator that converts sunlight (and any light) int
 | HP | 10 |
 | Overheat temp | 2400 K (default) |
 | Heat output | 0 kDTU/s |
-| Decor | -10 (radius 2) |
+| Decor | -15 (radius 3) |
 | Noise | Tier 5 (Noisy) |
 | Tech | Renewable Energy |
 | Power distribution order | 9 (last priority) |

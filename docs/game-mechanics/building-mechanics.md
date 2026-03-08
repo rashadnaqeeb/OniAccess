@@ -62,13 +62,11 @@ Registers with the native sim to consume elements from the grid:
 
 ### ElementEmitter
 
-Emits elements into the world at a configured cell position (building center + offset vector):
-
-- **Gas:** Added to cell via `SimMessages.AddRemoveSubstance()`
-- **Liquid:** Spawned as falling particle via `FallingWater`
-- **Solid:** Spawned as physical resource object
+Registers with the native sim to emit elements at a configured cell position (building center + offset vector). Normal emission is handled entirely by the native sim via `SimMessages.ModifyElementEmitter`, which takes emission frequency, mass rate, temperature, and max pressure. The sim handles element placement and pressure checks internally.
 
 Tracks blocked state (`isEmitterBlocked`) when the target cell is full. The native sim invokes callbacks to toggle this state, and the building displays "Blocked" status.
+
+A separate `ForceEmit` method bypasses the native emitter: uses `SimMessages.AddRemoveSubstance()` for gas and liquid, `SpawnResource` for solids.
 
 `BuildingElementEmitter` is a simpler variant for creatures and basic buildings that always uses a fixed temperature (not computed from inputs).
 
@@ -77,7 +75,7 @@ Tracks blocked state (`isEmitterBlocked`) when the target cell is full. The nati
 A lightweight system for creature metabolism (e.g., plants absorbing CO2, emitting O2):
 - Single input element + single output element
 - Simple mass ratio: `outputMass = consumedMass * exchangeRatio`
-- Passes disease straight through (no weighting)
+- Discards all disease (emits with no disease index and zero count)
 - State machine with `exchanging` and `paused` states (pauses when creature wilts)
 
 ## Building Cell Occupation

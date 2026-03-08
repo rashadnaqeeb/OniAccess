@@ -110,7 +110,7 @@ Duplicants exchange heat with the simulation as `CreatureSimTemperatureTransfer`
 
 - **Surface area**: `DUPLICANTSTATS.STANDARD.Temperature.SURFACE_AREA` = 1 m^2
 - **Skin thickness** (thermal conductivity barrier): base `SKIN_THICKNESS` = 0.002 m, modified by clothing and body type traits
-- **Ground transfer scale**: 0.0625 (reduces heat exchange with the ground tile)
+- **Ground transfer scale**: 0 (duplicants have no ground heat exchange; the `SimTemperatureTransfer` default is 0.0625, but `BaseMinionConfig` overrides it to `DUPLICANTSTATS.STANDARD.Temperature.GROUND_TRANSFER_SCALE` which is 0)
 
 The `ThermalConductivityBarrier` attribute represents total insulation thickness. Higher values slow heat transfer to/from the environment. Base skin provides 0.002 m, and clothing/suits add on top of that.
 
@@ -394,7 +394,7 @@ Source: `TUNING.TRAITS`, `TUNING.DUPLICANTSTATS`.
 
 ### Medical Cot
 
-The basic medical bed. Duplicants with wounds or disease are assigned here to rest and recuperate. Built from 400 kg raw minerals (TIER3), 3x2 tiles.
+The basic medical bed. Duplicants with wounds or disease are assigned here to rest and recuperate. Built from 200 kg raw minerals (TIER3), 3x2 tiles.
 
 The `Clinic` component manages the healing state machine. When a patient occupies the bed, undoctored health/disease effects are applied (`MedicalCot` / `MedicalCot`). A doctor can visit to upgrade these to doctored effects (`MedicalCotDoctored` / `MedicalCotDoctored`), which provide the 1.2x disease recovery multiplier instead of 1.1x.
 
@@ -416,7 +416,7 @@ Source: `MedicalCotConfig`, `Clinic`, `DoctorChoreWorkable`.
 
 ### Disease Clinic (Doctor Station)
 
-A treatment station where a doctor administers medicine to cure specific diseases. The patient sits in the station while a doctor operates. Built from 400 kg raw minerals (TIER3), 3x2 tiles.
+A treatment station where a doctor administers medicine to cure specific diseases. The patient sits in the station while a doctor operates. Built from 200 kg raw minerals (TIER3), 3x2 tiles.
 
 **Requires `CanDoctor` perk** (Medicine2 skill) to operate.
 
@@ -438,11 +438,11 @@ Source: `DoctorStationConfig`, `DoctorStation`, `DoctorStationDoctorWorkable`.
 
 ### Sick Bay (Advanced Doctor Station)
 
-An advanced medical station for administering high-tier medicine. Built from 400 kg refined metals (TIER3), 2x3 tiles.
+An advanced medical station for administering high-tier medicine. Built from 200 kg refined metals (TIER3), 2x3 tiles.
 
 **Requires power**: 480 W when active.
 
-**Requires `CanAdvancedMedicine` perk** (Senior Medic skill, Medicine3) to operate.
+**Requires `CanAdvancedMedicine` perk** (Advanced Medical Care skill, Medicine3) to operate.
 
 **Doctor work time**: 60 seconds (`SetWorkTime(60f)`). Modified by `DoctorSpeed` attribute.
 
@@ -454,7 +454,7 @@ Source: `AdvancedDoctorStationConfig`, `DoctorStation`, `DoctorStationDoctorWork
 
 ### Massage Table
 
-A stress relief building. Built from 400 kg raw minerals (TIER3), 2x2 tiles.
+A stress relief building. Built from 200 kg raw minerals (TIER3), 2x2 tiles.
 
 **Requires power**: 240 W when active.
 
@@ -485,11 +485,11 @@ Both recommend Hospital room placement. The Disease Clinic requires a doctor wit
 
 ### Apothecary
 
-A crafting station for medicine. Uses the `Apothecary` component (extends `ComplexFabricator`). Built from 800 kg All Metals (TIER4), 2x3 tiles.
+A crafting station for medicine. Uses the `Apothecary` component (extends `ComplexFabricator`). Built from 400 kg All Metals (TIER4), 2x3 tiles.
 
 **No power required** (despite producing heat: 0.125 kW exhaust, 0.5 kW self-heat when active).
 
-**Requires `CanCompound` perk** (Medicine1 / Field Medic skill) to operate. Manually operated with a logic input port for automation.
+**Requires `CanCompound` perk** (Medicine1 / Medicine Compounding skill) to operate. Manually operated with a logic input port for automation.
 
 **Crafting speed**: Modified by the `CompoundingSpeed` attribute converter. Earns experience in the `MedicalAid` skill group at `PART_DAY_EXPERIENCE` rate.
 
@@ -499,7 +499,7 @@ Source: `ApothecaryConfig`, `Apothecary`.
 
 ### Advanced Apothecary (Deprecated)
 
-A radbolt-powered crafting station. Requires the Spaced Out DLC. Marked `Deprecated = true` in the building def (no longer buildable in current game versions). Built from 1000 kg Refined Metals (TIER5), 3x3 tiles.
+A radbolt-powered crafting station. Requires the Spaced Out DLC. Marked `Deprecated = true` in the building def (no longer buildable in current game versions). Built from 800 kg Refined Metals (TIER5), 3x3 tiles.
 
 **Requires `CanCompound` perk** to operate (same as the regular Apothecary). Uses high-energy particle input (capacity 400, consumes 1 particle/s while active). Produces 0.5 kW exhaust and 2 kW self-heat.
 
@@ -511,9 +511,9 @@ Source: `AdvancedApothecaryConfig`, `AdvancedApothecary`.
 
 | Skill | Perk | Unlocks |
 |-------|------|---------|
-| Medicine1 (Field Aid) | `CanCompound` | Apothecary operation (medicine crafting) |
+| Medicine1 (Medicine Compounding) | `CanCompound` | Apothecary operation (medicine crafting) |
 | Medicine2 (Bedside Manner) | `CanDoctor` | Disease Clinic operation |
-| Medicine3 (Senior Medic) | `CanAdvancedMedicine` | Sick Bay operation |
+| Medicine3 (Advanced Medical Care) | `CanAdvancedMedicine` | Sick Bay operation |
 
 Source: `Database.Skills`, `Database.SkillPerks`.
 
@@ -528,7 +528,7 @@ All medicines are crafted at the Apothecary (except Intermediate Rad Pills at th
 | BasicBooster (Vitamin Chews) | 1 kg Carbon | 50s | Apothecary | None |
 | IntermediateBooster (Immuno Booster) | 1 Pincha Peppernut | 100s | Apothecary | None |
 | BasicCure (Curative Tablet) | 1 kg Carbon + 1 kg Water | 50s | Apothecary | None |
-| Antihistamine | 1 Balm Lily Flower or 10 Waterweed + 1 kg Dirt | 100s | Apothecary | None |
+| Antihistamine | 1 Bristle Blossom Seed or 10 Waterweed + 1 kg Dirt | 100s | Apothecary | None |
 | IntermediateCure (Serum Vial - Slime Lung) | 1 Balm Lily Flower + 1 kg Phosphorite | 100s | Apothecary | MedicineII |
 | AdvancedCure (Serum Vial - Zombie Spores) | 1 kg Steel + 1 Shine Bug Egg (Orange) | 200s | Apothecary | MedicineIV |
 | BasicRadPill (Rad Pills) | 1 kg Carbon | 50s | Apothecary | None |

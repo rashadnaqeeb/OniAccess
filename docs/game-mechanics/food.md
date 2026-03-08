@@ -15,8 +15,9 @@ Hunger threshold: satisfied above 95% stomach. Hungry at 50% of a cycle's burn b
 ## Food Quality Tiers and Morale
 
 Food quality ranges from -1 to +6. The effective quality is `FoodInfo.Quality + FoodExpectation`, where `FoodExpectation` comes from traits:
-- **Gourmet** trait: +1 (perceives food as one tier higher)
-- **Shrivelled Tastebuds / Kitchen Menace**: -1 (perceives food as one tier lower)
+- **Gourmet** (Foodie trait): -1 (more demanding, perceives food as one tier lower)
+- **Shrivelled Tastebuds** (SimpleTastes trait): +1 (less demanding, perceives food as one tier higher)
+- **Kitchen Menace** (CookingDown trait): +1 (less demanding, perceives food as one tier higher)
 
 The effective quality is clamped to [-1, 5] for effect lookup. Internal effect names are offset: quality -1 maps to `EdibleMinus3`, quality 0 to `EdibleMinus2`, etc.
 
@@ -58,6 +59,7 @@ Internal calorie values are in calories (divide by 1000 for kcal). Spoil time is
 
 | Food | kcal | Spoil (cycles) | Rots | Source |
 |------|------|----------------|------|--------|
+| Vine Fruit (DLC4) | 325 | 8 | Yes | Vine plant |
 | Mushroom | 2,400 | 8 | Yes | Dusk Cap plant |
 | Lettuce | 400 | 4 | Yes | Waterweed plant |
 | Bristle Berry (PrickleFruit) | 1,600 | 8 | Yes | Bristle Blossom |
@@ -66,7 +68,6 @@ Internal calorie values are in calories (divide by 1000 for kcal). Spoil time is
 | Swamp Fruit (Expansion1) | 1,840 | 4 | Yes | Bog Bucket plant |
 | Worm Basic Fruit (Expansion1) | 800 | 8 | Yes | Saturn Critter Trap |
 | Carrot (DLC2) | 4,000 | 16 | Yes | Spindly Grubfruit plant |
-| Vine Fruit (DLC4) | 325 | 8 | Yes | Vine plant |
 
 ### Quality 1 (Poor)
 
@@ -128,7 +129,7 @@ Internal calorie values are in calories (divide by 1000 for kcal). Spoil time is
 | Pepper Bread (SpiceBread) | 4,000 | 8 | Yes | Gas Range (10x Grain + 1x Pincha Pepper) |
 | Spicy Tofu | 4,000 | 4 | Yes | Gas Range (1x Tofu + 1x Pincha Pepper) |
 | Mushroom Quiche (Quiche) | 6,400 | 4 | Yes | Gas Range (1x Omelette + 1x Lettuce + 1x Fried Mushroom) |
-| Berry Pie (Expansion1) | 4,200 | 4 | Yes | Gas Range (3x Grain + 4x Grubfruit + 1x Berry) |
+| Berry Pie (Expansion1) | 4,200 | 4 | Yes | Gas Range (3x Grain + 4x Grubfruit + 1x Gristle Berry) |
 
 ### Quality 6 (Ambrosial)
 
@@ -152,7 +153,7 @@ Each food item has a rot amount that starts at `spoilTime` and counts down. When
 
 ### Decay Rate Modifiers
 
-The decay rate is the product of two independent multipliers: temperature and atmosphere. Each applies a modifier to the rot amount's delta attribute.
+The decay rate is the sum of two independent modifiers: temperature and atmosphere. Each applies an additive modifier to the rot amount's delta attribute.
 
 **Temperature modifiers:**
 
@@ -235,7 +236,7 @@ Requires Haute Cuisine skill. 240W power + Natural Gas pipe input (0.1 kg/s cons
 | Curried Beans | 4x Ginger + 4x Nosh Bean | 1x Curried Beans | 4 | 5,000 |
 | Mushroom Quiche | 1x Omelette + 1x Lettuce + 1x Fried Mushroom | 1x Quiche | 5 | 6,400 |
 | Frost Burger | 1x Frost Bun + 1x Lettuce + 1x Barbeque | 1x Frost Burger | 6 | 6,000 |
-| Berry Pie (Exp1) | 3x Grain + 4x Grubfruit + 1x Berry | 1x Berry Pie | 5 | 4,200 |
+| Berry Pie (Exp1) | 3x Grain + 4x Grubfruit + 1x Gristle Berry | 1x Berry Pie | 5 | 4,200 |
 
 ### Deep Fryer (DLC2)
 Requires Deep Frying skill. 480W power. Must be in a Kitchen room.

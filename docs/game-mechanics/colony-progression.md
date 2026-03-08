@@ -164,7 +164,7 @@ Constants defined in `Immigration`:
 
 Available from cycle 0 (no condition):
 - Sandstone 1000 kg, Dirt 500 kg, Algae 500 kg, Oxylite 100 kg, Water 2000 kg, Sand 3000 kg, Carbon 3000 kg, Fertilizer 3000 kg, Brine 2000 kg, Salt Water 2000 kg, Rust 1000 kg
-- Seeds: Bristle Blossom x3, Mealwood x3, Jumping Joya x3, Mushroom x1, Bristle Berry x2, Oxyfern x1, Arbor Tree x1
+- Seeds: Bluff Briar x3, Mirth Leaf x3, Jumping Joya x3, Mushroom x1, Bristle Blossom x2, Oxyfern x1, Arbor Tree x1
 - Food: Field Ration x5, Muckroot x6
 - Critters: Shine Bug x1, Hatchling x1, Puft x1, Pip x1, Pokeshell x1
 - Eggs: Shine Bug x3, Hatch x3, Puft x3, Pip x2
@@ -175,7 +175,7 @@ Cycle 6+: Omelette x3
 
 Cycle 12+: Ice 4000 kg, Cuprite 2000 kg (if discovered), Gold Amalgam 2000 kg (if discovered), Bristle Berry x3, Oilfloater Egg x3
 
-Cycle 24+: Copper 400 kg (if discovered), Iron 400 kg (if discovered), Reed Fiber Plant seed x3, Balm Lily x1, Wheezewort x1, Pincha Pepper x1, Waterweed x1, Mealwood x1, Drecko x1, Pacu x8, Fried Mushroom x3, Mole Egg x3, Drecko Egg x3
+Cycle 24+: Copper 400 kg (if discovered), Iron 400 kg (if discovered), Reed Fiber Plant seed x3, Balm Lily x1, Wheezewort x1, Pincha Pepper x1, Dasha Saltvine x1, Mealwood x1, Drecko x1, Pacu x8, Fried Mushroom x3, Mole Egg x3, Drecko Egg x3
 
 Cycle 48+: Lime 150 kg (if discovered), Plastic 500 kg (if discovered), Glass 200 kg (if discovered), Steel 100 kg (if discovered), Ethanol 100 kg (if discovered), Aluminum Ore 100 kg (if discovered), Shove Vole x1, Oilfloater x1, BBQ x3, Spicy Tofu x3
 

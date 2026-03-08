@@ -109,7 +109,7 @@ Quick-reference for key simulation formulas. Each formula links to its detailed 
 | `MaxHP = 100` | Base duplicant hit points |
 | `ScaldingThreshold = 345 K (71.85 C)` | Temperature contact damage (hot) |
 | `ScoldingThreshold = 183 K (-90.15 C)` | Temperature contact damage (cold) |
-| `IncapacitationBleedout = 600 seconds` | Time before incapacitated dupe dies |
+| `IncapacitationBleedout = 120 seconds` | Time before incapacitated dupe dies |
 
 ## Geysers (geysers-and-vents.md)
 

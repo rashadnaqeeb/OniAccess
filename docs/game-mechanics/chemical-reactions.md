@@ -53,7 +53,7 @@ Buildings use `ElementConverter` components to consume input elements and produc
 **Electrolyzer** (`ElectrolyzerConfig.cs`):
 - 1 kg/s Water -> 0.888 kg/s Oxygen + 0.112 kg/s Hydrogen
 
-**Algae Terrarium** (`AirFilterConfig.cs`):
+**Deodorizer** (`AirFilterConfig.cs`):
 - 0.1 kg/s Polluted Oxygen + 0.133 kg/s Filter -> 0.09 kg/s Oxygen + 0.143 kg/s Clay
 
 **Algae Deoxidizer** (`MineralDeoxidizerConfig.cs`):
@@ -74,7 +74,7 @@ Buildings use `ElementConverter` components to consume input elements and produc
 **Carbon Skimmer** (`CO2ScrubberConfig.cs`):
 - 0.3 kg/s CO2 + 1 kg/s Water -> 1 kg/s Polluted Water
 
-**Algae Habitat** (`AlgaeHabitatConfig.cs`):
+**Algae Terrarium** (`AlgaeHabitatConfig.cs`):
 - 0.03 kg/s Algae + 0.3 kg/s Water -> 0.04 kg/s Oxygen + 0.29 kg/s Polluted Water
 - Also consumes 0.000333 kg/s CO2 from atmosphere (non-required, radius 3)
 

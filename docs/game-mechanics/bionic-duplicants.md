@@ -11,7 +11,7 @@ Bionics use `GameTags.Minions.Models.Bionic` and are configured by `BionicMinion
 - **Attribute levels capped at 0** -- bionics do not gain attribute experience; they use boosters instead
 - **No calorie-based body temperature** -- `WarmBlooded` set to `HomeostasisWithoutCaloriesImpact`
 
-Key state machines registered on bionic duplicants (in `BionicMinionConfig.RATIONAL_AI_STATE_MACHINES`):
+Key state machines registered on bionic duplicants (bionic-specific ones from `BionicMinionConfig.RATIONAL_AI_STATE_MACHINES`, plus shared ones from `BaseMinionConfig`):
 
 | State Machine | Purpose |
 |---|---|
@@ -19,7 +19,7 @@ Key state machines registered on bionic duplicants (in `BionicMinionConfig.RATIO
 | `BionicOilMonitor` | Lubricant tracking |
 | `GunkMonitor` | Waste buildup |
 | `BionicOxygenTankMonitor` | Internal O2 tank |
-| `BionicSuffocationMonitor` | Suffocation/death from no oxygen |
+| `SuffocationMonitor` | Suffocation/death from no oxygen (from `BaseMinionConfig`) |
 | `BionicWaterDamageMonitor` | Water damage stress |
 | `BionicUpgradesMonitor` | Booster slot management |
 | `BionicBedTimeMonitor` | Sleep-schedule defragmentation |
@@ -174,7 +174,7 @@ Bionics carry an internal oxygen tank rather than breathing from the environment
 | Parameter | Value | Source |
 |---|---|---|
 | Tank capacity (seconds) | 2400 s (4 cycles) | `OXYGEN_TANK_CAPACITY_IN_SECONDS` |
-| Tank capacity (kg) | 2400 * O2_PER_SECOND | `OXYGEN_TANK_CAPACITY_KG` |
+| Tank capacity (kg) | 2400 * OXYGEN_USED_PER_SECOND | `OXYGEN_TANK_CAPACITY_KG` |
 | Safe threshold | 85% | `SAFE_TRESHOLD` |
 | Critical threshold | 0% | `CRITICAL_TRESHOLD` |
 | Initial fill element | Oxygen | `INITIAL_TANK_ELEMENT` |
@@ -189,9 +189,9 @@ Refill is attempted during Eat schedule blocks when tank is below 85%. When tank
 
 ### Suffocation
 
-`BionicSuffocationMonitor` handles suffocation identically to standard duplicants: when the Breath amount drops to 0, the bionic dies of suffocation. Bionics cannot recover breath (`canRecoverBreath = false` on `BreathMonitor`).
+Bionics use the standard `SuffocationMonitor` (registered via `BaseMinionConfig`): when the Breath amount drops to 0, the bionic dies of suffocation. Bionics cannot recover breath (`canRecoverBreath = false` on `BreathMonitor`). Note: `BionicSuffocationMonitor` exists in the codebase but is never registered on any prefab.
 
-Source: `BionicOxygenTankMonitor.cs`, `BionicSuffocationMonitor.cs`.
+Source: `BionicOxygenTankMonitor.cs`, `SuffocationMonitor.cs`, `BaseMinionConfig.cs`.
 
 ## Water Damage
 
@@ -266,7 +266,7 @@ Source: `ElectrobankCharger.cs`, `ElectrobankChargerConfig.cs`.
 | `BionicOilMonitor` | `BionicOilMonitor.cs` | Oil depletion and refill state machine |
 | `GunkMonitor` | `GunkMonitor.cs` | Gunk buildup and expulsion state machine |
 | `BionicOxygenTankMonitor` | `BionicOxygenTankMonitor.cs` | Oxygen tank refill state machine |
-| `BionicSuffocationMonitor` | `BionicSuffocationMonitor.cs` | Suffocation death logic |
+| `SuffocationMonitor` | `SuffocationMonitor.cs` | Suffocation death logic (shared with standard duplicants) |
 | `BionicWaterDamageMonitor` | `BionicWaterDamageMonitor.cs` | Water stress effect |
 | `BionicUpgradesMonitor` | `BionicUpgradesMonitor.cs` | Booster slot management state machine |
 | `BionicUpgradeComponent` | `BionicUpgradeComponent.cs` | Individual booster item component |

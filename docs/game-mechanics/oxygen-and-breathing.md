@@ -106,7 +106,7 @@ When breath drops below `RETREAT_AMOUNT` (~72.7), the duplicant:
 1. Gets the `RecoverBreath` urge and `Suffocating` thought bubble
 2. Searches for the nearest breathable cell using `SafetyQuery`
 3. Creates a `RecoverBreathChore` (compulsory priority) to move to that cell
-4. Recovers breath at `RECOVER_BREATH_DELTA` = **3.0/s** (about 3.3x faster than natural recovery rate of 0.909/s)
+4. Gets an additional breath delta of `RECOVER_BREATH_DELTA` = **3.0/s** on top of the normal breathing rate (0.909/s), for a total recovery rate of ~3.909/s
 5. During recovery, tagged with `GameTags.RecoveringBreath`, which makes `HasOxygen` return true regardless of actual gas
 
 During Red Alert, the retreat threshold is lowered to `SUFFOCATE_AMOUNT` (~45.5), so duplicants keep working longer before retreating.

@@ -44,7 +44,7 @@ Example: 1 kg of Iron Ore melting might produce 0.7 kg Molten Iron (the primary 
 
 ### Transition Buffer
 
-The simulation uses a `STATE_TRANSITION_TEMPERATURE_BUFFER` of 3K to prevent flickering at boundaries. The `GetRelativeHeatLevel()` method maps temperature to a 0-1 scale between `lowTemp - 3` and `highTemp + 3`.
+The `GetRelativeHeatLevel()` method uses a hardcoded 3K buffer to prevent flickering at boundaries, mapping temperature to a 0-1 scale between `lowTemp - 3` and `highTemp + 3`.
 
 ### What Triggers Transitions
 
@@ -60,7 +60,7 @@ Sublimation skips the liquid phase entirely. The `Sublimates` component (a KMono
 - `sublimateProbability` - Per-frame chance of emission occurring
 - `sublimateFX` - Visual effect
 
-Note: The Element class also defines `sublimateEfficiency`, but this property is not used in the C# `Sublimates` component's rate calculation. It is checked during element loading validation (`sublimateRate * sublimateEfficiency > 0.001f`) and may be used by the native sim.
+Note: The Element class also defines `sublimateEfficiency`, but this property is not used in the C# `Sublimates` component's rate calculation. It is checked during element loading validation (`sublimateRate * sublimateEfficiency > 0.001f`) and is passed to the native sim via `Sim.Element`.
 
 **Rate calculation:**
 ```
@@ -70,9 +70,9 @@ Emission only occurs if accumulated sublimated mass exceeds `minSublimationAmoun
 
 **Overpressure blocking:** The Sublimates component checks if the destination cell (and its left/right/above neighbors) exceed `maxDestinationMass`. If overpressured, the status shows "Blocked (High Pressure)" and emission stops until pressure drops.
 
-**Temperature blocking:** Sublimation is blocked if the source material's temperature is at or below `element.lowTemp`. The material must be warm enough for the target gas to exist.
+**Temperature blocking:** Sublimation is blocked if the source material's temperature is at or below the target gas element's `lowTemp`. The material must be warm enough for the target gas to exist.
 
-**Sealed containers:** Items tagged `GameTags.Sealed` do not sublimate (unless the storage has decay enabled and is corrosion-proof).
+**Sealed containers:** Items tagged `GameTags.Sealed` do not sublimate unless the storage has decay enabled and is not corrosion-proof.
 
 **Disease transfer:** When mass sublimates, disease germs from the source transfer proportionally with the emitted mass.
 

@@ -34,7 +34,7 @@ Source: `BladderMonitor.cs`.
 
 ### Pee Fuse (Accident Timer)
 
-When `urgentwant` is active, `PeeChoreMonitor` starts a countdown from **120 seconds** (`PEE_FUSE_TIME`). The fuse counts down each frame. If it reaches 60s remaining, the state becomes `critical` and the dupe is added to `Components.CriticalBladders`. If it reaches 0, a `PeeChore` triggers (bathroom accident). The fuse pauses while sleeping.
+When `urgentwant` is active, `PeeChoreMonitor` starts a countdown from **120 seconds** (`PEE_FUSE_TIME`). The fuse counts down each frame. If it reaches 60s remaining, the state becomes `critical` and the dupe is added to `Components.CriticalBladders`. If it reaches 0, a `PeeChore` triggers (bathroom accident). Note: `PeeChoreMonitor` has a `paused` state intended to pause the fuse during sleep, but the `IsSleeping` method always returns false (the `StaminaMonitor.IsSleeping()` result is discarded), so the fuse never actually pauses. In practice, dupes don't enter `urgentwant` while asleep because `NeedsToPee()` checks the `Asleep` tag, but if they fall asleep after reaching 100 bladder, the fuse continues counting down.
 
 Source: `PeeChoreMonitor.cs`.
 

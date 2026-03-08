@@ -63,14 +63,14 @@ Cell coordinates are linearized: `cellIndex = x + (width * y)`.
 When cells are modified through `SimMessages.ModifyCell()`, the game validates:
 - Temperature must be between 0K and 10,000K
 - If mass > 0, temperature must be > 0 (no absolute-zero matter)
-- Mass is clamped to the element's `maxMass`
+- Mass is rejected if it exceeds `maxMass` on elements whose `maxMass` is 0 (e.g., Vacuum); for other elements no ModifyCell-side mass clamping occurs
 - Invalid values are logged as warnings and reset to element defaults
 
 ## Elements
 
 Every material in the game is defined as an `Element` object with extensive physical properties. Element definitions are loaded from YAML files at startup, processed by `ElementLoader`, and referenced by their `SimHashes` enum value (a 32-bit hash).
 
-There are approximately 193 elements total, split roughly into:
+There are approximately 191 elements total (per `SimHashes` enum), split roughly into:
 - ~30 gases
 - ~35 liquids
 - ~120 solids
