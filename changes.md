@@ -1,5 +1,7 @@
 # Changelog
 
+- Module flight utility side screen: duplicant dropdown is now cyclable with left/right arrows
+- Module flight utility side screen: duplicate module names are numbered (e.g. "Cargo Bay 1", "Cargo Bay 2")
 - Rocket restriction side screen now speaks the automation tooltip when restrictions are controlled by a logic wire
 - Pilot and crew side screen now announces when a robo-pilot copilot is active alongside a dupe pilot
 - Fix: rocket landing pad dropdown no longer speaks the pad name twice, removes redundant label, and excludes invalid pads with reasons

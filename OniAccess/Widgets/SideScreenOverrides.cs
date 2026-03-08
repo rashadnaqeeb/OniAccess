@@ -1505,6 +1505,13 @@ namespace OniAccess.Widgets {
 			}
 			if (modulePanels == null || modulePanels.Count == 0) return;
 
+			var nameCounts = new Dictionary<string, int>();
+			foreach (var kv in modulePanels) {
+				string n = kv.Key.master.gameObject.GetProperName();
+				nameCounts[n] = nameCounts.ContainsKey(n) ? nameCounts[n] + 1 : 1;
+			}
+			var nameCounters = new Dictionary<string, int>();
+
 			foreach (var kv in modulePanels) {
 				var module = kv.Key;
 				var href = kv.Value;
@@ -1578,11 +1585,36 @@ namespace OniAccess.Widgets {
 						var dropDown = href.GetReference<DropDown>("dropDown");
 						if (dropDown != null && dropDown.gameObject.activeSelf) {
 							var capturedDropDown = dropDown;
-							children.Add(new ButtonWidget {
+							var capturedModuleDD = module;
+							var onEntrySelected = Traverse.Create(dropDown)
+								.Field<System.Action<IListableOption, object>>(
+									"onEntrySelectedAction").Value;
+							var radioMembers = new List<SideScreenWalker.RadioMember>();
+							var capturedOnSelect = onEntrySelected;
+							radioMembers.Add(new SideScreenWalker.RadioMember {
+								Label = (string)STRINGS.UI.DROPDOWN.NONE,
+								OnSelect = () => capturedOnSelect(
+									null, capturedModuleDD),
+								IsActive = () =>
+									capturedModuleDD.ChosenDuplicant == null
+							});
+							foreach (var entry in dropDown.Entries) {
+								var capturedEntry = entry;
+								radioMembers.Add(new SideScreenWalker.RadioMember {
+									Label = entry.GetProperName(),
+									OnSelect = () => capturedOnSelect(
+										capturedEntry, capturedModuleDD),
+									IsActive = () =>
+										capturedModuleDD.ChosenDuplicant
+											== (MinionIdentity)capturedEntry
+								});
+							}
+							children.Add(new DropdownWidget {
 								Label = (string)STRINGS.UI.UISIDESCREENS
 									.MODULEFLIGHTUTILITYSIDESCREEN.SELECT_DUPLICANT,
 								Component = dropDown.openButton,
 								GameObject = dropDown.gameObject,
+								Tag = radioMembers,
 								SpeechFunc = () => capturedDropDown.selectedLabel.text
 							});
 						}
@@ -1592,14 +1624,19 @@ namespace OniAccess.Widgets {
 				}
 
 				string moduleName = module.master.gameObject.GetProperName();
+				if (nameCounts[moduleName] > 1) {
+					nameCounters[moduleName] = nameCounters.ContainsKey(moduleName)
+						? nameCounters[moduleName] + 1 : 1;
+					moduleName = $"{moduleName} {nameCounters[moduleName]}";
+				}
 				var capturedHref = href;
-				var capturedModuleName = module;
+				var capturedLabel = moduleName;
 				items.Add(new LabelWidget {
-					Label = moduleName,
+					Label = capturedLabel,
 					GameObject = capturedHref.gameObject,
 					SuppressTooltip = true,
 					Children = children,
-					SpeechFunc = () => capturedModuleName.master.gameObject.GetProperName()
+					SpeechFunc = () => capturedLabel
 				});
 			}
 		}
