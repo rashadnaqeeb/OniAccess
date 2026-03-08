@@ -257,6 +257,20 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		// ========================================
+		// UP/DOWN: REBUILD BEFORE NAVIGATING
+		// ========================================
+
+		protected override void NavigateNext() {
+			RefreshSections();
+			base.NavigateNext();
+		}
+
+		protected override void NavigatePrev() {
+			RefreshSections();
+			base.NavigatePrev();
+		}
+
+		// ========================================
 		// LEFT/RIGHT: SLIDER ADJUSTMENT AT LEAF LEVEL
 		// ========================================
 
