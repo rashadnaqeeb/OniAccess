@@ -41,6 +41,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<BaseGameImpactorImperativeSideScreen>(WalkBaseGameImpactorImperative);
 			SideScreenWalker.RegisterOverride<FilterSideScreen>(WalkFilterSideScreen);
 			SideScreenWalker.RegisterOverride<AssignPilotAndCrewSideScreen>(WalkAssignPilotAndCrew);
+			SideScreenWalker.RegisterOverride<RocketRestrictionSideScreen>(WalkRocketRestriction);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -2413,6 +2414,29 @@ namespace OniAccess.Widgets {
 					};
 					break;
 				}
+			}
+		}
+		static void WalkRocketRestriction(
+				RocketRestrictionSideScreen screen, List<Widget> items) {
+			SideScreenWalker.WalkDefault(screen, items);
+			if (!screen.automationControlled.activeSelf) return;
+
+			var autoGO = screen.automationControlled;
+			for (int i = 0; i < items.Count; i++) {
+				if (items[i].GameObject != autoGO
+					&& !items[i].GameObject.transform.IsChildOf(autoGO.transform))
+					continue;
+				items[i] = new LabelWidget {
+					Label = (string)STRINGS.UI.UISIDESCREENS.ROCKETRESTRICTIONSIDESCREEN.AUTOMATION,
+					GameObject = items[i].GameObject,
+					SuppressTooltip = true,
+					SpeechFunc = () => {
+						string label = (string)STRINGS.UI.UISIDESCREENS.ROCKETRESTRICTIONSIDESCREEN.AUTOMATION;
+						string tooltip = (string)STRINGS.UI.UISIDESCREENS.ROCKETRESTRICTIONSIDESCREEN.AUTOMATION_TOOLTIP;
+						return $"{label}. {tooltip}";
+					}
+				};
+				break;
 			}
 		}
 	}
