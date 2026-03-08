@@ -21,6 +21,7 @@ Rockets are vertical stacks of modules connected via `BuildingAttachPoint`/`Atta
 - Each engine defines `maxModules` (max number of modules in stack) and `maxHeight` (max total height in cells)
 - `RocketHeight` is the sum of `HeightInCells` for all modules in the stack
 - `ConditionRocketHeight` enforces the engine's `maxHeight` limit
+- `MAX_MODULE_STACK_HEIGHT = VERY_TALL - 5 = 30` cells (absolute cap)
 - Modules can be reordered via `ReorderableBuilding` (DLC only)
 - Only one command/habitat module per rocket (`LimitOneCommandModule`)
 - Nosecone and small habitat must be on top (`TopOnly`)
@@ -32,7 +33,9 @@ Rockets are vertical stacks of modules connected via `BuildingAttachPoint`/`Atta
 - DLC: `HabitatModuleSmall` (3x3, burden 3, tagged `NoseRocketModule` + `TopOnly`), `HabitatModuleMedium` (5x4, burden 6). Both create interior worlds via `PassengerRocketModule` + `ClustercraftExteriorDoor`
 - `RoboPilotCommandModule` (5x5, base game starmap only, requires DLC3, forbidden in Spaced Out) for crewless rockets
 
-**Nosecone** (DLC): `NoseconeBasic` (5x2, burden 2, `TopOnly`), `NoseconeHarvest` (for space POI harvesting)
+**Nosecone** (DLC): `NoseconeBasic` (5x2, burden 2, `TopOnly`), `NoseconeHarvest` (5x4, burden 2, `TopOnly`, for space POI harvesting)
+
+**Robo Pilot Module** (DLC, requires both Expansion1 + DLC3): `RoboPilotModule` (3x4, burden 4). Allows crewless flight in cluster space. Limited to one per rocket (`LimitOneRoboPilotModule`).
 
 **Fuel/Oxidizer tanks**, **Cargo bays**, **Engines** - detailed in sections below.
 
@@ -89,7 +92,7 @@ massPenalty = max(totalMass, (totalMass / 300)^3.2)
 range = max(0, totalThrust - massPenalty)
 ```
 
-Oxidizer efficiencies (base game):
+Base game oxidizer efficiencies (in `RocketStats.oxidizerEfficiencies`):
 - Oxylite: 1.0 (LOW)
 - Liquid Oxygen: 1.33 (HIGH)
 
@@ -115,28 +118,28 @@ If a `RoboPilotModule` is present, range is capped to `min(fuelRange, dataBankRa
 
 ### DLC Oxidizer Efficiencies
 
-Oxidizer power = mass * efficiency factor:
+Oxidizer power = mass * efficiency factor (in `Clustercraft.dlc1OxidizerEfficiencies`):
 - Fertilizer: 1.0 (VERY_LOW)
 - Oxylite: 2.0 (LOW)
 - Liquid Oxygen: 4.0 (HIGH)
 
-### Fuel Tanks
+### Fuel Tanks (DLC)
 
-| Tank | Game | Capacity | Notes |
-|---|---|---|---|
-| Steam Engine (built-in) | Base | 900 kg | Integrated fuel tank |
-| Steam Engine Cluster (built-in) | DLC | 150 kg | Integrated |
-| CO2 Engine (built-in) | DLC | 100 kg | Integrated, gas input |
-| Sugar Engine (built-in) | DLC | 450 kg | Integrated, manual delivery |
-| Small Petroleum Engine (built-in) | DLC | 450 kg | Integrated, liquid input |
-| Separate fuel tanks | Both | Varies | Not covered here; depend on building config |
+| Tank | ID | Capacity | Size | Burden | Input |
+|---|---|---|---|---|---|
+| Liquid Fuel Tank | `LiquidFuelTankCluster` | 900 kg | 5x5 | 5 (MODERATE_PLUS) | Liquid conduit |
+| CO2 Engine (built-in) | `CO2Engine` | 100 kg | - | - | Gas conduit |
+| Steam Engine (built-in) | `SteamEngineCluster` | 150 kg | - | - | Gas conduit |
+| Sugar Engine (built-in) | `SugarEngine` | 450 kg | - | - | Manual delivery |
+| Small Petroleum (built-in) | `KeroseneEngineClusterSmall` | 450 kg | - | - | Liquid conduit |
 
 ### Oxidizer Tanks (DLC)
 
-| Tank | Capacity | Type | Burden |
-|---|---|---|---|
-| Solid Oxidizer Tank | 900 kg | Oxylite + Fertilizer | 5 |
-| Liquid Oxidizer Tank | 450 kg | Liquid Oxygen only | 5 |
+| Tank | ID | Capacity | Accepts | Size | Burden |
+|---|---|---|---|---|---|
+| Solid Oxidizer Tank (large) | `OxidizerTankCluster` | 900 kg | Oxylite, Fertilizer | 5x5 | 5 (MODERATE_PLUS) |
+| Solid Oxidizer Tank (small) | `SmallOxidizerTank` | 450 kg | Oxylite, Fertilizer | 3x2 | 2 (MINOR) |
+| Liquid Oxidizer Tank | `OxidizerTankLiquidCluster` | 450 kg | Liquid Oxygen only | 5x2 | 5 (MODERATE_PLUS) |
 
 DLC oxidizer tanks do not consume on landing (`consumeOnLand = false` when cluster space enabled).
 
@@ -146,14 +149,17 @@ DLC oxidizer tanks do not consume on landing (`consumeOnLand = false` when clust
 
 Capacity = base value * `CARGO_CAPACITY_SCALE` (10).
 
-| Cargo Bay | ID | Capacity (kg) | Burden | Size |
-|---|---|---|---|---|
-| Solid (large) | `CargoBayCluster` | 27,000 | 6 | 5x5 |
-| Solid (small) | `SolidCargoBaySmall` | 12,000 | 4 | 3x3 |
-| Liquid (large) | `LiquidCargoBayCluster` | 27,000 | 5 | 5x5 |
-| Liquid (small) | `LiquidCargoBaySmall` | 9,000 | 3 | 3x3 |
-| Gas (large) | `GasCargoBayCluster` | 11,000 | 4 | 5x5 |
-| Gas (small) | `GasCargoBaySmall` | 3,600 | 2 | 3x3 |
+| Cargo Bay | ID | Base * Scale | Capacity (kg) | Burden | Size |
+|---|---|---|---|---|---|
+| Solid (large) | `CargoBayCluster` | 2700 * 10 | 27,000 | 6 (MAJOR) | 5x5 |
+| Solid (small) | `SolidCargoBaySmall` | 1200 * 10 | 12,000 | 4 (MODERATE) | 3x3 |
+| Liquid (large) | `LiquidCargoBayCluster` | 2700 * 10 | 27,000 | 5 (MODERATE_PLUS) | 5x5 |
+| Liquid (small) | `LiquidCargoBaySmall` | 900 * 10 | 9,000 | 3 (MINOR_PLUS) | 3x3 |
+| Gas (large) | `GasCargoBayCluster` | 1100 * 10 | 11,000 | 4 (MODERATE) | 5x5 |
+| Gas (small) | `GasCargoBaySmall` | 360 * 10 | 3,600 | 2 (MINOR) | 3x3 |
+| Critter/Entity | `SpecialCargoBayCluster` | - | - | 1 (INSIGNIFICANT) | 3x1 |
+
+The critter cargo bay (`SpecialCargoBayCluster`) stores one bagable creature at a time via `SpecialCargoBayClusterReceptacle`. It also has a secondary storage for loot/side products.
 
 ## Piloting and Speed
 
@@ -165,7 +171,7 @@ missionDuration = distance * 1800 / pilotNavigationEfficiency
 ```
 Where `pilotNavigationEfficiency = 1 + sum(spaceNavigation skill bonuses)`.
 
-Mission Control Station buff: adds 20% mission progress rate while active (`controlStationBuffTimeRemaining > 0`).
+Mission Control Station buff: adds 20% mission progress rate while active (`controlStationBuffTimeRemaining > 0`). Each work session sets the buff to 600s (1 cycle).
 
 ### DLC Speed
 
@@ -199,6 +205,32 @@ ETA calculation:
 ETA = remainingTravelDistance / speed
 remainingTravelDistance = (pathNodes - (hasAsteroidDestination ? 1 : 0)) * 600 - movePotential
 ```
+
+### Mission Control
+
+Two variants: `MissionControl` (base game) and `MissionControlCluster` (DLC).
+
+**Base game**: Targets a `Spacecraft` with state `Underway` that doesn't already have a buff. Sets `controlStationBuffTimeRemaining = 600` (1 cycle). While buffed, mission elapsed time accumulates at 120% rate.
+
+**DLC**: Same buff mechanic but for `Clustercraft`. Additional constraint: the rocket must be within range 2 hexes of the asteroid the Mission Control Station is on (`IsInRange(rocketLocation, stationLocation, 2)`). Cannot boost your own rocket if the station is inside it.
+
+## Robo Pilot Module
+
+The `RoboPilotModule` enables crewless rocket flight. Two variants exist:
+
+**DLC cluster version** (`RoboPilotModule` building, requires Expansion1 + DLC3):
+- Storage: 100 kg data banks
+- Burden: 4 (MODERATE)
+- Consumes 2 data banks per hex traveled (`dataBankConsumption = 2`)
+- Data bank range: `storedBanks / 2 * 600` = 300 units per data bank
+- Does not consume on landing (`consumeDataBanksOnLand = false`)
+
+**Base game version** (`RoboPilotCommandModule`, requires DLC3, forbidden in Spaced Out):
+- Storage: 100 kg data banks
+- Consumption: 1 data bank per distance unit
+- `consumeDataBanksOnLand = true` - banks consumed when rocket returns
+- Consumes `destination.OneBasedDistance * 2` data banks on landing
+- Data bank range: `storedBanks / 1 * 5000` = 5000 units per data bank (`DATABANKRANGE = 10000 / 2`)
 
 ## Cluster Map (DLC)
 
@@ -281,35 +313,93 @@ Base game space destinations are managed by `SpacecraftManager` and represented 
 
 ### Destination Types
 
-Organized by size tier (the number is `iconSize`, which also serves as the tier identifier):
+The constructor signature is: `SpaceDestinationType(id, parent, name, description, iconSize, spriteName, elementTable, recoverableEntities, artifactDropRate, maxMass, minMass, cyclesToRecover, visitable)`.
 
-| Type | Category | Base Resources | Entities | Artifact Rate |
-|---|---|---|---|---|
-| Satellite | Debris (16) | Steel, Copper, Glass | - | Bad |
-| Metallic Asteroid | Asteroid (32) | Iron, Copper, Obsidian | Metal Hatch x3 | Mediocre |
-| Rocky Asteroid | Asteroid (32) | Cuprite, Sedimentary Rock, Igneous Rock | Hard Hatch x3 | Good |
-| Carbonaceous Asteroid | Asteroid (32) | Refined Carbon, Carbon, Diamond | - | Mediocre |
-| Oily Asteroid | Asteroid (32) | Solid Methane, Solid CO2, Crude Oil, Petroleum | - | Mediocre |
-| Gold Asteroid | Asteroid (32) | Gold, Fullerene, Fool's Gold | - | Bad |
-| Icy Dwarf | Dwarf Planet (64) | Ice, Solid CO2, Solid Oxygen | Cold Breather x3, Cold Wheat x4 | Great |
-| Organic Dwarf | Dwarf Planet (64) | Slime Mold, Algae, Polluted O2 | Moo x2, Gas Grass x12 | Great |
-| Dusty Moon | Dwarf Planet (64) | Regolith, Mafic Rock, Sedimentary Rock | - | Amazing |
-| Salt Dwarf | Dwarf Planet (64) | Salt Water, Solid CO2, Brine | Salt Vine x3 | Bad |
-| Red Dwarf | Dwarf Planet (64) | Aluminum, Liquid Methane, Fossil | - | Amazing |
-| Terra Planet | Planet (96) | Water, Algae, Oxygen, Dirt | Prickle Flower x4, Pacu x4 | Amazing |
-| Volcano Planet | Planet (96) | Magma, Igneous Rock, Insulation | - | Amazing |
-| Rust Planet | Planet (96) | Rust, Solid CO2 | - | Perfect |
-| Forest Planet | Planet (96) | Aluminum Ore, Solid Oxygen | Squirrel x1, Arbor Tree x4 | Mediocre |
-| Shiny Planet | Planet (96) | Tungsten, Wolframite | - | Good |
-| Chlorine Planet | Planet (96) | Solid Chlorine, Bleach Stone | - | Bad |
-| Salt Desert Planet | Planet (96) | Salt, Crushed Rock | Pokeshell x1 | Bad |
-| Gas Giant | Giant (96) | Methane, Hydrogen | - | Perfect |
-| Ice Giant | Giant (96) | Ice, Solid CO2, Solid O2, Solid Methane | - | Perfect |
-| Hydrogen Giant | Giant (96) | Liquid Hydrogen, Water, Niobium | - | Mediocre |
-| Wormhole | Special (96) | Vacuum | - | Perfect |
-| Earth | Special (96) | (none) | - | None |
+| Type | Category (iconSize) | Base Resources | Entities | Artifact Rate | Max Mass | Min Mass | Cycles to Recover |
+|---|---|---|---|---|---|---|---|
+| Satellite | Debris (16) | Steel, Copper, Glass | - | Bad | 64M | ~64M | 18 |
+| Metallic Asteroid | Asteroid (32) | Iron, Copper, Obsidian | Metal Hatch x3 | Mediocre | 128M | ~128M | 12 |
+| Rocky Asteroid | Asteroid (32) | Cuprite, Sedimentary Rock, Igneous Rock | Hard Hatch x3 | Good | 128M | ~128M | 18 |
+| Carbonaceous Asteroid | Asteroid (32) | Refined Carbon, Carbon, Diamond | - | Mediocre | 128M | ~128M | default (6) |
+| Oily Asteroid | Asteroid (32) | Solid Methane, Solid CO2, Crude Oil, Petroleum | - | Mediocre | 128M | ~128M | 12 |
+| Gold Asteroid | Asteroid (32) | Gold, Fullerene, Fool's Gold | - | Bad | 128M | ~128M | 90 |
+| Icy Dwarf | Dwarf Planet (64) | Ice, Solid CO2, Solid Oxygen | Cold Breather x3, Cold Wheat x4 | Great | 256M | ~256M | 24 |
+| Organic Dwarf | Dwarf Planet (64) | Slime Mold, Algae, Polluted O2 | Moo x2, Gas Grass x12 | Great | 256M | ~256M | 30 |
+| Dusty Moon | Dwarf Planet (64) | Regolith, Mafic Rock, Sedimentary Rock | - | Amazing | 256M | ~256M | 42 |
+| Salt Dwarf | Dwarf Planet (64) | Salt Water, Solid CO2, Brine | Salt Vine x3 | Bad | 256M | ~256M | 30 |
+| Red Dwarf | Dwarf Planet (64) | Aluminum, Liquid Methane, Fossil | - | Amazing | 256M | ~256M | 42 |
+| Terra Planet | Planet (96) | Water, Algae, Oxygen, Dirt | Prickle Flower x4, Pacu x4 | Amazing | 384M | ~384M | 54 |
+| Volcano Planet | Planet (96) | Magma, Igneous Rock, Insulation | - | Amazing | 384M | ~384M | 54 |
+| Gas Giant | Giant (96) | Methane, Hydrogen | - | Perfect | 384M | ~384M | 60 |
+| Ice Giant | Giant (96) | Ice, Solid CO2, Solid O2, Solid Methane | - | Perfect | 384M | ~384M | 60 |
+| Rust Planet | Planet (96) | Rust, Solid CO2 | - | Perfect | 384M | ~384M | 60 |
+| Forest Planet | Planet (96) | Aluminum Ore, Solid Oxygen | Squirrel x1, Arbor Tree x4 | Mediocre | 384M | ~384M | 24 |
+| Shiny Planet | Planet (96) | Tungsten, Wolframite | - | Good | 384M | ~384M | 84 |
+| Chlorine Planet | Planet (96) | Solid Chlorine, Bleach Stone | - | Bad | 256M | ~256M | 90 |
+| Salt Desert Planet | Planet (96) | Salt, Crushed Rock | Pokeshell x1 | Bad | 384M | ~384M | 60 |
+| Hydrogen Giant | Giant (96) | Liquid Hydrogen, Water, Niobium | - | Mediocre | 384M | ~384M | 78 |
+| Wormhole | Special (96) | Vacuum | - | Perfect | 0 | 0 | 0 |
+| Earth | Special (96) | (none) | - | None | 0 | 0 | 0 |
 
-Rare elements discoverable through research: Insulation (Katairite), Niobium, Fullerene, Isoresin. Rare item: Gene Shuffler Recharge (33% chance).
+**DLC-specific destinations** (base game starmap, require their respective DLCs):
+- DLC2 Ceres: Cinnabar, Mercury, Ice; Wood Deer x3, Hard Skin Berry x4; Good; 384M; 60 cycles
+- DLC4 Prehistoric: Nickel Ore, Peat, Shale, Amber, Iridium; Stego x1, Raptor x1, Vine Mother x4; Good; 384M; 60 cycles
+- DLC4 Demolior debris fields (3 variants): various rare materials; no artifacts; 384M; 60 cycles
+
+### Destination Mass and Replenishment
+
+Each destination has a mass pool that cargo bays draw from:
+- `availableMass` starts at `maxMass - minMass` (typically 6,000 to 20,000 kg depending on type)
+- `replenishmentPerCycle = 1000 / cyclesToRecover` kg per cycle
+- `replenishmentPerSim1000ms = 1000 / (cyclesToRecover * 600)` kg per second
+- `CurrentMass = minimumMass + availableMass`
+- Cargo fills up to `min(CurrentMass + reservedMass - minimumMass, totalCargoSpace)`
+
+Resource distribution within cargo: each element's share is proportional to its value from `elementTable` (a `MinMax` of 100-200, lerped by a random roll per element).
+
+### Research Opportunities
+
+Each destination generates 5 research opportunities worth `BASIC = 50` data points each:
+1. Upper Atmosphere
+2. Lower Atmosphere
+3. Magnetic Field
+4. Surface
+5. Subsurface
+
+Rare elements discovered through research: Insulation (Katairite, 50-100 kg), Niobium (10-20 kg), Fullerene (0.5-1 kg), Isoresin (30-60 kg).
+
+Rare element chances (weighted roll):
+- 0 rare elements: weight 1.0 (most common)
+- 1 rare element: weight 0.33
+- 2 rare elements: weight 0.03
+
+Rare item: Gene Shuffler Recharge (33% chance, 1-2 units).
+
+### Artifact Drop Rates
+
+Artifacts have tiers with decor bonuses:
+
+| Tier | Decor Amount | Decor Radius |
+|---|---|---|
+| TIER_NONE | 0 | 0 |
+| TIER0 | 10 | 1 |
+| TIER1 | 15 | 2 |
+| TIER2 | 20 | 3 |
+| TIER3 | 25 | 4 |
+| TIER4 | 30 | 5 |
+| TIER5 | 35 | 6 |
+
+Drop rate tables (weights, not percentages; divide by total for probability):
+
+| Rate | None | T0 | T1 | T2 | T3 | T4 | T5 | Total |
+|---|---|---|---|---|---|---|---|---|
+| None | 1 | - | - | - | - | - | - | 1 |
+| Bad | 10 | 5 | 3 | 2 | - | - | - | 20 |
+| Mediocre | 10 | - | 5 | 3 | 2 | - | - | 20 |
+| Good | 10 | - | - | 5 | 3 | 2 | - | 20 |
+| Great | 10 | - | - | - | 5 | 3 | 2 | 20 |
+| Amazing | 10 | - | - | - | 3 | 5 | 2 | 20 |
+| Perfect | 10 | - | - | - | - | 6 | 4 | 20 |
 
 ### Mission Flow (Base Game)
 
@@ -319,6 +409,74 @@ Rare elements discoverable through research: Insulation (Katairite), Niobium, Fu
 4. On completion: state = WaitingToLand, triggers landing events on all modules
 5. Cargo bays receive resources from destination based on cargo type and available mass
 6. Destination mass depletes; replenishes at `replishmentPerSim1000ms`
+
+**Wormhole special case**: Sending a rocket to the Wormhole destination triggers `TemporallyTear`, which destroys all modules, consumes all stored items, and deletes any stored duplicants. Sets `hasVisitedWormHole = true`.
+
+## Space POIs (DLC)
+
+### Harvestable POIs
+
+DLC space has `HarvestablePOI` entities on the cluster map. Each has:
+- A type defining harvestable elements with weights (relative proportions, not rates)
+- Capacity: randomized between `poiCapacityMin` and `poiCapacityMax` (default 54,000-81,000 kg)
+- Recharge time: randomized between `poiRechargeMin` and `poiRechargeMax` (default 30,000-60,000 s, i.e., 50-100 cycles)
+- Initial data banks (default 50 for most POIs)
+- Initial liberated resources (spawned on first visit as floating items in the hex cell)
+- Optional artifact spawning (`canProvideArtifacts`)
+
+Recharge happens once per day: `delta = maxCapacity * (600 / rechargeTime)` added to current capacity.
+
+### Harvestable POI Types
+
+| POI | Elements (weight) | Capacity (kg) | Recharge (s) | Artifacts |
+|---|---|---|---|---|
+| Carbon Asteroid Field | Refined Carbon (1.5), Carbon (5.5) | 30k-45k | 30k-60k | Yes |
+| Metallic Asteroid Field | Molten Iron (1.25), Cuprite (1.75), Obsidian (6.25), Molten Lead (1.75) | 54k-81k | 30k-60k | Yes |
+| Satellite Field | Sand (3), Iron Ore (3), Molten Copper (2.67), Glass (1.33) | 30k-45k | 30k-60k | Yes |
+| Rocky Asteroid Field | Katairite (2), Granite (2), Sedimentary Rock (3), Igneous Rock (3) | 81k-94k | 30k-60k | Yes |
+| Interstellar Ice Field | Ice (2.5), Solid CO2 (7), Solid O2 (0.5) | 54k-81k | 30k-60k | Yes |
+| Organic Mass Field | Slime Mold (3), Algae (3), Polluted O2 (1), Dirt (3) | 54k-81k | 30k-60k | Yes |
+| Ice Asteroid Field | Ice (6), Solid CO2 (2), Oxygen (1.5), Solid Methane (0.5) | 54k-81k | 30k-60k | Yes |
+| Gas Giant Cloud | Methane (1), Liquid Methane (1), Solid Methane (1), Hydrogen (7) | 15k-20k | 30k-60k | Yes |
+| Chlorine Cloud | Chlorine (2.5), Bleach Stone (7.5) | 54k-81k | 30k-60k | Yes |
+| Gilded Asteroid Field | Gold (2.5), Fullerene (1), Refined Carbon (1), Sedimentary Rock (4.5), Regolith (1) | 30k-45k | 30k-60k | Yes |
+| Glimmering Asteroid Field | Molten Tungsten (2), Wolframite (6), Carbon (1), CO2 (1) | 30k-45k | 30k-60k | Yes |
+| Helium Cloud | Hydrogen (2), Water (8) | 30k-45k | 30k-60k | Yes |
+| Oily Asteroid Field | Solid CO2 (7.75), Solid Methane (1.125), Crude Oil (1.125) | 15k-25k | 30k-60k | Yes |
+| Oxidized Asteroid Field | Rust (8), Solid CO2 (2) | 54k-81k | 30k-60k | Yes |
+| Salty Asteroid Field | Salt Water (5), Brine (4), Solid CO2 (1) | 54k-81k | 30k-60k | Yes |
+| Frozen Ore Field | Ice (2.33), Dirty Ice (2.33), Snow (1.83), Aluminum Ore (2) | 54k-81k | 30k-60k | Yes |
+| Foresty Ore Field | Igneous Rock (7), Aluminum Ore (1), CO2 (2) | 54k-81k | 30k-60k | Yes |
+| Swampy Ore Field | Mud (2), Toxic Sand (7), Cobaltite (1) | 54k-81k | 30k-60k | Yes |
+| Sandy Ore Field | Sandstone (4), Algae (2), Cuprite (1), Sand (3) | 54k-81k | 30k-60k | Yes |
+| Radioactive Gas Cloud | Uranium Ore (2), Chlorine (2), CO2 (7) | 5k-10k | 30k-60k | Yes |
+| Radioactive Asteroid Field | Uranium Ore (2), Sulfur (3), Bleach Stone (2), Rust (4) | 5k-10k | 30k-60k | Yes |
+| Oxygen Rich Asteroid Field | Water (4), Polluted O2 (2), Ice (4) | 15k-25k | 30k-60k | Yes |
+| Interstellar Ocean | Salt Water (2.5), Brine (2.5), Salt (2.5), Ice (2.5) | 15k-25k | 30k-60k | Yes |
+
+DLC2/DLC4 add additional POI types (Ceres Fields, Prehistoric Fields, Impactor Debris Fields).
+
+### POI Harvesting Mechanics
+
+Harvesting requires a `NoseconeHarvest` module in orbit of a harvestable POI.
+
+**Resource harvesting** (`ResourceHarvestModule`):
+- Harvest speed: `solidCapacity / timeToFill` where solidCapacity = 2700 * 10 = 27,000 kg and timeToFill = 3600s, so speed = 7.5 kg/s
+- Consumes Diamond at 5% of harvested mass (0.05 kg Diamond per kg harvested)
+- Diamond storage: 1000 kg, delivered manually
+- Max extractable from diamond: `storedDiamond / 0.05` kg (1000 kg Diamond = 20,000 kg harvest capacity)
+- Harvested resources go to a `StarmapHexCellInventory` at the rocket's location
+- Updates every 4000ms (`SIM_4000ms`)
+- Depletes POI capacity; POI recharges over time
+
+**Artifact harvesting** (`ArtifactHarvestModule`):
+- Separate from resource harvesting
+- Artifact POIs start fully charged and spawn one artifact on the hex cell
+- After pickup, recharge timer starts (default 30,000-60,000 s)
+- Recharges once per day: `chargeProgress += 600 / rechargeTime`
+- When fully charged, spawns a new artifact and resets to 0
+- First harvest gives a specific pre-assigned artifact; subsequent ones are random unique space artifacts
+- POIs with `canProvideArtifacts = true` in harvestable POIs also support artifact harvesting
 
 ## Rocket Interior (DLC)
 
@@ -371,6 +529,13 @@ Automated launch (via logic port) uses `CheckReadyForAutomatedLaunchCommand` whi
 - `RocketStats.cs`: Base game thrust/range calculations
 - `Spacecraft.cs`: Base game mission timing
 - `SpaceDestination.cs` / `SpaceDestinationTypes.cs`: Base game destination data
+- `HarvestablePOIConfigurator.cs` / `HarvestablePOIConfig.cs`: DLC space POI types and harvesting config
+- `HarvestablePOIStates.cs`: POI recharge state machine
+- `ArtifactPOIStates.cs` / `ArtifactPOIConfigurator.cs`: Artifact spawning and harvesting
+- `ResourceHarvestModule.cs`: Nosecone harvest drilling logic
+- `ArtifactHarvestModule.cs`: Artifact collection from hex cells
+- `RoboPilotModule.cs` / `RoboPilotCommandModuleConfig.cs` / `RoboPilotModuleConfig.cs`: Crewless flight
+- `MissionControl.cs` / `MissionControlCluster.cs`: Mission Control Station speed buff
 - `TUNING/ROCKETRY.cs`: All tuning constants (efficiencies, burdens, fuel costs, heights)
 - Engine configs: `SteamEngineConfig.cs`, `KeroseneEngineClusterConfig.cs`, `HEPEngineConfig.cs`, etc.
 - Module configs: `HabitatModuleMediumConfig.cs`, `SolidCargoBayClusterConfig.cs`, `OxidizerTankClusterConfig.cs`, etc.

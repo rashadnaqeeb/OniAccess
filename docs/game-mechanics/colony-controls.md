@@ -1,8 +1,8 @@
-# Colony Management
+# Colony Controls
 
-Consumable permissions, door access control, daily reports, colony diagnostics (alert system), and notification dispatch. Derived from decompiled source code.
+Permissions, access control, monitoring, and alerts -- systems the player uses to manage and monitor the colony. Covers consumable permissions, door access control, daily reports, colony diagnostics, and notification dispatch. Derived from decompiled source code.
 
-For colony achievements, printing pod, duplicant generation, and care packages, see `colony-systems.md`. For duplicant health/vitals tracking, see `duplicant-health.md`. For stress and morale, see `stress-and-morale.md`.
+For printing pod, duplicant generation, care packages, skills, and achievements, see `colony-progression.md`. For duplicant health/vitals tracking, see `duplicant-health.md`. For stress and morale, see `stress-and-morale.md`.
 
 ## Consumable Permissions
 

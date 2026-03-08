@@ -36,7 +36,7 @@ finalTemp = (mass1 * temp1 + mass2 * temp2) / (mass1 + mass2)
 
 The result is clamped to `[min(temp1, temp2), max(temp1, temp2)]` to prevent numerical overshoot. This function is used throughout the game for pipe contents merging, element chunk absorption, storage consolidation, and turbine intake.
 
-**Exception: ElementConverter** uses SHC-weighted mixing when computing output temperatures from consumed inputs (see buildings.md):
+**Exception: ElementConverter** uses SHC-weighted mixing when computing output temperatures from consumed inputs (see building-mechanics.md):
 ```
 finalTemp = sum(mass * temp * SHC) / sum(mass * SHC)
 ```

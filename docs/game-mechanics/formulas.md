@@ -67,7 +67,7 @@ Quick-reference for key simulation formulas. Each formula links to its detailed 
 | `LitDecorBonus = +15 if LightIntensity > 0` | Automatic decor bonus from lighting |
 | `NoiseFalloff = sourceDB - (sourceDB * dist * 0.05)` | Noise decay with distance |
 
-## Element Conversion (buildings.md)
+## Element Conversion (building-mechanics.md)
 
 | Formula | Purpose |
 |---------|---------|
@@ -94,7 +94,7 @@ Quick-reference for key simulation formulas. Each formula links to its detailed 
 | `BuildingPressure = prev * 0.7 + current * 0.3` | Pressure reading momentum blend |
 | `JetFuelRate = 0.2 kg/s` | Jet suit fuel consumption |
 
-## Creature Metabolism (creatures.md)
+## Creature Metabolism (creature-ai.md)
 
 | Formula | Purpose |
 |---------|---------|
@@ -120,7 +120,7 @@ Quick-reference for key simulation formulas. Each formula links to its detailed 
 | `PreErupt = offDuration * 0.1` | Shaking phase duration |
 | `PostErupt = offDuration * 0.05` | Cooldown phase duration |
 
-## Colony (colony-systems.md)
+## Colony (colony-progression.md)
 
 | Formula | Purpose |
 |---------|---------|

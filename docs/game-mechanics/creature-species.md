@@ -1,6 +1,6 @@
 # Creature Species
 
-Per-species data for all major creature families. Derived from decompiled source code (`*Config.cs` and `*Tuning.cs`).
+Per-species stats for all major creature families -- diets, temperatures, egg chances, production rates. For how creature AI, reproduction, taming, and lifecycle work in general, see `creature-ai.md`. Derived from decompiled source code (`*Config.cs` and `*Tuning.cs`).
 
 All temperatures in Kelvin from source. Conversion: K - 273.15 = C. For reference: 273.15K = 0C, 293.15K = 20C, 313.15K = 40C, 373.15K = 100C.
 

@@ -1,6 +1,6 @@
-# Creatures
+# Creature AI
 
-Creature AI, diet, reproduction, taming, and lifecycle. Derived from decompiled source code.
+Creature AI, diet, reproduction, taming, and lifecycle -- how creatures behave regardless of species. For per-species stats (diets, temperatures, egg chances, production rates), see `creature-species.md`. Derived from decompiled source code.
 
 ## Brain Architecture
 

@@ -16,6 +16,23 @@ The fill produces a `CavityInfo` containing:
 
 A cavity becomes a `Room` only if `NumCells <= maxRoomSize`. The `maxRoomSize` value is loaded from `TuningData<RoomProber.Tuning>` at runtime (typically 256 tiles based on game data files). Cavities exceeding this limit are tracked but never assigned a room type.
 
+### Flood Fill Direction
+
+The flood fill expands in four cardinal directions (left, right, up, down) from each cell. Diagonal cells are not considered neighbors. This means a 1-tile diagonal gap between two solid tiles does not connect two cavities -- each side remains a separate cavity.
+
+### Dirty Cell Propagation
+
+When a solid change occurs at a cell, `RoomProber` marks that cell and its four cardinal neighbors as dirty. All cavities containing any dirty cell are condemned (destroyed), and their cells are re-flood-filled to build new cavities. This means a single tile change can split one cavity into multiple cavities or merge adjacent cavities into one.
+
+### Entity Detection Within Cavities
+
+After flood-filling, the prober scans each cell in new cavities that are within the `maxRoomSize` limit. For each cell, it checks object layer 1 (buildings layer) for a `KPrefabID`:
+- If the entity has the `RoomProberBuilding` tag, it is added to the cavity's `buildings` list. All standard buildings get this tag automatically via `BuildingConfigManager`.
+- If the entity has the `Plant` tag (and not `RoomProberBuilding`), it is added to the `plants` list.
+- Multi-cell buildings are deduplicated by instance ID so they appear only once in the list regardless of how many cells they occupy.
+
+Creatures, eggs, fish, and other entities are tracked separately through `CavityInfo.AddEntity()` calls from entity movement handlers, not from the flood fill scan.
+
 ### Boundary Rules
 
 A cell is a cavity boundary (`IsCavityBoundary`) when:
@@ -23,6 +40,18 @@ A cell is a cavity boundary (`IsCavityBoundary`) when:
 - The cell contains a door (`Grid.HasDoor`)
 
 Doors act as walls for room detection purposes. This means a single enclosed space divided by a door counts as two separate cavities.
+
+### What Does Not Count as a Boundary
+
+- Mesh tiles and airflow tiles: these have the `Foundation` build flag set, so they ARE boundaries despite allowing gas/liquid flow. A room enclosed by mesh tiles is still a valid room.
+- Pneumatic doors, manual airlocks, and mechanized airlocks all set `Grid.HasDoor`, so they all act as boundaries.
+- Open space (vacuum or gas-filled cells without solid or foundation flags) is NOT a boundary. An enclosure with a gap in its walls is not a room -- the flood fill leaks through the gap, merging the interior with the exterior into one large cavity that typically exceeds `maxRoomSize`.
+
+### Room Overlap Rules
+
+Each cell belongs to exactly one cavity. Two rooms cannot share interior space. If two enclosed areas share a wall, the wall cells are boundaries and belong to neither room's interior. The rooms are entirely separate.
+
+If a wall between two rooms is removed, the two cavities merge into one. The merged cavity is re-evaluated as a single room. If the combined cell count exceeds the room type's maximum size constraint (or `maxRoomSize`), the room becomes Neutral or is not assigned a type at all.
 
 ### Room Type Assignment
 
@@ -43,6 +72,28 @@ When multiple room types are fully satisfied, `HasAmbiguousRoomType` resolves co
 When only one type is fully satisfied but both have their primary constraint satisfied, ambiguity is still checked. The stomp-in-conflict and upgrade path rules apply the same way, but if neither resolves the conflict, the types are considered ambiguous (room becomes Neutral). This prevents partial matches from silently blocking a room classification.
 
 A room that satisfies two conflicting types with no resolution becomes `Neutral` until the player removes the conflicting building.
+
+### Room Invalidation and Re-evaluation
+
+Rooms are not persistent objects. When any solid cell changes or any building is added/removed in a cavity, the entire cavity is condemned and rebuilt from scratch:
+
+1. The old `CavityInfo` is freed and its `Room` (if any) is cleared via `ClearRoom()`, which unassigns all buildings from the room and removes the room from the assignment manager.
+2. New cavities are created by re-flood-filling all affected cells.
+3. New cavities that fall within `maxRoomSize` are assigned room types via `GetRoomType()`.
+4. All buildings and plants in the new cavities receive a room-changed event (hash `144050788`), which triggers `RoomTracker` components to update their status.
+
+This means a room can lose its type and bonuses instantly when:
+- A required building is deconstructed (e.g., removing the last toilet from a Latrine)
+- An incompatible building is placed (e.g., placing industrial machinery in a Barracks)
+- The room grows too large (breaking a wall to merge with adjacent space)
+- The room shrinks below minimum size
+- The enclosure is breached (removing a wall tile, causing the cavity to leak into open space)
+
+When a room loses its type, it reverts to Neutral. Buildings with `RoomTracker` components that require a specific room type display a status warning ("Not in required room" or "Not in recommended room") and may stop functioning. For example, a Farm Station outside a Greenhouse stops providing its crop growth bonus.
+
+### UpdateRoom vs Full Refresh
+
+`RoomProber.UpdateRoom()` can be called on a specific cavity to re-evaluate its room type without a full solid-change rebuild. This is used when an entity changes within the room (e.g., a creature enters or leaves) that doesn't affect the cavity boundaries but might affect room constraint satisfaction. It clears the old room, creates a new one, and re-triggers all building events.
 
 ## Room Type Identification
 
@@ -75,6 +126,16 @@ Two height constraints exist, measured as `1 + maxY - minY` (bounding box height
 - `CEILING_HEIGHT_6`: height >= 6 tiles (defined but not used by any standard room type)
 
 ## Room Types Reference
+
+### Registration Order
+
+`GetRoomType()` returns the first fully-satisfied, non-ambiguous type it finds while iterating the registry in insertion order. The registration order in `RoomTypes` constructor is:
+
+1. Neutral, 2. Washroom, 3. Latrine, 4. Private Bedroom, 5. Luxury Barracks, 6. Barracks, 7. Banquet Hall, 8. Great Hall, 9. Mess Hall, 10. Kitchen, 11. Massage Clinic, 12. Hospital, 13. Power Plant, 14. Greenhouse, 15. Stable, 16. Laboratory, 17. Recreation Room, 18. Nature Reserve, 19. Park
+
+Upgraded types are registered before their base types (e.g., Washroom before Latrine, Private Bedroom before Barracks). This ensures that when a room satisfies both a base type and its upgrade, the upgrade is found first and returned without needing to rely solely on the ambiguity resolution rules.
+
+Each room type also has a `sortKey` for UI display ordering, which is separate from registration order and priority.
 
 ### Bathroom Category
 
@@ -259,6 +320,24 @@ Effect IDs per room type (loaded from game data at runtime):
 
 Rooms without effect IDs (Kitchen, Hospital, Massage Clinic, Power Plant, Greenhouse, Stable, Laboratory, Recreation Room) provide functional bonuses through their buildings' operational state being tied to room membership, not through the Effect system.
 
+### Bonus Stacking
+
+Room morale effects are applied per interaction, not per room. When a Duplicant uses a primary building (e.g., sleeps in a bed, eats at a table), `TriggerRoomEffects()` adds the effect to the Duplicant. The effect has a duration defined in game data and persists as a timed buff.
+
+Because each room type has its own distinct effect ID, bonuses from different room types stack. A Duplicant who sleeps in a Luxury Barracks and eats in a Great Hall receives both `RoomBedroom` and `RoomGreatHall` effects simultaneously.
+
+Within the same upgrade chain, only one effect applies at a time in practice because a room can only be one type. A room cannot be both a Barracks and a Luxury Barracks simultaneously, so a Duplicant sleeping in a Luxury Barracks gets `RoomBedroom` but not `RoomBarracks`. If the room later downgrades (e.g., a decor item is removed), the old effect expires naturally at the end of its duration and new interactions grant the lower-tier effect.
+
+A single room does not grant its bonus multiple times per use. The effect is added once per interaction via `Effects.Add()`, which resets the timer if the effect already exists rather than stacking.
+
+### Building Room Tracking
+
+Buildings that require a specific room type to function use the `RoomTracker` component. This component subscribes to room-changed events and checks whether the building's current room matches its `requiredRoomType`. The requirement level determines the consequence:
+
+- `Required` / `CustomRequired`: building displays a "Not in required room" status and may be non-functional
+- `Recommended` / `CustomRecommended`: building displays a "Not in recommended room" status but still operates
+- `TrackingOnly`: no status shown, room is tracked for informational purposes only
+
 ## Common Constraints
 
 ### No Industrial Machinery
@@ -276,8 +355,58 @@ Buildings tagged `GameTags.Decoration` count as decor items. These include paint
 ### Displayed Ornament
 Requires a building tagged `OrnamentDisplayer` with an `OrnamentReceptacle` component that is operational and holding an item tagged as an `Ornament`. Checked against both buildings and other entities in the room.
 
+### Backwall Requirement
+
+Used only by Private Bedroom. The `IS_BACKWALLED` constraint checks every cell in the room's bounding box that belongs to the room's cavity. For each such cell, object layer 2 (backwall layer) must contain a placed object that is not tagged `UnderConstruction`. The scan iterates columns from both edges inward simultaneously, checking each row top to bottom. A single missing or under-construction backwall tile fails the entire constraint.
+
+### No Cots / No Outhouses / No Basic Mess Tables
+
+These are exclusion constraints that prevent mixing tiers within a room:
+- `NO_COTS`: fails if any building has `BedType` tag but NOT `LuxuryBedType` (i.e., a basic Cot is present)
+- `NO_OUTHOUSES`: fails if any building has `ToiletType` tag but NOT `FlushToiletType` (i.e., an Outhouse is present)
+- `NO_BASIC_MESS_STATIONS`: fails if any building has the exact prefab ID `"DiningTable"` (the basic Mess Table)
+- `NO_MESS_STATION`: fails if any building has the `MessTable` tag (used by Kitchen to prevent dining tables)
+
+### Constraint Satisfaction Mechanics
+
+A constraint with `building_criteria` counts how many buildings (and plants) in the room satisfy the criteria. If the count reaches `times_required`, the constraint is satisfied. Most constraints require 1; `SCIENCE_BUILDINGS` requires 2; `BIONICUPKEEP` requires 2.
+
+A constraint with only `room_criteria` (no `building_criteria`) evaluates the room-level lambda directly. Size constraints, height constraints, no-industrial-machinery, and backwall all work this way.
+
 ## Room Assignment
 
 Non-primary buildings in a room with a type other than Neutral are automatically assigned to the room via the `Assignable` system. Primary buildings (those matching `primary_constraint.building_criteria`) are excluded from room assignment -- they are assigned to individual Duplicants instead.
 
 Rooms that set `single_assignee = true` (Hospital, Massage Clinic, Power Plant, Greenhouse, Stable, Laboratory, Recreation Room) restrict assignment to one Duplicant at a time. Rooms with `priority_building_use = true` give the assigned Duplicant priority access to the room's primary building.
+
+## Edge Cases
+
+### Minimum Enclosure
+
+There is no minimum cell count enforced by the cavity system itself. A 1-cell enclosed space is a valid cavity. However, all room types require at least 12 cells (`MINIMUM_SIZE_12`), so cavities smaller than 12 cells always classify as Neutral.
+
+### Maximum Cavity Size vs Maximum Room Size
+
+Two separate limits apply:
+- `maxRoomSize` (from `TuningData`, typically 256): cavities exceeding this are never assigned a Room object at all. They exist as `CavityInfo` with `room == null`.
+- Room type maximum size constraints (64, 96, or 120): these are additional constraints checked during type classification. A cavity of 130 cells gets a Room object (under the 256 limit) but fails all maximum size constraints and becomes Neutral.
+
+### Doors and Room Splitting
+
+Placing a door in the middle of a room splits it into two separate cavities. Each half is independently evaluated for room type. If the original room required specific buildings and one half no longer contains them, that half loses the room type. This is a common way to accidentally break rooms.
+
+### Multi-cell Buildings Spanning Boundaries
+
+A building that occupies multiple cells might straddle a room boundary (e.g., a 3-wide building placed at the edge of a room). The building is added to whichever cavity contains the cell in object layer 1. Each cell is checked independently during entity detection, but the building is deduplicated by instance ID, so it appears in only one cavity's building list (the first cavity whose cell scan encounters it). This can cause unexpected behavior where a building appears to be "in" a room visually but is tracked by a different cavity.
+
+### Open-to-Space Cavities
+
+If a room's wall is breached to open space (vacuum), the flood fill leaks outward. Depending on the surrounding terrain, this can create an enormous cavity that exceeds `maxRoomSize`, destroying the room entirely. The entire connected open space becomes one cavity with no Room object.
+
+### Room Owner Tracking
+
+A room's owners are derived from the owners of its primary buildings. `Room.GetOwners()` iterates all buildings matching `primary_constraint.building_criteria`, checks each for an `Ownable` component with an assignee, and collects the unique `Ownables` from those assignees. A room with multiple primary buildings (e.g., a Barracks with 4 beds) can have multiple owners, one per assigned bed.
+
+### Neutral Room Diagnostic Display
+
+When a room is Neutral, the game's room overlay calls `GetPossibleRoomTypes()` to show which room types the cavity partially satisfies. For each type with at least `primary_satisfied`, it lists the unmet additional constraints in red. If a type is `all_satisfied` but ambiguous with another type, it shows a "type conflict" warning instead of listing missing constraints.

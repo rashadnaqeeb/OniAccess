@@ -1,6 +1,6 @@
 # Schedules
 
-How the schedule system controls duplicant behavior across the cycle. Derived from decompiled source code (`Schedule.cs`, `ScheduleManager.cs`, `ScheduleBlock.cs`, `ScheduleGroup.cs`, `ScheduleBlockType.cs`, `Database/ScheduleGroups.cs`, `Database/ScheduleBlockTypes.cs`, `RecreationTimeMonitor.cs`, `StaminaMonitor.cs`, `SleepChore.cs`, `SleepChoreMonitor.cs`, `Schedulable.cs`).
+How the schedule system controls duplicant behavior across the cycle. Derived from decompiled source code (`Schedule.cs`, `ScheduleManager.cs`, `ScheduleBlock.cs`, `ScheduleGroup.cs`, `ScheduleBlockType.cs`, `Database/ScheduleGroups.cs`, `Database/ScheduleBlockTypes.cs`, `RecreationTimeMonitor.cs`, `StaminaMonitor.cs`, `SleepChore.cs`, `SleepChoreMonitor.cs`, `Schedulable.cs`, `ChoreConsumer.cs`, `ChoreDriver.cs`, `ChoreType.cs`, `ChorePreconditions.cs`, `WorkChore.cs`, `CalorieMonitor.cs`, `BladderMonitor.cs`, `UrgeMonitor.cs`, `Database/ChoreTypes.cs`).
 
 ## Cycle Structure
 
@@ -91,6 +91,202 @@ Players can:
 - **Rotate blocks left/right** within a row (circular shift)
 
 This enables multi-day repeating schedules (e.g., alternate heavy-work and rest days).
+
+## How Schedules Control Chore Selection
+
+The schedule system does not directly assign tasks. Instead, it acts as a **precondition filter** on the chore system. Every tick, the brain (`ChoreConsumer.FindNextChore()`) collects all available chores, evaluates their preconditions, sorts the successes by priority, and picks the best one. The schedule determines which chores pass precondition checks.
+
+### The IsScheduledTime Precondition
+
+The core mechanism is `ChorePreconditions.IsScheduledTime`. Each chore declares which `ScheduleBlockType` it requires. At evaluation time, the precondition checks whether the duplicant's current schedule block allows that type:
+
+```csharp
+// ChorePreconditions.IsScheduledTime
+fn = delegate(ref Context context, object data) {
+    if (context.chore.gameObject.GetMyWorld().IsRedAlert())
+        return true;  // Red Alert bypasses schedule
+    ScheduleBlockType type = (ScheduleBlockType)data;
+    return context.consumerState.scheduleBlock?.IsAllowed(type) ?? true;
+};
+```
+
+The `consumerState.scheduleBlock` is refreshed from `schedulable.GetSchedule().GetCurrentScheduleBlock()` each time `ChoreConsumer.FindNextChore()` runs. If the schedule block is null (edge case), the precondition passes by default.
+
+### How WorkChore Applies Schedule Filtering
+
+`WorkChore<T>` is the most common chore type for buildings. Its constructor determines schedule filtering via two parameters:
+
+1. **`schedule_block`** (explicit): If set, the chore requires that specific block type. Recreation buildings pass `ScheduleBlockTypes.Recreation`, making them only available during blocks that include the Recreation type.
+2. **`ignore_schedule_block`** (default false): If true, no schedule precondition is added at all.
+
+If neither parameter is set (the default), the chore falls back to requiring `ScheduleBlockTypes.Work`:
+
+```csharp
+if (schedule_block != null)
+    AddPrecondition(IsScheduledTime, schedule_block);
+else if (!ignore_schedule_block)
+    AddPrecondition(IsScheduledTime, Db.Get().ScheduleBlockTypes.Work);
+```
+
+This means most colony errands (building, digging, operating machines, hauling) are gated on the Work block type. Recreation chores (Arcade Machine, Beach Chair, Espresso Machine) are gated on the Recreation block type.
+
+### Chores Without Schedule Gating
+
+Many chore types have **no `IsScheduledTime` precondition** and run regardless of the current schedule block. These are "survival" or "autonomous" chores that use the urge system instead. They appear in `Database.ChoreTypes` with empty chore group arrays (`new string[0]`). Examples:
+
+- **Die, Entombed, BeIncapacitated** - emergency states
+- **Pee, ExpellGunk** - critical biological needs
+- **Vomit, Cough, RecoverBreath** - involuntary reactions
+- **Sleep, Narcolepsy** - controlled by `StaminaMonitor`/`UrgeMonitor` rather than schedule preconditions
+- **Eat** - controlled by `CalorieMonitor` urge system
+- **Flee, MoveToSafety** - danger response
+- **StressVomit, UglyCry, BansheeWail** - stress reactions
+- **MoveTo, DebugGoTo** - player-directed movement
+
+These chores bypass the schedule entirely. The schedule only affects them indirectly through the urge threshold system (see below).
+
+### Schedule Block Types and What They Gate
+
+| Block Type | Chores Gated | Notes |
+|---|---|---|
+| `Work` | All `WorkChore<T>` instances without explicit schedule_block: building, digging, operating, hauling, cooking, researching, farming, ranching, etc. | Default for any WorkChore that doesn't specify otherwise |
+| `Recreation` | `WorkChore<T>` instances for recreation buildings (Arcade Machine, Beach Chair, Espresso Machine, Water Cooler, etc.) | All pass `schedule_block: ScheduleBlockTypes.Recreation` |
+| `Hygiene` | Not used as a chore precondition directly | Affects urge thresholds (bladder) rather than gating chores |
+| `Eat` | Not used as a chore precondition directly | Affects urge thresholds (calories) rather than gating chores |
+| `Sleep` | Not used as a chore precondition directly | Affects urge thresholds (stamina) rather than gating chores |
+
+### Which Block Groups Allow Which Chores
+
+Combining the above, here is what each schedule group enables:
+
+| Schedule Group | Allowed Types | Work Chores? | Recreation Chores? | Effect on Urges |
+|---|---|---|---|---|
+| Bathtime | Hygiene, Work | Yes | No | Bladder urge triggers at 40% |
+| Work | Work | Yes | No | Bladder urge only at 100% |
+| Downtime | Hygiene, Eat, Recreation, Work | Yes | Yes | Bladder at 40%, eat urge active, sleep urge at stamina threshold |
+| Bedtime | Sleep | No | No | Sleep urge fully active |
+
+## The Urge System and Schedule Thresholds
+
+Schedules influence duplicant behavior through **urge thresholds** that vary based on the current block type. The urge system determines when a duplicant "wants" to do something strongly enough to seek out the corresponding chore.
+
+### UrgeMonitor Dual Thresholds
+
+`UrgeMonitor` is a state machine that toggles an urge on/off based on an amount value. It has two thresholds:
+
+- **`inScheduleThreshold`**: Used when the current schedule block allows the associated block type
+- **`outOfScheduleThreshold`**: Used when it does not
+
+```csharp
+private float GetThreshold() {
+    if (schedulable.IsAllowed(scheduleBlock))
+        return inScheduleThreshold;
+    return outOfScheduleThreshold;
+}
+```
+
+For sleep, the `UrgeMonitor` is configured with `inScheduleThreshold=100` and `outOfScheduleThreshold=0`, `isThresholdMinimum=false`. Since the check is `value <= threshold`:
+- **During Sleep blocks**: urge triggers when stamina <= 100 (always true), so the duplicant always wants to sleep
+- **Outside Sleep blocks**: urge triggers when stamina <= 0 (only when exhausted)
+
+### Eating and Schedule
+
+`CalorieMonitor` uses a different pattern. It has two sub-states within `hungry`:
+
+- **`hungry.normal`**: Active when `IsEatTime()` returns true (current block allows `ScheduleBlockTypes.Eat`). Toggles the Eat urge, causing the duplicant to seek food.
+- **`hungry.working`**: Active when `IsEatTime()` returns false. The Eat urge is NOT toggled. The duplicant stays hungry but works instead.
+
+Transitions between these states occur on `GameHashes.ScheduleBlocksChanged`. The practical effect: duplicants only eat during Downtime blocks (the only group that includes the Eat type). They will not eat during Work or Bathtime even if hungry. They will eat during Downtime even if not starving, as long as calories are below the hungry threshold (`DUPLICANTSTATS.STANDARD.BaseStats.HUNGRY_THRESHOLD`).
+
+Exception: starving duplicants (`hungry.starving`) always have the Eat urge active regardless of schedule block.
+
+### Bladder and Schedule
+
+`BladderMonitor` has two pee states:
+
+- **`urgentwant`**: Bladder at 100% (full). Always triggers the Pee urge regardless of schedule. The duplicant will interrupt any activity.
+- **`breakwant`**: Bladder >= 40% AND `IsPeeTime()` returns true (block allows `ScheduleBlockTypes.Hygiene`). The duplicant seeks a toilet during Bathtime or Downtime blocks, even if not yet urgent.
+
+When the block changes away from a Hygiene-allowing block, `breakwant` transitions back to `satisfied` (via `ScheduleBlocksChanged` event) unless bladder has reached 100%.
+
+## Block Transitions
+
+### What Happens When the Hour Changes
+
+`ScheduleManager.Sim33ms()` compares `GetCurrentHour()` to `lastHour` every 33ms. When they differ, it calls `Schedule.Tick()` on every schedule. `Schedule.Tick()` does the following:
+
+1. **Timetable row advancement**: If the current block index is at position 0 (start of cycle), `progressTimetableIdx` increments and wraps around the number of timetable rows.
+
+2. **Block change detection**: Compares the allowed types of the current block against the previous block using `AreScheduleTypesIdentical()`. This means consecutive blocks of the same group type (e.g., two adjacent Work blocks) do NOT trigger a change notification.
+
+3. **Alarm**: If the alarm is enabled and the `alarm` flag differs between the old and new group, `PlayScheduleAlarm()` fires a notification and chime. Only the Work group has `alarm: true` by default, so the alarm plays on transitions into or out of Work blocks.
+
+4. **Block change notification**: For each assigned `Schedulable`, calls `OnScheduleBlocksChanged()` which triggers `GameHashes.ScheduleBlocksChanged` (-894023145). This event is what `CalorieMonitor`, `BladderMonitor`, and other monitors listen for to re-evaluate urge thresholds.
+
+5. **Tick notification**: Regardless of whether the block type changed, calls `OnScheduleBlocksTick()` on all assigned schedulables, triggering `GameHashes.ScheduleBlocksTick` (1714332666).
+
+### Transition Does Not Interrupt Running Chores Directly
+
+The block transition itself does not abort the current chore. It fires events that monitors listen to, which may toggle urges. The `ChoreConsumer` brain then re-evaluates on its next tick and picks a higher-priority chore if one is now available. The old chore gets interrupted only if the new one has higher interrupt priority.
+
+## Chore Interruptions
+
+### The Interrupt Priority System
+
+Every `ChoreType` has an `interruptPriority` value assigned in `Database.ChoreTypes`. These are assigned in descending order, starting at 100000 and decreasing by 100 per tier. A chore can only interrupt the current chore if its interrupt priority is strictly greater.
+
+The interrupt check happens in `ChoreConsumer.ChooseChore()`:
+
+```csharp
+// Simplified from ChooseChore()
+int currentInterrupt = currentChore.choreType.interruptPriority;
+// For TopPriority class, use TopPriority's interrupt value instead
+for (each succeeded context, highest priority first) {
+    if (context.interruptPriority > currentInterrupt
+        && !currentChore.choreType.interruptExclusion.Overlaps(context.chore.choreType.tags))
+        return context;  // this chore wins
+}
+```
+
+### Interrupt Priority Tiers (abridged)
+
+The tiers from highest to lowest interrupt priority, showing the chores most relevant to schedule interactions:
+
+| Tier | Interrupt Priority | Chores |
+|---|---|---|
+| 1 | 100000 | Die |
+| 2 | 99900 | Entombed |
+| 3 | 99800 | HealCritical |
+| 4 | 99700 | BeIncapacitated, GeneShuffle, Migrate |
+| ... | ... | ... |
+| 14 | 98700 | ExpellGunk |
+| 15 | 98600 | EmoteHighPriority, Pee, StressIdle, etc. |
+| 17 | 98400 | TopPriority (player !! priority) |
+| 21 | 98000 | LearnSkill, Eat, BreakPee, ReloadElectrobank |
+| 25 | 97600 | Sleep, BionicBedtimeMode, Narcolepsy |
+| 32 | 96900 | Relax (recreation) |
+| 34 | 96700 | All work chores (Build, Dig, Cook, Research, Haul, etc.) |
+| 37 | 96400 | Idle |
+
+Key takeaway: Eating (tier 21, priority 98000) interrupts Sleep (tier 25, priority 97600), and Sleep interrupts Relax (tier 32, priority 96900). Work chores (tier 34) cannot interrupt Sleep, Eat, or Recreation chores. Pee (tier 15, priority 98600) interrupts almost everything except emergencies.
+
+### Interrupt Exclusions
+
+`ChoreType` has an `interruptExclusion` tag set. A chore cannot interrupt the current chore if their exclusion tags overlap. For example, `Relax` has exclusion tag `"Sleep"`, meaning recreation chores won't interrupt sleep even though they technically have a lower interrupt priority (this is redundant since Sleep already has higher priority, but serves as a safety net).
+
+### When Do Duplicants Break From Their Schedule Block?
+
+Duplicants do not strictly follow their schedule block. They follow it to the extent that the precondition system and urge thresholds allow. Situations where a duplicant breaks from the expected behavior:
+
+1. **Survival chores override everything**: Pee (bladder full), RecoverBreath (suffocating), Flee (danger), Vomit, and other survival chores have no schedule precondition and very high interrupt priority. A duplicant in Bedtime will get up to pee if bladder hits 100%.
+
+2. **Sleep extends past Bedtime**: As documented in the Sleep Mechanics section, duplicants keep sleeping until stamina reaches 100%, even into Work blocks. Sleep's interrupt priority (97600) is higher than all work chores (96700), so the brain cannot find a work chore that can interrupt sleep.
+
+3. **Eating is Downtime-only by default**: The Eat urge only activates during blocks that allow the Eat type (only Downtime). A hungry duplicant in a Work block will keep working. A starving duplicant has the Eat urge regardless of schedule.
+
+4. **Work during Downtime**: Since the Downtime group includes the Work type, work chore preconditions pass during Downtime. If a duplicant has no active urges (not hungry, not tired, bladder low, no recreation desire), they will work during Downtime.
+
+5. **Idle during restrictive blocks**: During Bedtime, if a duplicant has full stamina and doesn't need sleep, most chores will fail the `IsScheduledTime` precondition. The Idle chore has no schedule precondition, so they idle. Same during Work blocks if no work is available.
 
 ## Stamina and Sleep Mechanics
 
@@ -219,3 +415,9 @@ The screen opens via `ManagementMenu` and has sort key 50.
 | Night Owl attribute bonus | +3 | `TRAITS.NIGHTOWL_MODIFIER` |
 | Narcolepsy interval | 300-600s | `TRAITS.NARCOLEPSY_INTERVAL_MIN/MAX` |
 | Narcolepsy duration | 15-30s | `TRAITS.NARCOLEPSY_SLEEPDURATION_MIN/MAX` |
+| Interrupt priority start | 100000 | `Database.ChoreTypes` constructor |
+| Interrupt priority step | -100 per tier | `Database.ChoreTypes` constructor |
+| Bladder break threshold | 40% | `BladderMonitor.Instance.WantsToPee()` |
+| Bladder urgent threshold | 100% | `BladderMonitor.Instance.NeedsToPee()` |
+| Sleep urge in-schedule threshold | 100 (always active) | `StaminaMonitor` UrgeMonitor config |
+| Sleep urge out-of-schedule threshold | 0 (only when exhausted) | `StaminaMonitor` UrgeMonitor config |

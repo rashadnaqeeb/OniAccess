@@ -2,7 +2,7 @@
 
 How elements interact with each other in the simulation, and how buildings mediate element conversions. Derived from decompiled source code.
 
-For building-specific details (power, dimensions, heat), see `key-buildings.md`. For phase transitions (melting, boiling, freezing), see `state-transitions.md`. For germ infection mechanics and sickness effects, see `disease-and-germs.md`.
+For building-specific details (power, dimensions, heat), see `building-catalog.md`. For phase transitions (melting, boiling, freezing), see `state-transitions.md`. For germ infection mechanics and sickness effects, see `disease-and-germs.md`.
 
 ## ElementInteraction System
 

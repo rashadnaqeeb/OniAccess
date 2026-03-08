@@ -1,6 +1,6 @@
 # Priorities and Errands
 
-How duplicants decide what to do. Covers the chore system, priority classes, personal priorities, the errand selection algorithm, and interrupt behavior. Derived from decompiled source code (`Chore.cs`, `ChoreConsumer.cs`, `ChoreDriver.cs`, `ChoreType.cs`, `ChoreTypes.cs`, `ChoreGroups.cs`, `ChorePreconditions.cs`, `Prioritizable.cs`, `PrioritySetting.cs`).
+How duplicants decide what to do. Covers the chore system, priority classes, personal priorities, the errand selection algorithm, interrupt behavior, alert states, and re-evaluation timing. Derived from decompiled source code (`Chore.cs`, `ChoreConsumer.cs`, `ChoreDriver.cs`, `ChoreType.cs`, `ChoreTypes.cs`, `ChoreGroups.cs`, `ChorePreconditions.cs`, `Prioritizable.cs`, `PrioritySetting.cs`, `Brain.cs`, `BrainScheduler.cs`, `RedAlertMonitor.cs`, `AlertStateManager.cs`, `GlobalChoreProvider.cs`).
 
 ## Core Concepts
 
@@ -219,6 +219,151 @@ Chores are registered with `ChoreProvider` instances. Each provider maintains a 
 
 A `ChoreConsumer` (the duplicant) has a list of providers it queries. By default this includes the duplicant's own provider (for self-directed chores like eating) and the global provider. Additional providers can be added (e.g., when a duplicant enters a rocket interior).
 
+## Brain Tick Cycle and Re-evaluation
+
+Duplicants do not continuously re-evaluate errands. The `BrainScheduler` calls `Brain.UpdateBrain()` in batches to spread CPU load across frames. Each brain tick runs `FindNextChore()`, which collects all available chores, evaluates preconditions, sorts them, and checks whether a better chore exists.
+
+The brain tick happens even while a duplicant is mid-work. If a higher-interrupt-priority chore becomes available (e.g., a personal need triggers), the brain tick will detect it and switch via `ChoreDriver.SetChore()`. However, the `GameTags.PreventChoreInterruption` tag on a duplicant's prefab ID blocks all chore switching for the duration -- `Brain.UpdateChores()` returns immediately when this tag is present. Similarly, `GameTags.PerformingWorkRequest` defers the switch until the current work request completes.
+
+The practical effect: errand re-evaluation is not instant. A newly created chore or priority change takes effect on the duplicant's next brain tick, not immediately. The scheduler processes minion brains in batches of up to 1000 per frame (tunable via `BrainScheduler.MinionBrainGroup.Tuning.idealProbeSize`).
+
+## Priority Changes Mid-Work
+
+When the player changes a building's priority via the priority tool or yellow alert button, `Prioritizable.SetMasterPriority()` fires the `onPriorityChanged` callback. Every chore linked to that `Prioritizable` subscribes to this callback via `StandardChoreBase.SetPrioritizable()`, which updates the chore's `masterPriority` field in real time (`OnMasterPriorityChanged` simply copies the new `PrioritySetting`).
+
+However, updating the chore's `masterPriority` does not immediately interrupt the current worker or reassign the errand. The change only takes effect when:
+
+1. **The current worker's brain ticks**: `FindNextChore()` re-evaluates all chores. If the priority change means a different chore now wins the sort, the brain will try to switch -- but only if the new chore's interrupt priority exceeds the current chore's interrupt priority. Since all regular work chores share interrupt tier 96700, raising one errand's building priority from 5 to 9 will not cause a duplicant doing a different work chore to switch. The duplicant finishes the current errand first, then picks the now-higher-priority one on the next selection cycle.
+
+2. **Another duplicant's brain ticks**: that duplicant may now pick the re-prioritized errand if it ranks higher for them.
+
+3. **Yellow alert toggle**: setting `!!` changes `priority_class` to `topPriority`, which does cross priority classes. A yellow-alert errand gets interrupt priority 98400 (via the `TopPriority` override), high enough to interrupt most personal-need chores. An idle or between-tasks duplicant will pick it up on their next brain tick.
+
+When the player changes a personal priority on the Jobs screen, `ChoreConsumer.SetPersonalPriority()` updates the duplicant's `choreGroupPriorities` dictionary and recalculates `choreTypePriorities`. If the currently-active chore's group was just disabled (set to 0), `ChoreDriver.StatesInstance.OnChoreRulesChanged()` fires immediately and calls `EndChore("Permissions changed")`, forcing the duplicant to stop.
+
+## Yellow Alert and Red Alert
+
+### Yellow Alert
+
+Yellow alert is a per-errand state, not a colony-wide mode. When the player clicks the `!!` button on a building, `Prioritizable.SetMasterPriority()` sets `priority_class = topPriority` with `priority_value = 1`. The `AlertStateManager` on the world tracks whether any `Prioritizable` in that world has `topPriority` class. If at least one exists, the world enters yellow alert state (visual vignette, alert sound).
+
+Effect on errand selection:
+- The errand's `priority_class` jumps from `basic` (0) to `topPriority` (3), dominating all normal errands in the sort
+- Personal priority and building priority still apply within `topPriority` class (so a dupe with the relevant group at "Very High" will prefer this errand over other yellow-alert errands from groups at "Normal")
+- The interrupt priority override means the errand gets effective interrupt priority 98400, which can interrupt eating (98000), sleeping (97600), relaxing (96900), and all regular work (96700). It cannot interrupt breathing (99200), entombing (99900), dying (100000), or stress responses above 98400
+
+### Red Alert
+
+Red alert is a colony-wide toggle per world, set via `AlertStateManager.Instance.ToggleRedAlert(true)`. Unlike yellow alert, it does not change any chore's priority class. Instead it works through preconditions:
+
+- **`IsNotRedAlert` precondition**: added to most work chores. During red alert, this precondition fails for any chore whose `priority_class` is not `topPriority`. This means only yellow-alert errands and survival/personal-need chores (which don't carry this precondition) can be performed.
+- **`IsScheduledTime` precondition**: red alert overrides schedule restrictions. During red alert, `IsScheduledTime` returns true regardless of the current schedule block. Duplicants will work through sleep and recreation time.
+- **`RedAlertMonitor`**: when entering red alert, every duplicant's `RedAlertMonitor` checks if their current chore has the `IsNotRedAlert` precondition. If so, the chore is immediately stopped via `ChoreDriver.StopChore()`. The duplicant then re-evaluates on the next brain tick and can only pick chores that pass `IsNotRedAlert` (yellow-alert errands) or don't have that precondition (personal needs, survival).
+- **`RedAlert` effect**: entering red alert also toggles the `RedAlert` status effect on all duplicants in that world (via `RedAlertMonitor.ToggleEffect("RedAlert")`), which applies attribute modifiers (movement speed bonus).
+
+In practice: red alert + yellow alert is the way to get duplicants to drop everything and work on specific errands. Red alert alone just makes them idle (or attend to personal needs) since no normal errands pass `IsNotRedAlert`. The player must mark specific errands as `!!` first, then toggle red alert to force all duplicants onto those errands.
+
+## Unreachable Errand Handling
+
+When a duplicant cannot pathfind to a chore target, the chore is not silently ignored -- it actively fails a precondition:
+
+- **`CanMoveTo` precondition**: calls `ChoreConsumer.GetNavigationCost(IApproachable)`, which calls `Navigator.GetNavigationCost()`. If the navigator returns -1 (no path), `GetNavigationCost` returns false, and the precondition fails. The chore goes into `failedContexts` instead of `succeededContexts`. The errand still exists and will be retried on every brain tick -- if a path becomes available (e.g., the player builds a ladder), the chore will pass on the next evaluation.
+
+- **`CanMoveTo` also computes cost**: when the path exists, the navigation cost is added to `context.cost` (cumulative -- fetch chores may add cost for both the pickup location and the delivery destination). This cost is used as the 8th tiebreaker in sorting.
+
+- **GlobalChoreProvider fetch deduplication**: for fetch chores specifically, `GlobalChoreProvider.UpdateFetches()` pre-filters fetches by reachability before collecting chores. It calls `Navigator.GetNavigationCost(destination)` for each fetch chore's storage destination. If the cost is -1 (unreachable), the fetch is excluded from the `fetches` list entirely and never presented to the consumer. This is a performance optimization -- without it, every duplicant would run `CanMoveTo` on every unreachable fetch every brain tick.
+
+- **Fetch deduplication also prunes duplicates**: `GlobalChoreProvider.UpdateFetches()` sorts fetches by priority class, priority value, and cost, then removes duplicates. Two fetch chores with the same `tagsHash`, `choreType`, and `fetchCategory` are considered duplicates; only the higher-priority (or closer) one survives. This prevents duplicants from being overwhelmed by hundreds of similar fetch errands.
+
+Unreachable errands produce a visible "unreachable" status on the building in the game's UI, but they do not generate speech events through the mod's system -- they are simply absent from the succeeded contexts list.
+
+## Complete Chore Type List
+
+All chore types from the `ChoreTypes` constructor, grouped by whether they have chore groups (and thus appear in the Jobs screen) or are groupless (autonomous/survival chores the player cannot prioritize per-duplicant).
+
+### Groupless Chore Types (not in the Jobs screen)
+
+These chores have no `ChoreGroup` assignment. The player cannot set personal priorities for them. They are triggered by urges, monitors, or game state. Listed in declaration order (which determines implicit priority -- earlier = higher):
+
+Die, Entombed, SuitMarker, Slip, Checkpoint, TravelTubeEntrance, WashHands, HealCritical, BeIncapacitated, WaterDamageZap, BeOffline, GeneShuffle, Migrate, DebugGoTo, MoveTo, RocketEnterExit, DropUnusedInventory, FindOxygenSourceItem_Critical, BionicAbsorbOxygen_Critical, ExpellGunk, Pee, RecoverBreath, RecoverWarmth, RecoverFromHeat, Flee, MoveToQuarantine, EmoteIdle, Emote, EmoteHighPriority, StressEmote, Hug, StressVomit, UglyCry, BansheeWail, StressShock, BingeEat, StressActingOut, Vomit, Cough, RadiationPain, SwitchHat, StressIdle, RescueIncapacitated, BreakPee, Eat, ReloadElectrobank, SeekAndInstallUpgrade, OilChange, SolidOilChange, BionicAbsorbOxygen, FindOxygenSourceItem, Narcolepsy, ReturnSuitUrgent, SleepDueToDisease, BionicRestDueToDisease, Sleep, TakeMedicine, GetDoctored, RestDueToDisease, BionicBedtimeMode, ScrubOre, DeliverFood, Sigh, Heal, Shower, LearnSkill, UnlearnSkill, Equip, JoyReaction, Fart, StressHeal, Party, Recharge, Unequip, Mourn, TopPriority, MoveToSafety, ReturnSuitIdle, Idle, Relocate
+
+### Grouped Chore Types (appear in the Jobs screen)
+
+These chores have explicit_priority = 5000 and belong to one or more ChoreGroups. The player can set personal priorities for the group(s) they belong to:
+
+| Chore Type | Groups |
+|------------|--------|
+| Attack | Combat |
+| Doctor | MedicalAid |
+| Toggle | Toggle |
+| Capture | Ranching |
+| CreatureFetch | Ranching |
+| RanchingFetch | Ranching, Hauling |
+| EggSing | Ranching |
+| Astronaut | Operate |
+| FetchCritical | Hauling, LifeSupport |
+| Art | Art |
+| EmptyStorage | Basekeeping, Hauling |
+| Mop | Basekeeping |
+| Disinfect | Basekeeping |
+| Repair | Basekeeping |
+| RepairFetch | Basekeeping, Hauling |
+| Deconstruct | Build |
+| Demolish | Build |
+| Research | Research |
+| AnalyzeArtifact | Research, Art |
+| AnalyzeSeed | Research, Farming |
+| ExcavateFossil | Research, Art, Dig |
+| ResearchFetch | Research, Hauling |
+| GeneratePower | Operate |
+| CropTend | Farming |
+| PowerTinker | Operate |
+| RemoteOperate | Operate |
+| MachineTinker | Operate |
+| MachineFetch | Operate, Hauling |
+| Harvest | Farming |
+| FarmFetch | Farming, Hauling |
+| Uproot | Farming |
+| CleanToilet | Basekeeping |
+| EmptyDesalinator | Basekeeping |
+| LiquidCooledFan | Operate |
+| IceCooledFan | Operate |
+| Train | Operate |
+| ProcessCritter | Ranching |
+| Cook | Cook |
+| CookFetch | Cook, Hauling |
+| DoctorFetch | MedicalAid, Hauling |
+| Ranch | Ranching |
+| PowerFetch | Operate, Hauling |
+| FlipCompost | Farming |
+| Depressurize | Operate |
+| FarmingFabricate | Farming |
+| PowerFabricate | Operate |
+| Compound | MedicalAid |
+| Fabricate | Operate |
+| FabricateFetch | Operate, Hauling |
+| FoodFetch | Hauling |
+| Transport | Hauling, Basekeeping |
+| Build | Build |
+| BuildDig | Build, Dig |
+| BuildUproot | Build, Farming |
+| BuildFetch | Build, Hauling |
+| Dig | Dig |
+| Fetch | Storage |
+| StorageFetch | Storage |
+| EquipmentFetch | Hauling |
+| ArmTrap | Ranching |
+| RocketControl | Rocketry |
+| Relax | Recreation |
+
+### The IsMoreSatisfyingEarly Optimization
+
+The `IsMoreSatisfyingEarly` precondition is an optimization that prevents expensive pathfinding for chores that would lose the sort anyway. It runs before `CanMoveTo` (which triggers pathfinding) and compares the candidate chore against the duplicant's current chore using the first four sort keys: priority class, personal priority, building priority, and chore type priority. If the candidate would lose on any of these, it fails immediately -- no pathfinding cost is incurred.
+
+This precondition is skipped in two cases:
+- When the building errand panel is active (`RootMenu.Instance.IsBuildingChorePanelActive()`), because the UI needs to show all errands regardless of whether they would win. In this case `IsMoreSatisfyingLate` (sortOrder 10000, runs last) handles the comparison instead.
+- When the duplicant is selected, for the same reason -- the errands panel shows all available chores.
+
 ## Practical Implications
 
 - **Priority class is king**: personal needs (eating, sleeping, breathing) always override work errands. Yellow alert overrides normal work but not personal needs. Compulsory chores (dying, entombed) override everything.
@@ -227,3 +372,9 @@ A `ChoreConsumer` (the duplicant) has a list of providers it queries. By default
 - **Proximity is a late tiebreaker**: it only matters when priority class, personal priority, building priority, and chore type priority are all equal. Enabling "advanced personal priorities" (Enable Proximity) flattens chore type priorities, making proximity matter more often.
 - **Disabled groups are absolute**: if a duplicant has Hauling disabled (0), they will never haul, regardless of building priority or yellow alert on the errand.
 - **Trait-disabled groups are also absolute**: some traits (e.g., "Unconstructive") disable chore groups at the trait level, and this cannot be overridden by the player.
+- **Priority changes don't interrupt same-tier work**: changing a building from priority 5 to 9 updates the chore's `masterPriority` immediately, but the current worker won't switch because all work chores share interrupt tier 96700. The change takes effect after the current errand finishes.
+- **Red alert without yellow alert = idle**: red alert alone blocks all normal errands via the `IsNotRedAlert` precondition. Only errands marked `!!` (yellow alert) pass the check. Without any `!!` errands, duplicants will only do personal-need chores or idle.
+- **Red alert overrides schedules**: during red alert, `IsScheduledTime` always returns true. Duplicants ignore sleep and recreation blocks.
+- **Unreachable errands are retried every brain tick**: an unreachable chore fails the `CanMoveTo` precondition and is skipped, but it remains registered and is re-evaluated next tick. Building a path to the target will allow the chore to be picked up automatically.
+- **Fetch deduplication reduces pathfinding load**: `GlobalChoreProvider` prunes duplicate fetch chores (same tags, same type, same storage category) before presenting them to duplicants. Only the highest-priority, closest-destination instance of each unique fetch survives. This is why hundreds of storage errands don't cause lag.
+- **Brain ticks are batched, not instant**: errand re-evaluation happens in batches spread across frames. A priority change or new errand may take several frames before any duplicant responds to it.

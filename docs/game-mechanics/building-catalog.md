@@ -1,6 +1,6 @@
-# Key Buildings Reference
+# Building Catalog
 
-Per-building specs derived from decompiled source code. All rates are per second unless noted. Temperatures in Kelvin (subtract 273.15 for Celsius).
+Per-building specs -- power, inputs, outputs, rates, and temperatures for individual buildings. For how buildings work in general (element conversion, cell occupation, damage), see `building-mechanics.md`. All rates are per second unless noted. Temperatures in Kelvin (subtract 273.15 for Celsius). Derived from decompiled source code.
 
 ---
 

@@ -1,6 +1,6 @@
-# Colony Systems
+# Colony Progression
 
-Printing pod cycles, care packages, skill scrubbing, colony achievements, and cycle timing. Derived from decompiled source code.
+Printing pod, immigration, duplicant generation, care packages, skill scrubbing, and colony achievements -- systems that advance the colony over time. For permissions, access control, reports, diagnostics, and notifications, see `colony-controls.md`. Derived from decompiled source code.
 
 ## Cycle Timing
 
