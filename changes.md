@@ -1,5 +1,6 @@
 # Changelog
 
+- Disabled buttons and toggles are now navigable and announce "unavailable". Pressing Enter on them plays a negative sound instead of silently failing
 - Announce "Saved" after the game finishes saving (autosave or manual)
 - H key now jumps to the Rocket Control Station when inside a rocket interior. Coordinates are relative to the control station (0,0)
 - Build tool cursor now represents the bottom-left corner of the building. Extent announcements use "right" and "up" only (e.g. "extends 2 right, 1 up"), and port offsets are relative to the corner you're standing on

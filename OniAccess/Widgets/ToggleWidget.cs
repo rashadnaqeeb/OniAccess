@@ -4,6 +4,15 @@ namespace OniAccess.Widgets {
 	/// Speaks on/off state, validates interactability, clicks on activation.
 	/// </summary>
 	public class ToggleWidget: Widget {
+		public override bool IsInteractable {
+			get {
+				if (_isInteractableOverride.HasValue) return _isInteractableOverride.Value;
+				var toggle = Component as KToggle;
+				if (toggle != null) return toggle.IsInteractable();
+				return true;
+			}
+		}
+
 		public override string GetSpeechText() {
 			if (SpeechFunc != null) {
 				string result = SpeechFunc()?.Trim();
@@ -25,8 +34,6 @@ namespace OniAccess.Widgets {
 
 		public override bool IsValid() {
 			if (GameObject != null && !GameObject.activeInHierarchy) return false;
-			var toggle = Component as KToggle;
-			if (toggle != null) return toggle.IsInteractable();
 			if (Component is MultiToggle) return true;
 			return Component != null || GameObject != null;
 		}

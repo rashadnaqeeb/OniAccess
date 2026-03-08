@@ -15,6 +15,13 @@ namespace OniAccess.Widgets {
 		public bool SuppressTooltip { get; set; }
 		public List<Widget> Children { get; set; }
 
+		protected bool? _isInteractableOverride;
+
+		public virtual bool IsInteractable {
+			get => _isInteractableOverride ?? true;
+			set => _isInteractableOverride = value;
+		}
+
 		/// <summary>
 		/// Build speech text for this widget. SpeechFunc short-circuits
 		/// if set; otherwise subclasses provide type-specific formatting.
@@ -28,7 +35,7 @@ namespace OniAccess.Widgets {
 		}
 
 		/// <summary>
-		/// Whether the widget is still valid for navigation (active, interactable).
+		/// Whether the widget is still valid for navigation (active, visible).
 		/// </summary>
 		public virtual bool IsValid() {
 			if (GameObject != null && !GameObject.activeInHierarchy) return false;

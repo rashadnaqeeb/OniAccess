@@ -134,6 +134,13 @@ namespace OniAccess.Handlers.Screens {
 			var w = GetWidgetAt(indices[0], indices[1], indices[2]);
 			if (w == null) return;
 
+			if (!w.IsInteractable) {
+				PlaySound("Negative");
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE);
+				return;
+			}
+
 			if (w is ButtonWidget bw) {
 				bw.Activate();
 				_pendingActivationSpeech = true;

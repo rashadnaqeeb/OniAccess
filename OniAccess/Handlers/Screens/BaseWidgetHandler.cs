@@ -184,6 +184,13 @@ namespace OniAccess.Handlers.Screens {
 			var widget = _widgets[CurrentIndex];
 			if (!IsWidgetValid(widget)) return;
 
+			if (!widget.IsInteractable) {
+				PlaySound("Negative");
+				Speech.SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE);
+				return;
+			}
+
 			if (widget is ButtonWidget bw) {
 				bw.Activate();
 				return;

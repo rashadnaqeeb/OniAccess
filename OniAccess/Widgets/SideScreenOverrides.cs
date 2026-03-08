@@ -1256,6 +1256,7 @@ namespace OniAccess.Widgets {
 					Component = capturedBtn,
 					GameObject = capturedBtn.gameObject,
 					SuppressTooltip = true,
+					IsInteractable = true,
 					SpeechFunc = () => {
 						if (!capturedBtn.isInteractable)
 							return $"{dirLabel}, {(string)STRINGS.ONIACCESS.STATES.SELECTED}";

@@ -14,7 +14,10 @@ namespace OniAccess.Widgets {
 		/// Build speech text for a widget by delegating to its virtual GetSpeechText().
 		/// </summary>
 		public static string GetSpeechText(Widget widget) {
-			return CleanTooltipEntry(widget.GetSpeechText());
+			string text = CleanTooltipEntry(widget.GetSpeechText());
+			if (!widget.IsInteractable)
+				text += $", {(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE}";
+			return text;
 		}
 
 		// ========================================
