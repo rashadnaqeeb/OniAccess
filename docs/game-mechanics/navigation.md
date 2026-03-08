@@ -1,6 +1,6 @@
-# Passability and Walkability
+# Navigation and Movement
 
-How ONI decides whether a duplicant (or critter) can move through a cell, and whether they can stand on top of it. Derived from decompiled source: `Grid.cs`, `NavTableValidator.cs`, `GameNavGrids.cs`, `SimCellOccupier.cs`, `FakeFloorAdder.cs`, `Door.cs`, and various building configs.
+How duplicants and critters navigate the world, including passability, walkability, pathfinding, and movement speed. Derived from decompiled source code.
 
 ## The BuildMask
 
@@ -14,7 +14,7 @@ Every cell in the world grid has a one-byte bitmask called `BuildMasks`. The nav
 - **CritterImpassable** (0x20) -- Critters cannot enter this cell. Used by doors that are not fully open.
 - **FakeFloor** (0xC0) -- A 2-bit reference counter (values 0 through 3). When nonzero, the cell acts as walkable ground for the cell above it, without being solid itself. Gas and liquid pass through freely.
 
-## How passability is checked
+## How Passability Is Checked
 
 `NavTableValidator.IsCellPassable(cell, is_dupe)` determines whether a given entity can occupy a cell. It first strips out `FakeFloor`, `Foundation`, and `Door` from the mask -- these flags describe structural properties, not passability -- then examines what remains:
 
@@ -23,7 +23,7 @@ Every cell in the world grid has a one-byte bitmask called `BuildMasks`. The nav
 - If `Solid` is set, the cell is passable for dupes only if `DupePassable` is also set (mesh tiles, gas permeable membranes). Otherwise it is blocked.
 - For critters: any `Solid` or `CritterImpassable` flag means the cell is impassable.
 
-## How walkability is checked
+## How Walkability Is Checked
 
 Passability answers "can this entity enter the cell?" Walkability answers "can this entity stand here?" -- meaning is there valid ground underfoot?
 
@@ -37,7 +37,7 @@ Passability answers "can this entity enter the cell?" Walkability answers "can t
 
 This means a mesh tile is a special case. A dupe can pass through it (it is passable), but it does not count as ground (it is not walkable from above). In practice mesh tiles do provide a floor because of how the game sets them up -- see the section on solid-but-passable buildings below.
 
-## Building categories by passability
+## Building Categories by Passability
 
 ### Solid buildings (tiles that replace the cell element)
 
@@ -77,8 +77,8 @@ Always-active fake floors:
 - **Water Trap** -- offset `(0,0)`.
 
 Conditionally-active fake floors (`initiallyActive = false`):
-- **Gantry** -- offsets `(0,1)` through `(3,1)`. The `Gantry` component toggles `SetFloor()` at runtime: extended = walkable, retracted = not walkable. This lets dupes walk across the gantry arm only when it is extended.
-- **Pioneer Module**, **Orbital Cargo Module**, **Habitat Module Small** -- offsets at y-1 (3 cells). Activated when landed, providing ground below the module.
+- **Gantry** -- offsets `(0,1)` through `(3,1)`. The `Gantry` component toggles `SetFloor()` at runtime: extended = walkable, retracted = not walkable.
+- **Pioneer Module**, **Orbital Cargo Module**, **Habitat Module Small** -- offsets at y-1 (3 cells). Activated when landed.
 - **Habitat Module Medium** -- 5 cells at y-1, same pattern.
 
 ### Doors (dynamic passability)
@@ -90,24 +90,136 @@ Internal doors (`DoorType.Internal`):
 - `CritterImpassable = true` when not fully open. Critters are blocked by any door that is not in the open state.
 
 Pressure doors, manual pressure doors, bunker doors, and sealed doors (`DoorType.ManualPressure`, `Pressure`, `Sealed`):
-- Use `Game.SetDupePassableSolid(cell, passable, solid)` to toggle between solid-and-impassable (closed) and passable (open). This sets `Grid.DupePassable` and modifies sim solidity directly.
+- Use `Game.SetDupePassableSolid(cell, passable, solid)` to toggle between solid-and-impassable (closed) and passable (open).
 - `CritterImpassable = true` when not fully open, same as internal doors.
 
 All doors set `IsFoundation = true` on their `BuildingDef`, so they also mark cells with the `Foundation` flag. This means the cell cannot be dug even when the door is open.
 
-## Non-building passability
+## Non-Building Passability
 
 Natural terrain follows the same rules but without any building flags. A natural solid cell (dirt, granite, etc.) is `Solid` in the sim layer, blocks movement, and provides walkable ground above. It can be dug because it is NOT `Foundation`. Vacuum cells, gas cells, and liquid cells are passable but not walkable ground (dupes fall through unless there is a ladder, pole, or fake floor).
 
 Ladders and poles do not use BuildMask flags at all. They set `NavValidatorFlags.Ladder` or `NavValidatorFlags.Pole` in a separate `NavValidatorMasks` array. The floor validator checks these as a last resort when neither solid ground nor fake floor is available.
 
-## Summary of the pitcher pump question
+## Navigation Grid
 
-The pitcher pump is 2 tiles wide and 4 tiles tall. Its bottom 2 cells use `FakeFloorAdder`, not `Foundation` or `Solid`. This means:
+The game constructs navigation meshes from the world grid. Each nav grid defines valid cell transitions for different movement types. Nav grids are static until tiles or buildings change, at which point affected regions are rebuilt.
 
-- Dupes can walk on top of the pump's base row (the cell above the fake floor is walkable).
-- The pump's cells are not solid. Gas and liquid flow through them.
-- The pump is NOT registered in the foundation layer (`ObjectLayer.FoundationTile`). It lives in `ObjectLayer.Building` like most non-tile buildings.
-- A dupe can also walk through the pump's cells because they are passable.
+**Navigation types (NavType enum):**
 
-Your sighted friend's description of "the bottom 2 tiles act as flooring" is accurate in the navigational sense -- dupes treat them as ground -- but they are fundamentally different from actual floor tiles. They provide a walking surface without providing a physical barrier.
+| NavType | Description |
+|---------|-------------|
+| Floor | Walking on solid ground |
+| Ladder | Climbing ladders |
+| Pole | Climbing fire poles |
+| Tube | Traveling through transit tubes |
+| Hover | Jet suit flight |
+| Swim | Swimming in liquid |
+| LeftWall | Walking on left wall surface |
+| RightWall | Walking on right wall surface |
+| Ceiling | Walking on ceiling (creatures only) |
+
+## Pathfinding
+
+The pathfinding system uses a cost-based graph search over the navigation grid. Each transition between cells has an associated cost that incorporates distance, movement type, and environmental penalties.
+
+**Transition costs (base values):**
+
+| Movement | Cost | Notes |
+|----------|------|-------|
+| Floor horizontal | 10 | Standard walking |
+| Floor diagonal | 14 | ~sqrt(2) * 10 |
+| Floor double hop (2 cells) | 20 | Jumping gaps |
+| Ladder up/down | 10 | Standard climbing |
+| Ladder horizontal | 15 | Side-to-side on ladder |
+| Pole down | 6 | Fast sliding |
+| Pole up | 50 | Very slow climbing |
+| Tube straight | 5 | Fast tube travel |
+| Tube entry | 40 | Mounting tube |
+| Tube exit | 5-17 | Varies by exit direction |
+| Hover any direction | 8-9 | Jet suit flight |
+| Fall initiation | 14 | Starting to fall |
+| Fall landing | 1 | Touching down |
+
+**Submerged penalty:** Duplicants without a protective suit (atmo suit, jet suit, lead suit) pay **2x the base transition cost** when traveling through liquid cells. This makes the pathfinder strongly prefer dry routes.
+
+**Creature underwater limit:** Creatures have a `MaxUnderwaterTravelCost` attribute that caps how far they can path through submerged cells.
+
+## Cell Validation
+
+A cell is walkable (Floor nav type) if:
+1. The cell is valid and passable (not a solid building)
+2. AND one of:
+   - Solid ground below (`Grid.Solid[below]` and not `DupePassable`)
+   - Fake floor below (`Grid.FakeFloor[below]`)
+   - Ladder or pole present
+
+Wall climbing requires a solid anchor cell to the left or right. Ceiling walking requires a solid block above.
+
+Swimming activates when a duplicant is substantially submerged (`SubmergedMonitor` forces NavType to Swim).
+
+## Movement Speed
+
+**Tile speed multipliers:**
+
+| Tile | Multiplier |
+|------|-----------|
+| Metal Tile | 1.5x |
+| Plastic Tile | 1.5x |
+| Wood Tile | 1.25x |
+| Floor Switch | 1.25x |
+| Carpet Tile | 0.75x |
+| Storage Tile | 0.75x |
+| Wire Bridge (Heavy-Watt) | 0.5x |
+| Travel Tube Wall Bridge | 0.5x |
+
+These multipliers are applied by `SimCellOccupier` on the building's occupied cells.
+
+**Transit tube speed:** Base 18 units/second. Waxed tubes receive a 25% boost (22.5 units/second).
+
+**Athletics attribute:** Trainable skill that directly modifies movement speed. Gained through physical activity and skill point allocation.
+
+## Access Control
+
+Door permissions are checked during pathfinding via `Grid.HasPermission()`:
+
+1. Check if cell has an access door (`Grid.HasAccessDoor[cell]`)
+2. Determine travel direction from source to destination cell
+3. Check door orientation (vertical doors check left/right, horizontal doors check up/down)
+4. Verify the duplicant's ID against the door's permission list
+
+**Permission types:** Both (bidirectional), GoLeft, GoRight, Neither (fully locked).
+
+Robots use a separate permission tag (`GameTags.Robot`) and can have distinct access rules from duplicants.
+
+## Suit Requirements
+
+Suit markers define zones requiring specific equipment:
+
+| Suit Type | Flag | Capability |
+|-----------|------|------------|
+| Atmo Suit | HasAtmoSuit | Standard protection |
+| Jet Suit | HasJetPack | Enables Hover nav type |
+| Oxygen Mask | HasOxygenMask | Limited protection |
+| Lead Suit | HasLeadSuit | Radiation protection |
+
+When a suit marker is operational, duplicants cannot traverse in the restricted direction without the required suit. The `OnlyTraverseIfUnequipAvailable` flag also requires a locker on the far side to store the suit when leaving the zone.
+
+## Jet Suit Mechanics
+
+Jet suits consume fuel at 0.2 kg/s while hovering. When fuel reaches 0:
+- Navigator is forced back to Floor nav type
+- `GameTags.JetSuitOutOfFuel` is applied
+- Duplicant falls and must walk to a jet suit dock
+
+Hover transitions cost 8 (straight) or 9 (diagonal), making jet suit travel faster than walking (cost 10-14) but slower than tubes (cost 5).
+
+## Falling Duplicants
+
+When a duplicant loses ground support:
+- `FallMonitor` detects the unsupported state
+- `GravityComponent` applies falling physics with accumulating velocity
+- On landing, recovery checks for nearby ladders or poles within 1-2 cells
+- If extremely stuck, the system tracks up to 3 previous safe positions for recovery pathfinding
+
+Fall damage is handled through the health/damage system on landing impact.
