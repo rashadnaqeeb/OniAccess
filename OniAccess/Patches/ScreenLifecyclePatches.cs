@@ -2,6 +2,7 @@ using HarmonyLib;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Screens;
 using OniAccess.Handlers.Screens.Codex;
+using OniAccess.Speech;
 using OniAccess.Util;
 using UnityEngine;
 
@@ -293,5 +294,35 @@ namespace OniAccess.Patches {
 	internal static class ClusterMapScreen_OnShow_Patch {
 		private static void Postfix(KScreen __instance, bool show) =>
 			ShowDispatch.Handle(__instance, show);
+	}
+
+	/// <summary>
+	/// When a side screen triggers destination selection, ensure ClusterMapHandler
+	/// is on the stack and announce the mode. Handles two scenarios:
+	/// - Map not open: OnShow patch already pushed the handler, just announce.
+	/// - Map already open: no OnShow fires, so push the handler manually.
+	/// </summary>
+	[HarmonyPatch(typeof(ClusterMapScreen), nameof(ClusterMapScreen.ShowInSelectDestinationMode))]
+	internal static class ClusterMapScreen_ShowInSelectDestinationMode_Patch {
+		private static void Postfix(ClusterMapScreen __instance) {
+			if (!ModToggle.IsEnabled) return;
+
+			DetailsScreenHandler.PreserveNavigationOnReactivate = true;
+
+			var active = HandlerStack.ActiveHandler;
+			if (active is OniAccess.Handlers.Screens.ClusterMap.ClusterMapHandler) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_DESTINATION);
+				return;
+			}
+
+			// Map was already open — force close-on-select so the map closes
+			// after selection, returning the player to the side screen.
+			AccessTools.Field(typeof(ClusterMapScreen), "m_closeOnSelect")
+				.SetValue(__instance, true);
+
+			HandlerStack.RemoveByScreen(__instance);
+			ContextDetector.OnScreenActivated(__instance);
+		}
 	}
 }

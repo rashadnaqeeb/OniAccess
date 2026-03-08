@@ -298,11 +298,29 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (e.IsAction(Action.Escape)) {
-				// In SelectDestination mode, cancel goes back to Default mode
 				var mode = ClusterMapScreen.Instance.GetMode();
 				if (mode == ClusterMapScreen.Mode.SelectDestination) {
 					e.TryConsume(Action.Escape);
-					ClusterMapScreen.Instance.TryHandleCancel();
+
+					var closeOnSelect = (bool)HarmonyLib.AccessTools.Field(
+						typeof(ClusterMapScreen), "m_closeOnSelect")
+						.GetValue(ClusterMapScreen.Instance);
+
+					if (closeOnSelect) {
+						// Map was opened for this selection — cancel and close entirely.
+						var selector = HarmonyLib.AccessTools.Field(
+							typeof(ClusterMapScreen), "m_destinationSelector")
+							.GetValue(ClusterMapScreen.Instance) as ClusterDestinationSelector;
+						HarmonyLib.AccessTools.Method(typeof(ClusterMapScreen), "SetMode")
+							.Invoke(ClusterMapScreen.Instance,
+								new object[] { ClusterMapScreen.Mode.Default });
+						if (selector != null)
+							selector.Trigger(94158097);
+						ManagementMenu.Instance.CloseAll();
+					} else {
+						ClusterMapScreen.Instance.TryHandleCancel();
+					}
+
 					SpeechPipeline.SpeakInterrupt(
 						(string)STRINGS.ONIACCESS.CLUSTER_MAP.DESTINATION_CANCELLED);
 					return true;
