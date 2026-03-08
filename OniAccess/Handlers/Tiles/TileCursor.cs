@@ -241,9 +241,13 @@ namespace OniAccess.Handlers.Tiles {
 			}
 
 			string content2 = composer.Compose(_cell);
-			if (content2 == null)
-				content2 = string.Format(STRINGS.ONIACCESS.GLANCE.ELEMENT_MASS,
-					Grid.Element[_cell].name, Sections.ElementSection.FormatGlanceMass(Grid.Mass[_cell]));
+			if (content2 == null) {
+				var element = Grid.Element[_cell];
+				content2 = element.IsVacuum
+					? element.name
+					: string.Format(STRINGS.ONIACCESS.GLANCE.ELEMENT_MASS,
+						element.name, Sections.ElementSection.FormatGlanceMass(Grid.Mass[_cell]));
+			}
 
 			if (mode == OverlayModes.Rooms.ID)
 				content2 = PrependRoomName(content2);

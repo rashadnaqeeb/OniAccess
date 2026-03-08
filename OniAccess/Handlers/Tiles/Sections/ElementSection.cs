@@ -22,6 +22,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					return System.Array.Empty<string>();
 			}
 			if (element == null) return System.Array.Empty<string>();
+			if (element.IsVacuum)
+				return new[] { element.name };
 			float kg = Grid.Mass[cell];
 			return new[] { $"{element.name}, {FormatGlanceMass(kg)}" };
 		}

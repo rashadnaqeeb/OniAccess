@@ -1,5 +1,6 @@
 # Changelog
 
+- Fix: vacuum and void tiles no longer report "0 g" mass
 - Fix: cluster map cursor no longer resets to the active world when returning from a details screen or entity picker
 - Cluster map: H key jumps cursor to the active world's hex location
 - Fix: rocket module side screen now speaks the module name and description instead of silence
