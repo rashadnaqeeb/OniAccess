@@ -1418,6 +1418,9 @@ namespace OniAccess.Widgets {
 				ClusterDestinationSideScreen screen, List<Widget> items) {
 			SideScreenWalker.WalkDefault(screen, items);
 
+			items.RemoveAll(item => item is LabelWidget
+				&& item.GameObject?.GetComponent<LocText>() == screen.landingPlatformInfoLabel);
+
 			RocketClusterDestinationSelector rocketSelector;
 			try {
 				rocketSelector = Traverse.Create(screen)
@@ -1428,6 +1431,7 @@ namespace OniAccess.Widgets {
 			}
 			if (rocketSelector == null) return;
 
+			var craft = rocketSelector.GetComponent<Clustercraft>();
 			var pads = LaunchPad.GetLaunchPadsForDestination(
 				rocketSelector.GetDestination());
 
@@ -1438,8 +1442,14 @@ namespace OniAccess.Widgets {
 				OnSelect = () => rocketSelector.SetDestinationPad(null),
 				IsActive = () => rocketSelector.GetDestinationPad() == null
 			});
+			var excluded = new List<string>();
 			foreach (var pad in pads) {
 				var capturedPad = pad;
+				var status = craft.CanLandAtPad(capturedPad, out string failReason);
+				if (status == Clustercraft.PadLandingStatus.CanNeverLand) {
+					excluded.Add($"{capturedPad.GetProperName()}: {failReason}");
+					continue;
+				}
 				members.Add(new SideScreenWalker.RadioMember {
 					Label = capturedPad.GetProperName(),
 					OnSelect = () => rocketSelector.SetDestinationPad(capturedPad),
@@ -1457,6 +1467,9 @@ namespace OniAccess.Widgets {
 			}
 
 			var platformLabel = screen.landingPlatformInfoLabel;
+			string excludedSummary = excluded.Count > 0
+				? ". Unavailable: " + string.Join(", ", excluded)
+				: null;
 			var dropdown = new DropdownWidget {
 				Label = (string)STRINGS.UI.UISIDESCREENS
 					.CLUSTERDESTINATIONSIDESCREEN.LANDING_PLATFORM_LABEL,
@@ -1465,12 +1478,9 @@ namespace OniAccess.Widgets {
 				Tag = members,
 				SpeechFunc = () => {
 					string label = platformLabel.GetParsedText();
-					var currentPad = rocketSelector.GetDestinationPad();
-					string padName = currentPad != null
-						? currentPad.GetProperName()
-						: (string)STRINGS.UI.UISIDESCREENS
-							.CLUSTERDESTINATIONSIDESCREEN.FIRSTAVAILABLE;
-					return $"{label}, {padName}";
+					if (excludedSummary != null)
+						return label + excludedSummary;
+					return label;
 				}
 			};
 
