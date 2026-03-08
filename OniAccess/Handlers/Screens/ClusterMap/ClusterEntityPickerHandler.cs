@@ -7,7 +7,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 	/// Selecting calls ClusterMapSelectTool.Instance.Select() instead of
 	/// SelectTool.Instance.Select().
 	/// </summary>
-	public class ClusterEntityPickerHandler : BaseMenuHandler {
+	public class ClusterEntityPickerHandler: BaseMenuHandler {
 		private readonly IReadOnlyList<ClusterGridEntity> _entities;
 
 		public override string DisplayName =>

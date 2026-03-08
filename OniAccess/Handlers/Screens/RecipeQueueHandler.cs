@@ -20,7 +20,7 @@ namespace OniAccess.Handlers.Screens {
 	/// fires before SetRecipeCategory populates the UI, and LocText.SetText vs
 	/// .text property can disagree due to TMPro's m_inputSource tracking.
 	/// </summary>
-	public class RecipeQueueHandler : NestedMenuHandler {
+	public class RecipeQueueHandler: NestedMenuHandler {
 		private SelectedRecipeQueueScreen RecipeScreen =>
 			(SelectedRecipeQueueScreen)_screen;
 

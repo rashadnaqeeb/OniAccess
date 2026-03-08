@@ -298,7 +298,8 @@ namespace OniAccess.Handlers.Screens.Starmap {
 					headerItems.Add((string)UI.STARMAP.ROCKETSTATUS.LOCKEDIN);
 			}
 			sections.Add(new DestinationSection {
-				Name = headerName, Items = headerItems
+				Name = headerName,
+				Items = headerItems
 			});
 
 			// Analysis

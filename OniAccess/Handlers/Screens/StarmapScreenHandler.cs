@@ -15,7 +15,7 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Lifecycle: Show-patch on StarmapScreen.OnShow(bool).
 	/// </summary>
-	public class StarmapScreenHandler : BaseScreenHandler {
+	public class StarmapScreenHandler: BaseScreenHandler {
 		private enum TabId { Rockets, Destinations, Details }
 
 		private readonly RocketsTab _rocketsTab;

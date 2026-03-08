@@ -5,7 +5,7 @@ using UnityEngine;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens {
-	public class AssignmentGroupControllerHandler : NestedMenuHandler {
+	public class AssignmentGroupControllerHandler: NestedMenuHandler {
 		private AssignmentGroupControllerSideScreen CrewScreen =>
 			(AssignmentGroupControllerSideScreen)_screen;
 

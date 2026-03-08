@@ -13,7 +13,7 @@ namespace OniAccess.Handlers.Screens {
 	/// Space at level 1 toggles criterion enabled/disabled.
 	/// Escape closes the screen.
 	/// </summary>
-	internal sealed class DiagnosticBrowserHandler : NestedMenuHandler {
+	internal sealed class DiagnosticBrowserHandler: NestedMenuHandler {
 		internal DiagnosticBrowserHandler(KScreen screen) : base(screen) { }
 
 		private static readonly ConsumedKey[] _consumedKeys = {

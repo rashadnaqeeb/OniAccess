@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Screens.Starmap {
 	/// Level 1 = items within section.
 	/// The analyze action is a leaf at level 0 (empty Items).
 	/// </summary>
-	internal class DestinationDetailsTab : NestedMenuHandler, IStarmapTab {
+	internal class DestinationDetailsTab: NestedMenuHandler, IStarmapTab {
 		private readonly StarmapScreenHandler _parent;
 
 		internal DestinationDetailsTab(StarmapScreenHandler parent)

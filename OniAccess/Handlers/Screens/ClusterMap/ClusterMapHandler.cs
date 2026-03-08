@@ -14,7 +14,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 	///
 	/// Lifecycle: Show-patched on ClusterMapScreen.OnShow(bool).
 	/// </summary>
-	public class ClusterMapHandler : BaseScreenHandler {
+	public class ClusterMapHandler: BaseScreenHandler {
 		private AxialI _cursorLocation;
 		private readonly ClusterScanNavigator _scanner = new ClusterScanNavigator();
 		private AxialI _pathStart;

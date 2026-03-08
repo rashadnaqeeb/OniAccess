@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace OniAccess.Handlers.Tiles.AreaScan {
-	public class CropsAreaScanner : IAreaScanner {
+	public class CropsAreaScanner: IAreaScanner {
 		public string Scan(int[] cells, int totalCells, int unexploredCount) {
 			try {
 				var tokens = new List<string>();

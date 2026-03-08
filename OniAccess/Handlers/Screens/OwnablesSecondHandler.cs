@@ -5,7 +5,7 @@ using OniAccess.Handlers.Screens;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens {
-	public class OwnablesSecondHandler : BaseMenuHandler {
+	public class OwnablesSecondHandler: BaseMenuHandler {
 		private OwnablesSecondSideScreen OwnablesScreen =>
 			(OwnablesSecondSideScreen)_screen;
 

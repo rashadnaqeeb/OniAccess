@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 	/// building count by type, dupe count, critter count,
 	/// pending order count by type.
 	/// </summary>
-	public class DefaultAreaScanner : IAreaScanner {
+	public class DefaultAreaScanner: IAreaScanner {
 		public string Scan(int[] cells, int totalCells, int unexploredCount) {
 			try {
 				return ScanCore(cells, totalCells, unexploredCount);

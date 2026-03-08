@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.AreaScan {
-	public class DecorAreaScanner : IAreaScanner {
+	public class DecorAreaScanner: IAreaScanner {
 		public string Scan(int[] cells, int totalCells, int unexploredCount) {
 			try {
 				var tokens = new List<string>();

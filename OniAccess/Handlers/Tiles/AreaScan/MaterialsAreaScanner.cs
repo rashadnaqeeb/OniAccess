@@ -7,7 +7,7 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 	/// Area scan for the Materials (TileMode) overlay.
 	/// Full element breakdown by percentage, descending.
 	/// </summary>
-	public class MaterialsAreaScanner : IAreaScanner {
+	public class MaterialsAreaScanner: IAreaScanner {
 		public string Scan(int[] cells, int totalCells, int unexploredCount) {
 			try {
 				var tokens = new List<string>();

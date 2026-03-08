@@ -5,7 +5,7 @@ using OniAccess.Handlers.Build;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens {
-	public class SelectModuleHandler : NestedMenuHandler {
+	public class SelectModuleHandler: NestedMenuHandler {
 		private SelectModuleSideScreen ModuleScreen =>
 			(SelectModuleSideScreen)_screen;
 
@@ -270,22 +270,22 @@ namespace OniAccess.Handlers.Screens {
 		private string GetSectionLabel(int section) {
 			switch ((Section)section) {
 				case Section.Modules: {
-					string label = (string)STRINGS.ONIACCESS.MODULE_SCREEN.MODULES;
-					var selected = GetSelectedModuleDef();
-					if (selected != null)
-						label += ", " + selected.Name;
-					return label;
-				}
+						string label = (string)STRINGS.ONIACCESS.MODULE_SCREEN.MODULES;
+						var selected = GetSelectedModuleDef();
+						if (selected != null)
+							label += ", " + selected.Name;
+						return label;
+					}
 				case Section.Materials:
 					return (string)STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS;
 				case Section.Skin:
 					return (string)STRINGS.ONIACCESS.MODULE_SCREEN.FACADE;
 				case Section.Build: {
-					string label = (string)STRINGS.UI.UISIDESCREENS.SELECTMODULESIDESCREEN.BUILDBUTTON;
-					if (!ModuleScreen.buildSelectedModuleButton.isInteractable)
-						label += ", " + (string)STRINGS.ONIACCESS.STATES.DISABLED;
-					return label;
-				}
+						string label = (string)STRINGS.UI.UISIDESCREENS.SELECTMODULESIDESCREEN.BUILDBUTTON;
+						if (!ModuleScreen.buildSelectedModuleButton.isInteractable)
+							label += ", " + (string)STRINGS.ONIACCESS.STATES.DISABLED;
+						return label;
+					}
 				default:
 					return null;
 			}
