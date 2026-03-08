@@ -426,6 +426,7 @@ namespace STRINGS {
 			public static LocString YELLOW_ALERT_OFF = "Yellow Alert off";
 			public static LocString TOGGLE_RED_ALERT = "Toggle red alert";
 			public static LocString READ_COLONY_STATUS = "Read colony status";
+			public static LocString SAVED = "Saved";
 			// {0} = dupe count
 			public static LocString DUPES = "{0} dupes";
 			// {0} = local world dupe count, {1} = total dupe count

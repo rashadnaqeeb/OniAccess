@@ -14,6 +14,15 @@ namespace OniAccess.Patches {
 	/// after loading a save. Tolk cleanup is handled by OS process exit.
 	/// </summary>
 
+	[HarmonyPatch(typeof(SaveLoader), nameof(SaveLoader.Save), typeof(string), typeof(bool), typeof(bool))]
+	internal static class SaveLoader_Save_Patch {
+		private static void Postfix() {
+			if (!ModToggle.IsEnabled) return;
+			Speech.SpeechPipeline.SpeakInterrupt(
+				(string)STRINGS.ONIACCESS.GAME_STATE.SAVED);
+		}
+	}
+
 	/// <summary>
 	/// Register ModInputRouter in ONI's input handler tree when the input system initializes.
 	/// Idempotent: checks if already registered before adding.
