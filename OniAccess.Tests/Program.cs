@@ -203,6 +203,7 @@ namespace OniAccess.Tests {
 			// --- BuildMenuData ---
 			results.Add(OrientationNameCoversAllKnownValues());
 			results.Add(OrientationNameDefaultReturnsUp());
+			results.Add(OrientationNameHorizontalFlowShiftsCCW());
 
 			// --- CleanTooltipEntry ---
 			results.Add(CleanTooltipSingleNewline());
@@ -2047,6 +2048,24 @@ namespace OniAccess.Tests {
 			bool ok = result == expected;
 			return Assert("OrientationNameDefaultReturnsUp", ok,
 				$"got \"{result}\", expected \"{expected}\"");
+		}
+
+		private static (string, bool, string) OrientationNameHorizontalFlowShiftsCCW() {
+			var failures = new List<string>();
+			Check(Orientation.Neutral, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT, "Neutral");
+			Check(Orientation.R90, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP, "R90");
+			Check(Orientation.R180, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT, "R180");
+			Check(Orientation.R270, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN, "R270");
+			bool ok = failures.Count == 0;
+			return Assert("OrientationNameHorizontalFlowShiftsCCW", ok,
+				ok ? "all correct" : string.Join("; ", failures));
+
+			void Check(Orientation o, string expected, string label) {
+				string actual = BuildMenuData.GetOrientationName(
+					o, PermittedRotations.R360, horizontalFlow: true);
+				if (actual != expected)
+					failures.Add($"{label}=\"{actual}\" expected \"{expected}\"");
+			}
 		}
 
 		// ========================================
