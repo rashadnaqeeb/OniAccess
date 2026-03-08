@@ -1740,17 +1740,17 @@ namespace OniAccess.Widgets {
 			// Module name
 			var nameLabel = screen.moduleNameLabel;
 			items.Add(new LabelWidget {
-				Label = nameLabel.GetParsedText(),
+				Label = SideScreenWalker.ReadLocText(nameLabel, nameLabel.transform.name),
 				GameObject = nameLabel.gameObject,
-				SpeechFunc = () => nameLabel.GetParsedText()
+				SpeechFunc = () => SideScreenWalker.ReadLocText(nameLabel, nameLabel.transform.name)
 			});
 
 			// Module description
 			var descLabel = screen.moduleDescriptionLabel;
 			items.Add(new LabelWidget {
-				Label = descLabel.GetParsedText(),
+				Label = SideScreenWalker.ReadLocText(descLabel, descLabel.transform.name),
 				GameObject = descLabel.gameObject,
-				SpeechFunc = () => descLabel.GetParsedText()
+				SpeechFunc = () => SideScreenWalker.ReadLocText(descLabel, descLabel.transform.name)
 			});
 
 			// Add Module

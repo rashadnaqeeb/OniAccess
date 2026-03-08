@@ -1,5 +1,6 @@
 # Changelog
 
+- Fix: rocket module side screen now speaks the module name and description instead of silence
 - Module flight utility side screen: duplicant dropdown is now cyclable with left/right arrows
 - Module flight utility side screen: duplicate module names are numbered (e.g. "Cargo Bay 1", "Cargo Bay 2")
 - Rocket restriction side screen now speaks the automation tooltip when restrictions are controlled by a logic wire

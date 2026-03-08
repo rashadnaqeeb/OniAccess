@@ -592,6 +592,7 @@ namespace OniAccess.Widgets {
 				char c = text[i];
 				if (char.IsWhiteSpace(c)) continue;
 				var cat = char.GetUnicodeCategory(c);
+				if (cat == System.Globalization.UnicodeCategory.Control) continue;
 				if (cat == System.Globalization.UnicodeCategory.Format) continue;
 				if (cat == System.Globalization.UnicodeCategory.OtherNotAssigned) continue;
 				return true;
@@ -725,9 +726,12 @@ namespace OniAccess.Widgets {
 		/// </summary>
 		internal static string ReadLocText(LocText lt, string fallback) {
 			if (lt != null) {
-				string text = lt.GetParsedText();
-				if (HasVisibleContent(text))
-					return text;
+				string parsed = lt.GetParsedText();
+				if (HasVisibleContent(parsed))
+					return parsed;
+				string raw = lt.text;
+				if (HasVisibleContent(raw))
+					return raw;
 			}
 			return fallback;
 		}
