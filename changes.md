@@ -1,5 +1,6 @@
 # Changelog
 
+- Side screen dropdown options (e.g. door access, rocket restrictions) now speak their tooltip when selected
 - Fix details screen navigation jumping to unexpected items when the game reorders widgets between keypresses
 - Disabled buttons and toggles are now navigable and announce "unavailable". Pressing Enter on them plays a negative sound instead of silently failing
 - Announce "Saved" after the game finishes saving (autosave or manual)

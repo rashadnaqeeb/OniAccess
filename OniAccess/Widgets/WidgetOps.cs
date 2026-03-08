@@ -30,6 +30,22 @@ namespace OniAccess.Widgets {
 		/// </summary>
 		public static string GetTooltipText(Widget widget) {
 			if (widget.SuppressTooltip) return null;
+
+			// Radio-collapsed dropdowns: read the selected member's tooltip,
+			// not the container's.
+			if (widget is DropdownWidget
+				&& widget.Tag is System.Collections.Generic.List<SideScreenWalker.RadioMember> members) {
+				for (int i = 0; i < members.Count; i++) {
+					if (members[i].Toggle != null
+						&& SideScreenWalker.IsToggleActive(members[i].Toggle)) {
+						var tt = members[i].Toggle.GetComponent<ToolTip>();
+						if (tt != null) return ReadAllTooltipText(tt);
+						break;
+					}
+				}
+				return null;
+			}
+
 			if (widget.GameObject == null) return null;
 
 			var tooltip = widget.GameObject.GetComponent<ToolTip>();
