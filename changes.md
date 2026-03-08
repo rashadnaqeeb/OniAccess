@@ -1,5 +1,6 @@
 # Changelog
 
+- Pilot and crew side screen now announces when a robo-pilot copilot is active alongside a dupe pilot
 - Fix: rocket landing pad dropdown no longer speaks the pad name twice, removes redundant label, and excludes invalid pads with reasons
 - Side screen dropdown options (e.g. door access, rocket restrictions) now speak their tooltip when selected
 - Fix details screen navigation jumping to unexpected items when the game reorders widgets between keypresses

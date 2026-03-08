@@ -1480,5 +1480,10 @@ namespace STRINGS {
 			public static LocString HELP_OPEN = "Open resource browser";
 			public static LocString HELP_READ_PINNED = "Read pinned resources";
 		}
+
+		// Side screen spoken labels
+		public class SIDESCREENS {
+			public static LocString COPILOT_ROBO = "Copilot: Robo-Pilot";
+		}
 	}
 }

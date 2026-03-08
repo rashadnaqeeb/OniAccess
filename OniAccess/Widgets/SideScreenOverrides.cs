@@ -40,6 +40,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<GeoTunerSideScreen>(WalkGeoTuner);
 			SideScreenWalker.RegisterOverride<BaseGameImpactorImperativeSideScreen>(WalkBaseGameImpactorImperative);
 			SideScreenWalker.RegisterOverride<FilterSideScreen>(WalkFilterSideScreen);
+			SideScreenWalker.RegisterOverride<AssignPilotAndCrewSideScreen>(WalkAssignPilotAndCrew);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -2391,6 +2392,27 @@ namespace OniAccess.Widgets {
 						? $"{(string)STRINGS.ONIACCESS.STATES.SELECTED}, {capturedTag.ProperName()}"
 						: capturedTag.ProperName()
 				});
+			}
+		}
+
+		static void WalkAssignPilotAndCrew(
+				AssignPilotAndCrewSideScreen screen, List<Widget> items) {
+			SideScreenWalker.WalkDefault(screen, items);
+
+			var infoLabel = screen.infoLabel;
+			var copilotImage = screen.copilotImage;
+
+			for (int i = 0; i < items.Count; i++) {
+				if (items[i] is LabelWidget label
+					&& label.GameObject?.GetComponent<LocText>() == infoLabel) {
+					label.SpeechFunc = () => {
+						string text = infoLabel.GetParsedText();
+						if (copilotImage.gameObject.activeSelf)
+							text += ", " + (string)STRINGS.ONIACCESS.SIDESCREENS.COPILOT_ROBO;
+						return text;
+					};
+					break;
+				}
 			}
 		}
 	}
