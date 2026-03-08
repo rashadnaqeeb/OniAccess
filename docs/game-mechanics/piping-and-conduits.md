@@ -102,6 +102,84 @@ When pipes are full:
 3. Dispensers detect full output pipes and set `blocked = true`
 4. Eventually the entire pipe network backs up
 
+## Valves
+
+Valves are inline conduit buildings that control flow. All valve types are 1x2 tiles, rotatable 360 degrees, with input at `(0,0)` and output at `(0,1)`. All share 30 HP and 1600 melting point.
+
+### Flow-Limiting Valves (Manual)
+
+**Gas Valve** and **Liquid Valve** let the player set a maximum flow rate via a slider. They use `ValveBase` for the flow logic and `Valve` for the work errand.
+
+| Property | Gas Valve | Liquid Valve |
+|----------|-----------|--------------|
+| Max flow | 1 kg/s | 10 kg/s |
+| Material | Raw Metal (TIER1) | Raw Metal (TIER3) |
+| Power | None | None |
+
+**How flow limiting works:** `ValveBase` registers a per-tick callback with `ConduitFlow`. Each tick it reads the input cell contents and transfers `min(contents.mass, currentFlow * dt)` to the output cell via `AddElement()` / `RemoveElement()`. Setting `currentFlow` to 0 blocks flow entirely; setting it to `maxFlow` allows full throughput.
+
+**UI controls:** `ValveSideScreen` presents a `KSlider` (range 0 to `maxFlow`) and a `KNumberInputField` (in grams/s). The slider value maps directly to kg/s internally. Changing the value calls `Valve.ChangeFlow()`, which queues a `WorkChore<Valve>` -- a duplicant must physically visit the valve and perform 5 seconds of work before the new flow rate takes effect. In instant-build debug mode, the change applies immediately.
+
+**Errand queuing:** If the desired flow already matches the current flow, no errand is created. If a new desired value is set while an errand is pending, the existing chore is reused (the chore reads `desiredFlow` on completion). The valve displays `ValveRequest` and `PendingWork` status items while waiting.
+
+**Always operational:** Both configs call `GeneratedBuildings.MakeBuildingAlwaysOperational()` and destroy `RequireInputs`, `ConduitConsumer`, and `ConduitDispenser` components. Valves work without power and without connected pipes on both sides (they simply transfer nothing if a side is missing).
+
+**Sources:** `ValveBase.cs`, `Valve.cs`, `ValveSideScreen.cs`, `GasValveConfig.cs`, `LiquidValveConfig.cs`
+
+### Shutoff Valves (Automation-Controlled)
+
+**Gas Shutoff** and **Liquid Shutoff** are all-or-nothing valves controlled by automation signals. They use `OperationalValve` (extends `ValveBase`) instead of `Valve`.
+
+| Property | Gas Shutoff | Liquid Shutoff |
+|----------|-------------|----------------|
+| Max flow | 1 kg/s | 10 kg/s |
+| Material | Refined Metal (TIER1) | Refined Metal (TIER1) |
+| Power | 10 W | 10 W |
+| Logic port | 1 input (on/off) | 1 input (on/off) |
+
+**Behavior:** `OperationalValve` subscribes to `OnOperationalChanged`. When operational (logic signal active AND powered), it sets `CurrentFlow = MaxFlow`. When not operational, it sets `CurrentFlow = 0`. There is no slider and no duplicant errand -- the valve responds instantly to automation signals.
+
+**Default state:** `LogicOperationalController.unNetworkedValue = 0`, so shutoff valves default to CLOSED when no automation wire is connected. This prevents accidental flow.
+
+**Solid variant:** `SolidLogicValve` / `SolidLogicValveConfig` provides the same on/off behavior for conveyor rails. It uses a `SolidConduitBridge` internally and a state machine (`off` / `on.idle` / `on.working`) instead of `OperationalValve`.
+
+**Sources:** `OperationalValve.cs`, `GasLogicValveConfig.cs`, `LiquidLogicValveConfig.cs`, `SolidLogicValve.cs`, `SolidLogicValveConfig.cs`
+
+### Limit Valves (Metered Quantity)
+
+**Gas Limit Valve**, **Liquid Limit Valve**, and **Solid Limit Valve** pass a set total quantity of material, then stop. They use `LimitValve` with a `ConduitBridge` (or `SolidConduitBridge` for solid).
+
+| Property | Gas / Liquid Limit Valve | Solid Limit Valve |
+|----------|--------------------------|-------------------|
+| Max limit | 500 kg | 500 units |
+| Default limit | 0 (blocks until set) | 0 |
+| Material | Refined Metal + Plastic | Refined Metal + Plastic |
+| Power | 10 W | 10 W |
+| Logic ports | 1 input (reset), 1 output (limit reached) | 1 input (reset), 1 output (limit reached) |
+
+**How metering works:** `LimitValve` hooks into the bridge's `desiredMassTransfer` delegate, returning `min(mass, RemainingCapacity)` where `RemainingCapacity = Limit - Amount`. Each transfer adds to `Amount`. When `Amount >= Limit`, the valve sets `operational.SetFlag(limitNotReached, false)`, which makes the bridge stop transferring.
+
+**Automation integration:** The output port sends GREEN (1) when the limit is reached, RED (0) otherwise. Sending a GREEN signal to the reset input port resets `Amount` to 0, allowing the valve to pass another batch.
+
+**Solid variant difference:** `SolidLimitValve` counts in units (via `displayUnitsInsteadOfMass = true`) rather than kilograms. Each transferred item increments `Amount` by `transferredMass / MassPerUnit`.
+
+**Sources:** `LimitValve.cs`, `LimitValveTuning.cs`, `GasLimitValveConfig.cs`, `LiquidLimitValveConfig.cs`, `SolidLimitValveConfig.cs`
+
+### Check Valves
+
+ONI has no check valve building. One-way flow is an inherent property of the pipe network: the graph construction algorithm (BFS from sources, topological sort) establishes fixed flow directions. To enforce one-way flow at a specific point, players use a bridge, which has a defined input/output direction and bypasses the flow solver.
+
+### How Valves Interact with Conduit Flow
+
+Manual valves and shutoff valves participate directly in the `ConduitFlow` update loop. `ValveBase.ConduitUpdate()` is registered via `Conduit.GetFlowManager(conduitType).AddConduitUpdater()` and runs alongside the normal flow passes. The valve reads from its input cell and writes to its output cell using the same `AddElement()` / `RemoveElement()` API that bridges use. This means:
+
+- Valves obey the **no element mixing** rule: if the output cell contains a different element, `AddElement()` returns 0 and nothing transfers
+- Valves do not store fluid internally -- they transfer directly from input to output each tick
+- A valve with `currentFlow = 0` acts as a complete blockage, causing upstream backup per the normal blockage behavior
+- Valves do not trigger network recalculation; they operate within the existing flow graph
+
+Limit valves work differently: they use a `ConduitBridge` component and hook into its transfer delegates rather than running their own `ConduitUpdate`. The bridge handles the actual input/output transfer, and `LimitValve` constrains how much the bridge is allowed to move.
+
 ## Solid Conveyor System
 
 Conveyors are fundamentally different from fluid pipes:

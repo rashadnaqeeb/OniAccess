@@ -87,6 +87,67 @@ Per-building specs derived from decompiled source code. All rates are per second
 
 ---
 
+## Temperature Control
+
+### Thermo Regulator (Gas Conditioner)
+- **ID:** `AirConditioner`
+- **Source:** `AirConditionerConfig.cs`
+- **Dimensions:** 2w x 2h
+- **Power:** 240 W consumed
+- **Input:** gas pipe (consumption rate 1 kg/s)
+- **Output:** same gas, cooled by 14 C (temperature delta -14)
+- **Max environment delta:** -50 C (building heats surroundings by the removed energy)
+- **Self-heating:** 0 kDTU/s (all heat goes to environment via AirConditioner component)
+- **Overheat:** default (1600 K melting point of construction metal)
+- **Notes:** Gas equivalent of the Aquatuner. Same AirConditioner component with identical -14 C delta and -50 C max environment delta. The 240 W is converted entirely to heat dumped into the building's tile. Lower throughput than the Aquatuner (1 kg/s gas vs 10 kg/s liquid) means less total heat moved per second
+
+### Space Heater
+- **ID:** `SpaceHeater`
+- **Source:** `SpaceHeaterConfig.cs`, `SpaceHeater.cs`
+- **Dimensions:** 2w x 2h
+- **Power:** 120-240 W consumed (adjustable via slider)
+- **Target temperature:** 343.15 K (70 C) -- stops heating when average nearby gas temperature reaches this
+- **Self-heating:** 16-32 kDTU/s (scales linearly with power slider)
+- **Exhaust heat:** 2-4 kDTU/s (scales linearly with power slider)
+- **Total heat output:** 18-36 kDTU/s
+- **Overheat:** 398.15 K (125 C)
+- **Effect range:** -4,-4 to 5,5 (9x9 area for warmth provider)
+- **Notes:** Player sets power consumption via slider (120 W min, 240 W max). Heat output scales proportionally. Monitors nearby gas cells and stops when average temperature reaches target. Also provides Cold Immunity to dupes adjacent to the building
+
+### Ice-E Fan
+- **ID:** `IceCooledFan`
+- **Source:** `IceCooledFanConfig.cs`, `IceCooledFan.cs`
+- **Dimensions:** 2w x 2h
+- **Power:** none (dupe-operated, no electrical power)
+- **Cooling rate:** 32 kDTU/s (transferred from environment into stored ice)
+- **Self-heating:** -8 kDTU/s (25% of cooling rate, applied as negative self-heat)
+- **Exhaust heat:** -24 kDTU/s (75% of cooling rate, applied as negative exhaust)
+- **Ice input:** any ice ore (manual delivery), 50 kg capacity, refill at 10 kg
+- **Min cooled temperature:** 278.15 K (5 C) -- stops cooling when environment reaches this
+- **Cooling range:** -2,0 to 2,4
+- **Min environment mass:** 0.25 kg per cell
+- **Overheat:** not overheatable
+- **Operated by:** dupe (manually operated)
+- **Notes:** Heats ice by transferring thermal energy from the environment. When ice warms past its melting point it becomes liquid, which is then dropped on the floor. No power required but ties up a dupe while running
+
+### Liquid Cooled Fan (Deprecated)
+- **ID:** `LiquidCooledFan`
+- **Source:** `LiquidCooledFanConfig.cs`
+- **Dimensions:** 2w x 2h
+- **Power:** none (dupe-operated, no electrical power)
+- **Cooling rate:** 80 kDTU/s
+- **Self-heating:** 0 kDTU/s
+- **Exhaust heat:** 0 kDTU/s
+- **Water input:** Water (manual delivery), 500 kg capacity, refill at 50 kg
+- **Min cooled temperature:** 290 K (16.85 C)
+- **Cooling range:** -2,0 to 2,4
+- **Gas consumption radius:** 8 cells
+- **Overheat:** not overheatable
+- **Operated by:** dupe (manually operated)
+- **Notes:** Deprecated building (`Deprecated = true`). Consumes water to cool nearby gas. Work time per cycle is 20s
+
+---
+
 ## Power Generation
 
 ### Manual Generator
@@ -195,6 +256,51 @@ Per-building specs derived from decompiled source code. All rates are per second
 - **Operated by:** dupe (manually operated)
 - **Conduit input capacity:** 100 kg crude oil buffer
 
+### Kiln
+- **ID:** `Kiln`
+- **Source:** `KilnConfig.cs`
+- **Dimensions:** 2w x 2h
+- **Power:** none (no electrical power)
+- **Self-heating:** 4 kDTU/s
+- **Exhaust heat:** 16 kDTU/s
+- **Overheat:** not overheatable
+- **Output temperature:** 353.15 K (80 C), heated
+- **Operated by:** automatic (not dupe-operated)
+- **Ceramic recipe:** 100 kg Clay + 25 kg fuel (Lumber/Carbon/Peat) -> 100 kg Ceramic (40s)
+- **Refined Carbon recipe:** variable input (200 kg Lumber, 200 kg Carbon, 125 kg Peat, or 300 kg other wood) -> 100 kg Refined Carbon (40s)
+- **Storage:** 2400 kg ceramic output capacity
+- **Notes:** No power required. Both recipes take 40s. Output is heated to 353.15 K regardless of input temperature. Fuel for ceramic recipe accepts any BasicWoods tag plus Carbon and Peat
+
+### Glass Forge
+- **ID:** `GlassForge`
+- **Source:** `GlassForgeConfig.cs`
+- **Dimensions:** 5w x 4h
+- **Power:** 1200 W consumed
+- **Self-heating:** 16 kDTU/s
+- **Glass recipe:** 100 kg Sand -> 25 kg Molten Glass (40s)
+- **Output storage:** 2000 kg
+- **Output:** liquid pipe (Molten Glass dispensed via conduit)
+- **Operated by:** dupe (manually operated)
+- **Notes:** Output is Molten Glass (liquid), not solid Glass. The output uses TemperatureOperation.Melted, so it comes out at glass melting temperature. Dispensed via liquid output pipe at offset 1,3. Only 25% mass conversion (100 kg Sand becomes 25 kg Molten Glass)
+
+### Rock Crusher
+- **ID:** `RockCrusher`
+- **Source:** `RockCrusherConfig.cs`
+- **Dimensions:** 4w x 4h
+- **Power:** 240 W consumed
+- **Self-heating:** 16 kDTU/s
+- **Operated by:** dupe (manually operated)
+- **Sand recipe:** 100 kg any Crushable mineral -> 100 kg Sand (40s)
+- **Metal ore recipe:** 100 kg metal ore -> 50 kg refined metal + 50 kg Sand (40s, 50% efficiency)
+- **Lime recipes:**
+  - 5 kg Egg Shell -> 5 kg Lime (40s)
+  - 10 kg Pokeshell Molt -> 10 kg Lime (40s)
+  - 100 kg Fossil -> 5 kg Lime + 95 kg Sedimentary Rock (40s)
+- **Salt recipe:** 100 kg Salt -> 0.005 kg Table Salt + ~100 kg Sand (40s)
+- **Fullerene recipe (DLC1):** 100 kg Fullerene -> 90 kg Graphite + 10 kg Sand (40s)
+- **Electrobank recipe (DLC3):** 1 Garbage Electrobank -> 100 kg Abyssalite (40s)
+- **Notes:** All recipes take 40s. Metal refining at 50% efficiency is worse than the Metal Refinery (100%) but requires no coolant and is available earlier. Lime recipes are important for Steel production
+
 ---
 
 ## Pumps
@@ -258,12 +364,15 @@ Key ratios derived from the building specs above:
 
 | Kelvin | Celsius | Used by |
 |--------|---------|---------|
+| 278.15 | 5 | Ice-E Fan min cooled temperature |
+| 290 | 16.85 | Liquid Cooled Fan min cooled temperature |
 | 313.15 | 40 | Polluted Water output (Nat Gas Gen, Petrol Gen) |
-| 343.15 | 70 | Electrolyzer O2/H2 output |
+| 343.15 | 70 | Electrolyzer O2/H2 output, Space Heater target temperature |
 | 348.15 | 75 | Oil Refinery Petroleum/Nat Gas output |
+| 353.15 | 80 | Kiln output temperature |
 | 368.15 | 95 | Steam Turbine Water output |
 | 373.15 | 100 | Steam Turbine max building temp |
 | 383.15 | 110 | CO2 output (Coal Gen, Nat Gas Gen, Petrol Gen) |
-| 398.15 | 125 | Aquatuner overheat, Steam Turbine min active temp |
+| 398.15 | 125 | Aquatuner overheat, Space Heater overheat, Steam Turbine min active temp |
 | 473.15 | 200 | Steam Turbine ideal source temp |
 | 1273.15 | 1000 | Steam Turbine overheat temp |

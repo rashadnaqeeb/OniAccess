@@ -117,6 +117,8 @@ Cold regulation heats the creature via `WarmingKW`. Hot regulation cools via eva
 - Hot threshold: gaining more than 0.008 kW from environment
 - The asymmetry means creatures feel hot more easily than cold
 
+For detailed coverage of duplicant body temperature regulation, heat exchange parameters, external comfort thresholds, and clothing/suit insulation effects, see `duplicant-health.md` under "Body Temperature Regulation" through "Clothing and Suit Temperature Effects".
+
 ## Key Temperature Constants
 
 | Constant | Value | Context |
