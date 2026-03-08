@@ -373,26 +373,355 @@ All temperatures in Kelvin. Consumption rates in kg/s. Growth times from `CROP_T
 | Light | None |
 | Tinker | Yes |
 
+### Gas Grass (GasGrass)
+
+| Property | Value |
+|----------|-------|
+| Crop | Plant Fiber (`PlantFiber`) |
+| Growth time | 2400s (4 cycles domestic, 16 cycles wild) |
+| Yield | 400 kg per harvest |
+| Temperature | 218.15 / 0 / 348.15 / 373.15 K |
+| Atmosphere | Any (not pressure sensitive) |
+| Fertilizer | Dirt, 1/24 kg/s (~25 kg/cycle) |
+| Irrigation | Chlorine, 0.00083333 kg/s (0.5 kg/cycle) |
+| Light | Requires 10000 lux minimum |
+| Tinker | Yes |
+| Special | Warning low temperature of 0 K means it effectively never wilts from cold above lethal low. `SetPrefersDarkness()` is called with default parameter `false`, so it requires light (not darkness). The 10000 lux `MinLightLux` attribute sets the light threshold. |
+
+### Critter Trap Plant / Bluff Briar (CritterTrapPlant) -- Spaced Out DLC
+
+| Property | Value |
+|----------|-------|
+| Crop | Plant Meat (`PlantMeat`) |
+| Growth time | 18000s (30 cycles domestic, 120 cycles wild) |
+| Yield | 10 units per harvest |
+| Temperature | 173 / 183 / 273 / 283 K |
+| Atmosphere | Any (not pressure sensitive) |
+| Fertilizer | None |
+| Irrigation | Polluted Water, 1/60 kg/s (10 kg/cycle) |
+| Light | None |
+| Tinker | Yes |
+| Seed type | Hidden (seed only from uproot) |
+| Special | Traps walker and hoverer critters. Outputs Hydrogen gas at 1/24 kg/s after reaching 33.25 kg threshold. `shouldGrowOld = false`. |
+
+### Filter Plant (FilterPlant) -- Spaced Out DLC (Deprecated)
+
+| Property | Value |
+|----------|-------|
+| Crop | Water |
+| Growth time | 6000s (10 cycles domestic, 40 cycles wild) |
+| Yield | 350 kg per harvest |
+| Temperature | 253.15 / 293.15 / 383.15 / 443.15 K |
+| Atmosphere | Oxygen only |
+| Pressure | Sensitive, min 0.025 kg |
+| Fertilizer | Sand, 1/120 kg/s (5 kg/cycle) |
+| Irrigation | Polluted Water, 13/120 kg/s (~65 kg/cycle) |
+| Light | None |
+| Tinker | Yes |
+| Special | Consumes Oxygen gas at 1/120 kg/s. Tagged as `DeprecatedContent` -- no longer obtainable in normal gameplay. Uses `SaltPlant` component (consumes gas element). |
+
+### Bonbon Tree / Space Tree (SpaceTree) -- Frosty Planet DLC
+
+| Property | Value |
+|----------|-------|
+| Crop | Sugar Water (via branches and storage) |
+| Trunk growth time | 2700s (4.5 cycles) |
+| Sugar Water production | 4 kg/cycle, 20 kg storage capacity, 150s optimal production duration |
+| Branch count | Up to 5 branches |
+| Temperature | 173.15 / 198.15 / 258.15 / 293.15 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide, Snow, Vacuum (not pressure sensitive) |
+| Fertilizer | Snow, 1/6 kg/s (100 kg/cycle) |
+| Irrigation | None |
+| Light | Requires 300 lux minimum to grow branches |
+| Tinker | No |
+| Seed type | Harvest |
+| Special | `shouldGrowOld = false`. Uses `PlantBranchGrower` with `SpaceTreeBranch` branches. Sugar Water stored internally, dispensable via liquid conduit. Can be manually harvested for syrup. Has `UnstableEntombDefense` (shakes free when entombed, 5s cooldown). |
+
+### Blue Grass (BlueGrass) -- Frosty Planet DLC
+
+| Property | Value |
+|----------|-------|
+| Crop | Oxylite (`OxyRock`) |
+| Growth time | 1200s (2 cycles domestic, 8 cycles wild) |
+| Yield | ~36 kg per harvest (2 * 17.76 rounded) |
+| Temperature | 193.15 / 193.15 / 273.15 / 273.15 K |
+| Atmosphere | Carbon Dioxide only |
+| Pressure | Sensitive (min 0 kg) |
+| Fertilizer | Ice, 1/30 kg/s (~20 kg/cycle) |
+| Irrigation | None |
+| Light | None |
+| Tinker | Yes |
+| Special | Consumes CO2 gas at 0.0005 kg/s. Warning and lethal temperatures are identical (193.15 / 273.15), meaning there is no warning buffer -- the plant dies immediately at boundary temperatures. |
+
+### Garden Food Plant (GardenFoodPlant) -- Biome Bundle DLC
+
+| Property | Value |
+|----------|-------|
+| Crop | Garden Food (`GardenFoodPlantFood`) |
+| Growth time | 1800s (3 cycles domestic, 12 cycles wild) |
+| Yield | 1 unit per harvest |
+| Temperature | 263.15 / 268.15 / 313.15 / 323.15 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide |
+| Pressure | Sensitive, min 0.15 kg |
+| Fertilizer | Peat, 1/60 kg/s (10 kg/cycle) |
+| Irrigation | None |
+| Light | None |
+| Tinker | Yes |
+| Special | Has `PollinationMonitor` -- can be pollinated. Uses `DirectlyEdiblePlant_Growth` (critters can eat it while growing). |
+
+### Vine Mother (VineMother) -- Biome Bundle DLC
+
+| Property | Value |
+|----------|-------|
+| Crop | Vine Fruit (via branches), 1 fruit per branch per 3-cycle harvest |
+| Branch count | Up to 24 branches |
+| Temperature | 273.15 / 298.15 / 318.15 / 378.15 K |
+| Atmosphere | Oxygen, Carbon Dioxide, Polluted Oxygen (not pressure sensitive) |
+| Fertilizer | None |
+| Irrigation | Water, 0.15 kg/s (90 kg/cycle) |
+| Light | None |
+| Tinker | No (trunk); Yes (branches) |
+| Seed type | Hidden (trunk); HarvestOnly with 1/6 chance (branches) |
+| Special | `shouldGrowOld = false`. Uses `VineMother.Def` branching system (not `PlantBranchGrower`). Branches grow as separate `VineBranch` entities that produce Vine Fruit (`VineFruit`, 1800s per harvest per branch) and Plant Fiber (6 kg/cycle per branch). Branches share parent's temperature thresholds. |
+
+### Kelp Plant (KelpPlant) -- Biome Bundle DLC
+
+| Property | Value |
+|----------|-------|
+| Crop | Kelp |
+| Growth time | 3000s (5 cycles domestic, 20 cycles wild) |
+| Yield | 50 kg per harvest |
+| Temperature | 253.15 / 263.15 / 358.15 / 373.15 K |
+| Atmosphere | Water, Dirty Water, Salt Water, Brine, Phyto Oil, Natural Resin (submerged aquatic plant) |
+| Pressure | Not pressure sensitive (but `allCellsMustBeSafe = true`) |
+| Fertilizer | Toxic Sand, 1/60 kg/s (10 kg/cycle) |
+| Irrigation | None |
+| Light | None |
+| Tinker | Yes |
+| Orientation | Hanging (grows downward, needs ceiling tile) |
+| Special | Cannot drown. Uses `DirectlyEdiblePlant_Growth`. All cells must be submerged in a safe element. |
+
+### Dew Dripper Plant (DewDripperPlant) -- Biome Bundle DLC
+
+| Property | Value |
+|----------|-------|
+| Crop | Dew Drip |
+| Growth time | 1200s (2 cycles domestic, 8 cycles wild) |
+| Yield | 1 unit per harvest |
+| Temperature | 218.15 / 238.15 / 278.15 / 308.15 K |
+| Atmosphere | Any |
+| Pressure | Sensitive, min 0.25 kg; max warning 2 kg, max lethal 10 kg |
+| Fertilizer | Brine Ice, 1/60 kg/s (10 kg/cycle) |
+| Irrigation | None |
+| Light | None |
+| Tinker | No |
+| Orientation | Hanging (grows downward, needs ceiling tile) |
+| Special | Also produces Plant Fiber at 2 kg/cycle via `PlantFiberProducer`. Has both minimum and maximum pressure thresholds. |
+
+### Fly Trap Plant (FlyTrapPlant) -- Biome Bundle DLC
+
+| Property | Value |
+|----------|-------|
+| Crop | Amber |
+| Growth time | 7200s (12 cycles domestic, 48 cycles wild) |
+| Yield | 264 kg per harvest |
+| Temperature | 273.15 / 283.15 / 328.15 / 348.15 K |
+| Atmosphere | Any |
+| Pressure | Sensitive, min 0.15 kg |
+| Fertilizer | None |
+| Irrigation | None |
+| Light | None |
+| Tinker | Yes |
+| Orientation | Hanging (grows downward, needs ceiling tile) |
+| Special | Has `FlytrapConsumptionMonitor` -- digests trapped critters over 12 cycles (7200s). Spawns with 0% maturity (`MaxMaturityValuePercentageToSpawnWith = 0`). |
+
+### Butterfly Plant (ButterflyPlant) -- Biome Bundle DLC
+
+| Property | Value |
+|----------|-------|
+| Crop | Butterfly (food item) |
+| Growth time | 3000s (5 cycles domestic, 20 cycles wild) |
+| Yield | 1 unit per harvest |
+| Temperature | 233.15 / 283.15 / 318.15 / 353.15 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide, Chlorine |
+| Pressure | Sensitive, min 0.15 kg |
+| Fertilizer | Dirt, 1/60 kg/s (10 kg/cycle) |
+| Irrigation | None |
+| Light | None |
+| Tinker | Yes |
+| Seed type | Crop (seed = food item, `ignoreDefaultSeedTag = true`) |
+| Special | `maxAge = 0` (no old age auto-harvest). `HarvestDesignatable` is destroyed -- cannot be manually designated for harvest. Seed is a food item (`BUTTERFLY_SEED`). |
+
+### Dinofern (Dinofern) -- Biome Bundle DLC
+
+| Property | Value |
+|----------|-------|
+| Crop | Fern Food (`FernFood`) |
+| Growth time | 5400s (9 cycles domestic, 36 cycles wild) |
+| Yield | 36 units per harvest |
+| Temperature | 218.15 / 228.15 / 288.15 / 308.15 K |
+| Atmosphere | Chlorine only |
+| Pressure | Sensitive, min 0.5 kg |
+| Fertilizer | None |
+| Irrigation | None |
+| Light | None |
+| Tinker | No |
+| Seed type | Hidden |
+| Size | 3x3 tiles |
+| Special | Consumes Chlorine gas at 0.09 kg/s (54 kg/cycle). Large 3x3 plant. Uses `Dinofern` component for consumption rate management. |
+
+## Decorative Plants
+
+Decorative plants provide decor bonuses when healthy and decor penalties when wilting. They produce no harvestable crop. All use `DecorPlantMonitor` and `PrickleGrass` components for decor state tracking. Seeds are tagged `DecorSeed` (not `CropSeed`) and can only be planted in Flower Pots. Seed production type is Hidden for all decorative plants (seeds only from uproot).
+
+### Bristle Briar / Bliss Burst (PrickleGrass)
+
+| Property | Value |
+|----------|-------|
+| Decor | +25 radius 4 (healthy) / -20 radius 4 (wilting) |
+| Temperature | 218.15 / 283.15 / 303.15 / 398.15 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide |
+| Pressure | Sensitive, min 0.15 kg |
+| Max radiation | 900 |
+| DLC | Base game |
+
+### Buddy Bud (BulbPlant)
+
+| Property | Value |
+|----------|-------|
+| Decor | +15 radius 2 (healthy) / -20 radius 4 (wilting) |
+| Temperature | 288 / 293.15 / 313.15 / 333.15 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide |
+| Pressure | Sensitive, min 0.15 kg |
+| Max radiation | 2200 |
+| DLC | Base game |
+| Special | Emits Pollen Germs at 5000/s average. |
+
+### Mirth Leaf (LeafyPlant)
+
+| Property | Value |
+|----------|-------|
+| Decor | +25 radius 4 (healthy) / -20 radius 4 (wilting) |
+| Temperature | 288 / 293.15 / 323.15 / 373 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide, Chlorine, Hydrogen |
+| Pressure | Sensitive, min 0.15 kg |
+| Max radiation | 2200 |
+| DLC | Base game |
+
+### Jumping Joya (CactusPlant)
+
+| Property | Value |
+|----------|-------|
+| Decor | +25 radius 4 (healthy) / -20 radius 4 (wilting) |
+| Temperature | 200 / 273.15 / 373.15 / 400 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide |
+| Pressure | Not pressure sensitive |
+| Max radiation | 2200 |
+| DLC | Base game |
+
+### Sporechid (EvilFlower)
+
+| Property | Value |
+|----------|-------|
+| Decor | +80 radius 7 (healthy) / -25 radius 6 (wilting) |
+| Temperature | 168.15 / 258.15 / 513.15 / 563.15 K |
+| Atmosphere | Carbon Dioxide only |
+| Pressure | Sensitive, min 0.15 kg |
+| Max radiation | 12200 |
+| DLC | Base game |
+| Special | Emits Zombie Spores at 1000/s average (100000 per burst, every 1s). Highest decor bonus of any decorative plant but extremely dangerous. Uses `EvilFlower` component instead of `PrickleGrass`. |
+
+### Tranquil Toes (ToePlant) -- Spaced Out DLC
+
+| Property | Value |
+|----------|-------|
+| Decor | +25 radius 4 (healthy) / -20 radius 4 (wilting) |
+| Temperature | 173 / 183 / 273 / 283 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide |
+| Pressure | Sensitive, min 0.15 kg |
+| Max radiation | 2200 |
+
+### Cylindrica (Cylindrica) -- Spaced Out DLC
+
+| Property | Value |
+|----------|-------|
+| Decor | +25 radius 4 (healthy) / -20 radius 4 (wilting) |
+| Temperature | 288.15 / 293.15 / 323.15 / 373.15 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide |
+| Pressure | Sensitive, min 0.15 kg |
+| Max radiation | 2200 |
+
+### Wine Cups (WineCups) -- Spaced Out DLC
+
+| Property | Value |
+|----------|-------|
+| Decor | +25 radius 4 (healthy) / -20 radius 4 (wilting) |
+| Temperature | 218.15 / 283.15 / 303.15 / 398.15 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide |
+| Pressure | Sensitive, min 0.15 kg |
+| Max radiation | 900 |
+
+### Ice Flower (IceFlower) -- Frosty Planet DLC
+
+| Property | Value |
+|----------|-------|
+| Decor | +25 radius 4 (healthy) / -20 radius 4 (wilting) |
+| Temperature | 173.15 / 203.15 / 278.15 / 318.15 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide, Chlorine, Hydrogen |
+| Pressure | Sensitive, min 0.15 kg |
+| Max radiation | 2200 |
+
+### Garden Decor Plant (GardenDecorPlant) -- Biome Bundle DLC
+
+| Property | Value |
+|----------|-------|
+| Decor | +25 radius 4 (healthy) / -20 radius 4 (wilting) |
+| Temperature | 263.15 / 268.15 / 313.15 / 323.15 K |
+| Atmosphere | Oxygen, Polluted Oxygen, Carbon Dioxide |
+| Pressure | Not pressure sensitive |
+| Max radiation | 2200 |
+
+## Special Plants
+
+### Sap Tree (SapTree) -- Spaced Out DLC
+
+| Property | Value |
+|----------|-------|
+| Decor | +35 radius 6 |
+| Size | 5x5 tiles |
+| Temperature | 0 / 173.15 / 373.15 / 1023.15 K |
+| Special | Hostile environmental entity, not a farm plant. Cannot be planted or harvested. Attacks nearby duplicants with area-of-effect damage (5 damage, radius 2, 5s cooldown). Consumes food items at 0.05 kg/s and converts to resin at 0.005 kcal-to-kg ratio (5 kg stomach capacity, oozes at 2 kg/s). Aligned to Hostile faction. Has `WiltCondition`, `TemperatureVulnerable`, and `EntombVulnerable` but no standard plant growth. |
+
 ## Growth Time Summary
 
 Sorted by domestic growth time (cycles = cropDuration / 600):
 
 | Plant | Crop | Domestic cycles | Wild cycles |
 |-------|------|---------------:|------------:|
+| Blue Grass | Oxylite (~36 kg) | 2.0 | 8.0 |
+| Dew Dripper Plant | Dew Drip | 2.0 | 8.0 |
 | Thimble Reed | Reed Fiber | 2.0 | 8.0 |
+| Garden Food Plant | Garden Food | 3.0 | 12.0 |
 | Mealwood | Meal Lice | 3.0 | 12.0 |
 | Pikeapple Bush | Pikeapple | 3.0 | 12.0 |
+| Gas Grass | Plant Fiber (400 kg) | 4.0 | 16.0 |
 | Worm Plant | Grubfruit | 4.0 | 16.0 |
+| Butterfly Plant | Butterfly | 5.0 | 20.0 |
+| Kelp Plant | Kelp (50 kg) | 5.0 | 20.0 |
 | Bristle Blossom | Bristle Berry | 6.0 | 24.0 |
 | Dasha Salt Vine | Salt | 6.0 | 24.0 |
 | Bog Bucket | Bog Jelly | 6.6 | 26.4 |
 | Dusk Cap | Mushroom | 7.5 | 30.0 |
 | Pincha Pepper | Peppernut | 8.0 | 32.0 |
+| Dinofern | Fern Food (x36) | 9.0 | 36.0 |
 | Plume Squash Plant | Plume Squash | 9.0 | 36.0 |
+| Filter Plant | Water (350 kg) | 10.0 | 40.0 |
+| Fly Trap Plant | Amber (264 kg) | 12.0 | 48.0 |
 | Waterweed | Lettuce | 12.0 | 48.0 |
 | Balm Lily | Balm Lily Flower | 12.0 | 48.0 |
 | Sleet Wheat | Wheat Grain (x18) | 18.0 | 72.0 |
 | Nosh Bean | Nosh Bean (x12) | 21.0 | 84.0 |
+| Critter Trap Plant | Plant Meat (x10) | 30.0 | 120.0 |
 
 ## Source References
 

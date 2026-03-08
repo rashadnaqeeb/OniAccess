@@ -315,16 +315,34 @@ Floor and tree climbers. Eat plants directly. Plant seeds in natural tiles.
 
 Digger creatures. Burrow through solid tiles, eat minerals, and deposit them as solid tiles. Extremely wide temperature tolerance.
 
-**Shared traits:** 25 kg mass, 100-cycle lifespan, no space requirement (0 tiles), 2 kg egg mass. Drownable, not entombable. Calorie burn: 4,800,000 kcal/cycle, stomach: 48,000,000 kcal (10 cycles reserve). Temperature comfort: -100 to 400C (173.15-673.15K), lethal: -200 to 500C. Drop 10 Meat on death. Poop Regolith.
+**Shared traits:** 25 kg mass, 100-cycle lifespan, no space requirement (0 tiles), 2 kg egg mass. Drownable, not entombable. Calorie burn: 4,800,000 kcal/cycle, stomach: 48,000,000 kcal (10 cycles reserve). Lethal: -200 to 500C. Poop Regolith.
 
 ### Shove Vole (base)
 
 | Property | Value |
 |----------|-------|
+| Temperature | Comfort: -100 to 400C (173.15-673.15K) |
 | Eats | Regolith, Dirt, Iron Ore (1,000 kcal/kg) |
 | Produces | Eaten material as solid tiles (NORMAL conversion, 50%) |
 | HP | 25 |
-| Egg | MoleEgg (base 98%, 2% Delicacy variant) |
+| Death drop | 10 Meat |
+| Egg | MoleEgg (base 98%, 2% Delicacy) |
+
+### Shove Vole Delicacy (MoleDelicacy)
+
+| Property | Value |
+|----------|-------|
+| Temperature | Comfort: -100 to 100C (173.15-373.15K) |
+| Eats | Regolith, Dirt, Iron Ore (1,000 kcal/kg) |
+| Produces | Eaten material as solid tiles (NORMAL conversion, 50%) |
+| Stomach | 24,000,000 kcal (half of base Shove Vole) |
+| HP | 25 |
+| Death drop | 5 Meat |
+| Scale product | Ginger (GingerConfig) |
+| Scale growth | 8 cycles to full, drops 8 kg ginger (1 kg/cycle) |
+| Scale temperature | 70-80C (343.15-353.15K) required for growth |
+| Scale levels | 5 |
+| Egg | MoleDelicacyEgg (base 65%, 32% Shove Vole) |
 
 ---
 
@@ -545,6 +563,238 @@ Wall/ceiling walkers. Eat metals, produce Hydrogen. Generate power or pump fluid
 
 ---
 
+## Wood Deer Family (Deer) -- DLC2 (Frosty Planet Pack)
+
+Floor walkers, 2 tiles tall (adults). Eat plants directly and produce Dirt. Faction: Pest. Grow antlers that can be sheared.
+
+**Shared traits:** 100 kg mass, 100-cycle lifespan, 12-tile space requirement (TIER3), 2 kg egg mass. Drownable, not entombable. Calorie burn: 100,000 kcal/cycle, stomach: 1,000,000 kcal (10 cycles reserve). Temperature comfort: -30 to 10C (243.15-283.15K), lethal: -60 to 100C (213.15-373.15K). HP: 25. Death drop: 1 Meat.
+
+### Wood Deer (base)
+
+| Property | Value |
+|----------|-------|
+| Eats | Hard Skin Berry Plant, Bristle Blossom (0.2 growth-days/cycle); also Hard Skin Berry, Bristle Berry as food items |
+| Produces | Dirt |
+| Antler product | Wood Logs |
+| Antler growth | 6 cycles to full, drops 360 kg wood (60 kg/cycle), starts at 50% growth |
+| Antler levels | 6 |
+| Egg | WoodDeerEgg (base 98%, 2% Glass Deer) |
+
+### Glass Deer (GlassDeer)
+
+| Property | Value |
+|----------|-------|
+| Eats | Hard Skin Berry Plant, Bristle Blossom (0.2 growth-days/cycle); Hard Skin Berry, Bristle Berry as food items; also Abyssalite (20 kg/cycle) |
+| Produces | Dirt |
+| Antler product | Glass (requires eating Abyssalite to grow) |
+| Antler growth | 6 cycles to full, drops 60 kg glass (10 kg/cycle), starts at 50% growth |
+| Antler levels | 6 |
+| Egg | GlassDeerEgg (base 65%, 35% Wood Deer) |
+
+---
+
+## Stegosaurus Family (Stego) -- DLC4 (Biome Bundle)
+
+Large floor walkers (2x2 grid). Eat fruit, produce Peat. Stomp ability (60s cooldown, 10-tile radius). Faction: Pest.
+
+**Shared traits:** 400 kg mass, 200-cycle lifespan, 16-tile space requirement (TIER4), 8 kg egg mass. Drownable, not entombable. Temperature comfort: 20-70C (293.15-343.15K), lethal: -100 to 100C (173.15-373.15K). HP: 50. Death drop: 12 Dinosaur Meat. Tagged as LargeCreature.
+
+### Stegosaurus (base)
+
+| Property | Value |
+|----------|-------|
+| Eats | Vine Fruit, Bristle Berry (and Swamp Fruit if Spaced Out DLC active) |
+| Vine consumption | 4 fruit/cycle |
+| Produces | Peat (200 kg/cycle from Vine Fruit) |
+| Egg | StegoEgg (base 98%, 2% Algae Stego) |
+
+### Algae Stegosaurus (AlgaeStego)
+
+| Property | Value |
+|----------|-------|
+| Eats | Vine Fruit, Bristle Berry (and Swamp Fruit if Spaced Out DLC active) |
+| Vine consumption | 4 fruit/cycle |
+| Produces | Algae (132 kg/cycle from Vine Fruit) |
+| Egg | AlgaeStegoEgg (base 65%, 35% Stegosaurus) |
+
+---
+
+## Raptor -- DLC4 (Biome Bundle)
+
+Large predator (2x2 grid). Eats meat and hunts smaller creatures. Faction: Predator. Grows feathers when well-fed.
+
+| Property | Value |
+|----------|-------|
+| Mass | 400 kg |
+| Lifespan | 200 cycles |
+| Space | 16 tiles (TIER4) |
+| Temperature | Comfort: -50 to 15C (223.15-288.15K), lethal: -100 to 100C (173.15-373.15K) |
+| Eats | Dinosaur Meat, Meat; also hunts and butchers smaller creatures (Hatches, Pips, Shove Voles, Dreckos, Slicksters, baby Stegos, Chameleons, and more) |
+| Produces | Brine Ice |
+| Meat conversion | 128 kg output per unit eaten; 256 kg from butchered prey |
+| Scale product | Feather Fabric |
+| Scale growth | 4 cycles to full, drops 4 kg feather fabric (1 kg/cycle), starts at 90% growth |
+| Scale levels | 2 |
+| HP | 50 |
+| Death drop | 5 Dinosaur Meat |
+| Egg | RaptorEgg (100% Raptor, no variants) |
+| Egg mass | 8 kg |
+| DLC | DLC4 (Biome Bundle) |
+
+---
+
+## Seal -- DLC2 (Frosty Planet Pack)
+
+Small floor walkers. Eat Sugar Trees (from plant storage) and Sucrose. Produce Ethanol. Not drownable. Faction: Pest.
+
+| Property | Value |
+|----------|-------|
+| Mass | 100 kg |
+| Lifespan | 100 cycles |
+| Space | 12 tiles (TIER3) |
+| Temperature | Comfort: -75 to 10C (198.15-283.15K), lethal: -100 to 100C (173.15-373.15K) |
+| Eats | Sugar Trees (from plant storage, GOOD_3 100% conversion); also Sucrose (40 kg/cycle) |
+| Produces | Ethanol |
+| HP | 25 |
+| Death drop | 50 Tallow |
+| Special | 20% chance to drop a Space Tree Seed when pooping |
+| Egg | SealEgg (100% Seal, no variants) |
+| Egg mass | 2 kg |
+| DLC | DLC2 (Frosty Planet Pack) |
+
+---
+
+## Prehistoric Pacu -- DLC4 (Biome Bundle)
+
+Large swimmer (2x2 grid). Hunts regular Pacu. Not drownable, not entombable. Faction: Prey. Not ranchable (no grooming). Fish overcrowding monitor.
+
+| Property | Value |
+|----------|-------|
+| Mass | 200 kg |
+| Lifespan | 100 cycles |
+| Space | 12 tiles (TIER3) |
+| Temperature | Comfort: 0-60C (273.15-333.15K), lethal: -20 to 100C (253.15-373.15K) |
+| Eats | Pacu (all variants, 1 per cycle); also Fish Meat (1 kg/cycle) |
+| Produces | Rust (60 kg per Pacu consumed) |
+| HP | 50 (base config says 25, overridden to 50 in PrehistoricPacuConfig) |
+| Death drop | 12 Prehistoric Pacu Fillet |
+| Egg | PrehistoricPacuEgg (100% Prehistoric Pacu, no variants) |
+| Egg mass | 4 kg |
+| Tagged | LargeCreature |
+| DLC | DLC4 (Biome Bundle) |
+
+---
+
+## Ice Belly Family (Belly) -- DLC2 (Frosty Planet Pack)
+
+Large floor walkers (2x2 grid). Warm-blooded (1.3 kW heat generation). Eat Carrot Plants, Carrots, Fries Carrot, Nosh Bean Plants, and Nosh Beans. Produce Ice Belly Poop (with Pollen Germs). Can burrow. Faction: Pest.
+
+**Shared traits:** 400 kg mass, 200-cycle lifespan, 16-tile space requirement (TIER4, uses MooTuning), 8 kg egg mass. Drownable, not entombable. Temperature comfort: 30-70C (303.15-343.15K), lethal: -100 to 100C (173.15-373.15K). Death drop: 14 Meat.
+
+### Ice Belly (base)
+
+| Property | Value |
+|----------|-------|
+| Eats | Carrot Plants (directly), Carrots, Fries Carrot, Nosh Bean Plants (directly), Nosh Beans |
+| Produces | Ice Belly Poop (emits 1000 Pollen Germs per kg) |
+| Scale product | Reed Fiber (BasicFabric) |
+| Scale growth | 10 cycles to full, drops 5 kg reed fiber (0.5 kg/cycle), starts at 25% growth |
+| Scale levels | 6 |
+| HP | 25 |
+| Egg | IceBellyEgg (base 100% Ice Belly, 0% Gold Belly; diet-modified) |
+
+### Gold Belly (GoldBelly)
+
+| Property | Value |
+|----------|-------|
+| Eats | Same diet as Ice Belly (Carrot Plants, Carrots, Fries Carrot, Nosh Bean Plants, Nosh Beans) |
+| Produces | Ice Belly Poop (emits 1000 Pollen Germs per kg) |
+| Scale product | Gold Belly Crown (requires eating Fries Carrot to grow) |
+| Scale growth | 10 cycles to full, drops 250 kg gold belly crown (25 kg/cycle), starts at 25% growth |
+| Scale levels | 6 |
+| HP | 50 |
+| Egg | GoldBellyEgg (base 98%, 2% Ice Belly) |
+
+---
+
+## Butterfly -- DLC4 (Biome Bundle)
+
+Small flyer. Pollinates plants (10-tile radius). Does not eat. Very short lifespan. Faction: Pest. Lured by Algae.
+
+| Property | Value |
+|----------|-------|
+| Mass | 5 kg |
+| Lifespan | 5 cycles |
+| Space | 8 tiles (TIER2) |
+| Temperature | Comfort: 10-45C (283.15-318.15K), lethal: -40 to 80C (233.15-353.15K) |
+| Diet | None (does not eat) |
+| HP | 5 |
+| Death drop | 1 Butterfly Plant Seed |
+| Special | Pollinator. No egg-based reproduction. |
+| Reproduction | Does not lay eggs |
+| DLC | DLC4 (Biome Bundle) |
+
+---
+
+## Mosquito -- DLC4 (Biome Bundle)
+
+Small flyer (adults) / swimmer (larvae). Attacks duplicants and other creatures to feed (poke behavior). Short lifespan. Faction: Prey. Larvae live in water, adults fly.
+
+| Property | Value |
+|----------|-------|
+| Mass | 5 kg |
+| Lifespan | 10 cycles (5 as baby, 5 as adult) |
+| Space | 4 tiles (TIER1, adults); 0 (babies/larvae) |
+| Temperature | Comfort: 5-65C (278.15-338.15K), lethal: 0-75C (273.15-348.15K) |
+| Diet | Feeds by poking duplicants and creatures (not calorie-based) |
+| HP | 5 |
+| Targets | Duplicants and creatures (excludes Mosquitoes, swimming creatures, dead, and suited duplicants) |
+| Egg | MosquitoEgg (100% Mosquito, no variants) |
+| Egg mass | 1 kg |
+| Special | Babies are aquatic swimmers; adults are flyers that drown in liquid. Spawns at 50% age minimum. Eggs cannot be cracked. |
+| DLC | DLC4 (Biome Bundle) |
+
+---
+
+## Chameleon -- DLC4 (Biome Bundle)
+
+Wall/ceiling walker (Drecko navigation). Eats Dew Drips, produces Bleach Stone and emits Chlorine Gas. Shakes Dew Dripper Plants to harvest fruit. Faction: Pest.
+
+| Property | Value |
+|----------|-------|
+| Mass | 50 kg |
+| Lifespan | 50 cycles |
+| Space | 4 tiles (TIER1) |
+| Temperature | Comfort: -40 to 20C (233.15-293.15K), lethal: -100 to 100C (173.15-373.15K) |
+| Eats | Dew Drips (1 per cycle) |
+| Produces | Bleach Stone (10 kg per Dew Drip consumed) |
+| Secondary output | Chlorine Gas (0.005 kg/s continuous emission) |
+| HP | 25 |
+| Death drop | 0.5 Meat |
+| Special | Shakes Dew Dripper Plants to harvest fruit (10-tile radius, 150s cooldown) |
+| Egg | ChameleonEgg (base 98%) |
+| Egg mass | 2 kg |
+| DLC | DLC4 (Biome Bundle) |
+
+---
+
+## Shockworm
+
+Hostile flyer (1x2 grid). No diet, no reproduction. Area-of-effect electrical attack.
+
+| Property | Value |
+|----------|-------|
+| Mass | 50 kg |
+| Temperature | Comfort: -10 to 40C (263.15-313.15K), lethal: -20 to 50C (253.15-323.15K) |
+| Diet | None |
+| HP | 32 |
+| Death drop | 3 Meat |
+| Weapon | 3-6 damage, AoE, 10 targets, 4-tile range, with status effect |
+| Faction | Hostile |
+| Reproduction | None |
+
+---
+
 ## Key Production Rates Summary
 
 Useful throughput numbers for ranch planning.
@@ -569,5 +819,16 @@ Useful throughput numbers for ranch planning.
 | Pokeshell | Polluted Dirt | 70 kg | Sand | 35 kg |
 | Shove Vole | Regolith | 4800 kg* | Regolith tiles | 2400 kg* |
 | Plug Slug | Metal Ore | 60 kg | Hydrogen | 3 kg |
+| Shove Vole Delicacy (scales) | Heat (70-80C) | -- | Ginger | 1 kg |
+| Wood Deer (antlers) | Well-fed | -- | Wood Logs | 60 kg |
+| Glass Deer (antlers) | Well-fed + Abyssalite | -- | Glass | 10 kg |
+| Stegosaurus | Vine Fruit | 4 fruits | Peat | 200 kg |
+| Algae Stegosaurus | Vine Fruit | 4 fruits | Algae | 132 kg |
+| Raptor | Meat | varies | Brine Ice | varies |
+| Seal | Sugar Tree / Sucrose | 40 kg | Ethanol | 40 kg |
+| Prehistoric Pacu | Pacu | 1 fish | Rust | 60 kg |
+| Ice Belly (scales) | Well-fed | -- | Reed Fiber | 0.5 kg |
+| Gold Belly (scales) | Well-fed + Fries Carrot | -- | Gold Belly Crown | 25 kg |
+| Chameleon | Dew Drips | 1 drip | Bleach Stone | 10 kg |
 
 *Shove Vole calorie rates imply very high consumption but actual throughput depends on access to diggable tiles.
