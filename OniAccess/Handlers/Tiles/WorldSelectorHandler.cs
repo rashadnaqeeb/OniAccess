@@ -108,6 +108,12 @@ namespace OniAccess.Handlers.Tiles {
 			if (isActive) parts.Add((string)STRINGS.ONIACCESS.WORLD_SELECTOR.ACTIVE_PREFIX);
 			parts.Add(name);
 
+			string worldType = world.IsModuleInterior
+				? (string)STRINGS.ONIACCESS.WORLD_SELECTOR.ROCKET
+				: Strings.Get(world.worldType);
+			if (!string.IsNullOrEmpty(worldType))
+				parts.Add(worldType);
+
 			if (ColonyDiagnosticUtility.Instance.diagnosticDisplaySettings.ContainsKey(worldId)) {
 				var opinion = ColonyDiagnosticUtility.Instance.GetWorldDiagnosticResult(worldId);
 				string severity = TileCursorHandler.OpinionWord(opinion);

@@ -1348,6 +1348,7 @@ namespace STRINGS {
 		public class WORLD_SELECTOR {
 			public static LocString ACTIVE_PREFIX = "active";
 			public static LocString OPEN = "Open world list";
+			public static LocString ROCKET = "rocket";
 			// {0} = world name
 			public static LocString DISCOVERED = "{0} discovered";
 		}
