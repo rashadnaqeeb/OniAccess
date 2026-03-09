@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OniAccess.Handlers.Sandbox;
 using OniAccess.Handlers.Tools;
 using OniAccess.Speech;
 
@@ -6,9 +7,11 @@ namespace OniAccess.Handlers.Build {
 	/// <summary>
 	/// Unified action menu combining tools and build categories.
 	/// Tools appear first at level 0 index 0 with individual tools at
-	/// level 1 (leaf). Build categories follow at indices 1+, with
-	/// subcategories (level 1) and buildings (level 2).
-	/// Type-ahead searches both tools and buildings.
+	/// level 1 (leaf). When sandbox mode is active, Sandbox Tools appears
+	/// at index 1 with sandbox tools at level 1 (leaf). Build categories
+	/// follow at the remaining indices, with subcategories (level 1) and
+	/// buildings (level 2).
+	/// Type-ahead searches tools, sandbox tools (when active), and buildings.
 	/// </summary>
 	public class ActionMenuHandler: NestedMenuHandler {
 		private readonly HashedString _initialCategory;
@@ -16,6 +19,13 @@ namespace OniAccess.Handlers.Build {
 		private List<BuildMenuData.CategoryGroup> _tree;
 
 		private const int ToolsCategoryIndex = 0;
+		private bool _sandboxActive;
+		private int _sandboxCategoryIndex = -1;
+		// Number of fixed categories before build categories (1 or 2)
+		private int _fixedCategoryCount = 1;
+
+		private bool IsSandboxCategory(int catIndex) =>
+			_sandboxActive && catIndex == _sandboxCategoryIndex;
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries;
 
@@ -60,9 +70,9 @@ namespace OniAccess.Handlers.Build {
 
 		/// <summary>
 		/// Convert level-0 category index to _tree index.
-		/// Build categories occupy indices 1..N, mapping to _tree[0..N-1].
+		/// Build categories start after the fixed categories (Tools, optionally Sandbox).
 		/// </summary>
-		private static int TreeIndex(int catIndex) => catIndex - 1;
+		private int TreeIndex(int catIndex) => catIndex - _fixedCategoryCount;
 
 		// ========================================
 		// NESTED MENU ABSTRACTS
@@ -73,10 +83,15 @@ namespace OniAccess.Handlers.Build {
 
 		protected override int GetItemCount(int level, int[] indices) {
 			if (_tree == null) return 0;
-			if (level == 0) return _tree.Count + 1;
+			if (level == 0) return _tree.Count + _fixedCategoryCount;
 
 			if (IsToolsCategory(indices[0])) {
 				if (level == 1) return ToolHandler.AllTools.Count;
+				return 0;
+			}
+
+			if (IsSandboxCategory(indices[0])) {
+				if (level == 1) return GetSandboxToolInfos().Count;
 				return 0;
 			}
 
@@ -93,6 +108,8 @@ namespace OniAccess.Handlers.Build {
 			if (level == 0) {
 				if (IsToolsCategory(indices[0]))
 					return (string)STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY;
+				if (IsSandboxCategory(indices[0]))
+					return (string)STRINGS.ONIACCESS.SANDBOX.TOOLS_CATEGORY;
 				int ti = TreeIndex(indices[0]);
 				if (ti < 0 || ti >= _tree.Count) return null;
 				return _tree[ti].DisplayName;
@@ -103,6 +120,15 @@ namespace OniAccess.Handlers.Build {
 					var tools = ToolHandler.AllTools;
 					if (indices[1] < 0 || indices[1] >= tools.Count) return null;
 					return tools[indices[1]].Label;
+				}
+				return null;
+			}
+
+			if (IsSandboxCategory(indices[0])) {
+				if (level == 1) {
+					var sbTools = GetSandboxToolInfos();
+					if (indices[1] < 0 || indices[1] >= sbTools.Count) return null;
+					return sbTools[indices[1]].text;
 				}
 				return null;
 			}
@@ -129,6 +155,12 @@ namespace OniAccess.Handlers.Build {
 				return null;
 			}
 
+			if (IsSandboxCategory(indices[0])) {
+				if (level == 1)
+					return (string)STRINGS.ONIACCESS.SANDBOX.TOOLS_CATEGORY;
+				return null;
+			}
+
 			int ti = TreeIndex(indices[0]);
 			if (level == 1) {
 				if (ti < 0 || ti >= _tree.Count) return null;
@@ -148,6 +180,11 @@ namespace OniAccess.Handlers.Build {
 
 			if (IsToolsCategory(indices[0])) {
 				ActivateToolItem(indices[1]);
+				return;
+			}
+
+			if (IsSandboxCategory(indices[0])) {
+				ActivateSandboxToolItem(indices[1]);
 				return;
 			}
 
@@ -186,6 +223,15 @@ namespace OniAccess.Handlers.Build {
 				ToolPickerHandler.ActivateTool(tool);
 				HandlerStack.Replace(new ToolHandler());
 			}
+		}
+
+		private void ActivateSandboxToolItem(int toolIndex) {
+			var sbTools = GetSandboxToolInfos();
+			if (toolIndex < 0 || toolIndex >= sbTools.Count) return;
+
+			var ti = sbTools[toolIndex];
+			ActivateSandboxTool(ti);
+			HandlerStack.Replace(new SandboxToolHandler());
 		}
 
 		// ========================================
@@ -229,7 +275,7 @@ namespace OniAccess.Handlers.Build {
 				var nextSubs = _tree[c].Subcategories;
 				for (int s = 0; s < nextSubs.Count; s++) {
 					if (nextSubs[s].Buildings.Count > 0) {
-						SetIndex(0, c + 1);
+						SetIndex(0, c + _fixedCategoryCount);
 						SetIndex(1, s);
 						SetIndex(2, 0);
 						PlaySound("HUD_Mouseover");
@@ -244,7 +290,7 @@ namespace OniAccess.Handlers.Build {
 				var wrapSubs = _tree[c].Subcategories;
 				for (int s = 0; s < wrapSubs.Count; s++) {
 					if (wrapSubs[s].Buildings.Count > 0) {
-						SetIndex(0, c + 1);
+						SetIndex(0, c + _fixedCategoryCount);
 						SetIndex(1, s);
 						SetIndex(2, 0);
 						PlaySound("HUD_Click");
@@ -295,7 +341,7 @@ namespace OniAccess.Handlers.Build {
 				var prevSubs = _tree[c].Subcategories;
 				for (int s = prevSubs.Count - 1; s >= 0; s--) {
 					if (prevSubs[s].Buildings.Count > 0) {
-						SetIndex(0, c + 1);
+						SetIndex(0, c + _fixedCategoryCount);
 						SetIndex(1, s);
 						SetIndex(2, prevSubs[s].Buildings.Count - 1);
 						PlaySound("HUD_Mouseover");
@@ -310,7 +356,7 @@ namespace OniAccess.Handlers.Build {
 				var wrapSubs = _tree[c].Subcategories;
 				for (int s = wrapSubs.Count - 1; s >= 0; s--) {
 					if (wrapSubs[s].Buildings.Count > 0) {
-						SetIndex(0, c + 1);
+						SetIndex(0, c + _fixedCategoryCount);
 						SetIndex(1, s);
 						SetIndex(2, wrapSubs[s].Buildings.Count - 1);
 						PlaySound("HUD_Click");
@@ -340,7 +386,7 @@ namespace OniAccess.Handlers.Build {
 			int sub = GetIndex(1);
 
 			if (FindNextSubcategory(ti, sub, out int nc, out int ns)) {
-				SetIndex(0, nc + 1);
+				SetIndex(0, nc + _fixedCategoryCount);
 				SetIndex(1, ns);
 				SetIndex(2, 0);
 				if (nc < ti || (nc == ti && ns <= sub)) PlaySound("HUD_Click");
@@ -363,7 +409,7 @@ namespace OniAccess.Handlers.Build {
 			int sub = GetIndex(1);
 
 			if (FindPrevSubcategory(ti, sub, out int nc, out int ns)) {
-				SetIndex(0, nc + 1);
+				SetIndex(0, nc + _fixedCategoryCount);
 				SetIndex(1, ns);
 				SetIndex(2, 0);
 				if (nc > ti || (nc == ti && ns >= sub)) PlaySound("HUD_Click");
@@ -472,8 +518,10 @@ namespace OniAccess.Handlers.Build {
 			return total;
 		}
 
+		private int SandboxSearchCount => _sandboxActive ? GetSandboxToolInfos().Count : 0;
+
 		protected override int GetSearchItemCount(int[] indices) {
-			return ToolHandler.AllTools.Count + GetBuildingSearchCount();
+			return ToolHandler.AllTools.Count + SandboxSearchCount + GetBuildingSearchCount();
 		}
 
 		protected override string GetSearchItemLabel(int flatIndex) {
@@ -481,10 +529,18 @@ namespace OniAccess.Handlers.Build {
 			var tools = ToolHandler.AllTools;
 			if (flatIndex < tools.Count)
 				return tools[flatIndex].Label;
+			int remaining = flatIndex - tools.Count;
+
+			// Then sandbox tools
+			if (_sandboxActive) {
+				var sbTools = GetSandboxToolInfos();
+				if (remaining < sbTools.Count)
+					return sbTools[remaining].text;
+				remaining -= sbTools.Count;
+			}
 
 			// Then buildings
 			if (_tree == null) return null;
-			int remaining = flatIndex - tools.Count;
 			for (int c = 0; c < _tree.Count; c++) {
 				var subs = _tree[c].Subcategories;
 				for (int s = 0; s < subs.Count; s++) {
@@ -506,16 +562,28 @@ namespace OniAccess.Handlers.Build {
 				outIndices[2] = 0;
 				return;
 			}
+			int remaining = flatIndex - tools.Count;
+
+			// Then sandbox tools
+			if (_sandboxActive) {
+				var sbTools = GetSandboxToolInfos();
+				if (remaining < sbTools.Count) {
+					outIndices[0] = _sandboxCategoryIndex;
+					outIndices[1] = remaining;
+					outIndices[2] = 0;
+					return;
+				}
+				remaining -= sbTools.Count;
+			}
 
 			// Then buildings
 			if (_tree == null) return;
-			int remaining = flatIndex - tools.Count;
 			for (int c = 0; c < _tree.Count; c++) {
 				var subs = _tree[c].Subcategories;
 				for (int s = 0; s < subs.Count; s++) {
 					int count = subs[s].Buildings.Count;
 					if (remaining < count) {
-						outIndices[0] = c + 1;
+						outIndices[0] = c + _fixedCategoryCount;
 						outIndices[1] = s;
 						outIndices[2] = remaining;
 						return;
@@ -526,7 +594,7 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		protected override int GetSearchTargetLevel(int flatIndex, int[] mappedIndices) {
-			if (IsToolsCategory(mappedIndices[0]))
+			if (IsToolsCategory(mappedIndices[0]) || IsSandboxCategory(mappedIndices[0]))
 				return 1;
 			return SearchLevel;
 		}
@@ -538,6 +606,9 @@ namespace OniAccess.Handlers.Build {
 		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
 			_tree = BuildMenuData.GetFullBuildTree();
+			_sandboxActive = Game.Instance != null && Game.Instance.SandboxModeActive;
+			_sandboxCategoryIndex = _sandboxActive ? 1 : -1;
+			_fixedCategoryCount = _sandboxActive ? 2 : 1;
 
 			if (_initialDef != null && _restoreFlatIndex < 0)
 				FindDefFlatIndex(_initialDef, _initialCategory);
@@ -583,7 +654,7 @@ namespace OniAccess.Handlers.Build {
 
 		private void FindDefFlatIndex(BuildingDef def, HashedString category) {
 			if (_tree == null) return;
-			int flat = ToolHandler.AllTools.Count;
+			int flat = ToolHandler.AllTools.Count + SandboxSearchCount;
 			for (int c = 0; c < _tree.Count; c++) {
 				bool categoryMatch = category.IsValid && _tree[c].Category == category;
 				var subs = _tree[c].Subcategories;
@@ -606,7 +677,7 @@ namespace OniAccess.Handlers.Build {
 		private void MoveToCategory(HashedString category) {
 			for (int c = 0; c < _tree.Count; c++) {
 				if (_tree[c].Category == category) {
-					SetIndex(0, c + 1);
+					SetIndex(0, c + _fixedCategoryCount);
 					Level = 0;
 					SpeakCurrentItem();
 					return;
@@ -631,6 +702,28 @@ namespace OniAccess.Handlers.Build {
 			string catName = _tree[ti].DisplayName;
 			string subName = _tree[ti].Subcategories[sub].Name;
 			SpeakCurrentItem(catName + ", " + subName);
+		}
+
+		// ========================================
+		// SANDBOX TOOL HELPERS
+		// ========================================
+
+		/// <summary>
+		/// Build a flat list of ToolInfo from all sandbox tool collections.
+		/// Re-queries ToolMenu each call to avoid caching game state.
+		/// </summary>
+		private static List<ToolMenu.ToolInfo> GetSandboxToolInfos() {
+			var list = new List<ToolMenu.ToolInfo>();
+			if (ToolMenu.Instance != null) {
+				foreach (var collection in ToolMenu.Instance.sandboxTools)
+					foreach (var ti in collection.tools)
+						list.Add(ti);
+			}
+			return list;
+		}
+
+		private static void ActivateSandboxTool(ToolMenu.ToolInfo ti) {
+			ToolPickerHandler.ActivateSandboxTool(ti);
 		}
 
 	}

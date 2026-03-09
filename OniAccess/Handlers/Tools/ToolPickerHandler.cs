@@ -87,12 +87,7 @@ namespace OniAccess.Handlers.Tools {
 					}
 
 				if (found != null) {
-					if (_chooseCollectionMethod == null)
-						_chooseCollectionMethod = AccessTools.Method(typeof(ToolMenu), "ChooseCollection");
-					if (_chooseToolMethod == null)
-						_chooseToolMethod = AccessTools.Method(typeof(ToolMenu), "ChooseTool");
-					_chooseCollectionMethod.Invoke(ToolMenu.Instance, new object[] { found.collection, false });
-					_chooseToolMethod.Invoke(ToolMenu.Instance, new object[] { found });
+					ChooseToolViaReflection(found);
 				} else {
 					foreach (var interfaceTool in PlayerController.Instance.tools) {
 						if (interfaceTool.GetType().Name == tool.ToolName) {
@@ -105,6 +100,23 @@ namespace OniAccess.Handlers.Tools {
 			} catch (System.Exception ex) {
 				Util.Log.Error($"ToolPickerHandler.ActivateTool: {ex}");
 			}
+		}
+
+		internal static void ActivateSandboxTool(ToolMenu.ToolInfo ti) {
+			try {
+				ChooseToolViaReflection(ti);
+			} catch (System.Exception ex) {
+				Util.Log.Error($"ToolPickerHandler.ActivateSandboxTool: {ex}");
+			}
+		}
+
+		private static void ChooseToolViaReflection(ToolMenu.ToolInfo ti) {
+			if (_chooseCollectionMethod == null)
+				_chooseCollectionMethod = AccessTools.Method(typeof(ToolMenu), "ChooseCollection");
+			if (_chooseToolMethod == null)
+				_chooseToolMethod = AccessTools.Method(typeof(ToolMenu), "ChooseTool");
+			_chooseCollectionMethod.Invoke(ToolMenu.Instance, new object[] { ti.collection, false });
+			_chooseToolMethod.Invoke(ToolMenu.Instance, new object[] { ti });
 		}
 	}
 }

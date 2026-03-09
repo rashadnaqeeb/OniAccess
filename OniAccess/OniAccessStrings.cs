@@ -1493,5 +1493,28 @@ namespace STRINGS {
 		public class SIDESCREENS {
 			public static LocString COPILOT_ROBO = "Copilot: Robo-Pilot";
 		}
+
+		// Sandbox tool mode
+		public class SANDBOX {
+			public static LocString TOOLS_ON = "sandbox tools on";
+			public static LocString TOOLS_OFF = "sandbox tools off";
+			public static LocString TOOLS_CATEGORY = "Sandbox Tools";
+			public static LocString PARAM_MENU = "sandbox parameters";
+			public static LocString SAMPLE = "sampled";
+			public static LocString TOOL_FALLBACK = "sandbox tool";
+			// {0} = cell count (int)
+			public static LocString APPLIED = "applied to {0} cells";
+			public static LocString APPLIED_ONE = "applied";
+			public static LocString NO_VALID_CELLS = "no valid cells";
+
+			public class HELP {
+				public static LocString SET_CORNER = "Set rectangle corner";
+				public static LocString CLEAR_RECT = "Clear rectangle at cursor";
+				public static LocString CONFIRM = "Apply at cursor and dismiss";
+				public static LocString CANCEL = "Cancel tool";
+				public static LocString OPEN_PARAMS = "Open parameter menu";
+				public static LocString SAMPLE = "Sample cell under cursor";
+			}
+		}
 	}
 }

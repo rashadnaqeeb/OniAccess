@@ -1,5 +1,6 @@
 # Changelog
 
+- Sandbox mode: all 12 sandbox tools are accessible. Toggle sandbox with Shift+S, pick tools from the Sandbox Tools category in the action menu (B key). Rectangle selection for brush tools (Space for corners, Enter to apply), single-cell apply for flood/spawner/story tools, Ctrl+Space to sample, F to open the parameter menu with sliders and selectors
 - Rectangle build mode: press G while placing a 1x1 building (tile, drywall, etc.) to define rectangular areas with Space, then Enter to fill them all at once
 - Alt+Arrow skips by building, tile type, or element regardless of the active overlay
 - Fix: vacuum and void tiles no longer report "0 g" mass

@@ -752,6 +752,10 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private void PushToolHandler(InterfaceTool tool) {
+			if (Sandbox.SandboxToolHandler.IsSandboxTool(tool)) {
+				HandlerStack.Push(new Sandbox.SandboxToolHandler());
+				return;
+			}
 			if (tool is CopySettingsTool) {
 				HandlerStack.Push(new OniAccess.Handlers.Tools.CopySettingsHandler());
 				return;
