@@ -146,6 +146,8 @@ namespace OniAccess.Handlers.Sandbox {
 				if (!InputUtil.AnyModifierHeld()) {
 					if (_isRectangleTool)
 						SetCorner();
+					else
+						PlaceAtCursor();
 					return true;
 				}
 			}
@@ -280,14 +282,32 @@ namespace OniAccess.Handlers.Sandbox {
 		}
 
 		private void SubmitSingleCellTool(InterfaceTool activeTool, int cell) {
+			ApplySingleCell(activeTool, cell);
+			DeactivateToolAndPop();
+		}
+
+		private void PlaceAtCursor() {
+			var activeTool = PlayerController.Instance?.ActiveTool;
+			if (activeTool == null) return;
+
+			int cell = TileCursor.Instance.Cell;
+			if (!Grid.IsVisible(cell)) {
+				PlaySound("Negative");
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+				return;
+			}
+
+			ApplySingleCell(activeTool, cell);
+		}
+
+		private static void ApplySingleCell(InterfaceTool tool, int cell) {
 			var pos = Grid.CellToPosCCC(cell, Grid.SceneLayer.Move);
 			try {
-				activeTool.OnLeftClickDown(pos);
+				tool.OnLeftClickDown(pos);
 			} catch (Exception ex) {
-				Util.Log.Error($"SandboxToolHandler.SubmitSingleCellTool: {ex}");
+				Util.Log.Error($"SandboxToolHandler.ApplySingleCell: {ex}");
 			}
 			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.SANDBOX.APPLIED_ONE);
-			DeactivateToolAndPop();
 		}
 
 		/// <summary>
@@ -366,16 +386,15 @@ namespace OniAccess.Handlers.Sandbox {
 		private string GetToolLabel() {
 			var tool = PlayerController.Instance?.ActiveTool;
 			if (tool == null) return (string)STRINGS.ONIACCESS.SANDBOX.TOOL_FALLBACK;
-			// Read the tool name from the ToolMenu's sandbox tool collection
 			try {
 				foreach (var collection in ToolMenu.Instance.sandboxTools)
 					foreach (var ti in collection.tools)
 						if (ti.toolName == tool.GetType().Name)
-							return Strings.Get("STRINGS.UI.TOOLS.SANDBOX." + ti.toolName.ToUpper() + ".TOOLNAME");
+							return ti.text;
 			} catch (Exception ex) {
 				Util.Log.Warn($"SandboxToolHandler.GetToolLabel: {ex.Message}");
 			}
-			return tool.GetType().Name;
+			return (string)STRINGS.ONIACCESS.SANDBOX.TOOL_FALLBACK;
 		}
 
 		private void DeactivateToolAndPop() {

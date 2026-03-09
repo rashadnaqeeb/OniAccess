@@ -51,7 +51,7 @@ namespace OniAccess.Handlers.Sandbox {
 				Sel(menu.entitySelector),
 				Sel(menu.elementSelector),
 				Sel(menu.storySelector),
-				Sld(menu.brushRadiusSlider),
+				// brushRadiusSlider omitted: rectangle selection replaces it
 				Sld(menu.noiseScaleSlider),
 				Sld(menu.noiseDensitySlider),
 				Sld(menu.massSlider),
@@ -76,11 +76,14 @@ namespace OniAccess.Handlers.Sandbox {
 				} else {
 					if (e.Slider.row == null || !e.Slider.row.activeSelf) continue;
 					if (e.Slider.slider == null) continue;
+					var sld = e.Slider;
 					_widgets.Add(new SliderWidget {
-						Label = e.Slider.labelText,
-						Component = e.Slider.slider,
-						GameObject = e.Slider.row,
+						Label = sld.labelText,
+						Component = sld.slider,
+						GameObject = sld.row,
 						SuppressTooltip = true,
+						SpeechFunc = () => ReadSliderValue(sld),
+						Tag = sld,
 					});
 				}
 			}
@@ -106,6 +109,23 @@ namespace OniAccess.Handlers.Sandbox {
 			return $"{sel.labelText}, {value}";
 		}
 
+		private static string ReadSliderValue(SandboxToolParameterMenu.SliderValue sld) {
+			if (sld.slider == null) return sld.labelText;
+			return $"{sld.labelText}, {FormatSliderRaw(sld)}";
+		}
+
+		private static string FormatSliderRaw(SandboxToolParameterMenu.SliderValue sld) {
+			float raw = sld.slider.value;
+			float rounded = UnityEngine.Mathf.Round(
+				raw * UnityEngine.Mathf.Pow(10f, sld.roundToDecimalPlaces))
+				/ UnityEngine.Mathf.Pow(10f, sld.roundToDecimalPlaces);
+			string formatted = sld.roundToDecimalPlaces == 0
+				? ((int)rounded).ToString()
+				: rounded.ToString($"F{sld.roundToDecimalPlaces}");
+			string unit = string.IsNullOrEmpty(sld.unitString) ? "" : $" {sld.unitString}";
+			return $"{formatted}{unit}";
+		}
+
 		// ========================================
 		// INTERACTION
 		// ========================================
@@ -121,6 +141,13 @@ namespace OniAccess.Handlers.Sandbox {
 			}
 
 			// Sliders: no Enter action
+		}
+
+		protected override string FormatSliderValue(KSlider slider) {
+			if (CurrentIndex >= 0 && CurrentIndex < _widgets.Count
+				&& _widgets[CurrentIndex].Tag is SandboxToolParameterMenu.SliderValue sld)
+				return FormatSliderRaw(sld);
+			return base.FormatSliderValue(slider);
 		}
 
 		// ========================================

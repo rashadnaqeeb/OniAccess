@@ -1508,9 +1508,9 @@ namespace STRINGS {
 			public static LocString NO_VALID_CELLS = "no valid cells";
 
 			public class HELP {
-				public static LocString SET_CORNER = "Set rectangle corner";
+				public static LocString SET_CORNER = "Set rectangle corner or place";
 				public static LocString CLEAR_RECT = "Clear rectangle at cursor";
-				public static LocString CONFIRM = "Apply at cursor and dismiss";
+				public static LocString CONFIRM = "Apply and dismiss";
 				public static LocString CANCEL = "Cancel tool";
 				public static LocString OPEN_PARAMS = "Open parameter menu";
 				public static LocString SAMPLE = "Sample cell under cursor";
