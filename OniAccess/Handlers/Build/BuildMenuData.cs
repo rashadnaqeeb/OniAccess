@@ -163,6 +163,10 @@ namespace OniAccess.Handlers.Build {
 
 		public static string GetOrientationName(
 				Orientation orientation, BuildingDef def) {
+			if (def.BuildLocationRule == BuildLocationRule.HighWattBridgeTile)
+				return orientation == Orientation.R90 || orientation == Orientation.R270
+					? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL
+					: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL;
 			return GetOrientationName(
 				orientation, def.PermittedRotations, IsHorizontalFlowBuilding(def));
 		}
