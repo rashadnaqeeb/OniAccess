@@ -16,10 +16,10 @@ namespace OniAccess {
 		public static string ModDir { get; private set; }
 		public static string Version { get; private set; }
 
-		[DllImport("kernel32.dll", SetLastError = true)]
+		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		private static extern bool SetDllDirectory(string lpPathName);
 
-		[DllImport("kernel32.dll", SetLastError = true)]
+		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		private static extern IntPtr LoadLibrary(string lpFileName);
 
 		public override void OnLoad(Harmony harmony) {
