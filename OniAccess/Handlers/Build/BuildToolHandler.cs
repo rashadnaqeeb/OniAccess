@@ -111,7 +111,7 @@ namespace OniAccess.Handlers.Build {
 		private static readonly IReadOnlyList<HelpEntry> _singleModeHelp = new List<HelpEntry> {
 			new HelpEntry("Space", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE_AND_EXIT),
-			new HelpEntry("G", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE),
+			new HelpEntry("Ctrl+G", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE),
 			new HelpEntry("R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE),
 			new HelpEntry("Shift+R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE_REVERSE),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST),
@@ -126,7 +126,7 @@ namespace OniAccess.Handlers.Build {
 			new HelpEntry("Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER),
 			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CONFIRM_TOOL),
-			new HelpEntry("G", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE),
+			new HelpEntry("Ctrl+G", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO),
 			new HelpEntry("P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
@@ -285,7 +285,7 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.G)
-				&& !InputUtil.AnyModifierHeld()) {
+				&& InputUtil.CtrlHeld() && !InputUtil.ShiftHeld() && !InputUtil.AltHeld()) {
 				ToggleRectMode();
 				return true;
 			}
