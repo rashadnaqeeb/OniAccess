@@ -57,8 +57,13 @@ namespace OniAccess.Handlers.Screens {
 							label = titleText.text;
 					}
 
-					if (string.IsNullOrEmpty(label))
-						label = go.name;
+					// UGC buttons use SetText() which doesn't update m_text in this
+					// TMP version, so titleText.text returns the prefab default "Title".
+					// Fall back to go.name which the game sets to "mod.title_button".
+					if (string.IsNullOrEmpty(label) || label == "Title")
+						label = go.name.EndsWith("_button")
+							? go.name.Substring(0, go.name.Length - "_button".Length)
+							: go.name;
 
 					bool isSelected = selectedButtonName != null && go.name == selectedButtonName;
 					string widgetLabel = label;
