@@ -1,0 +1,4485 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OniAccess\n"
+"PO-Revision-Date: 2026-03-09\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.ALLOWED
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.ALLOWED"
+msgid "allowed"
+msgstr "autorisé"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.BLOCKED
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.BLOCKED"
+msgid "blocked"
+msgstr "bloqué"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_DOWN
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_DOWN"
+msgid "default, passing from top to bottom"
+msgstr "défaut, passage du haut vers le bas"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_LEFT
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_LEFT"
+msgid "default, passing from right to left"
+msgstr "défaut, passage de droite à gauche"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_RIGHT
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_RIGHT"
+msgid "default, passing from left to right"
+msgstr "défaut, passage de gauche à droite"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_UP
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_UP"
+msgid "default, passing from bottom to top"
+msgstr "défaut, passage du bas vers le haut"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.LOCKED
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.LOCKED"
+msgid "Door locked, access control disabled"
+msgstr "Porte verrouillée, contrôle d'accès désactivé"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_DOWN
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_DOWN"
+msgid "passing from top to bottom"
+msgstr "passage du haut vers le bas"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_LEFT
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_LEFT"
+msgid "passing from right to left"
+msgstr "passage de droite à gauche"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_RIGHT
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_RIGHT"
+msgid "passing from left to right"
+msgstr "passage de gauche à droite"
+
+#. STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_UP
+msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_UP"
+msgid "passing from bottom to top"
+msgstr "passage du bas vers le haut"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.AVG_DECOR
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.AVG_DECOR"
+msgid "average {0} decor"
+msgstr "décoration moyenne {0}"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.AVG_DISEASE
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.AVG_DISEASE"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.AVG_LUX
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.AVG_LUX"
+msgid "average {0}"
+msgstr "moyenne {0}"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.AVG_RADS
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.AVG_RADS"
+msgid "average {0}"
+msgstr "moyenne {0}"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.AVG_TEMPERATURE
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.AVG_TEMPERATURE"
+msgid "average {0}"
+msgstr "moyenne {0}"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.BUILDING_COUNT
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.BUILDING_COUNT"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.CRITTER_PLURAL
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.CRITTER_PLURAL"
+msgid "{0} critters"
+msgstr "{0} bestioles"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.CRITTER_SINGULAR
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.CRITTER_SINGULAR"
+msgid "{0} critter"
+msgstr "{0} bestiole"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.DISEASE_CLEAR
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.DISEASE_CLEAR"
+msgid "no germs"
+msgstr "aucun germe"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.DUPE_PLURAL
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.DUPE_PLURAL"
+msgid "{0} dupes"
+msgstr "{0} Duplicants"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.DUPE_SINGULAR
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.DUPE_SINGULAR"
+msgid "{0} dupe"
+msgstr "{0} Duplicant"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_MASS_PCT
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_MASS_PCT"
+msgid "{0} {1}%: {2}"
+msgstr "{0} {1}% : {2}"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_PCT
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_PCT"
+msgid "{0} {1}%"
+msgstr "{0} {1}%"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.EMPTY
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.EMPTY"
+msgid "empty"
+msgstr "vide"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.GAS
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.GAS"
+msgid "gas"
+msgstr "gaz"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.HELP_CYCLE_SIZE
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.HELP_CYCLE_SIZE"
+msgid "Increase or decrease cursor size"
+msgstr "Augmenter ou diminuer la taille du curseur"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.HELP_RESET_SIZE
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.HELP_RESET_SIZE"
+msgid "Reset cursor to 1x1"
+msgstr "Réinitialiser le curseur à 1x1"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.LIQUID
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.LIQUID"
+msgid "liquid"
+msgstr "liquide"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.NO_PLANTS
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.NO_PLANTS"
+msgid "no plants"
+msgstr "aucune plante"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.NO_ROOMS
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.NO_ROOMS"
+msgid "no rooms"
+msgstr "aucune salle"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.ORDER_COUNT
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.ORDER_COUNT"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.PLANT_ENTRY
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.PLANT_ENTRY"
+msgid "{0} {1}, {2}% grown"
+msgstr "{0} {1}, {2}% de croissance"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.SCAN_ERROR
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.SCAN_ERROR"
+msgid "scan error"
+msgstr "erreur de scan"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.SIZE_FORMAT
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.SIZE_FORMAT"
+msgid "{0}x{0}"
+msgstr "{0}x{0}"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.SOLID
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.SOLID"
+msgid "solid"
+msgstr "solide"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.UNCATEGORIZED_ROOMS
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.UNCATEGORIZED_ROOMS"
+msgid "{0} uncategorized"
+msgstr "{0} non catégorisée"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.UNEXPLORED_PCT
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.UNEXPLORED_PCT"
+msgid "{0}% unexplored"
+msgstr "{0}% inexplorée"
+
+#. STRINGS.ONIACCESS.BIG_CURSOR.VACUUM
+msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.VACUUM"
+msgid "vacuum"
+msgstr "vide spatial"
+
+#. STRINGS.ONIACCESS.BOOKMARKS.BOOKMARK_SET
+msgctxt "STRINGS.ONIACCESS.BOOKMARKS.BOOKMARK_SET"
+msgid "bookmark {0} set"
+msgstr "signet {0} défini"
+
+#. STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK
+msgctxt "STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK"
+msgid "Jump to bookmark"
+msgstr "Aller au signet"
+
+#. STRINGS.ONIACCESS.BOOKMARKS.HELP_HOME
+msgctxt "STRINGS.ONIACCESS.BOOKMARKS.HELP_HOME"
+msgid "Jump to Printing Pod"
+msgstr "Aller au Printing Pod"
+
+#. STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_BOOKMARK
+msgctxt "STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_BOOKMARK"
+msgid "Distance to bookmark"
+msgstr "Distance au signet"
+
+#. STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK
+msgctxt "STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK"
+msgid "Set bookmark"
+msgstr "Définir un signet"
+
+#. STRINGS.ONIACCESS.BOOKMARKS.NO_BOOKMARK
+msgctxt "STRINGS.ONIACCESS.BOOKMARKS.NO_BOOKMARK"
+msgid "no bookmark"
+msgstr "aucun signet"
+
+#. STRINGS.ONIACCESS.BOOKMARKS.NO_HOME
+msgctxt "STRINGS.ONIACCESS.BOOKMARKS.NO_HOME"
+msgid "no printing pod"
+msgstr "aucun Printing Pod"
+
+#. STRINGS.ONIACCESS.BOOKMARKS.ORIENT_DISTANCE
+msgctxt "STRINGS.ONIACCESS.BOOKMARKS.ORIENT_DISTANCE"
+msgid "{0}. {1}"
+msgstr "{0}. {1}"
+
+#. STRINGS.ONIACCESS.BOOKMARKS.ORIENT_HERE
+msgctxt "STRINGS.ONIACCESS.BOOKMARKS.ORIENT_HERE"
+msgid "here. {0}"
+msgstr "ici. {0}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.ACTION_MENU
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ACTION_MENU"
+msgid "action menu"
+msgstr "menu d'actions"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.ATTR_MODIFIER
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ATTR_MODIFIER"
+msgid "{0} {1}{2}"
+msgstr "{0} {1}{2}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.ATTR_VALUE
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ATTR_VALUE"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.ATTRIBUTES_FMT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ATTRIBUTES_FMT"
+msgid "attributes: {0}"
+msgstr "attributs : {0}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.CANCEL_CONSTRUCTION
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.CANCEL_CONSTRUCTION"
+msgid "canceled"
+msgstr "annulé"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.CANCELED
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.CANCELED"
+msgid "canceled"
+msgstr "annulé"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.CATEGORY_FMT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.CATEGORY_FMT"
+msgid "category: {0}"
+msgstr "catégorie : {0}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.CONFIRM_BUILD_RECT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.CONFIRM_BUILD_RECT"
+msgid "placed {0}, priority {1}"
+msgstr "placé {0}, priorité {1}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTION_FMT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTION_FMT"
+msgid "description: {0}"
+msgstr "description : {0}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTOR_FMT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTOR_FMT"
+msgid "{0}: {1}"
+msgstr "{0} : {1}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.EFFECTS
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EFFECTS"
+msgid "effects"
+msgstr "effets"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN"
+msgid "{0} down"
+msgstr "{0} vers le bas"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.EXTENT_FORMAT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EXTENT_FORMAT"
+msgid "extends {0}"
+msgstr "s'étend {0}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT"
+msgid "{0} left"
+msgstr "{0} à gauche"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT"
+msgid "{0} right"
+msgstr "{0} à droite"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP"
+msgid "{0} up"
+msgstr "{0} vers le haut"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.FACADE_DEFAULT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.FACADE_DEFAULT"
+msgid "default"
+msgstr "défaut"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.FACADE_FMT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.FACADE_FMT"
+msgid "facade: {0}"
+msgstr "apparence : {0}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.FACING
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.FACING"
+msgid "facing {0}"
+msgstr "orienté {0}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST"
+msgid "Return to building list"
+msgstr "Retour à la liste des bâtiments"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.HELP_CANCEL_CONSTRUCTION
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_CANCEL_CONSTRUCTION"
+msgid "Cancel construction at cursor"
+msgstr "Annuler la construction au curseur"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO"
+msgid "Open info panel"
+msgstr "Ouvrir le panneau d'infos"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_ACTION_MENU
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_ACTION_MENU"
+msgid "Open action menu"
+msgstr "Ouvrir le menu d'actions"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE"
+msgid "Place building or set start"
+msgstr "Placer le bâtiment ou définir le début"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE_AND_EXIT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE_AND_EXIT"
+msgid "Place building and exit"
+msgstr "Placer le bâtiment et quitter"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS"
+msgid "ports"
+msgstr "ports"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE"
+msgid "toggle rectangle mode"
+msgstr "activer/désactiver le mode rectangle"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE"
+msgid "Rotate building"
+msgstr "Tourner le bâtiment"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE_REVERSE
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE_REVERSE"
+msgid "Rotate building backward"
+msgstr "Tourner le bâtiment en arrière"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.INFO_PANEL
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.INFO_PANEL"
+msgid "info"
+msgstr "infos"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE"
+msgid "invalid"
+msgstr "invalide"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.LINE_CELLS
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.LINE_CELLS"
+msgid "{0} cells"
+msgstr "{0} cellules"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_EFFECTS_FMT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_EFFECTS_FMT"
+msgid "material effects: {0}"
+msgstr "effets du matériau : {0}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_ENTRY
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_ENTRY"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_INSUFFICIENT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_INSUFFICIENT"
+msgid "{0}, {1}, insufficient"
+msgstr "{0}, {1}, insuffisant"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_OR
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_OR"
+msgid " or "
+msgstr " ou "
+
+#. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_SLOT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_SLOT"
+msgid "{0}: {1}, {2}"
+msgstr "{0} : {1}, {2}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_SLOT_INSUFFICIENT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_SLOT_INSUFFICIENT"
+msgid "{0}: {1}, {2}, insufficient"
+msgstr "{0} : {1}, {2}, insuffisant"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.MUST_BE_STRAIGHT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MUST_BE_STRAIGHT"
+msgid "must be a straight line"
+msgstr "doit être en ligne droite"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.NO_CONSTRUCTION
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.NO_CONSTRUCTION"
+msgid "nothing to cancel"
+msgstr "rien à annuler"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.NO_PORTS
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.NO_PORTS"
+msgid "no ports"
+msgstr "aucun port"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE"
+msgid "not buildable"
+msgstr "non constructible"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.NOT_ROTATABLE
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.NOT_ROTATABLE"
+msgid "not rotatable"
+msgstr "non orientable"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED"
+msgid "obstructed"
+msgstr "obstrué"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN"
+msgid "down"
+msgstr "bas"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL"
+msgid "horizontal"
+msgstr "horizontal"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT"
+msgid "left"
+msgstr "gauche"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT"
+msgid "right"
+msgstr "droite"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP"
+msgid "up"
+msgstr "haut"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL"
+msgid "vertical"
+msgstr "vertical"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.PLACED
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.PLACED"
+msgid "placed"
+msgstr "placé"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.PLACED_NO_MATERIAL
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.PLACED_NO_MATERIAL"
+msgid "placed, no material available"
+msgstr "placé, aucun matériau disponible"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.PORT_AT
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.PORT_AT"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.PREBUILD_ERROR
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.PREBUILD_ERROR"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_OFF
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_OFF"
+msgid "single mode"
+msgstr "mode simple"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_ON
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_ON"
+msgid "rectangle mode"
+msgstr "mode rectangle"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_UNAVAILABLE
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_UNAVAILABLE"
+msgid "rectangle mode not available"
+msgstr "mode rectangle non disponible"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.REQUIREMENTS
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.REQUIREMENTS"
+msgid "requirements"
+msgstr "prérequis"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.START_CLEARED
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.START_CLEARED"
+msgid "start cleared"
+msgstr "début effacé"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.START_SET
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.START_SET"
+msgid "start set"
+msgstr "début défini"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY"
+msgid "Tools"
+msgstr "Outils"
+
+#. STRINGS.ONIACCESS.BUTTONS.ACCEPT
+msgctxt "STRINGS.ONIACCESS.BUTTONS.ACCEPT"
+msgid "Accept"
+msgstr "Accepter"
+
+#. STRINGS.ONIACCESS.BUTTONS.MANAGE
+msgctxt "STRINGS.ONIACCESS.BUTTONS.MANAGE"
+msgid "Manage"
+msgstr "Gérer"
+
+#. STRINGS.ONIACCESS.BUTTONS.MOVE_DOWN
+msgctxt "STRINGS.ONIACCESS.BUTTONS.MOVE_DOWN"
+msgid "Move down"
+msgstr "Déplacer vers le bas"
+
+#. STRINGS.ONIACCESS.BUTTONS.MOVE_UP
+msgctxt "STRINGS.ONIACCESS.BUTTONS.MOVE_UP"
+msgid "Move up"
+msgstr "Déplacer vers le haut"
+
+#. STRINGS.ONIACCESS.BUTTONS.TOGGLE_ALL
+msgctxt "STRINGS.ONIACCESS.BUTTONS.TOGGLE_ALL"
+msgid "Toggle all"
+msgstr "Tout basculer"
+
+#. STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES
+msgctxt "STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES"
+msgid "View other colonies"
+msgstr "Voir les autres colonies"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ALL
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ALL"
+msgid "All"
+msgstr "Tout"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ASTEROIDS
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ASTEROIDS"
+msgid "Asteroids"
+msgstr "Astéroïdes"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.METEORS
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.METEORS"
+msgid "Meteor showers"
+msgstr "Pluies de météorites"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.POIS
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.POIS"
+msgid "Points of interest"
+msgstr "Points d'intérêt"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ROCKETS
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ROCKETS"
+msgid "Rockets"
+msgstr "Fusées"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.UNKNOWN
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.UNKNOWN"
+msgid "Unknown"
+msgstr "Inconnu"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.EAST
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.EAST"
+msgid "east"
+msgstr "est"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTH
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTH"
+msgid "north"
+msgstr "nord"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTHEAST
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTHEAST"
+msgid "northeast"
+msgstr "nord-est"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTHWEST
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTHWEST"
+msgid "northwest"
+msgstr "nord-ouest"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTH
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTH"
+msgid "south"
+msgstr "sud"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTHEAST
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTHEAST"
+msgid "southeast"
+msgstr "sud-est"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTHWEST
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTHWEST"
+msgid "southwest"
+msgstr "sud-ouest"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.WEST
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.WEST"
+msgid "west"
+msgstr "ouest"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.DESTINATION_CANCELLED
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.DESTINATION_CANCELLED"
+msgid "destination cancelled"
+msgstr "destination annulée"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.DESTINATION_SET
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.DESTINATION_SET"
+msgid "destination set, {0} hexes"
+msgstr "destination définie, {0} hexagones"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.HEX_MOVE
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.HEX_MOVE"
+msgid "Move cursor on hex grid"
+msgstr "Déplacer le curseur sur la grille hexagonale"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.HEX_MOVE_ARROWS
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.HEX_MOVE_ARROWS"
+msgid "Move cursor (diagonal varies by row)"
+msgstr "Déplacer le curseur (diagonale varie selon la rangée)"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.JUMP_HOME
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.JUMP_HOME"
+msgid "Jump to active world"
+msgstr "Aller au monde actif"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.PATHFIND_CALC
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.PATHFIND_CALC"
+msgid "Calculate path to cursor"
+msgstr "Calculer le chemin vers le curseur"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.PATHFIND_START
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.PATHFIND_START"
+msgid "Set pathfinder start"
+msgstr "Définir le départ du pathfinder"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.READ_COORDS
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.READ_COORDS"
+msgid "Read hex coordinates"
+msgstr "Lire les coordonnées hexagonales"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.READ_TOOLTIP
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.READ_TOOLTIP"
+msgid "Read entity details"
+msgstr "Lire les détails de l'entité"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.SELECT_ENTITY
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.SELECT_ENTITY"
+msgid "Select entity"
+msgstr "Sélectionner l'entité"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.SWITCH_WORLD
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.SWITCH_WORLD"
+msgid "Switch to asteroid"
+msgstr "Basculer vers l'astéroïde"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.HEX_COORDINATES
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HEX_COORDINATES"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.NO_PATH
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.NO_PATH"
+msgid "no path"
+msgstr "aucun chemin"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.PATH_FOG_WITH_ALT
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.PATH_FOG_WITH_ALT"
+msgid "path: {0}, {1} through fog. Without scanner: {2}"
+msgstr "chemin : {0}, {1} dans le brouillard. Sans scanner : {2}"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.PATH_RESULT
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.PATH_RESULT"
+msgid "path: {0}"
+msgstr "chemin : {0}"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.PATH_THROUGH_FOG
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.PATH_THROUGH_FOG"
+msgid "path: {0}, {1} through fog"
+msgstr "chemin : {0}, {1} dans le brouillard"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_DESTINATION
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_DESTINATION"
+msgid "select destination"
+msgstr "sélectionner la destination"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_OBJECT
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_OBJECT"
+msgid "select object"
+msgstr "sélectionner l'objet"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.SET_START_FIRST
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.SET_START_FIRST"
+msgid "set start with space"
+msgstr "définir le départ avec espace"
+
+#. STRINGS.ONIACCESS.CLUSTER_MAP.UNSEEN
+msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.UNSEEN"
+msgid "unseen"
+msgstr "inexploré"
+
+#. STRINGS.ONIACCESS.CODEX.CATEGORIES_TAB
+msgctxt "STRINGS.ONIACCESS.CODEX.CATEGORIES_TAB"
+msgid "Categories"
+msgstr "Catégories"
+
+#. STRINGS.ONIACCESS.CODEX.CONTENT_TAB
+msgctxt "STRINGS.ONIACCESS.CODEX.CONTENT_TAB"
+msgid "Content"
+msgstr "Contenu"
+
+#. STRINGS.ONIACCESS.CODEX.FOLLOW_LINK_HELP
+msgctxt "STRINGS.ONIACCESS.CODEX.FOLLOW_LINK_HELP"
+msgid "Follow link"
+msgstr "Suivre le lien"
+
+#. STRINGS.ONIACCESS.CODEX.HISTORY_FORWARD_HELP
+msgctxt "STRINGS.ONIACCESS.CODEX.HISTORY_FORWARD_HELP"
+msgid "Go forward"
+msgstr "Avancer"
+
+#. STRINGS.ONIACCESS.CODEX.LINK_MENU
+msgctxt "STRINGS.ONIACCESS.CODEX.LINK_MENU"
+msgid "{0} links"
+msgstr "{0} liens"
+
+#. STRINGS.ONIACCESS.CODEX.LOCKED_CONTENT
+msgctxt "STRINGS.ONIACCESS.CODEX.LOCKED_CONTENT"
+msgid "locked content"
+msgstr "contenu verrouillé"
+
+#. STRINGS.ONIACCESS.CODEX.MADE_IN
+msgctxt "STRINGS.ONIACCESS.CODEX.MADE_IN"
+msgid "made in"
+msgstr "fabriqué dans"
+
+#. STRINGS.ONIACCESS.CODEX.NO_ARTICLE
+msgctxt "STRINGS.ONIACCESS.CODEX.NO_ARTICLE"
+msgid "no article selected"
+msgstr "aucun article sélectionné"
+
+#. STRINGS.ONIACCESS.CODEX.NO_BACK
+msgctxt "STRINGS.ONIACCESS.CODEX.NO_BACK"
+msgid "nothing to go back to"
+msgstr "rien pour revenir en arrière"
+
+#. STRINGS.ONIACCESS.CODEX.NO_FORWARD
+msgctxt "STRINGS.ONIACCESS.CODEX.NO_FORWARD"
+msgid "nothing to go forward to"
+msgstr "rien pour avancer"
+
+#. STRINGS.ONIACCESS.CODEX.PRODUCES
+msgctxt "STRINGS.ONIACCESS.CODEX.PRODUCES"
+msgid "produces"
+msgstr "produit"
+
+#. STRINGS.ONIACCESS.CODEX.REQUIRES
+msgctxt "STRINGS.ONIACCESS.CODEX.REQUIRES"
+msgid "requires"
+msgstr "nécessite"
+
+#. STRINGS.ONIACCESS.CODEX.TIME
+msgctxt "STRINGS.ONIACCESS.CODEX.TIME"
+msgid "time:"
+msgstr "temps :"
+
+#. STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE
+msgctxt "STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE"
+msgid "last cycle"
+msgstr "dernier cycle"
+
+#. STRINGS.ONIACCESS.COLONY_STATS.PEAK
+msgctxt "STRINGS.ONIACCESS.COLONY_STATS.PEAK"
+msgid "peak"
+msgstr "pic"
+
+#. STRINGS.ONIACCESS.COLORS.BEIGE
+msgctxt "STRINGS.ONIACCESS.COLORS.BEIGE"
+msgid "beige"
+msgstr "beige"
+
+#. STRINGS.ONIACCESS.COLORS.BLACK
+msgctxt "STRINGS.ONIACCESS.COLORS.BLACK"
+msgid "black"
+msgstr "noir"
+
+#. STRINGS.ONIACCESS.COLORS.BLUE
+msgctxt "STRINGS.ONIACCESS.COLORS.BLUE"
+msgid "blue"
+msgstr "bleu"
+
+#. STRINGS.ONIACCESS.COLORS.BLUE_VIOLET
+msgctxt "STRINGS.ONIACCESS.COLORS.BLUE_VIOLET"
+msgid "blue violet"
+msgstr "bleu violet"
+
+#. STRINGS.ONIACCESS.COLORS.BRIGHT_GREEN
+msgctxt "STRINGS.ONIACCESS.COLORS.BRIGHT_GREEN"
+msgid "bright green"
+msgstr "vert vif"
+
+#. STRINGS.ONIACCESS.COLORS.BROWN
+msgctxt "STRINGS.ONIACCESS.COLORS.BROWN"
+msgid "brown"
+msgstr "marron"
+
+#. STRINGS.ONIACCESS.COLORS.CHARTREUSE
+msgctxt "STRINGS.ONIACCESS.COLORS.CHARTREUSE"
+msgid "chartreuse"
+msgstr "chartreuse"
+
+#. STRINGS.ONIACCESS.COLORS.CORNFLOWER
+msgctxt "STRINGS.ONIACCESS.COLORS.CORNFLOWER"
+msgid "cornflower"
+msgstr "bleuet"
+
+#. STRINGS.ONIACCESS.COLORS.CREAM
+msgctxt "STRINGS.ONIACCESS.COLORS.CREAM"
+msgid "cream"
+msgstr "crème"
+
+#. STRINGS.ONIACCESS.COLORS.CRIMSON
+msgctxt "STRINGS.ONIACCESS.COLORS.CRIMSON"
+msgid "crimson"
+msgstr "cramoisi"
+
+#. STRINGS.ONIACCESS.COLORS.CYAN
+msgctxt "STRINGS.ONIACCESS.COLORS.CYAN"
+msgid "cyan"
+msgstr "cyan"
+
+#. STRINGS.ONIACCESS.COLORS.DARK_BLUE
+msgctxt "STRINGS.ONIACCESS.COLORS.DARK_BLUE"
+msgid "dark blue"
+msgstr "bleu foncé"
+
+#. STRINGS.ONIACCESS.COLORS.DARK_GOLD
+msgctxt "STRINGS.ONIACCESS.COLORS.DARK_GOLD"
+msgid "dark gold"
+msgstr "or foncé"
+
+#. STRINGS.ONIACCESS.COLORS.DARK_GRAY
+msgctxt "STRINGS.ONIACCESS.COLORS.DARK_GRAY"
+msgid "dark gray"
+msgstr "gris foncé"
+
+#. STRINGS.ONIACCESS.COLORS.DARK_GREEN
+msgctxt "STRINGS.ONIACCESS.COLORS.DARK_GREEN"
+msgid "dark green"
+msgstr "vert foncé"
+
+#. STRINGS.ONIACCESS.COLORS.DARK_OLIVE
+msgctxt "STRINGS.ONIACCESS.COLORS.DARK_OLIVE"
+msgid "dark olive"
+msgstr "olive foncé"
+
+#. STRINGS.ONIACCESS.COLORS.DARK_RED
+msgctxt "STRINGS.ONIACCESS.COLORS.DARK_RED"
+msgid "dark red"
+msgstr "rouge foncé"
+
+#. STRINGS.ONIACCESS.COLORS.DARK_TEAL
+msgctxt "STRINGS.ONIACCESS.COLORS.DARK_TEAL"
+msgid "dark teal"
+msgstr "sarcelle foncé"
+
+#. STRINGS.ONIACCESS.COLORS.DEEP_GREEN
+msgctxt "STRINGS.ONIACCESS.COLORS.DEEP_GREEN"
+msgid "deep green"
+msgstr "vert profond"
+
+#. STRINGS.ONIACCESS.COLORS.DODGER_BLUE
+msgctxt "STRINGS.ONIACCESS.COLORS.DODGER_BLUE"
+msgid "dodger blue"
+msgstr "bleu Dodger"
+
+#. STRINGS.ONIACCESS.COLORS.FOREST_GREEN
+msgctxt "STRINGS.ONIACCESS.COLORS.FOREST_GREEN"
+msgid "forest green"
+msgstr "vert forêt"
+
+#. STRINGS.ONIACCESS.COLORS.GOLD
+msgctxt "STRINGS.ONIACCESS.COLORS.GOLD"
+msgid "gold"
+msgstr "or"
+
+#. STRINGS.ONIACCESS.COLORS.GRAY
+msgctxt "STRINGS.ONIACCESS.COLORS.GRAY"
+msgid "gray"
+msgstr "gris"
+
+#. STRINGS.ONIACCESS.COLORS.GREEN
+msgctxt "STRINGS.ONIACCESS.COLORS.GREEN"
+msgid "green"
+msgstr "vert"
+
+#. STRINGS.ONIACCESS.COLORS.HOT_PINK
+msgctxt "STRINGS.ONIACCESS.COLORS.HOT_PINK"
+msgid "hot pink"
+msgstr "rose vif"
+
+#. STRINGS.ONIACCESS.COLORS.INDIGO
+msgctxt "STRINGS.ONIACCESS.COLORS.INDIGO"
+msgid "indigo"
+msgstr "indigo"
+
+#. STRINGS.ONIACCESS.COLORS.LAVENDER
+msgctxt "STRINGS.ONIACCESS.COLORS.LAVENDER"
+msgid "lavender"
+msgstr "lavande"
+
+#. STRINGS.ONIACCESS.COLORS.LIGHT_BLUE
+msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_BLUE"
+msgid "light blue"
+msgstr "bleu clair"
+
+#. STRINGS.ONIACCESS.COLORS.LIGHT_GOLD
+msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_GOLD"
+msgid "light gold"
+msgstr "or clair"
+
+#. STRINGS.ONIACCESS.COLORS.LIGHT_LIME
+msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_LIME"
+msgid "light lime"
+msgstr "citron vert clair"
+
+#. STRINGS.ONIACCESS.COLORS.LIGHT_PINK
+msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_PINK"
+msgid "light pink"
+msgstr "rose clair"
+
+#. STRINGS.ONIACCESS.COLORS.LIGHT_PURPLE
+msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_PURPLE"
+msgid "light purple"
+msgstr "violet clair"
+
+#. STRINGS.ONIACCESS.COLORS.LIGHT_ROSE
+msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_ROSE"
+msgid "light rose"
+msgstr "rose pâle"
+
+#. STRINGS.ONIACCESS.COLORS.MAGENTA
+msgctxt "STRINGS.ONIACCESS.COLORS.MAGENTA"
+msgid "magenta"
+msgstr "magenta"
+
+#. STRINGS.ONIACCESS.COLORS.MAROON
+msgctxt "STRINGS.ONIACCESS.COLORS.MAROON"
+msgid "maroon"
+msgstr "bordeaux"
+
+#. STRINGS.ONIACCESS.COLORS.MEDIUM_GRAY
+msgctxt "STRINGS.ONIACCESS.COLORS.MEDIUM_GRAY"
+msgid "medium gray"
+msgstr "gris moyen"
+
+#. STRINGS.ONIACCESS.COLORS.MEDIUM_GREEN
+msgctxt "STRINGS.ONIACCESS.COLORS.MEDIUM_GREEN"
+msgid "medium green"
+msgstr "vert moyen"
+
+#. STRINGS.ONIACCESS.COLORS.OFF_WHITE
+msgctxt "STRINGS.ONIACCESS.COLORS.OFF_WHITE"
+msgid "off-white"
+msgstr "blanc cassé"
+
+#. STRINGS.ONIACCESS.COLORS.ORANGE
+msgctxt "STRINGS.ONIACCESS.COLORS.ORANGE"
+msgid "orange"
+msgstr "orange"
+
+#. STRINGS.ONIACCESS.COLORS.ORCHID
+msgctxt "STRINGS.ONIACCESS.COLORS.ORCHID"
+msgid "orchid"
+msgstr "orchidée"
+
+#. STRINGS.ONIACCESS.COLORS.PALE_GREEN
+msgctxt "STRINGS.ONIACCESS.COLORS.PALE_GREEN"
+msgid "pale green"
+msgstr "vert pâle"
+
+#. STRINGS.ONIACCESS.COLORS.PURPLE
+msgctxt "STRINGS.ONIACCESS.COLORS.PURPLE"
+msgid "purple"
+msgstr "violet"
+
+#. STRINGS.ONIACCESS.COLORS.RED_ORANGE
+msgctxt "STRINGS.ONIACCESS.COLORS.RED_ORANGE"
+msgid "red orange"
+msgstr "rouge orangé"
+
+#. STRINGS.ONIACCESS.COLORS.ROYAL_BLUE
+msgctxt "STRINGS.ONIACCESS.COLORS.ROYAL_BLUE"
+msgid "royal blue"
+msgstr "bleu roi"
+
+#. STRINGS.ONIACCESS.COLORS.SALMON
+msgctxt "STRINGS.ONIACCESS.COLORS.SALMON"
+msgid "salmon"
+msgstr "saumon"
+
+#. STRINGS.ONIACCESS.COLORS.SEA_GREEN
+msgctxt "STRINGS.ONIACCESS.COLORS.SEA_GREEN"
+msgid "sea green"
+msgstr "vert mer"
+
+#. STRINGS.ONIACCESS.COLORS.SKY_BLUE
+msgctxt "STRINGS.ONIACCESS.COLORS.SKY_BLUE"
+msgid "sky blue"
+msgstr "bleu ciel"
+
+#. STRINGS.ONIACCESS.COLORS.SPRING_GREEN
+msgctxt "STRINGS.ONIACCESS.COLORS.SPRING_GREEN"
+msgid "spring green"
+msgstr "vert printemps"
+
+#. STRINGS.ONIACCESS.COLORS.TANGERINE
+msgctxt "STRINGS.ONIACCESS.COLORS.TANGERINE"
+msgid "tangerine"
+msgstr "mandarine"
+
+#. STRINGS.ONIACCESS.COLORS.TEAL
+msgctxt "STRINGS.ONIACCESS.COLORS.TEAL"
+msgid "teal"
+msgstr "sarcelle"
+
+#. STRINGS.ONIACCESS.COLORS.VIOLET
+msgctxt "STRINGS.ONIACCESS.COLORS.VIOLET"
+msgid "violet"
+msgstr "violet"
+
+#. STRINGS.ONIACCESS.COLORS.WHITE
+msgctxt "STRINGS.ONIACCESS.COLORS.WHITE"
+msgid "white"
+msgstr "blanc"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"
+msgid "all forbidden"
+msgstr "tout interdit"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_PERMITTED
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_PERMITTED"
+msgid "all permitted"
+msgstr "tout autorisé"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.DIET_RESTRICTED
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.DIET_RESTRICTED"
+msgid "restricted, {0}"
+msgstr "restreint, {0}"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.FORBIDDEN
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.FORBIDDEN"
+msgid "forbidden"
+msgstr "interdit"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.HANDLER_NAME
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.HANDLER_NAME"
+msgid "Consumables table"
+msgstr "Table des consommables"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.MIXED
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.MIXED"
+msgid "mixed"
+msgstr "mixte"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.MORALE
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.MORALE"
+msgid "morale {0}"
+msgstr "moral {0}"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.PERMITTED
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.PERMITTED"
+msgid "permitted"
+msgstr "autorisé"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.RESTRICTED
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.RESTRICTED"
+msgid "restricted"
+msgstr "restreint"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.TOGGLE_ALL
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.TOGGLE_ALL"
+msgid "Toggle all duplicants for this consumable"
+msgstr "Basculer tous les Duplicants pour ce consommable"
+
+#. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.TOGGLE_PERMISSION
+msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.TOGGLE_PERMISSION"
+msgid "Toggle permission"
+msgstr "Basculer la permission"
+
+#. STRINGS.ONIACCESS.CREW_SCREEN.AVAILABLE
+msgctxt "STRINGS.ONIACCESS.CREW_SCREEN.AVAILABLE"
+msgid "Available"
+msgstr "Disponible"
+
+#. STRINGS.ONIACCESS.CREW_SCREEN.TOTAL_FORMAT
+msgctxt "STRINGS.ONIACCESS.CREW_SCREEN.TOTAL_FORMAT"
+msgid "{0} total"
+msgstr "{0} au total"
+
+#. STRINGS.ONIACCESS.DEMOLIOR.DESTROYED
+msgctxt "STRINGS.ONIACCESS.DEMOLIOR.DESTROYED"
+msgid "Demolior destroyed"
+msgstr "Démolior détruit"
+
+#. STRINGS.ONIACCESS.DEMOLIOR.DISCOVERED
+msgctxt "STRINGS.ONIACCESS.DEMOLIOR.DISCOVERED"
+msgid "Demolior detected, impact in {0}"
+msgstr "Démolior détecté, impact dans {0}"
+
+#. STRINGS.ONIACCESS.DEMOLIOR.HEALTH
+msgctxt "STRINGS.ONIACCESS.DEMOLIOR.HEALTH"
+msgid "Demolior {0}%"
+msgstr "Démolior {0}%"
+
+#. STRINGS.ONIACCESS.DEMOLIOR.IMPACTED
+msgctxt "STRINGS.ONIACCESS.DEMOLIOR.IMPACTED"
+msgid "Demolior has impacted the colony"
+msgstr "Le Démolior a frappé la colonie"
+
+#. STRINGS.ONIACCESS.DEMOLIOR.STATUS
+msgctxt "STRINGS.ONIACCESS.DEMOLIOR.STATUS"
+msgid "Demolior {0}%, {1}"
+msgstr "Démolior {0}%, {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.ACTIONS_TAB
+msgctxt "STRINGS.ONIACCESS.DETAILS.ACTIONS_TAB"
+msgid "Actions"
+msgstr "Actions"
+
+#. STRINGS.ONIACCESS.DETAILS.CURRENT_TASK
+msgctxt "STRINGS.ONIACCESS.DETAILS.CURRENT_TASK"
+msgid "Current task"
+msgstr "Tâche en cours"
+
+#. STRINGS.ONIACCESS.DETAILS.DUPE_HAT_SUBTITLE
+msgctxt "STRINGS.ONIACCESS.DETAILS.DUPE_HAT_SUBTITLE"
+msgid "{0}, {1}, {2}"
+msgstr "{0}, {1}, {2}"
+
+#. STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE
+msgctxt "STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.ENTITY_TAB
+msgctxt "STRINGS.ONIACCESS.DETAILS.ENTITY_TAB"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.HEADER_ITEM
+msgctxt "STRINGS.ONIACCESS.DETAILS.HEADER_ITEM"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.NO_ACTIONS
+msgctxt "STRINGS.ONIACCESS.DETAILS.NO_ACTIONS"
+msgid "No actions"
+msgstr "Aucune action"
+
+#. STRINGS.ONIACCESS.DETAILS.NO_ERRANDS
+msgctxt "STRINGS.ONIACCESS.DETAILS.NO_ERRANDS"
+msgid "No errands"
+msgstr "Aucune tâche"
+
+#. STRINGS.ONIACCESS.DETAILS.PARENT_ITEM
+msgctxt "STRINGS.ONIACCESS.DETAILS.PARENT_ITEM"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE
+msgctxt "STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE"
+msgid "Pin resource"
+msgstr "Épingler la ressource"
+
+#. STRINGS.ONIACCESS.DETAILS.PRIORITY
+msgctxt "STRINGS.ONIACCESS.DETAILS.PRIORITY"
+msgid "Priority"
+msgstr "Priorité"
+
+#. STRINGS.ONIACCESS.DETAILS.SCHEDULE
+msgctxt "STRINGS.ONIACCESS.DETAILS.SCHEDULE"
+msgid "Schedule"
+msgstr "Planning"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER"
+msgid "Open diagnostics browser"
+msgstr "Ouvrir le navigateur de diagnostics"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_READ
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_READ"
+msgid "Read diagnostic alerts"
+msgstr "Lire les alertes de diagnostic"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_TOGGLE_CRITERION
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_TOGGLE_CRITERION"
+msgid "Toggle criterion"
+msgstr "Basculer le critère"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_TOGGLE_PIN
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_TOGGLE_PIN"
+msgid "Cycle pin state"
+msgstr "Changer l'état d'épinglage"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.NO_ALERTS
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.NO_ALERTS"
+msgid "no alerts"
+msgstr "aucune alerte"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_BAD
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_BAD"
+msgid "bad"
+msgstr "mauvais"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_CONCERN
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_CONCERN"
+msgid "concern"
+msgstr "préoccupant"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_CRITICAL
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_CRITICAL"
+msgid "critical"
+msgstr "critique"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_GOOD
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_GOOD"
+msgid "good"
+msgstr "bon"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_NORMAL
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_NORMAL"
+msgid "normal"
+msgstr "normal"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_SUGGESTION
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_SUGGESTION"
+msgid "suggestion"
+msgstr "suggestion"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_WARNING
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_WARNING"
+msgid "warning"
+msgstr "avertissement"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.PIN_ALERT_ONLY
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.PIN_ALERT_ONLY"
+msgid "alert only"
+msgstr "alerte seulement"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.PIN_ALWAYS
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.PIN_ALWAYS"
+msgid "always"
+msgstr "toujours"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.PIN_NEVER
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.PIN_NEVER"
+msgid "never"
+msgstr "jamais"
+
+#. STRINGS.ONIACCESS.DIAGNOSTICS.PIN_TUTORIAL_DISABLED
+msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.PIN_TUTORIAL_DISABLED"
+msgid "tutorial disabled"
+msgstr "tutoriel désactivé"
+
+#. STRINGS.ONIACCESS.DLC.ACTIVE
+msgctxt "STRINGS.ONIACCESS.DLC.ACTIVE"
+msgid "Active"
+msgstr "Actif"
+
+#. STRINGS.ONIACCESS.DLC.NOT_OWNED
+msgctxt "STRINGS.ONIACCESS.DLC.NOT_OWNED"
+msgid "Not owned"
+msgstr "Non possédé"
+
+#. STRINGS.ONIACCESS.DLC.OWNED_NOT_ACTIVE
+msgctxt "STRINGS.ONIACCESS.DLC.OWNED_NOT_ACTIVE"
+msgid "Owned, not active"
+msgstr "Possédé, non actif"
+
+#. STRINGS.ONIACCESS.DUPES.HEALTH_CRITICAL
+msgctxt "STRINGS.ONIACCESS.DUPES.HEALTH_CRITICAL"
+msgid "critical health"
+msgstr "santé critique"
+
+#. STRINGS.ONIACCESS.DUPES.HEALTH_INJURED
+msgctxt "STRINGS.ONIACCESS.DUPES.HEALTH_INJURED"
+msgid "injured"
+msgstr "blessé"
+
+#. STRINGS.ONIACCESS.DUPES.HELP_CHECK_PATH
+msgctxt "STRINGS.ONIACCESS.DUPES.HELP_CHECK_PATH"
+msgid "Check if current duplicant can reach cursor tile"
+msgstr "Vérifier si le Duplicant actuel peut atteindre la case du curseur"
+
+#. STRINGS.ONIACCESS.DUPES.HELP_CYCLE
+msgctxt "STRINGS.ONIACCESS.DUPES.HELP_CYCLE"
+msgid "Cycle through duplicants"
+msgstr "Parcourir les Duplicants"
+
+#. STRINGS.ONIACCESS.DUPES.HELP_JUMP
+msgctxt "STRINGS.ONIACCESS.DUPES.HELP_JUMP"
+msgid "Jump cursor to current duplicant, or open details"
+msgstr "Aller au Duplicant actuel, ou ouvrir les détails"
+
+#. STRINGS.ONIACCESS.DUPES.IDLE
+msgctxt "STRINGS.ONIACCESS.DUPES.IDLE"
+msgid "idle"
+msgstr "inactif"
+
+#. STRINGS.ONIACCESS.DUPES.INCAPACITATED
+msgctxt "STRINGS.ONIACCESS.DUPES.INCAPACITATED"
+msgid "incapacitated"
+msgstr "incapacité"
+
+#. STRINGS.ONIACCESS.DUPES.KEY_BRACKETS
+msgctxt "STRINGS.ONIACCESS.DUPES.KEY_BRACKETS"
+msgid "Left bracket / Right bracket"
+msgstr "Crochet gauche / Crochet droit"
+
+#. STRINGS.ONIACCESS.DUPES.NO_DUPLICANTS
+msgctxt "STRINGS.ONIACCESS.DUPES.NO_DUPLICANTS"
+msgid "no duplicants"
+msgstr "aucun Duplicant"
+
+#. STRINGS.ONIACCESS.DUPES.PATHABILITY.REACHABLE
+msgctxt "STRINGS.ONIACCESS.DUPES.PATHABILITY.REACHABLE"
+msgid "reachable, cost {0}"
+msgstr "accessible, coût {0}"
+
+#. STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NEAREST
+msgctxt "STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NEAREST"
+msgid "unreachable, nearest reachable {0}"
+msgstr "inaccessible, plus proche accessible {0}"
+
+#. STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NO_NEARBY
+msgctxt "STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NO_NEARBY"
+msgid "unreachable, no reachable tiles nearby"
+msgstr "inaccessible, aucune case accessible à proximité"
+
+#. STRINGS.ONIACCESS.DUPES.SICK
+msgctxt "STRINGS.ONIACCESS.DUPES.SICK"
+msgid "sick"
+msgstr "malade"
+
+#. STRINGS.ONIACCESS.FABRICATOR.CONTINUOUS
+msgctxt "STRINGS.ONIACCESS.FABRICATOR.CONTINUOUS"
+msgid "continuous"
+msgstr "continu"
+
+#. STRINGS.ONIACCESS.FABRICATOR.NOT_QUEUED
+msgctxt "STRINGS.ONIACCESS.FABRICATOR.NOT_QUEUED"
+msgid "not queued"
+msgstr "non mis en file"
+
+#. STRINGS.ONIACCESS.FABRICATOR.QUEUED
+msgctxt "STRINGS.ONIACCESS.FABRICATOR.QUEUED"
+msgid "{0} queued"
+msgstr "{0} en file"
+
+#. STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE
+msgctxt "STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE"
+msgid "unavailable"
+msgstr "indisponible"
+
+#. STRINGS.ONIACCESS.GAME_STATE.CYCLE
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.CYCLE"
+msgid "Cycle {0}"
+msgstr "Cycle {0}"
+
+#. STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS"
+msgid "Cycle {0}, block {1}"
+msgstr "Cycle {0}, bloc {1}"
+
+#. STRINGS.ONIACCESS.GAME_STATE.DUPES_CLUSTER
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.DUPES_CLUSTER"
+msgid "{0}/{1} dupes"
+msgstr "{0}/{1} Duplicants"
+
+#. STRINGS.ONIACCESS.GAME_STATE.ELECTROBANKS
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.ELECTROBANKS"
+msgid "{0}"
+msgstr "{0}"
+
+#. STRINGS.ONIACCESS.GAME_STATE.RATIONS
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.RATIONS"
+msgid "{0}"
+msgstr "{0}"
+
+#. STRINGS.ONIACCESS.GAME_STATE.READ_COLONY_STATUS
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.READ_COLONY_STATUS"
+msgid "Read colony status"
+msgstr "Lire l'état de la colonie"
+
+#. STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS"
+msgid "Read cycle status"
+msgstr "Lire l'état du cycle"
+
+#. STRINGS.ONIACCESS.GAME_STATE.READ_TIME_PLAYED
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.READ_TIME_PLAYED"
+msgid "Read total playtime"
+msgstr "Lire le temps de jeu total"
+
+#. STRINGS.ONIACCESS.GAME_STATE.RED_ALERT_OFF
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.RED_ALERT_OFF"
+msgid "Red Alert off"
+msgstr "Alerte rouge désactivée"
+
+#. STRINGS.ONIACCESS.GAME_STATE.SAVED
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.SAVED"
+msgid "Saved"
+msgstr "Sauvegardé"
+
+#. STRINGS.ONIACCESS.GAME_STATE.SICK
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.SICK"
+msgid "{0} sick"
+msgstr "{0} malade"
+
+#. STRINGS.ONIACCESS.GAME_STATE.STRESS
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.STRESS"
+msgid "{0}% stress"
+msgstr "{0}% stress"
+
+#. STRINGS.ONIACCESS.GAME_STATE.TOGGLE_RED_ALERT
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.TOGGLE_RED_ALERT"
+msgid "Toggle red alert"
+msgstr "Basculer l'alerte rouge"
+
+#. STRINGS.ONIACCESS.GAME_STATE.UNPAUSED
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.UNPAUSED"
+msgid "unpaused, {0}"
+msgstr "reprise, {0}"
+
+#. STRINGS.ONIACCESS.GAME_STATE.YELLOW_ALERT_OFF
+msgctxt "STRINGS.ONIACCESS.GAME_STATE.YELLOW_ALERT_OFF"
+msgid "Yellow Alert off"
+msgstr "Alerte jaune désactivée"
+
+#. STRINGS.ONIACCESS.GEOTUNER.TUNER_COUNT
+msgctxt "STRINGS.ONIACCESS.GEOTUNER.TUNER_COUNT"
+msgid "{0} tuners"
+msgstr "{0} syntoniseurs"
+
+#. STRINGS.ONIACCESS.GLANCE.ACCESS_POINT
+msgctxt "STRINGS.ONIACCESS.GLANCE.ACCESS_POINT"
+msgid "access point"
+msgstr "point d'accès"
+
+#. STRINGS.ONIACCESS.GLANCE.CONDUIT_GAS
+msgctxt "STRINGS.ONIACCESS.GLANCE.CONDUIT_GAS"
+msgid "gas"
+msgstr "gaz"
+
+#. STRINGS.ONIACCESS.GLANCE.CONDUIT_LIQUID
+msgctxt "STRINGS.ONIACCESS.GLANCE.CONDUIT_LIQUID"
+msgid "liquid"
+msgstr "liquide"
+
+#. STRINGS.ONIACCESS.GLANCE.CONDUIT_SOLID
+msgctxt "STRINGS.ONIACCESS.GLANCE.CONDUIT_SOLID"
+msgid "solid"
+msgstr "solide"
+
+#. STRINGS.ONIACCESS.GLANCE.CONNECTS
+msgctxt "STRINGS.ONIACCESS.GLANCE.CONNECTS"
+msgid "connects {0}"
+msgstr "connecte {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.DISEASE_CLEAR
+msgctxt "STRINGS.ONIACCESS.GLANCE.DISEASE_CLEAR"
+msgid "clean"
+msgstr "propre"
+
+#. STRINGS.ONIACCESS.GLANCE.DISEASE_ENTRY
+msgctxt "STRINGS.ONIACCESS.GLANCE.DISEASE_ENTRY"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.ELEMENT_MASS
+msgctxt "STRINGS.ONIACCESS.GLANCE.ELEMENT_MASS"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.FILTERED_PORT
+msgctxt "STRINGS.ONIACCESS.GLANCE.FILTERED_PORT"
+msgid "filtered {0}"
+msgstr "filtré {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.GAS_INPUT
+msgctxt "STRINGS.ONIACCESS.GLANCE.GAS_INPUT"
+msgid "gas input"
+msgstr "entrée de gaz"
+
+#. STRINGS.ONIACCESS.GLANCE.GAS_OUTPUT
+msgctxt "STRINGS.ONIACCESS.GLANCE.GAS_OUTPUT"
+msgid "gas output"
+msgstr "sortie de gaz"
+
+#. STRINGS.ONIACCESS.GLANCE.INPUT_PORT
+msgctxt "STRINGS.ONIACCESS.GLANCE.INPUT_PORT"
+msgid "input"
+msgstr "entrée"
+
+#. STRINGS.ONIACCESS.GLANCE.INTAKE_PIPE
+msgctxt "STRINGS.ONIACCESS.GLANCE.INTAKE_PIPE"
+msgid "{0} intake pipe"
+msgstr "tuyau d'admission {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.LIQUID_INPUT
+msgctxt "STRINGS.ONIACCESS.GLANCE.LIQUID_INPUT"
+msgid "liquid input"
+msgstr "entrée de liquide"
+
+#. STRINGS.ONIACCESS.GLANCE.LIQUID_OUTPUT
+msgctxt "STRINGS.ONIACCESS.GLANCE.LIQUID_OUTPUT"
+msgid "liquid output"
+msgstr "sortie de liquide"
+
+#. STRINGS.ONIACCESS.GLANCE.LURE
+msgctxt "STRINGS.ONIACCESS.GLANCE.LURE"
+msgid "{0} lure"
+msgstr "leurre {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.NUMBERED_PORT
+msgctxt "STRINGS.ONIACCESS.GLANCE.NUMBERED_PORT"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_ATTACK
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_ATTACK"
+msgid "attack"
+msgstr "attaque"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_BUILD
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_BUILD"
+msgid "build"
+msgstr "construction"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_CAPTURE
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_CAPTURE"
+msgid "capture"
+msgstr "capture"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_DECONSTRUCT
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DECONSTRUCT"
+msgid "deconstruct"
+msgstr "déconstruction"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_DIG
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DIG"
+msgid "dig"
+msgstr "creuser"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_DISINFECT
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DISINFECT"
+msgid "disinfect"
+msgstr "désinfecter"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_EMPTY_PIPE
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_EMPTY_PIPE"
+msgid "empty pipe"
+msgstr "vider le tuyau"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_HARVEST
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_HARVEST"
+msgid "harvest"
+msgstr "récolte"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_MOP
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_MOP"
+msgid "mop"
+msgstr "éponger"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY"
+msgid "{0} priority {1}"
+msgstr "{0} priorité {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_SWEEP
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_SWEEP"
+msgid "sweep"
+msgstr "balayer"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_UNREACHABLE
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_UNREACHABLE"
+msgid "unreachable {0}"
+msgstr "inaccessible {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_UPROOT
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_UPROOT"
+msgid "uproot"
+msgstr "déraciner"
+
+#. STRINGS.ONIACCESS.GLANCE.OUTPUT_POINT
+msgctxt "STRINGS.ONIACCESS.GLANCE.OUTPUT_POINT"
+msgid "output point"
+msgstr "point de sortie"
+
+#. STRINGS.ONIACCESS.GLANCE.OUTPUT_PORT
+msgctxt "STRINGS.ONIACCESS.GLANCE.OUTPUT_PORT"
+msgid "output"
+msgstr "sortie"
+
+#. STRINGS.ONIACCESS.GLANCE.OVERFLOW_PORT
+msgctxt "STRINGS.ONIACCESS.GLANCE.OVERFLOW_PORT"
+msgid "overflow {0}"
+msgstr "trop-plein {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.OVERLAY_DECOR
+msgctxt "STRINGS.ONIACCESS.GLANCE.OVERLAY_DECOR"
+msgid "{0}{1} decor"
+msgstr "{0}{1} décoration"
+
+#. STRINGS.ONIACCESS.GLANCE.POWER_INPUT
+msgctxt "STRINGS.ONIACCESS.GLANCE.POWER_INPUT"
+msgid "power input"
+msgstr "entrée d'énergie"
+
+#. STRINGS.ONIACCESS.GLANCE.POWER_OUTPUT
+msgctxt "STRINGS.ONIACCESS.GLANCE.POWER_OUTPUT"
+msgid "power output"
+msgstr "sortie d'énergie"
+
+#. STRINGS.ONIACCESS.GLANCE.PRIORITY_PORT
+msgctxt "STRINGS.ONIACCESS.GLANCE.PRIORITY_PORT"
+msgid "priority {0}"
+msgstr "priorité {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.RADBOLT_INPUT
+msgctxt "STRINGS.ONIACCESS.GLANCE.RADBOLT_INPUT"
+msgid "radbolt input"
+msgstr "entrée de radbolt"
+
+#. STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT
+msgctxt "STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT"
+msgid "radbolt output"
+msgstr "sortie de radbolt"
+
+#. STRINGS.ONIACCESS.GLANCE.SOLID_INPUT
+msgctxt "STRINGS.ONIACCESS.GLANCE.SOLID_INPUT"
+msgid "conveyor input"
+msgstr "entrée de convoyeur"
+
+#. STRINGS.ONIACCESS.GLANCE.SOLID_OUTPUT
+msgctxt "STRINGS.ONIACCESS.GLANCE.SOLID_OUTPUT"
+msgid "conveyor output"
+msgstr "sortie de convoyeur"
+
+#. STRINGS.ONIACCESS.GLANCE.TILE_OF_INTEREST
+msgctxt "STRINGS.ONIACCESS.GLANCE.TILE_OF_INTEREST"
+msgid "P O I"
+msgstr "P O I"
+
+#. STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION
+msgctxt "STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION"
+msgid "constructing {0}"
+msgstr "construction de {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.UNKNOWN_ELEMENT
+msgctxt "STRINGS.ONIACCESS.GLANCE.UNKNOWN_ELEMENT"
+msgid "unknown"
+msgstr "inconnu"
+
+#. STRINGS.ONIACCESS.GLANCE.WIRE
+msgctxt "STRINGS.ONIACCESS.GLANCE.WIRE"
+msgid "wire"
+msgstr "câble"
+
+#. STRINGS.ONIACCESS.HANDLERS.AUDIO_OPTIONS
+msgctxt "STRINGS.ONIACCESS.HANDLERS.AUDIO_OPTIONS"
+msgid "Audio options"
+msgstr "Options audio"
+
+#. STRINGS.ONIACCESS.HANDLERS.COLONY_SUMMARY
+msgctxt "STRINGS.ONIACCESS.HANDLERS.COLONY_SUMMARY"
+msgid "Colony summary"
+msgstr "Résumé de la colonie"
+
+#. STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW
+msgctxt "STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW"
+msgid "Colony View"
+msgstr "Vue de la colonie"
+
+#. STRINGS.ONIACCESS.HANDLERS.DATA_OPTIONS
+msgctxt "STRINGS.ONIACCESS.HANDLERS.DATA_OPTIONS"
+msgid "Data options"
+msgstr "Options de données"
+
+#. STRINGS.ONIACCESS.HANDLERS.DETAILS_SCREEN
+msgctxt "STRINGS.ONIACCESS.HANDLERS.DETAILS_SCREEN"
+msgid "Entity details"
+msgstr "Détails de l'entité"
+
+#. STRINGS.ONIACCESS.HANDLERS.DIAGNOSTICS
+msgctxt "STRINGS.ONIACCESS.HANDLERS.DIAGNOSTICS"
+msgid "Diagnostics"
+msgstr "Diagnostics"
+
+#. STRINGS.ONIACCESS.HANDLERS.ENTITY_PICKER
+msgctxt "STRINGS.ONIACCESS.HANDLERS.ENTITY_PICKER"
+msgid "object selection"
+msgstr "sélection d'objet"
+
+#. STRINGS.ONIACCESS.HANDLERS.ERROR_SCREEN
+msgctxt "STRINGS.ONIACCESS.HANDLERS.ERROR_SCREEN"
+msgid "Error"
+msgstr "Erreur"
+
+#. STRINGS.ONIACCESS.HANDLERS.FEEDBACK
+msgctxt "STRINGS.ONIACCESS.HANDLERS.FEEDBACK"
+msgid "Feedback"
+msgstr "Retour"
+
+#. STRINGS.ONIACCESS.HANDLERS.GAME_OPTIONS
+msgctxt "STRINGS.ONIACCESS.HANDLERS.GAME_OPTIONS"
+msgid "Game options"
+msgstr "Options de jeu"
+
+#. STRINGS.ONIACCESS.HANDLERS.GRAPHICS_OPTIONS
+msgctxt "STRINGS.ONIACCESS.HANDLERS.GRAPHICS_OPTIONS"
+msgid "Graphics options"
+msgstr "Options graphiques"
+
+#. STRINGS.ONIACCESS.HANDLERS.HELP
+msgctxt "STRINGS.ONIACCESS.HANDLERS.HELP"
+msgid "Help"
+msgstr "Aide"
+
+#. STRINGS.ONIACCESS.HANDLERS.ITEM_DROP
+msgctxt "STRINGS.ONIACCESS.HANDLERS.ITEM_DROP"
+msgid "Claim blueprints"
+msgstr "Réclamer les plans"
+
+#. STRINGS.ONIACCESS.HANDLERS.KEY_BINDINGS
+msgctxt "STRINGS.ONIACCESS.HANDLERS.KEY_BINDINGS"
+msgid "Key bindings"
+msgstr "Raccourcis clavier"
+
+#. STRINGS.ONIACCESS.HANDLERS.LOADING
+msgctxt "STRINGS.ONIACCESS.HANDLERS.LOADING"
+msgid "Loading"
+msgstr "Chargement"
+
+#. STRINGS.ONIACCESS.HANDLERS.MAIN_MENU
+msgctxt "STRINGS.ONIACCESS.HANDLERS.MAIN_MENU"
+msgid "Main menu"
+msgstr "Menu principal"
+
+#. STRINGS.ONIACCESS.HANDLERS.MINION_SELECT
+msgctxt "STRINGS.ONIACCESS.HANDLERS.MINION_SELECT"
+msgid "Select duplicants"
+msgstr "Sélectionner les Duplicants"
+
+#. STRINGS.ONIACCESS.HANDLERS.MODS
+msgctxt "STRINGS.ONIACCESS.HANDLERS.MODS"
+msgid "Mods"
+msgstr "Mods"
+
+#. STRINGS.ONIACCESS.HANDLERS.PAUSE_MENU
+msgctxt "STRINGS.ONIACCESS.HANDLERS.PAUSE_MENU"
+msgid "Pause menu"
+msgstr "Menu pause"
+
+#. STRINGS.ONIACCESS.HANDLERS.PRINTING_POD
+msgctxt "STRINGS.ONIACCESS.HANDLERS.PRINTING_POD"
+msgid "Printing pod"
+msgstr "Printing Pod"
+
+#. STRINGS.ONIACCESS.HANDLERS.SAVE_LOAD
+msgctxt "STRINGS.ONIACCESS.HANDLERS.SAVE_LOAD"
+msgid "Save and load"
+msgstr "Sauvegarde et chargement"
+
+#. STRINGS.ONIACCESS.HANDLERS.STORY_MESSAGE
+msgctxt "STRINGS.ONIACCESS.HANDLERS.STORY_MESSAGE"
+msgid "Story message"
+msgstr "Message d'histoire"
+
+#. STRINGS.ONIACCESS.HANDLERS.SUPPLY_CLOSET
+msgctxt "STRINGS.ONIACCESS.HANDLERS.SUPPLY_CLOSET"
+msgid "Supply closet"
+msgstr "Placard de fournitures"
+
+#. STRINGS.ONIACCESS.HANDLERS.TRANSLATIONS
+msgctxt "STRINGS.ONIACCESS.HANDLERS.TRANSLATIONS"
+msgid "Translations"
+msgstr "Traductions"
+
+#. STRINGS.ONIACCESS.HANDLERS.VIDEO
+msgctxt "STRINGS.ONIACCESS.HANDLERS.VIDEO"
+msgid "Video"
+msgstr "Vidéo"
+
+#. STRINGS.ONIACCESS.HANDLERS.WELCOME_MESSAGE
+msgctxt "STRINGS.ONIACCESS.HANDLERS.WELCOME_MESSAGE"
+msgid "Welcome message"
+msgstr "Message de bienvenue"
+
+#. STRINGS.ONIACCESS.HANDLERS.WORLD_GEN
+msgctxt "STRINGS.ONIACCESS.HANDLERS.WORLD_GEN"
+msgid "Generating world"
+msgstr "Génération du monde"
+
+#. STRINGS.ONIACCESS.HANDLERS.WORLD_SELECTOR
+msgctxt "STRINGS.ONIACCESS.HANDLERS.WORLD_SELECTOR"
+msgid "World list"
+msgstr "Liste des mondes"
+
+#. STRINGS.ONIACCESS.HELP.ADJUST_VALUE
+msgctxt "STRINGS.ONIACCESS.HELP.ADJUST_VALUE"
+msgid "Adjust value by 1 or 1 percent"
+msgstr "Ajuster la valeur de 1 ou 1 pourcent"
+
+#. STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGE
+msgctxt "STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGE"
+msgid "Adjust value by 10 or 10 percent"
+msgstr "Ajuster la valeur de 10 ou 10 pourcent"
+
+#. STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGER
+msgctxt "STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGER"
+msgid "Adjust value by 100 or 25 percent"
+msgstr "Ajuster la valeur de 100 ou 25 pourcent"
+
+#. STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGEST
+msgctxt "STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGEST"
+msgid "Adjust value by 1000 or 50 percent"
+msgstr "Ajuster la valeur de 1000 ou 50 pourcent"
+
+#. STRINGS.ONIACCESS.HELP.CLOSE
+msgctxt "STRINGS.ONIACCESS.HELP.CLOSE"
+msgid "Close"
+msgstr "Fermer"
+
+#. STRINGS.ONIACCESS.HELP.COPY_SETTINGS
+msgctxt "STRINGS.ONIACCESS.HELP.COPY_SETTINGS"
+msgid "Copy settings"
+msgstr "Copier les paramètres"
+
+#. STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE
+msgctxt "STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE"
+msgid "Cycle coordinate display"
+msgstr "Changer l'affichage des coordonnées"
+
+#. STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED
+msgctxt "STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED"
+msgid "Cycle game speed"
+msgstr "Changer la vitesse du jeu"
+
+#. STRINGS.ONIACCESS.HELP.CYCLE_RECIPE
+msgctxt "STRINGS.ONIACCESS.HELP.CYCLE_RECIPE"
+msgid "Cycle recipe"
+msgstr "Changer la recette"
+
+#. STRINGS.ONIACCESS.HELP.GO_BACK
+msgctxt "STRINGS.ONIACCESS.HELP.GO_BACK"
+msgid "Go back"
+msgstr "Retour"
+
+#. STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST
+msgctxt "STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST"
+msgid "Jump to first or last"
+msgstr "Aller au premier ou au dernier"
+
+#. STRINGS.ONIACCESS.HELP.JUMP_GROUP
+msgctxt "STRINGS.ONIACCESS.HELP.JUMP_GROUP"
+msgid "Jump to next or previous group"
+msgstr "Aller au groupe suivant ou précédent"
+
+#. STRINGS.ONIACCESS.HELP.MOVE_CURSOR
+msgctxt "STRINGS.ONIACCESS.HELP.MOVE_CURSOR"
+msgid "Move tile cursor"
+msgstr "Déplacer le curseur de case"
+
+#. STRINGS.ONIACCESS.HELP.NAVIGATE
+msgctxt "STRINGS.ONIACCESS.HELP.NAVIGATE"
+msgid "Step through help entries"
+msgstr "Parcourir les entrées d'aide"
+
+#. STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS
+msgctxt "STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS"
+msgid "Navigate items"
+msgstr "Parcourir les éléments"
+
+#. STRINGS.ONIACCESS.HELP.OPEN_GROUP
+msgctxt "STRINGS.ONIACCESS.HELP.OPEN_GROUP"
+msgid "Open group"
+msgstr "Ouvrir le groupe"
+
+#. STRINGS.ONIACCESS.HELP.READ_COORDS
+msgctxt "STRINGS.ONIACCESS.HELP.READ_COORDS"
+msgid "Read coordinates"
+msgstr "Lire les coordonnées"
+
+#. STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY
+msgctxt "STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY"
+msgid "Read tooltip summary at cursor"
+msgstr "Lire le résumé de l'infobulle au curseur"
+
+#. STRINGS.ONIACCESS.HELP.SELECT_ENTITY
+msgctxt "STRINGS.ONIACCESS.HELP.SELECT_ENTITY"
+msgid "Select object at cursor"
+msgstr "Sélectionner l'objet au curseur"
+
+#. STRINGS.ONIACCESS.HELP.SELECT_ITEM
+msgctxt "STRINGS.ONIACCESS.HELP.SELECT_ITEM"
+msgid "Activate selected item"
+msgstr "Activer l'élément sélectionné"
+
+#. STRINGS.ONIACCESS.HELP.SWITCH_DUPE_SLOT
+msgctxt "STRINGS.ONIACCESS.HELP.SWITCH_DUPE_SLOT"
+msgid "Switch duplicant slot"
+msgstr "Changer l'emplacement du Duplicant"
+
+#. STRINGS.ONIACCESS.HELP.SWITCH_OPTION
+msgctxt "STRINGS.ONIACCESS.HELP.SWITCH_OPTION"
+msgid "Switch option"
+msgstr "Changer l'option"
+
+#. STRINGS.ONIACCESS.HELP.SWITCH_PANEL
+msgctxt "STRINGS.ONIACCESS.HELP.SWITCH_PANEL"
+msgid "Switch panel"
+msgstr "Changer de panneau"
+
+#. STRINGS.ONIACCESS.HELP.SWITCH_SECTION
+msgctxt "STRINGS.ONIACCESS.HELP.SWITCH_SECTION"
+msgid "Switch section"
+msgstr "Changer de section"
+
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.APPLY_AND_EXIT
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.APPLY_AND_EXIT"
+msgid "Apply settings and exit"
+msgstr "Appliquer les paramètres et quitter"
+
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.APPLY_SETTINGS
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.APPLY_SETTINGS"
+msgid "Apply settings"
+msgstr "Appliquer les paramètres"
+
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_TOOL
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_TOOL"
+msgid "Cancel tool"
+msgstr "Annuler l'outil"
+
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT"
+msgid "Clear rectangle at cursor"
+msgstr "Effacer le rectangle au curseur"
+
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.CONFIRM_TOOL
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CONFIRM_TOOL"
+msgid "Apply tool at cursor and dismiss"
+msgstr "Appliquer l'outil au curseur et fermer"
+
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_FILTER
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_FILTER"
+msgid "Change filter"
+msgstr "Changer le filtre"
+
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER"
+msgid "Set rectangle corner"
+msgstr "Définir le coin du rectangle"
+
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY"
+msgid "Set priority"
+msgstr "Définir la priorité"
+
+#. STRINGS.ONIACCESS.HELP.TYPE_SEARCH
+msgctxt "STRINGS.ONIACCESS.HELP.TYPE_SEARCH"
+msgid "Type-ahead search"
+msgstr "Recherche incrémentale"
+
+#. STRINGS.ONIACCESS.HOTKEYS.TOGGLE_MOD
+msgctxt "STRINGS.ONIACCESS.HOTKEYS.TOGGLE_MOD"
+msgid "Toggle Oni-Access on/off"
+msgstr "Activer/Désactiver Oni-Access"
+
+#. STRINGS.ONIACCESS.INFO.BIONIC_BUG
+msgctxt "STRINGS.ONIACCESS.INFO.BIONIC_BUG"
+msgid "Bionic bug"
+msgstr "Bug bionique"
+
+#. STRINGS.ONIACCESS.INFO.BIONIC_UPGRADE
+msgctxt "STRINGS.ONIACCESS.INFO.BIONIC_UPGRADE"
+msgid "Bionic upgrade"
+msgstr "Amélioration bionique"
+
+#. STRINGS.ONIACCESS.INFO.COLONY_HAS
+msgctxt "STRINGS.ONIACCESS.INFO.COLONY_HAS"
+msgid "Colony has: {0}"
+msgstr "La colonie possède : {0}"
+
+#. STRINGS.ONIACCESS.INFO.DIFFICULTY
+msgctxt "STRINGS.ONIACCESS.INFO.DIFFICULTY"
+msgid "Difficulty"
+msgstr "Difficulté"
+
+#. STRINGS.ONIACCESS.INFO.INTEREST
+msgctxt "STRINGS.ONIACCESS.INFO.INTEREST"
+msgid "Interest"
+msgstr "Intérêt"
+
+#. STRINGS.ONIACCESS.INFO.INTEREST_FILTER
+msgctxt "STRINGS.ONIACCESS.INFO.INTEREST_FILTER"
+msgid "Interest filter"
+msgstr "Filtre d'intérêt"
+
+#. STRINGS.ONIACCESS.INFO.NEGATIVE_TRAIT
+msgctxt "STRINGS.ONIACCESS.INFO.NEGATIVE_TRAIT"
+msgid "Negative trait"
+msgstr "Trait négatif"
+
+#. STRINGS.ONIACCESS.INFO.POSITIVE_TRAIT
+msgctxt "STRINGS.ONIACCESS.INFO.POSITIVE_TRAIT"
+msgid "Positive trait"
+msgstr "Trait positif"
+
+#. STRINGS.ONIACCESS.INFO.SETTING
+msgctxt "STRINGS.ONIACCESS.INFO.SETTING"
+msgid "setting"
+msgstr "paramètre"
+
+#. STRINGS.ONIACCESS.INFO.SLOT
+msgctxt "STRINGS.ONIACCESS.INFO.SLOT"
+msgid "Slot {0}"
+msgstr "Emplacement {0}"
+
+#. STRINGS.ONIACCESS.INFO.STORY_TRAITS
+msgctxt "STRINGS.ONIACCESS.INFO.STORY_TRAITS"
+msgid "Story traits"
+msgstr "Traits d'histoire"
+
+#. STRINGS.ONIACCESS.INFO.TRAIT
+msgctxt "STRINGS.ONIACCESS.INFO.TRAIT"
+msgid "Trait"
+msgstr "Trait"
+
+#. STRINGS.ONIACCESS.KEY_BINDINGS.BINDINGS_RESET
+msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.BINDINGS_RESET"
+msgid "All bindings reset to defaults"
+msgstr "Tous les raccourcis réinitialisés par défaut"
+
+#. STRINGS.ONIACCESS.KEY_BINDINGS.PRESS_KEY_FOR
+msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.PRESS_KEY_FOR"
+msgid "Press a key for {0}"
+msgstr "Appuyez sur une touche pour {0}"
+
+#. STRINGS.ONIACCESS.KEY_BINDINGS.RESET_ALL
+msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.RESET_ALL"
+msgid "Reset all to defaults"
+msgstr "Tout réinitialiser par défaut"
+
+#. STRINGS.ONIACCESS.KEY_BINDINGS.UNBOUND
+msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.UNBOUND"
+msgid "Unbound"
+msgstr "Non assigné"
+
+#. STRINGS.ONIACCESS.MODULE_SCREEN.FACADE
+msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.FACADE"
+msgid "Skin"
+msgstr "Apparence"
+
+#. STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS
+msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS"
+msgid "Materials"
+msgstr "Matériaux"
+
+#. STRINGS.ONIACCESS.MODULE_SCREEN.MODULES
+msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MODULES"
+msgid "Modules"
+msgstr "Modules"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED"
+msgid "achievement earned: {0}"
+msgstr "succès obtenu : {0}"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.CANNOT_DISMISS
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.CANNOT_DISMISS"
+msgid "cannot dismiss"
+msgstr "impossible de fermer"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.DISMISS_HELP
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.DISMISS_HELP"
+msgid "Dismiss notification"
+msgstr "Fermer la notification"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.DISMISSED
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.DISMISSED"
+msgid "dismissed"
+msgstr "fermée"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.DONT_SHOW_AGAIN
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.DONT_SHOW_AGAIN"
+msgid "don't show again"
+msgstr "ne plus afficher"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY"
+msgid "no notifications"
+msgstr "aucune notification"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.GROUP_COUNT
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.GROUP_COUNT"
+msgid "{0} x{1}"
+msgstr "{0} x{1}"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.MENU_TITLE
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.MENU_TITLE"
+msgid "Notifications"
+msgstr "Notifications"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.MESSAGE_DIALOG
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.MESSAGE_DIALOG"
+msgid "Message"
+msgstr "Message"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.NEXT_MESSAGE
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.NEXT_MESSAGE"
+msgid "next message"
+msgstr "message suivant"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.NUMBERED_ENTRY
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.NUMBERED_ENTRY"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP"
+msgid "Open notifications menu"
+msgstr "Ouvrir le menu des notifications"
+
+#. STRINGS.ONIACCESS.NOTIFICATIONS.PLAY_VIDEO
+msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.PLAY_VIDEO"
+msgid "play video"
+msgstr "lire la vidéo"
+
+#. STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS
+msgctxt "STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS"
+msgid "Achievements"
+msgstr "Succès"
+
+#. STRINGS.ONIACCESS.PANELS.BUTTONS
+msgctxt "STRINGS.ONIACCESS.PANELS.BUTTONS"
+msgid "Buttons"
+msgstr "Boutons"
+
+#. STRINGS.ONIACCESS.PANELS.COLONY_NAME
+msgctxt "STRINGS.ONIACCESS.PANELS.COLONY_NAME"
+msgid "Colony name"
+msgstr "Nom de la colonie"
+
+#. STRINGS.ONIACCESS.PANELS.DLC
+msgctxt "STRINGS.ONIACCESS.PANELS.DLC"
+msgid "DLC"
+msgstr "DLC"
+
+#. STRINGS.ONIACCESS.PANELS.NEWS
+msgctxt "STRINGS.ONIACCESS.PANELS.NEWS"
+msgid "News"
+msgstr "Actualités"
+
+#. STRINGS.ONIACCESS.PANELS.NO_NEWS
+msgctxt "STRINGS.ONIACCESS.PANELS.NO_NEWS"
+msgid "No news available"
+msgstr "Aucune actualité disponible"
+
+#. STRINGS.ONIACCESS.PANELS.PLANETOIDS
+msgctxt "STRINGS.ONIACCESS.PANELS.PLANETOIDS"
+msgid "Planetoids"
+msgstr "Planétoïdes"
+
+#. STRINGS.ONIACCESS.PANELS.RENAME
+msgctxt "STRINGS.ONIACCESS.PANELS.RENAME"
+msgid "Rename"
+msgstr "Renommer"
+
+#. STRINGS.ONIACCESS.PANELS.SEED
+msgctxt "STRINGS.ONIACCESS.PANELS.SEED"
+msgid "World seed"
+msgstr "Graine du monde"
+
+#. STRINGS.ONIACCESS.PANELS.SHUFFLE_NAME
+msgctxt "STRINGS.ONIACCESS.PANELS.SHUFFLE_NAME"
+msgid "Shuffle name"
+msgstr "Mélanger le nom"
+
+#. STRINGS.ONIACCESS.PANELS.STATS
+msgctxt "STRINGS.ONIACCESS.PANELS.STATS"
+msgid "Stats"
+msgstr "Statistiques"
+
+#. STRINGS.ONIACCESS.PANELS.VICTORY_CONDITIONS
+msgctxt "STRINGS.ONIACCESS.PANELS.VICTORY_CONDITIONS"
+msgid "Victory conditions"
+msgstr "Conditions de victoire"
+
+#. STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS
+msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS"
+msgid "active colors"
+msgstr "couleurs actives"
+
+#. STRINGS.ONIACCESS.PIXEL_PACK.IN_USE
+msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.IN_USE"
+msgid "in use"
+msgstr "en cours d'utilisation"
+
+#. STRINGS.ONIACCESS.PIXEL_PACK.PALETTE
+msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.PALETTE"
+msgid "color palette"
+msgstr "palette de couleurs"
+
+#. STRINGS.ONIACCESS.PIXEL_PACK.PALETTE_COUNT
+msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.PALETTE_COUNT"
+msgid "{0} colors"
+msgstr "{0} couleurs"
+
+#. STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT
+msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT"
+msgid "pixel {0}"
+msgstr "pixel {0}"
+
+#. STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS
+msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS"
+msgid "standby colors"
+msgstr "couleurs en veille"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_CELL
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_CELL"
+msgid "Adjust priority of current cell"
+msgstr "Ajuster la priorité de la cellule actuelle"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_COLUMN
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_COLUMN"
+msgid "Adjust all priorities in column"
+msgstr "Ajuster toutes les priorités de la colonne"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_ROW
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_ROW"
+msgid "Adjust all priorities in row"
+msgstr "Ajuster toutes les priorités de la ligne"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.AFFECTED_ERRANDS
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.AFFECTED_ERRANDS"
+msgid "Affected errands: {0}"
+msgstr "Tâches affectées : {0}"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_DECREASED
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_DECREASED"
+msgid "column decreased"
+msgstr "colonne diminuée"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_INCREASED
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_INCREASED"
+msgid "column increased"
+msgstr "colonne augmentée"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_SET
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_SET"
+msgid "column set to {0}"
+msgstr "colonne définie à {0}"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT"
+msgid "Disabled, {0}"
+msgstr "Désactivé, {0}"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.HANDLER_NAME
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.HANDLER_NAME"
+msgid "Priorities table"
+msgstr "Table des priorités"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_OFF
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_OFF"
+msgid "Proximity, off"
+msgstr "Proximité, désactivée"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_ON
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_ON"
+msgid "Proximity, on"
+msgstr "Proximité, activée"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_DECREASED
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_DECREASED"
+msgid "row decreased"
+msgstr "ligne diminuée"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_INCREASED
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_INCREASED"
+msgid "row increased"
+msgstr "ligne augmentée"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_COLUMN
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_COLUMN"
+msgid "Set all priorities in column"
+msgstr "Définir toutes les priorités de la colonne"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_PRIORITY
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_PRIORITY"
+msgid "Set priority of current cell"
+msgstr "Définir la priorité de la cellule actuelle"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.SKILL
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.SKILL"
+msgid "skill {0}"
+msgstr "compétence {0}"
+
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.TOOLBAR
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.TOOLBAR"
+msgid "Toolbar"
+msgstr "Barre d'outils"
+
+#. STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT
+msgctxt "STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT"
+msgid "{0} items"
+msgstr "{0} éléments"
+
+#. STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT
+msgctxt "STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT"
+msgid "Queue: {0}"
+msgstr "File : {0}"
+
+#. STRINGS.ONIACCESS.REPORT.ADDED
+msgctxt "STRINGS.ONIACCESS.REPORT.ADDED"
+msgid "added {0}"
+msgstr "ajouté {0}"
+
+#. STRINGS.ONIACCESS.REPORT.COLONY_SUMMARY
+msgctxt "STRINGS.ONIACCESS.REPORT.COLONY_SUMMARY"
+msgid "Colony summary"
+msgstr "Résumé de la colonie"
+
+#. STRINGS.ONIACCESS.REPORT.HANDLER_NAME
+msgctxt "STRINGS.ONIACCESS.REPORT.HANDLER_NAME"
+msgid "Daily report"
+msgstr "Rapport quotidien"
+
+#. STRINGS.ONIACCESS.REPORT.HELP_CYCLE
+msgctxt "STRINGS.ONIACCESS.REPORT.HELP_CYCLE"
+msgid "Previous or next cycle"
+msgstr "Cycle précédent ou suivant"
+
+#. STRINGS.ONIACCESS.REPORT.NET
+msgctxt "STRINGS.ONIACCESS.REPORT.NET"
+msgid "net {0}"
+msgstr "net {0}"
+
+#. STRINGS.ONIACCESS.REPORT.NO_EARLIER_CYCLE
+msgctxt "STRINGS.ONIACCESS.REPORT.NO_EARLIER_CYCLE"
+msgid "Earliest cycle"
+msgstr "Premier cycle"
+
+#. STRINGS.ONIACCESS.REPORT.NO_LATER_CYCLE
+msgctxt "STRINGS.ONIACCESS.REPORT.NO_LATER_CYCLE"
+msgid "Latest cycle"
+msgstr "Dernier cycle"
+
+#. STRINGS.ONIACCESS.REPORT.NOTE
+msgctxt "STRINGS.ONIACCESS.REPORT.NOTE"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.REPORT.REMOVED
+msgctxt "STRINGS.ONIACCESS.REPORT.REMOVED"
+msgid "removed {0}"
+msgstr "retiré {0}"
+
+#. STRINGS.ONIACCESS.RESEARCH.ACTIVE
+msgctxt "STRINGS.ONIACCESS.RESEARCH.ACTIVE"
+msgid "active"
+msgstr "actif"
+
+#. STRINGS.ONIACCESS.RESEARCH.AVAILABLE
+msgctxt "STRINGS.ONIACCESS.RESEARCH.AVAILABLE"
+msgid "available"
+msgstr "disponible"
+
+#. STRINGS.ONIACCESS.RESEARCH.BANKED_POINTS_FMT
+msgctxt "STRINGS.ONIACCESS.RESEARCH.BANKED_POINTS_FMT"
+msgid "banked research points: {0}"
+msgstr "points de recherche accumulés : {0}"
+
+#. STRINGS.ONIACCESS.RESEARCH.BROWSE_TAB
+msgctxt "STRINGS.ONIACCESS.RESEARCH.BROWSE_TAB"
+msgid "Browse"
+msgstr "Parcourir"
+
+#. STRINGS.ONIACCESS.RESEARCH.BUCKET_AVAILABLE
+msgctxt "STRINGS.ONIACCESS.RESEARCH.BUCKET_AVAILABLE"
+msgid "Available"
+msgstr "Disponible"
+
+#. STRINGS.ONIACCESS.RESEARCH.BUCKET_COMPLETED
+msgctxt "STRINGS.ONIACCESS.RESEARCH.BUCKET_COMPLETED"
+msgid "Completed"
+msgstr "Terminé"
+
+#. STRINGS.ONIACCESS.RESEARCH.BUCKET_LOCKED
+msgctxt "STRINGS.ONIACCESS.RESEARCH.BUCKET_LOCKED"
+msgid "Locked"
+msgstr "Verrouillé"
+
+#. STRINGS.ONIACCESS.RESEARCH.CANCEL_HELP
+msgctxt "STRINGS.ONIACCESS.RESEARCH.CANCEL_HELP"
+msgid "Cancel selected research"
+msgstr "Annuler la recherche sélectionnée"
+
+#. STRINGS.ONIACCESS.RESEARCH.CANCELED
+msgctxt "STRINGS.ONIACCESS.RESEARCH.CANCELED"
+msgid "{0} canceled"
+msgstr "{0} annulé"
+
+#. STRINGS.ONIACCESS.RESEARCH.COMPLETED
+msgctxt "STRINGS.ONIACCESS.RESEARCH.COMPLETED"
+msgid "completed"
+msgstr "terminé"
+
+#. STRINGS.ONIACCESS.RESEARCH.DEAD_END
+msgctxt "STRINGS.ONIACCESS.RESEARCH.DEAD_END"
+msgid "no further techs"
+msgstr "aucune technologie supplémentaire"
+
+#. STRINGS.ONIACCESS.RESEARCH.HANDLER_NAME
+msgctxt "STRINGS.ONIACCESS.RESEARCH.HANDLER_NAME"
+msgid "Research"
+msgstr "Recherche"
+
+#. STRINGS.ONIACCESS.RESEARCH.JUMP_TO_TREE_HELP
+msgctxt "STRINGS.ONIACCESS.RESEARCH.JUMP_TO_TREE_HELP"
+msgid "Jump to tech in tree view"
+msgstr "Aller à la technologie dans l'arbre"
+
+#. STRINGS.ONIACCESS.RESEARCH.LOCKED
+msgctxt "STRINGS.ONIACCESS.RESEARCH.LOCKED"
+msgid "locked"
+msgstr "verrouillé"
+
+#. STRINGS.ONIACCESS.RESEARCH.NEEDS_FMT
+msgctxt "STRINGS.ONIACCESS.RESEARCH.NEEDS_FMT"
+msgid "needs {0}"
+msgstr "nécessite {0}"
+
+#. STRINGS.ONIACCESS.RESEARCH.NO_BANKED_POINTS
+msgctxt "STRINGS.ONIACCESS.RESEARCH.NO_BANKED_POINTS"
+msgid "no banked research points"
+msgstr "aucun point de recherche accumulé"
+
+#. STRINGS.ONIACCESS.RESEARCH.PREREQ_COMPLETED
+msgctxt "STRINGS.ONIACCESS.RESEARCH.PREREQ_COMPLETED"
+msgid "{0} completed"
+msgstr "{0} terminé"
+
+#. STRINGS.ONIACCESS.RESEARCH.PROGRESS_ENTRY
+msgctxt "STRINGS.ONIACCESS.RESEARCH.PROGRESS_ENTRY"
+msgid "{0} of {1} {2}"
+msgstr "{0} sur {1} {2}"
+
+#. STRINGS.ONIACCESS.RESEARCH.QUEUE_CANCEL_HELP
+msgctxt "STRINGS.ONIACCESS.RESEARCH.QUEUE_CANCEL_HELP"
+msgid "Select or cancel research"
+msgstr "Sélectionner ou annuler la recherche"
+
+#. STRINGS.ONIACCESS.RESEARCH.QUEUE_CLEARED
+msgctxt "STRINGS.ONIACCESS.RESEARCH.QUEUE_CLEARED"
+msgid "queue cleared"
+msgstr "file vidée"
+
+#. STRINGS.ONIACCESS.RESEARCH.QUEUE_EMPTY
+msgctxt "STRINGS.ONIACCESS.RESEARCH.QUEUE_EMPTY"
+msgid "no research queued"
+msgstr "aucune recherche en file"
+
+#. STRINGS.ONIACCESS.RESEARCH.QUEUE_TAB
+msgctxt "STRINGS.ONIACCESS.RESEARCH.QUEUE_TAB"
+msgid "Queue"
+msgstr "File"
+
+#. STRINGS.ONIACCESS.RESEARCH.QUEUED
+msgctxt "STRINGS.ONIACCESS.RESEARCH.QUEUED"
+msgid "{0} queued"
+msgstr "{0} en file"
+
+#. STRINGS.ONIACCESS.RESEARCH.ROOT_NODE
+msgctxt "STRINGS.ONIACCESS.RESEARCH.ROOT_NODE"
+msgid "no prerequisites"
+msgstr "aucun prérequis"
+
+#. STRINGS.ONIACCESS.RESEARCH.TREE_TAB
+msgctxt "STRINGS.ONIACCESS.RESEARCH.TREE_TAB"
+msgid "Tree"
+msgstr "Arbre"
+
+#. STRINGS.ONIACCESS.RESEARCH.UNLOCKS_FMT
+msgctxt "STRINGS.ONIACCESS.RESEARCH.UNLOCKS_FMT"
+msgid "unlocks {0}"
+msgstr "débloque {0}"
+
+#. STRINGS.ONIACCESS.RESOURCES.ALL_UNPINNED
+msgctxt "STRINGS.ONIACCESS.RESOURCES.ALL_UNPINNED"
+msgid "all unpinned"
+msgstr "tout désépinglé"
+
+#. STRINGS.ONIACCESS.RESOURCES.AVAILABLE
+msgctxt "STRINGS.ONIACCESS.RESOURCES.AVAILABLE"
+msgid "available"
+msgstr "disponible"
+
+#. STRINGS.ONIACCESS.RESOURCES.BROWSER_TITLE
+msgctxt "STRINGS.ONIACCESS.RESOURCES.BROWSER_TITLE"
+msgid "Resources"
+msgstr "Ressources"
+
+#. STRINGS.ONIACCESS.RESOURCES.DISCOVERED
+msgctxt "STRINGS.ONIACCESS.RESOURCES.DISCOVERED"
+msgid "Discovered: {0}"
+msgstr "Découvert : {0}"
+
+#. STRINGS.ONIACCESS.RESOURCES.FALLING
+msgctxt "STRINGS.ONIACCESS.RESOURCES.FALLING"
+msgid "falling"
+msgstr "en baisse"
+
+#. STRINGS.ONIACCESS.RESOURCES.HELP_CLEAR_PINS
+msgctxt "STRINGS.ONIACCESS.RESOURCES.HELP_CLEAR_PINS"
+msgid "Unpin all resources"
+msgstr "Désépingler toutes les ressources"
+
+#. STRINGS.ONIACCESS.RESOURCES.HELP_JUMP
+msgctxt "STRINGS.ONIACCESS.RESOURCES.HELP_JUMP"
+msgid "Jump to instance location"
+msgstr "Aller à l'emplacement"
+
+#. STRINGS.ONIACCESS.RESOURCES.HELP_OPEN
+msgctxt "STRINGS.ONIACCESS.RESOURCES.HELP_OPEN"
+msgid "Open resource browser"
+msgstr "Ouvrir le navigateur de ressources"
+
+#. STRINGS.ONIACCESS.RESOURCES.HELP_PIN
+msgctxt "STRINGS.ONIACCESS.RESOURCES.HELP_PIN"
+msgid "Pin or unpin resource"
+msgstr "Épingler ou désépingler la ressource"
+
+#. STRINGS.ONIACCESS.RESOURCES.HELP_READ_PINNED
+msgctxt "STRINGS.ONIACCESS.RESOURCES.HELP_READ_PINNED"
+msgid "Read pinned resources"
+msgstr "Lire les ressources épinglées"
+
+#. STRINGS.ONIACCESS.RESOURCES.INSTANCE_IN_BUILDING
+msgctxt "STRINGS.ONIACCESS.RESOURCES.INSTANCE_IN_BUILDING"
+msgid "{0} in {1} at {2}"
+msgstr "{0} dans {1} à {2}"
+
+#. STRINGS.ONIACCESS.RESOURCES.INSTANCE_LOOSE
+msgctxt "STRINGS.ONIACCESS.RESOURCES.INSTANCE_LOOSE"
+msgid "{0} at {1}"
+msgstr "{0} à {1}"
+
+#. STRINGS.ONIACCESS.RESOURCES.NO_INSTANCES
+msgctxt "STRINGS.ONIACCESS.RESOURCES.NO_INSTANCES"
+msgid "none available"
+msgstr "aucun disponible"
+
+#. STRINGS.ONIACCESS.RESOURCES.NO_PINNED
+msgctxt "STRINGS.ONIACCESS.RESOURCES.NO_PINNED"
+msgid "no pinned resources"
+msgstr "aucune ressource épinglée"
+
+#. STRINGS.ONIACCESS.RESOURCES.OVERDRAWN
+msgctxt "STRINGS.ONIACCESS.RESOURCES.OVERDRAWN"
+msgid "overdrawn"
+msgstr "surconsommé"
+
+#. STRINGS.ONIACCESS.RESOURCES.PINNED
+msgctxt "STRINGS.ONIACCESS.RESOURCES.PINNED"
+msgid "pinned"
+msgstr "épinglé"
+
+#. STRINGS.ONIACCESS.RESOURCES.RESERVED
+msgctxt "STRINGS.ONIACCESS.RESOURCES.RESERVED"
+msgid "reserved"
+msgstr "réservé"
+
+#. STRINGS.ONIACCESS.RESOURCES.RISING
+msgctxt "STRINGS.ONIACCESS.RESOURCES.RISING"
+msgid "rising"
+msgstr "en hausse"
+
+#. STRINGS.ONIACCESS.RESOURCES.UNPINNED
+msgctxt "STRINGS.ONIACCESS.RESOURCES.UNPINNED"
+msgid "unpinned"
+msgstr "désépinglé"
+
+#. STRINGS.ONIACCESS.RULER.CLEARED
+msgctxt "STRINGS.ONIACCESS.RULER.CLEARED"
+msgid "ruler cleared"
+msgstr "règle effacée"
+
+#. STRINGS.ONIACCESS.RULER.HELP_CLEAR
+msgctxt "STRINGS.ONIACCESS.RULER.HELP_CLEAR"
+msgid "Clear ruler"
+msgstr "Effacer la règle"
+
+#. STRINGS.ONIACCESS.RULER.HELP_PLACE
+msgctxt "STRINGS.ONIACCESS.RULER.HELP_PLACE"
+msgid "Place ruler at cursor"
+msgstr "Placer la règle au curseur"
+
+#. STRINGS.ONIACCESS.RULER.PLACED
+msgctxt "STRINGS.ONIACCESS.RULER.PLACED"
+msgid "ruler set"
+msgstr "règle définie"
+
+#. STRINGS.ONIACCESS.SANDBOX.APPLIED
+msgctxt "STRINGS.ONIACCESS.SANDBOX.APPLIED"
+msgid "applied to {0} cells"
+msgstr "appliqué à {0} cellules"
+
+#. STRINGS.ONIACCESS.SANDBOX.APPLIED_ONE
+msgctxt "STRINGS.ONIACCESS.SANDBOX.APPLIED_ONE"
+msgid "applied"
+msgstr "appliqué"
+
+#. STRINGS.ONIACCESS.SANDBOX.HELP.CONFIRM
+msgctxt "STRINGS.ONIACCESS.SANDBOX.HELP.CONFIRM"
+msgid "Apply and dismiss"
+msgstr "Appliquer et fermer"
+
+#. STRINGS.ONIACCESS.SANDBOX.HELP.OPEN_PARAMS
+msgctxt "STRINGS.ONIACCESS.SANDBOX.HELP.OPEN_PARAMS"
+msgid "Open parameter menu"
+msgstr "Ouvrir le menu des paramètres"
+
+#. STRINGS.ONIACCESS.SANDBOX.HELP.SAMPLE
+msgctxt "STRINGS.ONIACCESS.SANDBOX.HELP.SAMPLE"
+msgid "Sample cell under cursor"
+msgstr "Échantillonner la cellule sous le curseur"
+
+#. STRINGS.ONIACCESS.SANDBOX.HELP.SET_CORNER
+msgctxt "STRINGS.ONIACCESS.SANDBOX.HELP.SET_CORNER"
+msgid "Set rectangle corner or place"
+msgstr "Définir le coin du rectangle ou placer"
+
+#. STRINGS.ONIACCESS.SANDBOX.PARAM_MENU
+msgctxt "STRINGS.ONIACCESS.SANDBOX.PARAM_MENU"
+msgid "sandbox parameters"
+msgstr "paramètres du bac à sable"
+
+#. STRINGS.ONIACCESS.SANDBOX.SAMPLE
+msgctxt "STRINGS.ONIACCESS.SANDBOX.SAMPLE"
+msgid "sampled"
+msgstr "échantillonné"
+
+#. STRINGS.ONIACCESS.SANDBOX.TOOL_FALLBACK
+msgctxt "STRINGS.ONIACCESS.SANDBOX.TOOL_FALLBACK"
+msgid "sandbox tool"
+msgstr "outil bac à sable"
+
+#. STRINGS.ONIACCESS.SANDBOX.TOOLS_CATEGORY
+msgctxt "STRINGS.ONIACCESS.SANDBOX.TOOLS_CATEGORY"
+msgid "Sandbox Tools"
+msgstr "Outils bac à sable"
+
+#. STRINGS.ONIACCESS.SANDBOX.TOOLS_OFF
+msgctxt "STRINGS.ONIACCESS.SANDBOX.TOOLS_OFF"
+msgid "sandbox tools off"
+msgstr "outils bac à sable désactivés"
+
+#. STRINGS.ONIACCESS.SANDBOX.TOOLS_ON
+msgctxt "STRINGS.ONIACCESS.SANDBOX.TOOLS_ON"
+msgid "sandbox tools on"
+msgstr "outils bac à sable activés"
+
+#. STRINGS.ONIACCESS.SAVE_LOAD.AUTO_SAVE
+msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.AUTO_SAVE"
+msgid "auto-save"
+msgstr "sauvegarde auto"
+
+#. STRINGS.ONIACCESS.SAVE_LOAD.CONVERT_ALL_TO_CLOUD
+msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.CONVERT_ALL_TO_CLOUD"
+msgid "Convert all to cloud"
+msgstr "Tout convertir en cloud"
+
+#. STRINGS.ONIACCESS.SAVE_LOAD.CONVERT_ALL_TO_LOCAL
+msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.CONVERT_ALL_TO_LOCAL"
+msgid "Convert all to local"
+msgstr "Tout convertir en local"
+
+#. STRINGS.ONIACCESS.SAVE_LOAD.DELETE
+msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.DELETE"
+msgid "Delete"
+msgstr "Supprimer"
+
+#. STRINGS.ONIACCESS.SAVE_LOAD.NEWEST
+msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.NEWEST"
+msgid "newest"
+msgstr "plus récent"
+
+#. STRINGS.ONIACCESS.SAVE_LOAD.SAVE_INFO
+msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.SAVE_INFO"
+msgid "Save info"
+msgstr "Infos de sauvegarde"
+
+#. STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_OFF
+msgctxt "STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_OFF"
+msgid "auto-move off"
+msgstr "déplacement auto désactivé"
+
+#. STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_ON
+msgctxt "STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_ON"
+msgid "auto-move on"
+msgstr "déplacement auto activé"
+
+#. STRINGS.ONIACCESS.SCANNER.BIOME_NAME
+msgctxt "STRINGS.ONIACCESS.SCANNER.BIOME_NAME"
+msgid "{0} Biome"
+msgstr "Biome {0}"
+
+#. STRINGS.ONIACCESS.SCANNER.BOTTLE_NAME
+msgctxt "STRINGS.ONIACCESS.SCANNER.BOTTLE_NAME"
+msgid "Bottled {0}"
+msgstr "{0} en bouteille"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.AUTOMATION
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.AUTOMATION"
+msgid "Automation"
+msgstr "Automatisation"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.BUILDINGS
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.BUILDINGS"
+msgid "Buildings"
+msgstr "Bâtiments"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.DEBRIS
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.DEBRIS"
+msgid "Debris"
+msgstr "Débris"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.GASES
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.GASES"
+msgid "Gases"
+msgstr "Gaz"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.GEYSERS
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.GEYSERS"
+msgid "Geysers"
+msgstr "Geysers"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.LIFE
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.LIFE"
+msgid "Life"
+msgstr "Vie"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.LIQUIDS
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.LIQUIDS"
+msgid "Liquids"
+msgstr "Liquides"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.NETWORKS
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.NETWORKS"
+msgid "Networks"
+msgstr "Réseaux"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.SEARCH
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.SEARCH"
+msgid "Search"
+msgstr "Recherche"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.SOLIDS
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.SOLIDS"
+msgid "Solids"
+msgstr "Solides"
+
+#. STRINGS.ONIACCESS.SCANNER.CATEGORIES.ZONES
+msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.ZONES"
+msgid "Zones"
+msgstr "Zones"
+
+#. STRINGS.ONIACCESS.SCANNER.CLUSTER_LABEL
+msgctxt "STRINGS.ONIACCESS.SCANNER.CLUSTER_LABEL"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN"
+msgid "down"
+msgstr "bas"
+
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT"
+msgid "left"
+msgstr "gauche"
+
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT"
+msgid "right"
+msgstr "droite"
+
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_UP
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_UP"
+msgid "up"
+msgstr "haut"
+
+#. STRINGS.ONIACCESS.SCANNER.DISTANCE_BOTH
+msgctxt "STRINGS.ONIACCESS.SCANNER.DISTANCE_BOTH"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.SCANNER.DISTANCE_HORIZONTAL
+msgctxt "STRINGS.ONIACCESS.SCANNER.DISTANCE_HORIZONTAL"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.SCANNER.DISTANCE_VERTICAL
+msgctxt "STRINGS.ONIACCESS.SCANNER.DISTANCE_VERTICAL"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.SCANNER.EMPTY
+msgctxt "STRINGS.ONIACCESS.SCANNER.EMPTY"
+msgid "no results"
+msgstr "aucun résultat"
+
+#. STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_CATEGORY
+msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_CATEGORY"
+msgid "Scanner: cycle category"
+msgstr "Scanner : changer de catégorie"
+
+#. STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE
+msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE"
+msgid "Scanner: cycle instance"
+msgstr "Scanner : changer d'instance"
+
+#. STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM
+msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM"
+msgid "Scanner: cycle item"
+msgstr "Scanner : changer d'élément"
+
+#. STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_SUBCATEGORY
+msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_SUBCATEGORY"
+msgid "Scanner: cycle subcategory"
+msgstr "Scanner : changer de sous-catégorie"
+
+#. STRINGS.ONIACCESS.SCANNER.HELP.ORIENT_ITEM
+msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.ORIENT_ITEM"
+msgid "Distance to current item"
+msgstr "Distance à l'élément actuel"
+
+#. STRINGS.ONIACCESS.SCANNER.HELP.REFRESH
+msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.REFRESH"
+msgid "Refresh scanner"
+msgstr "Actualiser le scanner"
+
+#. STRINGS.ONIACCESS.SCANNER.HELP.SEARCH
+msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.SEARCH"
+msgid "Search scanner"
+msgstr "Chercher dans le scanner"
+
+#. STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT
+msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT"
+msgid "Jump to selected scanner entry"
+msgstr "Aller à l'entrée sélectionnée du scanner"
+
+#. STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT_BACK
+msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT_BACK"
+msgid "Return to pre-teleport position"
+msgstr "Retourner à la position avant téléportation"
+
+#. STRINGS.ONIACCESS.SCANNER.HELP.TOGGLE_AUTO_MOVE
+msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.TOGGLE_AUTO_MOVE"
+msgid "Toggle auto-move cursor"
+msgstr "Activer/Désactiver le déplacement auto du curseur"
+
+#. STRINGS.ONIACCESS.SCANNER.HERE
+msgctxt "STRINGS.ONIACCESS.SCANNER.HERE"
+msgid "here"
+msgstr "ici"
+
+#. STRINGS.ONIACCESS.SCANNER.INSTANCE_NO_DISTANCE
+msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_NO_DISTANCE"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.SCANNER.INSTANCE_OF
+msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_OF"
+msgid "{0} of {1}"
+msgstr "{0} sur {1}"
+
+#. STRINGS.ONIACCESS.SCANNER.INSTANCE_WITH_DISTANCE
+msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_WITH_DISTANCE"
+msgid "{0}, {1}, {2}"
+msgstr "{0}, {1}, {2}"
+
+#. STRINGS.ONIACCESS.SCANNER.INVALID
+msgctxt "STRINGS.ONIACCESS.SCANNER.INVALID"
+msgid "gone"
+msgstr "disparu"
+
+#. STRINGS.ONIACCESS.SCANNER.LOOSE_NAME
+msgctxt "STRINGS.ONIACCESS.SCANNER.LOOSE_NAME"
+msgid "Loose {0}"
+msgstr "{0} au sol"
+
+#. STRINGS.ONIACCESS.SCANNER.MIXED
+msgctxt "STRINGS.ONIACCESS.SCANNER.MIXED"
+msgid "mixed"
+msgstr "mixte"
+
+#. STRINGS.ONIACCESS.SCANNER.ORDER_CLUSTER_COUNT
+msgctxt "STRINGS.ONIACCESS.SCANNER.ORDER_CLUSTER_COUNT"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.SCANNER.ORDER_CLUSTER_LABEL
+msgctxt "STRINGS.ONIACCESS.SCANNER.ORDER_CLUSTER_LABEL"
+msgid "{0} {1} {2}"
+msgstr "{0} {1} {2}"
+
+#. STRINGS.ONIACCESS.SCANNER.ORDER_LABEL
+msgctxt "STRINGS.ONIACCESS.SCANNER.ORDER_LABEL"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.SCANNER.REFRESHED
+msgctxt "STRINGS.ONIACCESS.SCANNER.REFRESHED"
+msgid "scanned"
+msgstr "scanné"
+
+#. STRINGS.ONIACCESS.SCANNER.SEARCH.PROMPT
+msgctxt "STRINGS.ONIACCESS.SCANNER.SEARCH.PROMPT"
+msgid "search"
+msgstr "recherche"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ALL
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ALL"
+msgid "all"
+msgstr "tout"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.BIOMES
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.BIOMES"
+msgid "Biomes"
+msgstr "Biomes"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.BOTTLES
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.BOTTLES"
+msgid "Bottles"
+msgstr "Bouteilles"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONSUMABLES
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONSUMABLES"
+msgid "Consumables"
+msgstr "Consommables"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONTROLS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONTROLS"
+msgid "Controls"
+msgstr "Contrôles"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONVEYOR
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONVEYOR"
+msgid "Conveyor"
+msgstr "Convoyeur"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.DUPLICANTS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.DUPLICANTS"
+msgid "Duplicants"
+msgstr "Duplicants"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FARM_PLANTS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FARM_PLANTS"
+msgid "Farm Plants"
+msgstr "Plantes cultivées"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FARMING
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FARMING"
+msgid "Farming"
+msgstr "Agriculture"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FOOD
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FOOD"
+msgid "Food"
+msgstr "Nourriture"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FUELS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FUELS"
+msgid "Fuels"
+msgstr "Carburants"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GAS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GAS"
+msgid "Gas"
+msgstr "Gaz"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GATES
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GATES"
+msgid "Gates"
+msgstr "Portes"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GENERATORS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GENERATORS"
+msgid "Generators"
+msgstr "Générateurs"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GEOTHERMAL
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GEOTHERMAL"
+msgid "Geothermal"
+msgstr "Géothermique"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GRAVITAS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GRAVITAS"
+msgid "Gravitas"
+msgstr "Gravitas"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ICE
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ICE"
+msgid "Ice"
+msgstr "Glace"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.INFRASTRUCTURE
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.INFRASTRUCTURE"
+msgid "Infrastructure"
+msgstr "Infrastructure"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ITEMS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ITEMS"
+msgid "Items"
+msgstr "Objets"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.LIQUID
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.LIQUID"
+msgid "Liquid"
+msgstr "Liquide"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MATERIALS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MATERIALS"
+msgid "Materials"
+msgstr "Matériaux"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MISC
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MISC"
+msgid "Misc"
+msgstr "Divers"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MOLTEN
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MOLTEN"
+msgid "Molten"
+msgstr "En fusion"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MORALE
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MORALE"
+msgid "Morale"
+msgstr "Moral"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORDERS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORDERS"
+msgid "Orders"
+msgstr "Ordres"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORES
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORES"
+msgid "Ores"
+msgstr "Minerais"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORGANICS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORGANICS"
+msgid "Organics"
+msgstr "Organiques"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.OXYGEN
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.OXYGEN"
+msgid "Oxygen"
+msgstr "Oxygène"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.POWER
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.POWER"
+msgid "Power"
+msgstr "Énergie"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.PRODUCTION
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.PRODUCTION"
+msgid "Production"
+msgstr "Production"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.REFINED
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.REFINED"
+msgid "Refined"
+msgstr "Raffiné"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.REFINING
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.REFINING"
+msgid "Refining"
+msgstr "Raffinage"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROBOTS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROBOTS"
+msgid "Robots"
+msgstr "Robots"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROCKETRY
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROCKETRY"
+msgid "Rocketry"
+msgstr "Fuséologie"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROOMS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROOMS"
+msgid "Rooms"
+msgstr "Salles"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.SAFE
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.SAFE"
+msgid "Safe"
+msgstr "Sûr"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.SENSORS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.SENSORS"
+msgid "Sensors"
+msgstr "Capteurs"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.STONE
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.STONE"
+msgid "Stone"
+msgstr "Pierre"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.STORAGE
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.STORAGE"
+msgid "Storage"
+msgstr "Stockage"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TAME_CRITTERS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TAME_CRITTERS"
+msgid "Tame Critters"
+msgstr "Bestioles apprivoisées"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TEMPERATURE
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TEMPERATURE"
+msgid "Temperature"
+msgstr "Température"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TILES
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TILES"
+msgid "Tiles"
+msgstr "Cases"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TRANSPORT
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TRANSPORT"
+msgid "Transport"
+msgstr "Transport"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.UNSAFE
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.UNSAFE"
+msgid "Unsafe"
+msgstr "Dangereux"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WATERS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WATERS"
+msgid "Waters"
+msgstr "Eaux"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WELLNESS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WELLNESS"
+msgid "Wellness"
+msgstr "Bien-être"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_CRITTERS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_CRITTERS"
+msgid "Wild Critters"
+msgstr "Bestioles sauvages"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_PLANTS
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_PLANTS"
+msgid "Wild Plants"
+msgstr "Plantes sauvages"
+
+#. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WIRES
+msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WIRES"
+msgid "Wires"
+msgstr "Câbles"
+
+#. STRINGS.ONIACCESS.SCHEDULE.ADD_SCHEDULE
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.ADD_SCHEDULE"
+msgid "Add new schedule"
+msgstr "Ajouter un nouveau planning"
+
+#. STRINGS.ONIACCESS.SCHEDULE.BLOCK_ALREADY
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.BLOCK_ALREADY"
+msgid "block {0}, already {1}"
+msgstr "bloc {0}, déjà {1}"
+
+#. STRINGS.ONIACCESS.SCHEDULE.BLOCK_LABEL
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.BLOCK_LABEL"
+msgid "{0}, block {1}"
+msgstr "{0}, bloc {1}"
+
+#. STRINGS.ONIACCESS.SCHEDULE.BRUSH_ACTIVE
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.BRUSH_ACTIVE"
+msgid "Brush: {0}"
+msgstr "Pinceau : {0}"
+
+#. STRINGS.ONIACCESS.SCHEDULE.CANNOT_DELETE_LAST
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.CANNOT_DELETE_LAST"
+msgid "Cannot delete last schedule"
+msgstr "Impossible de supprimer le dernier planning"
+
+#. STRINGS.ONIACCESS.SCHEDULE.CANNOT_DELETE_LAST_ROW
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.CANNOT_DELETE_LAST_ROW"
+msgid "Cannot delete last row"
+msgstr "Impossible de supprimer la dernière ligne"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HANDLER_NAME
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HANDLER_NAME"
+msgid "Schedule"
+msgstr "Planning"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HELP_CHANGE_SCHEDULE
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_CHANGE_SCHEDULE"
+msgid "Change schedule assignment"
+msgstr "Changer l'affectation du planning"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HELP_JUMP_BLOCK
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_JUMP_BLOCK"
+msgid "Jump to first or last block"
+msgstr "Aller au premier ou au dernier bloc"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HELP_NAVIGATE_BLOCKS
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_NAVIGATE_BLOCKS"
+msgid "Navigate blocks"
+msgstr "Parcourir les blocs"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HELP_OPTIONS
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_OPTIONS"
+msgid "Open schedule options"
+msgstr "Ouvrir les options du planning"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT"
+msgid "Paint current block"
+msgstr "Peindre le bloc actuel"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_MOVE
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_MOVE"
+msgid "Paint and move"
+msgstr "Peindre et déplacer"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_RANGE
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_RANGE"
+msgid "Paint range to start or end"
+msgstr "Peindre la plage jusqu'au début ou à la fin"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HELP_REORDER_SCHEDULE
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_REORDER_SCHEDULE"
+msgid "Move schedule up or down"
+msgstr "Déplacer le planning vers le haut ou le bas"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HELP_ROTATE
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_ROTATE"
+msgid "Rotate blocks left or right"
+msgstr "Tourner les blocs à gauche ou à droite"
+
+#. STRINGS.ONIACCESS.SCHEDULE.HELP_SELECT_BRUSH
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_SELECT_BRUSH"
+msgid "Select brush"
+msgstr "Sélectionner le pinceau"
+
+#. STRINGS.ONIACCESS.SCHEDULE.MOVED_DOWN
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.MOVED_DOWN"
+msgid "moved down"
+msgstr "déplacé vers le bas"
+
+#. STRINGS.ONIACCESS.SCHEDULE.MOVED_UP
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.MOVED_UP"
+msgid "moved up"
+msgstr "déplacé vers le haut"
+
+#. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_ADD_ROW
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_ADD_ROW"
+msgid "Add timetable row"
+msgstr "Ajouter une ligne à l'emploi du temps"
+
+#. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DELETE_ROW
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DELETE_ROW"
+msgid "Delete timetable row"
+msgstr "Supprimer une ligne de l'emploi du temps"
+
+#. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DELETE_SCHEDULE
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DELETE_SCHEDULE"
+msgid "Delete schedule"
+msgstr "Supprimer le planning"
+
+#. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DUPLICATE
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DUPLICATE"
+msgid "Duplicate schedule"
+msgstr "Dupliquer le planning"
+
+#. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_RENAME
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_RENAME"
+msgid "Rename"
+msgstr "Renommer"
+
+#. STRINGS.ONIACCESS.SCHEDULE.PAINTED_RANGE
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.PAINTED_RANGE"
+msgid "Painted {0}, blocks {1} through {2}"
+msgstr "{0} peint, blocs {1} à {2}"
+
+#. STRINGS.ONIACCESS.SCHEDULE.ROW_LABEL
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.ROW_LABEL"
+msgid "row {0}"
+msgstr "ligne {0}"
+
+#. STRINGS.ONIACCESS.SCHEDULE.SCHEDULE_DELETED
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.SCHEDULE_DELETED"
+msgid "Schedule deleted"
+msgstr "Planning supprimé"
+
+#. STRINGS.ONIACCESS.SCHEDULE.SCHEDULE_ROW
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.SCHEDULE_ROW"
+msgid "{0}, row {1}"
+msgstr "{0}, ligne {1}"
+
+#. STRINGS.ONIACCESS.SCHEDULE.SCHEDULES_TAB
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.SCHEDULES_TAB"
+msgid "Schedules"
+msgstr "Plannings"
+
+#. STRINGS.ONIACCESS.SCHEDULE.TIMETABLE_ROW_ADDED
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.TIMETABLE_ROW_ADDED"
+msgid "Row added"
+msgstr "Ligne ajoutée"
+
+#. STRINGS.ONIACCESS.SCHEDULE.TIMETABLE_ROW_DELETED
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.TIMETABLE_ROW_DELETED"
+msgid "Row deleted"
+msgstr "Ligne supprimée"
+
+#. STRINGS.ONIACCESS.SEARCH.CLEARED
+msgctxt "STRINGS.ONIACCESS.SEARCH.CLEARED"
+msgid "Search cleared"
+msgstr "Recherche effacée"
+
+#. STRINGS.ONIACCESS.SEARCH.NO_MATCH
+msgctxt "STRINGS.ONIACCESS.SEARCH.NO_MATCH"
+msgid "No match for {0}"
+msgstr "Aucun résultat pour {0}"
+
+#. STRINGS.ONIACCESS.SIDESCREENS.COPILOT_ROBO
+msgctxt "STRINGS.ONIACCESS.SIDESCREENS.COPILOT_ROBO"
+msgid "Copilot: Robo-Pilot"
+msgstr "Copilote : Robo-Pilote"
+
+#. STRINGS.ONIACCESS.SKILLS.ASSIGNED
+msgctxt "STRINGS.ONIACCESS.SKILLS.ASSIGNED"
+msgid "{0} assigned"
+msgstr "{0} assigné"
+
+#. STRINGS.ONIACCESS.SKILLS.AVAILABLE
+msgctxt "STRINGS.ONIACCESS.SKILLS.AVAILABLE"
+msgid "available"
+msgstr "disponible"
+
+#. STRINGS.ONIACCESS.SKILLS.BLOCKED_BY
+msgctxt "STRINGS.ONIACCESS.SKILLS.BLOCKED_BY"
+msgid "blocked by {0}"
+msgstr "bloqué par {0}"
+
+#. STRINGS.ONIACCESS.SKILLS.BOOSTER_ASSIGNED
+msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_ASSIGNED"
+msgid "booster assigned"
+msgstr "booster assigné"
+
+#. STRINGS.ONIACCESS.SKILLS.BOOSTER_AVAILABLE
+msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_AVAILABLE"
+msgid "{0} available"
+msgstr "{0} disponible"
+
+#. STRINGS.ONIACCESS.SKILLS.BOOSTER_HELP
+msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_HELP"
+msgid "Assign or unassign boosters with +/-"
+msgstr "Assigner ou retirer les boosters avec +/-"
+
+#. STRINGS.ONIACCESS.SKILLS.BOOSTER_HINT
+msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_HINT"
+msgid "use plus to assign, minus to unassign"
+msgstr "utiliser plus pour assigner, moins pour retirer"
+
+#. STRINGS.ONIACCESS.SKILLS.BOOSTER_SLOTS
+msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_SLOTS"
+msgid "{0} of {1} booster slots used"
+msgstr "{0} sur {1} emplacements de booster utilisés"
+
+#. STRINGS.ONIACCESS.SKILLS.BOOSTER_UNASSIGNED
+msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_UNASSIGNED"
+msgid "booster unassigned"
+msgstr "booster retiré"
+
+#. STRINGS.ONIACCESS.SKILLS.BUCKET_BOOSTERS
+msgctxt "STRINGS.ONIACCESS.SKILLS.BUCKET_BOOSTERS"
+msgid "Boosters"
+msgstr "Boosters"
+
+#. STRINGS.ONIACCESS.SKILLS.BUCKET_DUPE_INFO
+msgctxt "STRINGS.ONIACCESS.SKILLS.BUCKET_DUPE_INFO"
+msgid "Dupe Info"
+msgstr "Infos Duplicant"
+
+#. STRINGS.ONIACCESS.SKILLS.BUCKET_MASTERED
+msgctxt "STRINGS.ONIACCESS.SKILLS.BUCKET_MASTERED"
+msgid "Mastered"
+msgstr "Maîtrisé"
+
+#. STRINGS.ONIACCESS.SKILLS.CANNOT_LEARN
+msgctxt "STRINGS.ONIACCESS.SKILLS.CANNOT_LEARN"
+msgid "cannot learn"
+msgstr "ne peut pas apprendre"
+
+#. STRINGS.ONIACCESS.SKILLS.DEAD_END
+msgctxt "STRINGS.ONIACCESS.SKILLS.DEAD_END"
+msgid "no further skills"
+msgstr "aucune compétence supplémentaire"
+
+#. STRINGS.ONIACCESS.SKILLS.DUPES_TAB
+msgctxt "STRINGS.ONIACCESS.SKILLS.DUPES_TAB"
+msgid "Duplicants"
+msgstr "Duplicants"
+
+#. STRINGS.ONIACCESS.SKILLS.GRANTED
+msgctxt "STRINGS.ONIACCESS.SKILLS.GRANTED"
+msgid "granted"
+msgstr "acquis"
+
+#. STRINGS.ONIACCESS.SKILLS.HANDLER_NAME
+msgctxt "STRINGS.ONIACCESS.SKILLS.HANDLER_NAME"
+msgid "Skills"
+msgstr "Compétences"
+
+#. STRINGS.ONIACCESS.SKILLS.HAT_LABEL
+msgctxt "STRINGS.ONIACCESS.SKILLS.HAT_LABEL"
+msgid "hat: {0}"
+msgstr "chapeau : {0}"
+
+#. STRINGS.ONIACCESS.SKILLS.HAT_QUEUED
+msgctxt "STRINGS.ONIACCESS.SKILLS.HAT_QUEUED"
+msgid "{0} queued"
+msgstr "{0} en file"
+
+#. STRINGS.ONIACCESS.SKILLS.HAT_SELECTED
+msgctxt "STRINGS.ONIACCESS.SKILLS.HAT_SELECTED"
+msgid "{0} selected"
+msgstr "{0} sélectionné"
+
+#. STRINGS.ONIACCESS.SKILLS.HEADER_TOTAL
+msgctxt "STRINGS.ONIACCESS.SKILLS.HEADER_TOTAL"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.SKILLS.INTERESTED
+msgctxt "STRINGS.ONIACCESS.SKILLS.INTERESTED"
+msgid "interested"
+msgstr "intéressé"
+
+#. STRINGS.ONIACCESS.SKILLS.INTERESTS
+msgctxt "STRINGS.ONIACCESS.SKILLS.INTERESTS"
+msgid "interests: {0}"
+msgstr "intérêts : {0}"
+
+#. STRINGS.ONIACCESS.SKILLS.JUMP_TO_TREE_HELP
+msgctxt "STRINGS.ONIACCESS.SKILLS.JUMP_TO_TREE_HELP"
+msgid "Jump to skill in tree view"
+msgstr "Aller à la compétence dans l'arbre"
+
+#. STRINGS.ONIACCESS.SKILLS.LEARN_HELP
+msgctxt "STRINGS.ONIACCESS.SKILLS.LEARN_HELP"
+msgid "Learn skill or select hat"
+msgstr "Apprendre la compétence ou sélectionner le chapeau"
+
+#. STRINGS.ONIACCESS.SKILLS.LEARNED
+msgctxt "STRINGS.ONIACCESS.SKILLS.LEARNED"
+msgid "{0} learned"
+msgstr "{0} appris"
+
+#. STRINGS.ONIACCESS.SKILLS.LOCKED
+msgctxt "STRINGS.ONIACCESS.SKILLS.LOCKED"
+msgid "locked"
+msgstr "verrouillé"
+
+#. STRINGS.ONIACCESS.SKILLS.MASTERED
+msgctxt "STRINGS.ONIACCESS.SKILLS.MASTERED"
+msgid "mastered"
+msgstr "maîtrisé"
+
+#. STRINGS.ONIACCESS.SKILLS.MASTERED_BY
+msgctxt "STRINGS.ONIACCESS.SKILLS.MASTERED_BY"
+msgid "mastered by {0}"
+msgstr "maîtrisé par {0}"
+
+#. STRINGS.ONIACCESS.SKILLS.MODIFIER_LINE
+msgctxt "STRINGS.ONIACCESS.SKILLS.MODIFIER_LINE"
+msgid "{0} {1}{2}"
+msgstr "{0} {1}{2}"
+
+#. STRINGS.ONIACCESS.SKILLS.MORALE_DEFICIT
+msgctxt "STRINGS.ONIACCESS.SKILLS.MORALE_DEFICIT"
+msgid "morale deficit"
+msgstr "déficit de moral"
+
+#. STRINGS.ONIACCESS.SKILLS.MORALE_NEED
+msgctxt "STRINGS.ONIACCESS.SKILLS.MORALE_NEED"
+msgid "{0} morale need"
+msgstr "{0} besoin de moral"
+
+#. STRINGS.ONIACCESS.SKILLS.MORALE_OF
+msgctxt "STRINGS.ONIACCESS.SKILLS.MORALE_OF"
+msgid "morale {0} of {1}"
+msgstr "moral {0} sur {1}"
+
+#. STRINGS.ONIACCESS.SKILLS.NAME_POINTS
+msgctxt "STRINGS.ONIACCESS.SKILLS.NAME_POINTS"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.SKILLS.NAME_STATUS
+msgctxt "STRINGS.ONIACCESS.SKILLS.NAME_STATUS"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.SKILLS.NAME_STORED
+msgctxt "STRINGS.ONIACCESS.SKILLS.NAME_STORED"
+msgid "{0}, stored"
+msgstr "{0}, stocké"
+
+#. STRINGS.ONIACCESS.SKILLS.NO_BOOSTERS_AVAILABLE
+msgctxt "STRINGS.ONIACCESS.SKILLS.NO_BOOSTERS_AVAILABLE"
+msgid "no boosters available"
+msgstr "aucun booster disponible"
+
+#. STRINGS.ONIACCESS.SKILLS.NO_EMPTY_SLOTS
+msgctxt "STRINGS.ONIACCESS.SKILLS.NO_EMPTY_SLOTS"
+msgid "no empty slots"
+msgstr "aucun emplacement libre"
+
+#. STRINGS.ONIACCESS.SKILLS.NO_HAT
+msgctxt "STRINGS.ONIACCESS.SKILLS.NO_HAT"
+msgid "no hat"
+msgstr "aucun chapeau"
+
+#. STRINGS.ONIACCESS.SKILLS.NO_INTERESTS
+msgctxt "STRINGS.ONIACCESS.SKILLS.NO_INTERESTS"
+msgid "no interests"
+msgstr "aucun intérêt"
+
+#. STRINGS.ONIACCESS.SKILLS.NO_SKILL_POINTS
+msgctxt "STRINGS.ONIACCESS.SKILLS.NO_SKILL_POINTS"
+msgid "no skill points"
+msgstr "aucun point de compétence"
+
+#. STRINGS.ONIACCESS.SKILLS.NONE_ASSIGNED
+msgctxt "STRINGS.ONIACCESS.SKILLS.NONE_ASSIGNED"
+msgid "none assigned"
+msgstr "aucun assigné"
+
+#. STRINGS.ONIACCESS.SKILLS.POINTS
+msgctxt "STRINGS.ONIACCESS.SKILLS.POINTS"
+msgid "{0} points"
+msgstr "{0} points"
+
+#. STRINGS.ONIACCESS.SKILLS.SKILLS_TAB
+msgctxt "STRINGS.ONIACCESS.SKILLS.SKILLS_TAB"
+msgid "Skills"
+msgstr "Compétences"
+
+#. STRINGS.ONIACCESS.SKILLS.XP_PROGRESS
+msgctxt "STRINGS.ONIACCESS.SKILLS.XP_PROGRESS"
+msgid "{0} of {1} experience to next point"
+msgstr "{0} sur {1} expérience pour le prochain point"
+
+#. STRINGS.ONIACCESS.SKIP.COUNT_FORMAT
+msgctxt "STRINGS.ONIACCESS.SKIP.COUNT_FORMAT"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.SKIP.HELP_SKIP
+msgctxt "STRINGS.ONIACCESS.SKIP.HELP_SKIP"
+msgid "Skip cursor to next change"
+msgstr "Sauter au prochain changement"
+
+#. STRINGS.ONIACCESS.SKIP.HELP_SKIP_DEFAULT
+msgctxt "STRINGS.ONIACCESS.SKIP.HELP_SKIP_DEFAULT"
+msgid "Skip by building or element (ignore overlay)"
+msgstr "Sauter par bâtiment ou élément (ignorer la superposition)"
+
+#. STRINGS.ONIACCESS.SKIP.NO_CHANGE_BOUNDARY
+msgctxt "STRINGS.ONIACCESS.SKIP.NO_CHANGE_BOUNDARY"
+msgid "no change till map boundary"
+msgstr "aucun changement jusqu'au bord de la carte"
+
+#. STRINGS.ONIACCESS.SKIP.TILE_PLURAL
+msgctxt "STRINGS.ONIACCESS.SKIP.TILE_PLURAL"
+msgid "tiles"
+msgstr "cases"
+
+#. STRINGS.ONIACCESS.SKIP.TILE_SINGULAR
+msgctxt "STRINGS.ONIACCESS.SKIP.TILE_SINGULAR"
+msgid "tile"
+msgstr "case"
+
+#. STRINGS.ONIACCESS.SPEECH.HANDLER_FAILED
+msgctxt "STRINGS.ONIACCESS.SPEECH.HANDLER_FAILED"
+msgid "Error, {0} failed"
+msgstr "Erreur, {0} a échoué"
+
+#. STRINGS.ONIACCESS.SPEECH.MOD_LOADED
+msgctxt "STRINGS.ONIACCESS.SPEECH.MOD_LOADED"
+msgid "Oni-Access version {0} loaded"
+msgstr "Oni-Access version {0} chargé"
+
+#. STRINGS.ONIACCESS.SPEECH.MOD_OFF
+msgctxt "STRINGS.ONIACCESS.SPEECH.MOD_OFF"
+msgid "Oni-Access off"
+msgstr "Oni-Access désactivé"
+
+#. STRINGS.ONIACCESS.SPEECH.MOD_ON
+msgctxt "STRINGS.ONIACCESS.SPEECH.MOD_ON"
+msgid "Oni-Access on"
+msgstr "Oni-Access activé"
+
+#. STRINGS.ONIACCESS.SPEECH.NO_COMMANDS
+msgctxt "STRINGS.ONIACCESS.SPEECH.NO_COMMANDS"
+msgid "No commands available in this context"
+msgstr "Aucune commande disponible dans ce contexte"
+
+#. STRINGS.ONIACCESS.SPRITES.LOGIC_GREEN
+msgctxt "STRINGS.ONIACCESS.SPRITES.LOGIC_GREEN"
+msgid "green signal"
+msgstr "signal vert"
+
+#. STRINGS.ONIACCESS.SPRITES.LOGIC_RED
+msgctxt "STRINGS.ONIACCESS.SPRITES.LOGIC_RED"
+msgid "red signal"
+msgstr "signal rouge"
+
+#. STRINGS.ONIACCESS.SPRITES.WARNING
+msgctxt "STRINGS.ONIACCESS.SPRITES.WARNING"
+msgid "warning:"
+msgstr "attention :"
+
+#. STRINGS.ONIACCESS.STARMAP.ANALYSIS_STARTED
+msgctxt "STRINGS.ONIACCESS.STARMAP.ANALYSIS_STARTED"
+msgid "analysis started"
+msgstr "analyse commencée"
+
+#. STRINGS.ONIACCESS.STARMAP.ANALYSIS_SUSPENDED
+msgctxt "STRINGS.ONIACCESS.STARMAP.ANALYSIS_SUSPENDED"
+msgid "analysis suspended"
+msgstr "analyse suspendue"
+
+#. STRINGS.ONIACCESS.STARMAP.ANALYZING_THIS
+msgctxt "STRINGS.ONIACCESS.STARMAP.ANALYZING_THIS"
+msgid "telescope analyzing"
+msgstr "télescope en analyse"
+
+#. STRINGS.ONIACCESS.STARMAP.CAN_CARRY
+msgctxt "STRINGS.ONIACCESS.STARMAP.CAN_CARRY"
+msgid "can carry"
+msgstr "peut transporter"
+
+#. STRINGS.ONIACCESS.STARMAP.CHECK_NOT_READY
+msgctxt "STRINGS.ONIACCESS.STARMAP.CHECK_NOT_READY"
+msgid "not ready"
+msgstr "pas prêt"
+
+#. STRINGS.ONIACCESS.STARMAP.CHECK_READY
+msgctxt "STRINGS.ONIACCESS.STARMAP.CHECK_READY"
+msgid "ready"
+msgstr "prêt"
+
+#. STRINGS.ONIACCESS.STARMAP.CHECK_WARNING
+msgctxt "STRINGS.ONIACCESS.STARMAP.CHECK_WARNING"
+msgid "warning"
+msgstr "avertissement"
+
+#. STRINGS.ONIACCESS.STARMAP.COMPLETE
+msgctxt "STRINGS.ONIACCESS.STARMAP.COMPLETE"
+msgid "complete"
+msgstr "terminé"
+
+#. STRINGS.ONIACCESS.STARMAP.DESTINATION_ASSIGNED
+msgctxt "STRINGS.ONIACCESS.STARMAP.DESTINATION_ASSIGNED"
+msgid "{0} assigned to {1}"
+msgstr "{0} assigné à {1}"
+
+#. STRINGS.ONIACCESS.STARMAP.DESTINATIONS_TAB
+msgctxt "STRINGS.ONIACCESS.STARMAP.DESTINATIONS_TAB"
+msgid "Destinations"
+msgstr "Destinations"
+
+#. STRINGS.ONIACCESS.STARMAP.DESTINATIONS_TAB_WITH_ROCKET
+msgctxt "STRINGS.ONIACCESS.STARMAP.DESTINATIONS_TAB_WITH_ROCKET"
+msgid "assigning to {0}"
+msgstr "assignation à {0}"
+
+#. STRINGS.ONIACCESS.STARMAP.DETAILS_TAB
+msgctxt "STRINGS.ONIACCESS.STARMAP.DETAILS_TAB"
+msgid "Destination details"
+msgstr "Détails de la destination"
+
+#. STRINGS.ONIACCESS.STARMAP.HANDLER_NAME
+msgctxt "STRINGS.ONIACCESS.STARMAP.HANDLER_NAME"
+msgid "Starmap"
+msgstr "Carte stellaire"
+
+#. STRINGS.ONIACCESS.STARMAP.LAUNCH_HELP
+msgctxt "STRINGS.ONIACCESS.STARMAP.LAUNCH_HELP"
+msgid "Launch rocket"
+msgstr "Lancer la fusée"
+
+#. STRINGS.ONIACCESS.STARMAP.LAUNCHED
+msgctxt "STRINGS.ONIACCESS.STARMAP.LAUNCHED"
+msgid "{0} launched"
+msgstr "{0} lancé"
+
+#. STRINGS.ONIACCESS.STARMAP.NEEDS_BAY
+msgctxt "STRINGS.ONIACCESS.STARMAP.NEEDS_BAY"
+msgid "needs"
+msgstr "nécessite"
+
+#. STRINGS.ONIACCESS.STARMAP.NO_DESTINATION_SELECTED
+msgctxt "STRINGS.ONIACCESS.STARMAP.NO_DESTINATION_SELECTED"
+msgid "no destination selected"
+msgstr "aucune destination sélectionnée"
+
+#. STRINGS.ONIACCESS.STARMAP.NO_DESTINATIONS
+msgctxt "STRINGS.ONIACCESS.STARMAP.NO_DESTINATIONS"
+msgid "no destinations"
+msgstr "aucune destination"
+
+#. STRINGS.ONIACCESS.STARMAP.NO_ROCKET_SELECTED
+msgctxt "STRINGS.ONIACCESS.STARMAP.NO_ROCKET_SELECTED"
+msgid "no rocket selected"
+msgstr "aucune fusée sélectionnée"
+
+#. STRINGS.ONIACCESS.STARMAP.NO_ROCKETS
+msgctxt "STRINGS.ONIACCESS.STARMAP.NO_ROCKETS"
+msgid "no rockets"
+msgstr "aucune fusée"
+
+#. STRINGS.ONIACCESS.STARMAP.REMAINING
+msgctxt "STRINGS.ONIACCESS.STARMAP.REMAINING"
+msgid "remaining"
+msgstr "restant"
+
+#. STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE
+msgctxt "STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE"
+msgid "complete: {0}, {1} points"
+msgstr "terminé : {0}, {1} points"
+
+#. STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE_RARE
+msgctxt "STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE_RARE"
+msgid "complete: rare {0}, {1} points"
+msgstr "terminé : rare {0}, {1} points"
+
+#. STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE
+msgctxt "STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE"
+msgid "incomplete: {0}, {1} points"
+msgstr "incomplet : {0}, {1} points"
+
+#. STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE_RARE
+msgctxt "STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE_RARE"
+msgid "incomplete: rare {0}, {1} points"
+msgstr "incomplet : rare {0}, {1} points"
+
+#. STRINGS.ONIACCESS.STARMAP.ROCKET_NOT_GROUNDED
+msgctxt "STRINGS.ONIACCESS.STARMAP.ROCKET_NOT_GROUNDED"
+msgid "rocket not grounded"
+msgstr "fusée pas au sol"
+
+#. STRINGS.ONIACCESS.STARMAP.ROCKETS_TAB
+msgctxt "STRINGS.ONIACCESS.STARMAP.ROCKETS_TAB"
+msgid "Rockets"
+msgstr "Fusées"
+
+#. STRINGS.ONIACCESS.STATES.ANY
+msgctxt "STRINGS.ONIACCESS.STATES.ANY"
+msgid "Any"
+msgstr "Tout"
+
+#. STRINGS.ONIACCESS.STATES.ASSIGNED
+msgctxt "STRINGS.ONIACCESS.STATES.ASSIGNED"
+msgid "assigned"
+msgstr "assigné"
+
+#. STRINGS.ONIACCESS.STATES.AVAILABLE
+msgctxt "STRINGS.ONIACCESS.STATES.AVAILABLE"
+msgid "available"
+msgstr "disponible"
+
+#. STRINGS.ONIACCESS.STATES.CONDITION_FAILED
+msgctxt "STRINGS.ONIACCESS.STATES.CONDITION_FAILED"
+msgid "failed"
+msgstr "échoué"
+
+#. STRINGS.ONIACCESS.STATES.CONDITION_MET
+msgctxt "STRINGS.ONIACCESS.STATES.CONDITION_MET"
+msgid "met"
+msgstr "remplie"
+
+#. STRINGS.ONIACCESS.STATES.CONDITION_MET_OTHER
+msgctxt "STRINGS.ONIACCESS.STATES.CONDITION_MET_OTHER"
+msgid "met by past colony"
+msgstr "remplie par une ancienne colonie"
+
+#. STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET
+msgctxt "STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET"
+msgid "not met"
+msgstr "non remplie"
+
+#. STRINGS.ONIACCESS.STATES.DISABLED
+msgctxt "STRINGS.ONIACCESS.STATES.DISABLED"
+msgid "disabled"
+msgstr "désactivé"
+
+#. STRINGS.ONIACCESS.STATES.ENABLED
+msgctxt "STRINGS.ONIACCESS.STATES.ENABLED"
+msgid "enabled"
+msgstr "activé"
+
+#. STRINGS.ONIACCESS.STATES.FORBIDDEN
+msgctxt "STRINGS.ONIACCESS.STATES.FORBIDDEN"
+msgid "not present"
+msgstr "non présent"
+
+#. STRINGS.ONIACCESS.STATES.GUARANTEED
+msgctxt "STRINGS.ONIACCESS.STATES.GUARANTEED"
+msgid "present"
+msgstr "présent"
+
+#. STRINGS.ONIACCESS.STATES.INPUT_FIELD
+msgctxt "STRINGS.ONIACCESS.STATES.INPUT_FIELD"
+msgid "input field"
+msgstr "champ de saisie"
+
+#. STRINGS.ONIACCESS.STATES.LOCKED
+msgctxt "STRINGS.ONIACCESS.STATES.LOCKED"
+msgid "locked"
+msgstr "verrouillé"
+
+#. STRINGS.ONIACCESS.STATES.MIXED
+msgctxt "STRINGS.ONIACCESS.STATES.MIXED"
+msgid "mixed"
+msgstr "mixte"
+
+#. STRINGS.ONIACCESS.STATES.NONE
+msgctxt "STRINGS.ONIACCESS.STATES.NONE"
+msgid "None"
+msgstr "Aucun"
+
+#. STRINGS.ONIACCESS.STATES.OFF
+msgctxt "STRINGS.ONIACCESS.STATES.OFF"
+msgid "off"
+msgstr "désactivé"
+
+#. STRINGS.ONIACCESS.STATES.ON
+msgctxt "STRINGS.ONIACCESS.STATES.ON"
+msgid "on"
+msgstr "activé"
+
+#. STRINGS.ONIACCESS.STATES.QUEUED
+msgctxt "STRINGS.ONIACCESS.STATES.QUEUED"
+msgid "queued"
+msgstr "en file"
+
+#. STRINGS.ONIACCESS.STATES.SELECTED
+msgctxt "STRINGS.ONIACCESS.STATES.SELECTED"
+msgid "selected"
+msgstr "sélectionné"
+
+#. STRINGS.ONIACCESS.STATES.SLIDER
+msgctxt "STRINGS.ONIACCESS.STATES.SLIDER"
+msgid "slider"
+msgstr "curseur"
+
+#. STRINGS.ONIACCESS.STATES.UNASSIGNED
+msgctxt "STRINGS.ONIACCESS.STATES.UNASSIGNED"
+msgid "unassigned"
+msgstr "non assigné"
+
+#. STRINGS.ONIACCESS.SUPPLY_CLOSET.NO_ITEMS
+msgctxt "STRINGS.ONIACCESS.SUPPLY_CLOSET.NO_ITEMS"
+msgid "No items to claim"
+msgstr "Aucun objet à réclamer"
+
+#. STRINGS.ONIACCESS.SUPPLY_CLOSET.OFFLINE
+msgctxt "STRINGS.ONIACCESS.SUPPLY_CLOSET.OFFLINE"
+msgid "Not connected to server"
+msgstr "Non connecté au serveur"
+
+#. STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST
+msgctxt "STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST"
+msgid "Jump to first or last row"
+msgstr "Aller à la première ou la dernière ligne"
+
+#. STRINGS.ONIACCESS.TABLE.NAVIGATE_TABLE
+msgctxt "STRINGS.ONIACCESS.TABLE.NAVIGATE_TABLE"
+msgid "Navigate rows and columns"
+msgstr "Parcourir les lignes et les colonnes"
+
+#. STRINGS.ONIACCESS.TABLE.SORT_ASC_FMT
+msgctxt "STRINGS.ONIACCESS.TABLE.SORT_ASC_FMT"
+msgid "{0}, sorted low to high"
+msgstr "{0}, trié du plus bas au plus haut"
+
+#. STRINGS.ONIACCESS.TABLE.SORT_CLEARED_FMT
+msgctxt "STRINGS.ONIACCESS.TABLE.SORT_CLEARED_FMT"
+msgid "{0}, sort cleared"
+msgstr "{0}, tri effacé"
+
+#. STRINGS.ONIACCESS.TABLE.SORT_COLUMN
+msgctxt "STRINGS.ONIACCESS.TABLE.SORT_COLUMN"
+msgid "Sort by column on header row"
+msgstr "Trier par colonne sur la ligne d'en-tête"
+
+#. STRINGS.ONIACCESS.TABLE.SORT_DESC_FMT
+msgctxt "STRINGS.ONIACCESS.TABLE.SORT_DESC_FMT"
+msgid "{0}, sorted high to low"
+msgstr "{0}, trié du plus haut au plus bas"
+
+#. STRINGS.ONIACCESS.TABLE.STORED
+msgctxt "STRINGS.ONIACCESS.TABLE.STORED"
+msgid "Stored"
+msgstr "Stocké"
+
+#. STRINGS.ONIACCESS.TELEPAD.NEW_ACHIEVEMENTS
+msgctxt "STRINGS.ONIACCESS.TELEPAD.NEW_ACHIEVEMENTS"
+msgid "new achievements"
+msgstr "nouveaux succès"
+
+#. STRINGS.ONIACCESS.TELEPAD.SKILL_POINTS
+msgctxt "STRINGS.ONIACCESS.TELEPAD.SKILL_POINTS"
+msgid "skill points available"
+msgstr "points de compétence disponibles"
+
+#. STRINGS.ONIACCESS.TEMPERATURE.NEAR_BOILING
+msgctxt "STRINGS.ONIACCESS.TEMPERATURE.NEAR_BOILING"
+msgid "near boiling"
+msgstr "proche de l'ébullition"
+
+#. STRINGS.ONIACCESS.TEMPERATURE.NEAR_FREEZING
+msgctxt "STRINGS.ONIACCESS.TEMPERATURE.NEAR_FREEZING"
+msgid "near freezing"
+msgstr "proche du gel"
+
+#. STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED
+msgctxt "STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED"
+msgid "Cancelled"
+msgstr "Annulé"
+
+#. STRINGS.ONIACCESS.TEXT_EDIT.COPIED
+msgctxt "STRINGS.ONIACCESS.TEXT_EDIT.COPIED"
+msgid "Copied"
+msgstr "Copié"
+
+#. STRINGS.ONIACCESS.TEXT_EDIT.EDITING
+msgctxt "STRINGS.ONIACCESS.TEXT_EDIT.EDITING"
+msgid "Editing"
+msgstr "Édition"
+
+#. STRINGS.ONIACCESS.TEXT_EDIT.PASTED
+msgctxt "STRINGS.ONIACCESS.TEXT_EDIT.PASTED"
+msgid "Pasted"
+msgstr "Collé"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.COORD_APPEND
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.COORD_APPEND"
+msgid "coordinates append"
+msgstr "coordonnées en suffixe"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.COORD_OFF
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.COORD_OFF"
+msgid "coordinates off"
+msgstr "coordonnées désactivées"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.COORD_PREPEND
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.COORD_PREPEND"
+msgid "coordinates prepend"
+msgstr "coordonnées en préfixe"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.COORDS
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.COORDS"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.KEY_PERIOD
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.KEY_PERIOD"
+msgid "period"
+msgstr "point"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.COLONY_REPORT
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.COLONY_REPORT"
+msgid "Colony report"
+msgstr "Rapport de la colonie"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.CONSUMABLES
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.CONSUMABLES"
+msgid "Consumables"
+msgstr "Consommables"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.DATABASE
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.DATABASE"
+msgid "Database"
+msgstr "Base de données"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.PRIORITIES
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.PRIORITIES"
+msgid "Priorities"
+msgstr "Priorités"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.RESEARCH
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.RESEARCH"
+msgid "Research"
+msgstr "Recherche"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.SCHEDULE
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.SCHEDULE"
+msgid "Schedule"
+msgstr "Planning"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.SKILLS
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.SKILLS"
+msgid "Skills"
+msgstr "Compétences"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.STARMAP
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.STARMAP"
+msgid "Starmap"
+msgstr "Carte stellaire"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.VITALS
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.VITALS"
+msgid "Vitals"
+msgstr "Signes vitaux"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.NO_ROOM
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.NO_ROOM"
+msgid "no room"
+msgstr "aucune salle"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.NOTHING_TO_SELECT
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.NOTHING_TO_SELECT"
+msgid "nothing to select"
+msgstr "rien à sélectionner"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.OVERLAY_NONE
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.OVERLAY_NONE"
+msgid "default view"
+msgstr "vue par défaut"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.SELECT_OBJECT
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.SELECT_OBJECT"
+msgid "select an object"
+msgstr "sélectionner un objet"
+
+#. STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED
+msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED"
+msgid "unexplored"
+msgstr "inexploré"
+
+#. STRINGS.ONIACCESS.TOOLS.ACTIVATION
+msgctxt "STRINGS.ONIACCESS.TOOLS.ACTIVATION"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.ACTIVATION_PLAIN
+msgctxt "STRINGS.ONIACCESS.TOOLS.ACTIVATION_PLAIN"
+msgid "{0}"
+msgstr "{0}"
+
+#. STRINGS.ONIACCESS.TOOLS.ACTIVATION_WITH_FILTER
+msgctxt "STRINGS.ONIACCESS.TOOLS.ACTIVATION_WITH_FILTER"
+msgid "{0}, {1}, {2}"
+msgstr "{0}, {1}, {2}"
+
+#. STRINGS.ONIACCESS.TOOLS.CANCELED
+msgctxt "STRINGS.ONIACCESS.TOOLS.CANCELED"
+msgid "canceled"
+msgstr "annulé"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_ATTACK
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_ATTACK"
+msgid "marked {0} for attack at priority {1}"
+msgstr "{0} marqué pour attaque, priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_CANCEL
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_CANCEL"
+msgid "cancelled {0} {2}"
+msgstr "{0} {2} annulé"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_CAPTURE
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_CAPTURE"
+msgid "marked {0} for capture at priority {1}"
+msgstr "{0} marqué pour capture, priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_DECONSTRUCT
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DECONSTRUCT"
+msgid "marked {0} for deconstruction at priority {1}"
+msgstr "{0} marqué pour déconstruction, priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG"
+msgid "marked {0} for digging at priority {1}"
+msgstr "{0} marqué pour creusage, priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_DISCONNECT
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DISCONNECT"
+msgid "disconnected {0} segments"
+msgstr "{0} segments déconnectés"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_DISINFECT
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DISINFECT"
+msgid "marked {0} for disinfection at priority {1}"
+msgstr "{0} marqué pour désinfection, priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_EMPTY_PIPE
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_EMPTY_PIPE"
+msgid "marked {0} pipe cells for emptying at priority {1}"
+msgstr "{0} cellules de tuyau marquées pour vidage, priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_HARVEST
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_HARVEST"
+msgid "set harvest on {0} plants at priority {1}"
+msgstr "récolte définie sur {0} plantes, priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_MOP
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_MOP"
+msgid "marked {0} for mopping at priority {1}"
+msgstr "{0} marqué pour épongeage, priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_PRIORITIZE
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_PRIORITIZE"
+msgid "updated {0} {2} to priority {1}"
+msgstr "{0} {2} mis à jour en priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_SWEEP
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_SWEEP"
+msgid "marked {0} for sweeping at priority {1}"
+msgstr "{0} marqué pour balayage, priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_ACTIVATION
+msgctxt "STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_ACTIVATION"
+msgid "{0}, copy settings"
+msgstr "{0}, copier les paramètres"
+
+#. STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_NO_TARGET
+msgctxt "STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_NO_TARGET"
+msgid "no matching building"
+msgstr "aucun bâtiment correspondant"
+
+#. STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_UNAVAILABLE
+msgctxt "STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_UNAVAILABLE"
+msgid "no copyable settings"
+msgstr "aucun paramètre à copier"
+
+#. STRINGS.ONIACCESS.TOOLS.CORNER_SET
+msgctxt "STRINGS.ONIACCESS.TOOLS.CORNER_SET"
+msgid "corner set"
+msgstr "coin défini"
+
+#. STRINGS.ONIACCESS.TOOLS.DIG_ORDER
+msgctxt "STRINGS.ONIACCESS.TOOLS.DIG_ORDER"
+msgid "dig order"
+msgstr "ordre de creusage"
+
+#. STRINGS.ONIACCESS.TOOLS.DIG_ORDER_PRIORITY
+msgctxt "STRINGS.ONIACCESS.TOOLS.DIG_ORDER_PRIORITY"
+msgid "dig order, priority {0}"
+msgstr "ordre de creusage, priorité {0}"
+
+#. STRINGS.ONIACCESS.TOOLS.DISCONNECT_TOO_FAR
+msgctxt "STRINGS.ONIACCESS.TOOLS.DISCONNECT_TOO_FAR"
+msgid "adjacent cells only"
+msgstr "cellules adjacentes seulement"
+
+#. STRINGS.ONIACCESS.TOOLS.DISINFECT_OBJECT
+msgctxt "STRINGS.ONIACCESS.TOOLS.DISINFECT_OBJECT"
+msgid "{0}, {1}, {2}"
+msgstr "{0}, {1}, {2}"
+
+#. STRINGS.ONIACCESS.TOOLS.DONE
+msgctxt "STRINGS.ONIACCESS.TOOLS.DONE"
+msgid "done"
+msgstr "terminé"
+
+#. STRINGS.ONIACCESS.TOOLS.FALLBACK_LABEL
+msgctxt "STRINGS.ONIACCESS.TOOLS.FALLBACK_LABEL"
+msgid "tool"
+msgstr "outil"
+
+#. STRINGS.ONIACCESS.TOOLS.FILTER_NAME
+msgctxt "STRINGS.ONIACCESS.TOOLS.FILTER_NAME"
+msgid "tool filter"
+msgstr "filtre d'outil"
+
+#. STRINGS.ONIACCESS.TOOLS.FILTER_REMOVED
+msgctxt "STRINGS.ONIACCESS.TOOLS.FILTER_REMOVED"
+msgid "filter removed"
+msgstr "filtre retiré"
+
+#. STRINGS.ONIACCESS.TOOLS.FILTERED
+msgctxt "STRINGS.ONIACCESS.TOOLS.FILTERED"
+msgid "filtered"
+msgstr "filtré"
+
+#. STRINGS.ONIACCESS.TOOLS.ITEM_PLURAL
+msgctxt "STRINGS.ONIACCESS.TOOLS.ITEM_PLURAL"
+msgid "items"
+msgstr "éléments"
+
+#. STRINGS.ONIACCESS.TOOLS.ITEM_SINGULAR
+msgctxt "STRINGS.ONIACCESS.TOOLS.ITEM_SINGULAR"
+msgid "item"
+msgstr "élément"
+
+#. STRINGS.ONIACCESS.TOOLS.MARKED_ATTACK
+msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_ATTACK"
+msgid "marked for attack"
+msgstr "marqué pour attaque"
+
+#. STRINGS.ONIACCESS.TOOLS.MARKED_CAPTURE
+msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_CAPTURE"
+msgid "marked for capture"
+msgstr "marqué pour capture"
+
+#. STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT
+msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT"
+msgid "marked for deconstruct"
+msgstr "marqué pour déconstruction"
+
+#. STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT_PRIORITY
+msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT_PRIORITY"
+msgid "marked for deconstruct, priority {0}"
+msgstr "marqué pour déconstruction, priorité {0}"
+
+#. STRINGS.ONIACCESS.TOOLS.MARKED_DISINFECT
+msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_DISINFECT"
+msgid "marked for disinfect"
+msgstr "marqué pour désinfection"
+
+#. STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP
+msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP"
+msgid "marked for sweep"
+msgstr "marqué pour balayage"
+
+#. STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY
+msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY"
+msgid "marked for sweep, priority {0}"
+msgstr "marqué pour balayage, priorité {0}"
+
+#. STRINGS.ONIACCESS.TOOLS.MOP_ORDER
+msgctxt "STRINGS.ONIACCESS.TOOLS.MOP_ORDER"
+msgid "mop order"
+msgstr "ordre d'épongeage"
+
+#. STRINGS.ONIACCESS.TOOLS.MOP_ORDER_PRIORITY
+msgctxt "STRINGS.ONIACCESS.TOOLS.MOP_ORDER_PRIORITY"
+msgid "mop order, priority {0}"
+msgstr "ordre d'épongeage, priorité {0}"
+
+#. STRINGS.ONIACCESS.TOOLS.MOVE_TO_ACTIVATION
+msgctxt "STRINGS.ONIACCESS.TOOLS.MOVE_TO_ACTIVATION"
+msgid "move to, {0}"
+msgstr "déplacer vers, {0}"
+
+#. STRINGS.ONIACCESS.TOOLS.MOVE_TO_CONFIRMED
+msgctxt "STRINGS.ONIACCESS.TOOLS.MOVE_TO_CONFIRMED"
+msgid "destination set"
+msgstr "destination définie"
+
+#. STRINGS.ONIACCESS.TOOLS.MOVE_TO_UNREACHABLE
+msgctxt "STRINGS.ONIACCESS.TOOLS.MOVE_TO_UNREACHABLE"
+msgid "unreachable"
+msgstr "inaccessible"
+
+#. STRINGS.ONIACCESS.TOOLS.NO_VALID_CELLS
+msgctxt "STRINGS.ONIACCESS.TOOLS.NO_VALID_CELLS"
+msgid "no valid cells"
+msgstr "aucune cellule valide"
+
+#. STRINGS.ONIACCESS.TOOLS.PICKER_NAME
+msgctxt "STRINGS.ONIACCESS.TOOLS.PICKER_NAME"
+msgid "tool menu"
+msgstr "menu d'outils"
+
+#. STRINGS.ONIACCESS.TOOLS.PIPE_CONTENTS
+msgctxt "STRINGS.ONIACCESS.TOOLS.PIPE_CONTENTS"
+msgid "{0}, {1}, {2}"
+msgstr "{0}, {1}, {2}"
+
+#. STRINGS.ONIACCESS.TOOLS.PIPE_EMPTY
+msgctxt "STRINGS.ONIACCESS.TOOLS.PIPE_EMPTY"
+msgid "{0}, empty"
+msgstr "{0}, vide"
+
+#. STRINGS.ONIACCESS.TOOLS.PLACE_ACTIVATION
+msgctxt "STRINGS.ONIACCESS.TOOLS.PLACE_ACTIVATION"
+msgid "place, {0}"
+msgstr "placer, {0}"
+
+#. STRINGS.ONIACCESS.TOOLS.PLACE_INVALID
+msgctxt "STRINGS.ONIACCESS.TOOLS.PLACE_INVALID"
+msgid "invalid location"
+msgstr "emplacement invalide"
+
+#. STRINGS.ONIACCESS.TOOLS.PRIORITY_BASIC
+msgctxt "STRINGS.ONIACCESS.TOOLS.PRIORITY_BASIC"
+msgid "priority {0}"
+msgstr "priorité {0}"
+
+#. STRINGS.ONIACCESS.TOOLS.PRIORITY_EMERGENCY
+msgctxt "STRINGS.ONIACCESS.TOOLS.PRIORITY_EMERGENCY"
+msgid "emergency priority"
+msgstr "priorité d'urgence"
+
+#. STRINGS.ONIACCESS.TOOLS.RECT_CLEARED
+msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_CLEARED"
+msgid "rectangle cleared"
+msgstr "rectangle effacé"
+
+#. STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY
+msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY"
+msgid "{0}x{1}, {2} valid"
+msgstr "{0}x{1}, {2} valide"
+
+#. STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_INVALID
+msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_INVALID"
+msgid "{0}x{1}, {2} valid, {3} invalid"
+msgstr "{0}x{1}, {2} valide, {3} invalide"
+
+#. STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED
+msgctxt "STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED"
+msgid "selection cleared"
+msgstr "sélection effacée"
+
+#. STRINGS.ONIACCESS.TOOLTIP.CANNOT_CONTINUE
+msgctxt "STRINGS.ONIACCESS.TOOLTIP.CANNOT_CONTINUE"
+msgid "cannot continue"
+msgstr "impossible de continuer"
+
+#. STRINGS.ONIACCESS.TOOLTIP.CLOSED
+msgctxt "STRINGS.ONIACCESS.TOOLTIP.CLOSED"
+msgid "closed"
+msgstr "fermé"
+
+#. STRINGS.ONIACCESS.TOOLTIP.CONTINUING
+msgctxt "STRINGS.ONIACCESS.TOOLTIP.CONTINUING"
+msgid "continuing"
+msgstr "en cours"
+
+#. STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP
+msgctxt "STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP"
+msgid "no tooltip"
+msgstr "aucune infobulle"
+
+#. STRINGS.ONIACCESS.VIDEO.PLAYING
+msgctxt "STRINGS.ONIACCESS.VIDEO.PLAYING"
+msgid "Video playing"
+msgstr "Vidéo en cours"
+
+#. STRINGS.ONIACCESS.VITALS_SCREEN.CHANGE
+msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.CHANGE"
+msgid "change: {0}"
+msgstr "variation : {0}"
+
+#. STRINGS.ONIACCESS.VITALS_SCREEN.DISEASE_HEADER
+msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.DISEASE_HEADER"
+msgid "Current diseases and time remaining"
+msgstr "Maladies actuelles et temps restant"
+
+#. STRINGS.ONIACCESS.VITALS_SCREEN.EATEN_TODAY
+msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.EATEN_TODAY"
+msgid "eaten today: {0}"
+msgstr "mangé aujourd'hui : {0}"
+
+#. STRINGS.ONIACCESS.VITALS_SCREEN.FOCUS_DUPLICANT
+msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.FOCUS_DUPLICANT"
+msgid "Focus camera on duplicant"
+msgstr "Centrer la caméra sur le Duplicant"
+
+#. STRINGS.ONIACCESS.VITALS_SCREEN.FOCUSED
+msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.FOCUSED"
+msgid "focused"
+msgstr "centré"
+
+#. STRINGS.ONIACCESS.VITALS_SCREEN.FULLNESS_HEADER
+msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.FULLNESS_HEADER"
+msgid "Calories remaining before starvation"
+msgstr "Calories restantes avant la famine"
+
+#. STRINGS.ONIACCESS.VITALS_SCREEN.HANDLER_NAME
+msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.HANDLER_NAME"
+msgid "Vitals table"
+msgstr "Table des signes vitaux"
+
+#. STRINGS.ONIACCESS.WORLD_GEN.COMPLETE
+msgctxt "STRINGS.ONIACCESS.WORLD_GEN.COMPLETE"
+msgid "World generation complete"
+msgstr "Génération du monde terminée"
+
+#. STRINGS.ONIACCESS.WORLD_GEN.PERCENT
+msgctxt "STRINGS.ONIACCESS.WORLD_GEN.PERCENT"
+msgid "{0} percent"
+msgstr "{0} pourcent"
+
+#. STRINGS.ONIACCESS.WORLD_SELECTOR.ACTIVE_LABEL
+msgctxt "STRINGS.ONIACCESS.WORLD_SELECTOR.ACTIVE_LABEL"
+msgid "active"
+msgstr "actif"
+
+#. STRINGS.ONIACCESS.WORLD_SELECTOR.DISCOVERED
+msgctxt "STRINGS.ONIACCESS.WORLD_SELECTOR.DISCOVERED"
+msgid "{0} discovered"
+msgstr "{0} découvert"
+
+#. STRINGS.ONIACCESS.WORLD_SELECTOR.OPEN
+msgctxt "STRINGS.ONIACCESS.WORLD_SELECTOR.OPEN"
+msgid "Open world list"
+msgstr "Ouvrir la liste des mondes"
+
+#. STRINGS.ONIACCESS.WORLD_SELECTOR.ROCKET
+msgctxt "STRINGS.ONIACCESS.WORLD_SELECTOR.ROCKET"
+msgid "rocket"
+msgstr "fusée"
