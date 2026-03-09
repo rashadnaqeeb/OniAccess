@@ -98,6 +98,8 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
 			if (go == null) return;
 			if (go.GetComponent<Growing>() != null) return;
+			var uncoverable = go.GetComponent<Uncoverable>();
+			if (uncoverable != null && !uncoverable.IsUncovered) return;
 			if (!seen.Add(go)) return;
 			string name = GetBuildingName(go);
 			if (name == null) return;
