@@ -217,19 +217,14 @@ namespace OniAccess.Handlers {
 			if (UnityEngine.Time.frameCount == _searchSuppressFrame)
 				return false;
 
-			// A-Z (no modifiers) — start or continue search
+			// Letters (no modifiers) — start or continue search
 			if (!ctrlHeld && !altHeld) {
 				string inputStr = UnityEngine.Input.inputString;
 				bool consumed = false;
 				for (int i = 0; i < inputStr.Length; i++) {
 					char c = inputStr[i];
-					if (c >= 'a' && c <= 'z') {
-						var kc = UnityEngine.KeyCode.A + (c - 'a');
-						consumed |= _search.HandleKey(kc, ctrlHeld, altHeld, this);
-					} else if (c >= 'A' && c <= 'Z') {
-						var kc = UnityEngine.KeyCode.A + (c - 'A');
-						consumed |= _search.HandleKey(kc, ctrlHeld, altHeld, this);
-					}
+					if (char.IsLetter(c))
+						consumed |= _search.HandleChar(c, this);
 				}
 				if (consumed) return true;
 			}

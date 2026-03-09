@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using OniAccess.Util;
 using UnityEngine;
 
 [assembly: InternalsVisibleTo("OniAccess.Tests")]
@@ -135,6 +136,23 @@ namespace OniAccess.Handlers {
 		/// <param name="ctrlHeld">Whether Ctrl is held.</param>
 		/// <param name="altHeld">Whether Alt is held.</param>
 		/// <param name="searchable">The searchable context to search within.</param>
+		/// <summary>
+		/// Handle a typed character for search. Accepts any letter in any script.
+		/// Returns true if the character was consumed by search.
+		/// </summary>
+		public bool HandleChar(char c, ISearchable searchable) {
+			_searchable = searchable;
+
+			if (!_isSearchActive) {
+				if (searchable.SearchItemCount == 0)
+					return false;
+			}
+
+			AddChar(c);
+			RunSearch();
+			return true;
+		}
+
 		public bool HandleKey(KeyCode keyCode, bool ctrlHeld, bool altHeld, ISearchable searchable) {
 			_searchable = searchable;
 
@@ -170,31 +188,11 @@ namespace OniAccess.Handlers {
 						}
 						return false;
 					default:
-						// A-Z without Ctrl/Alt: add to search buffer
-						if (!ctrlHeld && !altHeld &&
-							keyCode >= KeyCode.A && keyCode <= KeyCode.Z) {
-							char c = (char)('a' + (keyCode - KeyCode.A));
-							AddChar(c);
-							RunSearch();
-							return true;
-						}
 						// Non-search key: cursor is already at search result from SearchMoveTo.
 						// Just clear search and let handler process the key normally.
 						Clear();
 						return false;
 				}
-			}
-
-			// Search inactive: start search on A-Z (no Ctrl/Alt)
-			if (!ctrlHeld && !altHeld &&
-				keyCode >= KeyCode.A && keyCode <= KeyCode.Z) {
-				if (searchable.SearchItemCount == 0)
-					return false;
-
-				char c = (char)('a' + (keyCode - KeyCode.A));
-				AddChar(c);
-				RunSearch();
-				return true;
 			}
 
 			// Search inactive but has leftover buffer: handle Backspace
@@ -432,6 +430,8 @@ namespace OniAccess.Handlers {
 
 		internal static int MatchTier(string lowerName, string lowerPrefix, out int position) {
 			position = -1;
+			lowerName = StringUtil.RemoveDiacritics(lowerName);
+			lowerPrefix = StringUtil.RemoveDiacritics(lowerPrefix);
 			int prefixLen = lowerPrefix.Length;
 			if (prefixLen > lowerName.Length)
 				return -1;

@@ -82,6 +82,8 @@ namespace OniAccess.Tests {
 			results.Add(SearchTierPositionSorting());
 			results.Add(SearchSpaceMultiWord());
 			results.Add(SearchTrailingSpaceIgnored());
+			results.Add(MatchTierAccentInsensitive());
+			results.Add(MatchTierAccentedQuery());
 
 			// --- ScannerSearch ---
 			results.Add(ScannerSearchPrefixMatch());
@@ -91,6 +93,7 @@ namespace OniAccess.Tests {
 			results.Add(ScannerSearchCaseInsensitive());
 			results.Add(ScannerSearchFilterRemapsCategory());
 			results.Add(ScannerSearchBestMatchAcrossPositions());
+			results.Add(ScannerSearchAccentInsensitive());
 
 			// --- TextFilter ---
 			TextFilter.RegisterSprite("warning", "warning:");
@@ -861,6 +864,20 @@ namespace OniAccess.Tests {
 			return Assert("MatchTierNoMatch", ok, $"tier={tier} pos={pos}");
 		}
 
+		private static (string, bool, string) MatchTierAccentInsensitive() {
+			// ASCII "e" matches accented "é" in "défaut"
+			int tier = TypeAheadSearch.MatchTier("défaut", "def");
+			bool ok = tier == 1; // start-of-string prefix
+			return Assert("MatchTierAccentInsensitive", ok, $"tier={tier}");
+		}
+
+		private static (string, bool, string) MatchTierAccentedQuery() {
+			// Accented query also matches: "é" matches "é"
+			int tier = TypeAheadSearch.MatchTier("défaut", "déf");
+			bool ok = tier == 1;
+			return Assert("MatchTierAccentedQuery", ok, $"tier={tier}");
+		}
+
 		private static (string, bool, string) SearchTierOrdering() {
 			// Items designed so each tier is represented:
 			// "Wood Club" (tier 0), "Wooden Axe" (tier 1), "Pine Wood" (tier 2),
@@ -1000,6 +1017,13 @@ namespace OniAccess.Tests {
 			int key = ScannerSearch.MatchSortKey("X Generators Gen", "gen");
 			bool ok = key == 1;
 			return Assert("ScannerSearchBestMatchAcrossPositions", ok, $"key={key}");
+		}
+
+		private static (string, bool, string) ScannerSearchAccentInsensitive() {
+			// ASCII "categ" matches "Catégorie" with accented é
+			int key = ScannerSearch.MatchSortKey("Catégorie", "categ");
+			bool ok = key == 0; // prefix match
+			return Assert("ScannerSearchAccentInsensitive", ok, $"key={key}");
 		}
 
 		// ========================================

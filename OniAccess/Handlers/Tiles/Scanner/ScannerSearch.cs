@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using OniAccess.Util;
 
 namespace OniAccess.Handlers.Tiles.Scanner {
 	public static class ScannerSearch {
@@ -32,8 +33,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		/// Scans all positions to find the best (lowest) sort key.
 		/// </summary>
 		internal static int MatchSortKey(string itemName, string query) {
-			string lower = itemName.ToLowerInvariant();
-			query = query.ToLowerInvariant();
+			string lower = StringUtil.RemoveDiacritics(itemName.ToLowerInvariant());
+			query = StringUtil.RemoveDiacritics(query.ToLowerInvariant());
 
 			if (lower.StartsWith(query, StringComparison.Ordinal))
 				return 0;
