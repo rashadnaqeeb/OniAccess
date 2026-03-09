@@ -312,6 +312,26 @@ These are base game hotkeys that open management screens from the colony view. T
 - **U** -- Database (Codex)
 - **Z** -- Starmap
 
+## Overlay hotkeys
+
+These are base game hotkeys that toggle information overlays. Each overlay changes what the tile cursor and big cursor area scan report. Pressing the same overlay key again returns to the default view. These keys can be remapped from the game's Input Bindings menu.
+
+- **F1** -- Oxygen
+- **F2** -- Power
+- **F3** -- Temperature
+- **F4** -- Materials
+- **F5** -- Light
+- **F6** -- Liquid Plumbing
+- **F7** -- Gas Plumbing
+- **F8** -- Decor
+- **F9** -- Disease
+- **F10** -- Crops
+- **F11** -- Rooms
+- **Shift+F1** -- Exosuit (requires Exosuit Engineering research)
+- **Shift+F2** -- Automation (requires Smart Batteries research)
+- **Shift+F3** -- Conveyor (requires Solid Transport research)
+- **Shift+F4** -- Radiation (Spaced Out DLC only)
+
 ## Cluster map (Spaced Out DLC)
 
 **Z** opens the starmap, which is a hex grid of asteroids, rockets, POIs, and other space entities. The cursor starts on the asteroid you opened from.
