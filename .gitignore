@@ -4,3 +4,4 @@ obj/
 .planning/
 ONI-Decompiled/
 nul
+*.pot
