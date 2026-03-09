@@ -180,6 +180,45 @@ Manual valves and shutoff valves participate directly in the `ConduitFlow` updat
 
 Limit valves work differently: they use a `ConduitBridge` component and hook into its transfer delegates rather than running their own `ConduitUpdate`. The bridge handles the actual input/output transfer, and `LimitValve` constrains how much the bridge is allowed to move.
 
+## Phase Changes in Pipes
+
+Pipe contents exchange heat with the surrounding environment. When the temperature of a fluid inside a pipe crosses its element's phase transition point (freezing point for liquids, boiling point for gases in liquid pipes, or condensation/vaporization thresholds), the native simulation flags that pipe cell as frozen or melted.
+
+### Temperature Simulation
+
+`ConduitTemperatureManager.Sim200ms()` runs every 200ms of game time. For each occupied pipe cell, the native sim calculates heat exchange using:
+- **Conduit heat capacity** = pipe building mass x pipe material specific heat capacity
+- **Conduit thermal conductivity** = pipe material thermal conductivity x pipe building thermal conductivity multiplier
+- **Insulated flag** = `true` when the pipe's `ThermalConductivity` multiplier is less than 1.0 (insulated pipes use 0.03125, standard pipes use 1.0)
+
+The sim returns two lists: pipe cells whose contents froze and pipe cells whose contents boiled (melted in the code, but functionally it means the contents changed state).
+
+### Damage and Contents Loss
+
+When a pipe cell is flagged as frozen or boiled, `ConduitFlow.FreezeConduitContents()` or `MeltConduitContents()` fires. Both apply the same logic:
+
+1. **Mass threshold**: The event is ignored if the pipe contains less than 10% of its maximum capacity (1 kg for liquid pipes, 0.1 kg for gas pipes). Small residual amounts do not cause damage.
+2. **Damage**: The pipe takes 1 HP of damage. All pipes have 10 HP, so 10 state-change events destroy the pipe.
+3. **Contents dumped**: `EmptyConduit()` ejects the pipe's contents into the world cell as a free substance via `SimMessages.AddRemoveSubstance`. For a liquid pipe whose contents froze, this means a solid debris tile appears in the world. For a liquid pipe whose contents boiled, gas is released into the atmosphere.
+
+The game displays "Cold Damage" for freezing and "Heat Damage" for boiling as damage pop-ups.
+
+### Liquid vs Gas Pipes
+
+Both liquid and gas conduits use the same `ConduitTemperatureManager` and the same freeze/boil logic. The only differences are the visual effects: frozen liquid pipes show an ice effect, while frozen gas pipes (where the gas liquefied) show a liquid leak effect. Boiling in either pipe type shows a gas leak effect.
+
+### Repair After State-Change Damage
+
+Repair behavior follows the same rules as other damage sources (see Pipe Physical Properties above): gas pipes queue a repair errand immediately, while liquid pipes cannot be repaired and must be deconstructed and rebuilt.
+
+### Prevention
+
+- **Insulated pipes** reduce thermal conductivity to 1/32 of default, dramatically slowing heat exchange between pipe contents and the environment. They do not prevent phase changes outright -- if the fluid enters the pipe already near its transition temperature, or the environment is extreme enough, state changes still occur.
+- **Material selection** affects heat capacity: higher specific heat capacity means the pipe absorbs or releases heat more slowly. Ceramic insulated pipes are common because ceramic has very low thermal conductivity.
+- **Temperature management** is the only complete prevention: ensure the environment around the pipe stays within the fluid's phase-stable range, or pre-cool/pre-heat the fluid before piping it through hostile areas.
+
+**Sources:** `ConduitTemperatureManager.cs` (Sim200ms, Allocate), `Conduit.cs` (OnConduitFrozen, OnConduitBoiling), `ConduitFlow.cs` (FreezeConduitContents, MeltConduitContents, EmptyConduit), `TUNING/BUILDINGS.cs` (DAMAGE_SOURCES), `STRINGS/BUILDINGS.cs` (DAMAGESOURCES)
+
 ## Solid Conveyor System
 
 Conveyors are fundamentally different from fluid pipes:
