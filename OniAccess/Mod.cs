@@ -65,10 +65,6 @@ namespace OniAccess {
 			// ModInputRouter will be registered later via Harmony patch on InputInit.Awake
 			HandlerStack.Push(new BaselineHandler());
 
-			// Startup announcement
-			SpeechPipeline.SpeakInterrupt(
-				string.Format(STRINGS.ONIACCESS.SPEECH.MOD_LOADED, Version));
-
 			ModUtil.RegisterForTranslation(typeof(STRINGS.ONIACCESS));
 
 			Log.Info($"Oni-Access version {Version} loaded");
