@@ -717,7 +717,8 @@ namespace OniAccess.Handlers.Build {
 			if (ToolMenu.Instance != null) {
 				foreach (var collection in ToolMenu.Instance.sandboxTools)
 					foreach (var ti in collection.tools)
-						list.Add(ti);
+						if (ti.toolName != "SandboxSampleTool")
+							list.Add(ti);
 			}
 			return list;
 		}

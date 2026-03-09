@@ -302,6 +302,16 @@ namespace OniAccess.Handlers.Sandbox {
 
 		private static void ApplySingleCell(InterfaceTool tool, int cell) {
 			var pos = Grid.CellToPosCCC(cell, Grid.SceneLayer.Move);
+
+			if (tool is SandboxStoryTraitTool storyTool) {
+				string error = storyTool.GetError(pos, out _, out _);
+				if (error != null) {
+					PlaySound("Negative");
+					SpeechPipeline.SpeakInterrupt(TextFilter.FilterForSpeech(error));
+					return;
+				}
+			}
+
 			try {
 				tool.OnLeftClickDown(pos);
 			} catch (Exception ex) {
