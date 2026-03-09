@@ -162,7 +162,7 @@ namespace OniAccess.Handlers.Screens {
 			_containers = screen.GetComponentsInChildren<CharacterContainer>(true);
 			if (_containers != null && _containers.Length > 0) {
 				_widgets.Add(new ButtonWidget {
-					Label = STRINGS.ONIACCESS.PANELS.SELECT_DUPLICANTS,
+					Label = STRINGS.ONIACCESS.HANDLERS.MINION_SELECT,
 					Component = null,
 					GameObject = screen.gameObject,
 					Tag = "enter_dupe_mode"

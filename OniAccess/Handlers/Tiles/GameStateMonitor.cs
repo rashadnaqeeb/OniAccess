@@ -138,7 +138,7 @@ namespace OniAccess.Handlers.Tiles {
 						(string)STRINGS.ONIACCESS.GAME_STATE.DUPES_CLUSTER, local, total));
 				} else {
 					parts.Add(string.Format(
-						(string)STRINGS.ONIACCESS.GAME_STATE.DUPES, local));
+						(string)STRINGS.ONIACCESS.BIG_CURSOR.DUPE_PLURAL, local));
 				}
 			} catch (System.Exception ex) {
 				Log.Error($"SpeakColonyStatus dupes: {ex}");

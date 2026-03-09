@@ -24,7 +24,7 @@ namespace OniAccess.Handlers.Tiles {
 				int dupeCell = Grid.PosToCell(mi);
 
 				if (cursorCell == dupeCell)
-					return (string)STRINGS.ONIACCESS.DUPES.PATHABILITY.HERE;
+					return (string)STRINGS.ONIACCESS.SCANNER.HERE;
 
 				var navigator = mi.GetComponent<Navigator>();
 				int cost = navigator.GetNavigationCost(cursorCell);

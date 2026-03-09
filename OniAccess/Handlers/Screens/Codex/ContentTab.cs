@@ -34,7 +34,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.HELP.JUMP_GROUP),
 			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
 			new HelpEntry("Enter", STRINGS.ONIACCESS.CODEX.FOLLOW_LINK_HELP),
-			new HelpEntry("Alt+Left/Backspace", STRINGS.ONIACCESS.CODEX.HISTORY_BACK_HELP),
+			new HelpEntry("Alt+Left/Backspace", STRINGS.ONIACCESS.HELP.GO_BACK),
 			new HelpEntry("Alt+Right", STRINGS.ONIACCESS.CODEX.HISTORY_FORWARD_HELP),
 		};
 

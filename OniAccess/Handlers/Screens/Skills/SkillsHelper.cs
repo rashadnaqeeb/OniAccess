@@ -258,7 +258,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 			if (Array.Exists(conditions,
 				c => c == MinionResume.SkillMasteryConditions.MissingPreviousSkill)) {
 				var missing = GetMissingPrereqs(skill, resume);
-				return string.Format(STRINGS.ONIACCESS.SKILLS.NEEDS_FMT, string.Join(", ", missing));
+				return string.Format(STRINGS.ONIACCESS.RESEARCH.NEEDS_FMT, string.Join(", ", missing));
 			}
 			if (Array.Exists(conditions,
 				c => c == MinionResume.SkillMasteryConditions.NeedsSkillPoints))
@@ -306,7 +306,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 				var prereq = Db.Get().Skills.TryGet(prereqId);
 				names.Add(prereq != null ? prereq.Name : prereqId);
 			}
-			return string.Format(STRINGS.ONIACCESS.SKILLS.NEEDS_FMT, string.Join(", ", names));
+			return string.Format(STRINGS.ONIACCESS.RESEARCH.NEEDS_FMT, string.Join(", ", names));
 		}
 
 		internal static int CountMasters(string skillId) {

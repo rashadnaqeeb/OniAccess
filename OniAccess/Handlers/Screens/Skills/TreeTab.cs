@@ -20,7 +20,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 			_parent = parent;
 		}
 
-		public string TabName => (string)STRINGS.ONIACCESS.SKILLS.TREE_TAB;
+		public string TabName => (string)STRINGS.ONIACCESS.RESEARCH.TREE_TAB;
 
 		// ========================================
 		// ISkillsTab
@@ -81,7 +81,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 						SkillsHelper.BuildSkillLabel(node, _parent.SelectedDupe));
 				} else {
 					SpeechPipeline.SpeakInterrupt(
-						STRINGS.ONIACCESS.SKILLS.ROOT_NODE);
+						STRINGS.ONIACCESS.RESEARCH.ROOT_NODE);
 				}
 				return true;
 			}

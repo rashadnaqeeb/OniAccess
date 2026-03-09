@@ -120,8 +120,6 @@ namespace STRINGS {
 		// Crew assignment screen labels
 		public class CREW_SCREEN {
 			public static LocString AVAILABLE = "Available";
-			// {0} = number of assigned dupes (int)
-			public static LocString ASSIGNED_COUNT_FORMAT = "{0} assigned";
 			// {0} = total assigned count after toggle (int)
 			public static LocString TOTAL_FORMAT = "{0} total";
 		}
@@ -159,7 +157,6 @@ namespace STRINGS {
 			public static LocString NEWS = "News";
 			public static LocString NO_NEWS = "No news available";
 			public static LocString COLONY_NAME = "Colony name";
-			public static LocString SELECT_DUPLICANTS = "Select duplicants";
 			public static LocString RENAME = "Rename";
 			public static LocString SHUFFLE_NAME = "Shuffle name";
 		}
@@ -184,6 +181,7 @@ namespace STRINGS {
 		// These are single words/phrases spoken after an item name
 		// to describe its current state (e.g. "Algae Distiller, selected").
 		public class STATES {
+			// Spoken after an item to indicate it is the current selection (tools, buildings, etc.)
 			public static LocString SELECTED = "selected";
 			// World trait is guaranteed to appear on the asteroid
 			public static LocString GUARANTEED = "present";
@@ -193,6 +191,7 @@ namespace STRINGS {
 			public static LocString OFF = "off";
 			// Checkbox with mixed state (some children on, some off)
 			public static LocString MIXED = "mixed";
+			// Toggle state: feature/criterion is active (diagnostics, settings, etc.)
 			public static LocString ENABLED = "enabled";
 			public static LocString DISABLED = "disabled";
 			// Filter dropdown: no filter applied
@@ -312,7 +311,7 @@ namespace STRINGS {
 			public static LocString BUILDING_COUNT = "{0} {1}";
 			// {0} = count (int)
 			public static LocString DUPE_SINGULAR = "{0} dupe";
-			// {0} = count (int)
+			// {0} = count (int). Used in area surveys and colony status
 			public static LocString DUPE_PLURAL = "{0} dupes";
 			// {0} = count (int)
 			public static LocString CRITTER_SINGULAR = "{0} critter";
@@ -347,7 +346,7 @@ namespace STRINGS {
 
 		// Tile cursor navigation and coordinate display
 		public class TILE_CURSOR {
-			// Announced when cursor enters an unexplored map tile
+			// Announced when cursor enters an unexplored tile or hex (world map and starmap)
 			public static LocString UNEXPLORED = "unexplored";
 			// {0} = X coordinate (int), {1} = Y coordinate (int)
 			public static LocString COORDS = "{0}, {1}";
@@ -358,6 +357,7 @@ namespace STRINGS {
 			public static LocString OVERLAY_NONE = "default view";
 			// Announced when cursor tile is not inside any defined room
 			public static LocString NO_ROOM = "no room";
+			// Announced when cursor has no selectable object (world map and starmap)
 			public static LocString NOTHING_TO_SELECT = "nothing to select";
 			// Prompt when multiple objects occupy the cursor tile
 			public static LocString SELECT_OBJECT = "select an object";
@@ -400,7 +400,6 @@ namespace STRINGS {
 			public static LocString HELP_CHECK_PATH = "Check if current duplicant can reach cursor tile";
 
 			public class PATHABILITY {
-				public static LocString HERE = "here";
 				// {0} = cost (int)
 				public static LocString REACHABLE = "reachable, cost {0}";
 				// {0} = offset description (e.g. "3 right 1 up")
@@ -424,8 +423,6 @@ namespace STRINGS {
 			public static LocString TOGGLE_RED_ALERT = "Toggle red alert";
 			public static LocString READ_COLONY_STATUS = "Read colony status";
 			public static LocString SAVED = "Saved";
-			// {0} = dupe count
-			public static LocString DUPES = "{0} dupes";
 			// {0} = local world dupe count, {1} = total dupe count
 			public static LocString DUPES_CLUSTER = "{0}/{1} dupes";
 			// {0} = sick count
@@ -471,7 +468,6 @@ namespace STRINGS {
 			public static LocString RECT_SUMMARY = "{0}x{1}, {2} valid";
 			// {0} = width (int), {1} = height (int), {2} = valid cell count (int), {3} = invalid cell count (int)
 			public static LocString RECT_SUMMARY_INVALID = "{0}x{1}, {2} valid, {3} invalid";
-			public static LocString SELECTED = "selected";
 			public static LocString CANCELED = "canceled";
 			public static LocString NO_VALID_CELLS = "no valid cells";
 			// Tool confirmation messages after applying a tool to a selection.
@@ -540,7 +536,6 @@ namespace STRINGS {
 			public static LocString COPY_SETTINGS_UNAVAILABLE = "no copyable settings";
 			// {0} = item being placed
 			public static LocString PLACE_ACTIVATION = "place, {0}";
-			public static LocString PLACE_CONFIRMED = "placed";
 			public static LocString PLACE_INVALID = "invalid location";
 			public static LocString DONE = "done";
 		}
@@ -758,6 +753,7 @@ namespace STRINGS {
 			public static LocString AUTO_MOVE_ON = "auto-move on";
 			public static LocString AUTO_MOVE_OFF = "auto-move off";
 
+			// Spoken when the target is at the cursor position (scanner, pathability, building ports)
 			public static LocString HERE = "here";
 
 			// Search
@@ -971,13 +967,14 @@ namespace STRINGS {
 			public static LocString HANDLER_NAME = "Research";
 			public static LocString BROWSE_TAB = "Browse";
 			public static LocString QUEUE_TAB = "Queue";
+			// Tab name shared by research and skills tree views
 			public static LocString TREE_TAB = "Tree";
 			// Tech status labels
 			public static LocString AVAILABLE = "available";
 			public static LocString LOCKED = "locked";
 			public static LocString COMPLETED = "completed";
 			public static LocString ACTIVE = "active";
-			// {0} = comma-joined prerequisite tech names
+			// {0} = comma-joined prerequisite names (research techs or skills)
 			public static LocString NEEDS_FMT = "needs {0}";
 			// {0} = comma-joined names of buildings/items unlocked
 			public static LocString UNLOCKS_FMT = "unlocks {0}";
@@ -993,8 +990,9 @@ namespace STRINGS {
 			public static LocString QUEUE_EMPTY = "no research queued";
 			public static LocString NO_BANKED_POINTS = "no banked research points";
 			public static LocString DEAD_END = "no further techs";
+			// Spoken at the top of a tech or skill tree (no parent nodes)
 			public static LocString ROOT_NODE = "no prerequisites";
-			// Browse tab bucket/section headers
+			// Browse tab bucket/section headers (shared by research and skills screens)
 			public static LocString BUCKET_AVAILABLE = "Available";
 			public static LocString BUCKET_LOCKED = "Locked";
 			public static LocString BUCKET_COMPLETED = "Completed";
@@ -1009,9 +1007,9 @@ namespace STRINGS {
 		// Skills screen (duplicant skills, hats, boosters)
 		public class SKILLS {
 			public static LocString HANDLER_NAME = "Skills";
+			// Tab name shared by skills and schedule screens
 			public static LocString DUPES_TAB = "Duplicants";
 			public static LocString SKILLS_TAB = "Skills";
-			public static LocString TREE_TAB = "Tree";
 
 			// {0} = number of available skill points (int)
 			public static LocString POINTS = "{0} points";
@@ -1030,8 +1028,6 @@ namespace STRINGS {
 
 			// Browse tab section headers
 			public static LocString BUCKET_DUPE_INFO = "Dupe Info";
-			public static LocString BUCKET_AVAILABLE = "Available";
-			public static LocString BUCKET_LOCKED = "Locked";
 			public static LocString BUCKET_MASTERED = "Mastered";
 			public static LocString BUCKET_BOOSTERS = "Boosters";
 
@@ -1045,8 +1041,6 @@ namespace STRINGS {
 			// Duplicant has an interest in this skill's group
 			public static LocString INTERESTED = "interested";
 			public static LocString NO_SKILL_POINTS = "no skill points";
-			// {0} = comma-joined prerequisite skill names
-			public static LocString NEEDS_FMT = "needs {0}";
 			// {0} = skill name, {1} = status text (mastered/available/locked reason)
 			public static LocString NAME_STATUS = "{0}, {1}";
 			// Attribute modifier line. {0} = modifier description, {1} = sign ("+" or ""), {2} = value (float)
@@ -1067,12 +1061,11 @@ namespace STRINGS {
 			public static LocString LEARNED = "{0} learned";
 			public static LocString CANNOT_LEARN = "cannot learn";
 			public static LocString DEAD_END = "no further skills";
-			public static LocString ROOT_NODE = "no prerequisites";
 
 			// Booster slot management
 			// {0} = assigned slot count (int), {1} = unlocked slot count (int)
 			public static LocString BOOSTER_SLOTS = "{0} of {1} booster slots used";
-			// {0} = number assigned of this booster type (int)
+			// {0} = count (int). Used for boosters assigned and crew member counts
 			public static LocString ASSIGNED = "{0} assigned";
 			// {0} = number of unassigned boosters available (int)
 			public static LocString BOOSTER_AVAILABLE = "{0} available";
@@ -1096,7 +1089,6 @@ namespace STRINGS {
 		public class SCHEDULE {
 			public static LocString HANDLER_NAME = "Schedule";
 			public static LocString SCHEDULES_TAB = "Schedules";
-			public static LocString DUPES_TAB = "Duplicants";
 			public static LocString ADD_SCHEDULE = "Add new schedule";
 			public static LocString CANNOT_DELETE_LAST = "Cannot delete last schedule";
 			public static LocString CANNOT_DELETE_LAST_ROW = "Cannot delete last row";
@@ -1194,7 +1186,6 @@ namespace STRINGS {
 			public static LocString FOLLOW_LINK_HELP = "Follow link";
 			public static LocString NO_BACK = "nothing to go back to";
 			public static LocString NO_FORWARD = "nothing to go forward to";
-			public static LocString HISTORY_BACK_HELP = "Go back";
 			public static LocString HISTORY_FORWARD_HELP = "Go forward";
 		}
 
@@ -1228,6 +1219,7 @@ namespace STRINGS {
 		public class BUILD_MENU {
 			public static LocString ACTION_MENU = "action menu";
 			public static LocString TOOLS_CATEGORY = "Tools";
+			// Confirmation after placing a building or object (build tool, place tool)
 			public static LocString PLACED = "placed";
 			public static LocString PLACED_NO_MATERIAL = "placed, no material available";
 			public static LocString NOT_ROTATABLE = "not rotatable";
@@ -1239,7 +1231,7 @@ namespace STRINGS {
 			public static LocString INVALID_LINE = "invalid";
 			// {0} = number of cells in the line segment (int)
 			public static LocString LINE_CELLS = "{0} cells";
-			// Wire/pipe start point
+			// Wire/pipe start point or pathfinder start set
 			public static LocString START_SET = "start set";
 			public static LocString START_CLEARED = "start cleared";
 			public static LocString INFO_PANEL = "info";
@@ -1303,7 +1295,6 @@ namespace STRINGS {
 			public static LocString NO_PORTS = "no ports";
 			// {0} = port name, {1} = offset description
 			public static LocString PORT_AT = "{0}, {1}";
-			public static LocString PORT_HERE = "here";
 			public static LocString RECT_MODE_ON = "rectangle mode";
 			public static LocString RECT_MODE_OFF = "single mode";
 			public static LocString RECT_MODE_UNAVAILABLE = "rectangle mode not available";
@@ -1339,9 +1330,6 @@ namespace STRINGS {
 			public static LocString PIN_ALERT_ONLY = "alert only";
 			public static LocString PIN_NEVER = "never";
 			public static LocString PIN_TUTORIAL_DISABLED = "tutorial disabled";
-			// Criterion toggle states
-			public static LocString ENABLED = "enabled";
-			public static LocString DISABLED = "disabled";
 			// Help entries
 			public static LocString HELP_READ = "Read diagnostic alerts";
 			public static LocString HELP_OPEN_BROWSER = "Open diagnostics browser";
@@ -1360,8 +1348,9 @@ namespace STRINGS {
 			public static LocString DISCOVERED = "{0} discovered";
 		}
 
-		// Starmap screen (non-DLC rocket management)
+		// Starmap screen (base game and Spaced Out DLC cluster map)
 		public class STARMAP {
+			// Announced when the starmap opens (both base game and DLC cluster map)
 			public static LocString HANDLER_NAME = "Starmap";
 			public static LocString ROCKETS_TAB = "Rockets";
 			public static LocString DESTINATIONS_TAB = "Destinations";
@@ -1409,9 +1398,7 @@ namespace STRINGS {
 
 		// Cluster map (Spaced Out DLC starmap) handler
 		public class CLUSTER_MAP {
-			public static LocString HANDLER_NAME = "Starmap";
 			public static LocString SELECT_OBJECT = "select object";
-			public static LocString NOTHING_TO_SELECT = "nothing to select";
 			public static LocString SELECT_DESTINATION = "select destination";
 			// {0} = path length
 			public static LocString DESTINATION_SET = "destination set, {0} hexes";
@@ -1426,8 +1413,6 @@ namespace STRINGS {
 			public static LocString PATH_FOG_WITH_ALT = "path: {0}, {1} through fog. Without scanner: {2}";
 			public static LocString NO_PATH = "no path";
 			public static LocString SET_START_FIRST = "set start with space";
-			public static LocString START_SET = "start set";
-			public static LocString UNEXPLORED = "unexplored";
 			public static LocString UNSEEN = "unseen";
 
 			// Compass directions for hex coordinate reading
@@ -1513,13 +1498,10 @@ namespace STRINGS {
 			// {0} = cell count (int)
 			public static LocString APPLIED = "applied to {0} cells";
 			public static LocString APPLIED_ONE = "applied";
-			public static LocString NO_VALID_CELLS = "no valid cells";
 
 			public class HELP {
 				public static LocString SET_CORNER = "Set rectangle corner or place";
-				public static LocString CLEAR_RECT = "Clear rectangle at cursor";
 				public static LocString CONFIRM = "Apply and dismiss";
-				public static LocString CANCEL = "Cancel tool";
 				public static LocString OPEN_PARAMS = "Open parameter menu";
 				public static LocString SAMPLE = "Sample cell under cursor";
 			}

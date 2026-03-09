@@ -207,7 +207,7 @@ namespace OniAccess.Handlers.Screens {
 				_pendingActivation = false;
 				string title = (string)STRINGS.UI.UISIDESCREENS.ASSIGNMENTGROUPCONTROLLER.TITLE;
 				int memberCount = GetTarget().GetMembers().Count;
-				string countLabel = string.Format(STRINGS.ONIACCESS.CREW_SCREEN.ASSIGNED_COUNT_FORMAT, memberCount);
+				string countLabel = string.Format(STRINGS.ONIACCESS.SKILLS.ASSIGNED, memberCount);
 				string firstItem = GetItemLabel(0, new[] { 0 });
 				string announcement = title + ", " + countLabel + ", " + firstItem;
 				SpeechPipeline.SpeakInterrupt(announcement);

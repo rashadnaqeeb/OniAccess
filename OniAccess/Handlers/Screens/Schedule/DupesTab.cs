@@ -14,7 +14,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			_parent = parent;
 		}
 
-		public string TabName => (string)STRINGS.ONIACCESS.SCHEDULE.DUPES_TAB;
+		public string TabName => (string)STRINGS.ONIACCESS.SKILLS.DUPES_TAB;
 
 		public override string DisplayName => TabName;
 

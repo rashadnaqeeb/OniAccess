@@ -7,7 +7,7 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 			var buildHandler = OniAccess.Handlers.Build.BuildToolHandler.Instance;
 			if ((toolHandler != null && toolHandler.IsCellSelected(cell))
 				|| (buildHandler != null && buildHandler.IsCellSelected(cell)))
-				return new[] { (string)STRINGS.ONIACCESS.TOOLS.SELECTED };
+				return new[] { (string)STRINGS.ONIACCESS.STATES.SELECTED };
 			return System.Array.Empty<string>();
 		}
 	}

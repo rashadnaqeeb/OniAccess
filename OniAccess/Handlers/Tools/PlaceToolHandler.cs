@@ -85,7 +85,7 @@ namespace OniAccess.Handlers.Tools {
 			tool.OnLeftClickUp(pos);
 			BaseScreenHandler.PlaySound("HUD_Click");
 			SpeechPipeline.SpeakInterrupt(
-				(string)STRINGS.ONIACCESS.TOOLS.PLACE_CONFIRMED);
+				(string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
 		}
 
 		private static void ExitTool() {

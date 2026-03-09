@@ -139,8 +139,8 @@ namespace OniAccess.Handlers.Screens {
 			bool enabled = ColonyDiagnosticUtility.Instance.IsCriteriaEnabled(
 				WorldId, diag.id, criterion.id);
 			string state = enabled
-				? (string)STRINGS.ONIACCESS.DIAGNOSTICS.ENABLED
-				: (string)STRINGS.ONIACCESS.DIAGNOSTICS.DISABLED;
+				? (string)STRINGS.ONIACCESS.STATES.ENABLED
+				: (string)STRINGS.ONIACCESS.STATES.DISABLED;
 			return criterion.name + ", " + state;
 		}
 
@@ -245,8 +245,8 @@ namespace OniAccess.Handlers.Screens {
 			SyncSidebar();
 			PlaySound("HUD_Click");
 			string state = !enabled
-				? (string)STRINGS.ONIACCESS.DIAGNOSTICS.ENABLED
-				: (string)STRINGS.ONIACCESS.DIAGNOSTICS.DISABLED;
+				? (string)STRINGS.ONIACCESS.STATES.ENABLED
+				: (string)STRINGS.ONIACCESS.STATES.DISABLED;
 			SpeechPipeline.SpeakInterrupt(state);
 		}
 

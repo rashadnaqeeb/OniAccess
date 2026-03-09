@@ -69,10 +69,10 @@ namespace OniAccess.Handlers.Sandbox {
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
 			new HelpEntry("Space", (string)STRINGS.ONIACCESS.SANDBOX.HELP.SET_CORNER),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.SANDBOX.HELP.CONFIRM),
-			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.SANDBOX.HELP.CANCEL),
+			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_TOOL),
 			new HelpEntry("F", (string)STRINGS.ONIACCESS.SANDBOX.HELP.OPEN_PARAMS),
 			new HelpEntry("Ctrl+Space", (string)STRINGS.ONIACCESS.SANDBOX.HELP.SAMPLE),
-			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.SANDBOX.HELP.CLEAR_RECT),
+			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT),
 		}.AsReadOnly();
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
@@ -266,7 +266,7 @@ namespace OniAccess.Handlers.Sandbox {
 			}
 
 			if (cells.Count == 0) {
-				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.SANDBOX.NO_VALID_CELLS);
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.NO_VALID_CELLS);
 				PlaySound("Negative");
 				DeactivateToolAndPop();
 				return;

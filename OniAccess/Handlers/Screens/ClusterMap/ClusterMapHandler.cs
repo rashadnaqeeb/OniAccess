@@ -25,7 +25,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 		}
 
 		public override string DisplayName =>
-			(string)STRINGS.ONIACCESS.CLUSTER_MAP.HANDLER_NAME;
+			(string)STRINGS.ONIACCESS.STARMAP.HANDLER_NAME;
 
 		public override bool CapturesAllInput => true;
 
@@ -361,7 +361,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 				_cursorLocation);
 			if (entities == null || entities.Count == 0) {
 				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.CLUSTER_MAP.NOTHING_TO_SELECT);
+					(string)STRINGS.ONIACCESS.TILE_CURSOR.NOTHING_TO_SELECT);
 				return;
 			}
 
@@ -374,7 +374,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 
 			if (selectables.Count == 0) {
 				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.CLUSTER_MAP.NOTHING_TO_SELECT);
+					(string)STRINGS.ONIACCESS.TILE_CURSOR.NOTHING_TO_SELECT);
 				return;
 			}
 			if (selectables.Count == 1) {
@@ -463,7 +463,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			_pathStart = _cursorLocation;
 			_hasPathStart = true;
 			SpeechPipeline.SpeakInterrupt(
-				(string)STRINGS.ONIACCESS.CLUSTER_MAP.START_SET);
+				(string)STRINGS.ONIACCESS.BUILD_MENU.START_SET);
 		}
 
 		private void CalculatePath() {

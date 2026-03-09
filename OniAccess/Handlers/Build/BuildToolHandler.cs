@@ -1112,7 +1112,7 @@ namespace OniAccess.Handlers.Build {
 		private static string FormatOffset(CellOffset offset, CellOffset bottomLeft) {
 			var adjusted = new CellOffset(offset.x - bottomLeft.x, offset.y - bottomLeft.y);
 			if (adjusted.x == 0 && adjusted.y == 0)
-				return (string)STRINGS.ONIACCESS.BUILD_MENU.PORT_HERE;
+				return (string)STRINGS.ONIACCESS.SCANNER.HERE;
 
 			var parts = new List<string>();
 			if (adjusted.x < 0)
