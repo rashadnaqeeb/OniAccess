@@ -7,6 +7,7 @@ namespace STRINGS {
 	public class ONIACCESS {
 		// Spoken descriptions of sprite/icon overlays
 		public class SPRITES {
+			// Replacement text for warning icon sprites in game text. Followed by the warning detail
 			public static LocString WARNING = "warning:";
 			// Automation wire signal states
 			public static LocString LOGIC_GREEN = "green signal";
@@ -256,10 +257,8 @@ namespace STRINGS {
 		public class INFO {
 			public static LocString DIFFICULTY = "Difficulty";
 			public static LocString STORY_TRAITS = "Story traits";
-			// Suffix for game setting names
+			// Fallback noun label for a game difficulty setting when its name is unavailable
 			public static LocString SETTING = "setting";
-			// Suffix for achievement names
-			public static LocString ACHIEVEMENT = "achievement";
 			// Duplicant skill interest label
 			public static LocString INTEREST = "Interest";
 			public static LocString INTEREST_FILTER = "Interest filter";
@@ -335,8 +334,6 @@ namespace STRINGS {
 			// {0} = count (int), {1} = plant name (string), {2} = avg growth percent (int)
 			public static LocString PLANT_ENTRY = "{0} {1}, {2}% grown";
 			public static LocString NO_PLANTS = "no plants";
-			// {0} = comma-separated room list (string)
-			public static LocString ROOMS_LIST = "{0}";
 			// {0} = count (int)
 			public static LocString UNCATEGORIZED_ROOMS = "{0} uncategorized";
 			public static LocString NO_ROOMS = "no rooms";
@@ -512,7 +509,6 @@ namespace STRINGS {
 			public static LocString MARKED_CAPTURE = "marked for capture";
 			public static LocString MARKED_DECONSTRUCT = "marked for deconstruct";
 			public static LocString MARKED_DECONSTRUCT_PRIORITY = "marked for deconstruct, priority {0}";
-			public static LocString MARKED_EMPTY = "marked for emptying";
 			// Disinfect tool: object with disease info.
 			// {0} = object name, {1} = disease name, {2} = disease germ count (int)
 			public static LocString DISINFECT_OBJECT = "{0}, {1}, {2}";
@@ -524,7 +520,6 @@ namespace STRINGS {
 			public static LocString PIPE_CONTENTS = "{0}, {1}, {2}";
 			public static LocString DISCONNECT_TOO_FAR = "adjacent cells only";
 			// Filter state change announcements
-			public static LocString FILTER_CHANGED = "filter changed";
 			public static LocString FILTERED = "filtered";
 			public static LocString FILTER_REMOVED = "filter removed";
 			public static LocString SELECTION_CLEARED = "selection cleared";
@@ -1090,7 +1085,6 @@ namespace STRINGS {
 
 			// {0} = hat/role name
 			public static LocString HAT_SELECTED = "{0} selected";
-			public static LocString SELECT_HAT = "select hat";
 
 			// Help entries
 			public static LocString JUMP_TO_TREE_HELP = "Jump to skill in tree view";
@@ -1186,10 +1180,13 @@ namespace STRINGS {
 			public static LocString NO_ARTICLE = "no article selected";
 			// Announced for codex entries that haven't been unlocked yet
 			public static LocString LOCKED_CONTENT = "locked content";
-			// Recipe info labels
+			// Recipe input label, spoken before ingredient list (e.g. "requires 100 kg Dirt")
 			public static LocString REQUIRES = "requires";
+			// Recipe output label, spoken before result list (e.g. "produces 100 kg Fertilizer")
 			public static LocString PRODUCES = "produces";
+			// Recipe crafting duration label, spoken before a formatted time value (e.g. "time: 30 s")
 			public static LocString TIME = "time:";
+			// Prefix before the fabricator building name for a recipe (e.g. "made in Rock Crusher")
 			public static LocString MADE_IN = "made in";
 			// {0} = number of hyperlinks in the article (int)
 			public static LocString LINK_MENU = "{0} links";
@@ -1354,8 +1351,10 @@ namespace STRINGS {
 
 		// World selector (Spaced Out DLC world list)
 		public class WORLD_SELECTOR {
+			// Prepended to the world name when it is the currently viewed asteroid
 			public static LocString ACTIVE_PREFIX = "active";
 			public static LocString OPEN = "Open world list";
+			// World type label for rocket interior worlds (e.g. "Voyager, rocket")
 			public static LocString ROCKET = "rocket";
 			// {0} = world name
 			public static LocString DISCOVERED = "{0} discovered";
@@ -1372,24 +1371,33 @@ namespace STRINGS {
 			public static LocString NO_ROCKETS = "no rockets";
 			public static LocString NO_DESTINATIONS = "no destinations";
 			public static LocString NO_DESTINATION_SELECTED = "no destination selected";
-			// {0} = rocket name
-			public static LocString ROCKET_DETAIL_HEADER = "{0} details";
 			// {0} = destination name, {1} = rocket name
 			public static LocString DESTINATION_ASSIGNED = "{0} assigned to {1}";
 			// {0} = rocket name
 			public static LocString LAUNCHED = "{0} launched";
 			public static LocString NO_ROCKET_SELECTED = "no rocket selected";
 			public static LocString ROCKET_NOT_GROUNDED = "rocket not grounded";
+			// Announced when a telescope is actively analyzing this destination
 			public static LocString ANALYZING_THIS = "telescope analyzing";
+			// Confirmation when the player begins telescope analysis
 			public static LocString ANALYSIS_STARTED = "analysis started";
+			// Confirmation when the player pauses telescope analysis
 			public static LocString ANALYSIS_SUSPENDED = "analysis suspended";
+			// Prefix for a finished research opportunity (e.g. "complete: Fossil Research")
 			public static LocString RESEARCH_COMPLETE_PREFIX = "complete:";
+			// Prefix for an unfinished research opportunity (e.g. "incomplete: Fossil Research")
 			public static LocString RESEARCH_INCOMPLETE_PREFIX = "incomplete:";
+			// Parenthetical note when the rocket has a cargo bay for this resource (e.g. "Fossil (can carry)")
 			public static LocString CAN_CARRY = "can carry";
+			// Prefix when a rocket lacks the required cargo bay. Followed by ": {bay name}"
 			public static LocString NEEDS_BAY = "needs";
+			// Suffix after a formatted cycle count for rocket travel time (e.g. "2.5 Cycles remaining")
 			public static LocString REMAINING = "remaining";
+			// Suffix after a percentage for mission/research progress (e.g. "40% complete")
 			public static LocString COMPLETE = "complete";
+			// Unit label for research data points at a destination (e.g. "50 points")
 			public static LocString DATA_POINTS = "points";
+			// Adjective marking a research opportunity with a discovered rare resource
 			public static LocString RARE_RESOURCE = "rare";
 			// Launch checklist status prefixes
 			public static LocString CHECK_READY = "ready";
@@ -1397,7 +1405,6 @@ namespace STRINGS {
 			public static LocString CHECK_NOT_READY = "not ready";
 			// Help entries
 			public static LocString LAUNCH_HELP = "Launch rocket";
-			public static LocString ANALYZE_HELP = "Analyze or suspend analysis";
 		}
 
 		// Cluster map (Spaced Out DLC starmap) handler
@@ -1491,6 +1498,7 @@ namespace STRINGS {
 
 		// Side screen spoken labels
 		public class SIDESCREENS {
+			// Appended to rocket pilot info when an auto-pilot module is active
 			public static LocString COPILOT_ROBO = "Copilot: Robo-Pilot";
 		}
 

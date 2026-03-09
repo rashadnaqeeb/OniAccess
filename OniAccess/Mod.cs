@@ -69,7 +69,7 @@ namespace OniAccess {
 			SpeechPipeline.SpeakInterrupt(
 				string.Format(STRINGS.ONIACCESS.SPEECH.MOD_LOADED, Version));
 
-			Localization.RegisterForTranslation(typeof(STRINGS.ONIACCESS));
+			ModUtil.RegisterForTranslation(typeof(STRINGS.ONIACCESS));
 
 			Log.Info($"Oni-Access version {Version} loaded");
 		}

@@ -96,6 +96,22 @@ foreach ($dll in $TolkDlls) {
 }
 Write-Host "Deployed DLL and Tolk libraries to $ModDir" -ForegroundColor Green
 
+# --- Copy translation files ---
+$TranslationsSrc = "$PSScriptRoot\translations"
+if (Test-Path $TranslationsSrc) {
+    $PoFiles = Get-ChildItem "$TranslationsSrc\*.po" -ErrorAction SilentlyContinue
+    if ($PoFiles.Count -gt 0) {
+        $TranslationsDest = "$ModDir\translations"
+        if (-not (Test-Path $TranslationsDest)) {
+            New-Item -ItemType Directory -Path $TranslationsDest -Force | Out-Null
+        }
+        foreach ($po in $PoFiles) {
+            Copy-Item $po.FullName "$TranslationsDest\$($po.Name)" -Force
+        }
+        Write-Host "Deployed $($PoFiles.Count) translation file(s) to $TranslationsDest" -ForegroundColor Green
+    }
+}
+
 # --- Patch mods.json ---
 # Ensures the mod entry has enabledForDlc covering both base game ("") and
 # Spaced Out ("EXPANSION1_ID"), crash_count reset to 0, enabled = true.
