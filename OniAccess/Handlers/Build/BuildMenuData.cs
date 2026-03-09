@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
 
 namespace OniAccess.Handlers.Build {
 	/// <summary>
@@ -9,6 +11,9 @@ namespace OniAccess.Handlers.Build {
 	public static class BuildMenuData {
 		internal const string DefaultFacadeId = "DEFAULT_FACADE";
 		internal static bool _selectBuildingInProgress;
+
+		private static readonly PropertyInfo _selectedBuildingGameObject = AccessTools.Property(
+			typeof(PlanScreen), "SelectedBuildingGameObject");
 
 		public struct CategoryEntry {
 			public HashedString Category;
@@ -141,6 +146,7 @@ namespace OniAccess.Handlers.Build {
 					Util.Log.Warn($"BuildMenuData.SelectBuilding: no toggle for {def.PrefabID}");
 					return false;
 				}
+				_selectedBuildingGameObject.SetValue(PlanScreen.Instance, null);
 				PlanScreen.Instance.OnSelectBuilding(toggle.gameObject, def);
 				return true;
 			} catch (System.Exception ex) {
