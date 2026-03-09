@@ -269,8 +269,8 @@ namespace STRINGS {
 			public static LocString BIONIC_BUG = "Bionic bug";
 			// {0} = duplicant selection slot number (1-indexed int)
 			public static LocString SLOT = "Slot {0}";
-			// Prefix for listing resources the colony already has
-			public static LocString COLONY_HAS = "Colony has: ";
+			// {0} = amount the colony already has (e.g. "200 kg")
+			public static LocString COLONY_HAS = "Colony has: {0}";
 		}
 
 		// Save/load screen labels
@@ -644,10 +644,12 @@ namespace STRINGS {
 			public static LocString INSTANCE_OF = "{0} of {1}";
 			public static LocString MIXED = "mixed";
 
-			// Must match the suffix used by STRINGS.SUBWORLDS.*.NAME (e.g., "Forest Biome")
-			public static LocString BIOME_SUFFIX = " Biome";
-			public static LocString BOTTLE_PREFIX = "Bottled ";
-			public static LocString LOOSE_PREFIX = "Loose ";
+			// {0} = biome zone name from game data (e.g. "Forest")
+			public static LocString BIOME_NAME = "{0} Biome";
+			// {0} = element name (e.g. "Water")
+			public static LocString BOTTLE_NAME = "Bottled {0}";
+			// {0} = element name (e.g. "Sand")
+			public static LocString LOOSE_NAME = "Loose {0}";
 
 			// Direction tokens
 			public static LocString DIRECTION_UP = "up";
@@ -957,6 +959,8 @@ namespace STRINGS {
 			public static LocString MIXED = "mixed";
 			public static LocString ALL_PERMITTED = "all permitted";
 			public static LocString ALL_FORBIDDEN = "all forbidden";
+			// {0} = game's diet restriction explanation text
+			public static LocString DIET_RESTRICTED = "restricted, {0}";
 			// Help entries
 			public static LocString TOGGLE_ALL = "Toggle all duplicants for this consumable";
 			public static LocString TOGGLE_PERMISSION = "Toggle permission";
@@ -1340,7 +1344,7 @@ namespace STRINGS {
 		// World selector (Spaced Out DLC world list)
 		public class WORLD_SELECTOR {
 			// Prepended to the world name when it is the currently viewed asteroid
-			public static LocString ACTIVE_PREFIX = "active";
+			public static LocString ACTIVE_LABEL = "active";
 			public static LocString OPEN = "Open world list";
 			// World type label for rocket interior worlds (e.g. "Voyager, rocket")
 			public static LocString ROCKET = "rocket";
@@ -1372,10 +1376,12 @@ namespace STRINGS {
 			public static LocString ANALYSIS_STARTED = "analysis started";
 			// Confirmation when the player pauses telescope analysis
 			public static LocString ANALYSIS_SUSPENDED = "analysis suspended";
-			// Prefix for a finished research opportunity (e.g. "complete: Fossil Research")
-			public static LocString RESEARCH_COMPLETE_PREFIX = "complete:";
-			// Prefix for an unfinished research opportunity (e.g. "incomplete: Fossil Research")
-			public static LocString RESEARCH_INCOMPLETE_PREFIX = "incomplete:";
+			// {0} = research opportunity description, {1} = data point value
+			public static LocString RESEARCH_COMPLETE = "complete: {0}, {1} points";
+			public static LocString RESEARCH_INCOMPLETE = "incomplete: {0}, {1} points";
+			// Variants when a rare resource has been discovered at the destination
+			public static LocString RESEARCH_COMPLETE_RARE = "complete: rare {0}, {1} points";
+			public static LocString RESEARCH_INCOMPLETE_RARE = "incomplete: rare {0}, {1} points";
 			// Parenthetical note when the rocket has a cargo bay for this resource (e.g. "Fossil (can carry)")
 			public static LocString CAN_CARRY = "can carry";
 			// Prefix when a rocket lacks the required cargo bay. Followed by ": {bay name}"
@@ -1384,10 +1390,6 @@ namespace STRINGS {
 			public static LocString REMAINING = "remaining";
 			// Suffix after a percentage for mission/research progress (e.g. "40% complete")
 			public static LocString COMPLETE = "complete";
-			// Unit label for research data points at a destination (e.g. "50 points")
-			public static LocString DATA_POINTS = "points";
-			// Adjective marking a research opportunity with a discovered rare resource
-			public static LocString RARE_RESOURCE = "rare";
 			// Launch checklist status prefixes
 			public static LocString CHECK_READY = "ready";
 			public static LocString CHECK_WARNING = "warning";

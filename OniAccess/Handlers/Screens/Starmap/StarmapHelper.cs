@@ -326,12 +326,15 @@ namespace OniAccess.Handlers.Screens.Starmap {
 				if (dest.researchOpportunities.Count > 0) {
 					var researchItems = new List<string>();
 					foreach (var opp in dest.researchOpportunities) {
-						string prefix = opp.completed
-							? STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE_PREFIX
-							: STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE_PREFIX;
-						string rare = opp.discoveredRareResource != SimHashes.Void
-							? $" {STRINGS.ONIACCESS.STARMAP.RARE_RESOURCE} " : " ";
-						researchItems.Add($"{prefix}{rare}{opp.description}, {opp.dataValue} {STRINGS.ONIACCESS.STARMAP.DATA_POINTS}");
+						bool rare = opp.discoveredRareResource != SimHashes.Void;
+						string fmt;
+						if (opp.completed)
+							fmt = rare ? STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE_RARE
+								: STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE;
+						else
+							fmt = rare ? STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE_RARE
+								: STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE;
+						researchItems.Add(string.Format(fmt, opp.description, opp.dataValue));
 					}
 					sections.Add(new DestinationSection {
 						Name = (string)UI.STARMAP.LISTTITLES.RESEARCH,

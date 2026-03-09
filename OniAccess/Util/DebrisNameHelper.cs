@@ -12,9 +12,9 @@ namespace OniAccess.Util {
 				?? go.GetProperName();
 			var prefabId = go.GetComponent<KPrefabID>();
 			if (prefabId != null && IsBottle(prefabId))
-				return (string)STRINGS.ONIACCESS.SCANNER.BOTTLE_PREFIX + name;
+				return string.Format((string)STRINGS.ONIACCESS.SCANNER.BOTTLE_NAME, name);
 			if (go.GetComponent<ElementChunk>() != null)
-				return (string)STRINGS.ONIACCESS.SCANNER.LOOSE_PREFIX + name;
+				return string.Format((string)STRINGS.ONIACCESS.SCANNER.LOOSE_NAME, name);
 			return name;
 		}
 

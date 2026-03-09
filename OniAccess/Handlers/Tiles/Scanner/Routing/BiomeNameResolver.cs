@@ -6,7 +6,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 	/// <summary>
 	/// Resolves SubWorld.ZoneType enum values to localized display names.
 	/// Built once from SettingsCache.subworlds at first use. Strips the
-	/// trailing " Biome" suffix which is redundant in the Biomes subcategory.
+	/// surrounding text from BIOME_NAME (e.g. " Biome" suffix in English)
+	/// which is redundant in the Biomes subcategory.
 	/// </summary>
 	public class BiomeNameResolver {
 		private Dictionary<SubWorld.ZoneType, string> _names;
@@ -29,9 +30,16 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 					continue;
 				if (subWorld.nameKey == null) continue;
 				string localized = Strings.Get(subWorld.nameKey);
-				string biomeSuffix = (string)STRINGS.ONIACCESS.SCANNER.BIOME_SUFFIX;
-				if (localized != null && localized.EndsWith(biomeSuffix))
-					localized = localized.Substring(0, localized.Length - biomeSuffix.Length);
+				string[] parts = ((string)STRINGS.ONIACCESS.SCANNER.BIOME_NAME).Split(
+					new[] { "{0}" }, System.StringSplitOptions.None);
+				string prefix = parts.Length > 0 ? parts[0] : "";
+				string suffix = parts.Length > 1 ? parts[1] : "";
+				if (localized != null) {
+					if (prefix.Length > 0 && localized.StartsWith(prefix))
+						localized = localized.Substring(prefix.Length);
+					if (suffix.Length > 0 && localized.EndsWith(suffix))
+						localized = localized.Substring(0, localized.Length - suffix.Length);
+				}
 				_names[subWorld.zoneType] = localized ?? InsertSpaces(subWorld.zoneType.ToString());
 			}
 		}

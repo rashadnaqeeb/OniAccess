@@ -252,10 +252,11 @@ namespace OniAccess.Handlers.Screens {
 			string id = consumable.ConsumableId;
 
 			if (consumer.IsDietRestricted(id))
-				return STRINGS.ONIACCESS.CONSUMABLES_SCREEN.RESTRICTED + ", "
-					+ TextFilter.FilterForSpeech(string.Format(
+				return string.Format(
+					(string)STRINGS.ONIACCESS.CONSUMABLES_SCREEN.DIET_RESTRICTED,
+					TextFilter.FilterForSpeech(string.Format(
 						STRINGS.UI.CONSUMABLESSCREEN.FOOD_CANT_CONSUME,
-						mi.GetProperName(), consumable.ConsumableName));
+						mi.GetProperName(), consumable.ConsumableName)));
 
 			bool permitted = consumer.IsPermitted(id);
 			string state = permitted

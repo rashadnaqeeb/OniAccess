@@ -384,14 +384,20 @@ namespace OniAccess.Handlers.Screens {
 					new System.Type[] { typeof(WorldInventory) })
 					.GetValue<string>(inventory);
 				if (!string.IsNullOrEmpty(current)) {
-					// Game returns "Available: {amount}" which is misleading —
-					// replace prefix with mod string for clarity.
+					// Game returns "Available: {amount}" — extract the amount
+					// and reformat with the mod's translatable string.
 					string gameFormat = (string)STRINGS.UI.IMMIGRANTSCREEN.CARE_PACKAGE_CURRENT_AMOUNT;
 					int placeholder = gameFormat.IndexOf("{0}");
-					if (placeholder > 0) {
+					if (placeholder >= 0) {
 						string gamePrefix = gameFormat.Substring(0, placeholder);
-						current = current.Replace(gamePrefix,
-							(string)STRINGS.ONIACCESS.INFO.COLONY_HAS);
+						string gameSuffix = gameFormat.Substring(placeholder + 3);
+						string amount = current;
+						if (gamePrefix.Length > 0 && amount.StartsWith(gamePrefix))
+							amount = amount.Substring(gamePrefix.Length);
+						if (gameSuffix.Length > 0 && amount.EndsWith(gameSuffix))
+							amount = amount.Substring(0, amount.Length - gameSuffix.Length);
+						current = string.Format(
+							(string)STRINGS.ONIACCESS.INFO.COLONY_HAS, amount);
 					}
 					_widgets.Add(new LabelWidget {
 						Label = current.Trim(),

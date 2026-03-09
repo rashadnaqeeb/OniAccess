@@ -317,10 +317,10 @@ namespace OniAccess.Handlers.Build {
 
 		private static string GetIngredientCategoryName(Tag tag) {
 			string[] parts = tag.ToString().Split('&');
-			string name = parts[0].ToTag().ProperName();
-			for (int i = 1; i < parts.Length; i++)
-				name += (string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_OR + parts[i].ToTag().ProperName();
-			return name;
+			var names = new string[parts.Length];
+			for (int i = 0; i < parts.Length; i++)
+				names[i] = parts[i].ToTag().ProperName();
+			return string.Join((string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_OR, names);
 		}
 
 

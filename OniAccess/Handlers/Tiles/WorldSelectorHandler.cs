@@ -105,7 +105,7 @@ namespace OniAccess.Handlers.Tiles {
 			bool isActive = worldId == ClusterManager.Instance.activeWorldId;
 
 			var parts = new List<string>();
-			if (isActive) parts.Add((string)STRINGS.ONIACCESS.WORLD_SELECTOR.ACTIVE_PREFIX);
+			if (isActive) parts.Add((string)STRINGS.ONIACCESS.WORLD_SELECTOR.ACTIVE_LABEL);
 			parts.Add(name);
 
 			string worldType = world.IsModuleInterior
