@@ -84,6 +84,7 @@ namespace OniAccess.Tests {
 			results.Add(SearchTrailingSpaceIgnored());
 			results.Add(MatchTierAccentInsensitive());
 			results.Add(MatchTierAccentedQuery());
+			results.Add(MatchTierLigatureOe());
 
 			// --- ScannerSearch ---
 			results.Add(ScannerSearchPrefixMatch());
@@ -876,6 +877,13 @@ namespace OniAccess.Tests {
 			int tier = TypeAheadSearch.MatchTier("défaut", "déf");
 			bool ok = tier == 1;
 			return Assert("MatchTierAccentedQuery", ok, $"tier={tier}");
+		}
+
+		private static (string, bool, string) MatchTierLigatureOe() {
+			// "oeuf" matches "œuf" — ligature expanded to "oe"
+			int tier = TypeAheadSearch.MatchTier("œuf", "oeuf");
+			bool ok = tier == 0; // start-of-string whole word
+			return Assert("MatchTierLigatureOe", ok, $"tier={tier}");
 		}
 
 		private static (string, bool, string) SearchTierOrdering() {
