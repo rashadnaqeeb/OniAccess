@@ -58,6 +58,10 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.DownArrow, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.LeftArrow, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.RightArrow, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.UpArrow, Modifier.Alt),
+			new ConsumedKey(KKeyCode.DownArrow, Modifier.Alt),
+			new ConsumedKey(KKeyCode.LeftArrow, Modifier.Alt),
+			new ConsumedKey(KKeyCode.RightArrow, Modifier.Alt),
 			// Scanner keybinds
 			new ConsumedKey(KKeyCode.Backspace),
 			new ConsumedKey(KKeyCode.End),
@@ -139,6 +143,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Shift+Up/Down", (string)STRINGS.ONIACCESS.BIG_CURSOR.HELP_CYCLE_SIZE),
 			new HelpEntry("Ctrl+Shift+Down", (string)STRINGS.ONIACCESS.BIG_CURSOR.HELP_RESET_SIZE),
 			new HelpEntry("Ctrl+Arrow keys", (string)STRINGS.ONIACCESS.SKIP.HELP_SKIP),
+			new HelpEntry("Alt+Arrow keys", (string)STRINGS.ONIACCESS.SKIP.HELP_SKIP_DEFAULT),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_ACTION_MENU),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.SELECT_ENTITY),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY),
@@ -342,6 +347,26 @@ namespace OniAccess.Handlers.Tiles {
 					PlaySound("HUD_Click_Deselect");
 					SpeechPipeline.SpeakInterrupt(result);
 				}
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
+				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
+				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Up));
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)
+				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
+				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Down));
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)
+				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
+				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Left));
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)
+				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
+				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Right));
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)

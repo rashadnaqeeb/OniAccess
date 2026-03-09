@@ -27,7 +27,7 @@ Most overlays prepend one extra reading before the standard information. Tempera
 
 ### Skip
 
-**Ctrl+Arrow** skips in a direction until something changes, then announces how many tiles were crossed. What counts as a "change" depends on the active overlay:
+**Ctrl+Arrow** skips in a direction until something changes, then announces how many tiles were crossed. **Alt+Arrow** always skips by the default criterion (building, tile type, or element) regardless of which overlay is active. What counts as a "change" for Ctrl+Arrow depends on the active overlay:
 
 - **Default view**: different building, tile type, or element
 - **Temperature**: different temperature band (8 bands from below freezing to above 1800 C)

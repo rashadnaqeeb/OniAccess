@@ -17,23 +17,29 @@ namespace OniAccess.Handlers.Tiles.Skip {
 		/// </summary>
 		public string Skip(Direction direction) {
 			try {
-				return SkipCore(direction);
+				HashedString mode = OverlayModes.None.ID;
+				var overlayScreen = OverlayScreen.Instance;
+				if (overlayScreen != null)
+					mode = overlayScreen.GetMode();
+				return SkipCore(direction, _registry.GetStrategy(mode));
 			} catch (System.Exception ex) {
 				Util.Log.Error($"SkipEngine.Skip: {ex}");
 				return (string)STRINGS.ONIACCESS.SKIP.NO_CHANGE_BOUNDARY;
 			}
 		}
 
-		private string SkipCore(Direction direction) {
+		public string SkipDefault(Direction direction) {
+			try {
+				return SkipCore(direction, _registry.GetStrategy(OverlayModes.None.ID));
+			} catch (System.Exception ex) {
+				Util.Log.Error($"SkipEngine.SkipDefault: {ex}");
+				return (string)STRINGS.ONIACCESS.SKIP.NO_CHANGE_BOUNDARY;
+			}
+		}
+
+		private string SkipCore(Direction direction, ISkipStrategy strategy) {
 			var cursor = TileCursor.Instance;
 			int startCell = cursor.Cell;
-
-			HashedString mode = OverlayModes.None.ID;
-			var overlayScreen = OverlayScreen.Instance;
-			if (overlayScreen != null)
-				mode = overlayScreen.GetMode();
-
-			ISkipStrategy strategy = _registry.GetStrategy(mode);
 			bool startedUnexplored = !Grid.IsVisible(startCell);
 			object startSignature = strategy.GetSignature(startCell);
 
