@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Build;
+using RectangleSelection = OniAccess.Handlers.RectangleSelection;
 using OniAccess.Handlers.Notifications;
 using OniAccess.Handlers.Screens.ClusterMap;
 using OniAccess.Handlers.Tiles;
@@ -276,6 +277,20 @@ namespace OniAccess.Tests {
 			// --- HexCoordinates ---
 			results.Add(HexCompassAllOctants());
 			results.Add(HexFormatSameHexReturnsHere());
+
+			// --- RectangleSelection ---
+			results.Add(RectSelectionFirstCornerSet());
+			results.Add(RectSelectionSecondCornerCompletesRect());
+			results.Add(RectSelectionClearRectRemovesContainingRect());
+			results.Add(RectSelectionClearRectReturnsFalseWhenEmpty());
+			results.Add(RectSelectionMultiRectAccumulation());
+			results.Add(RectSelectionIsCellSelectedInRect());
+			results.Add(RectSelectionIsCellSelectedOutsideRect());
+			results.Add(RectSelectionClearAllResetsState());
+			results.Add(RectSelectionAutoSelectSingle());
+			results.Add(RectSelectionAddRectangleDirect());
+			results.Add(RectSelectionComputeArea());
+			results.Add(RectSelectionTileCountBetween());
 
 			// --- CursorBookmarks.DigitKeyToIndex ---
 			results.Add(DigitKeyAlpha1Through9());
@@ -3022,6 +3037,141 @@ namespace OniAccess.Tests {
 			bool ok = result == expected;
 			return Assert("HexFormatSameHexReturnsHere", ok,
 				$"got \"{result}\", expected \"{expected}\"");
+		}
+
+		// ========================================
+		// RectangleSelection
+		// ========================================
+
+		private static (string, bool, string) RectSelectionFirstCornerSet() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			int cell = Grid.XYToCell(5, 5);
+			var result = sel.SetCorner(cell, out _);
+			bool ok = result == RectangleSelection.SetCornerResult.FirstCornerSet
+				&& sel.PendingFirstCorner == cell
+				&& sel.RectangleCount == 0;
+			return Assert("RectSelectionFirstCornerSet", ok,
+				$"result={result}, pending={sel.PendingFirstCorner}, rects={sel.RectangleCount}");
+		}
+
+		private static (string, bool, string) RectSelectionSecondCornerCompletesRect() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			int c1 = Grid.XYToCell(2, 3);
+			int c2 = Grid.XYToCell(5, 7);
+			sel.SetCorner(c1, out _);
+			var result = sel.SetCorner(c2, out var rect);
+			bool ok = result == RectangleSelection.SetCornerResult.RectangleComplete
+				&& sel.PendingFirstCorner == Grid.InvalidCell
+				&& sel.RectangleCount == 1
+				&& rect.Cell1 == c1 && rect.Cell2 == c2;
+			return Assert("RectSelectionSecondCornerCompletesRect", ok,
+				$"result={result}, pending={sel.PendingFirstCorner}, rects={sel.RectangleCount}");
+		}
+
+		private static (string, bool, string) RectSelectionClearRectRemovesContainingRect() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			sel.AddRectangle(Grid.XYToCell(0, 0), Grid.XYToCell(4, 4));
+			int inside = Grid.XYToCell(2, 2);
+			bool removed = sel.ClearRectAtCursor(inside);
+			bool ok = removed && sel.RectangleCount == 0;
+			return Assert("RectSelectionClearRectRemovesContainingRect", ok,
+				$"removed={removed}, rects={sel.RectangleCount}");
+		}
+
+		private static (string, bool, string) RectSelectionClearRectReturnsFalseWhenEmpty() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			bool removed = sel.ClearRectAtCursor(Grid.XYToCell(5, 5));
+			bool ok = !removed;
+			return Assert("RectSelectionClearRectReturnsFalseWhenEmpty", ok,
+				$"removed={removed}");
+		}
+
+		private static (string, bool, string) RectSelectionMultiRectAccumulation() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			sel.AddRectangle(Grid.XYToCell(0, 0), Grid.XYToCell(2, 2));
+			sel.AddRectangle(Grid.XYToCell(5, 5), Grid.XYToCell(7, 7));
+			bool ok = sel.RectangleCount == 2;
+			return Assert("RectSelectionMultiRectAccumulation", ok,
+				$"rects={sel.RectangleCount}");
+		}
+
+		private static (string, bool, string) RectSelectionIsCellSelectedInRect() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			sel.AddRectangle(Grid.XYToCell(1, 1), Grid.XYToCell(3, 3));
+			bool ok = sel.IsCellSelected(Grid.XYToCell(2, 2))
+				&& sel.IsCellSelected(Grid.XYToCell(1, 1))
+				&& sel.IsCellSelected(Grid.XYToCell(3, 3));
+			return Assert("RectSelectionIsCellSelectedInRect", ok, "cell not selected");
+		}
+
+		private static (string, bool, string) RectSelectionIsCellSelectedOutsideRect() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			sel.AddRectangle(Grid.XYToCell(1, 1), Grid.XYToCell(3, 3));
+			bool ok = !sel.IsCellSelected(Grid.XYToCell(0, 0))
+				&& !sel.IsCellSelected(Grid.XYToCell(4, 4));
+			return Assert("RectSelectionIsCellSelectedOutsideRect", ok, "cell was selected");
+		}
+
+		private static (string, bool, string) RectSelectionClearAllResetsState() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			sel.SetCorner(Grid.XYToCell(1, 1), out _);
+			sel.AddRectangle(Grid.XYToCell(0, 0), Grid.XYToCell(2, 2));
+			sel.ClearAll();
+			bool ok = sel.RectangleCount == 0
+				&& sel.PendingFirstCorner == Grid.InvalidCell
+				&& !sel.HasSelection;
+			return Assert("RectSelectionClearAllResetsState", ok,
+				$"rects={sel.RectangleCount}, pending={sel.PendingFirstCorner}");
+		}
+
+		private static (string, bool, string) RectSelectionAutoSelectSingle() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			int cell = Grid.XYToCell(5, 5);
+			sel.AutoSelectSingle(cell);
+			bool ok = sel.RectangleCount == 1 && sel.IsCellSelected(cell);
+			return Assert("RectSelectionAutoSelectSingle", ok,
+				$"rects={sel.RectangleCount}");
+		}
+
+		private static (string, bool, string) RectSelectionAddRectangleDirect() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			// Set a pending corner first, AddRectangle should clear it
+			sel.SetCorner(Grid.XYToCell(9, 9), out _);
+			sel.AddRectangle(Grid.XYToCell(0, 0), Grid.XYToCell(1, 1));
+			bool ok = sel.PendingFirstCorner == Grid.InvalidCell
+				&& sel.RectangleCount == 1;
+			return Assert("RectSelectionAddRectangleDirect", ok,
+				$"pending={sel.PendingFirstCorner}, rects={sel.RectangleCount}");
+		}
+
+		private static (string, bool, string) RectSelectionComputeArea() {
+			SetupGrid(100);
+			int c1 = Grid.XYToCell(2, 3);
+			int c2 = Grid.XYToCell(5, 6);
+			int area = RectangleSelection.ComputeArea(c1, c2);
+			// 4 wide x 4 tall = 16
+			bool ok = area == 16;
+			return Assert("RectSelectionComputeArea", ok, $"area={area}");
+		}
+
+		private static (string, bool, string) RectSelectionTileCountBetween() {
+			SetupGrid(100);
+			int c1 = Grid.XYToCell(2, 3);
+			int c2 = Grid.XYToCell(5, 6);
+			int count = RectangleSelection.TileCountBetween(c1, c2);
+			// 4 wide + 4 tall - 1 = 7
+			bool ok = count == 7;
+			return Assert("RectSelectionTileCountBetween", ok, $"count={count}");
 		}
 	}
 }

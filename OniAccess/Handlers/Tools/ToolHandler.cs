@@ -19,31 +19,10 @@ namespace OniAccess.Handlers.Tools {
 	public class ToolHandler: BaseScreenHandler {
 		public static ToolHandler Instance { get; private set; }
 
-		private int _pendingFirstCorner = Grid.InvalidCell;
-		private int _lastDragCell = Grid.InvalidCell;
-		private readonly List<RectCorners> _rectangles = new List<RectCorners>();
+		internal readonly RectangleSelection Selection = new RectangleSelection();
 		private ModToolInfo _toolInfo;
 		private string _lastFilterKey;
 		private bool _skipFirstTick;
-
-		private struct RectCorners {
-			public int Cell1;
-			public int Cell2;
-
-			public void GetBounds(out int minX, out int maxX, out int minY, out int maxY) {
-				minX = Math.Min(Grid.CellColumn(Cell1), Grid.CellColumn(Cell2));
-				maxX = Math.Max(Grid.CellColumn(Cell1), Grid.CellColumn(Cell2));
-				minY = Math.Min(Grid.CellRow(Cell1), Grid.CellRow(Cell2));
-				maxY = Math.Max(Grid.CellRow(Cell1), Grid.CellRow(Cell2));
-			}
-
-			public bool Contains(int cell) {
-				GetBounds(out int minX, out int maxX, out int minY, out int maxY);
-				int cx = Grid.CellColumn(cell);
-				int cy = Grid.CellRow(cell);
-				return cx >= minX && cx <= maxX && cy >= minY && cy <= maxY;
-			}
-		}
 
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Space),
@@ -141,9 +120,7 @@ namespace OniAccess.Handlers.Tools {
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 
 			_lastFilterKey = null;
-			_rectangles.Clear();
-			_pendingFirstCorner = Grid.InvalidCell;
-			_lastDragCell = Grid.InvalidCell;
+			Selection.ClearAll();
 		}
 
 		private void OnActiveToolChanged(object data) {
@@ -164,8 +141,8 @@ namespace OniAccess.Handlers.Tools {
 
 			_lastFilterKey = newKey;
 
-			bool hadSelection = HasSelection;
-			ClearSelection();
+			bool hadSelection = Selection.HasSelection;
+			Selection.ClearAll();
 
 			string announcement = newKey == ToolParameterMenu.FILTERLAYERS.ALL
 				? (string)STRINGS.ONIACCESS.TOOLS.FILTER_REMOVED
@@ -204,11 +181,12 @@ namespace OniAccess.Handlers.Tools {
 				return false;
 			}
 
-			if (_pendingFirstCorner != Grid.InvalidCell) {
+			if (Selection.PendingFirstCorner != Grid.InvalidCell) {
 				int cell = TileCursor.Instance.Cell;
-				if (cell != _lastDragCell) {
-					_lastDragCell = cell;
-					int tileCount = TileCountBetween(_pendingFirstCorner, cell);
+				if (cell != Selection.LastDragCell) {
+					Selection.LastDragCell = cell;
+					int tileCount = RectangleSelection.TileCountBetween(
+						Selection.PendingFirstCorner, cell);
 					PlayDragSound(tileCount);
 				}
 			}
@@ -277,25 +255,19 @@ namespace OniAccess.Handlers.Tools {
 			if (TileCursor.Instance.Radius > 0
 				&& (_toolInfo == null || !_toolInfo.IsLineMode)) {
 				var (c1, c2) = TileCursor.Instance.GetAreaCorners();
-				var bigRect = new RectCorners { Cell1 = c1, Cell2 = c2 };
-				_rectangles.Add(bigRect);
-				_pendingFirstCorner = Grid.InvalidCell;
-				PlayDragSound(ComputeArea(bigRect));
-				SpeechPipeline.SpeakInterrupt(BuildRectSummary(bigRect));
+				Selection.AddRectangle(c1, c2);
+				int area = RectangleSelection.ComputeArea(c1, c2);
+				PlayDragSound(area);
+				SpeechPipeline.SpeakInterrupt(
+					RectangleSelection.BuildRectSummary(c1, c2,
+						_toolInfo?.CountTargets));
 				return;
 			}
 
-			if (_pendingFirstCorner == Grid.InvalidCell) {
-				_pendingFirstCorner = cell;
-				_lastDragCell = cell;
-				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.CORNER_SET);
-				PlayDragSound(1);
-				return;
-			}
-
-			if (_toolInfo != null && _toolInfo.IsLineMode) {
-				int col1 = Grid.CellColumn(_pendingFirstCorner);
-				int row1 = Grid.CellRow(_pendingFirstCorner);
+			if (_toolInfo != null && _toolInfo.IsLineMode
+				&& Selection.PendingFirstCorner != Grid.InvalidCell) {
+				int col1 = Grid.CellColumn(Selection.PendingFirstCorner);
+				int row1 = Grid.CellRow(Selection.PendingFirstCorner);
 				int col2 = Grid.CellColumn(cell);
 				int row2 = Grid.CellRow(cell);
 				bool sameCol = col1 == col2;
@@ -311,17 +283,21 @@ namespace OniAccess.Handlers.Tools {
 				}
 			}
 
-			var rect = new RectCorners { Cell1 = _pendingFirstCorner, Cell2 = cell };
-			_rectangles.Add(rect);
-			_pendingFirstCorner = Grid.InvalidCell;
-
-			int area = ComputeArea(rect);
-			PlayDragSound(area);
-			SpeechPipeline.SpeakInterrupt(BuildRectSummary(rect));
+			var result = Selection.SetCorner(cell, out var rect);
+			if (result == RectangleSelection.SetCornerResult.FirstCornerSet) {
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.CORNER_SET);
+				PlayDragSound(1);
+			} else {
+				int area = RectangleSelection.ComputeArea(rect.Cell1, rect.Cell2);
+				PlayDragSound(area);
+				SpeechPipeline.SpeakInterrupt(
+					RectangleSelection.BuildRectSummary(rect.Cell1, rect.Cell2,
+						_toolInfo?.CountTargets));
+			}
 		}
 
 		private void ConfirmOrCancel() {
-			if (_rectangles.Count == 0 && _pendingFirstCorner == Grid.InvalidCell) {
+			if (!Selection.HasSelection) {
 				int cell = TileCursor.Instance.Cell;
 				if (!Grid.IsVisible(cell)) {
 					PlaySound("Negative");
@@ -331,13 +307,13 @@ namespace OniAccess.Handlers.Tools {
 				if (TileCursor.Instance.Radius > 0
 					&& (_toolInfo == null || !_toolInfo.IsLineMode)) {
 					var (c1, c2) = TileCursor.Instance.GetAreaCorners();
-					_rectangles.Add(new RectCorners { Cell1 = c1, Cell2 = c2 });
+					Selection.AddRectangle(c1, c2);
 				} else {
-					_rectangles.Add(new RectCorners { Cell1 = cell, Cell2 = cell });
+					Selection.AutoSelectSingle(cell);
 				}
 			}
 
-			if (_rectangles.Count == 0) {
+			if (Selection.RectangleCount == 0) {
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.CANCELED);
 				PlayDeactivateSound();
 				DeactivateToolAndPop();
@@ -362,12 +338,13 @@ namespace OniAccess.Handlers.Tools {
 				return;
 			}
 
+			var rects = Selection.GetRectangles();
 			DragToolPatches.SuppressConfirmSound = true;
 			try {
-				for (int i = 0; i < _rectangles.Count; i++) {
-					if (i == _rectangles.Count - 1)
+				for (int i = 0; i < rects.Count; i++) {
+					if (i == rects.Count - 1)
 						DragToolPatches.SuppressConfirmSound = false;
-					var r = _rectangles[i];
+					var r = rects[i];
 					var pos1 = Grid.CellToPosCCC(r.Cell1, Grid.SceneLayer.Move);
 					var pos2 = Grid.CellToPosCCC(r.Cell2, Grid.SceneLayer.Move);
 					activeTool.OnLeftClickDown(pos1);
@@ -386,23 +363,12 @@ namespace OniAccess.Handlers.Tools {
 		// CELL SELECTION QUERIES
 		// ========================================
 
-		public bool IsCellSelected(int cell) {
-			for (int i = 0; i < _rectangles.Count; i++) {
-				if (_rectangles[i].Contains(cell))
-					return true;
-			}
-			return false;
-		}
+		public bool IsCellSelected(int cell) => Selection.IsCellSelected(cell);
 
 		private void ClearRectAtCursor() {
 			int cell = TileCursor.Instance.Cell;
-			for (int i = _rectangles.Count - 1; i >= 0; i--) {
-				if (_rectangles[i].Contains(cell)) {
-					_rectangles.RemoveAt(i);
-					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.RECT_CLEARED);
-					return;
-				}
-			}
+			if (Selection.ClearRectAtCursor(cell))
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.RECT_CLEARED);
 		}
 
 		// ========================================
@@ -435,13 +401,9 @@ namespace OniAccess.Handlers.Tools {
 			HandlerStack.Push(new ToolFilterHandler(this));
 		}
 
-		internal bool HasSelection => _rectangles.Count > 0 || _pendingFirstCorner != Grid.InvalidCell;
+		internal bool HasSelection => Selection.HasSelection;
 
-		internal void ClearSelection() {
-			_rectangles.Clear();
-			_pendingFirstCorner = Grid.InvalidCell;
-			_lastDragCell = Grid.InvalidCell;
-		}
+		internal void ClearSelection() => Selection.ClearAll();
 
 		// ========================================
 		// ANNOUNCEMENTS
@@ -508,42 +470,10 @@ namespace OniAccess.Handlers.Tools {
 			return null;
 		}
 
-		private string BuildRectSummary(RectCorners rect) {
-			rect.GetBounds(out int minX, out int maxX, out int minY, out int maxY);
-			int width = maxX - minX + 1;
-			int height = maxY - minY + 1;
-			int valid = 0;
-			int invalid = 0;
-
-			for (int y = minY; y <= maxY; y++) {
-				for (int x = minX; x <= maxX; x++) {
-					int cell = Grid.XYToCell(x, y);
-					if (!Grid.IsValidCell(cell) || !Grid.IsVisible(cell)) {
-						invalid++;
-						continue;
-					}
-					if (_toolInfo != null && _toolInfo.CountTargets != null) {
-						int count = _toolInfo.CountTargets(cell);
-						if (count > 0)
-							valid += count;
-						else
-							invalid++;
-					} else {
-						valid++;
-					}
-				}
-			}
-
-			string format = invalid > 0
-				? (string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_INVALID
-				: (string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY;
-			return string.Format(format, width, height, valid, invalid);
-		}
-
 		private string BuildConfirmSummary(out int total) {
 			var cells = new HashSet<int>();
 			total = 0;
-			foreach (var r in _rectangles) {
+			foreach (var r in Selection.GetRectangles()) {
 				r.GetBounds(out int minX, out int maxX, out int minY, out int maxY);
 				for (int y = minY; y <= maxY; y++)
 					for (int x = minX; x <= maxX; x++) {
@@ -583,36 +513,12 @@ namespace OniAccess.Handlers.Tools {
 		}
 
 		// ========================================
-		// AREA COMPUTATION
-		// ========================================
-
-		private static int ComputeArea(RectCorners rect) {
-			int width = Math.Abs(Grid.CellColumn(rect.Cell2) - Grid.CellColumn(rect.Cell1)) + 1;
-			int height = Math.Abs(Grid.CellRow(rect.Cell2) - Grid.CellRow(rect.Cell1)) + 1;
-			return width * height;
-		}
-
-		private static int TileCountBetween(int cell1, int cell2) {
-			int width = Math.Abs(Grid.CellColumn(cell2) - Grid.CellColumn(cell1)) + 1;
-			int height = Math.Abs(Grid.CellRow(cell2) - Grid.CellRow(cell1)) + 1;
-			return width + height - 1;
-		}
-
-		// ========================================
 		// SOUNDS
 		// ========================================
 
-		private void PlayDragSound(int tileCount) {
-			try {
-				string soundName = _toolInfo?.DragSound ?? "Tile_Drag";
-				var pos = Grid.CellToPosCCC(TileCursor.Instance.Cell, Grid.SceneLayer.Move);
-				var ev = KFMOD.BeginOneShot(GlobalAssets.GetSound(soundName), pos);
-				ev.setParameterByName("tileCount", tileCount);
-				KFMOD.EndOneShot(ev);
-			} catch (Exception ex) {
-				Util.Log.Error($"ToolHandler.PlayDragSound: {ex}");
-			}
-		}
+		private void PlayDragSound(int tileCount) =>
+			RectangleSelection.PlayDragSound(
+				_toolInfo?.DragSound ?? "Tile_Drag", tileCount);
 
 		private void DeactivateToolAndPop() {
 			Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);

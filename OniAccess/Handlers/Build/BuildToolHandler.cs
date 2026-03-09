@@ -33,6 +33,12 @@ namespace OniAccess.Handlers.Build {
 		internal bool UtilityStartSet => _utilityStartCell != Grid.InvalidCell;
 		internal int UtilityStartCell => _utilityStartCell;
 
+		// Rectangle mode state (1x1 non-utility buildings only)
+		private readonly RectangleSelection _rectSelection = new RectangleSelection();
+		private bool _rectMode;
+		private bool CanUseRectMode => _def.PlacementOffsets.Length == 1 && !_isUtility;
+		private GlanceComposer _rectComposer;
+
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Space),
 			new ConsumedKey(KKeyCode.Space, Modifier.Shift),
@@ -42,6 +48,7 @@ namespace OniAccess.Handlers.Build {
 			new ConsumedKey(KKeyCode.Tab),
 			new ConsumedKey(KKeyCode.I),
 			new ConsumedKey(KKeyCode.P),
+			new ConsumedKey(KKeyCode.G),
 			new ConsumedKey(KKeyCode.Alpha0),
 			new ConsumedKey(KKeyCode.Alpha1),
 			new ConsumedKey(KKeyCode.Alpha2),
@@ -88,7 +95,7 @@ namespace OniAccess.Handlers.Build {
 			return Grid.OffsetCell(TileCursor.Instance.Cell, shift);
 		}
 
-		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
+		private static readonly IReadOnlyList<HelpEntry> _singleModeNoRectHelp = new List<HelpEntry> {
 			new HelpEntry("Space", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE_AND_EXIT),
 			new HelpEntry("R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE),
@@ -101,12 +108,50 @@ namespace OniAccess.Handlers.Build {
 			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.CLOSE),
 		}.AsReadOnly();
 
-		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
+		private static readonly IReadOnlyList<HelpEntry> _singleModeHelp = new List<HelpEntry> {
+			new HelpEntry("Space", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE),
+			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE_AND_EXIT),
+			new HelpEntry("G", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE),
+			new HelpEntry("R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE),
+			new HelpEntry("Shift+R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE_REVERSE),
+			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST),
+			new HelpEntry("I", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO),
+			new HelpEntry("P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
+			new HelpEntry("0-9", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY),
+			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_CANCEL_CONSTRUCTION),
+			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.CLOSE),
+		}.AsReadOnly();
+
+		private static readonly IReadOnlyList<HelpEntry> _rectModeHelp = new List<HelpEntry> {
+			new HelpEntry("Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER),
+			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT),
+			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CONFIRM_TOOL),
+			new HelpEntry("G", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE),
+			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST),
+			new HelpEntry("I", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO),
+			new HelpEntry("P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
+			new HelpEntry("0-9", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY),
+			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.CLOSE),
+		}.AsReadOnly();
+
+		public override IReadOnlyList<HelpEntry> HelpEntries =>
+			_rectMode ? _rectModeHelp
+			: CanUseRectMode ? _singleModeHelp
+			: _singleModeNoRectHelp;
 
 		public BuildToolHandler(HashedString category, BuildingDef def) {
 			_category = category;
 			_def = def;
 			_isUtility = BuildMenuData.IsUtilityBuilding(def);
+			if (CanUseRectMode) {
+				_rectComposer = new GlanceComposer(new List<ICellSection> {
+					ToolProfileRegistry.Selection,
+					GlanceComposer.Building,
+					new Tiles.ToolProfiles.Sections.BuildPrioritySection(),
+					GlanceComposer.Element,
+					new Tiles.ToolProfiles.Sections.BuildExtentSection()
+				}.AsReadOnly());
+			}
 		}
 
 		// ========================================
@@ -158,6 +203,8 @@ namespace OniAccess.Handlers.Build {
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
 
 			_utilityStartCell = Grid.InvalidCell;
+			_rectMode = false;
+			_rectSelection.ClearAll();
 		}
 
 		private void OnActiveToolChanged(object data) {
@@ -219,6 +266,7 @@ namespace OniAccess.Handlers.Build {
 		// ========================================
 
 		public override bool Tick() {
+			// Drag sound tracking for utility start or rect mode pending corner
 			if (_utilityStartCell != Grid.InvalidCell) {
 				int cell = TileCursor.Instance.Cell;
 				if (cell != _lastDragCell) {
@@ -226,11 +274,27 @@ namespace OniAccess.Handlers.Build {
 					if (IsValidDragTarget(cell))
 						PlayDragSound(Grid.GetCellDistance(cell, _utilityStartCell) + 1);
 				}
+			} else if (_rectMode && _rectSelection.PendingFirstCorner != Grid.InvalidCell) {
+				int cell = TileCursor.Instance.Cell;
+				if (cell != _rectSelection.LastDragCell) {
+					_rectSelection.LastDragCell = cell;
+					int tileCount = RectangleSelection.TileCountBetween(
+						_rectSelection.PendingFirstCorner, cell);
+					PlayDragSound(tileCount);
+				}
+			}
+
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.G)
+				&& !InputUtil.AnyModifierHeld()) {
+				ToggleRectMode();
+				return true;
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)) {
 				if (InputUtil.ShiftHeld()) {
-					if (_isUtility && UtilityStartSet) {
+					if (_rectMode) {
+						RectShiftSpace();
+					} else if (_isUtility && UtilityStartSet) {
 						_utilityStartCell = Grid.InvalidCell;
 						_lastDragCell = Grid.InvalidCell;
 						SpeechPipeline.SpeakInterrupt(
@@ -243,7 +307,9 @@ namespace OniAccess.Handlers.Build {
 						string error = GetPrebuildError();
 						SpeechPipeline.SpeakInterrupt(
 							error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
-					} else if (_isUtility)
+					} else if (_rectMode)
+						RectSetCorner();
+					else if (_isUtility)
 						UtilityPlacement();
 					else
 						RegularPlacement();
@@ -258,7 +324,9 @@ namespace OniAccess.Handlers.Build {
 					string error = GetPrebuildError();
 					SpeechPipeline.SpeakInterrupt(
 						error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
-				} else if (_isUtility)
+				} else if (_rectMode)
+					RectConfirm();
+				else if (_isUtility)
 					UtilityPlaceAndExit();
 				else
 					RegularPlaceAndExit();
@@ -675,6 +743,155 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		// ========================================
+		// RECTANGLE MODE
+		// ========================================
+
+		public bool IsCellSelected(int cell) =>
+			_rectMode && _rectSelection.IsCellSelected(cell);
+
+		private void ToggleRectMode() {
+			if (!CanUseRectMode) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_UNAVAILABLE);
+				return;
+			}
+
+			_rectMode = !_rectMode;
+			if (_rectMode) {
+				if (TileCursor.Instance != null)
+					TileCursor.Instance.ActiveToolComposer = _rectComposer;
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_ON);
+			} else {
+				_rectSelection.ClearAll();
+				SetupBuildMode();
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_OFF);
+			}
+		}
+
+		private void RectSetCorner() {
+			int cell = TileCursor.Instance.Cell;
+			if (!Grid.IsVisible(cell)) {
+				PlaySound("Negative");
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+				return;
+			}
+
+			var result = _rectSelection.SetCorner(cell, out var rect);
+			if (result == RectangleSelection.SetCornerResult.FirstCornerSet) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TOOLS.CORNER_SET);
+				PlayDragSound(1);
+			} else {
+				int area = RectangleSelection.ComputeArea(rect.Cell1, rect.Cell2);
+				PlayDragSound(area);
+				SpeechPipeline.SpeakInterrupt(
+					RectangleSelection.BuildRectSummary(
+						rect.Cell1, rect.Cell2, CountValidPlacements));
+			}
+		}
+
+		private void RectShiftSpace() {
+			int cell = TileCursor.Instance.Cell;
+			if (_rectSelection.ClearRectAtCursor(cell)) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TOOLS.RECT_CLEARED);
+			} else if (_rectSelection.PendingFirstCorner != Grid.InvalidCell) {
+				_rectSelection.ClearAll();
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED);
+			} else {
+				QuickCancel();
+			}
+		}
+
+		private void RectConfirm() {
+			if (!_rectSelection.HasSelection) {
+				// No selection: place single cell and exit (current Enter behavior)
+				RegularPlaceAndExit();
+				return;
+			}
+
+			SubmitBuildRectangles();
+		}
+
+		private void SubmitBuildRectangles() {
+			if (!(PlayerController.Instance.ActiveTool is BuildTool)) {
+				PlaySound("Negative");
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+				return;
+			}
+
+			var orientation = BuildMenuData.GetCurrentOrientation();
+			int placed = 0;
+
+			try {
+				foreach (var rect in _rectSelection.GetRectangles()) {
+					rect.GetBounds(out int minX, out int maxX, out int minY, out int maxY);
+					for (int y = minY; y <= maxY; y++) {
+						for (int x = minX; x <= maxX; x++) {
+							int cell = Grid.XYToCell(x, y);
+							if (!Grid.IsValidCell(cell) || !Grid.IsVisible(cell))
+								continue;
+
+							var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
+							if (!_def.IsValidPlaceLocation(
+									BuildTool.Instance.visualizer, pos, orientation, out _))
+								continue;
+
+							BuildTool.Instance.visualizer.transform.SetPosition(pos);
+							_buildToolLastDragCell.SetValue(BuildTool.Instance, -1);
+							BuildTool.Instance.OnLeftClickDown(pos);
+							BuildTool.Instance.OnLeftClickUp(pos);
+							placed++;
+						}
+					}
+				}
+			} catch (Exception ex) {
+				Util.Log.Error($"BuildToolHandler.SubmitBuildRectangles: {ex}");
+			}
+
+			if (placed == 0) {
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TOOLS.NO_VALID_CELLS);
+				PlaySound("Negative");
+				ExitBuildMode();
+				return;
+			}
+
+			string priorityText = ReadBuildPriority();
+			SpeechPipeline.SpeakInterrupt(
+				string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.CONFIRM_BUILD_RECT,
+					placed, priorityText));
+			ExitBuildMode();
+		}
+
+		private int CountValidPlacements(int cell) {
+			var orientation = BuildMenuData.GetCurrentOrientation();
+			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
+			return _def.IsValidPlaceLocation(
+				BuildTool.Instance.visualizer, pos, orientation, out _) ? 1 : 0;
+		}
+
+		private static string ReadBuildPriority() {
+			try {
+				var priority = PlanScreen.Instance.ProductInfoScreen
+					.materialSelectionPanel.PriorityScreen
+					.GetLastSelectedPriority();
+				if (priority.priority_class == PriorityScreen.PriorityClass.topPriority)
+					return (string)STRINGS.ONIACCESS.TOOLS.PRIORITY_EMERGENCY;
+				return priority.priority_value.ToString();
+			} catch (Exception ex) {
+				Util.Log.Warn($"BuildToolHandler.ReadBuildPriority: {ex.Message}");
+				return 5.ToString();
+			}
+		}
+
+		// ========================================
 		// QUICK CANCEL
 		// ========================================
 
@@ -991,16 +1208,8 @@ namespace OniAccess.Handlers.Build {
 			return ValidateUtilityPath(path);
 		}
 
-		private void PlayDragSound(int tileCount) {
-			try {
-				var pos = Grid.CellToPosCCC(TileCursor.Instance.Cell, Grid.SceneLayer.Move);
-				var ev = KFMOD.BeginOneShot(GlobalAssets.GetSound("Tile_Drag"), pos);
-				ev.setParameterByName("tileCount", tileCount);
-				KFMOD.EndOneShot(ev);
-			} catch (Exception ex) {
-				Util.Log.Error($"BuildToolHandler.PlayDragSound: {ex}");
-			}
-		}
+		private static void PlayDragSound(int tileCount) =>
+			RectangleSelection.PlayDragSound("Tile_Drag", tileCount);
 
 		private static void PlayDeactivateSound() {
 			try {

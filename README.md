@@ -151,6 +151,8 @@ Selecting a building enters placement mode:
 - **0-9** -- set construction priority
 - **Shift+Space** -- cancel existing construction at the cursor
 
+For single-cell buildings (tiles, drywall, etc.), **G** toggles rectangle mode where you define areas with Space and fill them all at once with Enter.
+
 Utility buildings (pipes and wires) use line placement: Space sets the start, then move in a straight line and Space again to complete the run. If any tiles along the line are invalid, the placement will fail.
 
 ## Colony status
