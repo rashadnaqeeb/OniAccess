@@ -1,6 +1,6 @@
 # Building Mechanics
 
-How buildings convert elements, occupy cells, take damage, and interact with the simulation -- systems shared by all buildings. For per-building specs (power, inputs, outputs, rates), see `building-catalog.md`. Derived from decompiled source code.
+How buildings convert elements, occupy cells, take damage, and interact with the simulation -- systems shared by all buildings. For per-building specs (power, inputs, outputs, rates), see `building-<category>.md`. Derived from decompiled source code.
 
 ## Element Conversion and Consumption
 
