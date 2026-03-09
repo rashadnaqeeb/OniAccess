@@ -2271,7 +2271,7 @@ namespace OniAccess.Tests {
 			var graph = MakeTestGraph(out _, out _, roots);
 			graph.MoveTo("B");
 			string up = graph.NavigateUp(); // → A (a root node)
-			// A is a root, so siblings should be the roots list
+											// A is a root, so siblings should be the roots list
 			string sibling = graph.CycleSibling(1, out _); // → X
 			bool ok = up == "A" && sibling == "X";
 			return Assert("GraphNavigateUpToRootUsesRoots", ok,

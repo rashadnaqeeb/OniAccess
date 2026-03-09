@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Sandbox {
 	/// from SandboxToolParameterMenu. Sliders adjust with Left/Right;
 	/// selectors open a SandboxSelectorHandler on Enter.
 	/// </summary>
-	public class SandboxParamMenuHandler : BaseWidgetHandler {
+	public class SandboxParamMenuHandler: BaseWidgetHandler {
 		public override string DisplayName => (string)STRINGS.ONIACCESS.SANDBOX.PARAM_MENU;
 
 		private static readonly IReadOnlyList<HelpEntry> _helpEntries;

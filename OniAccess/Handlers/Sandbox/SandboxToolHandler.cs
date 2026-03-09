@@ -18,7 +18,7 @@ namespace OniAccess.Handlers.Sandbox {
 	/// with rectangle cells and calls Paint() via reflection.
 	/// Single-cell tools receive OnLeftClickDown at the cursor position.
 	/// </summary>
-	public class SandboxToolHandler : BaseScreenHandler {
+	public class SandboxToolHandler: BaseScreenHandler {
 		public static SandboxToolHandler Instance { get; private set; }
 
 		internal readonly RectangleSelection Selection = new RectangleSelection();

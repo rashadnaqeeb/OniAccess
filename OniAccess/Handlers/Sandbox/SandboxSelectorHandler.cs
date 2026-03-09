@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Sandbox {
 	///
 	/// Enter selects the item and pops back to the parameter menu.
 	/// </summary>
-	public class SandboxSelectorHandler : NestedMenuHandler {
+	public class SandboxSelectorHandler: NestedMenuHandler {
 		private readonly SandboxToolParameterMenu.SelectorValue _selector;
 		private readonly bool _hasCategories;
 
