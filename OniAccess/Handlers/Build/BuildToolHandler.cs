@@ -533,22 +533,53 @@ namespace OniAccess.Handlers.Build {
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 				return;
 			}
-			if (!IsValidUtilityCell(cell)) {
-				PlaySound("Negative");
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
-				return;
-			}
 
-			var path = new List<int> { cell };
 			var tool = GetActiveUtilityTool();
 			if (tool == null) {
 				Util.Log.Error("BuildToolHandler.UtilityPlaceAndExit: no active utility tool");
 				return;
 			}
 
-			SimulateUtilityDrag(path, tool);
-			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
+			if (UtilityStartSet) {
+				int startCol = Grid.CellColumn(_utilityStartCell);
+				int startRow = Grid.CellRow(_utilityStartCell);
+				int endCol = Grid.CellColumn(cell);
+				int endRow = Grid.CellRow(cell);
+				bool sameCol = startCol == endCol;
+				bool sameRow = startRow == endRow;
+
+				if (!sameCol && !sameRow) {
+					PlaySound("Negative");
+					SpeechPipeline.SpeakInterrupt(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.MUST_BE_STRAIGHT);
+					return;
+				}
+
+				var path = BuildLinePath(_utilityStartCell, cell);
+				if (!ValidateUtilityPath(path)) {
+					PlaySound("Negative");
+					SpeechPipeline.SpeakInterrupt(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE);
+					return;
+				}
+
+				SimulateUtilityDrag(path, tool);
+				SpeechPipeline.SpeakInterrupt(
+					string.Format((string)STRINGS.ONIACCESS.BUILD_MENU.LINE_CELLS, path.Count)
+					+ ", " + (string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
+			} else {
+				if (!IsValidUtilityCell(cell)) {
+					PlaySound("Negative");
+					SpeechPipeline.SpeakInterrupt(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
+					return;
+				}
+
+				var path = new List<int> { cell };
+				SimulateUtilityDrag(path, tool);
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.BUILD_MENU.PLACED);
+			}
+
 			ExitBuildMode();
 		}
 
