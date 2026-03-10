@@ -32,7 +32,14 @@ namespace OniAccess.Patches {
 	internal static class InputInit_Awake_Patch {
 		private static System.Reflection.MethodBase TargetMethod() {
 			var type = AccessTools.TypeByName("InputInit");
-			return AccessTools.Method(type, "Awake");
+			if (type == null) {
+				Log.Error("InputInit_Awake_Patch: InputInit type not found");
+				return null;
+			}
+			var method = AccessTools.Method(type, "Awake");
+			if (method == null)
+				Log.Error("InputInit_Awake_Patch: InputInit.Awake method not found");
+			return method;
 		}
 
 		private static void Postfix() {

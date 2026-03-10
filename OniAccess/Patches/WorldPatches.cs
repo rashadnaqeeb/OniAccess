@@ -13,12 +13,21 @@ namespace OniAccess.Patches {
 	[HarmonyPatch]
 	internal static class CameraController_ActiveWorldStarWipe_Patch {
 		static IEnumerable<MethodBase> TargetMethods() {
-			yield return AccessTools.Method(typeof(CameraController),
+			var twoArg = AccessTools.Method(typeof(CameraController),
 				"ActiveWorldStarWipe",
 				new[] { typeof(int), typeof(System.Action) });
-			yield return AccessTools.Method(typeof(CameraController),
+			if (twoArg == null)
+				Log.Error("CameraController_ActiveWorldStarWipe_Patch: 2-arg overload not found");
+			else
+				yield return twoArg;
+
+			var fourArg = AccessTools.Method(typeof(CameraController),
 				"ActiveWorldStarWipe",
 				new[] { typeof(int), typeof(UnityEngine.Vector3), typeof(float), typeof(System.Action) });
+			if (fourArg == null)
+				Log.Error("CameraController_ActiveWorldStarWipe_Patch: 4-arg overload not found");
+			else
+				yield return fourArg;
 		}
 
 		private static void Postfix(int id) {

@@ -318,8 +318,12 @@ namespace OniAccess.Patches {
 
 			// Map was already open — force close-on-select so the map closes
 			// after selection, returning the player to the side screen.
-			AccessTools.Field(typeof(ClusterMapScreen), "m_closeOnSelect")
-				.SetValue(__instance, true);
+			try {
+				AccessTools.Field(typeof(ClusterMapScreen), "m_closeOnSelect")
+					.SetValue(__instance, true);
+			} catch (System.Exception ex) {
+				Util.Log.Error($"ClusterMapScreen_ShowInSelectDestinationMode_Patch: {ex}");
+			}
 
 			HandlerStack.RemoveByScreen(__instance);
 			ContextDetector.OnScreenActivated(__instance);

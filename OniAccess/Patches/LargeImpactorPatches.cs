@@ -23,7 +23,10 @@ namespace OniAccess.Patches {
 	[HarmonyPatch]
 	internal static class LargeImpactorEvent_InitializeLandingSequence_Patch {
 		static MethodBase TargetMethod() {
-			return AccessTools.Method(typeof(LargeImpactorEvent), "InitializeLandingSequence");
+			var method = AccessTools.Method(typeof(LargeImpactorEvent), "InitializeLandingSequence");
+			if (method == null)
+				Log.Error("LargeImpactorEvent_InitializeLandingSequence_Patch: target method not found");
+			return method;
 		}
 
 		static void Postfix() {
@@ -40,7 +43,10 @@ namespace OniAccess.Patches {
 	[HarmonyPatch]
 	internal static class LargeImpactorEvent_UnlockWinAchievement_Patch {
 		static MethodBase TargetMethod() {
-			return AccessTools.Method(typeof(LargeImpactorEvent), "UnlockWinAchievement");
+			var method = AccessTools.Method(typeof(LargeImpactorEvent), "UnlockWinAchievement");
+			if (method == null)
+				Log.Error("LargeImpactorEvent_UnlockWinAchievement_Patch: target method not found");
+			return method;
 		}
 
 		static void Postfix() {

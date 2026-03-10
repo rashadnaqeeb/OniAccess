@@ -18,7 +18,10 @@ namespace OniAccess.Patches {
 				Log.Error("DiagnosticRow_TriggerVisualNotification_Patch: DiagnosticRow type not found");
 				return null;
 			}
-			return AccessTools.Method(rowType, "TriggerVisualNotification");
+			var method = AccessTools.Method(rowType, "TriggerVisualNotification");
+			if (method == null)
+				Log.Error("DiagnosticRow_TriggerVisualNotification_Patch: TriggerVisualNotification method not found");
+			return method;
 		}
 
 		private static void Postfix(object __instance) {

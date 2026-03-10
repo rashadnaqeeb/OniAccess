@@ -434,7 +434,11 @@ namespace OniAccess.Handlers.Build {
 			// TryBuild check (Grid.PosToCell(visualizer) == cell) passes
 			// for buildings with LogicPorts/LogicGateBase.
 			BuildTool.Instance.visualizer.transform.SetPosition(pos);
-			_buildToolLastDragCell.SetValue(BuildTool.Instance, -1);
+			try {
+				_buildToolLastDragCell.SetValue(BuildTool.Instance, -1);
+			} catch (System.Exception ex) {
+				Util.Log.Error($"BuildToolHandler.PlaceRegular: {ex}");
+			}
 			BuildTool.Instance.OnLeftClickDown(pos);
 			BuildTool.Instance.OnLeftClickUp(pos);
 			// OnePerWorld buildings auto-dismiss the tool, triggering

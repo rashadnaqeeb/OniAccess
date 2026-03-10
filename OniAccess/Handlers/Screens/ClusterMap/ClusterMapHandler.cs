@@ -302,22 +302,27 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 				if (mode == ClusterMapScreen.Mode.SelectDestination) {
 					e.TryConsume(Action.Escape);
 
-					var closeOnSelect = (bool)HarmonyLib.AccessTools.Field(
-						typeof(ClusterMapScreen), "m_closeOnSelect")
-						.GetValue(ClusterMapScreen.Instance);
+					try {
+						var closeOnSelect = (bool)HarmonyLib.AccessTools.Field(
+							typeof(ClusterMapScreen), "m_closeOnSelect")
+							.GetValue(ClusterMapScreen.Instance);
 
-					if (closeOnSelect) {
-						// Map was opened for this selection — cancel and close entirely.
-						var selector = HarmonyLib.AccessTools.Field(
-							typeof(ClusterMapScreen), "m_destinationSelector")
-							.GetValue(ClusterMapScreen.Instance) as ClusterDestinationSelector;
-						HarmonyLib.AccessTools.Method(typeof(ClusterMapScreen), "SetMode")
-							.Invoke(ClusterMapScreen.Instance,
-								new object[] { ClusterMapScreen.Mode.Default });
-						if (selector != null)
-							selector.Trigger(94158097);
-						ManagementMenu.Instance.CloseAll();
-					} else {
+						if (closeOnSelect) {
+							// Map was opened for this selection — cancel and close entirely.
+							var selector = HarmonyLib.AccessTools.Field(
+								typeof(ClusterMapScreen), "m_destinationSelector")
+								.GetValue(ClusterMapScreen.Instance) as ClusterDestinationSelector;
+							HarmonyLib.AccessTools.Method(typeof(ClusterMapScreen), "SetMode")
+								.Invoke(ClusterMapScreen.Instance,
+									new object[] { ClusterMapScreen.Mode.Default });
+							if (selector != null)
+								selector.Trigger(94158097);
+							ManagementMenu.Instance.CloseAll();
+						} else {
+							ClusterMapScreen.Instance.TryHandleCancel();
+						}
+					} catch (System.Exception ex) {
+						Util.Log.Error($"ClusterMapHandler.HandleKeyDown (destination cancel): {ex}");
 						ClusterMapScreen.Instance.TryHandleCancel();
 					}
 
