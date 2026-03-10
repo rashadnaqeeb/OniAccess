@@ -106,31 +106,23 @@ namespace OniAccess.Handlers.Tiles {
 			int worldId = ClusterManager.Instance.activeWorldId;
 			var inventory = ClusterManager.Instance.activeWorld.worldInventory;
 
-			// Demolior
-			try {
-				if (Game.IsDlcActiveForCurrentSave("DLC4_ID")) {
-					var eventInstance = GameplayEventManager.Instance
-						.GetGameplayEventInstance(Db.Get().GameplayEvents.LargeImpactor.Id);
-					if (eventInstance != null) {
-						var smi = (LargeImpactorEvent.StatesInstance)eventInstance.smi;
-						if (smi?.impactorInstance != null) {
-							var status = smi.impactorInstance.GetSMI<LargeImpactorStatus.Instance>();
-							if (status != null) {
-								int percent = status.Health * 100 / status.def.MAX_HEALTH;
-								string cycles = GameUtil.GetFormattedCycles(
-									status.TimeRemainingBeforeCollision);
-								parts.Add(string.Format(
-									(string)STRINGS.ONIACCESS.DEMOLIOR.STATUS, percent, cycles));
-							}
-						}
-					}
-				}
-			} catch (System.Exception ex) {
-				Log.Error($"SpeakColonyStatus demolior: {ex}");
-			}
+			TryAddStatus(parts, "demolior", () => {
+				if (!Game.IsDlcActiveForCurrentSave("DLC4_ID")) return;
+				var eventInstance = GameplayEventManager.Instance
+					.GetGameplayEventInstance(Db.Get().GameplayEvents.LargeImpactor.Id);
+				if (eventInstance == null) return;
+				var smi = (LargeImpactorEvent.StatesInstance)eventInstance.smi;
+				if (smi?.impactorInstance == null) return;
+				var status = smi.impactorInstance.GetSMI<LargeImpactorStatus.Instance>();
+				if (status == null) return;
+				int percent = status.Health * 100 / status.def.MAX_HEALTH;
+				string cycles = GameUtil.GetFormattedCycles(
+					status.TimeRemainingBeforeCollision);
+				parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.DEMOLIOR.STATUS, percent, cycles));
+			});
 
-			// Dupes
-			try {
+			TryAddStatus(parts, "dupes", () => {
 				int local = Components.LiveMinionIdentities.GetWorldItems(worldId).Count;
 				if (DlcManager.FeatureClusterSpaceEnabled()) {
 					int total = Components.LiveMinionIdentities.Count;
@@ -140,12 +132,9 @@ namespace OniAccess.Handlers.Tiles {
 					parts.Add(string.Format(
 						(string)STRINGS.ONIACCESS.BIG_CURSOR.DUPE_PLURAL, local));
 				}
-			} catch (System.Exception ex) {
-				Log.Error($"SpeakColonyStatus dupes: {ex}");
-			}
+			});
 
-			// Sick
-			try {
+			TryAddStatus(parts, "sick", () => {
 				int sick = 0;
 				var minions = Components.LiveMinionIdentities.GetWorldItems(worldId);
 				foreach (var minion in minions) {
@@ -156,12 +145,9 @@ namespace OniAccess.Handlers.Tiles {
 				if (sick > 0)
 					parts.Add(string.Format(
 						(string)STRINGS.ONIACCESS.GAME_STATE.SICK, sick));
-			} catch (System.Exception ex) {
-				Log.Error($"SpeakColonyStatus sick: {ex}");
-			}
+			});
 
-			// Rations
-			try {
+			TryAddStatus(parts, "rations", () => {
 				float kcal = WorldResourceAmountTracker<RationTracker>.Get()
 					.CountAmount(null, inventory);
 				string formatted = GameUtil.GetFormattedCalories(kcal);
@@ -172,12 +158,9 @@ namespace OniAccess.Handlers.Tiles {
 				if (trend != null)
 					rations += ", " + trend;
 				parts.Add(rations);
-			} catch (System.Exception ex) {
-				Log.Error($"SpeakColonyStatus rations: {ex}");
-			}
+			});
 
-			// Stress
-			try {
+			TryAddStatus(parts, "stress", () => {
 				float stress = Mathf.Round(GameUtil.GetMaxStressInActiveWorld());
 				string stressStr = string.Format(
 					(string)STRINGS.ONIACCESS.GAME_STATE.STRESS, (int)stress);
@@ -186,44 +169,46 @@ namespace OniAccess.Handlers.Tiles {
 				if (trend != null)
 					stressStr += ", " + trend;
 				parts.Add(stressStr);
-			} catch (System.Exception ex) {
-				Log.Error($"SpeakColonyStatus stress: {ex}");
-			}
+			});
 
-			// Electrobanks
-			try {
-				if (Game.IsDlcActiveForCurrentSave("DLC3_ID")
-					&& WorldResourceAmountTracker<ElectrobankTracker>.Get() != null) {
-					bool hasBionics = false;
-					var minions = Components.LiveMinionIdentities.GetWorldItems(worldId);
-					foreach (var minion in minions) {
-						if (!minion.IsNullOrDestroyed()
-							&& minion.model == BionicMinionConfig.MODEL) {
-							hasBionics = true;
-							break;
-						}
-					}
-					if (hasBionics) {
-						float totalUnits;
-						float joules = WorldResourceAmountTracker<ElectrobankTracker>.Get()
-							.CountAmount(null, out totalUnits, inventory, true);
-						string formatted = GameUtil.GetFormattedJoules(joules);
-						string ebank = string.Format(
-							(string)STRINGS.ONIACCESS.GAME_STATE.ELECTROBANKS, formatted);
-						string trend = GetTrend(
-							TrackerTool.Instance.GetWorldTracker<ElectrobankJoulesTracker>(worldId),
-							10000f);
-						if (trend != null)
-							ebank += ", " + trend;
-						parts.Add(ebank);
+			TryAddStatus(parts, "electrobanks", () => {
+				if (!Game.IsDlcActiveForCurrentSave("DLC3_ID")
+					|| WorldResourceAmountTracker<ElectrobankTracker>.Get() == null) return;
+				bool hasBionics = false;
+				var minions = Components.LiveMinionIdentities.GetWorldItems(worldId);
+				foreach (var minion in minions) {
+					if (!minion.IsNullOrDestroyed()
+						&& minion.model == BionicMinionConfig.MODEL) {
+						hasBionics = true;
+						break;
 					}
 				}
-			} catch (System.Exception ex) {
-				Log.Error($"SpeakColonyStatus electrobanks: {ex}");
-			}
+				if (!hasBionics) return;
+				float totalUnits;
+				float joules = WorldResourceAmountTracker<ElectrobankTracker>.Get()
+					.CountAmount(null, out totalUnits, inventory, true);
+				string formatted = GameUtil.GetFormattedJoules(joules);
+				string ebank = string.Format(
+					(string)STRINGS.ONIACCESS.GAME_STATE.ELECTROBANKS, formatted);
+				string trend = GetTrend(
+					TrackerTool.Instance.GetWorldTracker<ElectrobankJoulesTracker>(worldId),
+					10000f);
+				if (trend != null)
+					ebank += ", " + trend;
+				parts.Add(ebank);
+			});
 
 			if (parts.Count > 0)
 				SpeechPipeline.SpeakInterrupt(string.Join(", ", parts));
+		}
+
+		private static void TryAddStatus(
+				List<string> parts, string section, System.Action action) {
+			try {
+				action();
+			} catch (System.Exception ex) {
+				Log.Error($"SpeakColonyStatus {section}: {ex}");
+			}
 		}
 
 		private static string GetTrend(WorldTracker tracker, float threshold) {
