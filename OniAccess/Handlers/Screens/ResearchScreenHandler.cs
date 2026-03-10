@@ -70,6 +70,7 @@ namespace OniAccess.Handlers.Screens {
 		internal void JumpToTreeTab(Tech tech) {
 			DeactivateCurrentTab();
 			ActiveTabIndex = (int)TabId.Tree;
+			PlaySound("HUD_Mouseover");
 			_treeTab.OnTabActivatedAt(tech);
 		}
 	}

@@ -30,8 +30,7 @@ namespace OniAccess.Handlers.Screens {
 			SetTabs(_rocketsTab, _destinationsTab, _detailsTab);
 		}
 
-		public override string DisplayName =>
-			(string)STRINGS.ONIACCESS.STARMAP.HANDLER_NAME;
+		public override string DisplayName => STRINGS.ONIACCESS.STARMAP.HANDLER_NAME;
 
 		public override bool CapturesAllInput => true;
 

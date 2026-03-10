@@ -58,8 +58,8 @@ namespace OniAccess.Handlers.Screens {
 			base.OnActivate();
 
 			// Pick initial dupe from the screen's selection, or first live minion
-			var screen = _screen as SkillsScreen;
-			if (screen != null && screen.CurrentlySelectedMinion != null)
+			var screen = (SkillsScreen)_screen;
+			if (screen.CurrentlySelectedMinion != null)
 				_selectedDupe = screen.CurrentlySelectedMinion;
 			else if (Components.LiveMinionIdentities.Count > 0)
 				_selectedDupe = Components.LiveMinionIdentities.Items[0];
@@ -87,15 +87,14 @@ namespace OniAccess.Handlers.Screens {
 		internal void JumpToTreeTab(Skill skill) {
 			DeactivateCurrentTab();
 			ActiveTabIndex = (int)TabId.Tree;
+			PlaySound("HUD_Mouseover");
 			_treeTab.OnTabActivatedAt(skill);
 		}
 
 		internal void SetSelectedDupe(IAssignableIdentity dupe) {
 			_selectedDupe = dupe;
 			// Sync with the game screen
-			var screen = _screen as SkillsScreen;
-			if (screen != null)
-				screen.CurrentlySelectedMinion = dupe;
+			((SkillsScreen)_screen).CurrentlySelectedMinion = dupe;
 		}
 	}
 }
