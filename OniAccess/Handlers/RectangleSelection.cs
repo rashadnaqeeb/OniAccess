@@ -165,7 +165,7 @@ namespace OniAccess.Handlers {
 				ev.setParameterByName("tileCount", tileCount);
 				KFMOD.EndOneShot(ev);
 			} catch (Exception ex) {
-				Util.Log.Error($"RectangleSelection.PlayDragSound: {ex}");
+				Util.Log.Warn($"RectangleSelection.PlayDragSound: {ex}");
 			}
 		}
 	}

@@ -86,7 +86,7 @@ namespace OniAccess.Handlers {
 			try {
 				removed.OnDeactivate();
 			} catch (System.Exception ex) {
-				Util.Log.Error($"HandlerStack.Pop: OnDeactivate of {removed.DisplayName} failed: {ex}");
+				Util.Log.Warn($"HandlerStack.Pop: OnDeactivate of {removed.DisplayName} failed: {ex}");
 			}
 			Util.Log.Debug($"HandlerStack.Pop: {removed.DisplayName} (depth={_stack.Count})");
 
@@ -128,7 +128,7 @@ namespace OniAccess.Handlers {
 				try {
 					removed.OnDeactivate();
 				} catch (System.Exception ex) {
-					Util.Log.Error($"HandlerStack.Replace: OnDeactivate of {removed.DisplayName} failed: {ex}");
+					Util.Log.Warn($"HandlerStack.Replace: OnDeactivate of {removed.DisplayName} failed: {ex}");
 				}
 				Util.Log.Debug($"HandlerStack.Replace: removed {removed.DisplayName}");
 			}
@@ -162,7 +162,7 @@ namespace OniAccess.Handlers {
 				try {
 					removed.OnDeactivate();
 				} catch (System.Exception ex) {
-					Util.Log.Error($"HandlerStack.PopAbove: OnDeactivate of {removed.DisplayName} failed: {ex}");
+					Util.Log.Warn($"HandlerStack.PopAbove: OnDeactivate of {removed.DisplayName} failed: {ex}");
 				}
 				Util.Log.Debug($"HandlerStack.PopAbove: removed {removed.DisplayName}");
 			}
@@ -178,7 +178,7 @@ namespace OniAccess.Handlers {
 				try {
 					_stack[i].OnDeactivate();
 				} catch (System.Exception ex) {
-					Util.Log.Error($"HandlerStack.DeactivateAll: OnDeactivate of {_stack[i].DisplayName} failed: {ex}");
+					Util.Log.Warn($"HandlerStack.DeactivateAll: OnDeactivate of {_stack[i].DisplayName} failed: {ex}");
 				}
 				Util.Log.Debug($"HandlerStack.DeactivateAll: deactivated {_stack[i].DisplayName}");
 			}

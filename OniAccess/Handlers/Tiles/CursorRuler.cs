@@ -81,7 +81,7 @@ namespace OniAccess.Handlers.Tiles {
 				if (sound == null) return;
 				KFMOD.PlayUISound(sound);
 			} catch (System.Exception ex) {
-				Util.Log.Error($"CursorRuler.PlayClickSound: {ex.Message}");
+				Util.Log.Warn($"CursorRuler.PlayClickSound: {ex.Message}");
 			}
 		}
 
@@ -94,7 +94,7 @@ namespace OniAccess.Handlers.Tiles {
 				instance.setParameterByName("Drag_Count", dragCount);
 				SoundEvent.EndOneShot(instance);
 			} catch (System.Exception ex) {
-				Util.Log.Error($"CursorRuler.PlayPluckSound: {ex.Message}");
+				Util.Log.Warn($"CursorRuler.PlayPluckSound: {ex.Message}");
 			}
 		}
 	}

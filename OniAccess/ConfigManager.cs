@@ -26,7 +26,7 @@ namespace OniAccess {
 					Log.Info($"Loaded config from {_path}");
 				}
 			} catch (Exception ex) {
-				Log.Error($"Failed to load config from {_path}: {ex.Message}");
+				Log.Warn($"Failed to load config from {_path}: {ex.Message}");
 				Config = new ModConfig();
 			}
 		}
@@ -35,7 +35,7 @@ namespace OniAccess {
 			try {
 				YamlIO.Save(Config, _path);
 			} catch (Exception ex) {
-				Log.Error($"Failed to save config to {_path}: {ex.Message}");
+				Log.Warn($"Failed to save config to {_path}: {ex.Message}");
 			}
 		}
 

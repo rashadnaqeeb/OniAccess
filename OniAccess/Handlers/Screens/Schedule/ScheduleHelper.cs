@@ -107,7 +107,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 				instance.setParameterByName("Drag_Count", dragCount);
 				SoundEvent.EndOneShot(instance);
 			} catch (System.Exception ex) {
-				Util.Log.Error($"PlayPaintSound failed: {ex.Message}");
+				Util.Log.Warn($"PlayPaintSound failed: {ex.Message}");
 			}
 		}
 
@@ -118,7 +118,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 				if (sound == null) return;
 				SoundEvent.EndOneShot(SoundEvent.BeginOneShot(sound, pos));
 			} catch (System.Exception ex) {
-				Util.Log.Error($"PlayPaintNoneSound failed: {ex.Message}");
+				Util.Log.Warn($"PlayPaintNoneSound failed: {ex.Message}");
 			}
 		}
 
@@ -134,7 +134,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 				if (sound == null) return;
 				SoundEvent.EndOneShot(SoundEvent.BeginOneShot(sound, pos));
 			} catch (System.Exception ex) {
-				Util.Log.Error($"PlayShiftUpSound failed: {ex.Message}");
+				Util.Log.Warn($"PlayShiftUpSound failed: {ex.Message}");
 			}
 		}
 
@@ -147,7 +147,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 				if (sound == null) return;
 				SoundEvent.EndOneShot(SoundEvent.BeginOneShot(sound, pos));
 			} catch (System.Exception ex) {
-				Util.Log.Error($"PlayShiftDownSound failed: {ex.Message}");
+				Util.Log.Warn($"PlayShiftDownSound failed: {ex.Message}");
 			}
 		}
 	}

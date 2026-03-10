@@ -96,7 +96,7 @@ namespace OniAccess.Handlers {
 			try {
 				KFMOD.PlayUISound(GlobalAssets.GetSound(clipName));
 			} catch (System.Exception ex) {
-				Util.Log.Error($"PlaySound({clipName}) failed: {ex.Message}");
+				Util.Log.Warn($"PlaySound({clipName}) failed: {ex.Message}");
 			}
 		}
 	}

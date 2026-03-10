@@ -28,7 +28,7 @@ namespace OniAccess {
 				Localization.LoadTranslation(lines);
 				Log.Info($"Loaded translation from {Path.GetFileName(poPath)}");
 			} catch (System.Exception ex) {
-				Log.Error($"Failed to load mod translations: {ex}");
+				Log.Warn($"Failed to load mod translations: {ex}");
 			}
 		}
 	}

@@ -92,7 +92,7 @@ namespace OniAccess.Speech {
 				Tolk_Unload();
 				Log.Info("Speech shutdown");
 			} catch (Exception ex) {
-				Log.Error($"Speech shutdown error: {ex}");
+				Log.Warn($"Speech shutdown error: {ex}");
 			} finally {
 				_initialized = false;
 				_available = false;
@@ -111,7 +111,7 @@ namespace OniAccess.Speech {
 			try {
 				Tolk_Output(text, interrupt);
 			} catch (Exception ex) {
-				Log.Error($"Speech error: {ex}");
+				Log.Warn($"Speech error: {ex}");
 			}
 		}
 
@@ -124,7 +124,7 @@ namespace OniAccess.Speech {
 			try {
 				Tolk_Silence();
 			} catch (Exception ex) {
-				Log.Error($"Speech stop error: {ex}");
+				Log.Warn($"Speech stop error: {ex}");
 			}
 		}
 	}

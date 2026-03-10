@@ -424,7 +424,7 @@ namespace OniAccess.Handlers.Sandbox {
 			try {
 				KFMOD.PlayUISound(GlobalAssets.GetSound("Tile_Cancel"));
 			} catch (Exception ex) {
-				Util.Log.Error($"SandboxToolHandler.PlayDeactivateSound: {ex}");
+				Util.Log.Warn($"SandboxToolHandler.PlayDeactivateSound: {ex}");
 			}
 		}
 	}

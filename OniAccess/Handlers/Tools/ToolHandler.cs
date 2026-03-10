@@ -537,7 +537,7 @@ namespace OniAccess.Handlers.Tools {
 			try {
 				KFMOD.PlayUISound(GlobalAssets.GetSound("Tile_Cancel"));
 			} catch (Exception ex) {
-				Util.Log.Error($"ToolHandler.PlayDeactivateSound: {ex}");
+				Util.Log.Warn($"ToolHandler.PlayDeactivateSound: {ex}");
 			}
 		}
 
