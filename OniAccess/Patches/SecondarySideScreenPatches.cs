@@ -57,17 +57,12 @@ namespace OniAccess.Patches {
 			if (!(HandlerStack.ActiveHandler is BaseScreenHandler)) return;
 			var ds = DetailsScreen.Instance;
 			if (ds == null || !ds.gameObject.activeInHierarchy) return;
-			if (HandlerStack.ActiveHandler is RecipeQueueHandler) {
-				Util.Log.Debug("ClearSecondarySideScreen: popping RecipeQueueHandler");
-				HandlerStack.Pop();
-			} else if (HandlerStack.ActiveHandler is OwnablesSecondHandler) {
-				Util.Log.Debug("ClearSecondarySideScreen: popping OwnablesSecondHandler");
-				HandlerStack.Pop();
-			} else if (HandlerStack.ActiveHandler is AssignmentGroupControllerHandler) {
-				Util.Log.Debug("ClearSecondarySideScreen: popping AssignmentGroupControllerHandler");
-				HandlerStack.Pop();
-			} else if (HandlerStack.ActiveHandler is SelectModuleHandler) {
-				Util.Log.Debug("ClearSecondarySideScreen: popping SelectModuleHandler");
+			if (HandlerStack.ActiveHandler is RecipeQueueHandler
+				or OwnablesSecondHandler
+				or AssignmentGroupControllerHandler
+				or SelectModuleHandler) {
+				Util.Log.Debug(
+					$"ClearSecondarySideScreen: popping {HandlerStack.ActiveHandler.GetType().Name}");
 				HandlerStack.Pop();
 			}
 		}
