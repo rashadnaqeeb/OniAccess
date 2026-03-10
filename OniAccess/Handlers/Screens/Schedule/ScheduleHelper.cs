@@ -125,29 +125,20 @@ namespace OniAccess.Handlers.Screens.Schedule {
 		private static bool _shiftUpToggle;
 		private static bool _shiftDownToggle;
 
-		internal static void PlayShiftUpSound() {
+		internal static void PlayShiftSound(bool up) {
 			try {
-				string name = _shiftUpToggle ? "ScheduleMenu_Shift_up_reset" : "ScheduleMenu_Shift_up";
-				_shiftUpToggle = !_shiftUpToggle;
+				ref bool toggle = ref (up ? ref _shiftUpToggle : ref _shiftDownToggle);
+				string dir = up ? "up" : "down";
+				string name = toggle
+					? $"ScheduleMenu_Shift_{dir}_reset"
+					: $"ScheduleMenu_Shift_{dir}";
+				toggle = !toggle;
 				var pos = SoundListenerController.Instance.transform.GetPosition();
 				string sound = GlobalAssets.GetSound(name);
 				if (sound == null) return;
 				SoundEvent.EndOneShot(SoundEvent.BeginOneShot(sound, pos));
 			} catch (System.Exception ex) {
-				Util.Log.Warn($"PlayShiftUpSound failed: {ex.Message}");
-			}
-		}
-
-		internal static void PlayShiftDownSound() {
-			try {
-				string name = _shiftDownToggle ? "ScheduleMenu_Shift_down_reset" : "ScheduleMenu_Shift_down";
-				_shiftDownToggle = !_shiftDownToggle;
-				var pos = SoundListenerController.Instance.transform.GetPosition();
-				string sound = GlobalAssets.GetSound(name);
-				if (sound == null) return;
-				SoundEvent.EndOneShot(SoundEvent.BeginOneShot(sound, pos));
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"PlayShiftDownSound failed: {ex.Message}");
+				Util.Log.Warn($"PlayShiftSound failed: {ex.Message}");
 			}
 		}
 	}

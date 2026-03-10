@@ -597,8 +597,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			_row += up ? -1 : 1;
 			ClampCursor();
 			var newGr = GetRow(_row);
-			if (up) ScheduleHelper.PlayShiftUpSound();
-			else ScheduleHelper.PlayShiftDownSound();
+			ScheduleHelper.PlayShiftSound(up);
 			SpeechPipeline.SpeakInterrupt(string.Format(
 				STRINGS.ONIACCESS.SCHEDULE.ROW_LABEL, newGr.TimetableIndex + 1));
 		}
