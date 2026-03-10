@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Build;
 using RectangleSelection = OniAccess.Handlers.RectangleSelection;
@@ -9,6 +10,7 @@ using OniAccess.Handlers.Notifications;
 using OniAccess.Handlers.Screens.ClusterMap;
 using OniAccess.Handlers.Tiles;
 using OniAccess.Handlers.Tiles.Scanner;
+using OniAccess.Handlers.Tiles.Sections;
 using OniAccess.Speech;
 using OniAccess.Util;
 using OniAccess.Widgets;
@@ -281,6 +283,24 @@ namespace OniAccess.Tests {
 			// --- HexCoordinates ---
 			results.Add(HexCompassAllOctants());
 			results.Add(HexFormatSameHexReturnsHere());
+
+			// --- HexPathfinder.FormatResult ---
+			results.Add(FormatResultNoPath());
+			results.Add(FormatResultVisibleOnly());
+			results.Add(FormatResultFogOnly());
+			results.Add(FormatResultBothFogShorter());
+			results.Add(FormatResultBothVisibleShorter());
+
+			// --- StatusFilter.ShouldSpeak ---
+			StatusFilterTests.Initialize();
+			results.Add(StatusFilterTests.OverlayMatchingItem());
+			results.Add(StatusFilterTests.OverlayNonMatchingItem());
+			results.Add(StatusFilterTests.FarmingNeutralPlant());
+			results.Add(StatusFilterTests.FarmingNeutralNonPlant());
+			results.Add(StatusFilterTests.DefaultAlwaysNeutral());
+			results.Add(StatusFilterTests.DefaultOtherNeutralSuppressed());
+			results.Add(StatusFilterTests.DefaultBadNotOverlay());
+			results.Add(StatusFilterTests.DefaultBadClaimedByOverlay());
 
 			// --- RectangleSelection ---
 			results.Add(RectSelectionFirstCornerSet());
@@ -1788,6 +1808,9 @@ namespace OniAccess.Tests {
 				List<string> list, Func<string, bool> isNonEmpty) {
 			var method = typeof(ScannerNavigator).GetMethod("WrapSkipEmpty",
 				BindingFlags.NonPublic | BindingFlags.Static);
+			if (method == null)
+				throw new MissingMethodException(
+					"ScannerNavigator.WrapSkipEmpty not found — was it renamed?");
 			var generic = method.MakeGenericMethod(typeof(string));
 			return (int)generic.Invoke(null, new object[] { current, direction, list, isNonEmpty });
 		}
@@ -3205,5 +3228,204 @@ namespace OniAccess.Tests {
 			bool ok = count == 7;
 			return Assert("RectSelectionTileCountBetween", ok, $"count={count}");
 		}
+
+		// ========================================
+		// HexPathfinder.FormatResult tests
+		// ========================================
+
+		private static (string, bool, string) FormatResultNoPath() {
+			var r = new HexPathfinder.PathResult();
+			string result = HexPathfinder.FormatResult(r);
+			string expected = (string)STRINGS.ONIACCESS.CLUSTER_MAP.NO_PATH;
+			bool ok = result == expected;
+			return Assert("FormatResultNoPath", ok,
+				$"got \"{result}\", expected \"{expected}\"");
+		}
+
+		private static (string, bool, string) FormatResultVisibleOnly() {
+			var r = new HexPathfinder.PathResult {
+				HasVisiblePath = true, VisiblePathLength = 5
+			};
+			string result = HexPathfinder.FormatResult(r);
+			string expected = string.Format(
+				(string)STRINGS.ONIACCESS.CLUSTER_MAP.PATH_RESULT, 5);
+			bool ok = result == expected;
+			return Assert("FormatResultVisibleOnly", ok,
+				$"got \"{result}\", expected \"{expected}\"");
+		}
+
+		private static (string, bool, string) FormatResultFogOnly() {
+			var r = new HexPathfinder.PathResult {
+				HasFogPath = true, FogPathLength = 7, FogCellCount = 3
+			};
+			string result = HexPathfinder.FormatResult(r);
+			string expected = string.Format(
+				(string)STRINGS.ONIACCESS.CLUSTER_MAP.PATH_THROUGH_FOG, 7, 3);
+			bool ok = result == expected;
+			return Assert("FormatResultFogOnly", ok,
+				$"got \"{result}\", expected \"{expected}\"");
+		}
+
+		private static (string, bool, string) FormatResultBothFogShorter() {
+			var r = new HexPathfinder.PathResult {
+				HasVisiblePath = true, VisiblePathLength = 10,
+				HasFogPath = true, FogPathLength = 6, FogCellCount = 2
+			};
+			string result = HexPathfinder.FormatResult(r);
+			string expected = string.Format(
+				(string)STRINGS.ONIACCESS.CLUSTER_MAP.PATH_FOG_WITH_ALT,
+				6, 2, 10);
+			bool ok = result == expected;
+			return Assert("FormatResultBothFogShorter", ok,
+				$"got \"{result}\", expected \"{expected}\"");
+		}
+
+		private static (string, bool, string) FormatResultBothVisibleShorter() {
+			var r = new HexPathfinder.PathResult {
+				HasVisiblePath = true, VisiblePathLength = 4,
+				HasFogPath = true, FogPathLength = 8, FogCellCount = 3
+			};
+			string result = HexPathfinder.FormatResult(r);
+			string expected = string.Format(
+				(string)STRINGS.ONIACCESS.CLUSTER_MAP.PATH_RESULT, 4);
+			bool ok = result == expected;
+			return Assert("FormatResultBothVisibleShorter", ok,
+				$"got \"{result}\", expected \"{expected}\"");
+		}
+
+		// ========================================
+		// StatusFilter.ShouldSpeak tests
+		// ========================================
+		// Isolated in a nested class so HashedString/StatusItem types are
+		// only loaded after Main() sets up the assembly resolver.
+
+		private static class StatusFilterTests {
+			private static readonly HashedString PowerOverlay =
+				new HashedString("Power");
+			private static readonly HashedString GasOverlay =
+				new HashedString("GasConduit");
+			private static readonly HashedString CropOverlay =
+				new HashedString("Crop");
+			private static readonly HashedString DefaultOverlay =
+				HashedString.Invalid;
+
+			public static void Initialize() {
+				var flags = BindingFlags.NonPublic | BindingFlags.Static;
+				var type = typeof(StatusFilter);
+
+				var overlayItems =
+						new Dictionary<HashedString, HashSet<string>> {
+					{ PowerOverlay, new HashSet<string> {
+						"NeedPower", "NotEnoughPower" } },
+					{ GasOverlay, new HashSet<string> {
+						"NeedGasIn", "NeedGasOut" } },
+					{ CropOverlay, new HashSet<string> {
+						"NeedPlant", "NeedSeed" } },
+				};
+				type.GetField("overlayItems", flags)
+					.SetValue(null, overlayItems);
+
+				var allOverlay = new HashSet<string>();
+				foreach (var set in overlayItems.Values)
+					foreach (var id in set)
+						allOverlay.Add(id);
+				type.GetField("allOverlayItems", flags)
+					.SetValue(null, allOverlay);
+
+				type.GetField("alwaysNeutrals", flags).SetValue(null,
+					new HashSet<string> {
+						"UnderConstruction", "BuildingDisabled" });
+
+				type.GetField("cropOverlay", flags)
+					.SetValue(null, CropOverlay);
+			}
+
+			private static StatusItem MakeStatusItem(string id,
+					NotificationType severity) {
+				var item = (StatusItem)FormatterServices
+					.GetUninitializedObject(typeof(StatusItem));
+				item.Id = id;
+				item.notificationType = severity;
+				return item;
+			}
+
+			public static (string, bool, string) OverlayMatchingItem() {
+				var item = MakeStatusItem("NeedPower",
+					NotificationType.Bad);
+				bool result = StatusFilter.ShouldSpeak(item,
+					PowerOverlay, isPlant: false);
+				return Assert("ShouldSpeakOverlayMatchingItem", result,
+					"expected true for power item in power overlay");
+			}
+
+			public static (string, bool, string) OverlayNonMatchingItem() {
+				var item = MakeStatusItem("NeedPower",
+					NotificationType.Bad);
+				bool result = StatusFilter.ShouldSpeak(item,
+					GasOverlay, isPlant: false);
+				return Assert("ShouldSpeakOverlayNonMatchingItem",
+					!result,
+					"expected false for power item in gas overlay");
+			}
+
+			public static (string, bool, string) FarmingNeutralPlant() {
+				var item = MakeStatusItem("SomePlantStatus",
+					NotificationType.Neutral);
+				bool result = StatusFilter.ShouldSpeak(item,
+					CropOverlay, isPlant: true);
+				return Assert("ShouldSpeakFarmingNeutralPlant", result,
+					"expected true for neutral plant in farming overlay");
+			}
+
+			public static (string, bool, string) FarmingNeutralNonPlant() {
+				var item = MakeStatusItem("SomeBuildingStatus",
+					NotificationType.Neutral);
+				bool result = StatusFilter.ShouldSpeak(item,
+					CropOverlay, isPlant: false);
+				return Assert("ShouldSpeakFarmingNeutralNonPlant",
+					!result,
+					"expected false for neutral non-plant in farming overlay");
+			}
+
+			public static (string, bool, string) DefaultAlwaysNeutral() {
+				var item = MakeStatusItem("UnderConstruction",
+					NotificationType.Neutral);
+				bool result = StatusFilter.ShouldSpeak(item,
+					DefaultOverlay, isPlant: false);
+				return Assert("ShouldSpeakDefaultAlwaysNeutral", result,
+					"expected true for always-neutral in default view");
+			}
+
+			public static (string, bool, string) DefaultOtherNeutralSuppressed() {
+				var item = MakeStatusItem("SomeRandomNeutral",
+					NotificationType.Neutral);
+				bool result = StatusFilter.ShouldSpeak(item,
+					DefaultOverlay, isPlant: false);
+				return Assert(
+					"ShouldSpeakDefaultOtherNeutralSuppressed",
+					!result,
+					"expected false for unlisted neutral in default view");
+			}
+
+			public static (string, bool, string) DefaultBadNotOverlay() {
+				var item = MakeStatusItem("EntombedItem",
+					NotificationType.Bad);
+				bool result = StatusFilter.ShouldSpeak(item,
+					DefaultOverlay, isPlant: false);
+				return Assert("ShouldSpeakDefaultBadNotOverlay", result,
+					"expected true for bad item not claimed by any overlay");
+			}
+
+			public static (string, bool, string) DefaultBadClaimedByOverlay() {
+				var item = MakeStatusItem("NeedPower",
+					NotificationType.Bad);
+				bool result = StatusFilter.ShouldSpeak(item,
+					DefaultOverlay, isPlant: false);
+				return Assert(
+					"ShouldSpeakDefaultBadClaimedByOverlay", !result,
+					"expected false for bad item claimed by power overlay");
+			}
+		}
+
 	}
 }

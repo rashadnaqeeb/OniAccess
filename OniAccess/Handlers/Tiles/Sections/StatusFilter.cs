@@ -23,6 +23,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		/// </summary>
 		private static HashSet<string> allOverlayItems;
 
+		private static HashedString cropOverlay;
+
 		public static void Initialize() {
 			overlayItems = new Dictionary<HashedString, HashSet<string>>();
 
@@ -68,7 +70,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				"CREATURE_REUSABLE_TRAP.READY",
 				"CREATURE_REUSABLE_TRAP.SPRUNG"
 			};
-			overlayItems[OverlayModes.Crop.ID] = farming;
+			cropOverlay = OverlayModes.Crop.ID;
+			overlayItems[cropOverlay] = farming;
 
 			var oxygen = new HashSet<string> {
 				"PressureOk", "UnderPressure"
@@ -111,7 +114,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (activeSet.Contains(id))
 					return true;
 				if (severity == NotificationType.Neutral && isPlant
-					&& activeOverlay == OverlayModes.Crop.ID)
+					&& activeOverlay == cropOverlay)
 					return true;
 				return false;
 			}
