@@ -649,20 +649,7 @@ namespace OniAccess.Handlers.Screens {
 				? _tabIndex <= oldIndex
 				: _tabIndex >= oldIndex;
 
-			SwitchGameTab();
-
-			if (wrapped) PlaySound("HUD_Click");
-			else PlaySound("HUD_Mouseover");
-
-			SpeechPipeline.SpeakInterrupt(_activeTabs[_tabIndex].DisplayName);
-
-			if (_activeTabs[_tabIndex].GameTabId == null) {
-				_pendingTabSpeech = true;
-			} else {
-				RebuildSections();
-				ResetNavigation();
-				SpeakFirstSection();
-			}
+			CommitTabSwitch(wrapped);
 		}
 
 		private void AdvanceSection(int direction) {
@@ -677,6 +664,10 @@ namespace OniAccess.Handlers.Screens {
 				? _sectionIndex <= oldSection
 				: _sectionIndex >= oldSection;
 
+			CommitTabSwitch(wrapped);
+		}
+
+		private void CommitTabSwitch(bool wrapped) {
 			SwitchGameTab();
 
 			if (wrapped) PlaySound("HUD_Click");
