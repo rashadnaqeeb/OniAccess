@@ -27,7 +27,6 @@ namespace OniAccess.Handlers.Tiles {
 		private NotificationAnnouncer _notificationAnnouncer;
 		private DupeNavigator _dupeNavigator;
 		private PathabilityChecker _pathabilityChecker;
-		private bool _hasActivated;
 		private bool _overlaySubscribed;
 		private int _preJumpCell = Grid.InvalidCell;
 		private int _queueNextOverlayTtl;
@@ -200,8 +199,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public override void OnActivate() {
-			if (!_hasActivated) {
-				_hasActivated = true;
+			if (_scanner == null) {
 				_overlayRegistry = Overlays.OverlayProfileRegistry.Build();
 				_skipEngine = new SkipEngine(SkipStrategyRegistry.Build());
 				ToolProfiles.ToolProfileRegistry.Build();
