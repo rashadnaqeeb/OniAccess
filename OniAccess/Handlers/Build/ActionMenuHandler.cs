@@ -385,7 +385,7 @@ namespace OniAccess.Handlers.Build {
 			int ti = TreeIndex(GetIndex(0));
 			int sub = GetIndex(1);
 
-			if (FindNextSubcategory(ti, sub, out int nc, out int ns)) {
+			if (FindSubcategory(ti, sub, 1, out int nc, out int ns)) {
 				SetIndex(0, nc + _fixedCategoryCount);
 				SetIndex(1, ns);
 				SetIndex(2, 0);
@@ -408,7 +408,7 @@ namespace OniAccess.Handlers.Build {
 			int ti = TreeIndex(GetIndex(0));
 			int sub = GetIndex(1);
 
-			if (FindPrevSubcategory(ti, sub, out int nc, out int ns)) {
+			if (FindSubcategory(ti, sub, -1, out int nc, out int ns)) {
 				SetIndex(0, nc + _fixedCategoryCount);
 				SetIndex(1, ns);
 				SetIndex(2, 0);
@@ -423,75 +423,45 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		/// <summary>
-		/// Find next non-empty subcategory scanning _tree indices.
-		/// outCat/outSub are _tree indices (not level-0 indices).
+		/// Find the next non-empty subcategory in the given direction,
+		/// wrapping around if necessary. outCat/outSub are _tree indices
+		/// (not level-0 indices). direction must be 1 (forward) or -1 (backward).
 		/// </summary>
-		private bool FindNextSubcategory(int cat, int sub, out int outCat, out int outSub) {
+		private bool FindSubcategory(int cat, int sub, int direction,
+				out int outCat, out int outSub) {
 			outCat = cat;
 			outSub = sub;
 
 			int c = cat;
-			int s = sub + 1;
+			int s = sub + direction;
 			while (true) {
-				if (c >= _tree.Count) break;
+				if (direction > 0) {
+					if (c >= _tree.Count) break;
+				} else {
+					if (c < 0) break;
+				}
 				var subs = _tree[c].Subcategories;
-				if (s < subs.Count) {
+				if (s >= 0 && s < subs.Count) {
 					if (subs[s].Buildings.Count > 0) {
 						outCat = c;
 						outSub = s;
 						return true;
 					}
-					s++;
+					s += direction;
 				} else {
-					c++;
-					s = 0;
+					c += direction;
+					if (c >= 0 && c < _tree.Count)
+						s = direction > 0 ? 0 : _tree[c].Subcategories.Count - 1;
 				}
 			}
 
-			for (int wc = 0; wc < _tree.Count; wc++) {
+			int startC = direction > 0 ? 0 : _tree.Count - 1;
+			int endC = direction > 0 ? _tree.Count : -1;
+			for (int wc = startC; wc != endC; wc += direction) {
 				var subs = _tree[wc].Subcategories;
-				for (int ws = 0; ws < subs.Count; ws++) {
-					if (subs[ws].Buildings.Count > 0) {
-						outCat = wc;
-						outSub = ws;
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
-
-		/// <summary>
-		/// Find previous non-empty subcategory scanning _tree indices.
-		/// outCat/outSub are _tree indices (not level-0 indices).
-		/// </summary>
-		private bool FindPrevSubcategory(int cat, int sub, out int outCat, out int outSub) {
-			outCat = cat;
-			outSub = sub;
-
-			int c = cat;
-			int s = sub - 1;
-			while (true) {
-				if (c < 0) break;
-				if (s >= 0) {
-					var subs = _tree[c].Subcategories;
-					if (subs[s].Buildings.Count > 0) {
-						outCat = c;
-						outSub = s;
-						return true;
-					}
-					s--;
-				} else {
-					c--;
-					if (c >= 0)
-						s = _tree[c].Subcategories.Count - 1;
-				}
-			}
-
-			for (int wc = _tree.Count - 1; wc >= 0; wc--) {
-				var subs = _tree[wc].Subcategories;
-				for (int ws = subs.Count - 1; ws >= 0; ws--) {
+				int startS = direction > 0 ? 0 : subs.Count - 1;
+				int endS = direction > 0 ? subs.Count : -1;
+				for (int ws = startS; ws != endS; ws += direction) {
 					if (subs[ws].Buildings.Count > 0) {
 						outCat = wc;
 						outSub = ws;
