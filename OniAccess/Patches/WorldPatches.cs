@@ -30,7 +30,7 @@ namespace OniAccess.Patches {
 				string name = world.GetComponent<ClusterGridEntity>().Name;
 				SpeechPipeline.SpeakInterrupt(name);
 			} catch (System.Exception ex) {
-				Log.Warn($"CameraController_ActiveWorldStarWipe_Patch: {ex.Message}");
+				Log.Warn($"CameraController_ActiveWorldStarWipe_Patch: {ex}");
 			}
 		}
 	}
@@ -56,7 +56,7 @@ namespace OniAccess.Patches {
 					: $"{name}: {status}, {severity}";
 				SpeechPipeline.SpeakInterrupt(speech);
 			} catch (System.Exception ex) {
-				Log.Warn($"WorldSelector_TriggerVisualNotification_Patch: {ex.Message}");
+				Log.Warn($"WorldSelector_TriggerVisualNotification_Patch: {ex}");
 			}
 		}
 	}
@@ -83,7 +83,7 @@ namespace OniAccess.Patches {
 				SpeechPipeline.SpeakInterrupt(
 					string.Format((string)STRINGS.ONIACCESS.WORLD_SELECTOR.DISCOVERED, name));
 			} catch (System.Exception ex) {
-				Log.Warn($"WorldContainer_SetDiscovered_Patch: {ex.Message}");
+				Log.Warn($"WorldContainer_SetDiscovered_Patch: {ex}");
 			}
 		}
 	}
