@@ -389,8 +389,6 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (headerLabel != null && !string.IsNullOrEmpty(headerLabel.text))
 				section.Header = headerLabel.text;
 
-			// Collect active LocText children. Indented descriptors (leading whitespace)
-			// are children of the preceding non-indented header descriptor.
 			var activeLabels = new List<LocText>();
 			for (int i = 0; i < descriptorPanel.transform.childCount; i++) {
 				var child = descriptorPanel.transform.GetChild(i);
@@ -400,46 +398,8 @@ namespace OniAccess.Handlers.Screens.Details {
 					activeLabels.Add(locText);
 			}
 
-			int idx = 0;
-			while (idx < activeLabels.Count) {
-				var header = activeLabels[idx];
-				// Collect any indented children following this item
-				var children = new List<LocText>();
-				int next = idx + 1;
-				while (next < activeLabels.Count) {
-					string nextText = activeLabels[next].text;
-					if (string.IsNullOrEmpty(nextText) || nextText[0] != ' ')
-						break;
-					children.Add(activeLabels[next]);
-					next++;
-				}
-
-				if (children.Count == 0) {
-					var captured = header;
-					section.Items.Add(new LabelWidget {
-						Label = captured.text,
-						GameObject = captured.gameObject,
-						SpeechFunc = () => captured.text
-					});
-				} else {
-					var capturedHeader = header;
-					var capturedChildren = children.ToArray();
-					section.Items.Add(new LabelWidget {
-						Label = capturedHeader.text,
-						GameObject = capturedHeader.gameObject,
-						SpeechFunc = () => {
-							string text = capturedHeader.text;
-							foreach (var child in capturedChildren) {
-								string childText = child.text?.Trim();
-								if (!string.IsNullOrEmpty(childText))
-									text = $"{text} {childText}";
-							}
-							return text;
-						}
-					});
-				}
-				idx = next;
-			}
+			CollapsiblePanelReader.FoldIndentedItems(activeLabels, section,
+				lt => lt.text, lt => lt.gameObject);
 
 			if (section.Items.Count > 0)
 				sections.Add(section);

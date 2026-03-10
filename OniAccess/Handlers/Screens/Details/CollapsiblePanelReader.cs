@@ -25,8 +25,6 @@ namespace OniAccess.Handlers.Screens.Details {
 			var content = gameSection.Content;
 			if (content == null) return section;
 
-			// Collect active DetailLabel children. Indented entries (leading whitespace)
-			// are children of the preceding non-indented header entry.
 			var activeLabels = new List<DetailLabel>();
 			for (int i = 0; i < content.childCount; i++) {
 				var child = content.GetChild(i);
@@ -36,36 +34,51 @@ namespace OniAccess.Handlers.Screens.Details {
 					activeLabels.Add(detailLabel);
 			}
 
+			FoldIndentedItems(activeLabels, section,
+				dl => dl.label.text, dl => dl.gameObject);
+
+			return section;
+		}
+
+		/// <summary>
+		/// Groups items by leading-whitespace indentation: entries whose text
+		/// starts with a space are folded into the preceding non-indented
+		/// entry's SpeechFunc (spoken as one combined item).
+		/// </summary>
+		public static void FoldIndentedItems<T>(
+				List<T> items, DetailSection section,
+				System.Func<T, string> getText,
+				System.Func<T, GameObject> getGameObject) {
 			int idx = 0;
-			while (idx < activeLabels.Count) {
-				var header = activeLabels[idx];
-				var children = new List<DetailLabel>();
+			while (idx < items.Count) {
+				var header = items[idx];
 				int next = idx + 1;
-				while (next < activeLabels.Count) {
-					string nextText = activeLabels[next].label.text;
+				while (next < items.Count) {
+					string nextText = getText(items[next]);
 					if (string.IsNullOrEmpty(nextText) || nextText[0] != ' ')
 						break;
-					children.Add(activeLabels[next]);
 					next++;
 				}
 
-				if (children.Count == 0) {
+				if (next == idx + 1) {
 					var captured = header;
 					section.Items.Add(new LabelWidget {
-						Label = captured.label.text,
-						GameObject = captured.gameObject,
-						SpeechFunc = () => captured.label.text
+						Label = getText(captured),
+						GameObject = getGameObject(captured),
+						SpeechFunc = () => getText(captured)
 					});
 				} else {
 					var capturedHeader = header;
-					var capturedChildren = children.ToArray();
+					int childStart = idx + 1;
+					int childEnd = next;
+					var capturedItems = items;
 					section.Items.Add(new LabelWidget {
-						Label = capturedHeader.label.text,
-						GameObject = capturedHeader.gameObject,
+						Label = getText(capturedHeader),
+						GameObject = getGameObject(capturedHeader),
 						SpeechFunc = () => {
-							string text = capturedHeader.label.text;
-							foreach (var child in capturedChildren) {
-								string childText = child.label.text?.Trim();
+							string text = getText(capturedHeader);
+							for (int i = childStart; i < childEnd; i++) {
+								string childText = getText(capturedItems[i])?.Trim();
 								if (!string.IsNullOrEmpty(childText))
 									text = $"{text} {childText}";
 							}
@@ -75,8 +88,6 @@ namespace OniAccess.Handlers.Screens.Details {
 				}
 				idx = next;
 			}
-
-			return section;
 		}
 	}
 }
