@@ -224,7 +224,8 @@ namespace OniAccess.Handlers.Tiles {
 					Util.Log.Error($"TileCursorHandler.OnActivate: cursor init failed: {ex}");
 				}
 			}
-			CursorRuler.Create();
+			if (CursorRuler.Instance == null)
+				CursorRuler.Create();
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 			if (Game.Instance != null)
