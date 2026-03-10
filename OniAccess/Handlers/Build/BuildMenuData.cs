@@ -320,34 +320,16 @@ namespace OniAccess.Handlers.Build {
 		private static string FormatCost(BuildingDef def) {
 			var ingredients = def.CraftRecipe.Ingredients;
 			if (ingredients.Count == 0) return null;
-
-			bool allSameAmount = true;
-			float sharedAmount = ingredients[0].amount;
-			for (int i = 1; i < ingredients.Count; i++) {
-				if (ingredients[i].amount != sharedAmount) {
-					allSameAmount = false;
-					break;
-				}
-			}
-
-			var sb = new System.Text.StringBuilder();
-			for (int i = 0; i < ingredients.Count; i++) {
-				if (i > 0) sb.Append(", ");
-				sb.Append(ingredients[i].tag.ProperName());
-				if (!allSameAmount) {
-					sb.Append(' ');
-					sb.Append(GameUtil.GetFormattedMass(ingredients[i].amount));
-				}
-			}
-			if (allSameAmount) {
-				sb.Append(' ');
-				sb.Append(GameUtil.GetFormattedMass(sharedAmount));
-			}
-			return sb.ToString();
+			return FormatIngredientList(ingredients);
 		}
 
 		private static string FormatMissingMaterials(BuildingDef def) {
-			var ingredients = def.CraftRecipe.Ingredients;
+			return (string)STRINGS.UI.PRODUCTINFO_MISSINGRESOURCES_HOVER
+				+ ": " + FormatIngredientList(def.CraftRecipe.Ingredients);
+		}
+
+		private static string FormatIngredientList(
+				System.Collections.Generic.IList<Recipe.Ingredient> ingredients) {
 			bool allSameAmount = true;
 			float sharedAmount = ingredients.Count > 0 ? ingredients[0].amount : 0f;
 			for (int i = 1; i < ingredients.Count; i++) {
@@ -358,8 +340,6 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			var sb = new System.Text.StringBuilder();
-			sb.Append((string)STRINGS.UI.PRODUCTINFO_MISSINGRESOURCES_HOVER);
-			sb.Append(": ");
 			for (int i = 0; i < ingredients.Count; i++) {
 				if (i > 0) sb.Append(", ");
 				sb.Append(ingredients[i].tag.ProperName());
