@@ -102,7 +102,7 @@ namespace OniAccess.Patches {
 
 	/// Patch OnShow — PauseScreen overrides OnShow, not Show.
 	[HarmonyPatch(typeof(PauseScreen), "OnShow")]
-	internal static class PauseScreen_Show_Patch {
+	internal static class PauseScreen_OnShow_Patch {
 		private static void Postfix(KScreen __instance, bool show) =>
 			ShowDispatch.Handle(__instance, show);
 	}
