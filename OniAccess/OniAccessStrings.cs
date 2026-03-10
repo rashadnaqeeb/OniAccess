@@ -617,8 +617,25 @@ namespace STRINGS {
 			public static LocString DISEASE_ENTRY = "{0}, {1}";
 			// {0} = element name, {1} = formatted mass
 			public static LocString ELEMENT_MASS = "{0}, {1}";
-			// Conduit connection directions. {0} = comma-joined direction list (e.g. "up, left")
-			public static LocString CONNECTS = "connects {0}";
+			// Conduit/wire shape announcements.
+			// Describes how a pipe or wire segment connects to its neighbors.
+			// Pipe connecting up and down (straight vertical line)
+			public static LocString SHAPE_VERTICAL = "vertical";
+			// Pipe connecting left and right (straight horizontal line)
+			public static LocString SHAPE_HORIZONTAL = "horizontal";
+			// Pipe turning a corner. {0} = vertical direction (up/down), {1} = horizontal direction (left/right).
+			// Example: "up right corner" for a pipe connecting up and right
+			public static LocString SHAPE_CORNER = "{0} {1} corner";
+			// Three-way junction (T-shape). {0} = direction the branch extends toward.
+			// Example: "right tee junction" for a pipe connecting up, down, and right
+			public static LocString SHAPE_T = "{0} tee junction";
+			// Four-way junction (pipe connects in all directions)
+			public static LocString SHAPE_CROSS = "cross";
+			// Dead-end pipe with one connection. {0} = direction the pipe ends toward (opposite of its connection).
+			// Example: "ends down" for a pipe that connects upward and has its dead end facing down
+			public static LocString SHAPE_END = "ends {0}";
+			// Pipe segment with no connections to neighbors
+			public static LocString SHAPE_ALONE = "unconnected";
 		}
 
 		public class SCANNER {

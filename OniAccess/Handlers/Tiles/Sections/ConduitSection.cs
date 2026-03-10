@@ -28,12 +28,9 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (sel != null)
 					tokens.Add(sel.GetName());
 			}
-			if (tokens.Count > 0) {
-				var conn = FormatConnections(
-					_getManager().GetConnections(cell, true));
-				if (conn != null)
-					tokens.Add(conn);
-			}
+			if (tokens.Count > 0)
+				tokens.Add(FormatConnections(
+					_getManager().GetConnections(cell, true)));
 			return tokens;
 		}
 
@@ -49,24 +46,52 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		/// <summary>
-		/// Formats a UtilityConnections flags value as "connects up, down"
-		/// etc. Returns null if no connections.
+		/// Formats a UtilityConnections flags value as a shape name
+		/// (e.g. "vertical", "up right corner"). Returns "unconnected"
+		/// when no connections exist.
 		/// </summary>
 		internal static string FormatConnections(UtilityConnections connections) {
-			if (connections == 0) return null;
-			var dirs = new List<string>(4);
-			if ((connections & UtilityConnections.Up) != 0)
-				dirs.Add(STRINGS.ONIACCESS.SCANNER.DIRECTION_UP);
-			if ((connections & UtilityConnections.Down) != 0)
-				dirs.Add(STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN);
-			if ((connections & UtilityConnections.Left) != 0)
-				dirs.Add(STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT);
-			if ((connections & UtilityConnections.Right) != 0)
-				dirs.Add(STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT);
-			if (dirs.Count == 0) return null;
-			return string.Format(
-				STRINGS.ONIACCESS.GLANCE.CONNECTS,
-				string.Join(", ", dirs));
+			bool up = (connections & UtilityConnections.Up) != 0;
+			bool down = (connections & UtilityConnections.Down) != 0;
+			bool left = (connections & UtilityConnections.Left) != 0;
+			bool right = (connections & UtilityConnections.Right) != 0;
+			int count = (up ? 1 : 0) + (down ? 1 : 0)
+				+ (left ? 1 : 0) + (right ? 1 : 0);
+
+			switch (count) {
+				case 0:
+					return STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE;
+				case 1:
+					string dir = up ? STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN
+						: down ? STRINGS.ONIACCESS.SCANNER.DIRECTION_UP
+						: left ? STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT
+						: STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT;
+					return string.Format(
+						STRINGS.ONIACCESS.GLANCE.SHAPE_END, dir);
+				case 2:
+					if (up && down)
+						return STRINGS.ONIACCESS.GLANCE.SHAPE_VERTICAL;
+					if (left && right)
+						return STRINGS.ONIACCESS.GLANCE.SHAPE_HORIZONTAL;
+					string d1 = up
+						? STRINGS.ONIACCESS.SCANNER.DIRECTION_UP
+						: STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN;
+					string d2 = left
+						? STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT
+						: STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT;
+					return string.Format(
+						STRINGS.ONIACCESS.GLANCE.SHAPE_CORNER, d1, d2);
+				case 3:
+					string branch = !up
+						? STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN
+						: !down ? STRINGS.ONIACCESS.SCANNER.DIRECTION_UP
+						: !left ? STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT
+						: STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT;
+					return string.Format(
+						STRINGS.ONIACCESS.GLANCE.SHAPE_T, branch);
+				default:
+					return STRINGS.ONIACCESS.GLANCE.SHAPE_CROSS;
+			}
 		}
 	}
 }
