@@ -507,7 +507,9 @@ namespace OniAccess.Handlers.Build {
 			var path = BuildLinePath(_utilityStartCell, cell);
 			var tool = GetActiveUtilityTool();
 			if (tool == null) {
-				Util.Log.Error("BuildToolHandler.UtilityPlacement: no active utility tool");
+				Util.Log.Warn("BuildToolHandler.UtilityPlacement: no active utility tool");
+				PlaySound("Negative");
+				ExitBuildMode();
 				return;
 			}
 
@@ -543,7 +545,9 @@ namespace OniAccess.Handlers.Build {
 			var path = new List<int> { cell };
 			var tool = GetActiveUtilityTool();
 			if (tool == null) {
-				Util.Log.Error("BuildToolHandler.UtilityPlaceAndExit: no active utility tool");
+				Util.Log.Warn("BuildToolHandler.UtilityPlaceAndExit: no active utility tool");
+				PlaySound("Negative");
+				ExitBuildMode();
 				return;
 			}
 
