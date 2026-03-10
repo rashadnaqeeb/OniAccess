@@ -29,6 +29,7 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 			int dupeCount = 0;
 			int critterCount = 0;
 			var orders = new Dictionary<string, int>();
+			var seenOrderBuildings = new HashSet<UnityEngine.GameObject>();
 
 			for (int i = 0; i < cells.Length; i++) {
 				int cell = cells[i];
@@ -44,7 +45,7 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 
 				CountBuilding(cell, buildings, seenBuildings);
 				CountEntities(cell, ref dupeCount, ref critterCount);
-				CountOrders(cell, orders);
+				CountOrders(cell, orders, seenOrderBuildings);
 			}
 
 			AddStatePercent(tokens, (string)STRINGS.ONIACCESS.BIG_CURSOR.SOLID,
@@ -133,14 +134,15 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 			}
 		}
 
-		private static void CountOrders(int cell, Dictionary<string, int> orders) {
+		private static void CountOrders(int cell, Dictionary<string, int> orders,
+				HashSet<UnityEngine.GameObject> seenBuildings) {
 			if (Grid.Objects[cell, (int)ObjectLayer.DigPlacer] != null)
 				Increment(orders, Strings.Get("STRINGS.UI.TOOLS.DIG.TOOLNAME"));
 			if (Grid.Objects[cell, (int)ObjectLayer.MopPlacer] != null)
 				Increment(orders, Strings.Get("STRINGS.UI.TOOLS.MOP.TOOLNAME"));
 
 			var buildingGo = Grid.Objects[cell, (int)ObjectLayer.Building];
-			if (buildingGo != null) {
+			if (buildingGo != null && seenBuildings.Add(buildingGo)) {
 				var constructable = buildingGo.GetComponent<Constructable>();
 				if (constructable != null)
 					Increment(orders, Strings.Get("STRINGS.UI.TOOLS.BUILD.TOOLNAME"));
@@ -159,7 +161,8 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 			}
 
 			var foundationGo = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
-			if (foundationGo != null && foundationGo != buildingGo) {
+			if (foundationGo != null && foundationGo != buildingGo
+					&& seenBuildings.Add(foundationGo)) {
 				var constructable = foundationGo.GetComponent<Constructable>();
 				if (constructable != null)
 					Increment(orders, Strings.Get("STRINGS.UI.TOOLS.BUILD.TOOLNAME"));
