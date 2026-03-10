@@ -3,7 +3,13 @@ using OniAccess.Input;
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Base class for screen handlers that compose multiple IScreenTab objects
-	/// and cycle between them with Tab/Shift+Tab.
+	/// and cycle between them with Tab/Shift+Tab. Each tab is an autonomous
+	/// object that owns its own input handling and announcements.
+	///
+	/// Not all handlers with Tab cycling use this. Handlers that cycle an index
+	/// over their own content (DetailsScreen sections, ReportScreen days,
+	/// MinionSelect slots, etc.) don't have composed tab objects and extend
+	/// their navigation base classes directly.
 	///
 	/// Provides tab array management, CycleTab with wrap detection, and default
 	/// Tick/HandleKeyDown/OnDeactivate that delegate to the active tab.
