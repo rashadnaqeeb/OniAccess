@@ -1,5 +1,6 @@
 # Changelog
 
+- Material picker now announces material effects (overheat temperature modifier, thermal conductivity, etc.) alongside name and quantity
 - Fix: audio rulers no longer disappear when opening and closing menus
 - Translation: replaced concatenation patterns with format strings so translators can reorder words (biome names, bottled/loose labels, colony inventory, starmap research, diet restrictions, material alternatives)
 - Fix: heavy-watt joint plates now announce "horizontal" and "vertical" when rotating instead of meaningless direction names

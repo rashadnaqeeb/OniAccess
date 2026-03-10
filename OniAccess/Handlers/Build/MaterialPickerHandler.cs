@@ -111,6 +111,14 @@ namespace OniAccess.Handlers.Build {
 						(string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_INSUFFICIENT,
 						name, quantity);
 
+				var descriptors = GameUtil.GetMaterialDescriptors(tag);
+				if (descriptors.Count > 0) {
+					var effects = new List<string>();
+					foreach (var desc in descriptors)
+						effects.Add(global::Util.StripTextFormatting(desc.text));
+					label += ", " + string.Join(", ", effects.ToArray());
+				}
+
 				var entry = new MaterialEntry { Tag = tag, Label = label };
 				if (hasSufficient)
 					sufficient.Add(entry);
