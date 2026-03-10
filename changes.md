@@ -3,7 +3,8 @@
 - Translation: replaced concatenation patterns with format strings so translators can reorder words (biome names, bottled/loose labels, colony inventory, starmap research, diet restrictions, material alternatives)
 - Fix: heavy-watt joint plates now announce "horizontal" and "vertical" when rotating instead of meaningless direction names
 - Sandbox mode: all 12 sandbox tools are accessible. Toggle sandbox with Shift+S, pick tools from the Sandbox Tools category in the action menu (B key). Rectangle selection for brush tools (Space for corners, Enter to apply), single-cell apply for flood/spawner/story tools, Ctrl+Space to sample, F to open the parameter menu with sliders and selectors
-- Rectangle build mode: press G while placing a 1x1 building (tile, drywall, etc.) to define rectangular areas with Space, then Enter to fill them all at once
+- Fix: bare G key was blocked during build placement even after the rectangle mode toggle moved to Ctrl+G
+- Rectangle build mode: press Ctrl+G while placing a 1x1 building (tile, drywall, etc.) to define rectangular areas with Space, then Enter to fill them all at once
 - Alt+Arrow skips by building, tile type, or element regardless of the active overlay
 - Fix: vacuum and void tiles no longer report "0 g" mass
 - Fix: cluster map cursor no longer resets to the active world when returning from a details screen or entity picker

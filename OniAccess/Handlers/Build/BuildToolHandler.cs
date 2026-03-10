@@ -48,7 +48,7 @@ namespace OniAccess.Handlers.Build {
 			new ConsumedKey(KKeyCode.Tab),
 			new ConsumedKey(KKeyCode.I),
 			new ConsumedKey(KKeyCode.P),
-			new ConsumedKey(KKeyCode.G),
+			new ConsumedKey(KKeyCode.G, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.Alpha0),
 			new ConsumedKey(KKeyCode.Alpha1),
 			new ConsumedKey(KKeyCode.Alpha2),
