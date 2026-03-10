@@ -1246,7 +1246,7 @@ namespace OniAccess.Handlers.Build {
 			try {
 				KFMOD.PlayUISound(GlobalAssets.GetSound("Tile_Cancel"));
 			} catch (Exception ex) {
-				Util.Log.Error($"BuildToolHandler.PlayDeactivateSound: {ex}");
+				Util.Log.Warn($"BuildToolHandler.PlayDeactivateSound: {ex}");
 			}
 		}
 
@@ -1255,7 +1255,7 @@ namespace OniAccess.Handlers.Build {
 			try {
 				KFMOD.PlayUISound(GlobalAssets.GetSound("Tile_Confirm_NegativeTool"));
 			} catch (Exception ex) {
-				Util.Log.Error($"BuildToolHandler.PlayCancelSound: {ex}");
+				Util.Log.Warn($"BuildToolHandler.PlayCancelSound: {ex}");
 			}
 		}
 	}
