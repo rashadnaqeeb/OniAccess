@@ -72,6 +72,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (statusPanel == null || !statusPanel.gameObject.activeSelf) return;
 
 			var section = new DetailSection();
+			section.Key = "statusItems";
 			section.Header = statusPanel.HeaderLabel != null
 				? statusPanel.HeaderLabel.text
 				: (string)STRINGS.UI.DETAILTABS.SIMPLEINFO.GROUPNAME_STATUS;
@@ -86,19 +87,23 @@ namespace OniAccess.Handlers.Screens.Details {
 				}
 				var button = entryTraverse.Field<KButton>("button").Value;
 				var widget = entryTraverse.Field<GameObject>("widget").Value;
+				var go = widget ?? text.gameObject;
+				string key = go.GetInstanceID().ToString();
 
 				bool isClickable = button != null && button.enabled;
 
 				Widget w = isClickable
 					? (Widget)new ButtonWidget {
+						Key = key,
 						Label = text.text,
 						Component = button,
-						GameObject = widget ?? text.gameObject,
+						GameObject = go,
 						SpeechFunc = () => text.text
 					}
 					: new LabelWidget {
+						Key = key,
 						Label = text.text,
-						GameObject = widget ?? text.gameObject,
+						GameObject = go,
 						SpeechFunc = () => text.text
 					};
 				section.Items.Add(w);
@@ -117,6 +122,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (storagePanel == null || !storagePanel.gameObject.activeSelf) return;
 
 			var section = new DetailSection();
+			section.Key = "storage";
 			section.Header = storagePanel.HeaderLabel != null
 				&& !string.IsNullOrEmpty(storagePanel.HeaderLabel.text)
 				? storagePanel.HeaderLabel.text
@@ -158,6 +164,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (plain != null && !string.IsNullOrEmpty(plain.label.text)) {
 					var captured = plain;
 					section.Items.Add(new LabelWidget {
+						Key = child.gameObject.GetInstanceID().ToString(),
 						Label = captured.label.text,
 						GameObject = child.gameObject,
 						SpeechFunc = () => captured.label.text
@@ -172,6 +179,7 @@ namespace OniAccess.Handlers.Screens.Details {
 		private static void AddStorageItem(DetailLabelWithButton item, DetailSection section) {
 			var captured = item;
 			section.Items.Add(new ButtonWidget {
+				Key = captured.gameObject.GetInstanceID().ToString(),
 				Label = captured.label.text,
 				Component = captured.button,
 				GameObject = captured.gameObject,
@@ -182,6 +190,7 @@ namespace OniAccess.Handlers.Screens.Details {
 		private static void AddStorageGroup(DetailCollapsableLabel group, DetailSection section) {
 			var captured = group;
 			var widget = new LabelWidget {
+				Key = captured.gameObject.GetInstanceID().ToString(),
 				Label = $"{captured.nameLabel.GetParsedText()}, {captured.valueLabel.GetParsedText()}",
 				GameObject = captured.gameObject,
 				SpeechFunc = () =>
@@ -197,6 +206,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (!row.inUse) continue;
 				var childLabel = row.label;
 				children.Add(new ButtonWidget {
+					Key = childLabel.gameObject.GetInstanceID().ToString(),
 					Label = childLabel.label.GetParsedText(),
 					Component = childLabel.button,
 					GameObject = childLabel.gameObject,
@@ -236,6 +246,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (vitals == null || !vitals.gameObject.activeSelf) return;
 
 			var section = new DetailSection();
+			section.Key = "vitalsPanel";
 			section.Header = vitals.HeaderLabel != null
 				&& !string.IsNullOrEmpty(vitals.HeaderLabel.text)
 				? vitals.HeaderLabel.text
@@ -249,6 +260,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				var captured = line;
 				var checkRef = captured.go.GetComponent<HierarchyReferences>();
 				section.Items.Add(new LabelWidget {
+					Key = captured.go.GetInstanceID().ToString(),
 					Label = captured.label_text_func(DetailsScreen.Instance.target),
 					GameObject = captured.go,
 					SpeechFunc = () => {
@@ -273,6 +285,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (!line.go.activeSelf) continue;
 				var captured = line;
 				section.Items.Add(new LabelWidget {
+					Key = captured.go.GetInstanceID().ToString(),
 					Label = captured.locText.GetParsedText(),
 					GameObject = captured.go,
 					SpeechFunc = () => captured.locText.GetParsedText()
@@ -286,6 +299,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (!line.go.activeSelf) continue;
 				var captured = line;
 				section.Items.Add(new LabelWidget {
+					Key = captured.go.GetInstanceID().ToString(),
 					Label = captured.locText.GetParsedText(),
 					GameObject = captured.go,
 					SpeechFunc = () => captured.locText.GetParsedText()
@@ -310,6 +324,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (gameSection == null || !gameSection.gameObject.activeSelf) return;
 
 			var section = BuildCollapsibleSection(gameSection);
+			section.Key = fieldName;
 			if (section.Items.Count > 0)
 				sections.Add(section);
 		}
@@ -333,6 +348,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (withButton != null) {
 					var captured = withButton;
 					section.Items.Add(new ButtonWidget {
+						Key = child.gameObject.GetInstanceID().ToString(),
 						Label = captured.label.text,
 						Component = captured.button,
 						GameObject = child.gameObject,
@@ -345,6 +361,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (detailLabel != null && !string.IsNullOrEmpty(detailLabel.label.text)) {
 					var captured = detailLabel;
 					section.Items.Add(new LabelWidget {
+						Key = child.gameObject.GetInstanceID().ToString(),
 						Label = captured.label.text,
 						GameObject = child.gameObject,
 						SpeechFunc = () => captured.label.text
@@ -385,6 +402,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (descriptorPanel == null || !descriptorPanel.gameObject.activeSelf) return;
 
 			var section = new DetailSection();
+			section.Key = panelFieldName;
 			var headerLabel = wrapper.HeaderLabel;
 			if (headerLabel != null && !string.IsNullOrEmpty(headerLabel.text))
 				section.Header = headerLabel.text;
@@ -446,6 +464,7 @@ namespace OniAccess.Handlers.Screens.Details {
 						sections.Add(currentSection);
 
 					currentSection = new DetailSection();
+					currentSection.Key = $"processCondition_{child.gameObject.GetInstanceID()}";
 					var capturedHeader = headerText;
 					currentSection.Header = capturedHeader.text;
 				} else {
@@ -458,6 +477,7 @@ namespace OniAccess.Handlers.Screens.Details {
 
 					var captured = labelText;
 					currentSection.Items.Add(new LabelWidget {
+						Key = child.gameObject.GetInstanceID().ToString(),
 						Label = captured.text,
 						GameObject = child.gameObject,
 						SpeechFunc = () => captured.text
@@ -486,6 +506,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (gameSection == null || !gameSection.gameObject.activeSelf) return;
 
 			var section = new DetailSection();
+			section.Key = fieldName;
 			var headerLabel = gameSection.HeaderLabel;
 			if (headerLabel != null && !string.IsNullOrEmpty(headerLabel.text))
 				section.Header = headerLabel.text;
@@ -508,6 +529,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (detailLabel != null && !string.IsNullOrEmpty(detailLabel.label.text)) {
 					var captured = detailLabel;
 					section.Items.Add(new LabelWidget {
+						Key = child.gameObject.GetInstanceID().ToString(),
 						Label = captured.label.text,
 						GameObject = child.gameObject,
 						SpeechFunc = () => captured.label.text
@@ -535,6 +557,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			var capturedDesc = descLabel;
 
 			section.Items.Add(new LabelWidget {
+				Key = go.GetInstanceID().ToString(),
 				Label = capturedName.GetParsedText(),
 				GameObject = go,
 				SpeechFunc = () => {
@@ -582,6 +605,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (worldContainer == null || worldContainer.Biomes == null) return;
 
 			var section = new DetailSection();
+			section.Key = "worldBiomesPanel";
 			var headerLabel = gameSection.HeaderLabel;
 			if (headerLabel != null && !string.IsNullOrEmpty(headerLabel.text))
 				section.Header = headerLabel.text;
@@ -593,6 +617,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				string desc = Strings.Get(descKey);
 
 				section.Items.Add(new LabelWidget {
+					Key = biome,
 					Label = name,
 					SpeechFunc = () => string.IsNullOrEmpty(desc)
 						? name : $"{name}, {desc}"

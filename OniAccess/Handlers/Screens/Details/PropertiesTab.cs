@@ -54,6 +54,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (gameSection == null || !gameSection.gameObject.activeSelf) continue;
 
 				var section = CollapsiblePanelReader.BuildSection(gameSection);
+				section.Key = fieldName;
 				if (section.Items.Count > 0)
 					sections.Add(section);
 			}

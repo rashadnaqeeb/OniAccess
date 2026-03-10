@@ -21,6 +21,11 @@ namespace OniAccess.Widgets {
 
 		public Prioritizable Prioritizable { get; set; }
 
+		public override void UpdateFrom(Widget source) {
+			base.UpdateFrom(source);
+			Prioritizable = ((PriorityWidget)source).Prioritizable;
+		}
+
 		public override bool IsAdjustable => true;
 
 		public override bool IsValid() {

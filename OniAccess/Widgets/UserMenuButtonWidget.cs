@@ -7,6 +7,13 @@ namespace OniAccess.Widgets {
 		public System.Action OnClick { get; set; }
 		public System.Func<bool> IsInteractableFunc { get; set; }
 
+		public override void UpdateFrom(Widget source) {
+			base.UpdateFrom(source);
+			var s = (UserMenuButtonWidget)source;
+			OnClick = s.OnClick;
+			IsInteractableFunc = s.IsInteractableFunc;
+		}
+
 		public override bool IsValid() {
 			if (IsInteractableFunc != null && !IsInteractableFunc()) return false;
 			return true;

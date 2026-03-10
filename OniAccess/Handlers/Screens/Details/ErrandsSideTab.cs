@@ -46,8 +46,10 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (string.IsNullOrEmpty(shiftText)) return;
 
 			var section = new DetailSection();
+			section.Key = "schedule";
 			section.Header = (string)STRINGS.ONIACCESS.DETAILS.SCHEDULE;
 			section.Items.Add(new LabelWidget {
+				Key = "currentShift",
 				Label = shiftText,
 				SpeechFunc = () => screen.currentShiftLabel.text
 			});
@@ -60,14 +62,17 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (entry == null || !entry.gameObject.activeSelf) return;
 
 			var kbutton = entry.GetComponentInChildren<KButton>();
-			string speech = BuildEntrySpeech(entry);
+			var capturedEntry = entry;
+			string choreKey = ReadChoreId(capturedEntry);
 			var section = new DetailSection();
+			section.Key = "currentTask";
 			section.Header = (string)STRINGS.ONIACCESS.DETAILS.CURRENT_TASK;
 			section.Items.Add(new ButtonWidget {
+				Key = choreKey,
 				Component = kbutton,
-				GameObject = entry.gameObject,
+				GameObject = capturedEntry.gameObject,
 				SuppressTooltip = true,
-				SpeechFunc = () => speech
+				SpeechFunc = () => BuildEntrySpeech(capturedEntry)
 			});
 			sections.Add(section);
 		}
@@ -96,13 +101,9 @@ namespace OniAccess.Handlers.Screens.Details {
 				string header = title != null ? title.text : "";
 
 				var section = new DetailSection();
+				section.Key = $"priority_{group.first}_{group.second}";
 				section.Header = header;
 
-				// Snapshot speech text at populate time. The game continuously
-				// re-sorts MinionTodoChoreEntry objects via Apply(), recycling
-				// them with new chore data even while paused. Live reads cause
-				// navigation to land on different items between frames.
-				// Snapshots refresh on tab switch, target change, or activation.
 				for (int i = 0; i < container.childCount; i++) {
 					var child = container.GetChild(i);
 					if (!child.gameObject.activeSelf) continue;
@@ -111,12 +112,14 @@ namespace OniAccess.Handlers.Screens.Details {
 					if (entry == null) continue;
 
 					var kbutton = entry.GetComponentInChildren<KButton>();
-					string speech = BuildEntrySpeech(entry);
+					var capturedEntry = entry;
+					string choreKey = ReadChoreId(capturedEntry);
 					section.Items.Add(new ButtonWidget {
+						Key = choreKey,
 						Component = kbutton,
-						GameObject = entry.gameObject,
+						GameObject = capturedEntry.gameObject,
 						SuppressTooltip = true,
-						SpeechFunc = () => speech
+						SpeechFunc = () => BuildEntrySpeech(capturedEntry)
 					});
 				}
 
@@ -169,6 +172,17 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (string.IsNullOrEmpty(text)) return;
 			if (sb.Length > 0) sb.Append(", ");
 			sb.Append(text);
+		}
+
+		private static string ReadChoreId(MinionTodoChoreEntry entry) {
+			try {
+				var chore = Traverse.Create(entry)
+					.Field<Chore>("targetChore").Value;
+				if (chore != null) return chore.id.ToString();
+			} catch (System.Exception ex) {
+				Util.Log.Debug($"ErrandsSideTab: targetChore read failed: {ex.Message}");
+			}
+			return null;
 		}
 	}
 }

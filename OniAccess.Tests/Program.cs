@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Build;
+using OniAccess.Handlers.Screens.Details;
 using RectangleSelection = OniAccess.Handlers.RectangleSelection;
 using OniAccess.Handlers.Notifications;
 using OniAccess.Handlers.Screens.ClusterMap;
@@ -322,6 +323,18 @@ namespace OniAccess.Tests {
 			results.Add(DigitKeyKeypad1Through9());
 			results.Add(DigitKeyKeypad0MapsToNine());
 			results.Add(DigitKeyNonDigitReturnsNegativeOne());
+
+			// --- SectionMerger ---
+			results.Add(MergerMatchedItemsPreserveOrder());
+			results.Add(MergerItemRemoved());
+			results.Add(MergerItemAdded());
+			results.Add(MergerSectionRemoved());
+			results.Add(MergerSectionAdded());
+			results.Add(MergerJitterPreservesOrder());
+			results.Add(MergerChildrenMerged());
+			results.Add(MergerMissingKeyFallback());
+			results.Add(MergerTypeMismatchReplaces());
+			results.Add(MergerUpdateFromCopiesFields());
 
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
@@ -3425,6 +3438,212 @@ namespace OniAccess.Tests {
 					"ShouldSpeakDefaultBadClaimedByOverlay", !result,
 					"expected false for bad item claimed by power overlay");
 			}
+		}
+
+		// ========================================
+		// SectionMerger tests
+		// ========================================
+
+		static DetailSection MakeSection(string key, params (string key, string label)[] items) {
+			var s = new DetailSection { Key = key, Header = key };
+			foreach (var (k, l) in items)
+				s.Items.Add(new LabelWidget { Key = k, Label = l });
+			return s;
+		}
+
+		static string ItemKeys(List<DetailSection> sections) {
+			var sb = new System.Text.StringBuilder();
+			foreach (var s in sections) {
+				if (sb.Length > 0) sb.Append("|");
+				sb.Append(s.Key ?? s.Header).Append(":");
+				for (int i = 0; i < s.Items.Count; i++) {
+					if (i > 0) sb.Append(",");
+					sb.Append(s.Items[i].Key ?? s.Items[i].Label);
+				}
+			}
+			return sb.ToString();
+		}
+
+		static (string, bool, string) MergerMatchedItemsPreserveOrder() {
+			var existing = new List<DetailSection> {
+				MakeSection("s1", ("a", "A"), ("b", "B"), ("c", "C"))
+			};
+			var fresh = new List<DetailSection> {
+				MakeSection("s1", ("a", "A2"), ("b", "B2"), ("c", "C2"))
+			};
+			SectionMerger.Merge(existing, fresh);
+			bool labelsUpdated = existing[0].Items[0].Label == "A2"
+				&& existing[0].Items[1].Label == "B2"
+				&& existing[0].Items[2].Label == "C2";
+			return Assert("MergerMatchedItemsPreserveOrder", labelsUpdated,
+				$"labels not updated: {ItemKeys(existing)}");
+		}
+
+		static (string, bool, string) MergerItemRemoved() {
+			var existing = new List<DetailSection> {
+				MakeSection("s1", ("a", "A"), ("b", "B"), ("c", "C"))
+			};
+			var fresh = new List<DetailSection> {
+				MakeSection("s1", ("a", "A"), ("c", "C"))
+			};
+			SectionMerger.Merge(existing, fresh);
+			bool ok = existing[0].Items.Count == 2
+				&& existing[0].Items[0].Key == "a"
+				&& existing[0].Items[1].Key == "c";
+			return Assert("MergerItemRemoved", ok,
+				$"expected a,c got {ItemKeys(existing)}");
+		}
+
+		static (string, bool, string) MergerItemAdded() {
+			var existing = new List<DetailSection> {
+				MakeSection("s1", ("a", "A"), ("c", "C"))
+			};
+			var fresh = new List<DetailSection> {
+				MakeSection("s1", ("a", "A"), ("b", "B"), ("c", "C"))
+			};
+			SectionMerger.Merge(existing, fresh);
+			bool ok = existing[0].Items.Count == 3
+				&& existing[0].Items[0].Key == "a"
+				&& existing[0].Items[1].Key == "b"
+				&& existing[0].Items[2].Key == "c";
+			return Assert("MergerItemAdded", ok,
+				$"expected a,b,c got {ItemKeys(existing)}");
+		}
+
+		static (string, bool, string) MergerSectionRemoved() {
+			var existing = new List<DetailSection> {
+				MakeSection("s1", ("a", "A")),
+				MakeSection("s2", ("b", "B")),
+				MakeSection("s3", ("c", "C"))
+			};
+			var fresh = new List<DetailSection> {
+				MakeSection("s1", ("a", "A")),
+				MakeSection("s3", ("c", "C"))
+			};
+			SectionMerger.Merge(existing, fresh);
+			bool ok = existing.Count == 2
+				&& existing[0].Key == "s1"
+				&& existing[1].Key == "s3";
+			return Assert("MergerSectionRemoved", ok,
+				$"expected s1,s3 got {ItemKeys(existing)}");
+		}
+
+		static (string, bool, string) MergerSectionAdded() {
+			var existing = new List<DetailSection> {
+				MakeSection("s1", ("a", "A")),
+				MakeSection("s3", ("c", "C"))
+			};
+			var fresh = new List<DetailSection> {
+				MakeSection("s1", ("a", "A")),
+				MakeSection("s2", ("b", "B")),
+				MakeSection("s3", ("c", "C"))
+			};
+			SectionMerger.Merge(existing, fresh);
+			bool ok = existing.Count == 3
+				&& existing[0].Key == "s1"
+				&& existing[1].Key == "s2"
+				&& existing[2].Key == "s3";
+			return Assert("MergerSectionAdded", ok,
+				$"expected s1,s2,s3 got {ItemKeys(existing)}");
+		}
+
+		static (string, bool, string) MergerJitterPreservesOrder() {
+			var existing = new List<DetailSection> {
+				MakeSection("s1", ("a", "A"), ("b", "B"), ("c", "C"))
+			};
+			// Fresh has same items but reordered (jitter).
+			var fresh = new List<DetailSection> {
+				MakeSection("s1", ("c", "C2"), ("a", "A2"), ("b", "B2"))
+			};
+			SectionMerger.Merge(existing, fresh);
+			bool orderPreserved = existing[0].Items[0].Key == "a"
+				&& existing[0].Items[1].Key == "b"
+				&& existing[0].Items[2].Key == "c";
+			bool labelsUpdated = existing[0].Items[0].Label == "A2"
+				&& existing[0].Items[1].Label == "B2"
+				&& existing[0].Items[2].Label == "C2";
+			return Assert("MergerJitterPreservesOrder",
+				orderPreserved && labelsUpdated,
+				$"order or labels wrong: {ItemKeys(existing)}");
+		}
+
+		static (string, bool, string) MergerChildrenMerged() {
+			var parent = new LabelWidget {
+				Key = "p", Label = "Parent",
+				Children = new List<Widget> {
+					new LabelWidget { Key = "c1", Label = "Child1" },
+					new LabelWidget { Key = "c2", Label = "Child2" }
+				}
+			};
+			var existing = new List<DetailSection> {
+				new DetailSection { Key = "s1", Header = "S1",
+					Items = { parent } }
+			};
+
+			var freshParent = new LabelWidget {
+				Key = "p", Label = "ParentNew",
+				Children = new List<Widget> {
+					new LabelWidget { Key = "c2", Label = "Child2New" },
+					new LabelWidget { Key = "c1", Label = "Child1New" }
+				}
+			};
+			var fresh = new List<DetailSection> {
+				new DetailSection { Key = "s1", Header = "S1",
+					Items = { freshParent } }
+			};
+
+			SectionMerger.Merge(existing, fresh);
+
+			var children = existing[0].Items[0].Children;
+			bool ok = children != null && children.Count == 2
+				&& children[0].Key == "c1" && children[0].Label == "Child1New"
+				&& children[1].Key == "c2" && children[1].Label == "Child2New";
+			return Assert("MergerChildrenMerged", ok,
+				$"children wrong: c1={children?[0]?.Label}, c2={children?[1]?.Label}");
+		}
+
+		static (string, bool, string) MergerMissingKeyFallback() {
+			var existing = new List<DetailSection> {
+				new DetailSection { Key = "s1", Header = "S1",
+					Items = { new LabelWidget { Label = "NoKey" } } }
+			};
+			var fresh = new List<DetailSection> {
+				new DetailSection { Key = "s1", Header = "S1",
+					Items = { new LabelWidget { Label = "NoKey" } } }
+			};
+			SectionMerger.Merge(existing, fresh);
+			bool ok = existing.Count == 1 && existing[0].Items.Count == 1
+				&& existing[0].Items[0].Label == "NoKey";
+			return Assert("MergerMissingKeyFallback", ok,
+				$"expected 1 item, got {existing[0].Items.Count}");
+		}
+
+		static (string, bool, string) MergerTypeMismatchReplaces() {
+			var existing = new List<DetailSection> {
+				new DetailSection { Key = "s1", Header = "S1",
+					Items = { new LabelWidget { Key = "x", Label = "Old" } } }
+			};
+			var fresh = new List<DetailSection> {
+				new DetailSection { Key = "s1", Header = "S1",
+					Items = { new ButtonWidget { Key = "x", Label = "New" } } }
+			};
+			SectionMerger.Merge(existing, fresh);
+			bool ok = existing[0].Items.Count == 1
+				&& existing[0].Items[0] is ButtonWidget
+				&& existing[0].Items[0].Label == "New";
+			return Assert("MergerTypeMismatchReplaces", ok,
+				$"expected ButtonWidget, got {existing[0].Items[0].GetType().Name}");
+		}
+
+		static (string, bool, string) MergerUpdateFromCopiesFields() {
+			var oldW = new LabelWidget { Key = "k", Label = "Old",
+				SuppressTooltip = false };
+			var newW = new LabelWidget { Key = "k", Label = "New",
+				SuppressTooltip = true };
+			oldW.UpdateFrom(newW);
+			bool ok = oldW.Label == "New" && oldW.SuppressTooltip;
+			return Assert("MergerUpdateFromCopiesFields", ok,
+				$"Label={oldW.Label}, SuppressTooltip={oldW.SuppressTooltip}");
 		}
 
 	}

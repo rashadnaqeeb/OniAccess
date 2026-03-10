@@ -62,9 +62,11 @@ namespace OniAccess.Handlers.Screens.Details {
 
 				if (next == idx + 1) {
 					var captured = header;
+					var go = getGameObject(captured);
 					section.Items.Add(new LabelWidget {
+						Key = go != null ? go.GetInstanceID().ToString() : null,
 						Label = getText(captured),
-						GameObject = getGameObject(captured),
+						GameObject = go,
 						SpeechFunc = () => getText(captured)
 					});
 				} else {
@@ -72,9 +74,11 @@ namespace OniAccess.Handlers.Screens.Details {
 					int childStart = idx + 1;
 					int childEnd = next;
 					var capturedItems = items;
+					var headerGo = getGameObject(capturedHeader);
 					section.Items.Add(new LabelWidget {
+						Key = headerGo != null ? headerGo.GetInstanceID().ToString() : null,
 						Label = getText(capturedHeader),
-						GameObject = getGameObject(capturedHeader),
+						GameObject = headerGo,
 						SpeechFunc = () => {
 							string text = getText(capturedHeader);
 							for (int i = childStart; i < childEnd; i++) {

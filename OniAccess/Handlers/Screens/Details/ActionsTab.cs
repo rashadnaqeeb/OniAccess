@@ -27,6 +27,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (ds == null) return;
 
 			var section = new DetailSection();
+			section.Key = "actions";
 			section.Header = (string)STRINGS.ONIACCESS.DETAILS.ACTIONS_TAB;
 
 			AddUserMenuButtons(ds, section.Items);
@@ -70,6 +71,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (info == null) continue;
 				var captured = info;
 				items.Add(new UserMenuButtonWidget {
+					Key = captured.text,
 					Label = captured.text,
 					SpeechFunc = () => string.IsNullOrEmpty(captured.tooltipText)
 						? captured.text
@@ -92,6 +94,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (prioritizable == null || !prioritizable.IsPrioritizable()) return;
 
 			items.Add(new PriorityWidget {
+				Key = "priority",
 				Label = (string)STRINGS.ONIACCESS.DETAILS.PRIORITY,
 				Prioritizable = prioritizable
 			});
@@ -101,11 +104,13 @@ namespace OniAccess.Handlers.Screens.Details {
 				DetailsScreen ds, List<Widget> items) {
 			WidgetDiscoveryUtil.TryAddButtonField(
 				ds, "CodexEntryButton",
-				(string)STRINGS.UI.TOOLTIPS.OPEN_CODEX_ENTRY, items);
+				(string)STRINGS.UI.TOOLTIPS.OPEN_CODEX_ENTRY, items,
+				"CodexEntryButton");
 
 			WidgetDiscoveryUtil.TryAddButtonField(
 				ds, "PinResourceButton",
-				(string)STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE, items);
+				(string)STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE, items,
+				"PinResourceButton");
 
 			try {
 				var tabTitle = Traverse.Create(ds)
@@ -113,9 +118,9 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (tabTitle == null) return;
 
 				TryAddKButton(tabTitle.editNameButton,
-					(string)STRINGS.ONIACCESS.PANELS.RENAME, items);
+					(string)STRINGS.ONIACCESS.PANELS.RENAME, items, "editName");
 				TryAddKButton(tabTitle.randomNameButton,
-					(string)STRINGS.ONIACCESS.PANELS.SHUFFLE_NAME, items);
+					(string)STRINGS.ONIACCESS.PANELS.SHUFFLE_NAME, items, "randomName");
 			} catch (System.Exception ex) {
 				Util.Log.Warn(
 					$"ActionsTab: TabTitle read failed: {ex.Message}");
@@ -123,11 +128,13 @@ namespace OniAccess.Handlers.Screens.Details {
 		}
 
 		private static void TryAddKButton(
-				KButton button, string fallbackLabel, List<Widget> items) {
+				KButton button, string fallbackLabel, List<Widget> items,
+				string key = null) {
 			if (button == null || !button.gameObject.activeInHierarchy) return;
 
 			var captured = button;
 			items.Add(new ButtonWidget {
+				Key = key,
 				Label = fallbackLabel,
 				Component = captured,
 				GameObject = captured.gameObject,

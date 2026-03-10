@@ -7,6 +7,11 @@ namespace OniAccess.Widgets {
 	public class HierRefToggleWidget: ToggleWidget {
 		public HierarchyReferences HierRef { get; set; }
 
+		public override void UpdateFrom(Widget source) {
+			base.UpdateFrom(source);
+			HierRef = ((HierRefToggleWidget)source).HierRef;
+		}
+
 		public override bool IsValid() {
 			if (GameObject != null && !GameObject.activeInHierarchy) return false;
 			var kb = Component as KButton;

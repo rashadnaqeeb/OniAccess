@@ -53,11 +53,13 @@ namespace OniAccess.Handlers.Screens.Details {
 			}
 
 			var section = new DetailSection();
+			section.Key = "currentMaterial";
 			section.Header = (string)STRINGS.UI.DETAILTABS.MATERIAL.NAME;
 
 			if (materialLabel != null) {
 				var label = materialLabel;
 				section.Items.Add(new LabelWidget {
+					Key = label.gameObject.GetInstanceID().ToString(),
 					Label = label.GetParsedText(),
 					GameObject = label.gameObject,
 					SpeechFunc = () => label.GetParsedText()
@@ -67,6 +69,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (materialDescription != null) {
 				var desc = materialDescription;
 				section.Items.Add(new LabelWidget {
+					Key = desc.gameObject.GetInstanceID().ToString(),
 					Label = desc.GetParsedText(),
 					GameObject = desc.gameObject,
 					SpeechFunc = () => desc.GetParsedText()
@@ -109,6 +112,7 @@ namespace OniAccess.Handlers.Screens.Details {
 
 				var captured = locText;
 				section.Items.Add(new LabelWidget {
+					Key = labelObj.GetInstanceID().ToString(),
 					Label = text,
 					GameObject = labelObj,
 					SpeechFunc = () => captured.text
@@ -132,6 +136,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			}
 
 			var section = new DetailSection();
+			section.Key = "changeMaterial";
 			section.Header = (string)STRINGS.UI.DETAILTABS.MATERIAL.BUTTON_CHANGE_MATERIAL;
 
 			if (selectionPanel != null && selectionPanel.gameObject.activeSelf) {
@@ -142,6 +147,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				var btn = openButton;
 				var btnLocText = btn.GetComponentInChildren<LocText>();
 				section.Items.Add(new ButtonWidget {
+					Key = "openChangeMaterial",
 					Component = btn,
 					GameObject = btn.gameObject,
 					Label = btnLocText != null ? btnLocText.GetParsedText()
@@ -179,6 +185,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				var capturedTag = tag;
 				var capturedToggle = toggle;
 				section.Items.Add(new ToggleWidget {
+					Key = capturedTag.ToString(),
 					Component = capturedToggle,
 					GameObject = capturedToggle.gameObject,
 					Label = capturedTag.ProperName(),
@@ -205,6 +212,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			var btn = orderButton;
 			var btnLocText = btn.GetComponentInChildren<LocText>();
 			section.Items.Add(new ButtonWidget {
+				Key = "orderChangeMaterial",
 				Component = btn,
 				GameObject = btn.gameObject,
 				Label = btnLocText != null ? btnLocText.GetParsedText() : "",

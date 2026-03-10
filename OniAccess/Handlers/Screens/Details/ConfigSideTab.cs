@@ -35,8 +35,13 @@ namespace OniAccess.Handlers.Screens.Details {
 			foreach (var screen in GetActiveScreens(
 					ds, DetailsScreen.SidescreenTabTypes.Config)) {
 				var section = new DetailSection();
+				section.Key = screen.GetType().Name;
 				section.Header = screen.GetTitle();
 				SideScreenWalker.Walk(screen, section.Items);
+				foreach (var item in section.Items) {
+					if (item.Key == null && item.GameObject != null)
+						item.Key = item.GameObject.GetInstanceID().ToString();
+				}
 				if (section.Items.Count > 0)
 					sections.Add(section);
 			}

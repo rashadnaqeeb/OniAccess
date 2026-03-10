@@ -4,6 +4,7 @@ using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Details {
 	class DetailSection {
+		public string Key;
 		public string Header;
 		public readonly List<Widget> Items = new List<Widget>();
 	}

@@ -101,11 +101,13 @@ namespace OniAccess.Handlers.Screens.Details {
 				FacadeSelectionPanel selectionPanel,
 				List<DetailSection> sections) {
 			var section = new DetailSection();
+			section.Key = "buildingBlueprint";
 			section.Header = (string)STRINGS.UI.DETAILTABS.COSMETICS.NAME;
 
 			if (nameLabel != null) {
 				var label = nameLabel;
 				section.Items.Add(new LabelWidget {
+					Key = label.gameObject.GetInstanceID().ToString(),
 					Label = label.GetParsedText(),
 					GameObject = label.gameObject,
 					SpeechFunc = () => label.GetParsedText()
@@ -117,6 +119,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (!string.IsNullOrEmpty(descText)) {
 					var desc = descriptionLabel;
 					section.Items.Add(new LabelWidget {
+						Key = desc.gameObject.GetInstanceID().ToString(),
 						Label = descText,
 						GameObject = desc.gameObject,
 						SpeechFunc = () => desc.GetParsedText()
@@ -135,11 +138,13 @@ namespace OniAccess.Handlers.Screens.Details {
 				Dictionary<ClothingOutfitUtility.OutfitType, GameObject> outfitCategories,
 				List<DetailSection> sections) {
 			var section = new DetailSection();
+			section.Key = "dupeBlueprint";
 			section.Header = (string)STRINGS.UI.DETAILTABS.COSMETICS.NAME;
 
 			if (nameLabel != null) {
 				var label = nameLabel;
 				section.Items.Add(new LabelWidget {
+					Key = label.gameObject.GetInstanceID().ToString(),
 					Label = label.GetParsedText(),
 					GameObject = label.gameObject,
 					SpeechFunc = () => label.GetParsedText()
@@ -151,6 +156,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				var btnLocText = btn.GetComponentInChildren<LocText>();
 				string btnLabel = btnLocText != null ? btnLocText.GetParsedText() : "";
 				section.Items.Add(new ButtonWidget {
+					Key = "editButton",
 					Component = btn,
 					GameObject = btn.gameObject,
 					Label = btnLabel,
@@ -181,6 +187,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				var capturedToggle = multiToggle;
 				var capturedName = catName;
 				section.Items.Add(new ToggleWidget {
+					Key = catType.ToString(),
 					Component = capturedToggle,
 					GameObject = catGO,
 					Label = capturedName,
@@ -200,6 +207,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (selectionPanel == null) return;
 
 			var section = new DetailSection();
+			section.Key = "facadeGrid";
 			section.Header = header;
 			AddFacadeToggles(selectionPanel, section);
 
@@ -245,6 +253,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				var capturedPanel = selectionPanel;
 				var capturedGO = toggleGO;
 				section.Items.Add(new ToggleWidget {
+					Key = capturedId,
 					Component = multiToggle,
 					GameObject = capturedGO,
 					Label = name,

@@ -704,89 +704,28 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// Rebuilds sections from live game widgets and restores the navigation
-		/// position by label identity. Prevents stale widget references from
-		/// causing crashes when side screens refresh their children between
-		/// user actions.
+		/// Merges fresh widget data into the existing sections, preserving
+		/// navigation order. Matched items stay at their position with
+		/// updated content; new items are inserted, gone items removed.
 		/// </summary>
 		private void RefreshSections() {
-			int savedLevel = Level;
-			string sectionHeader = null;
-			string itemLabel = null;
-			string childLabel = null;
+			var fresh = new List<DetailSection>();
+			var ds = DetailsScreen.Instance;
+			if (ds == null || ds.target == null) { ClampIndices(); return; }
+			if (_tabIndex < 0 || _tabIndex >= _activeTabs.Count) { ClampIndices(); return; }
 
-			int s = GetIndex(0);
-			if (s >= 0 && s < _sections.Count) {
-				sectionHeader = _sections[s].Header;
-				var items = _sections[s].Items;
-				int i = GetIndex(1);
-				if (i >= 0 && i < items.Count) {
-					itemLabel = items[i].Label;
-					var children = items[i].Children;
-					int c = GetIndex(2);
-					if (children != null && c >= 0 && c < children.Count)
-						childLabel = children[c].Label;
-				}
-			}
-
-			RebuildSections();
-
-			if (sectionHeader == null) {
+			try {
+				_activeTabs[_tabIndex].Populate(ds.target, fresh);
+			} catch (System.Exception ex) {
+				Util.Log.Error(
+					$"DetailsScreenHandler: tab '{_activeTabs[_tabIndex].DisplayName}' " +
+					$"Populate failed: {ex}");
 				ClampIndices();
 				return;
 			}
 
-			int newSection = -1;
-			for (int si = 0; si < _sections.Count; si++) {
-				if (_sections[si].Header == sectionHeader) { newSection = si; break; }
-			}
-			if (newSection < 0) {
-				Util.Log.Debug($"RefreshSections: section '{sectionHeader}' not found, clamping");
-				ClampIndices();
-				return;
-			}
-			SetIndex(0, newSection);
-
-			if (itemLabel == null || savedLevel < 1) {
-				Level = savedLevel;
-				ClampIndices();
-				return;
-			}
-
-			var newItems = _sections[newSection].Items;
-			int newItem = -1;
-			for (int ii = 0; ii < newItems.Count; ii++) {
-				if (newItems[ii].Label == itemLabel) { newItem = ii; break; }
-			}
-			if (newItem < 0) {
-				Util.Log.Debug($"RefreshSections: item '{itemLabel}' not found, clamping");
-				Level = savedLevel;
-				ClampIndices();
-				return;
-			}
-			SetIndex(1, newItem);
-
-			if (childLabel == null || savedLevel < 2) {
-				Level = savedLevel;
-				ClampIndices();
-				return;
-			}
-
-			var newChildren = newItems[newItem].Children;
-			int newChild = -1;
-			if (newChildren != null) {
-				for (int ci = 0; ci < newChildren.Count; ci++) {
-					if (newChildren[ci].Label == childLabel) { newChild = ci; break; }
-				}
-			}
-			if (newChild < 0) {
-				Util.Log.Debug($"RefreshSections: child '{childLabel}' not found, clamping");
-				Level = savedLevel;
-				ClampIndices();
-				return;
-			}
-			SetIndex(2, newChild);
-			Level = savedLevel;
+			SectionMerger.Merge(_sections, fresh);
+			ClampIndices();
 		}
 
 		// ========================================

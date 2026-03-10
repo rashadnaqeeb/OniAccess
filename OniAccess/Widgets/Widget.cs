@@ -7,6 +7,7 @@ namespace OniAccess.Widgets {
 	/// so dispatch happens via virtual calls instead of switch statements.
 	/// </summary>
 	public class Widget {
+		public string Key { get; set; }
 		public string Label { get; set; }
 		public UnityEngine.Component Component { get; set; }
 		public UnityEngine.GameObject GameObject { get; set; }
@@ -57,5 +58,19 @@ namespace OniAccess.Widgets {
 		/// Whether this widget supports Left/Right adjustment.
 		/// </summary>
 		public virtual bool IsAdjustable => false;
+
+		/// <summary>
+		/// Copy mutable fields from source into this widget, preserving
+		/// identity and position in the list. Used by SectionMerger.
+		/// </summary>
+		public virtual void UpdateFrom(Widget source) {
+			Label = source.Label;
+			Component = source.Component;
+			GameObject = source.GameObject;
+			Tag = source.Tag;
+			SpeechFunc = source.SpeechFunc;
+			SuppressTooltip = source.SuppressTooltip;
+			_isInteractableOverride = source._isInteractableOverride;
+		}
 	}
 }

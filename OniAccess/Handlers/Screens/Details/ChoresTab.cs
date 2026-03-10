@@ -69,6 +69,7 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (entry == null) continue;
 
 				var section = new DetailSection();
+				section.Key = $"chore_{choreIndex}";
 
 				// Use enriched header from the Chore object when available,
 				// fall back to the game's ChoreLabel text.
@@ -90,6 +91,7 @@ namespace OniAccess.Handlers.Screens.Details {
 
 						var capturedRow = row;
 						section.Items.Add(new ButtonWidget {
+							Key = capturedRow.label.text,
 							Label = capturedRow.label.text,
 							Component = capturedRow.button,
 							GameObject = capturedRow.gameObject,

@@ -1,5 +1,6 @@
 # Changelog
 
+- Details screen navigation is now stable when the game reorders widgets between keypresses (errands, storage, and other tabs no longer jump to unexpected items)
 - Material picker now announces material effects (overheat temperature modifier, thermal conductivity, etc.) alongside name and quantity
 - Fix: audio rulers no longer disappear when opening and closing menus
 - Translation: replaced concatenation patterns with format strings so translators can reorder words (biome names, bottled/loose labels, colony inventory, starmap research, diet restrictions, material alternatives)
@@ -18,7 +19,6 @@
 - Pilot and crew side screen now announces when a robo-pilot copilot is active alongside a dupe pilot
 - Fix: rocket landing pad dropdown no longer speaks the pad name twice, removes redundant label, and excludes invalid pads with reasons
 - Side screen dropdown options (e.g. door access, rocket restrictions) now speak their tooltip when selected
-- Fix details screen navigation jumping to unexpected items when the game reorders widgets between keypresses
 - Disabled buttons and toggles are now navigable and announce "unavailable". Pressing Enter on them plays a negative sound instead of silently failing
 - Announce "Saved" after the game finishes saving (autosave or manual)
 - H key now jumps to the Rocket Control Station when inside a rocket interior. Coordinates are relative to the control station (0,0)
