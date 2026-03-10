@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 	/// Ctrl+Up/Down jumps between section headings (Title, Subtitle,
 	/// CollapsibleHeader). Enter follows links.
 	/// </summary>
-	internal class ContentTab: BaseMenuHandler, ICodexTab {
+	internal class ContentTab: BaseMenuHandler, IScreenTab {
 		private readonly CodexScreenHandler _parent;
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
 
 		// ========================================
-		// ICodexTab
+		// IScreenTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {

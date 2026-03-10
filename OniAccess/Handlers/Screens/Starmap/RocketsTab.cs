@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Screens.Starmap {
 	/// Level 2 = items within category.
 	/// Space launches the active rocket from any level.
 	/// </summary>
-	internal class RocketsTab: NestedMenuHandler, IStarmapTab {
+	internal class RocketsTab: NestedMenuHandler, IScreenTab {
 		private readonly StarmapScreenHandler _parent;
 
 		internal RocketsTab(StarmapScreenHandler parent) : base(screen: null) {
@@ -28,7 +28,7 @@ namespace OniAccess.Handlers.Screens.Starmap {
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
 
 		// ========================================
-		// IStarmapTab
+		// IScreenTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {

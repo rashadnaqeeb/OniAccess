@@ -7,7 +7,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 	/// Tab 1: flat list of all duplicants with type-ahead search.
 	/// Enter selects a dupe and jumps to the Skills tab.
 	/// </summary>
-	internal class DupeTab: BaseMenuHandler, ISkillsTab {
+	internal class DupeTab: BaseMenuHandler, IScreenTab {
 		private readonly SkillsScreenHandler _parent;
 
 		internal DupeTab(SkillsScreenHandler parent) : base(screen: null) {
@@ -26,7 +26,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 			}.AsReadOnly();
 
 		// ========================================
-		// ISkillsTab
+		// IScreenTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {

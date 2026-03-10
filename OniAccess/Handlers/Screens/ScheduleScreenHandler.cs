@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 
 using OniAccess.Handlers.Screens.Schedule;
-using OniAccess.Input;
-using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
@@ -14,19 +12,16 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Lifecycle: OnShow-patch on ScheduleScreen.OnShow(bool).
 	/// </summary>
-	public class ScheduleScreenHandler: BaseScreenHandler {
+	public class ScheduleScreenHandler: TabbedScreenHandler {
 		private enum TabId { Schedules, Duplicants }
 
 		private readonly SchedulesTab _schedulesTab;
 		private readonly DupesTab _dupesTab;
-		private readonly IScheduleTab[] _tabs;
-
-		private TabId _activeTab;
 
 		public ScheduleScreenHandler(KScreen screen) : base(screen) {
 			_schedulesTab = new SchedulesTab(this);
 			_dupesTab = new DupesTab(this);
-			_tabs = new IScheduleTab[] { _schedulesTab, _dupesTab };
+			SetTabs(_schedulesTab, _dupesTab);
 		}
 
 		public override string DisplayName => STRINGS.ONIACCESS.SCHEDULE.HANDLER_NAME;
@@ -56,7 +51,7 @@ namespace OniAccess.Handlers.Screens {
 		};
 
 		public override IReadOnlyList<HelpEntry> HelpEntries =>
-			_activeTab == TabId.Schedules ? _schedulesHelpEntries : _dupesHelpEntries;
+			ActiveTabIndex == (int)TabId.Schedules ? _schedulesHelpEntries : _dupesHelpEntries;
 
 		// ========================================
 		// LIFECYCLE
@@ -64,33 +59,8 @@ namespace OniAccess.Handlers.Screens {
 
 		public override void OnActivate() {
 			base.OnActivate();
-			_activeTab = TabId.Schedules;
+			ActiveTabIndex = (int)TabId.Schedules;
 			_schedulesTab.OnTabActivated(announce: false);
-		}
-
-		public override void OnDeactivate() {
-			ActiveTab.OnTabDeactivated();
-			base.OnDeactivate();
-		}
-
-		// ========================================
-		// INPUT
-		// ========================================
-
-		public override bool Tick() {
-			if (base.Tick()) return true;
-
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)) {
-				int dir = InputUtil.ShiftHeld() ? -1 : 1;
-				CycleTab(dir);
-				return true;
-			}
-
-			return ActiveTab.HandleInput();
-		}
-
-		public override bool HandleKeyDown(KButtonEvent e) {
-			return ActiveTab.HandleKeyDown(e);
 		}
 
 		// ========================================
@@ -98,17 +68,5 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		internal ScheduleScreen ScheduleScreen => _screen as ScheduleScreen;
-
-		private IScheduleTab ActiveTab => _tabs[(int)_activeTab];
-
-		private void CycleTab(int direction) {
-			ActiveTab.OnTabDeactivated();
-			int next = ((int)_activeTab + direction + _tabs.Length) % _tabs.Length;
-			bool wrapped = direction > 0 ? next <= (int)_activeTab : next >= (int)_activeTab;
-			_activeTab = (TabId)next;
-			if (wrapped) ScheduleHelper.PlayWrapSound();
-			else ScheduleHelper.PlayHoverSound();
-			ActiveTab.OnTabActivated(announce: true);
-		}
 	}
 }

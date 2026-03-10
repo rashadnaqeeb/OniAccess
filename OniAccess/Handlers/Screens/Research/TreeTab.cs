@@ -9,7 +9,7 @@ namespace OniAccess.Handlers.Screens.Research {
 	/// Left/Right cycles among siblings from the last Up/Down move.
 	/// Enter queues the current tech for research.
 	/// </summary>
-	internal class TreeTab: IResearchTab {
+	internal class TreeTab: IScreenTab {
 		private readonly ResearchScreenHandler _parent;
 		private readonly NavigableGraph<Tech> _graph;
 
@@ -24,7 +24,7 @@ namespace OniAccess.Handlers.Screens.Research {
 		public string TabName => (string)STRINGS.ONIACCESS.RESEARCH.TREE_TAB;
 
 		// ========================================
-		// IResearchTab
+		// IScreenTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {

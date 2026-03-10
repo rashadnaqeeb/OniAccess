@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 
 using OniAccess.Handlers.Screens.Starmap;
-using OniAccess.Input;
-using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
@@ -15,15 +13,13 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Lifecycle: Show-patch on StarmapScreen.OnShow(bool).
 	/// </summary>
-	public class StarmapScreenHandler: BaseScreenHandler {
+	public class StarmapScreenHandler: TabbedScreenHandler {
 		private enum TabId { Rockets, Destinations, Details }
 
 		private readonly RocketsTab _rocketsTab;
 		private readonly DestinationsTab _destinationsTab;
 		private readonly DestinationDetailsTab _detailsTab;
-		private readonly IStarmapTab[] _tabs;
 
-		private TabId _activeTab;
 		private Spacecraft _activeRocket;
 		private SpaceDestination _selectedDestination;
 
@@ -31,7 +27,7 @@ namespace OniAccess.Handlers.Screens {
 			_rocketsTab = new RocketsTab(this);
 			_destinationsTab = new DestinationsTab(this);
 			_detailsTab = new DestinationDetailsTab(this);
-			_tabs = new IStarmapTab[] { _rocketsTab, _destinationsTab, _detailsTab };
+			SetTabs(_rocketsTab, _destinationsTab, _detailsTab);
 		}
 
 		public override string DisplayName =>
@@ -66,38 +62,13 @@ namespace OniAccess.Handlers.Screens {
 				DetectTelescopeTarget();
 
 			if (_selectedDestination != null && _activeRocket == null) {
-				_activeTab = TabId.Details;
+				ActiveTabIndex = (int)TabId.Details;
 				_detailsTab.OnDestinationChanged();
 				_detailsTab.OnTabActivated(announce: false);
 			} else {
-				_activeTab = TabId.Rockets;
+				ActiveTabIndex = (int)TabId.Rockets;
 				_rocketsTab.OnTabActivated(announce: false);
 			}
-		}
-
-		public override void OnDeactivate() {
-			ActiveTab.OnTabDeactivated();
-			base.OnDeactivate();
-		}
-
-		// ========================================
-		// INPUT
-		// ========================================
-
-		public override bool Tick() {
-			if (base.Tick()) return true;
-
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)) {
-				int dir = InputUtil.ShiftHeld() ? -1 : 1;
-				CycleTab(dir);
-				return true;
-			}
-
-			return ActiveTab.HandleInput();
-		}
-
-		public override bool HandleKeyDown(KButtonEvent e) {
-			return ActiveTab.HandleKeyDown(e);
 		}
 
 		// ========================================
@@ -105,11 +76,11 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		internal void JumpToDetailsTab() {
-			ActiveTab.OnTabDeactivated();
-			_activeTab = TabId.Details;
+			DeactivateCurrentTab();
+			ActiveTabIndex = (int)TabId.Details;
 			_detailsTab.OnDestinationChanged();
 			PlaySound("HUD_Mouseover");
-			ActiveTab.OnTabActivated(announce: true);
+			ActivateCurrentTab(announce: true);
 		}
 
 		internal void SetActiveRocket(Spacecraft rocket) {
@@ -118,20 +89,6 @@ namespace OniAccess.Handlers.Screens {
 
 		internal void SelectDestination(SpaceDestination dest) {
 			_selectedDestination = dest;
-		}
-
-		private IStarmapTab ActiveTab => _tabs[(int)_activeTab];
-
-		private void CycleTab(int direction) {
-			ActiveTab.OnTabDeactivated();
-			int next = ((int)_activeTab + direction + _tabs.Length) % _tabs.Length;
-			bool wrapped = direction > 0
-				? next <= (int)_activeTab
-				: next >= (int)_activeTab;
-			_activeTab = (TabId)next;
-			if (wrapped) PlaySound("HUD_Click");
-			else PlaySound("HUD_Mouseover");
-			ActiveTab.OnTabActivated(announce: true);
 		}
 
 		// ========================================

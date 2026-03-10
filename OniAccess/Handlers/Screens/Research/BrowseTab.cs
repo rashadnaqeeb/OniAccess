@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Screens.Research {
 	/// Type-ahead search across all techs at level 1.
 	/// Enter queues research. Space jumps to Tree tab.
 	/// </summary>
-	internal class BrowseTab: NestedMenuHandler, IResearchTab {
+	internal class BrowseTab: NestedMenuHandler, IScreenTab {
 		private readonly ResearchScreenHandler _parent;
 
 		internal BrowseTab(ResearchScreenHandler parent) : base(screen: null) {
@@ -24,7 +24,7 @@ namespace OniAccess.Handlers.Screens.Research {
 		public override IReadOnlyList<HelpEntry> HelpEntries => NestedNavHelpEntries;
 
 		// ========================================
-		// IResearchTab
+		// IScreenTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {

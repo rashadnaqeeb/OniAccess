@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Database;
 
 using OniAccess.Handlers.Screens.Skills;
-using OniAccess.Input;
-using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
@@ -17,22 +15,20 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Lifecycle: Show-patch on SkillsScreen.Show(bool).
 	/// </summary>
-	public class SkillsScreenHandler: BaseScreenHandler {
+	public class SkillsScreenHandler: TabbedScreenHandler {
 		private enum TabId { Duplicants, Skills, Tree }
 
 		private readonly DupeTab _dupeTab;
 		private readonly SkillsTab _skillsTab;
 		private readonly TreeTab _treeTab;
-		private readonly ISkillsTab[] _tabs;
 
-		private TabId _activeTab;
 		private IAssignableIdentity _selectedDupe;
 
 		public SkillsScreenHandler(KScreen screen) : base(screen) {
 			_dupeTab = new DupeTab(this);
 			_skillsTab = new SkillsTab(this);
 			_treeTab = new TreeTab(this);
-			_tabs = new ISkillsTab[] { _dupeTab, _skillsTab, _treeTab };
+			SetTabs(_dupeTab, _skillsTab, _treeTab);
 		}
 
 		public override string DisplayName => STRINGS.ONIACCESS.SKILLS.HANDLER_NAME;
@@ -68,33 +64,8 @@ namespace OniAccess.Handlers.Screens {
 			else if (Components.LiveMinionIdentities.Count > 0)
 				_selectedDupe = Components.LiveMinionIdentities.Items[0];
 
-			_activeTab = TabId.Duplicants;
+			ActiveTabIndex = (int)TabId.Duplicants;
 			_dupeTab.OnTabActivated(announce: false);
-		}
-
-		public override void OnDeactivate() {
-			ActiveTab.OnTabDeactivated();
-			base.OnDeactivate();
-		}
-
-		// ========================================
-		// INPUT
-		// ========================================
-
-		public override bool Tick() {
-			if (base.Tick()) return true;
-
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)) {
-				int dir = InputUtil.ShiftHeld() ? -1 : 1;
-				CycleTab(dir);
-				return true;
-			}
-
-			return ActiveTab.HandleInput();
-		}
-
-		public override bool HandleKeyDown(KButtonEvent e) {
-			return ActiveTab.HandleKeyDown(e);
 		}
 
 		// ========================================
@@ -107,15 +78,15 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		internal void JumpToSkillsTab() {
-			ActiveTab.OnTabDeactivated();
-			_activeTab = TabId.Skills;
+			DeactivateCurrentTab();
+			ActiveTabIndex = (int)TabId.Skills;
 			PlaySound("HUD_Mouseover");
-			ActiveTab.OnTabActivated(announce: true);
+			ActivateCurrentTab(announce: true);
 		}
 
 		internal void JumpToTreeTab(Skill skill) {
-			ActiveTab.OnTabDeactivated();
-			_activeTab = TabId.Tree;
+			DeactivateCurrentTab();
+			ActiveTabIndex = (int)TabId.Tree;
 			_treeTab.OnTabActivatedAt(skill);
 		}
 
@@ -126,18 +97,5 @@ namespace OniAccess.Handlers.Screens {
 			if (screen != null)
 				screen.CurrentlySelectedMinion = dupe;
 		}
-
-		private ISkillsTab ActiveTab => _tabs[(int)_activeTab];
-
-		private void CycleTab(int direction) {
-			ActiveTab.OnTabDeactivated();
-			int next = ((int)_activeTab + direction + _tabs.Length) % _tabs.Length;
-			bool wrapped = direction > 0 ? next <= (int)_activeTab : next >= (int)_activeTab;
-			_activeTab = (TabId)next;
-			if (wrapped) PlaySound("HUD_Click");
-			else PlaySound("HUD_Mouseover");
-			ActiveTab.OnTabActivated(announce: true);
-		}
-
 	}
 }

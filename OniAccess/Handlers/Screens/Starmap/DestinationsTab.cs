@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Screens.Starmap {
 	/// Enter selects destination, assigns to active rocket if grounded,
 	/// and auto-switches to Tab 3 (destination details).
 	/// </summary>
-	internal class DestinationsTab: NestedMenuHandler, IStarmapTab {
+	internal class DestinationsTab: NestedMenuHandler, IScreenTab {
 		private readonly StarmapScreenHandler _parent;
 
 		internal DestinationsTab(StarmapScreenHandler parent) : base(screen: null) {
@@ -35,7 +35,7 @@ namespace OniAccess.Handlers.Screens.Starmap {
 		public override IReadOnlyList<HelpEntry> HelpEntries => NestedNavHelpEntries;
 
 		// ========================================
-		// IStarmapTab
+		// IScreenTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {

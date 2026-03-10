@@ -7,7 +7,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 	/// Duplicants tab: flat list of all duplicants with type-ahead search.
 	/// Left/Right cycles schedule assignment.
 	/// </summary>
-	internal class DupesTab: BaseMenuHandler, IScheduleTab {
+	internal class DupesTab: BaseMenuHandler, IScreenTab {
 		private readonly ScheduleScreenHandler _parent;
 
 		internal DupesTab(ScheduleScreenHandler parent) : base(screen: null) {
@@ -24,7 +24,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			}.AsReadOnly();
 
 		// ========================================
-		// IScheduleTab
+		// IScreenTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {

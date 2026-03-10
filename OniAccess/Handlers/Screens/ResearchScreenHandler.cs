@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
 using OniAccess.Handlers.Screens.Research;
-using OniAccess.Input;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens {
@@ -15,21 +14,18 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Lifecycle: Show-patch on ResearchScreen.OnShow(bool).
 	/// </summary>
-	public class ResearchScreenHandler: BaseScreenHandler {
+	public class ResearchScreenHandler: TabbedScreenHandler {
 		private enum TabId { Browse, Queue, Tree }
 
 		private readonly BrowseTab _browseTab;
 		private readonly QueueTab _queueTab;
 		private readonly TreeTab _treeTab;
-		private readonly IResearchTab[] _tabs;
-
-		private TabId _activeTab;
 
 		public ResearchScreenHandler(KScreen screen) : base(screen) {
 			_browseTab = new BrowseTab(this);
 			_queueTab = new QueueTab(this);
 			_treeTab = new TreeTab(this);
-			_tabs = new IResearchTab[] { _browseTab, _queueTab, _treeTab };
+			SetTabs(_browseTab, _queueTab, _treeTab);
 		}
 
 		public override string DisplayName => STRINGS.ONIACCESS.RESEARCH.HANDLER_NAME;
@@ -55,40 +51,12 @@ namespace OniAccess.Handlers.Screens {
 
 		public override void OnActivate() {
 			base.OnActivate();
-			_activeTab = TabId.Browse;
+			ActiveTabIndex = (int)TabId.Browse;
 			_browseTab.OnTabActivated(announce: false);
 
 			string points = ResearchHelper.BuildPointInventoryString();
 			if (points != null)
 				SpeechPipeline.SpeakQueued(points);
-		}
-
-		public override void OnDeactivate() {
-			ActiveTab.OnTabDeactivated();
-			base.OnDeactivate();
-		}
-
-		// ========================================
-		// INPUT
-		// ========================================
-
-		public override bool Tick() {
-			if (base.Tick()) return true;
-
-			// Intercept Tab for tab cycling before delegating to the active tab.
-			// GetKeyDown returns true for one frame only, so the active tab's
-			// base.Tick() will see GetKeyDown(Tab) == false.
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)) {
-				int dir = InputUtil.ShiftHeld() ? -1 : 1;
-				CycleTab(dir);
-				return true;
-			}
-
-			return ActiveTab.HandleInput();
-		}
-
-		public override bool HandleKeyDown(KButtonEvent e) {
-			return ActiveTab.HandleKeyDown(e);
 		}
 
 		// ========================================
@@ -100,22 +68,9 @@ namespace OniAccess.Handlers.Screens {
 		/// Called by Browse and Queue tabs when the player presses Space.
 		/// </summary>
 		internal void JumpToTreeTab(Tech tech) {
-			ActiveTab.OnTabDeactivated();
-			_activeTab = TabId.Tree;
+			DeactivateCurrentTab();
+			ActiveTabIndex = (int)TabId.Tree;
 			_treeTab.OnTabActivatedAt(tech);
 		}
-
-		private IResearchTab ActiveTab => _tabs[(int)_activeTab];
-
-		private void CycleTab(int direction) {
-			ActiveTab.OnTabDeactivated();
-			int next = ((int)_activeTab + direction + _tabs.Length) % _tabs.Length;
-			bool wrapped = direction > 0 ? next <= (int)_activeTab : next >= (int)_activeTab;
-			_activeTab = (TabId)next;
-			if (wrapped) PlaySound("HUD_Click");
-			else PlaySound("HUD_Mouseover");
-			ActiveTab.OnTabActivated(announce: true);
-		}
-
 	}
 }

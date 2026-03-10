@@ -11,7 +11,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 	/// Left/Right cycles among siblings from the last Up/Down move.
 	/// Enter learns the current skill.
 	/// </summary>
-	internal class TreeTab: ISkillsTab {
+	internal class TreeTab: IScreenTab {
 		private readonly SkillsScreenHandler _parent;
 		private NavigableGraph<Skill> _graph;
 		private Tag _lastModel;
@@ -23,7 +23,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 		public string TabName => (string)STRINGS.ONIACCESS.RESEARCH.TREE_TAB;
 
 		// ========================================
-		// ISkillsTab
+		// IScreenTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {

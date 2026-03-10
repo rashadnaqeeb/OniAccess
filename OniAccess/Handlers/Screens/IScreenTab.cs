@@ -1,17 +1,17 @@
-namespace OniAccess.Handlers.Screens.Research {
+namespace OniAccess.Handlers.Screens {
 	/// <summary>
-	/// Contract for research screen tabs. Tab objects are composed inside
-	/// ResearchScreenHandler — they are never pushed onto the HandlerStack.
-	/// The parent handler delegates input to the active tab after consuming
-	/// Tab for tab cycling.
+	/// Contract for composed tabs inside tabbed screen handlers.
+	/// Tab objects are owned by the parent TabbedScreenHandler — they are never
+	/// pushed onto the HandlerStack. The parent delegates input to the active tab
+	/// after consuming Tab/Shift+Tab for tab cycling.
 	/// </summary>
-	internal interface IResearchTab {
+	public interface IScreenTab {
 		string TabName { get; }
 		void OnTabActivated(bool announce);
 		void OnTabDeactivated();
 
 		/// <summary>
-		/// Handle one frame of input. Called by ResearchScreenHandler.Tick()
+		/// Handle one frame of input. Called from TabbedScreenHandler.Tick()
 		/// after Tab has already been consumed by the parent.
 		/// Returns true if a key was consumed.
 		/// </summary>

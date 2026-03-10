@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
 using OniAccess.Input;
-using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens.Codex {
 	/// <summary>
@@ -12,19 +11,16 @@ namespace OniAccess.Handlers.Screens.Codex {
 	/// Lifecycle: Show-patch on CodexScreen.OnShow(bool).
 	/// ChangeArticle postfix resets the content tab.
 	/// </summary>
-	public class CodexScreenHandler: BaseScreenHandler {
+	public class CodexScreenHandler: TabbedScreenHandler {
 		private enum TabId { Categories, Content }
 
 		private readonly CategoriesTab _categoriesTab;
 		private readonly ContentTab _contentTab;
-		private readonly ICodexTab[] _tabs;
-
-		private TabId _activeTab;
 
 		public CodexScreenHandler(KScreen screen) : base(screen) {
 			_categoriesTab = new CategoriesTab(this);
 			_contentTab = new ContentTab(this);
-			_tabs = new ICodexTab[] { _categoriesTab, _contentTab };
+			SetTabs(_categoriesTab, _contentTab);
 		}
 
 		public override string DisplayName => STRINGS.UI.CODEX.TITLE;
@@ -54,42 +50,31 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 		public override void OnActivate() {
 			base.OnActivate();
-			_activeTab = TabId.Categories;
+			ActiveTabIndex = (int)TabId.Categories;
 			_categoriesTab.OnTabActivated(announce: false);
-		}
-
-		public override void OnDeactivate() {
-			ActiveTab.OnTabDeactivated();
-			base.OnDeactivate();
 		}
 
 		// ========================================
 		// INPUT
 		// ========================================
 
-		public override bool Tick() {
-			if (base.Tick()) return true;
-
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)) {
-				if (_activeTab == TabId.Content) {
-					JumpToCategoriesOnArticle();
-				} else {
-					int dir = InputUtil.ShiftHeld() ? -1 : 1;
-					CycleTab(dir);
-				}
-				return true;
+		protected override bool HandleTabKey() {
+			if (ActiveTabIndex == (int)TabId.Content) {
+				JumpToCategoriesOnArticle();
+			} else {
+				int dir = InputUtil.ShiftHeld() ? -1 : 1;
+				CycleTab(dir);
 			}
-
-			return ActiveTab.HandleInput();
+			return true;
 		}
 
 		public override bool HandleKeyDown(KButtonEvent e) {
 			// Escape from content tab returns to categories instead of closing
-			if (_activeTab == TabId.Content && e.TryConsume(Action.Escape)) {
+			if (ActiveTabIndex == (int)TabId.Content && e.TryConsume(Action.Escape)) {
 				JumpToCategoriesOnArticle();
 				return true;
 			}
-			return ActiveTab.HandleKeyDown(e);
+			return base.HandleKeyDown(e);
 		}
 
 		// ========================================
@@ -101,19 +86,19 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// and by OnArticleChanged for external navigations.
 		/// </summary>
 		internal void JumpToContentTab() {
-			if (_activeTab == TabId.Content) return;
-			ActiveTab.OnTabDeactivated();
-			_activeTab = TabId.Content;
+			if (ActiveTabIndex == (int)TabId.Content) return;
+			DeactivateCurrentTab();
+			ActiveTabIndex = (int)TabId.Content;
 			PlaySound("HUD_Mouseover");
-			ActiveTab.OnTabActivated(announce: true);
+			ActivateCurrentTab(announce: true);
 		}
 
 		/// <summary>
 		/// Switch from content tab to categories, landing on the current article.
 		/// </summary>
 		private void JumpToCategoriesOnArticle() {
-			ActiveTab.OnTabDeactivated();
-			_activeTab = TabId.Categories;
+			DeactivateCurrentTab();
+			ActiveTabIndex = (int)TabId.Categories;
 			PlaySound("HUD_Mouseover");
 			string entryId = CodexScreen?.activeEntryID;
 			_categoriesTab.OnTabActivatedOnEntry(announce: true, entryId: entryId);
@@ -129,22 +114,10 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// call is then a no-op since we're already on content.
 		/// </summary>
 		internal void OnArticleChanged() {
-			if (_activeTab == TabId.Content)
+			if (ActiveTabIndex == (int)TabId.Content)
 				_contentTab.OnArticleChanged();
 			else
 				JumpToContentTab();
-		}
-
-		private ICodexTab ActiveTab => _tabs[(int)_activeTab];
-
-		private void CycleTab(int direction) {
-			ActiveTab.OnTabDeactivated();
-			int next = ((int)_activeTab + direction + _tabs.Length) % _tabs.Length;
-			bool wrapped = direction > 0 ? next <= (int)_activeTab : next >= (int)_activeTab;
-			_activeTab = (TabId)next;
-			if (wrapped) PlaySound("HUD_Click");
-			else PlaySound("HUD_Mouseover");
-			ActiveTab.OnTabActivated(announce: true);
 		}
 	}
 }

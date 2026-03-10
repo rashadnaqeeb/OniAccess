@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 	/// Tab 2: NestedMenuHandler with categories (Dupe Info, Available, Locked, Mastered, Boosters).
 	/// Level 0 = categories, level 1 = items within category, level 2 = hat list (only under hat entry).
 	/// </summary>
-	internal class SkillsTab: NestedMenuHandler, ISkillsTab {
+	internal class SkillsTab: NestedMenuHandler, IScreenTab {
 		private readonly SkillsScreenHandler _parent;
 
 		// Category indices
@@ -45,7 +45,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 			}.AsReadOnly();
 
 		// ========================================
-		// ISkillsTab
+		// IScreenTab
 		// ========================================
 
 		public void OnTabActivated(bool announce) {
