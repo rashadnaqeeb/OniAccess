@@ -52,26 +52,14 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			int dy = targetRow - cursorRow;
 			int dx = targetCol - cursorCol;
 
-			string vertical = null;
-			string horizontal = null;
-
-			if (dy > 0)
-				vertical = string.Format(
-					(string)STRINGS.ONIACCESS.SCANNER.DISTANCE_VERTICAL,
-					dy, (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_UP);
-			else if (dy < 0)
-				vertical = string.Format(
-					(string)STRINGS.ONIACCESS.SCANNER.DISTANCE_VERTICAL,
-					-dy, (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN);
-
-			if (dx > 0)
-				horizontal = string.Format(
-					(string)STRINGS.ONIACCESS.SCANNER.DISTANCE_HORIZONTAL,
-					dx, (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT);
-			else if (dx < 0)
-				horizontal = string.Format(
-					(string)STRINGS.ONIACCESS.SCANNER.DISTANCE_HORIZONTAL,
-					-dx, (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT);
+			string vertical = FormatAxis(dy,
+				(string)STRINGS.ONIACCESS.SCANNER.DISTANCE_VERTICAL,
+				(string)STRINGS.ONIACCESS.SCANNER.DIRECTION_UP,
+				(string)STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN);
+			string horizontal = FormatAxis(dx,
+				(string)STRINGS.ONIACCESS.SCANNER.DISTANCE_HORIZONTAL,
+				(string)STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT,
+				(string)STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT);
 
 			if (vertical != null && horizontal != null)
 				return string.Format(
@@ -82,6 +70,15 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			if (horizontal != null)
 				return horizontal;
 			return "";
+		}
+
+		private static string FormatAxis(
+				int delta, string format, string positive, string negative) {
+			if (delta > 0)
+				return string.Format(format, delta, positive);
+			if (delta < 0)
+				return string.Format(format, -delta, negative);
+			return null;
 		}
 	}
 }
