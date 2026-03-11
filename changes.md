@@ -1,5 +1,6 @@
 # Changelog
 
+- Shift+G opens disinfect threshold settings when germ overlay is active (toggle auto-disinfect, adjust threshold via slider or direct number entry)
 - Cycling dupes with [ / ] now announces "trapped" after the dupe's name when they can't pathfind to other dupes, the telepad, or their bed
 - Farm tiles now announce plant extent and blocked status (e.g. "extends 2 up, blocked") when selecting a multi-cell plant
 - Pipe bridges, logic gates, and wire bridges now place the cursor on the input end and announce the output direction (e.g. "right" means flow goes right)

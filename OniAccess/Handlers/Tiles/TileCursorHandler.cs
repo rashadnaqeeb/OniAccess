@@ -134,6 +134,8 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Backslash, Modifier.Shift),
 			// W overwrites PanUp (camera pan — mod cursor replaces camera navigation)
 			new ConsumedKey(KKeyCode.W),
+			// Shift+G opens disinfect threshold settings (G = game's dig tool; Shift variant is free)
+			new ConsumedKey(KKeyCode.G, Modifier.Shift),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -178,6 +180,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("\\", (string)STRINGS.ONIACCESS.DUPES.HELP_JUMP),
 			new HelpEntry("Shift+\\", (string)STRINGS.ONIACCESS.DUPES.HELP_CHECK_PATH),
 			new HelpEntry("W", (string)STRINGS.ONIACCESS.WORLD_SELECTOR.OPEN),
+			new HelpEntry("Shift+G", (string)STRINGS.ONIACCESS.DISINFECT_SETTINGS.HELP_OPEN),
 			// Base game management screen hotkeys. The mod does not consume these keys;
 			// they are listed here so blind players can discover them via the help screen.
 			new HelpEntry("L", (string)STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.PRIORITIES),
@@ -491,6 +494,12 @@ namespace OniAccess.Handlers.Tiles {
 				return true;
 			}
 
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.G)
+				&& InputUtil.ShiftHeld()) {
+				OpenDisinfectSettings();
+				return true;
+			}
+
 			// Red alert toggle
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)
 				&& InputUtil.CtrlHeld() && !InputUtil.ShiftHeld()) {
@@ -732,6 +741,12 @@ namespace OniAccess.Handlers.Tiles {
 			if (!DlcManager.FeatureClusterSpaceEnabled()) return;
 			if (ClusterManager.Instance == null) return;
 			HandlerStack.Push(new WorldSelectorHandler());
+		}
+
+		private void OpenDisinfectSettings() {
+			if (OverlayScreen.Instance == null) return;
+			if (OverlayScreen.Instance.mode != OverlayModes.Disease.ID) return;
+			HandlerStack.Push(new DisinfectSettingsHandler());
 		}
 
 		private void OnActiveToolChanged(object data) {

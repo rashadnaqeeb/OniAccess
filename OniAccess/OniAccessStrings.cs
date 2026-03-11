@@ -67,6 +67,7 @@ namespace STRINGS {
 			public static LocString ERROR_SCREEN = "Error";
 			public static LocString DIAGNOSTICS = "Diagnostics";
 			public static LocString WORLD_SELECTOR = "World list";
+			public static LocString DISINFECT_SETTINGS = "disinfect settings";
 		}
 
 		// Supply closet (Klei rewards) screen messages
@@ -1373,6 +1374,13 @@ namespace STRINGS {
 			public static LocString ROCKET = "rocket";
 			// {0} = world name
 			public static LocString DISCOVERED = "{0} discovered";
+		}
+
+		// Disinfect threshold settings (germ overlay sidebar panel)
+		public class DISINFECT_SETTINGS {
+			public static LocString AUTO_DISINFECT = "auto-disinfect";
+			public static LocString THRESHOLD_INPUT = "threshold";
+			public static LocString HELP_OPEN = "Open disinfect settings";
 		}
 
 		// Starmap screen (base game and Spaced Out DLC cluster map)
