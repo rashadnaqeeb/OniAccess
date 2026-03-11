@@ -1,5 +1,6 @@
 # Changelog
 
+- Cycling dupes with [ / ] now announces "trapped" after the dupe's name when they can't pathfind to other dupes, the telepad, or their bed
 - Farm tiles now announce plant extent and blocked status (e.g. "extends 2 up, blocked") when selecting a multi-cell plant
 - Pipe bridges, logic gates, and wire bridges now place the cursor on the input end and announce the output direction (e.g. "right" means flow goes right)
 - Fix: logic gate ports (NOT, AND, OR, XOR, buffer, filter, multiplexer, demultiplexer) now announce port names in the automation overlay

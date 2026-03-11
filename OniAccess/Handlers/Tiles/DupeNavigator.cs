@@ -78,9 +78,59 @@ namespace OniAccess.Handlers.Tiles {
 			string name = mi.GetProperName();
 			string task = BuildTaskPart(mi);
 			string statuses = BuildStatusPart(mi);
+			bool trapped = IsTrapped(mi);
+			var parts = new System.Text.StringBuilder(name);
+			if (trapped)
+				parts.Append(", ").Append(
+					(string)STRINGS.UI.COLONY_DIAGNOSTICS.TRAPPEDDUPLICANTDIAGNOSTIC.ALL_NAME);
+			parts.Append(", ").Append(task);
 			if (statuses != null)
-				return $"{name}, {task}, {statuses}";
-			return $"{name}, {task}";
+				parts.Append(", ").Append(statuses);
+			return parts.ToString();
+		}
+
+		private static bool IsTrapped(MinionIdentity mi) {
+			try {
+				if (!CheckMinionBasicallyIdle(mi))
+					return false;
+				int worldId = mi.GetComponent<Navigator>().GetMyWorldId();
+				if (ClusterManager.Instance.GetWorld(worldId).IsModuleInterior)
+					return false;
+				var nav = mi.GetComponent<Navigator>();
+				foreach (var other in Components.LiveMinionIdentities.GetWorldItems(worldId)) {
+					if (other != mi && !CheckMinionBasicallyIdle(other)
+						&& nav.CanReach(other.GetComponent<IApproachable>()))
+						return false;
+				}
+				var telepads = Components.Telepads.GetWorldItems(worldId);
+				if (telepads != null && telepads.Count > 0
+					&& nav.CanReach(telepads[0].GetComponent<IApproachable>()))
+					return false;
+				var receivers = Components.WarpReceivers.GetWorldItems(worldId);
+				if (receivers != null && receivers.Count > 0) {
+					foreach (var receiver in receivers) {
+						if (nav.CanReach(receiver.GetComponent<IApproachable>()))
+							return false;
+					}
+				}
+				foreach (var bed in Components.NormalBeds.WorldItemsEnumerate(worldId, true)) {
+					var assignable = bed.assignable;
+					if (assignable != null && assignable.IsAssignedTo(mi)
+						&& nav.CanReach(bed.approachable))
+						return false;
+				}
+				return true;
+			} catch (System.Exception ex) {
+				Log.Warn($"DupeNavigator.IsTrapped: {ex}");
+				return false;
+			}
+		}
+
+		private static bool CheckMinionBasicallyIdle(MinionIdentity minion) {
+			var kpid = minion.GetComponent<KPrefabID>();
+			return kpid.HasTag(GameTags.Idle)
+				|| kpid.HasTag(GameTags.RecoveringBreath)
+				|| kpid.HasTag(GameTags.MakingMess);
 		}
 
 		private static string BuildTaskPart(MinionIdentity mi) {
