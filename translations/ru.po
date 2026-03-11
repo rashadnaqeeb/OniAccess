@@ -1519,11 +1519,6 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.CONDUIT_SOLID"
 msgid "solid"
 msgstr "твёрдое"
 
-#. STRINGS.ONIACCESS.GLANCE.CONNECTS
-msgctxt "STRINGS.ONIACCESS.GLANCE.CONNECTS"
-msgid "connects {0}"
-msgstr "соединяет {0}"
-
 #. STRINGS.ONIACCESS.GLANCE.DISEASE_CLEAR
 msgctxt "STRINGS.ONIACCESS.GLANCE.DISEASE_CLEAR"
 msgid "clean"
@@ -1693,6 +1688,41 @@ msgstr "вход радболтов"
 msgctxt "STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT"
 msgid "radbolt output"
 msgstr "выход радболтов"
+
+#. STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE"
+msgid "unconnected"
+msgstr "не подключено"
+
+#. STRINGS.ONIACCESS.GLANCE.SHAPE_CORNER
+msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_CORNER"
+msgid "{0} {1} corner"
+msgstr "угол {0} {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.SHAPE_CROSS
+msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_CROSS"
+msgid "cross"
+msgstr "перекрёсток"
+
+#. STRINGS.ONIACCESS.GLANCE.SHAPE_END
+msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_END"
+msgid "ends {0}"
+msgstr "тупик {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SHAPE_HORIZONTAL
+msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_HORIZONTAL"
+msgid "horizontal"
+msgstr "горизонтально"
+
+#. STRINGS.ONIACCESS.GLANCE.SHAPE_T
+msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_T"
+msgid "{0} tee junction"
+msgstr "Т-образное соединение {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SHAPE_VERTICAL
+msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_VERTICAL"
+msgid "vertical"
+msgstr "вертикально"
 
 #. STRINGS.ONIACCESS.GLANCE.SOLID_INPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.SOLID_INPUT"
