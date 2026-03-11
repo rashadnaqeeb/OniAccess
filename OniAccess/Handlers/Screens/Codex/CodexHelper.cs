@@ -41,7 +41,9 @@ namespace OniAccess.Handlers.Screens.Codex {
 			}
 
 			// YAML-based categories: scan all entries for category strings
-			// that don't map to a known CategoryEntry already in the list.
+			// that aren't already reachable in the programmatic tree.
+			// Skip categories whose ID maps to a CategoryEntry — those
+			// are nested sub-categories (e.g. VIDEOTUTORIALS under LESSONS).
 			var yamlCatIds = new HashSet<string>();
 			foreach (var kvp in CodexCache.entries) {
 				var entry = kvp.Value;
@@ -50,6 +52,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 				string catId = entry.category;
 				if (catId == "Root") continue;
 				if (seen.Contains(catId)) continue;
+				if (CodexCache.entries.TryGetValue(catId, out var existing)
+					&& existing is CategoryEntry) continue;
 				if (!IsEntryVisible(entry)) continue;
 				yamlCatIds.Add(catId);
 			}
