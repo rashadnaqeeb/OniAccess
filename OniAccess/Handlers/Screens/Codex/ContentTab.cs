@@ -21,6 +21,15 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// </summary>
 		private readonly List<ContentItem> _items = new List<ContentItem>();
 
+		/// <summary>
+		/// Maps each ContentContainer to its first index in _items.
+		/// Used for positioning the cursor on a specific SubEntry.
+		/// </summary>
+		private readonly List<(ContentContainer cc, int startIndex)> _containerMap
+			= new List<(ContentContainer, int)>();
+
+		private string _pendingSubEntryId;
+
 		internal ContentTab(CodexScreenHandler parent) : base(screen: null) {
 			_parent = parent;
 		}
@@ -51,7 +60,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
 			RebuildWidgetList();
-			SpeakFirstItem();
+			ApplyPendingSubEntry();
+			SpeakCurrentItemQueued();
 		}
 
 		public void OnTabDeactivated() {
@@ -81,7 +91,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 			_search.Clear();
 			SuppressSearchThisFrame();
 			RebuildWidgetList();
-			SpeakFirstItem();
+			ApplyPendingSubEntry();
+			SpeakCurrentItemQueued();
 		}
 
 		// ========================================
@@ -232,11 +243,37 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		// ========================================
+		// SubEntry cursor positioning
+		// ========================================
+
+		internal void SetPendingSubEntryId(string id) { _pendingSubEntryId = id; }
+
+		private void SeekToSubEntry(string subEntryId) {
+			var subEntry = CodexCache.FindSubEntry(subEntryId);
+			if (subEntry?.contentContainers == null || subEntry.contentContainers.Count == 0) return;
+			var target = subEntry.contentContainers[0];
+			foreach (var (cc, startIndex) in _containerMap) {
+				if (object.ReferenceEquals(cc, target) && startIndex < _items.Count) {
+					CurrentIndex = startIndex;
+					return;
+				}
+			}
+		}
+
+		private void ApplyPendingSubEntry() {
+			if (_pendingSubEntryId == null) return;
+			string id = _pendingSubEntryId;
+			_pendingSubEntryId = null;
+			SeekToSubEntry(id);
+		}
+
+		// ========================================
 		// Widget list building
 		// ========================================
 
 		private void RebuildWidgetList() {
 			_items.Clear();
+			_containerMap.Clear();
 
 			var codexScreen = _parent.CodexScreen;
 			if (codexScreen == null) return;
@@ -248,6 +285,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 			string lastLockedId = null;
 			foreach (var cc in entry.contentContainers) {
+				_containerMap.Add((cc, _items.Count));
 				if (!CodexHelper.IsContainerVisible(cc)) continue;
 
 				if (CodexHelper.IsContainerLocked(cc)) {
@@ -298,12 +336,13 @@ namespace OniAccess.Handlers.Screens.Codex {
 			}
 		}
 
-		private void SpeakFirstItem() {
+		private void SpeakCurrentItemQueued() {
 			if (_items.Count == 0) {
 				SpeechPipeline.SpeakQueued(STRINGS.ONIACCESS.CODEX.NO_ARTICLE);
 				return;
 			}
-			string text = _items[0].text;
+			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
+			string text = _items[CurrentIndex].text;
 			if (!string.IsNullOrEmpty(text))
 				SpeechPipeline.SpeakQueued(text);
 		}

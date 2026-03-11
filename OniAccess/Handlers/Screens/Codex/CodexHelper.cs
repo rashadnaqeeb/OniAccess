@@ -118,6 +118,40 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		/// <summary>
+		/// Whether a SubEntry should appear in the navigator.
+		/// </summary>
+		internal static bool IsSubEntryVisible(SubEntry sub) {
+			if (sub.disabled) return false;
+			if (!Game.IsCorrectDlcActiveForCurrentSave(sub)) return false;
+			if (!string.IsNullOrEmpty(sub.lockID) && !Game.Instance.unlocks.IsUnlocked(sub.lockID))
+				return false;
+			return true;
+		}
+
+		/// <summary>
+		/// Get visible SubEntries for drilling. Returns empty if count &lt;= 1
+		/// (a single SubEntry IS the entry content, not worth drilling into).
+		/// CategoryEntries never have SubEntries worth drilling.
+		/// </summary>
+		internal static List<SubEntry> GetVisibleSubEntries(CodexEntry entry) {
+			var result = new List<SubEntry>();
+			if (entry == null || entry is CategoryEntry) return result;
+			if (entry.subEntries == null || entry.subEntries.Count <= 1) return result;
+			foreach (var sub in entry.subEntries)
+				if (IsSubEntryVisible(sub)) result.Add(sub);
+			return result;
+		}
+
+		/// <summary>
+		/// Resolve SubEntry display name, falling back to title LocString key.
+		/// </summary>
+		internal static string GetSubEntryName(SubEntry sub) {
+			if (!string.IsNullOrEmpty(sub.name)) return sub.name;
+			if (!string.IsNullOrEmpty(sub.title)) return Strings.Get(sub.title);
+			return sub.id;
+		}
+
+		/// <summary>
 		/// Extract link IDs from a CodexText's raw text (TMP link markup).
 		/// Returns (linkID, displayText) pairs.
 		/// </summary>

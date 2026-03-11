@@ -4,13 +4,16 @@ using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens.Codex {
 	/// <summary>
-	/// Categories tab: 3-level NestedMenuHandler.
+	/// Categories tab: 4-level NestedMenuHandler.
 	/// Level 0 = top categories from HOME.entriesInCategory
 	/// Level 1 = entries or sub-categories within a category
-	/// Level 2 = entries within a sub-category (only when level 1 is a CategoryEntry)
+	/// Level 2 = entries within a sub-category (CategoryEntry children)
+	///           OR SubEntries of a level 1 entry (critter morphs, etc.)
+	/// Level 3 = SubEntries of a level 2 entry inside a sub-category
 	///
-	/// Leaf activation calls ChangeArticle on the game screen and
-	/// switches to the content tab.
+	/// Enter on a CodexEntry with SubEntries opens the article directly.
+	/// Right arrow drills into SubEntries. Enter on a SubEntry opens the
+	/// parent article with the content cursor at that SubEntry's section.
 	/// </summary>
 	internal class CategoriesTab: NestedMenuHandler, IScreenTab {
 		private readonly CodexScreenHandler _parent;
@@ -67,64 +70,68 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// NestedMenuHandler abstracts
 		// ========================================
 
-		protected override int MaxLevel => 2;
+		protected override int MaxLevel => 3;
 		protected override int SearchLevel => 1;
+
+		protected override bool ShouldDrillOnActivate() {
+			var entry = ResolveEntryAtLevel(Level);
+			return entry is CategoryEntry;
+		}
 
 		protected override int GetItemCount(int level, int[] indices) {
 			if (level == 0)
 				return CodexHelper.GetTopCategories().Count;
 
-			var topCats = CodexHelper.GetTopCategories();
-			if (indices[0] < 0 || indices[0] >= topCats.Count) return 0;
+			var parent = ResolveEntryAtLevel(level - 1, indices);
+			if (parent == null) return 0;
 
-			if (level == 1)
-				return CodexHelper.GetEntriesInCategory(topCats[indices[0]]).Count;
+			if (parent is CategoryEntry)
+				return CodexHelper.GetEntriesInCategory(parent).Count;
 
-			// Level 2: only if level 1 item is a CategoryEntry
-			var level1Entries = CodexHelper.GetEntriesInCategory(topCats[indices[0]]);
-			if (indices[1] < 0 || indices[1] >= level1Entries.Count) return 0;
-			var level1Item = level1Entries[indices[1]];
-			if (level1Item is CategoryEntry)
-				return CodexHelper.GetEntriesInCategory(level1Item).Count;
-			return 0;
+			return CodexHelper.GetVisibleSubEntries(parent).Count;
 		}
 
 		protected override string GetItemLabel(int level, int[] indices) {
-			var topCats = CodexHelper.GetTopCategories();
-			if (indices[0] < 0 || indices[0] >= topCats.Count) return null;
-			if (level == 0)
+			if (level == 0) {
+				var topCats = CodexHelper.GetTopCategories();
+				if (indices[0] < 0 || indices[0] >= topCats.Count) return null;
 				return CodexHelper.GetEntryName(topCats[indices[0]]);
-
-			var entries = CodexHelper.GetEntriesInCategory(topCats[indices[0]]);
-
-			if (level == 1) {
-				if (indices[1] < 0 || indices[1] >= entries.Count) return null;
-				return CodexHelper.GetEntryName(entries[indices[1]]);
 			}
 
-			// Level 2
-			if (indices[1] < 0 || indices[1] >= entries.Count) return null;
-			var subEntries = CodexHelper.GetEntriesInCategory(entries[indices[1]]);
-			if (indices[2] < 0 || indices[2] >= subEntries.Count) return null;
-			return CodexHelper.GetEntryName(subEntries[indices[2]]);
+			var parent = ResolveEntryAtLevel(level - 1, indices);
+			if (parent == null) return null;
+
+			if (parent is CategoryEntry) {
+				var children = CodexHelper.GetEntriesInCategory(parent);
+				if (indices[level] < 0 || indices[level] >= children.Count) return null;
+				return CodexHelper.GetEntryName(children[indices[level]]);
+			}
+
+			var subs = CodexHelper.GetVisibleSubEntries(parent);
+			if (indices[level] < 0 || indices[level] >= subs.Count) return null;
+			return CodexHelper.GetSubEntryName(subs[indices[level]]);
 		}
 
 		protected override string GetParentLabel(int level, int[] indices) {
-			var topCats = CodexHelper.GetTopCategories();
-			if (indices[0] < 0 || indices[0] >= topCats.Count) return null;
-
-			if (level == 2) {
-				var entries = CodexHelper.GetEntriesInCategory(topCats[indices[0]]);
-				if (indices[1] >= 0 && indices[1] < entries.Count)
-					return CodexHelper.GetEntryName(entries[indices[1]]);
-			}
-			if (level >= 1)
-				return CodexHelper.GetEntryName(topCats[indices[0]]);
-			return null;
+			if (level <= 0) return null;
+			var parent = ResolveEntryAtLevel(level - 1, indices);
+			if (parent == null) return null;
+			return CodexHelper.GetEntryName(parent);
 		}
 
 		protected override void ActivateLeafItem(int[] indices) {
-			var entry = ResolveEntry(indices);
+			var sub = ResolveSubEntry(indices);
+			if (sub != null) {
+				_parent.ContentTabRef.SetPendingSubEntryId(sub.id);
+				var screen = _parent.CodexScreen;
+				if (screen == null) return;
+				PlaySound("HUD_Click_Open");
+				screen.ChangeArticle(sub.id);
+				_parent.JumpToContentTab();
+				return;
+			}
+
+			var entry = ResolveEntryAtLevel(Level, indices);
 			if (entry == null) return;
 
 			var codexScreen = _parent.CodexScreen;
@@ -137,21 +144,14 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 		protected override int GetSearchTargetLevel(int flatIndex, int[] mappedIndices) {
 			var all = GetAllSearchableEntries();
-			if (flatIndex >= 0 && flatIndex < all.Count && all[flatIndex].isCategory)
-				return 0;
-			// If the mapped level-1 entry is a CategoryEntry (sub-category),
-			// search should land at level 2. Otherwise level 1.
-			var topCats = CodexHelper.GetTopCategories();
-			if (mappedIndices[0] < 0 || mappedIndices[0] >= topCats.Count) return 1;
-			var entries = CodexHelper.GetEntriesInCategory(topCats[mappedIndices[0]]);
-			if (mappedIndices[1] < 0 || mappedIndices[1] >= entries.Count) return 1;
-			if (entries[mappedIndices[1]] is CategoryEntry)
-				return 2;
-			return 1;
+			if (flatIndex < 0 || flatIndex >= all.Count) return 1;
+			var item = all[flatIndex];
+			if (item.isCategory) return 0;
+			return item.targetLevel;
 		}
 
 		// ========================================
-		// Search across all leaf entries
+		// Search across all leaf entries and SubEntries
 		// ========================================
 
 		protected override int GetSearchItemCount(int[] indices) {
@@ -161,7 +161,9 @@ namespace OniAccess.Handlers.Screens.Codex {
 		protected override string GetSearchItemLabel(int flatIndex) {
 			var all = GetAllSearchableEntries();
 			if (flatIndex < 0 || flatIndex >= all.Count) return null;
-			return CodexHelper.GetEntryName(all[flatIndex].entry);
+			var item = all[flatIndex];
+			if (item.subEntryName != null) return item.subEntryName;
+			return CodexHelper.GetEntryName(item.entry);
 		}
 
 		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
@@ -170,7 +172,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 			var item = all[flatIndex];
 			outIndices[0] = item.catIdx;
 			outIndices[1] = item.entryIdx;
-			outIndices[2] = item.subIdx;
+			outIndices[2] = item.subCatIdx;
+			outIndices[3] = item.subEntryIdx;
 		}
 
 		// ========================================
@@ -183,6 +186,50 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		/// <summary>
+		/// Resolve the CodexEntry at a given level using the current live indices.
+		/// </summary>
+		private CodexEntry ResolveEntryAtLevel(int level) {
+			// Build a snapshot of live indices for ResolveEntryAtLevel(int, int[])
+			int[] snap = new int[4];
+			for (int i = 0; i <= level && i < 4; i++)
+				snap[i] = GetIndex(i);
+			return ResolveEntryAtLevel(level, snap);
+		}
+
+		/// <summary>
+		/// Walk the category tree to resolve the CodexEntry at a given level.
+		/// Only traverses CategoryEntry children (not SubEntries).
+		/// </summary>
+		private static CodexEntry ResolveEntryAtLevel(int level, int[] indices) {
+			var topCats = CodexHelper.GetTopCategories();
+			if (indices[0] < 0 || indices[0] >= topCats.Count) return null;
+			if (level == 0) return topCats[indices[0]];
+
+			CodexEntry current = topCats[indices[0]];
+			for (int l = 1; l <= level; l++) {
+				if (!(current is CategoryEntry)) return null;
+				var children = CodexHelper.GetEntriesInCategory(current);
+				if (indices[l] < 0 || indices[l] >= children.Count) return null;
+				current = children[indices[l]];
+			}
+			return current;
+		}
+
+		/// <summary>
+		/// If the current level points to a SubEntry (parent is non-CategoryEntry
+		/// with visible SubEntries), return that SubEntry. Otherwise null.
+		/// </summary>
+		private SubEntry ResolveSubEntry(int[] indices) {
+			if (Level < 1) return null;
+			var parent = ResolveEntryAtLevel(Level - 1, indices);
+			if (parent == null || parent is CategoryEntry) return null;
+			var subs = CodexHelper.GetVisibleSubEntries(parent);
+			if (subs.Count == 0) return null;
+			if (indices[Level] < 0 || indices[Level] >= subs.Count) return null;
+			return subs[indices[Level]];
+		}
+
+		/// <summary>
 		/// Position the cursor on the leaf entry matching entryId.
 		/// Returns false if the entry isn't found in the category tree.
 		/// </summary>
@@ -190,16 +237,14 @@ namespace OniAccess.Handlers.Screens.Codex {
 			var all = GetAllSearchableEntries();
 			for (int i = 0; i < all.Count; i++) {
 				if (all[i].isCategory) continue;
+				if (all[i].subEntryName != null) continue;
 				if (all[i].entry.id == entryId) {
 					var item = all[i];
 					SetIndex(0, item.catIdx);
 					SetIndex(1, item.entryIdx);
-					SetIndex(2, item.subIdx);
-
-					var topCats = CodexHelper.GetTopCategories();
-					var entries = CodexHelper.GetEntriesInCategory(topCats[item.catIdx]);
-					Level = (entries[item.entryIdx] is CategoryEntry) ? 2 : 1;
-
+					SetIndex(2, item.subCatIdx);
+					SetIndex(3, 0);
+					Level = item.targetLevel;
 					_search.Clear();
 					SuppressSearchThisFrame();
 					return true;
@@ -208,27 +253,15 @@ namespace OniAccess.Handlers.Screens.Codex {
 			return false;
 		}
 
-		private CodexEntry ResolveEntry(int[] indices) {
-			var topCats = CodexHelper.GetTopCategories();
-			if (indices[0] < 0 || indices[0] >= topCats.Count) return null;
-			var entries = CodexHelper.GetEntriesInCategory(topCats[indices[0]]);
-			if (indices[1] < 0 || indices[1] >= entries.Count) return null;
-
-			var level1 = entries[indices[1]];
-			if (level1 is CategoryEntry) {
-				var subEntries = CodexHelper.GetEntriesInCategory(level1);
-				if (indices[2] < 0 || indices[2] >= subEntries.Count) return null;
-				return subEntries[indices[2]];
-			}
-			return level1;
-		}
-
 		private struct FlatEntry {
 			internal CodexEntry entry;
 			internal int catIdx;
 			internal int entryIdx;
-			internal int subIdx;
+			internal int subCatIdx;
+			internal int subEntryIdx;
+			internal int targetLevel;
 			internal bool isCategory;
+			internal string subEntryName;
 		}
 
 		private List<FlatEntry> GetAllSearchableEntries() {
@@ -244,16 +277,22 @@ namespace OniAccess.Handlers.Screens.Codex {
 								entry = subEntries[s],
 								catIdx = c,
 								entryIdx = e,
-								subIdx = s
+								subCatIdx = s,
+								targetLevel = 2
 							});
+							// SubEntries of entries within a sub-category (level 3)
+							AddSubEntrySearchItems(result, subEntries[s], c, e, s, 3);
 						}
 					} else {
 						result.Add(new FlatEntry {
 							entry = entries[e],
 							catIdx = c,
 							entryIdx = e,
-							subIdx = 0
+							subCatIdx = 0,
+							targetLevel = 1
 						});
+						// SubEntries of direct entries (level 2)
+						AddSubEntrySearchItems(result, entries[e], c, e, 0, 2);
 					}
 				}
 			}
@@ -265,6 +304,24 @@ namespace OniAccess.Handlers.Screens.Codex {
 				});
 			}
 			return result;
+		}
+
+		private static void AddSubEntrySearchItems(
+			List<FlatEntry> result, CodexEntry entry,
+			int catIdx, int entryIdx, int subCatIdx, int targetLevel
+		) {
+			var subs = CodexHelper.GetVisibleSubEntries(entry);
+			for (int i = 0; i < subs.Count; i++) {
+				result.Add(new FlatEntry {
+					entry = entry,
+					catIdx = catIdx,
+					entryIdx = entryIdx,
+					subCatIdx = subCatIdx,
+					subEntryIdx = i,
+					targetLevel = targetLevel,
+					subEntryName = CodexHelper.GetSubEntryName(subs[i])
+				});
+			}
 		}
 	}
 }

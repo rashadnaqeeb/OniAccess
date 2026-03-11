@@ -83,6 +83,13 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		protected virtual int GetSearchTargetLevel(int flatIndex, int[] mappedIndices) => SearchLevel;
 
+		/// <summary>
+		/// Whether Enter on the current item should drill down (true) or
+		/// activate as a leaf (false). Default is true. Override when some
+		/// drillable items should open directly on Enter (Right still drills).
+		/// </summary>
+		protected virtual bool ShouldDrillOnActivate() => true;
+
 		// ========================================
 		// BASE CLASS BRIDGES
 		// ========================================
@@ -210,7 +217,7 @@ namespace OniAccess.Handlers {
 
 		protected override void ActivateCurrentItem() {
 			if (ItemCount == 0) return;
-			if (_level < MaxLevel && CanDrillDown())
+			if (_level < MaxLevel && CanDrillDown() && ShouldDrillOnActivate())
 				DrillDown();
 			else
 				ActivateLeafItem(_indices);
