@@ -1504,6 +1504,11 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.ACCESS_POINT"
 msgid "access point"
 msgstr "point d'accès"
 
+#. STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE
+msgctxt "STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE"
+msgid "{0} middle"
+msgstr "milieu {0}"
+
 #. STRINGS.ONIACCESS.GLANCE.CONDUIT_GAS
 msgctxt "STRINGS.ONIACCESS.GLANCE.CONDUIT_GAS"
 msgid "gas"

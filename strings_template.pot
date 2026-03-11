@@ -1,4520 +1,4515 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: OniAccess\n"
-"PO-Revision-Date: 2026-03-09\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: ru\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Application: Oxygen Not Included"
+"POT Version: 2.0"
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.ALLOWED
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.ALLOWED"
 msgid "allowed"
-msgstr "разрешено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.BLOCKED
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.BLOCKED"
 msgid "blocked"
-msgstr "заблокировано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_DOWN
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_DOWN"
 msgid "default, passing from top to bottom"
-msgstr "по умолчанию, проход сверху вниз"
+msgstr ""
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_LEFT
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_LEFT"
 msgid "default, passing from right to left"
-msgstr "по умолчанию, проход справа налево"
+msgstr ""
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_RIGHT
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_RIGHT"
 msgid "default, passing from left to right"
-msgstr "по умолчанию, проход слева направо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_UP
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.DEFAULT_PASS_UP"
 msgid "default, passing from bottom to top"
-msgstr "по умолчанию, проход снизу вверх"
+msgstr ""
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.LOCKED
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.LOCKED"
 msgid "Door locked, access control disabled"
-msgstr "Дверь заперта, контроль доступа отключён"
+msgstr ""
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_DOWN
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_DOWN"
 msgid "passing from top to bottom"
-msgstr "проход сверху вниз"
+msgstr ""
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_LEFT
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_LEFT"
 msgid "passing from right to left"
-msgstr "проход справа налево"
+msgstr ""
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_RIGHT
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_RIGHT"
 msgid "passing from left to right"
-msgstr "проход слева направо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_UP
 msgctxt "STRINGS.ONIACCESS.ACCESS_CONTROL.PASS_UP"
 msgid "passing from bottom to top"
-msgstr "проход снизу вверх"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.AVG_DECOR
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.AVG_DECOR"
 msgid "average {0} decor"
-msgstr "среднее {0} декор"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.AVG_DISEASE
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.AVG_DISEASE"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.AVG_LUX
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.AVG_LUX"
 msgid "average {0}"
-msgstr "среднее {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.AVG_RADS
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.AVG_RADS"
 msgid "average {0}"
-msgstr "среднее {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.AVG_TEMPERATURE
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.AVG_TEMPERATURE"
 msgid "average {0}"
-msgstr "среднее {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.BUILDING_COUNT
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.BUILDING_COUNT"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.CRITTER_PLURAL
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.CRITTER_PLURAL"
 msgid "{0} critters"
-msgstr "{0} существ"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.CRITTER_SINGULAR
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.CRITTER_SINGULAR"
 msgid "{0} critter"
-msgstr "{0} существо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.DISEASE_CLEAR
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.DISEASE_CLEAR"
 msgid "no germs"
-msgstr "нет микробов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.DUPE_PLURAL
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.DUPE_PLURAL"
 msgid "{0} dupes"
-msgstr "{0} дупов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.DUPE_SINGULAR
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.DUPE_SINGULAR"
 msgid "{0} dupe"
-msgstr "{0} дуп"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_MASS_PCT
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_MASS_PCT"
 msgid "{0} {1}%: {2}"
-msgstr "{0} {1}%: {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_PCT
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.ELEMENT_PCT"
 msgid "{0} {1}%"
-msgstr "{0} {1}%"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.EMPTY
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.EMPTY"
 msgid "empty"
-msgstr "пусто"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.GAS
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.GAS"
 msgid "gas"
-msgstr "газ"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.HELP_CYCLE_SIZE
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.HELP_CYCLE_SIZE"
 msgid "Increase or decrease cursor size"
-msgstr "Увеличить или уменьшить размер курсора"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.HELP_RESET_SIZE
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.HELP_RESET_SIZE"
 msgid "Reset cursor to 1x1"
-msgstr "Сбросить курсор до 1x1"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.LIQUID
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.LIQUID"
 msgid "liquid"
-msgstr "жидкость"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.NO_PLANTS
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.NO_PLANTS"
 msgid "no plants"
-msgstr "нет растений"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.NO_ROOMS
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.NO_ROOMS"
 msgid "no rooms"
-msgstr "нет комнат"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.ORDER_COUNT
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.ORDER_COUNT"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.PLANT_ENTRY
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.PLANT_ENTRY"
 msgid "{0} {1}, {2}% grown"
-msgstr "{0} {1}, {2}% выросло"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.SCAN_ERROR
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.SCAN_ERROR"
 msgid "scan error"
-msgstr "ошибка сканирования"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.SIZE_FORMAT
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.SIZE_FORMAT"
 msgid "{0}x{0}"
-msgstr "{0}x{0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.SOLID
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.SOLID"
 msgid "solid"
-msgstr "твёрдое"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.UNCATEGORIZED_ROOMS
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.UNCATEGORIZED_ROOMS"
 msgid "{0} uncategorized"
-msgstr "{0} без категории"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.UNEXPLORED_PCT
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.UNEXPLORED_PCT"
 msgid "{0}% unexplored"
-msgstr "{0}% неисследовано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BIG_CURSOR.VACUUM
 msgctxt "STRINGS.ONIACCESS.BIG_CURSOR.VACUUM"
 msgid "vacuum"
-msgstr "вакуум"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BOOKMARKS.BOOKMARK_SET
 msgctxt "STRINGS.ONIACCESS.BOOKMARKS.BOOKMARK_SET"
 msgid "bookmark {0} set"
-msgstr "закладка {0} установлена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK
 msgctxt "STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK"
 msgid "Jump to bookmark"
-msgstr "Перейти к закладке"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BOOKMARKS.HELP_HOME
 msgctxt "STRINGS.ONIACCESS.BOOKMARKS.HELP_HOME"
 msgid "Jump to Printing Pod"
-msgstr "Перейти к печатному станку"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_BOOKMARK
 msgctxt "STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_BOOKMARK"
 msgid "Distance to bookmark"
-msgstr "Расстояние до закладки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK
 msgctxt "STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK"
 msgid "Set bookmark"
-msgstr "Установить закладку"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BOOKMARKS.NO_BOOKMARK
 msgctxt "STRINGS.ONIACCESS.BOOKMARKS.NO_BOOKMARK"
 msgid "no bookmark"
-msgstr "нет закладки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BOOKMARKS.NO_HOME
 msgctxt "STRINGS.ONIACCESS.BOOKMARKS.NO_HOME"
 msgid "no printing pod"
-msgstr "нет печатного станка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BOOKMARKS.ORIENT_DISTANCE
 msgctxt "STRINGS.ONIACCESS.BOOKMARKS.ORIENT_DISTANCE"
 msgid "{0}. {1}"
-msgstr "{0}. {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BOOKMARKS.ORIENT_HERE
 msgctxt "STRINGS.ONIACCESS.BOOKMARKS.ORIENT_HERE"
 msgid "here. {0}"
-msgstr "здесь. {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.ACTION_MENU
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ACTION_MENU"
 msgid "action menu"
-msgstr "меню действий"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.ATTR_MODIFIER
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ATTR_MODIFIER"
 msgid "{0} {1}{2}"
-msgstr "{0} {1}{2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.ATTR_VALUE
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ATTR_VALUE"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.ATTRIBUTES_FMT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ATTRIBUTES_FMT"
 msgid "attributes: {0}"
-msgstr "характеристики: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.CANCEL_CONSTRUCTION
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.CANCEL_CONSTRUCTION"
 msgid "canceled"
-msgstr "отменено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.CANCELED
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.CANCELED"
 msgid "canceled"
-msgstr "отменено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.CATEGORY_FMT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.CATEGORY_FMT"
 msgid "category: {0}"
-msgstr "категория: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.CONFIRM_BUILD_RECT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.CONFIRM_BUILD_RECT"
 msgid "placed {0}, priority {1}"
-msgstr "размещено {0}, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTION_FMT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTION_FMT"
 msgid "description: {0}"
-msgstr "описание: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTOR_FMT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.DESCRIPTOR_FMT"
 msgid "{0}: {1}"
-msgstr "{0}: {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.EFFECTS
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EFFECTS"
 msgid "effects"
-msgstr "эффекты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN"
 msgid "{0} down"
-msgstr "{0} вниз"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.EXTENT_FORMAT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EXTENT_FORMAT"
 msgid "extends {0}"
-msgstr "простирается {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT"
 msgid "{0} left"
-msgstr "{0} влево"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT"
 msgid "{0} right"
-msgstr "{0} вправо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP"
 msgid "{0} up"
-msgstr "{0} вверх"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.FACADE_DEFAULT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.FACADE_DEFAULT"
 msgid "default"
-msgstr "по умолчанию"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.FACADE_FMT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.FACADE_FMT"
 msgid "facade: {0}"
-msgstr "облик: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.FACING
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.FACING"
 msgid "facing {0}"
-msgstr "направление {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST"
 msgid "Return to building list"
-msgstr "Вернуться к списку построек"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_CANCEL_CONSTRUCTION
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_CANCEL_CONSTRUCTION"
 msgid "Cancel construction at cursor"
-msgstr "Отменить строительство на курсоре"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO"
 msgid "Open info panel"
-msgstr "Открыть панель информации"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_ACTION_MENU
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_ACTION_MENU"
 msgid "Open action menu"
-msgstr "Открыть меню действий"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE"
 msgid "Place building or set start"
-msgstr "Разместить постройку или задать начало"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE_AND_EXIT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_PLACE_AND_EXIT"
 msgid "Place building and exit"
-msgstr "Разместить постройку и выйти"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS"
 msgid "ports"
-msgstr "порты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE"
 msgid "toggle rectangle mode"
-msgstr "переключить режим прямоугольника"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE"
 msgid "Rotate building"
-msgstr "Повернуть постройку"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE_REVERSE
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE_REVERSE"
 msgid "Rotate building backward"
-msgstr "Повернуть постройку назад"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.INFO_PANEL
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.INFO_PANEL"
 msgid "info"
-msgstr "информация"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.INVALID_LINE"
 msgid "invalid"
-msgstr "недопустимо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.LINE_CELLS
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.LINE_CELLS"
 msgid "{0} cells"
-msgstr "{0} клеток"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_EFFECTS_FMT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_EFFECTS_FMT"
 msgid "material effects: {0}"
-msgstr "эффекты материала: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_ENTRY
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_ENTRY"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_INSUFFICIENT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_INSUFFICIENT"
 msgid "{0}, {1}, insufficient"
-msgstr "{0}, {1}, недостаточно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_OR
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_OR"
 msgid " or "
-msgstr " или "
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_SLOT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_SLOT"
 msgid "{0}: {1}, {2}"
-msgstr "{0}: {1}, {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_SLOT_INSUFFICIENT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_SLOT_INSUFFICIENT"
 msgid "{0}: {1}, {2}, insufficient"
-msgstr "{0}: {1}, {2}, недостаточно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.MUST_BE_STRAIGHT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.MUST_BE_STRAIGHT"
 msgid "must be a straight line"
-msgstr "должна быть прямая линия"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.NO_CONSTRUCTION
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.NO_CONSTRUCTION"
 msgid "nothing to cancel"
-msgstr "нечего отменять"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.NO_PORTS
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.NO_PORTS"
 msgid "no ports"
-msgstr "нет портов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE"
 msgid "not buildable"
-msgstr "нельзя построить"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.NOT_ROTATABLE
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.NOT_ROTATABLE"
 msgid "not rotatable"
-msgstr "нельзя повернуть"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED"
 msgid "obstructed"
-msgstr "заблокировано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN"
 msgid "down"
-msgstr "вниз"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL"
 msgid "horizontal"
-msgstr "горизонтально"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT"
 msgid "left"
-msgstr "влево"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT"
 msgid "right"
-msgstr "вправо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP"
 msgid "up"
-msgstr "вверх"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL"
 msgid "vertical"
-msgstr "вертикально"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.PLACED
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.PLACED"
 msgid "placed"
-msgstr "размещено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.PLACED_NO_MATERIAL
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.PLACED_NO_MATERIAL"
 msgid "placed, no material available"
-msgstr "размещено, нет доступного материала"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.PORT_AT
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.PORT_AT"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.PREBUILD_ERROR
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.PREBUILD_ERROR"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_OFF
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_OFF"
 msgid "single mode"
-msgstr "одиночный режим"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_ON
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_ON"
 msgid "rectangle mode"
-msgstr "режим прямоугольника"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_UNAVAILABLE
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_UNAVAILABLE"
 msgid "rectangle mode not available"
-msgstr "режим прямоугольника недоступен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.REQUIREMENTS
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.REQUIREMENTS"
 msgid "requirements"
-msgstr "требования"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.START_CLEARED
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.START_CLEARED"
 msgid "start cleared"
-msgstr "начало сброшено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.START_SET
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.START_SET"
 msgid "start set"
-msgstr "начало установлено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY"
 msgid "Tools"
-msgstr "Инструменты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUTTONS.ACCEPT
 msgctxt "STRINGS.ONIACCESS.BUTTONS.ACCEPT"
 msgid "Accept"
-msgstr "Принять"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUTTONS.MANAGE
 msgctxt "STRINGS.ONIACCESS.BUTTONS.MANAGE"
 msgid "Manage"
-msgstr "Управление"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUTTONS.MOVE_DOWN
 msgctxt "STRINGS.ONIACCESS.BUTTONS.MOVE_DOWN"
 msgid "Move down"
-msgstr "Переместить вниз"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUTTONS.MOVE_UP
 msgctxt "STRINGS.ONIACCESS.BUTTONS.MOVE_UP"
 msgid "Move up"
-msgstr "Переместить вверх"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUTTONS.TOGGLE_ALL
 msgctxt "STRINGS.ONIACCESS.BUTTONS.TOGGLE_ALL"
 msgid "Toggle all"
-msgstr "Переключить все"
+msgstr ""
 
 #. STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES
 msgctxt "STRINGS.ONIACCESS.BUTTONS.VIEW_OTHER_COLONIES"
 msgid "View other colonies"
-msgstr "Посмотреть другие колонии"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ALL
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ALL"
 msgid "All"
-msgstr "Все"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ASTEROIDS
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ASTEROIDS"
 msgid "Asteroids"
-msgstr "Астероиды"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.METEORS
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.METEORS"
 msgid "Meteor showers"
-msgstr "Метеоритные дожди"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.POIS
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.POIS"
 msgid "Points of interest"
-msgstr "Достопримечательности"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ROCKETS
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.ROCKETS"
 msgid "Rockets"
-msgstr "Ракеты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.UNKNOWN
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.CATEGORIES.UNKNOWN"
 msgid "Unknown"
-msgstr "Неизвестно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.EAST
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.EAST"
 msgid "east"
-msgstr "восток"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTH
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTH"
 msgid "north"
-msgstr "север"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTHEAST
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTHEAST"
 msgid "northeast"
-msgstr "северо-восток"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTHWEST
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.NORTHWEST"
 msgid "northwest"
-msgstr "северо-запад"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTH
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTH"
 msgid "south"
-msgstr "юг"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTHEAST
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTHEAST"
 msgid "southeast"
-msgstr "юго-восток"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTHWEST
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.SOUTHWEST"
 msgid "southwest"
-msgstr "юго-запад"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.WEST
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.COMPASS.WEST"
 msgid "west"
-msgstr "запад"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.DESTINATION_CANCELLED
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.DESTINATION_CANCELLED"
 msgid "destination cancelled"
-msgstr "пункт назначения отменён"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.DESTINATION_SET
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.DESTINATION_SET"
 msgid "destination set, {0} hexes"
-msgstr "пункт назначения задан, {0} гексов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.HEX_MOVE
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.HEX_MOVE"
 msgid "Move cursor on hex grid"
-msgstr "Перемещение курсора по гексагональной сетке"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.HEX_MOVE_ARROWS
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.HEX_MOVE_ARROWS"
 msgid "Move cursor (diagonal varies by row)"
-msgstr "Перемещение курсора (диагональ зависит от ряда)"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.JUMP_HOME
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.JUMP_HOME"
 msgid "Jump to active world"
-msgstr "Перейти к активному миру"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.PATHFIND_CALC
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.PATHFIND_CALC"
 msgid "Calculate path to cursor"
-msgstr "Вычислить путь к курсору"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.PATHFIND_START
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.PATHFIND_START"
 msgid "Set pathfinder start"
-msgstr "Задать начало пути"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.READ_COORDS
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.READ_COORDS"
 msgid "Read hex coordinates"
-msgstr "Прочитать координаты гекса"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.READ_TOOLTIP
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.READ_TOOLTIP"
 msgid "Read entity details"
-msgstr "Прочитать детали объекта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.SELECT_ENTITY
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.SELECT_ENTITY"
 msgid "Select entity"
-msgstr "Выбрать объект"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.HELP.SWITCH_WORLD
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HELP.SWITCH_WORLD"
 msgid "Switch to asteroid"
-msgstr "Переключиться на астероид"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.HEX_COORDINATES
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.HEX_COORDINATES"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.NO_PATH
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.NO_PATH"
 msgid "no path"
-msgstr "нет пути"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.PATH_FOG_WITH_ALT
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.PATH_FOG_WITH_ALT"
 msgid "path: {0}, {1} through fog. Without scanner: {2}"
-msgstr "путь: {0}, {1} через туман. Без сканера: {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.PATH_RESULT
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.PATH_RESULT"
 msgid "path: {0}"
-msgstr "путь: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.PATH_THROUGH_FOG
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.PATH_THROUGH_FOG"
 msgid "path: {0}, {1} through fog"
-msgstr "путь: {0}, {1} через туман"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_DESTINATION
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_DESTINATION"
 msgid "select destination"
-msgstr "выбрать пункт назначения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_OBJECT
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_OBJECT"
 msgid "select object"
-msgstr "выбрать объект"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.SET_START_FIRST
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.SET_START_FIRST"
 msgid "set start with space"
-msgstr "задать начало пробелом"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CLUSTER_MAP.UNSEEN
 msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.UNSEEN"
 msgid "unseen"
-msgstr "неизведано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.CATEGORIES_TAB
 msgctxt "STRINGS.ONIACCESS.CODEX.CATEGORIES_TAB"
 msgid "Categories"
-msgstr "Категории"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.CONTENT_TAB
 msgctxt "STRINGS.ONIACCESS.CODEX.CONTENT_TAB"
 msgid "Content"
-msgstr "Содержание"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.FOLLOW_LINK_HELP
 msgctxt "STRINGS.ONIACCESS.CODEX.FOLLOW_LINK_HELP"
 msgid "Follow link"
-msgstr "Перейти по ссылке"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.HISTORY_FORWARD_HELP
 msgctxt "STRINGS.ONIACCESS.CODEX.HISTORY_FORWARD_HELP"
 msgid "Go forward"
-msgstr "Вперёд"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.LINK_MENU
 msgctxt "STRINGS.ONIACCESS.CODEX.LINK_MENU"
 msgid "{0} links"
-msgstr "{0} ссылок"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.LOCKED_CONTENT
 msgctxt "STRINGS.ONIACCESS.CODEX.LOCKED_CONTENT"
 msgid "locked content"
-msgstr "заблокированный контент"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.MADE_IN
 msgctxt "STRINGS.ONIACCESS.CODEX.MADE_IN"
 msgid "made in"
-msgstr "производится в"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.NO_ARTICLE
 msgctxt "STRINGS.ONIACCESS.CODEX.NO_ARTICLE"
 msgid "no article selected"
-msgstr "статья не выбрана"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.NO_BACK
 msgctxt "STRINGS.ONIACCESS.CODEX.NO_BACK"
 msgid "nothing to go back to"
-msgstr "некуда возвращаться"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.NO_FORWARD
 msgctxt "STRINGS.ONIACCESS.CODEX.NO_FORWARD"
 msgid "nothing to go forward to"
-msgstr "некуда идти вперёд"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.PRODUCES
 msgctxt "STRINGS.ONIACCESS.CODEX.PRODUCES"
 msgid "produces"
-msgstr "производит"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.REQUIRES
 msgctxt "STRINGS.ONIACCESS.CODEX.REQUIRES"
 msgid "requires"
-msgstr "требует"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CODEX.TIME
 msgctxt "STRINGS.ONIACCESS.CODEX.TIME"
 msgid "time:"
-msgstr "время:"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE
 msgctxt "STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE"
 msgid "last cycle"
-msgstr "прошлый цикл"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLONY_STATS.PEAK
 msgctxt "STRINGS.ONIACCESS.COLONY_STATS.PEAK"
 msgid "peak"
-msgstr "максимум"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.BEIGE
 msgctxt "STRINGS.ONIACCESS.COLORS.BEIGE"
 msgid "beige"
-msgstr "бежевый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.BLACK
 msgctxt "STRINGS.ONIACCESS.COLORS.BLACK"
 msgid "black"
-msgstr "чёрный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.BLUE
 msgctxt "STRINGS.ONIACCESS.COLORS.BLUE"
 msgid "blue"
-msgstr "синий"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.BLUE_VIOLET
 msgctxt "STRINGS.ONIACCESS.COLORS.BLUE_VIOLET"
 msgid "blue violet"
-msgstr "сине-фиолетовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.BRIGHT_GREEN
 msgctxt "STRINGS.ONIACCESS.COLORS.BRIGHT_GREEN"
 msgid "bright green"
-msgstr "ярко-зелёный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.BROWN
 msgctxt "STRINGS.ONIACCESS.COLORS.BROWN"
 msgid "brown"
-msgstr "коричневый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.CHARTREUSE
 msgctxt "STRINGS.ONIACCESS.COLORS.CHARTREUSE"
 msgid "chartreuse"
-msgstr "шартрёз"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.CORNFLOWER
 msgctxt "STRINGS.ONIACCESS.COLORS.CORNFLOWER"
 msgid "cornflower"
-msgstr "васильковый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.CREAM
 msgctxt "STRINGS.ONIACCESS.COLORS.CREAM"
 msgid "cream"
-msgstr "кремовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.CRIMSON
 msgctxt "STRINGS.ONIACCESS.COLORS.CRIMSON"
 msgid "crimson"
-msgstr "малиновый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.CYAN
 msgctxt "STRINGS.ONIACCESS.COLORS.CYAN"
 msgid "cyan"
-msgstr "голубой"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.DARK_BLUE
 msgctxt "STRINGS.ONIACCESS.COLORS.DARK_BLUE"
 msgid "dark blue"
-msgstr "тёмно-синий"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.DARK_GOLD
 msgctxt "STRINGS.ONIACCESS.COLORS.DARK_GOLD"
 msgid "dark gold"
-msgstr "тёмно-золотой"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.DARK_GRAY
 msgctxt "STRINGS.ONIACCESS.COLORS.DARK_GRAY"
 msgid "dark gray"
-msgstr "тёмно-серый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.DARK_GREEN
 msgctxt "STRINGS.ONIACCESS.COLORS.DARK_GREEN"
 msgid "dark green"
-msgstr "тёмно-зелёный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.DARK_OLIVE
 msgctxt "STRINGS.ONIACCESS.COLORS.DARK_OLIVE"
 msgid "dark olive"
-msgstr "тёмно-оливковый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.DARK_RED
 msgctxt "STRINGS.ONIACCESS.COLORS.DARK_RED"
 msgid "dark red"
-msgstr "тёмно-красный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.DARK_TEAL
 msgctxt "STRINGS.ONIACCESS.COLORS.DARK_TEAL"
 msgid "dark teal"
-msgstr "тёмно-бирюзовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.DEEP_GREEN
 msgctxt "STRINGS.ONIACCESS.COLORS.DEEP_GREEN"
 msgid "deep green"
-msgstr "глубокий зелёный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.DODGER_BLUE
 msgctxt "STRINGS.ONIACCESS.COLORS.DODGER_BLUE"
 msgid "dodger blue"
-msgstr "ярко-голубой"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.FOREST_GREEN
 msgctxt "STRINGS.ONIACCESS.COLORS.FOREST_GREEN"
 msgid "forest green"
-msgstr "лесной зелёный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.GOLD
 msgctxt "STRINGS.ONIACCESS.COLORS.GOLD"
 msgid "gold"
-msgstr "золотой"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.GRAY
 msgctxt "STRINGS.ONIACCESS.COLORS.GRAY"
 msgid "gray"
-msgstr "серый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.GREEN
 msgctxt "STRINGS.ONIACCESS.COLORS.GREEN"
 msgid "green"
-msgstr "зелёный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.HOT_PINK
 msgctxt "STRINGS.ONIACCESS.COLORS.HOT_PINK"
 msgid "hot pink"
-msgstr "ярко-розовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.INDIGO
 msgctxt "STRINGS.ONIACCESS.COLORS.INDIGO"
 msgid "indigo"
-msgstr "индиго"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.LAVENDER
 msgctxt "STRINGS.ONIACCESS.COLORS.LAVENDER"
 msgid "lavender"
-msgstr "лавандовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.LIGHT_BLUE
 msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_BLUE"
 msgid "light blue"
-msgstr "светло-голубой"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.LIGHT_GOLD
 msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_GOLD"
 msgid "light gold"
-msgstr "светло-золотой"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.LIGHT_LIME
 msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_LIME"
 msgid "light lime"
-msgstr "светло-лаймовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.LIGHT_PINK
 msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_PINK"
 msgid "light pink"
-msgstr "светло-розовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.LIGHT_PURPLE
 msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_PURPLE"
 msgid "light purple"
-msgstr "светло-фиолетовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.LIGHT_ROSE
 msgctxt "STRINGS.ONIACCESS.COLORS.LIGHT_ROSE"
 msgid "light rose"
-msgstr "светло-розовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.MAGENTA
 msgctxt "STRINGS.ONIACCESS.COLORS.MAGENTA"
 msgid "magenta"
-msgstr "пурпурный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.MAROON
 msgctxt "STRINGS.ONIACCESS.COLORS.MAROON"
 msgid "maroon"
-msgstr "бордовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.MEDIUM_GRAY
 msgctxt "STRINGS.ONIACCESS.COLORS.MEDIUM_GRAY"
 msgid "medium gray"
-msgstr "средне-серый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.MEDIUM_GREEN
 msgctxt "STRINGS.ONIACCESS.COLORS.MEDIUM_GREEN"
 msgid "medium green"
-msgstr "средне-зелёный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.OFF_WHITE
 msgctxt "STRINGS.ONIACCESS.COLORS.OFF_WHITE"
 msgid "off-white"
-msgstr "грязно-белый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.ORANGE
 msgctxt "STRINGS.ONIACCESS.COLORS.ORANGE"
 msgid "orange"
-msgstr "оранжевый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.ORCHID
 msgctxt "STRINGS.ONIACCESS.COLORS.ORCHID"
 msgid "orchid"
-msgstr "орхидея"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.PALE_GREEN
 msgctxt "STRINGS.ONIACCESS.COLORS.PALE_GREEN"
 msgid "pale green"
-msgstr "бледно-зелёный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.PURPLE
 msgctxt "STRINGS.ONIACCESS.COLORS.PURPLE"
 msgid "purple"
-msgstr "фиолетовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.RED_ORANGE
 msgctxt "STRINGS.ONIACCESS.COLORS.RED_ORANGE"
 msgid "red orange"
-msgstr "красно-оранжевый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.ROYAL_BLUE
 msgctxt "STRINGS.ONIACCESS.COLORS.ROYAL_BLUE"
 msgid "royal blue"
-msgstr "королевский синий"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.SALMON
 msgctxt "STRINGS.ONIACCESS.COLORS.SALMON"
 msgid "salmon"
-msgstr "лососёвый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.SEA_GREEN
 msgctxt "STRINGS.ONIACCESS.COLORS.SEA_GREEN"
 msgid "sea green"
-msgstr "морской зелёный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.SKY_BLUE
 msgctxt "STRINGS.ONIACCESS.COLORS.SKY_BLUE"
 msgid "sky blue"
-msgstr "небесно-голубой"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.SPRING_GREEN
 msgctxt "STRINGS.ONIACCESS.COLORS.SPRING_GREEN"
 msgid "spring green"
-msgstr "весенний зелёный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.TANGERINE
 msgctxt "STRINGS.ONIACCESS.COLORS.TANGERINE"
 msgid "tangerine"
-msgstr "мандариновый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.TEAL
 msgctxt "STRINGS.ONIACCESS.COLORS.TEAL"
 msgid "teal"
-msgstr "бирюзовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.VIOLET
 msgctxt "STRINGS.ONIACCESS.COLORS.VIOLET"
 msgid "violet"
-msgstr "фиолетовый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.COLORS.WHITE
 msgctxt "STRINGS.ONIACCESS.COLORS.WHITE"
 msgid "white"
-msgstr "белый"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"
 msgid "all forbidden"
-msgstr "все запрещены"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_PERMITTED
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_PERMITTED"
 msgid "all permitted"
-msgstr "все разрешены"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.DIET_RESTRICTED
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.DIET_RESTRICTED"
 msgid "restricted, {0}"
-msgstr "ограничено, {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.FORBIDDEN"
 msgid "forbidden"
-msgstr "запрещено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.HANDLER_NAME
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.HANDLER_NAME"
 msgid "Consumables table"
-msgstr "Таблица продовольствия"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.MIXED
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.MIXED"
 msgid "mixed"
-msgstr "смешано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.MORALE
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.MORALE"
 msgid "morale {0}"
-msgstr "мораль {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.PERMITTED
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.PERMITTED"
 msgid "permitted"
-msgstr "разрешено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.RESTRICTED
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.RESTRICTED"
 msgid "restricted"
-msgstr "ограничено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.TOGGLE_ALL
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.TOGGLE_ALL"
 msgid "Toggle all duplicants for this consumable"
-msgstr "Переключить всех дубликантов для этого продукта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.TOGGLE_PERMISSION
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.TOGGLE_PERMISSION"
 msgid "Toggle permission"
-msgstr "Переключить разрешение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CREW_SCREEN.AVAILABLE
 msgctxt "STRINGS.ONIACCESS.CREW_SCREEN.AVAILABLE"
 msgid "Available"
-msgstr "Доступно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.CREW_SCREEN.TOTAL_FORMAT
 msgctxt "STRINGS.ONIACCESS.CREW_SCREEN.TOTAL_FORMAT"
 msgid "{0} total"
-msgstr "{0} всего"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DEMOLIOR.DESTROYED
 msgctxt "STRINGS.ONIACCESS.DEMOLIOR.DESTROYED"
 msgid "Demolior destroyed"
-msgstr "Демолиор уничтожен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DEMOLIOR.DISCOVERED
 msgctxt "STRINGS.ONIACCESS.DEMOLIOR.DISCOVERED"
 msgid "Demolior detected, impact in {0}"
-msgstr "Демолиор обнаружен, столкновение через {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DEMOLIOR.HEALTH
 msgctxt "STRINGS.ONIACCESS.DEMOLIOR.HEALTH"
 msgid "Demolior {0}%"
-msgstr "Демолиор {0}%"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DEMOLIOR.IMPACTED
 msgctxt "STRINGS.ONIACCESS.DEMOLIOR.IMPACTED"
 msgid "Demolior has impacted the colony"
-msgstr "Демолиор врезался в колонию"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DEMOLIOR.STATUS
 msgctxt "STRINGS.ONIACCESS.DEMOLIOR.STATUS"
 msgid "Demolior {0}%, {1}"
-msgstr "Демолиор {0}%, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.ACTIONS_TAB
 msgctxt "STRINGS.ONIACCESS.DETAILS.ACTIONS_TAB"
 msgid "Actions"
-msgstr "Действия"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.CURRENT_TASK
 msgctxt "STRINGS.ONIACCESS.DETAILS.CURRENT_TASK"
 msgid "Current task"
-msgstr "Текущая задача"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.DUPE_HAT_SUBTITLE
 msgctxt "STRINGS.ONIACCESS.DETAILS.DUPE_HAT_SUBTITLE"
 msgid "{0}, {1}, {2}"
-msgstr "{0}, {1}, {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE
 msgctxt "STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.ENTITY_TAB
 msgctxt "STRINGS.ONIACCESS.DETAILS.ENTITY_TAB"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.HEADER_ITEM
 msgctxt "STRINGS.ONIACCESS.DETAILS.HEADER_ITEM"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.NO_ACTIONS
 msgctxt "STRINGS.ONIACCESS.DETAILS.NO_ACTIONS"
 msgid "No actions"
-msgstr "Нет действий"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.NO_ERRANDS
 msgctxt "STRINGS.ONIACCESS.DETAILS.NO_ERRANDS"
 msgid "No errands"
-msgstr "Нет поручений"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.PARENT_ITEM
 msgctxt "STRINGS.ONIACCESS.DETAILS.PARENT_ITEM"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE
 msgctxt "STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE"
 msgid "Pin resource"
-msgstr "Закрепить ресурс"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.PRIORITY
 msgctxt "STRINGS.ONIACCESS.DETAILS.PRIORITY"
 msgid "Priority"
-msgstr "Приоритет"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DETAILS.SCHEDULE
 msgctxt "STRINGS.ONIACCESS.DETAILS.SCHEDULE"
 msgid "Schedule"
-msgstr "Расписание"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER"
 msgid "Open diagnostics browser"
-msgstr "Открыть обозреватель диагностики"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_READ
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_READ"
 msgid "Read diagnostic alerts"
-msgstr "Прочитать диагностические оповещения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_TOGGLE_CRITERION
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_TOGGLE_CRITERION"
 msgid "Toggle criterion"
-msgstr "Переключить критерий"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_TOGGLE_PIN
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_TOGGLE_PIN"
 msgid "Cycle pin state"
-msgstr "Переключить закрепление"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.NO_ALERTS
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.NO_ALERTS"
 msgid "no alerts"
-msgstr "нет оповещений"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_BAD
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_BAD"
 msgid "bad"
-msgstr "плохо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_CONCERN
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_CONCERN"
 msgid "concern"
-msgstr "тревога"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_CRITICAL
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_CRITICAL"
 msgid "critical"
-msgstr "критически"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_GOOD
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_GOOD"
 msgid "good"
-msgstr "хорошо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_NORMAL
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_NORMAL"
 msgid "normal"
-msgstr "нормально"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_SUGGESTION
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_SUGGESTION"
 msgid "suggestion"
-msgstr "рекомендация"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_WARNING
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.OPINION_WARNING"
 msgid "warning"
-msgstr "предупреждение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.PIN_ALERT_ONLY
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.PIN_ALERT_ONLY"
 msgid "alert only"
-msgstr "только оповещения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.PIN_ALWAYS
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.PIN_ALWAYS"
 msgid "always"
-msgstr "всегда"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.PIN_NEVER
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.PIN_NEVER"
 msgid "never"
-msgstr "никогда"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.PIN_TUTORIAL_DISABLED
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.PIN_TUTORIAL_DISABLED"
 msgid "tutorial disabled"
-msgstr "обучение отключено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DLC.ACTIVE
 msgctxt "STRINGS.ONIACCESS.DLC.ACTIVE"
 msgid "Active"
-msgstr "Активно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DLC.NOT_OWNED
 msgctxt "STRINGS.ONIACCESS.DLC.NOT_OWNED"
 msgid "Not owned"
-msgstr "Не куплено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DLC.OWNED_NOT_ACTIVE
 msgctxt "STRINGS.ONIACCESS.DLC.OWNED_NOT_ACTIVE"
 msgid "Owned, not active"
-msgstr "Куплено, не активно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.HEALTH_CRITICAL
 msgctxt "STRINGS.ONIACCESS.DUPES.HEALTH_CRITICAL"
 msgid "critical health"
-msgstr "критическое здоровье"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.HEALTH_INJURED
 msgctxt "STRINGS.ONIACCESS.DUPES.HEALTH_INJURED"
 msgid "injured"
-msgstr "ранен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.HELP_CHECK_PATH
 msgctxt "STRINGS.ONIACCESS.DUPES.HELP_CHECK_PATH"
 msgid "Check if current duplicant can reach cursor tile"
-msgstr "Проверить, может ли дубликант дойти до клетки курсора"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.HELP_CYCLE
 msgctxt "STRINGS.ONIACCESS.DUPES.HELP_CYCLE"
 msgid "Cycle through duplicants"
-msgstr "Переключение между дубликантами"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.HELP_JUMP
 msgctxt "STRINGS.ONIACCESS.DUPES.HELP_JUMP"
 msgid "Jump cursor to current duplicant, or open details"
-msgstr "Перейти к дубликанту или открыть подробности"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.IDLE
 msgctxt "STRINGS.ONIACCESS.DUPES.IDLE"
 msgid "idle"
-msgstr "бездействует"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.INCAPACITATED
 msgctxt "STRINGS.ONIACCESS.DUPES.INCAPACITATED"
 msgid "incapacitated"
-msgstr "недееспособен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.KEY_BRACKETS
 msgctxt "STRINGS.ONIACCESS.DUPES.KEY_BRACKETS"
 msgid "Left bracket / Right bracket"
-msgstr "Левая скобка / Правая скобка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.NO_DUPLICANTS
 msgctxt "STRINGS.ONIACCESS.DUPES.NO_DUPLICANTS"
 msgid "no duplicants"
-msgstr "нет дубликантов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.PATHABILITY.REACHABLE
 msgctxt "STRINGS.ONIACCESS.DUPES.PATHABILITY.REACHABLE"
 msgid "reachable, cost {0}"
-msgstr "доступно, стоимость {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NEAREST
 msgctxt "STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NEAREST"
 msgid "unreachable, nearest reachable {0}"
-msgstr "недоступно, ближайшее доступное {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NO_NEARBY
 msgctxt "STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NO_NEARBY"
 msgid "unreachable, no reachable tiles nearby"
-msgstr "недоступно, нет доступных клеток поблизости"
+msgstr ""
 
 #. STRINGS.ONIACCESS.DUPES.SICK
 msgctxt "STRINGS.ONIACCESS.DUPES.SICK"
 msgid "sick"
-msgstr "болен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.FABRICATOR.CONTINUOUS
 msgctxt "STRINGS.ONIACCESS.FABRICATOR.CONTINUOUS"
 msgid "continuous"
-msgstr "непрерывно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.FABRICATOR.NOT_QUEUED
 msgctxt "STRINGS.ONIACCESS.FABRICATOR.NOT_QUEUED"
 msgid "not queued"
-msgstr "не в очереди"
+msgstr ""
 
 #. STRINGS.ONIACCESS.FABRICATOR.QUEUED
 msgctxt "STRINGS.ONIACCESS.FABRICATOR.QUEUED"
 msgid "{0} queued"
-msgstr "{0} в очереди"
+msgstr ""
 
 #. STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE
 msgctxt "STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE"
 msgid "unavailable"
-msgstr "недоступно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.CYCLE
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.CYCLE"
 msgid "Cycle {0}"
-msgstr "Цикл {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS"
 msgid "Cycle {0}, block {1}"
-msgstr "Цикл {0}, блок {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.DUPES_CLUSTER
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.DUPES_CLUSTER"
 msgid "{0}/{1} dupes"
-msgstr "{0}/{1} дупов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.ELECTROBANKS
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.ELECTROBANKS"
 msgid "{0}"
-msgstr "{0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.RATIONS
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.RATIONS"
 msgid "{0}"
-msgstr "{0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.READ_COLONY_STATUS
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.READ_COLONY_STATUS"
 msgid "Read colony status"
-msgstr "Прочитать состояние колонии"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.READ_CYCLE_STATUS"
 msgid "Read cycle status"
-msgstr "Прочитать состояние цикла"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.READ_TIME_PLAYED
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.READ_TIME_PLAYED"
 msgid "Read total playtime"
-msgstr "Прочитать общее время игры"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.RED_ALERT_OFF
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.RED_ALERT_OFF"
 msgid "Red Alert off"
-msgstr "Красная тревога выключена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.SAVED
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.SAVED"
 msgid "Saved"
-msgstr "Сохранено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.SICK
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.SICK"
 msgid "{0} sick"
-msgstr "{0} болен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.STRESS
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.STRESS"
 msgid "{0}% stress"
-msgstr "{0}% стресс"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.TOGGLE_RED_ALERT
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.TOGGLE_RED_ALERT"
 msgid "Toggle red alert"
-msgstr "Переключить красную тревогу"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.UNPAUSED
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.UNPAUSED"
 msgid "unpaused, {0}"
-msgstr "снято с паузы, {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GAME_STATE.YELLOW_ALERT_OFF
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.YELLOW_ALERT_OFF"
 msgid "Yellow Alert off"
-msgstr "Жёлтая тревога выключена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GEOTUNER.TUNER_COUNT
 msgctxt "STRINGS.ONIACCESS.GEOTUNER.TUNER_COUNT"
 msgid "{0} tuners"
-msgstr "{0} тюнеров"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ACCESS_POINT
 msgctxt "STRINGS.ONIACCESS.GLANCE.ACCESS_POINT"
 msgid "access point"
-msgstr "точка доступа"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE
 msgctxt "STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE"
 msgid "{0} middle"
-msgstr "середина {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.CONDUIT_GAS
 msgctxt "STRINGS.ONIACCESS.GLANCE.CONDUIT_GAS"
 msgid "gas"
-msgstr "газ"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.CONDUIT_LIQUID
 msgctxt "STRINGS.ONIACCESS.GLANCE.CONDUIT_LIQUID"
 msgid "liquid"
-msgstr "жидкость"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.CONDUIT_SOLID
 msgctxt "STRINGS.ONIACCESS.GLANCE.CONDUIT_SOLID"
 msgid "solid"
-msgstr "твёрдое"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.DISEASE_CLEAR
 msgctxt "STRINGS.ONIACCESS.GLANCE.DISEASE_CLEAR"
 msgid "clean"
-msgstr "чисто"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.DISEASE_ENTRY
 msgctxt "STRINGS.ONIACCESS.GLANCE.DISEASE_ENTRY"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ELEMENT_MASS
 msgctxt "STRINGS.ONIACCESS.GLANCE.ELEMENT_MASS"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.FILTERED_PORT
 msgctxt "STRINGS.ONIACCESS.GLANCE.FILTERED_PORT"
 msgid "filtered {0}"
-msgstr "фильтрованный {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.GAS_INPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.GAS_INPUT"
 msgid "gas input"
-msgstr "газовый вход"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.GAS_OUTPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.GAS_OUTPUT"
 msgid "gas output"
-msgstr "газовый выход"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.INPUT_PORT
 msgctxt "STRINGS.ONIACCESS.GLANCE.INPUT_PORT"
 msgid "input"
-msgstr "вход"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.INTAKE_PIPE
 msgctxt "STRINGS.ONIACCESS.GLANCE.INTAKE_PIPE"
 msgid "{0} intake pipe"
-msgstr "{0} приёмная труба"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.LIQUID_INPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.LIQUID_INPUT"
 msgid "liquid input"
-msgstr "жидкостный вход"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.LIQUID_OUTPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.LIQUID_OUTPUT"
 msgid "liquid output"
-msgstr "жидкостный выход"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.LURE
 msgctxt "STRINGS.ONIACCESS.GLANCE.LURE"
 msgid "{0} lure"
-msgstr "{0} приманка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.NUMBERED_PORT
 msgctxt "STRINGS.ONIACCESS.GLANCE.NUMBERED_PORT"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_ATTACK
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_ATTACK"
 msgid "attack"
-msgstr "атаковать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_BUILD
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_BUILD"
 msgid "build"
-msgstr "построить"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_CAPTURE
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_CAPTURE"
 msgid "capture"
-msgstr "поймать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_DECONSTRUCT
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DECONSTRUCT"
 msgid "deconstruct"
-msgstr "разобрать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_DIG
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DIG"
 msgid "dig"
-msgstr "копать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_DISINFECT
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DISINFECT"
 msgid "disinfect"
-msgstr "дезинфицировать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_EMPTY_PIPE
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_EMPTY_PIPE"
 msgid "empty pipe"
-msgstr "опорожнить трубу"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_HARVEST
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_HARVEST"
 msgid "harvest"
-msgstr "собрать урожай"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_MOP
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_MOP"
 msgid "mop"
-msgstr "протереть"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY"
 msgid "{0} priority {1}"
-msgstr "{0} приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_SWEEP
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_SWEEP"
 msgid "sweep"
-msgstr "подмести"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_UNREACHABLE
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_UNREACHABLE"
 msgid "unreachable {0}"
-msgstr "недоступно {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_UPROOT
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_UPROOT"
 msgid "uproot"
-msgstr "выкорчевать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.OUTPUT_POINT
 msgctxt "STRINGS.ONIACCESS.GLANCE.OUTPUT_POINT"
 msgid "output point"
-msgstr "точка выхода"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.OUTPUT_PORT
 msgctxt "STRINGS.ONIACCESS.GLANCE.OUTPUT_PORT"
 msgid "output"
-msgstr "выход"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.OVERFLOW_PORT
 msgctxt "STRINGS.ONIACCESS.GLANCE.OVERFLOW_PORT"
 msgid "overflow {0}"
-msgstr "перелив {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.OVERLAY_DECOR
 msgctxt "STRINGS.ONIACCESS.GLANCE.OVERLAY_DECOR"
 msgid "{0}{1} decor"
-msgstr "{0}{1} декор"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.POWER_INPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.POWER_INPUT"
 msgid "power input"
-msgstr "вход питания"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.POWER_OUTPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.POWER_OUTPUT"
 msgid "power output"
-msgstr "выход питания"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.PRIORITY_PORT
 msgctxt "STRINGS.ONIACCESS.GLANCE.PRIORITY_PORT"
 msgid "priority {0}"
-msgstr "приоритет {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.RADBOLT_INPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.RADBOLT_INPUT"
 msgid "radbolt input"
-msgstr "вход радболтов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT"
 msgid "radbolt output"
-msgstr "выход радболтов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE"
 msgid "unconnected"
-msgstr "не подключено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_CORNER
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_CORNER"
 msgid "{0} {1} corner"
-msgstr "угол {0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_CROSS
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_CROSS"
 msgid "cross"
-msgstr "перекрёсток"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_END
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_END"
 msgid "ends {0}"
-msgstr "тупик {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_HORIZONTAL
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_HORIZONTAL"
 msgid "horizontal"
-msgstr "горизонтально"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_T
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_T"
 msgid "{0} tee junction"
-msgstr "Т-образное соединение {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_VERTICAL
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_VERTICAL"
 msgid "vertical"
-msgstr "вертикально"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.SOLID_INPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.SOLID_INPUT"
 msgid "conveyor input"
-msgstr "вход конвейера"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.SOLID_OUTPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.SOLID_OUTPUT"
 msgid "conveyor output"
-msgstr "выход конвейера"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.TILE_OF_INTEREST
 msgctxt "STRINGS.ONIACCESS.GLANCE.TILE_OF_INTEREST"
 msgid "P O I"
-msgstr "П О И"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION
 msgctxt "STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION"
 msgid "constructing {0}"
-msgstr "строится {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.UNKNOWN_ELEMENT
 msgctxt "STRINGS.ONIACCESS.GLANCE.UNKNOWN_ELEMENT"
 msgid "unknown"
-msgstr "неизвестно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.WIRE
 msgctxt "STRINGS.ONIACCESS.GLANCE.WIRE"
 msgid "wire"
-msgstr "провод"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.AUDIO_OPTIONS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.AUDIO_OPTIONS"
 msgid "Audio options"
-msgstr "Настройки звука"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.COLONY_SUMMARY
 msgctxt "STRINGS.ONIACCESS.HANDLERS.COLONY_SUMMARY"
 msgid "Colony summary"
-msgstr "Итоги колонии"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW
 msgctxt "STRINGS.ONIACCESS.HANDLERS.COLONY_VIEW"
 msgid "Colony View"
-msgstr "Обзор колонии"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.DATA_OPTIONS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.DATA_OPTIONS"
 msgid "Data options"
-msgstr "Настройки данных"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.DETAILS_SCREEN
 msgctxt "STRINGS.ONIACCESS.HANDLERS.DETAILS_SCREEN"
 msgid "Entity details"
-msgstr "Подробности объекта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.DIAGNOSTICS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.DIAGNOSTICS"
 msgid "Diagnostics"
-msgstr "Диагностика"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.ENTITY_PICKER
 msgctxt "STRINGS.ONIACCESS.HANDLERS.ENTITY_PICKER"
 msgid "object selection"
-msgstr "выбор объекта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.ERROR_SCREEN
 msgctxt "STRINGS.ONIACCESS.HANDLERS.ERROR_SCREEN"
 msgid "Error"
-msgstr "Ошибка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.FEEDBACK
 msgctxt "STRINGS.ONIACCESS.HANDLERS.FEEDBACK"
 msgid "Feedback"
-msgstr "Обратная связь"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.GAME_OPTIONS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.GAME_OPTIONS"
 msgid "Game options"
-msgstr "Настройки игры"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.GRAPHICS_OPTIONS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.GRAPHICS_OPTIONS"
 msgid "Graphics options"
-msgstr "Настройки графики"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.HELP
 msgctxt "STRINGS.ONIACCESS.HANDLERS.HELP"
 msgid "Help"
-msgstr "Справка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.ITEM_DROP
 msgctxt "STRINGS.ONIACCESS.HANDLERS.ITEM_DROP"
 msgid "Claim blueprints"
-msgstr "Получить чертежи"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.KEY_BINDINGS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.KEY_BINDINGS"
 msgid "Key bindings"
-msgstr "Назначение клавиш"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.LOADING
 msgctxt "STRINGS.ONIACCESS.HANDLERS.LOADING"
 msgid "Loading"
-msgstr "Загрузка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.MAIN_MENU
 msgctxt "STRINGS.ONIACCESS.HANDLERS.MAIN_MENU"
 msgid "Main menu"
-msgstr "Главное меню"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.MINION_SELECT
 msgctxt "STRINGS.ONIACCESS.HANDLERS.MINION_SELECT"
 msgid "Select duplicants"
-msgstr "Выбор дубликантов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.MODS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.MODS"
 msgid "Mods"
-msgstr "Моды"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.PAUSE_MENU
 msgctxt "STRINGS.ONIACCESS.HANDLERS.PAUSE_MENU"
 msgid "Pause menu"
-msgstr "Меню паузы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.PRINTING_POD
 msgctxt "STRINGS.ONIACCESS.HANDLERS.PRINTING_POD"
 msgid "Printing pod"
-msgstr "Печатный станок"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.SAVE_LOAD
 msgctxt "STRINGS.ONIACCESS.HANDLERS.SAVE_LOAD"
 msgid "Save and load"
-msgstr "Сохранение и загрузка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.STORY_MESSAGE
 msgctxt "STRINGS.ONIACCESS.HANDLERS.STORY_MESSAGE"
 msgid "Story message"
-msgstr "Сюжетное сообщение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.SUPPLY_CLOSET
 msgctxt "STRINGS.ONIACCESS.HANDLERS.SUPPLY_CLOSET"
 msgid "Supply closet"
-msgstr "Шкаф снабжения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.TRANSLATIONS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.TRANSLATIONS"
 msgid "Translations"
-msgstr "Переводы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.VIDEO
 msgctxt "STRINGS.ONIACCESS.HANDLERS.VIDEO"
 msgid "Video"
-msgstr "Видео"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.WELCOME_MESSAGE
 msgctxt "STRINGS.ONIACCESS.HANDLERS.WELCOME_MESSAGE"
 msgid "Welcome message"
-msgstr "Приветственное сообщение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.WORLD_GEN
 msgctxt "STRINGS.ONIACCESS.HANDLERS.WORLD_GEN"
 msgid "Generating world"
-msgstr "Генерация мира"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HANDLERS.WORLD_SELECTOR
 msgctxt "STRINGS.ONIACCESS.HANDLERS.WORLD_SELECTOR"
 msgid "World list"
-msgstr "Список миров"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.ADJUST_VALUE
 msgctxt "STRINGS.ONIACCESS.HELP.ADJUST_VALUE"
 msgid "Adjust value by 1 or 1 percent"
-msgstr "Изменить значение на 1 или 1 процент"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGE
 msgctxt "STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGE"
 msgid "Adjust value by 10 or 10 percent"
-msgstr "Изменить значение на 10 или 10 процентов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGER
 msgctxt "STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGER"
 msgid "Adjust value by 100 or 25 percent"
-msgstr "Изменить значение на 100 или 25 процентов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGEST
 msgctxt "STRINGS.ONIACCESS.HELP.ADJUST_VALUE_LARGEST"
 msgid "Adjust value by 1000 or 50 percent"
-msgstr "Изменить значение на 1000 или 50 процентов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.CLOSE
 msgctxt "STRINGS.ONIACCESS.HELP.CLOSE"
 msgid "Close"
-msgstr "Закрыть"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.COPY_SETTINGS
 msgctxt "STRINGS.ONIACCESS.HELP.COPY_SETTINGS"
 msgid "Copy settings"
-msgstr "Копировать настройки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE
 msgctxt "STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE"
 msgid "Cycle coordinate display"
-msgstr "Переключить отображение координат"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED
 msgctxt "STRINGS.ONIACCESS.HELP.CYCLE_GAME_SPEED"
 msgid "Cycle game speed"
-msgstr "Переключить скорость игры"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.CYCLE_RECIPE
 msgctxt "STRINGS.ONIACCESS.HELP.CYCLE_RECIPE"
 msgid "Cycle recipe"
-msgstr "Переключить рецепт"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.GO_BACK
 msgctxt "STRINGS.ONIACCESS.HELP.GO_BACK"
 msgid "Go back"
-msgstr "Назад"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST
 msgctxt "STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST"
 msgid "Jump to first or last"
-msgstr "Перейти к первому или последнему"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.JUMP_GROUP
 msgctxt "STRINGS.ONIACCESS.HELP.JUMP_GROUP"
 msgid "Jump to next or previous group"
-msgstr "Перейти к следующей или предыдущей группе"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.MOVE_CURSOR
 msgctxt "STRINGS.ONIACCESS.HELP.MOVE_CURSOR"
 msgid "Move tile cursor"
-msgstr "Переместить курсор по клеткам"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.NAVIGATE
 msgctxt "STRINGS.ONIACCESS.HELP.NAVIGATE"
 msgid "Step through help entries"
-msgstr "Навигация по пунктам справки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS
 msgctxt "STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS"
 msgid "Navigate items"
-msgstr "Навигация по элементам"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.OPEN_GROUP
 msgctxt "STRINGS.ONIACCESS.HELP.OPEN_GROUP"
 msgid "Open group"
-msgstr "Открыть группу"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.READ_COORDS
 msgctxt "STRINGS.ONIACCESS.HELP.READ_COORDS"
 msgid "Read coordinates"
-msgstr "Прочитать координаты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY
 msgctxt "STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY"
 msgid "Read tooltip summary at cursor"
-msgstr "Прочитать подсказку на курсоре"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.SELECT_ENTITY
 msgctxt "STRINGS.ONIACCESS.HELP.SELECT_ENTITY"
 msgid "Select object at cursor"
-msgstr "Выбрать объект на курсоре"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.SELECT_ITEM
 msgctxt "STRINGS.ONIACCESS.HELP.SELECT_ITEM"
 msgid "Activate selected item"
-msgstr "Активировать выбранный элемент"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.SWITCH_DUPE_SLOT
 msgctxt "STRINGS.ONIACCESS.HELP.SWITCH_DUPE_SLOT"
 msgid "Switch duplicant slot"
-msgstr "Переключить слот дубликанта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.SWITCH_OPTION
 msgctxt "STRINGS.ONIACCESS.HELP.SWITCH_OPTION"
 msgid "Switch option"
-msgstr "Переключить опцию"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.SWITCH_PANEL
 msgctxt "STRINGS.ONIACCESS.HELP.SWITCH_PANEL"
 msgid "Switch panel"
-msgstr "Переключить панель"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.SWITCH_SECTION
 msgctxt "STRINGS.ONIACCESS.HELP.SWITCH_SECTION"
 msgid "Switch section"
-msgstr "Переключить раздел"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.APPLY_AND_EXIT
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.APPLY_AND_EXIT"
 msgid "Apply settings and exit"
-msgstr "Применить настройки и выйти"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.APPLY_SETTINGS
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.APPLY_SETTINGS"
 msgid "Apply settings"
-msgstr "Применить настройки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_TOOL
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_TOOL"
 msgid "Cancel tool"
-msgstr "Отменить инструмент"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT"
 msgid "Clear rectangle at cursor"
-msgstr "Очистить прямоугольник на курсоре"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.CONFIRM_TOOL
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CONFIRM_TOOL"
 msgid "Apply tool at cursor and dismiss"
-msgstr "Применить инструмент на курсоре и закрыть"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_FILTER
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_FILTER"
 msgid "Change filter"
-msgstr "Изменить фильтр"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER"
 msgid "Set rectangle corner"
-msgstr "Задать угол прямоугольника"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY"
 msgid "Set priority"
-msgstr "Задать приоритет"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HELP.TYPE_SEARCH
 msgctxt "STRINGS.ONIACCESS.HELP.TYPE_SEARCH"
 msgid "Type-ahead search"
-msgstr "Поиск по вводу"
+msgstr ""
 
 #. STRINGS.ONIACCESS.HOTKEYS.TOGGLE_MOD
 msgctxt "STRINGS.ONIACCESS.HOTKEYS.TOGGLE_MOD"
 msgid "Toggle Oni-Access on/off"
-msgstr "Включить/выключить Oni-Access"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.BIONIC_BUG
 msgctxt "STRINGS.ONIACCESS.INFO.BIONIC_BUG"
 msgid "Bionic bug"
-msgstr "Бионический баг"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.BIONIC_UPGRADE
 msgctxt "STRINGS.ONIACCESS.INFO.BIONIC_UPGRADE"
 msgid "Bionic upgrade"
-msgstr "Бионическое улучшение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.COLONY_HAS
 msgctxt "STRINGS.ONIACCESS.INFO.COLONY_HAS"
 msgid "Colony has: {0}"
-msgstr "В колонии есть: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.DIFFICULTY
 msgctxt "STRINGS.ONIACCESS.INFO.DIFFICULTY"
 msgid "Difficulty"
-msgstr "Сложность"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.INTEREST
 msgctxt "STRINGS.ONIACCESS.INFO.INTEREST"
 msgid "Interest"
-msgstr "Интерес"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.INTEREST_FILTER
 msgctxt "STRINGS.ONIACCESS.INFO.INTEREST_FILTER"
 msgid "Interest filter"
-msgstr "Фильтр интересов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.NEGATIVE_TRAIT
 msgctxt "STRINGS.ONIACCESS.INFO.NEGATIVE_TRAIT"
 msgid "Negative trait"
-msgstr "Отрицательная черта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.POSITIVE_TRAIT
 msgctxt "STRINGS.ONIACCESS.INFO.POSITIVE_TRAIT"
 msgid "Positive trait"
-msgstr "Положительная черта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.SETTING
 msgctxt "STRINGS.ONIACCESS.INFO.SETTING"
 msgid "setting"
-msgstr "настройка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.SLOT
 msgctxt "STRINGS.ONIACCESS.INFO.SLOT"
 msgid "Slot {0}"
-msgstr "Слот {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.STORY_TRAITS
 msgctxt "STRINGS.ONIACCESS.INFO.STORY_TRAITS"
 msgid "Story traits"
-msgstr "Сюжетные черты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.INFO.TRAIT
 msgctxt "STRINGS.ONIACCESS.INFO.TRAIT"
 msgid "Trait"
-msgstr "Черта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.KEY_BINDINGS.BINDINGS_RESET
 msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.BINDINGS_RESET"
 msgid "All bindings reset to defaults"
-msgstr "Все назначения сброшены"
+msgstr ""
 
 #. STRINGS.ONIACCESS.KEY_BINDINGS.PRESS_KEY_FOR
 msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.PRESS_KEY_FOR"
 msgid "Press a key for {0}"
-msgstr "Нажмите клавишу для {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.KEY_BINDINGS.RESET_ALL
 msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.RESET_ALL"
 msgid "Reset all to defaults"
-msgstr "Сбросить все назначения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.KEY_BINDINGS.UNBOUND
 msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.UNBOUND"
 msgid "Unbound"
-msgstr "Не назначено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.FACADE
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.FACADE"
 msgid "Skin"
-msgstr "Облик"
+msgstr ""
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS"
 msgid "Materials"
-msgstr "Материалы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.MODULES
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MODULES"
 msgid "Modules"
-msgstr "Модули"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED"
 msgid "achievement earned: {0}"
-msgstr "получено достижение: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.CANNOT_DISMISS
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.CANNOT_DISMISS"
 msgid "cannot dismiss"
-msgstr "нельзя закрыть"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.DISMISS_HELP
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.DISMISS_HELP"
 msgid "Dismiss notification"
-msgstr "Закрыть уведомление"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.DISMISSED
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.DISMISSED"
 msgid "dismissed"
-msgstr "закрыто"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.DONT_SHOW_AGAIN
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.DONT_SHOW_AGAIN"
 msgid "don't show again"
-msgstr "больше не показывать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY"
 msgid "no notifications"
-msgstr "нет уведомлений"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.GROUP_COUNT
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.GROUP_COUNT"
 msgid "{0} x{1}"
-msgstr "{0} x{1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.MENU_TITLE
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.MENU_TITLE"
 msgid "Notifications"
-msgstr "Уведомления"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.MESSAGE_DIALOG
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.MESSAGE_DIALOG"
 msgid "Message"
-msgstr "Сообщение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.NEXT_MESSAGE
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.NEXT_MESSAGE"
 msgid "next message"
-msgstr "следующее сообщение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.NUMBERED_ENTRY
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.NUMBERED_ENTRY"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.OPEN_MENU_HELP"
 msgid "Open notifications menu"
-msgstr "Открыть меню уведомлений"
+msgstr ""
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.PLAY_VIDEO
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.PLAY_VIDEO"
 msgid "play video"
-msgstr "воспроизвести видео"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS
 msgctxt "STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS"
 msgid "Achievements"
-msgstr "Достижения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.BUTTONS
 msgctxt "STRINGS.ONIACCESS.PANELS.BUTTONS"
 msgid "Buttons"
-msgstr "Кнопки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.COLONY_NAME
 msgctxt "STRINGS.ONIACCESS.PANELS.COLONY_NAME"
 msgid "Colony name"
-msgstr "Название колонии"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.DLC
 msgctxt "STRINGS.ONIACCESS.PANELS.DLC"
 msgid "DLC"
-msgstr "DLC"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.NEWS
 msgctxt "STRINGS.ONIACCESS.PANELS.NEWS"
 msgid "News"
-msgstr "Новости"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.NO_NEWS
 msgctxt "STRINGS.ONIACCESS.PANELS.NO_NEWS"
 msgid "No news available"
-msgstr "Нет доступных новостей"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.PLANETOIDS
 msgctxt "STRINGS.ONIACCESS.PANELS.PLANETOIDS"
 msgid "Planetoids"
-msgstr "Планетоиды"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.RENAME
 msgctxt "STRINGS.ONIACCESS.PANELS.RENAME"
 msgid "Rename"
-msgstr "Переименовать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.SEED
 msgctxt "STRINGS.ONIACCESS.PANELS.SEED"
 msgid "World seed"
-msgstr "Сид мира"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.SHUFFLE_NAME
 msgctxt "STRINGS.ONIACCESS.PANELS.SHUFFLE_NAME"
 msgid "Shuffle name"
-msgstr "Случайное имя"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.STATS
 msgctxt "STRINGS.ONIACCESS.PANELS.STATS"
 msgid "Stats"
-msgstr "Статистика"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PANELS.VICTORY_CONDITIONS
 msgctxt "STRINGS.ONIACCESS.PANELS.VICTORY_CONDITIONS"
 msgid "Victory conditions"
-msgstr "Условия победы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS
 msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS"
 msgid "active colors"
-msgstr "активные цвета"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PIXEL_PACK.IN_USE
 msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.IN_USE"
 msgid "in use"
-msgstr "используется"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PIXEL_PACK.PALETTE
 msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.PALETTE"
 msgid "color palette"
-msgstr "цветовая палитра"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PIXEL_PACK.PALETTE_COUNT
 msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.PALETTE_COUNT"
 msgid "{0} colors"
-msgstr "{0} цветов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT
 msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT"
 msgid "pixel {0}"
-msgstr "пиксель {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS
 msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS"
 msgid "standby colors"
-msgstr "ожидающие цвета"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_CELL
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_CELL"
 msgid "Adjust priority of current cell"
-msgstr "Изменить приоритет текущей ячейки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_COLUMN
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_COLUMN"
 msgid "Adjust all priorities in column"
-msgstr "Изменить все приоритеты в столбце"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_ROW
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_ROW"
 msgid "Adjust all priorities in row"
-msgstr "Изменить все приоритеты в строке"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.AFFECTED_ERRANDS
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.AFFECTED_ERRANDS"
 msgid "Affected errands: {0}"
-msgstr "Затронутые поручения: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_DECREASED
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_DECREASED"
 msgid "column decreased"
-msgstr "столбец уменьшен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_INCREASED
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_INCREASED"
 msgid "column increased"
-msgstr "столбец увеличен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_SET
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_SET"
 msgid "column set to {0}"
-msgstr "столбец установлен на {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT"
 msgid "Disabled, {0}"
-msgstr "Отключено, {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.HANDLER_NAME
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.HANDLER_NAME"
 msgid "Priorities table"
-msgstr "Таблица приоритетов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_OFF
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_OFF"
 msgid "Proximity, off"
-msgstr "Близость, выключена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_ON
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_ON"
 msgid "Proximity, on"
-msgstr "Близость, включена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_DECREASED
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_DECREASED"
 msgid "row decreased"
-msgstr "строка уменьшена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_INCREASED
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_INCREASED"
 msgid "row increased"
-msgstr "строка увеличена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_COLUMN
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_COLUMN"
 msgid "Set all priorities in column"
-msgstr "Установить все приоритеты в столбце"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_PRIORITY
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.SET_PRIORITY"
 msgid "Set priority of current cell"
-msgstr "Установить приоритет текущей ячейки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.SKILL
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.SKILL"
 msgid "skill {0}"
-msgstr "навык {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.TOOLBAR
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.TOOLBAR"
 msgid "Toolbar"
-msgstr "Панель инструментов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT
 msgctxt "STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT"
 msgid "{0} items"
-msgstr "{0} предметов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT
 msgctxt "STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT"
 msgid "Queue: {0}"
-msgstr "Очередь: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.REPORT.ADDED
 msgctxt "STRINGS.ONIACCESS.REPORT.ADDED"
 msgid "added {0}"
-msgstr "добавлено {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.REPORT.COLONY_SUMMARY
 msgctxt "STRINGS.ONIACCESS.REPORT.COLONY_SUMMARY"
 msgid "Colony summary"
-msgstr "Итоги колонии"
+msgstr ""
 
 #. STRINGS.ONIACCESS.REPORT.HANDLER_NAME
 msgctxt "STRINGS.ONIACCESS.REPORT.HANDLER_NAME"
 msgid "Daily report"
-msgstr "Ежедневный отчёт"
+msgstr ""
 
 #. STRINGS.ONIACCESS.REPORT.HELP_CYCLE
 msgctxt "STRINGS.ONIACCESS.REPORT.HELP_CYCLE"
 msgid "Previous or next cycle"
-msgstr "Предыдущий или следующий цикл"
+msgstr ""
 
 #. STRINGS.ONIACCESS.REPORT.NET
 msgctxt "STRINGS.ONIACCESS.REPORT.NET"
 msgid "net {0}"
-msgstr "итого {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.REPORT.NO_EARLIER_CYCLE
 msgctxt "STRINGS.ONIACCESS.REPORT.NO_EARLIER_CYCLE"
 msgid "Earliest cycle"
-msgstr "Самый ранний цикл"
+msgstr ""
 
 #. STRINGS.ONIACCESS.REPORT.NO_LATER_CYCLE
 msgctxt "STRINGS.ONIACCESS.REPORT.NO_LATER_CYCLE"
 msgid "Latest cycle"
-msgstr "Последний цикл"
+msgstr ""
 
 #. STRINGS.ONIACCESS.REPORT.NOTE
 msgctxt "STRINGS.ONIACCESS.REPORT.NOTE"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.REPORT.REMOVED
 msgctxt "STRINGS.ONIACCESS.REPORT.REMOVED"
 msgid "removed {0}"
-msgstr "удалено {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.ACTIVE
 msgctxt "STRINGS.ONIACCESS.RESEARCH.ACTIVE"
 msgid "active"
-msgstr "активно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.AVAILABLE
 msgctxt "STRINGS.ONIACCESS.RESEARCH.AVAILABLE"
 msgid "available"
-msgstr "доступно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.BANKED_POINTS_FMT
 msgctxt "STRINGS.ONIACCESS.RESEARCH.BANKED_POINTS_FMT"
 msgid "banked research points: {0}"
-msgstr "накопленные очки исследований: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.BROWSE_TAB
 msgctxt "STRINGS.ONIACCESS.RESEARCH.BROWSE_TAB"
 msgid "Browse"
-msgstr "Обзор"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.BUCKET_AVAILABLE
 msgctxt "STRINGS.ONIACCESS.RESEARCH.BUCKET_AVAILABLE"
 msgid "Available"
-msgstr "Доступные"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.BUCKET_COMPLETED
 msgctxt "STRINGS.ONIACCESS.RESEARCH.BUCKET_COMPLETED"
 msgid "Completed"
-msgstr "Завершённые"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.BUCKET_LOCKED
 msgctxt "STRINGS.ONIACCESS.RESEARCH.BUCKET_LOCKED"
 msgid "Locked"
-msgstr "Заблокированные"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.CANCEL_HELP
 msgctxt "STRINGS.ONIACCESS.RESEARCH.CANCEL_HELP"
 msgid "Cancel selected research"
-msgstr "Отменить выбранное исследование"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.CANCELED
 msgctxt "STRINGS.ONIACCESS.RESEARCH.CANCELED"
 msgid "{0} canceled"
-msgstr "{0} отменено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.COMPLETED
 msgctxt "STRINGS.ONIACCESS.RESEARCH.COMPLETED"
 msgid "completed"
-msgstr "завершено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.DEAD_END
 msgctxt "STRINGS.ONIACCESS.RESEARCH.DEAD_END"
 msgid "no further techs"
-msgstr "нет дальнейших технологий"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.HANDLER_NAME
 msgctxt "STRINGS.ONIACCESS.RESEARCH.HANDLER_NAME"
 msgid "Research"
-msgstr "Исследования"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.JUMP_TO_TREE_HELP
 msgctxt "STRINGS.ONIACCESS.RESEARCH.JUMP_TO_TREE_HELP"
 msgid "Jump to tech in tree view"
-msgstr "Перейти к технологии в дереве"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.LOCKED
 msgctxt "STRINGS.ONIACCESS.RESEARCH.LOCKED"
 msgid "locked"
-msgstr "заблокировано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.NEEDS_FMT
 msgctxt "STRINGS.ONIACCESS.RESEARCH.NEEDS_FMT"
 msgid "needs {0}"
-msgstr "требуется {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.NO_BANKED_POINTS
 msgctxt "STRINGS.ONIACCESS.RESEARCH.NO_BANKED_POINTS"
 msgid "no banked research points"
-msgstr "нет накопленных очков исследований"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.PREREQ_COMPLETED
 msgctxt "STRINGS.ONIACCESS.RESEARCH.PREREQ_COMPLETED"
 msgid "{0} completed"
-msgstr "{0} завершено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.PROGRESS_ENTRY
 msgctxt "STRINGS.ONIACCESS.RESEARCH.PROGRESS_ENTRY"
 msgid "{0} of {1} {2}"
-msgstr "{0} из {1} {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.QUEUE_CANCEL_HELP
 msgctxt "STRINGS.ONIACCESS.RESEARCH.QUEUE_CANCEL_HELP"
 msgid "Select or cancel research"
-msgstr "Выбрать или отменить исследование"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.QUEUE_CLEARED
 msgctxt "STRINGS.ONIACCESS.RESEARCH.QUEUE_CLEARED"
 msgid "queue cleared"
-msgstr "очередь очищена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.QUEUE_EMPTY
 msgctxt "STRINGS.ONIACCESS.RESEARCH.QUEUE_EMPTY"
 msgid "no research queued"
-msgstr "нет исследований в очереди"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.QUEUE_TAB
 msgctxt "STRINGS.ONIACCESS.RESEARCH.QUEUE_TAB"
 msgid "Queue"
-msgstr "Очередь"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.QUEUED
 msgctxt "STRINGS.ONIACCESS.RESEARCH.QUEUED"
 msgid "{0} queued"
-msgstr "{0} в очереди"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.ROOT_NODE
 msgctxt "STRINGS.ONIACCESS.RESEARCH.ROOT_NODE"
 msgid "no prerequisites"
-msgstr "нет предварительных требований"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.TREE_TAB
 msgctxt "STRINGS.ONIACCESS.RESEARCH.TREE_TAB"
 msgid "Tree"
-msgstr "Дерево"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESEARCH.UNLOCKS_FMT
 msgctxt "STRINGS.ONIACCESS.RESEARCH.UNLOCKS_FMT"
 msgid "unlocks {0}"
-msgstr "открывает {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.ALL_UNPINNED
 msgctxt "STRINGS.ONIACCESS.RESOURCES.ALL_UNPINNED"
 msgid "all unpinned"
-msgstr "все откреплены"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.AVAILABLE
 msgctxt "STRINGS.ONIACCESS.RESOURCES.AVAILABLE"
 msgid "available"
-msgstr "доступно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.BROWSER_TITLE
 msgctxt "STRINGS.ONIACCESS.RESOURCES.BROWSER_TITLE"
 msgid "Resources"
-msgstr "Ресурсы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.DISCOVERED
 msgctxt "STRINGS.ONIACCESS.RESOURCES.DISCOVERED"
 msgid "Discovered: {0}"
-msgstr "Обнаружено: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.FALLING
 msgctxt "STRINGS.ONIACCESS.RESOURCES.FALLING"
 msgid "falling"
-msgstr "падает"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.HELP_CLEAR_PINS
 msgctxt "STRINGS.ONIACCESS.RESOURCES.HELP_CLEAR_PINS"
 msgid "Unpin all resources"
-msgstr "Открепить все ресурсы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.HELP_JUMP
 msgctxt "STRINGS.ONIACCESS.RESOURCES.HELP_JUMP"
 msgid "Jump to instance location"
-msgstr "Перейти к местоположению"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.HELP_OPEN
 msgctxt "STRINGS.ONIACCESS.RESOURCES.HELP_OPEN"
 msgid "Open resource browser"
-msgstr "Открыть обозреватель ресурсов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.HELP_PIN
 msgctxt "STRINGS.ONIACCESS.RESOURCES.HELP_PIN"
 msgid "Pin or unpin resource"
-msgstr "Закрепить или открепить ресурс"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.HELP_READ_PINNED
 msgctxt "STRINGS.ONIACCESS.RESOURCES.HELP_READ_PINNED"
 msgid "Read pinned resources"
-msgstr "Прочитать закреплённые ресурсы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.INSTANCE_IN_BUILDING
 msgctxt "STRINGS.ONIACCESS.RESOURCES.INSTANCE_IN_BUILDING"
 msgid "{0} in {1} at {2}"
-msgstr "{0} в {1} на {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.INSTANCE_LOOSE
 msgctxt "STRINGS.ONIACCESS.RESOURCES.INSTANCE_LOOSE"
 msgid "{0} at {1}"
-msgstr "{0} на {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.NO_INSTANCES
 msgctxt "STRINGS.ONIACCESS.RESOURCES.NO_INSTANCES"
 msgid "none available"
-msgstr "ничего не найдено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.NO_PINNED
 msgctxt "STRINGS.ONIACCESS.RESOURCES.NO_PINNED"
 msgid "no pinned resources"
-msgstr "нет закреплённых ресурсов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.OVERDRAWN
 msgctxt "STRINGS.ONIACCESS.RESOURCES.OVERDRAWN"
 msgid "overdrawn"
-msgstr "перерасход"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.PINNED
 msgctxt "STRINGS.ONIACCESS.RESOURCES.PINNED"
 msgid "pinned"
-msgstr "закреплено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.RESERVED
 msgctxt "STRINGS.ONIACCESS.RESOURCES.RESERVED"
 msgid "reserved"
-msgstr "зарезервировано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.RISING
 msgctxt "STRINGS.ONIACCESS.RESOURCES.RISING"
 msgid "rising"
-msgstr "растёт"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RESOURCES.UNPINNED
 msgctxt "STRINGS.ONIACCESS.RESOURCES.UNPINNED"
 msgid "unpinned"
-msgstr "откреплено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RULER.CLEARED
 msgctxt "STRINGS.ONIACCESS.RULER.CLEARED"
 msgid "ruler cleared"
-msgstr "линейка сброшена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RULER.HELP_CLEAR
 msgctxt "STRINGS.ONIACCESS.RULER.HELP_CLEAR"
 msgid "Clear ruler"
-msgstr "Сбросить линейку"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RULER.HELP_PLACE
 msgctxt "STRINGS.ONIACCESS.RULER.HELP_PLACE"
 msgid "Place ruler at cursor"
-msgstr "Установить линейку на курсоре"
+msgstr ""
 
 #. STRINGS.ONIACCESS.RULER.PLACED
 msgctxt "STRINGS.ONIACCESS.RULER.PLACED"
 msgid "ruler set"
-msgstr "линейка установлена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.APPLIED
 msgctxt "STRINGS.ONIACCESS.SANDBOX.APPLIED"
 msgid "applied to {0} cells"
-msgstr "применено к {0} клеткам"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.APPLIED_ONE
 msgctxt "STRINGS.ONIACCESS.SANDBOX.APPLIED_ONE"
 msgid "applied"
-msgstr "применено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.HELP.CONFIRM
 msgctxt "STRINGS.ONIACCESS.SANDBOX.HELP.CONFIRM"
 msgid "Apply and dismiss"
-msgstr "Применить и закрыть"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.HELP.OPEN_PARAMS
 msgctxt "STRINGS.ONIACCESS.SANDBOX.HELP.OPEN_PARAMS"
 msgid "Open parameter menu"
-msgstr "Открыть меню параметров"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.HELP.SAMPLE
 msgctxt "STRINGS.ONIACCESS.SANDBOX.HELP.SAMPLE"
 msgid "Sample cell under cursor"
-msgstr "Взять образец клетки под курсором"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.HELP.SET_CORNER
 msgctxt "STRINGS.ONIACCESS.SANDBOX.HELP.SET_CORNER"
 msgid "Set rectangle corner or place"
-msgstr "Задать угол прямоугольника или разместить"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.PARAM_MENU
 msgctxt "STRINGS.ONIACCESS.SANDBOX.PARAM_MENU"
 msgid "sandbox parameters"
-msgstr "параметры песочницы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.SAMPLE
 msgctxt "STRINGS.ONIACCESS.SANDBOX.SAMPLE"
 msgid "sampled"
-msgstr "образец взят"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.TOOL_FALLBACK
 msgctxt "STRINGS.ONIACCESS.SANDBOX.TOOL_FALLBACK"
 msgid "sandbox tool"
-msgstr "инструмент песочницы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.TOOLS_CATEGORY
 msgctxt "STRINGS.ONIACCESS.SANDBOX.TOOLS_CATEGORY"
 msgid "Sandbox Tools"
-msgstr "Инструменты песочницы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.TOOLS_OFF
 msgctxt "STRINGS.ONIACCESS.SANDBOX.TOOLS_OFF"
 msgid "sandbox tools off"
-msgstr "инструменты песочницы выключены"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SANDBOX.TOOLS_ON
 msgctxt "STRINGS.ONIACCESS.SANDBOX.TOOLS_ON"
 msgid "sandbox tools on"
-msgstr "инструменты песочницы включены"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SAVE_LOAD.AUTO_SAVE
 msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.AUTO_SAVE"
 msgid "auto-save"
-msgstr "автосохранение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SAVE_LOAD.CONVERT_ALL_TO_CLOUD
 msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.CONVERT_ALL_TO_CLOUD"
 msgid "Convert all to cloud"
-msgstr "Перенести все в облако"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SAVE_LOAD.CONVERT_ALL_TO_LOCAL
 msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.CONVERT_ALL_TO_LOCAL"
 msgid "Convert all to local"
-msgstr "Перенести все в локальное хранилище"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SAVE_LOAD.DELETE
 msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.DELETE"
 msgid "Delete"
-msgstr "Удалить"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SAVE_LOAD.NEWEST
 msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.NEWEST"
 msgid "newest"
-msgstr "новейшее"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SAVE_LOAD.SAVE_INFO
 msgctxt "STRINGS.ONIACCESS.SAVE_LOAD.SAVE_INFO"
 msgid "Save info"
-msgstr "Информация о сохранении"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_OFF
 msgctxt "STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_OFF"
 msgid "auto-move off"
-msgstr "автоперемещение выключено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_ON
 msgctxt "STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_ON"
 msgid "auto-move on"
-msgstr "автоперемещение включено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.BIOME_NAME
 msgctxt "STRINGS.ONIACCESS.SCANNER.BIOME_NAME"
 msgid "{0} Biome"
-msgstr "{0} Биом"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.BOTTLE_NAME
 msgctxt "STRINGS.ONIACCESS.SCANNER.BOTTLE_NAME"
 msgid "Bottled {0}"
-msgstr "В бутылке {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.AUTOMATION
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.AUTOMATION"
 msgid "Automation"
-msgstr "Автоматизация"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.BUILDINGS
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.BUILDINGS"
 msgid "Buildings"
-msgstr "Постройки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.DEBRIS
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.DEBRIS"
 msgid "Debris"
-msgstr "Мусор"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.GASES
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.GASES"
 msgid "Gases"
-msgstr "Газы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.GEYSERS
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.GEYSERS"
 msgid "Geysers"
-msgstr "Гейзеры"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.LIFE
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.LIFE"
 msgid "Life"
-msgstr "Жизнь"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.LIQUIDS
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.LIQUIDS"
 msgid "Liquids"
-msgstr "Жидкости"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.NETWORKS
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.NETWORKS"
 msgid "Networks"
-msgstr "Сети"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.SEARCH
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.SEARCH"
 msgid "Search"
-msgstr "Поиск"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.SOLIDS
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.SOLIDS"
 msgid "Solids"
-msgstr "Твёрдые вещества"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CATEGORIES.ZONES
 msgctxt "STRINGS.ONIACCESS.SCANNER.CATEGORIES.ZONES"
 msgid "Zones"
-msgstr "Зоны"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.CLUSTER_LABEL
 msgctxt "STRINGS.ONIACCESS.SCANNER.CLUSTER_LABEL"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN
 msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN"
 msgid "down"
-msgstr "вниз"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT
 msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT"
 msgid "left"
-msgstr "влево"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT
 msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT"
 msgid "right"
-msgstr "вправо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.DIRECTION_UP
 msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_UP"
 msgid "up"
-msgstr "вверх"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.DISTANCE_BOTH
 msgctxt "STRINGS.ONIACCESS.SCANNER.DISTANCE_BOTH"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.DISTANCE_HORIZONTAL
 msgctxt "STRINGS.ONIACCESS.SCANNER.DISTANCE_HORIZONTAL"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.DISTANCE_VERTICAL
 msgctxt "STRINGS.ONIACCESS.SCANNER.DISTANCE_VERTICAL"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.EMPTY
 msgctxt "STRINGS.ONIACCESS.SCANNER.EMPTY"
 msgid "no results"
-msgstr "нет результатов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_CATEGORY
 msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_CATEGORY"
 msgid "Scanner: cycle category"
-msgstr "Сканер: переключить категорию"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE
 msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_INSTANCE"
 msgid "Scanner: cycle instance"
-msgstr "Сканер: переключить экземпляр"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM
 msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_ITEM"
 msgid "Scanner: cycle item"
-msgstr "Сканер: переключить элемент"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_SUBCATEGORY
 msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.CYCLE_SUBCATEGORY"
 msgid "Scanner: cycle subcategory"
-msgstr "Сканер: переключить подкатегорию"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HELP.ORIENT_ITEM
 msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.ORIENT_ITEM"
 msgid "Distance to current item"
-msgstr "Расстояние до текущего элемента"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HELP.REFRESH
 msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.REFRESH"
 msgid "Refresh scanner"
-msgstr "Обновить сканер"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HELP.SEARCH
 msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.SEARCH"
 msgid "Search scanner"
-msgstr "Поиск в сканере"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT
 msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT"
 msgid "Jump to selected scanner entry"
-msgstr "Перейти к выбранному элементу сканера"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT_BACK
 msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.TELEPORT_BACK"
 msgid "Return to pre-teleport position"
-msgstr "Вернуться на позицию до телепортации"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HELP.TOGGLE_AUTO_MOVE
 msgctxt "STRINGS.ONIACCESS.SCANNER.HELP.TOGGLE_AUTO_MOVE"
 msgid "Toggle auto-move cursor"
-msgstr "Переключить автоперемещение курсора"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.HERE
 msgctxt "STRINGS.ONIACCESS.SCANNER.HERE"
 msgid "here"
-msgstr "здесь"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.INSTANCE_NO_DISTANCE
 msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_NO_DISTANCE"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.INSTANCE_OF
 msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_OF"
 msgid "{0} of {1}"
-msgstr "{0} из {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.INSTANCE_WITH_DISTANCE
 msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_WITH_DISTANCE"
 msgid "{0}, {1}, {2}"
-msgstr "{0}, {1}, {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.INVALID
 msgctxt "STRINGS.ONIACCESS.SCANNER.INVALID"
 msgid "gone"
-msgstr "исчезло"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.LOOSE_NAME
 msgctxt "STRINGS.ONIACCESS.SCANNER.LOOSE_NAME"
 msgid "Loose {0}"
-msgstr "Россыпь {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.MIXED
 msgctxt "STRINGS.ONIACCESS.SCANNER.MIXED"
 msgid "mixed"
-msgstr "смешано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.ORDER_CLUSTER_COUNT
 msgctxt "STRINGS.ONIACCESS.SCANNER.ORDER_CLUSTER_COUNT"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.ORDER_CLUSTER_LABEL
 msgctxt "STRINGS.ONIACCESS.SCANNER.ORDER_CLUSTER_LABEL"
 msgid "{0} {1} {2}"
-msgstr "{0} {1} {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.ORDER_LABEL
 msgctxt "STRINGS.ONIACCESS.SCANNER.ORDER_LABEL"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.REFRESHED
 msgctxt "STRINGS.ONIACCESS.SCANNER.REFRESHED"
 msgid "scanned"
-msgstr "отсканировано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SEARCH.PROMPT
 msgctxt "STRINGS.ONIACCESS.SCANNER.SEARCH.PROMPT"
 msgid "search"
-msgstr "поиск"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ALL
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ALL"
 msgid "all"
-msgstr "все"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.BIOMES
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.BIOMES"
 msgid "Biomes"
-msgstr "Биомы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.BOTTLES
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.BOTTLES"
 msgid "Bottles"
-msgstr "Бутылки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONSUMABLES
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONSUMABLES"
 msgid "Consumables"
-msgstr "Продовольствие"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONTROLS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONTROLS"
 msgid "Controls"
-msgstr "Управление"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONVEYOR
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.CONVEYOR"
 msgid "Conveyor"
-msgstr "Конвейер"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.DUPLICANTS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.DUPLICANTS"
 msgid "Duplicants"
-msgstr "Дубликанты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FARM_PLANTS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FARM_PLANTS"
 msgid "Farm Plants"
-msgstr "Фермерские растения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FARMING
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FARMING"
 msgid "Farming"
-msgstr "Фермерство"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FOOD
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FOOD"
 msgid "Food"
-msgstr "Еда"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FUELS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FUELS"
 msgid "Fuels"
-msgstr "Топливо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GAS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GAS"
 msgid "Gas"
-msgstr "Газ"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GATES
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GATES"
 msgid "Gates"
-msgstr "Вентили"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GENERATORS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GENERATORS"
 msgid "Generators"
-msgstr "Генераторы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GEOTHERMAL
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GEOTHERMAL"
 msgid "Geothermal"
-msgstr "Геотермальное"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GRAVITAS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.GRAVITAS"
 msgid "Gravitas"
-msgstr "Гравитас"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ICE
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ICE"
 msgid "Ice"
-msgstr "Лёд"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.INFRASTRUCTURE
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.INFRASTRUCTURE"
 msgid "Infrastructure"
-msgstr "Инфраструктура"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ITEMS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ITEMS"
 msgid "Items"
-msgstr "Предметы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.LIQUID
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.LIQUID"
 msgid "Liquid"
-msgstr "Жидкость"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MATERIALS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MATERIALS"
 msgid "Materials"
-msgstr "Материалы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MISC
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MISC"
 msgid "Misc"
-msgstr "Разное"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MOLTEN
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MOLTEN"
 msgid "Molten"
-msgstr "Расплавленное"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MORALE
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.MORALE"
 msgid "Morale"
-msgstr "Мораль"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORDERS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORDERS"
 msgid "Orders"
-msgstr "Приказы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORES
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORES"
 msgid "Ores"
-msgstr "Руды"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORGANICS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORGANICS"
 msgid "Organics"
-msgstr "Органика"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.OXYGEN
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.OXYGEN"
 msgid "Oxygen"
-msgstr "Кислород"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.POWER
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.POWER"
 msgid "Power"
-msgstr "Энергия"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.PRODUCTION
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.PRODUCTION"
 msgid "Production"
-msgstr "Производство"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.REFINED
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.REFINED"
 msgid "Refined"
-msgstr "Рафинированное"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.REFINING
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.REFINING"
 msgid "Refining"
-msgstr "Переработка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROBOTS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROBOTS"
 msgid "Robots"
-msgstr "Роботы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROCKETRY
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROCKETRY"
 msgid "Rocketry"
-msgstr "Ракетостроение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROOMS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROOMS"
 msgid "Rooms"
-msgstr "Комнаты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.SAFE
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.SAFE"
 msgid "Safe"
-msgstr "Безопасное"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.SENSORS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.SENSORS"
 msgid "Sensors"
-msgstr "Датчики"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.STONE
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.STONE"
 msgid "Stone"
-msgstr "Камень"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.STORAGE
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.STORAGE"
 msgid "Storage"
-msgstr "Хранение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TAME_CRITTERS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TAME_CRITTERS"
 msgid "Tame Critters"
-msgstr "Ручные существа"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TEMPERATURE
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TEMPERATURE"
 msgid "Temperature"
-msgstr "Температура"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TILES
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TILES"
 msgid "Tiles"
-msgstr "Клетки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TRANSPORT
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TRANSPORT"
 msgid "Transport"
-msgstr "Транспорт"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.UNSAFE
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.UNSAFE"
 msgid "Unsafe"
-msgstr "Опасное"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WATERS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WATERS"
 msgid "Waters"
-msgstr "Водоёмы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WELLNESS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WELLNESS"
 msgid "Wellness"
-msgstr "Здоровье"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_CRITTERS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_CRITTERS"
 msgid "Wild Critters"
-msgstr "Дикие существа"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_PLANTS
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_PLANTS"
 msgid "Wild Plants"
-msgstr "Дикие растения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WIRES
 msgctxt "STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WIRES"
 msgid "Wires"
-msgstr "Провода"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.ADD_SCHEDULE
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.ADD_SCHEDULE"
 msgid "Add new schedule"
-msgstr "Добавить новое расписание"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.BLOCK_ALREADY
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.BLOCK_ALREADY"
 msgid "block {0}, already {1}"
-msgstr "блок {0}, уже {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.BLOCK_LABEL
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.BLOCK_LABEL"
 msgid "{0}, block {1}"
-msgstr "{0}, блок {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.BRUSH_ACTIVE
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.BRUSH_ACTIVE"
 msgid "Brush: {0}"
-msgstr "Кисть: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.CANNOT_DELETE_LAST
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.CANNOT_DELETE_LAST"
 msgid "Cannot delete last schedule"
-msgstr "Нельзя удалить последнее расписание"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.CANNOT_DELETE_LAST_ROW
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.CANNOT_DELETE_LAST_ROW"
 msgid "Cannot delete last row"
-msgstr "Нельзя удалить последнюю строку"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HANDLER_NAME
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HANDLER_NAME"
 msgid "Schedule"
-msgstr "Расписание"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HELP_CHANGE_SCHEDULE
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_CHANGE_SCHEDULE"
 msgid "Change schedule assignment"
-msgstr "Изменить назначение расписания"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HELP_JUMP_BLOCK
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_JUMP_BLOCK"
 msgid "Jump to first or last block"
-msgstr "Перейти к первому или последнему блоку"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HELP_NAVIGATE_BLOCKS
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_NAVIGATE_BLOCKS"
 msgid "Navigate blocks"
-msgstr "Навигация по блокам"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HELP_OPTIONS
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_OPTIONS"
 msgid "Open schedule options"
-msgstr "Открыть параметры расписания"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT"
 msgid "Paint current block"
-msgstr "Закрасить текущий блок"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_MOVE
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_MOVE"
 msgid "Paint and move"
-msgstr "Закрасить и переместиться"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_RANGE
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_RANGE"
 msgid "Paint range to start or end"
-msgstr "Закрасить диапазон до начала или конца"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HELP_REORDER_SCHEDULE
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_REORDER_SCHEDULE"
 msgid "Move schedule up or down"
-msgstr "Переместить расписание вверх или вниз"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HELP_ROTATE
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_ROTATE"
 msgid "Rotate blocks left or right"
-msgstr "Сдвинуть блоки влево или вправо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.HELP_SELECT_BRUSH
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_SELECT_BRUSH"
 msgid "Select brush"
-msgstr "Выбрать кисть"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.MOVED_DOWN
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.MOVED_DOWN"
 msgid "moved down"
-msgstr "перемещено вниз"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.MOVED_UP
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.MOVED_UP"
 msgid "moved up"
-msgstr "перемещено вверх"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_ADD_ROW
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_ADD_ROW"
 msgid "Add timetable row"
-msgstr "Добавить строку расписания"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DELETE_ROW
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DELETE_ROW"
 msgid "Delete timetable row"
-msgstr "Удалить строку расписания"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DELETE_SCHEDULE
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DELETE_SCHEDULE"
 msgid "Delete schedule"
-msgstr "Удалить расписание"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DUPLICATE
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_DUPLICATE"
 msgid "Duplicate schedule"
-msgstr "Дублировать расписание"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_RENAME
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_RENAME"
 msgid "Rename"
-msgstr "Переименовать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.PAINTED_RANGE
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.PAINTED_RANGE"
 msgid "Painted {0}, blocks {1} through {2}"
-msgstr "Закрашено {0}, блоки с {1} по {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.ROW_LABEL
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.ROW_LABEL"
 msgid "row {0}"
-msgstr "строка {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.SCHEDULE_DELETED
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.SCHEDULE_DELETED"
 msgid "Schedule deleted"
-msgstr "Расписание удалено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.SCHEDULE_ROW
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.SCHEDULE_ROW"
 msgid "{0}, row {1}"
-msgstr "{0}, строка {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.SCHEDULES_TAB
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.SCHEDULES_TAB"
 msgid "Schedules"
-msgstr "Расписания"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.TIMETABLE_ROW_ADDED
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.TIMETABLE_ROW_ADDED"
 msgid "Row added"
-msgstr "Строка добавлена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SCHEDULE.TIMETABLE_ROW_DELETED
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.TIMETABLE_ROW_DELETED"
 msgid "Row deleted"
-msgstr "Строка удалена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SEARCH.CLEARED
 msgctxt "STRINGS.ONIACCESS.SEARCH.CLEARED"
 msgid "Search cleared"
-msgstr "Поиск очищен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SEARCH.NO_MATCH
 msgctxt "STRINGS.ONIACCESS.SEARCH.NO_MATCH"
 msgid "No match for {0}"
-msgstr "Нет совпадений для {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SIDESCREENS.COPILOT_ROBO
 msgctxt "STRINGS.ONIACCESS.SIDESCREENS.COPILOT_ROBO"
 msgid "Copilot: Robo-Pilot"
-msgstr "Второй пилот: робопилот"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.ASSIGNED
 msgctxt "STRINGS.ONIACCESS.SKILLS.ASSIGNED"
 msgid "{0} assigned"
-msgstr "{0} назначено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.AVAILABLE
 msgctxt "STRINGS.ONIACCESS.SKILLS.AVAILABLE"
 msgid "available"
-msgstr "доступно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.BLOCKED_BY
 msgctxt "STRINGS.ONIACCESS.SKILLS.BLOCKED_BY"
 msgid "blocked by {0}"
-msgstr "заблокировано из-за {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.BOOSTER_ASSIGNED
 msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_ASSIGNED"
 msgid "booster assigned"
-msgstr "бустер назначен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.BOOSTER_AVAILABLE
 msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_AVAILABLE"
 msgid "{0} available"
-msgstr "{0} доступно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.BOOSTER_HELP
 msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_HELP"
 msgid "Assign or unassign boosters with +/-"
-msgstr "Назначить или снять бустеры через +/-"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.BOOSTER_HINT
 msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_HINT"
 msgid "use plus to assign, minus to unassign"
-msgstr "плюс для назначения, минус для снятия"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.BOOSTER_SLOTS
 msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_SLOTS"
 msgid "{0} of {1} booster slots used"
-msgstr "{0} из {1} слотов бустеров использовано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.BOOSTER_UNASSIGNED
 msgctxt "STRINGS.ONIACCESS.SKILLS.BOOSTER_UNASSIGNED"
 msgid "booster unassigned"
-msgstr "бустер снят"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.BUCKET_BOOSTERS
 msgctxt "STRINGS.ONIACCESS.SKILLS.BUCKET_BOOSTERS"
 msgid "Boosters"
-msgstr "Бустеры"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.BUCKET_DUPE_INFO
 msgctxt "STRINGS.ONIACCESS.SKILLS.BUCKET_DUPE_INFO"
 msgid "Dupe Info"
-msgstr "Инфо о дупе"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.BUCKET_MASTERED
 msgctxt "STRINGS.ONIACCESS.SKILLS.BUCKET_MASTERED"
 msgid "Mastered"
-msgstr "Освоенные"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.CANNOT_LEARN
 msgctxt "STRINGS.ONIACCESS.SKILLS.CANNOT_LEARN"
 msgid "cannot learn"
-msgstr "не может изучить"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.DEAD_END
 msgctxt "STRINGS.ONIACCESS.SKILLS.DEAD_END"
 msgid "no further skills"
-msgstr "нет дальнейших навыков"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.DUPES_TAB
 msgctxt "STRINGS.ONIACCESS.SKILLS.DUPES_TAB"
 msgid "Duplicants"
-msgstr "Дубликанты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.GRANTED
 msgctxt "STRINGS.ONIACCESS.SKILLS.GRANTED"
 msgid "granted"
-msgstr "дарован"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.HANDLER_NAME
 msgctxt "STRINGS.ONIACCESS.SKILLS.HANDLER_NAME"
 msgid "Skills"
-msgstr "Навыки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.HAT_LABEL
 msgctxt "STRINGS.ONIACCESS.SKILLS.HAT_LABEL"
 msgid "hat: {0}"
-msgstr "шляпа: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.HAT_QUEUED
 msgctxt "STRINGS.ONIACCESS.SKILLS.HAT_QUEUED"
 msgid "{0} queued"
-msgstr "{0} в очереди"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.HAT_SELECTED
 msgctxt "STRINGS.ONIACCESS.SKILLS.HAT_SELECTED"
 msgid "{0} selected"
-msgstr "{0} выбрано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.HEADER_TOTAL
 msgctxt "STRINGS.ONIACCESS.SKILLS.HEADER_TOTAL"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.INTERESTED
 msgctxt "STRINGS.ONIACCESS.SKILLS.INTERESTED"
 msgid "interested"
-msgstr "интерес"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.INTERESTS
 msgctxt "STRINGS.ONIACCESS.SKILLS.INTERESTS"
 msgid "interests: {0}"
-msgstr "интересы: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.JUMP_TO_TREE_HELP
 msgctxt "STRINGS.ONIACCESS.SKILLS.JUMP_TO_TREE_HELP"
 msgid "Jump to skill in tree view"
-msgstr "Перейти к навыку в дереве"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.LEARN_HELP
 msgctxt "STRINGS.ONIACCESS.SKILLS.LEARN_HELP"
 msgid "Learn skill or select hat"
-msgstr "Изучить навык или выбрать шляпу"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.LEARNED
 msgctxt "STRINGS.ONIACCESS.SKILLS.LEARNED"
 msgid "{0} learned"
-msgstr "{0} изучено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.LOCKED
 msgctxt "STRINGS.ONIACCESS.SKILLS.LOCKED"
 msgid "locked"
-msgstr "заблокировано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.MASTERED
 msgctxt "STRINGS.ONIACCESS.SKILLS.MASTERED"
 msgid "mastered"
-msgstr "освоено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.MASTERED_BY
 msgctxt "STRINGS.ONIACCESS.SKILLS.MASTERED_BY"
 msgid "mastered by {0}"
-msgstr "освоено: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.MODIFIER_LINE
 msgctxt "STRINGS.ONIACCESS.SKILLS.MODIFIER_LINE"
 msgid "{0} {1}{2}"
-msgstr "{0} {1}{2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.MORALE_DEFICIT
 msgctxt "STRINGS.ONIACCESS.SKILLS.MORALE_DEFICIT"
 msgid "morale deficit"
-msgstr "дефицит морали"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.MORALE_NEED
 msgctxt "STRINGS.ONIACCESS.SKILLS.MORALE_NEED"
 msgid "{0} morale need"
-msgstr "{0} требование морали"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.MORALE_OF
 msgctxt "STRINGS.ONIACCESS.SKILLS.MORALE_OF"
 msgid "morale {0} of {1}"
-msgstr "мораль {0} из {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.NAME_POINTS
 msgctxt "STRINGS.ONIACCESS.SKILLS.NAME_POINTS"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.NAME_STATUS
 msgctxt "STRINGS.ONIACCESS.SKILLS.NAME_STATUS"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.NAME_STORED
 msgctxt "STRINGS.ONIACCESS.SKILLS.NAME_STORED"
 msgid "{0}, stored"
-msgstr "{0}, на складе"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.NO_BOOSTERS_AVAILABLE
 msgctxt "STRINGS.ONIACCESS.SKILLS.NO_BOOSTERS_AVAILABLE"
 msgid "no boosters available"
-msgstr "нет доступных бустеров"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.NO_EMPTY_SLOTS
 msgctxt "STRINGS.ONIACCESS.SKILLS.NO_EMPTY_SLOTS"
 msgid "no empty slots"
-msgstr "нет свободных слотов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.NO_HAT
 msgctxt "STRINGS.ONIACCESS.SKILLS.NO_HAT"
 msgid "no hat"
-msgstr "нет шляпы"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.NO_INTERESTS
 msgctxt "STRINGS.ONIACCESS.SKILLS.NO_INTERESTS"
 msgid "no interests"
-msgstr "нет интересов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.NO_SKILL_POINTS
 msgctxt "STRINGS.ONIACCESS.SKILLS.NO_SKILL_POINTS"
 msgid "no skill points"
-msgstr "нет очков навыков"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.NONE_ASSIGNED
 msgctxt "STRINGS.ONIACCESS.SKILLS.NONE_ASSIGNED"
 msgid "none assigned"
-msgstr "ничего не назначено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.POINTS
 msgctxt "STRINGS.ONIACCESS.SKILLS.POINTS"
 msgid "{0} points"
-msgstr "{0} очков"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.SKILLS_TAB
 msgctxt "STRINGS.ONIACCESS.SKILLS.SKILLS_TAB"
 msgid "Skills"
-msgstr "Навыки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKILLS.XP_PROGRESS
 msgctxt "STRINGS.ONIACCESS.SKILLS.XP_PROGRESS"
 msgid "{0} of {1} experience to next point"
-msgstr "{0} из {1} опыта до следующего очка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKIP.COUNT_FORMAT
 msgctxt "STRINGS.ONIACCESS.SKIP.COUNT_FORMAT"
 msgid "{0} {1}"
-msgstr "{0} {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKIP.HELP_SKIP
 msgctxt "STRINGS.ONIACCESS.SKIP.HELP_SKIP"
 msgid "Skip cursor to next change"
-msgstr "Перейти к следующему изменению"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKIP.HELP_SKIP_DEFAULT
 msgctxt "STRINGS.ONIACCESS.SKIP.HELP_SKIP_DEFAULT"
 msgid "Skip by building or element (ignore overlay)"
-msgstr "Перейти по постройке или элементу (игнорировать схему)"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKIP.NO_CHANGE_BOUNDARY
 msgctxt "STRINGS.ONIACCESS.SKIP.NO_CHANGE_BOUNDARY"
 msgid "no change till map boundary"
-msgstr "нет изменений до границы карты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKIP.TILE_PLURAL
 msgctxt "STRINGS.ONIACCESS.SKIP.TILE_PLURAL"
 msgid "tiles"
-msgstr "клеток"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SKIP.TILE_SINGULAR
 msgctxt "STRINGS.ONIACCESS.SKIP.TILE_SINGULAR"
 msgid "tile"
-msgstr "клетка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SPEECH.HANDLER_FAILED
 msgctxt "STRINGS.ONIACCESS.SPEECH.HANDLER_FAILED"
 msgid "Error, {0} failed"
-msgstr "Ошибка, {0} не удалось"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SPEECH.MOD_LOADED
 msgctxt "STRINGS.ONIACCESS.SPEECH.MOD_LOADED"
 msgid "Oni-Access version {0} loaded"
-msgstr "Oni-Access версия {0} загружена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SPEECH.MOD_OFF
 msgctxt "STRINGS.ONIACCESS.SPEECH.MOD_OFF"
 msgid "Oni-Access off"
-msgstr "Oni-Access выключен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SPEECH.MOD_ON
 msgctxt "STRINGS.ONIACCESS.SPEECH.MOD_ON"
 msgid "Oni-Access on"
-msgstr "Oni-Access включён"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SPEECH.NO_COMMANDS
 msgctxt "STRINGS.ONIACCESS.SPEECH.NO_COMMANDS"
 msgid "No commands available in this context"
-msgstr "В этом контексте нет доступных команд"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SPRITES.LOGIC_GREEN
 msgctxt "STRINGS.ONIACCESS.SPRITES.LOGIC_GREEN"
 msgid "green signal"
-msgstr "зелёный сигнал"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SPRITES.LOGIC_RED
 msgctxt "STRINGS.ONIACCESS.SPRITES.LOGIC_RED"
 msgid "red signal"
-msgstr "красный сигнал"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SPRITES.WARNING
 msgctxt "STRINGS.ONIACCESS.SPRITES.WARNING"
 msgid "warning:"
-msgstr "предупреждение:"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.ANALYSIS_STARTED
 msgctxt "STRINGS.ONIACCESS.STARMAP.ANALYSIS_STARTED"
 msgid "analysis started"
-msgstr "анализ начат"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.ANALYSIS_SUSPENDED
 msgctxt "STRINGS.ONIACCESS.STARMAP.ANALYSIS_SUSPENDED"
 msgid "analysis suspended"
-msgstr "анализ приостановлен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.ANALYZING_THIS
 msgctxt "STRINGS.ONIACCESS.STARMAP.ANALYZING_THIS"
 msgid "telescope analyzing"
-msgstr "телескоп анализирует"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.CAN_CARRY
 msgctxt "STRINGS.ONIACCESS.STARMAP.CAN_CARRY"
 msgid "can carry"
-msgstr "может нести"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.CHECK_NOT_READY
 msgctxt "STRINGS.ONIACCESS.STARMAP.CHECK_NOT_READY"
 msgid "not ready"
-msgstr "не готово"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.CHECK_READY
 msgctxt "STRINGS.ONIACCESS.STARMAP.CHECK_READY"
 msgid "ready"
-msgstr "готово"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.CHECK_WARNING
 msgctxt "STRINGS.ONIACCESS.STARMAP.CHECK_WARNING"
 msgid "warning"
-msgstr "предупреждение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.COMPLETE
 msgctxt "STRINGS.ONIACCESS.STARMAP.COMPLETE"
 msgid "complete"
-msgstr "завершено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.DESTINATION_ASSIGNED
 msgctxt "STRINGS.ONIACCESS.STARMAP.DESTINATION_ASSIGNED"
 msgid "{0} assigned to {1}"
-msgstr "{0} назначена к {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.DESTINATIONS_TAB
 msgctxt "STRINGS.ONIACCESS.STARMAP.DESTINATIONS_TAB"
 msgid "Destinations"
-msgstr "Пункты назначения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.DESTINATIONS_TAB_WITH_ROCKET
 msgctxt "STRINGS.ONIACCESS.STARMAP.DESTINATIONS_TAB_WITH_ROCKET"
 msgid "assigning to {0}"
-msgstr "назначение к {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.DETAILS_TAB
 msgctxt "STRINGS.ONIACCESS.STARMAP.DETAILS_TAB"
 msgid "Destination details"
-msgstr "Подробности о пункте назначения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.HANDLER_NAME
 msgctxt "STRINGS.ONIACCESS.STARMAP.HANDLER_NAME"
 msgid "Starmap"
-msgstr "Звёздная карта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.LAUNCH_HELP
 msgctxt "STRINGS.ONIACCESS.STARMAP.LAUNCH_HELP"
 msgid "Launch rocket"
-msgstr "Запустить ракету"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.LAUNCHED
 msgctxt "STRINGS.ONIACCESS.STARMAP.LAUNCHED"
 msgid "{0} launched"
-msgstr "{0} запущена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.NEEDS_BAY
 msgctxt "STRINGS.ONIACCESS.STARMAP.NEEDS_BAY"
 msgid "needs"
-msgstr "требуется"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.NO_DESTINATION_SELECTED
 msgctxt "STRINGS.ONIACCESS.STARMAP.NO_DESTINATION_SELECTED"
 msgid "no destination selected"
-msgstr "пункт назначения не выбран"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.NO_DESTINATIONS
 msgctxt "STRINGS.ONIACCESS.STARMAP.NO_DESTINATIONS"
 msgid "no destinations"
-msgstr "нет пунктов назначения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.NO_ROCKET_SELECTED
 msgctxt "STRINGS.ONIACCESS.STARMAP.NO_ROCKET_SELECTED"
 msgid "no rocket selected"
-msgstr "ракета не выбрана"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.NO_ROCKETS
 msgctxt "STRINGS.ONIACCESS.STARMAP.NO_ROCKETS"
 msgid "no rockets"
-msgstr "нет ракет"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.REMAINING
 msgctxt "STRINGS.ONIACCESS.STARMAP.REMAINING"
 msgid "remaining"
-msgstr "осталось"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE
 msgctxt "STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE"
 msgid "complete: {0}, {1} points"
-msgstr "завершено: {0}, {1} очков"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE_RARE
 msgctxt "STRINGS.ONIACCESS.STARMAP.RESEARCH_COMPLETE_RARE"
 msgid "complete: rare {0}, {1} points"
-msgstr "завершено: редкое {0}, {1} очков"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE
 msgctxt "STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE"
 msgid "incomplete: {0}, {1} points"
-msgstr "не завершено: {0}, {1} очков"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE_RARE
 msgctxt "STRINGS.ONIACCESS.STARMAP.RESEARCH_INCOMPLETE_RARE"
 msgid "incomplete: rare {0}, {1} points"
-msgstr "не завершено: редкое {0}, {1} очков"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.ROCKET_NOT_GROUNDED
 msgctxt "STRINGS.ONIACCESS.STARMAP.ROCKET_NOT_GROUNDED"
 msgid "rocket not grounded"
-msgstr "ракета не на земле"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STARMAP.ROCKETS_TAB
 msgctxt "STRINGS.ONIACCESS.STARMAP.ROCKETS_TAB"
 msgid "Rockets"
-msgstr "Ракеты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.ANY
 msgctxt "STRINGS.ONIACCESS.STATES.ANY"
 msgid "Any"
-msgstr "Любое"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.ASSIGNED
 msgctxt "STRINGS.ONIACCESS.STATES.ASSIGNED"
 msgid "assigned"
-msgstr "назначено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.AVAILABLE
 msgctxt "STRINGS.ONIACCESS.STATES.AVAILABLE"
 msgid "available"
-msgstr "доступно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.CONDITION_FAILED
 msgctxt "STRINGS.ONIACCESS.STATES.CONDITION_FAILED"
 msgid "failed"
-msgstr "не выполнено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.CONDITION_MET
 msgctxt "STRINGS.ONIACCESS.STATES.CONDITION_MET"
 msgid "met"
-msgstr "выполнено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.CONDITION_MET_OTHER
 msgctxt "STRINGS.ONIACCESS.STATES.CONDITION_MET_OTHER"
 msgid "met by past colony"
-msgstr "выполнено прошлой колонией"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET
 msgctxt "STRINGS.ONIACCESS.STATES.CONDITION_NOT_MET"
 msgid "not met"
-msgstr "не выполнено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.DISABLED
 msgctxt "STRINGS.ONIACCESS.STATES.DISABLED"
 msgid "disabled"
-msgstr "отключено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.ENABLED
 msgctxt "STRINGS.ONIACCESS.STATES.ENABLED"
 msgid "enabled"
-msgstr "включено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.STATES.FORBIDDEN"
 msgid "not present"
-msgstr "отсутствует"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.GUARANTEED
 msgctxt "STRINGS.ONIACCESS.STATES.GUARANTEED"
 msgid "present"
-msgstr "присутствует"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.INPUT_FIELD
 msgctxt "STRINGS.ONIACCESS.STATES.INPUT_FIELD"
 msgid "input field"
-msgstr "поле ввода"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.LOCKED
 msgctxt "STRINGS.ONIACCESS.STATES.LOCKED"
 msgid "locked"
-msgstr "заблокировано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.MIXED
 msgctxt "STRINGS.ONIACCESS.STATES.MIXED"
 msgid "mixed"
-msgstr "смешано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.NONE
 msgctxt "STRINGS.ONIACCESS.STATES.NONE"
 msgid "None"
-msgstr "Нет"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.OFF
 msgctxt "STRINGS.ONIACCESS.STATES.OFF"
 msgid "off"
-msgstr "выключено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.ON
 msgctxt "STRINGS.ONIACCESS.STATES.ON"
 msgid "on"
-msgstr "включено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.QUEUED
 msgctxt "STRINGS.ONIACCESS.STATES.QUEUED"
 msgid "queued"
-msgstr "в очереди"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.SELECTED
 msgctxt "STRINGS.ONIACCESS.STATES.SELECTED"
 msgid "selected"
-msgstr "выбрано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.SLIDER
 msgctxt "STRINGS.ONIACCESS.STATES.SLIDER"
 msgid "slider"
-msgstr "ползунок"
+msgstr ""
 
 #. STRINGS.ONIACCESS.STATES.UNASSIGNED
 msgctxt "STRINGS.ONIACCESS.STATES.UNASSIGNED"
 msgid "unassigned"
-msgstr "не назначено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SUPPLY_CLOSET.NO_ITEMS
 msgctxt "STRINGS.ONIACCESS.SUPPLY_CLOSET.NO_ITEMS"
 msgid "No items to claim"
-msgstr "Нет предметов для получения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.SUPPLY_CLOSET.OFFLINE
 msgctxt "STRINGS.ONIACCESS.SUPPLY_CLOSET.OFFLINE"
 msgid "Not connected to server"
-msgstr "Нет подключения к серверу"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST
 msgctxt "STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST"
 msgid "Jump to first or last row"
-msgstr "Перейти к первой или последней строке"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TABLE.NAVIGATE_TABLE
 msgctxt "STRINGS.ONIACCESS.TABLE.NAVIGATE_TABLE"
 msgid "Navigate rows and columns"
-msgstr "Навигация по строкам и столбцам"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TABLE.SORT_ASC_FMT
 msgctxt "STRINGS.ONIACCESS.TABLE.SORT_ASC_FMT"
 msgid "{0}, sorted low to high"
-msgstr "{0}, по возрастанию"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TABLE.SORT_CLEARED_FMT
 msgctxt "STRINGS.ONIACCESS.TABLE.SORT_CLEARED_FMT"
 msgid "{0}, sort cleared"
-msgstr "{0}, сортировка сброшена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TABLE.SORT_COLUMN
 msgctxt "STRINGS.ONIACCESS.TABLE.SORT_COLUMN"
 msgid "Sort by column on header row"
-msgstr "Сортировка по столбцу на строке заголовка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TABLE.SORT_DESC_FMT
 msgctxt "STRINGS.ONIACCESS.TABLE.SORT_DESC_FMT"
 msgid "{0}, sorted high to low"
-msgstr "{0}, по убыванию"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TABLE.STORED
 msgctxt "STRINGS.ONIACCESS.TABLE.STORED"
 msgid "Stored"
-msgstr "На складе"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TELEPAD.NEW_ACHIEVEMENTS
 msgctxt "STRINGS.ONIACCESS.TELEPAD.NEW_ACHIEVEMENTS"
 msgid "new achievements"
-msgstr "новые достижения"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TELEPAD.SKILL_POINTS
 msgctxt "STRINGS.ONIACCESS.TELEPAD.SKILL_POINTS"
 msgid "skill points available"
-msgstr "есть очки навыков"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TEMPERATURE.NEAR_BOILING
 msgctxt "STRINGS.ONIACCESS.TEMPERATURE.NEAR_BOILING"
 msgid "near boiling"
-msgstr "близко к кипению"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TEMPERATURE.NEAR_FREEZING
 msgctxt "STRINGS.ONIACCESS.TEMPERATURE.NEAR_FREEZING"
 msgid "near freezing"
-msgstr "близко к замерзанию"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED
 msgctxt "STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED"
 msgid "Cancelled"
-msgstr "Отменено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TEXT_EDIT.COPIED
 msgctxt "STRINGS.ONIACCESS.TEXT_EDIT.COPIED"
 msgid "Copied"
-msgstr "Скопировано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TEXT_EDIT.EDITING
 msgctxt "STRINGS.ONIACCESS.TEXT_EDIT.EDITING"
 msgid "Editing"
-msgstr "Редактирование"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TEXT_EDIT.PASTED
 msgctxt "STRINGS.ONIACCESS.TEXT_EDIT.PASTED"
 msgid "Pasted"
-msgstr "Вставлено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.COORD_APPEND
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.COORD_APPEND"
 msgid "coordinates append"
-msgstr "координаты в конце"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.COORD_OFF
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.COORD_OFF"
 msgid "coordinates off"
-msgstr "координаты выключены"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.COORD_PREPEND
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.COORD_PREPEND"
 msgid "coordinates prepend"
-msgstr "координаты в начале"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.COORDS
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.COORDS"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.KEY_PERIOD
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.KEY_PERIOD"
 msgid "period"
-msgstr "точка"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.COLONY_REPORT
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.COLONY_REPORT"
 msgid "Colony report"
-msgstr "Отчёт колонии"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.CONSUMABLES
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.CONSUMABLES"
 msgid "Consumables"
-msgstr "Продовольствие"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.DATABASE
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.DATABASE"
 msgid "Database"
-msgstr "База данных"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.PRIORITIES
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.PRIORITIES"
 msgid "Priorities"
-msgstr "Приоритеты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.RESEARCH
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.RESEARCH"
 msgid "Research"
-msgstr "Исследования"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.SCHEDULE
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.SCHEDULE"
 msgid "Schedule"
-msgstr "Расписание"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.SKILLS
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.SKILLS"
 msgid "Skills"
-msgstr "Навыки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.STARMAP
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.STARMAP"
 msgid "Starmap"
-msgstr "Звёздная карта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.VITALS
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.MANAGEMENT_HELP.VITALS"
 msgid "Vitals"
-msgstr "Показатели"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.NO_ROOM
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.NO_ROOM"
 msgid "no room"
-msgstr "нет комнаты"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.NOTHING_TO_SELECT
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.NOTHING_TO_SELECT"
 msgid "nothing to select"
-msgstr "нечего выбрать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.OVERLAY_NONE
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.OVERLAY_NONE"
 msgid "default view"
-msgstr "вид по умолчанию"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.SELECT_OBJECT
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.SELECT_OBJECT"
 msgid "select an object"
-msgstr "выберите объект"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED
 msgctxt "STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED"
 msgid "unexplored"
-msgstr "неисследовано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.ACTIVATION
 msgctxt "STRINGS.ONIACCESS.TOOLS.ACTIVATION"
 msgid "{0}, {1}"
-msgstr "{0}, {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.ACTIVATION_PLAIN
 msgctxt "STRINGS.ONIACCESS.TOOLS.ACTIVATION_PLAIN"
 msgid "{0}"
-msgstr "{0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.ACTIVATION_WITH_FILTER
 msgctxt "STRINGS.ONIACCESS.TOOLS.ACTIVATION_WITH_FILTER"
 msgid "{0}, {1}, {2}"
-msgstr "{0}, {1}, {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CANCELED
 msgctxt "STRINGS.ONIACCESS.TOOLS.CANCELED"
 msgid "canceled"
-msgstr "отменено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_ATTACK
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_ATTACK"
 msgid "marked {0} for attack at priority {1}"
-msgstr "отмечено {0} для атаки, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_CANCEL
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_CANCEL"
 msgid "cancelled {0} {2}"
-msgstr "отменено {0} {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_CAPTURE
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_CAPTURE"
 msgid "marked {0} for capture at priority {1}"
-msgstr "отмечено {0} для поимки, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_DECONSTRUCT
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DECONSTRUCT"
 msgid "marked {0} for deconstruction at priority {1}"
-msgstr "отмечено {0} для разбора, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG"
 msgid "marked {0} for digging at priority {1}"
-msgstr "отмечено {0} для копания, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_DISCONNECT
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DISCONNECT"
 msgid "disconnected {0} segments"
-msgstr "отключено {0} сегментов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_DISINFECT
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DISINFECT"
 msgid "marked {0} for disinfection at priority {1}"
-msgstr "отмечено {0} для дезинфекции, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_EMPTY_PIPE
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_EMPTY_PIPE"
 msgid "marked {0} pipe cells for emptying at priority {1}"
-msgstr "отмечено {0} клеток трубы для опорожнения, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_HARVEST
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_HARVEST"
 msgid "set harvest on {0} plants at priority {1}"
-msgstr "назначен сбор для {0} растений, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_MOP
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_MOP"
 msgid "marked {0} for mopping at priority {1}"
-msgstr "отмечено {0} для протирки, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_PRIORITIZE
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_PRIORITIZE"
 msgid "updated {0} {2} to priority {1}"
-msgstr "обновлено {0} {2}, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_SWEEP
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_SWEEP"
 msgid "marked {0} for sweeping at priority {1}"
-msgstr "отмечено {0} для подметания, приоритет {1}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_ACTIVATION
 msgctxt "STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_ACTIVATION"
 msgid "{0}, copy settings"
-msgstr "{0}, копирование настроек"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_NO_TARGET
 msgctxt "STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_NO_TARGET"
 msgid "no matching building"
-msgstr "нет подходящей постройки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_UNAVAILABLE
 msgctxt "STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_UNAVAILABLE"
 msgid "no copyable settings"
-msgstr "нет копируемых настроек"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.CORNER_SET
 msgctxt "STRINGS.ONIACCESS.TOOLS.CORNER_SET"
 msgid "corner set"
-msgstr "угол установлен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.DIG_ORDER
 msgctxt "STRINGS.ONIACCESS.TOOLS.DIG_ORDER"
 msgid "dig order"
-msgstr "приказ копать"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.DIG_ORDER_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.DIG_ORDER_PRIORITY"
 msgid "dig order, priority {0}"
-msgstr "приказ копать, приоритет {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.DISCONNECT_TOO_FAR
 msgctxt "STRINGS.ONIACCESS.TOOLS.DISCONNECT_TOO_FAR"
 msgid "adjacent cells only"
-msgstr "только соседние клетки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.DISINFECT_OBJECT
 msgctxt "STRINGS.ONIACCESS.TOOLS.DISINFECT_OBJECT"
 msgid "{0}, {1}, {2}"
-msgstr "{0}, {1}, {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.DONE
 msgctxt "STRINGS.ONIACCESS.TOOLS.DONE"
 msgid "done"
-msgstr "готово"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.FALLBACK_LABEL
 msgctxt "STRINGS.ONIACCESS.TOOLS.FALLBACK_LABEL"
 msgid "tool"
-msgstr "инструмент"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.FILTER_NAME
 msgctxt "STRINGS.ONIACCESS.TOOLS.FILTER_NAME"
 msgid "tool filter"
-msgstr "фильтр инструмента"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.FILTER_REMOVED
 msgctxt "STRINGS.ONIACCESS.TOOLS.FILTER_REMOVED"
 msgid "filter removed"
-msgstr "фильтр убран"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.FILTERED
 msgctxt "STRINGS.ONIACCESS.TOOLS.FILTERED"
 msgid "filtered"
-msgstr "отфильтровано"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.ITEM_PLURAL
 msgctxt "STRINGS.ONIACCESS.TOOLS.ITEM_PLURAL"
 msgid "items"
-msgstr "предметов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.ITEM_SINGULAR
 msgctxt "STRINGS.ONIACCESS.TOOLS.ITEM_SINGULAR"
 msgid "item"
-msgstr "предмет"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_ATTACK
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_ATTACK"
 msgid "marked for attack"
-msgstr "отмечено для атаки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_CAPTURE
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_CAPTURE"
 msgid "marked for capture"
-msgstr "отмечено для поимки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT"
 msgid "marked for deconstruct"
-msgstr "отмечено для разбора"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT_PRIORITY"
 msgid "marked for deconstruct, priority {0}"
-msgstr "отмечено для разбора, приоритет {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_DISINFECT
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_DISINFECT"
 msgid "marked for disinfect"
-msgstr "отмечено для дезинфекции"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP"
 msgid "marked for sweep"
-msgstr "отмечено для подметания"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY"
 msgid "marked for sweep, priority {0}"
-msgstr "отмечено для подметания, приоритет {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MOP_ORDER
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOP_ORDER"
 msgid "mop order"
-msgstr "приказ протереть"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MOP_ORDER_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOP_ORDER_PRIORITY"
 msgid "mop order, priority {0}"
-msgstr "приказ протереть, приоритет {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MOVE_TO_ACTIVATION
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOVE_TO_ACTIVATION"
 msgid "move to, {0}"
-msgstr "переместить к, {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MOVE_TO_CONFIRMED
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOVE_TO_CONFIRMED"
 msgid "destination set"
-msgstr "пункт назначения задан"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MOVE_TO_UNREACHABLE
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOVE_TO_UNREACHABLE"
 msgid "unreachable"
-msgstr "недоступно"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.NO_VALID_CELLS
 msgctxt "STRINGS.ONIACCESS.TOOLS.NO_VALID_CELLS"
 msgid "no valid cells"
-msgstr "нет подходящих клеток"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.PICKER_NAME
 msgctxt "STRINGS.ONIACCESS.TOOLS.PICKER_NAME"
 msgid "tool menu"
-msgstr "меню инструментов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.PIPE_CONTENTS
 msgctxt "STRINGS.ONIACCESS.TOOLS.PIPE_CONTENTS"
 msgid "{0}, {1}, {2}"
-msgstr "{0}, {1}, {2}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.PIPE_EMPTY
 msgctxt "STRINGS.ONIACCESS.TOOLS.PIPE_EMPTY"
 msgid "{0}, empty"
-msgstr "{0}, пусто"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.PLACE_ACTIVATION
 msgctxt "STRINGS.ONIACCESS.TOOLS.PLACE_ACTIVATION"
 msgid "place, {0}"
-msgstr "разместить, {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.PLACE_INVALID
 msgctxt "STRINGS.ONIACCESS.TOOLS.PLACE_INVALID"
 msgid "invalid location"
-msgstr "недопустимое расположение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.PRIORITY_BASIC
 msgctxt "STRINGS.ONIACCESS.TOOLS.PRIORITY_BASIC"
 msgid "priority {0}"
-msgstr "приоритет {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.PRIORITY_EMERGENCY
 msgctxt "STRINGS.ONIACCESS.TOOLS.PRIORITY_EMERGENCY"
 msgid "emergency priority"
-msgstr "экстренный приоритет"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.RECT_CLEARED
 msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_CLEARED"
 msgid "rectangle cleared"
-msgstr "прямоугольник сброшен"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY
 msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY"
 msgid "{0}x{1}, {2} valid"
-msgstr "{0}x{1}, {2} допустимо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_INVALID
 msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_INVALID"
 msgid "{0}x{1}, {2} valid, {3} invalid"
-msgstr "{0}x{1}, {2} допустимо, {3} недопустимо"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED
 msgctxt "STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED"
 msgid "selection cleared"
-msgstr "выделение сброшено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLTIP.CANNOT_CONTINUE
 msgctxt "STRINGS.ONIACCESS.TOOLTIP.CANNOT_CONTINUE"
 msgid "cannot continue"
-msgstr "невозможно продолжить"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLTIP.CLOSED
 msgctxt "STRINGS.ONIACCESS.TOOLTIP.CLOSED"
 msgid "closed"
-msgstr "закрыто"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLTIP.CONTINUING
 msgctxt "STRINGS.ONIACCESS.TOOLTIP.CONTINUING"
 msgid "continuing"
-msgstr "продолжение"
+msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP
 msgctxt "STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP"
 msgid "no tooltip"
-msgstr "нет подсказки"
+msgstr ""
 
 #. STRINGS.ONIACCESS.VIDEO.PLAYING
 msgctxt "STRINGS.ONIACCESS.VIDEO.PLAYING"
 msgid "Video playing"
-msgstr "Воспроизведение видео"
+msgstr ""
 
 #. STRINGS.ONIACCESS.VITALS_SCREEN.CHANGE
 msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.CHANGE"
 msgid "change: {0}"
-msgstr "изменение: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.VITALS_SCREEN.DISEASE_HEADER
 msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.DISEASE_HEADER"
 msgid "Current diseases and time remaining"
-msgstr "Текущие болезни и оставшееся время"
+msgstr ""
 
 #. STRINGS.ONIACCESS.VITALS_SCREEN.EATEN_TODAY
 msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.EATEN_TODAY"
 msgid "eaten today: {0}"
-msgstr "съедено сегодня: {0}"
+msgstr ""
 
 #. STRINGS.ONIACCESS.VITALS_SCREEN.FOCUS_DUPLICANT
 msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.FOCUS_DUPLICANT"
 msgid "Focus camera on duplicant"
-msgstr "Навести камеру на дубликанта"
+msgstr ""
 
 #. STRINGS.ONIACCESS.VITALS_SCREEN.FOCUSED
 msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.FOCUSED"
 msgid "focused"
-msgstr "наведено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.VITALS_SCREEN.FULLNESS_HEADER
 msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.FULLNESS_HEADER"
 msgid "Calories remaining before starvation"
-msgstr "Калории до голодной смерти"
+msgstr ""
 
 #. STRINGS.ONIACCESS.VITALS_SCREEN.HANDLER_NAME
 msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.HANDLER_NAME"
 msgid "Vitals table"
-msgstr "Таблица показателей"
+msgstr ""
 
 #. STRINGS.ONIACCESS.WORLD_GEN.COMPLETE
 msgctxt "STRINGS.ONIACCESS.WORLD_GEN.COMPLETE"
 msgid "World generation complete"
-msgstr "Генерация мира завершена"
+msgstr ""
 
 #. STRINGS.ONIACCESS.WORLD_GEN.PERCENT
 msgctxt "STRINGS.ONIACCESS.WORLD_GEN.PERCENT"
 msgid "{0} percent"
-msgstr "{0} процентов"
+msgstr ""
 
 #. STRINGS.ONIACCESS.WORLD_SELECTOR.ACTIVE_LABEL
 msgctxt "STRINGS.ONIACCESS.WORLD_SELECTOR.ACTIVE_LABEL"
 msgid "active"
-msgstr "активный"
+msgstr ""
 
 #. STRINGS.ONIACCESS.WORLD_SELECTOR.DISCOVERED
 msgctxt "STRINGS.ONIACCESS.WORLD_SELECTOR.DISCOVERED"
 msgid "{0} discovered"
-msgstr "{0} обнаружено"
+msgstr ""
 
 #. STRINGS.ONIACCESS.WORLD_SELECTOR.OPEN
 msgctxt "STRINGS.ONIACCESS.WORLD_SELECTOR.OPEN"
 msgid "Open world list"
-msgstr "Открыть список миров"
+msgstr ""
 
 #. STRINGS.ONIACCESS.WORLD_SELECTOR.ROCKET
 msgctxt "STRINGS.ONIACCESS.WORLD_SELECTOR.ROCKET"
 msgid "rocket"
-msgstr "ракета"
+msgstr ""
+
