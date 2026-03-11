@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Klei.AI;
 using OniAccess.Handlers.Tiles.Scanner;
@@ -12,6 +13,10 @@ namespace OniAccess.Handlers.Tiles {
 	/// </summary>
 	public class DupeNavigator {
 		private int _dupeIndex;
+		private MinionIdentity _followedDupe;
+		private Action<StatusItemGroup.Entry, StatusItemCategory> _onStatusAdded;
+		private Action<StatusItemGroup.Entry, bool> _onStatusRemoved;
+		private Action<object> _onChoreChanged;
 
 		/// <summary>
 		/// Returns the dupe at the current cycle index, or null if no dupes
@@ -36,6 +41,8 @@ namespace OniAccess.Handlers.Tiles {
 				}
 				_dupeIndex = ((_dupeIndex + direction) % dupes.Count + dupes.Count) % dupes.Count;
 				SpeechPipeline.SpeakInterrupt(BuildAnnouncement(dupes[_dupeIndex], TileCursor.Instance.Cell));
+				if (_followedDupe != null)
+					SwitchFollowTarget();
 			} catch (System.Exception ex) {
 				Log.Error($"DupeNavigator.CycleDupe: {ex}");
 			}
@@ -67,6 +74,118 @@ namespace OniAccess.Handlers.Tiles {
 				}
 			} catch (System.Exception ex) {
 				Log.Error($"DupeNavigator.JumpOrSelect: {ex}");
+			}
+		}
+
+		public string StartFollow() {
+			try {
+				var mi = GetCurrentDupe();
+				if (mi == null) {
+					BaseScreenHandler.PlaySound("Negative");
+					return null;
+				}
+				StopFollow();
+				_followedDupe = mi;
+				_onStatusAdded = OnStatusAdded;
+				_onStatusRemoved = OnStatusRemoved;
+				_onChoreChanged = OnChoreChanged;
+				var group = mi.GetComponent<KSelectable>().GetStatusItemGroup();
+				group.OnAddStatusItem = (Action<StatusItemGroup.Entry, StatusItemCategory>)
+					Delegate.Combine(group.OnAddStatusItem, _onStatusAdded);
+				group.OnRemoveStatusItem = (Action<StatusItemGroup.Entry, bool>)
+					Delegate.Combine(group.OnRemoveStatusItem, _onStatusRemoved);
+				mi.gameObject.Subscribe(-1988963660, _onChoreChanged);
+				CameraController.Instance.SetFollowTarget(mi.transform);
+				return string.Format(
+					(string)STRINGS.ONIACCESS.DUPES.FOLLOW.FOLLOWING,
+					mi.GetProperName());
+			} catch (Exception ex) {
+				Log.Error($"DupeNavigator.StartFollow: {ex}");
+				return null;
+			}
+		}
+
+		public void TickFollow() {
+			if (_followedDupe == null) return;
+			if (CameraController.Instance.followTarget == null)
+				StopFollow();
+		}
+
+		public void StopFollowAndClear() {
+			if (_followedDupe == null) return;
+			StopFollow();
+			CameraController.Instance.ClearFollowTarget();
+		}
+
+		private void StopFollow() {
+			if (_followedDupe == null) return;
+			try {
+				var selectable = _followedDupe.GetComponent<KSelectable>();
+				if (selectable != null) {
+					var group = selectable.GetStatusItemGroup();
+					if (group != null) {
+						group.OnAddStatusItem = (Action<StatusItemGroup.Entry, StatusItemCategory>)
+							Delegate.Remove(group.OnAddStatusItem, _onStatusAdded);
+						group.OnRemoveStatusItem = (Action<StatusItemGroup.Entry, bool>)
+							Delegate.Remove(group.OnRemoveStatusItem, _onStatusRemoved);
+					}
+				}
+				_followedDupe.gameObject.Unsubscribe(-1988963660, _onChoreChanged);
+			} catch (Exception ex) {
+				Log.Warn($"DupeNavigator.StopFollow: {ex}");
+			}
+			_followedDupe = null;
+			_onStatusAdded = null;
+			_onStatusRemoved = null;
+			_onChoreChanged = null;
+		}
+
+		private void SwitchFollowTarget() {
+			try {
+				StopFollow();
+				var mi = GetCurrentDupe();
+				if (mi == null) return;
+				_followedDupe = mi;
+				_onStatusAdded = OnStatusAdded;
+				_onStatusRemoved = OnStatusRemoved;
+				_onChoreChanged = OnChoreChanged;
+				var group = mi.GetComponent<KSelectable>().GetStatusItemGroup();
+				group.OnAddStatusItem = (Action<StatusItemGroup.Entry, StatusItemCategory>)
+					Delegate.Combine(group.OnAddStatusItem, _onStatusAdded);
+				group.OnRemoveStatusItem = (Action<StatusItemGroup.Entry, bool>)
+					Delegate.Combine(group.OnRemoveStatusItem, _onStatusRemoved);
+				mi.gameObject.Subscribe(-1988963660, _onChoreChanged);
+				CameraController.Instance.SetFollowTarget(mi.transform);
+			} catch (Exception ex) {
+				Log.Error($"DupeNavigator.SwitchFollowTarget: {ex}");
+			}
+		}
+
+		private void OnStatusAdded(StatusItemGroup.Entry entry, StatusItemCategory category) {
+			try {
+				SpeechPipeline.SpeakQueued(entry.GetName());
+			} catch (Exception ex) {
+				Log.Warn($"DupeNavigator.OnStatusAdded: {ex}");
+			}
+		}
+
+		private void OnStatusRemoved(StatusItemGroup.Entry entry, bool immediate) {
+			try {
+				SpeechPipeline.SpeakQueued(string.Format(
+					(string)STRINGS.ONIACCESS.DUPES.FOLLOW.STATUS_ENDED,
+					entry.GetName()));
+			} catch (Exception ex) {
+				Log.Warn($"DupeNavigator.OnStatusRemoved: {ex}");
+			}
+		}
+
+		private void OnChoreChanged(object data) {
+			try {
+				if (_followedDupe == null) return;
+				string task = BuildTaskPart(_followedDupe);
+				SpeechPipeline.SpeakQueued(task);
+			} catch (Exception ex) {
+				Log.Warn($"DupeNavigator.OnChoreChanged: {ex}");
 			}
 		}
 

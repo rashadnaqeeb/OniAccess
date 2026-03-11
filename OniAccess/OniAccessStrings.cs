@@ -411,6 +411,14 @@ namespace STRINGS {
 				public static LocString UNREACHABLE_NEAREST = "unreachable, nearest reachable {0}";
 				public static LocString UNREACHABLE_NO_NEARBY = "unreachable, no reachable tiles nearby";
 			}
+
+			public class FOLLOW {
+				// {0} = dupe name
+				public static LocString FOLLOWING = "following {0}";
+				// {0} = status item name
+				public static LocString STATUS_ENDED = "ended {0}";
+				public static LocString HELP_FOLLOW = "Follow current duplicant with camera";
+			}
 		}
 
 		// Game clock and speed announcements

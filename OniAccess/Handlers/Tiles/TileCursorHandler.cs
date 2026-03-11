@@ -132,6 +132,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.RightBracket),
 			new ConsumedKey(KKeyCode.Backslash),
 			new ConsumedKey(KKeyCode.Backslash, Modifier.Shift),
+			new ConsumedKey(KKeyCode.Backslash, Modifier.Ctrl),
 			// W overwrites PanUp (camera pan — mod cursor replaces camera navigation)
 			new ConsumedKey(KKeyCode.W),
 			// Shift+G opens disinfect threshold settings (G = game's dig tool; Shift variant is free)
@@ -178,6 +179,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Ctrl+Shift+B", (string)STRINGS.ONIACCESS.RULER.HELP_CLEAR),
 			new HelpEntry((string)STRINGS.ONIACCESS.DUPES.KEY_BRACKETS, (string)STRINGS.ONIACCESS.DUPES.HELP_CYCLE),
 			new HelpEntry("\\", (string)STRINGS.ONIACCESS.DUPES.HELP_JUMP),
+			new HelpEntry("Ctrl+\\", (string)STRINGS.ONIACCESS.DUPES.FOLLOW.HELP_FOLLOW),
 			new HelpEntry("Shift+\\", (string)STRINGS.ONIACCESS.DUPES.HELP_CHECK_PATH),
 			new HelpEntry("W", (string)STRINGS.ONIACCESS.WORLD_SELECTOR.OPEN),
 			new HelpEntry("Shift+G", (string)STRINGS.ONIACCESS.DISINFECT_SETTINGS.HELP_OPEN),
@@ -255,6 +257,7 @@ namespace OniAccess.Handlers.Tiles {
 			_notificationAnnouncer = null;
 			_notificationTracker?.Detach();
 			_notificationTracker = null;
+			_dupeNavigator?.StopFollowAndClear();
 			TileCursor.Destroy();
 			CursorRuler.Destroy();
 			_scanner = null;
@@ -298,6 +301,7 @@ namespace OniAccess.Handlers.Tiles {
 			_scanner.CheckWorldSwitch();
 			_monitor.Tick();
 			_notificationAnnouncer?.Tick();
+			_dupeNavigator.TickFollow();
 			LoadGate.Tick();
 
 			string arrived = TileCursor.Instance.SyncToCamera();
@@ -470,6 +474,12 @@ namespace OniAccess.Handlers.Tiles {
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backslash)) {
+				if (InputUtil.CtrlHeld() && !InputUtil.ShiftHeld()) {
+					string speech = _dupeNavigator.StartFollow();
+					if (speech != null)
+						SpeechPipeline.SpeakInterrupt(speech);
+					return true;
+				}
 				if (InputUtil.ShiftHeld()) {
 					SpeechPipeline.SpeakInterrupt(
 						_pathabilityChecker.Check(_dupeNavigator));
