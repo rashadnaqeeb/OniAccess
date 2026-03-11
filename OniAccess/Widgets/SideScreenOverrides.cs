@@ -2510,23 +2510,36 @@ namespace OniAccess.Widgets {
 			var offsets = occupyArea.OccupiedCellsOffsets;
 			if (offsets == null || offsets.Length <= 1) return;
 
-			int up = 0, down = 0, left = 0, right = 0;
+			// Offsets are unrotated on the prefab; compute max extent in each axis
+			int maxUp = 0, maxLeft = 0, maxRight = 0;
 			foreach (var o in offsets) {
-				if (o.y > up) up = o.y;
-				if (o.y < 0 && -o.y > down) down = -o.y;
-				if (o.x > right) right = o.x;
-				if (o.x < 0 && -o.x > left) left = -o.x;
+				if (o.y > maxUp) maxUp = o.y;
+				if (o.x > maxRight) maxRight = o.x;
+				if (o.x < 0 && -o.x > maxLeft) maxLeft = -o.x;
 			}
 
+			// Preview origin is 1 cell out from the farm tile in the growth direction,
+			// so the total extent along that axis is maxUp + 1.
+			// For Bottom direction, 180° rotation flips up→down and left↔right.
+			int growth = maxUp + 1;
+			bool bottom = plot.Direction == SingleEntityReceptacle.ReceptacleDirection.Bottom;
+
 			var parts = new List<string>();
-			if (up > 0) parts.Add(string.Format(
-				(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, up));
-			if (down > 0) parts.Add(string.Format(
-				(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN, down));
-			if (left > 0) parts.Add(string.Format(
-				(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT, left));
-			if (right > 0) parts.Add(string.Format(
-				(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, right));
+			if (bottom) {
+				if (growth > 0) parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN, growth));
+				if (maxRight > 0) parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT, maxRight));
+				if (maxLeft > 0) parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, maxLeft));
+			} else {
+				if (growth > 0) parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, growth));
+				if (maxLeft > 0) parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT, maxLeft));
+				if (maxRight > 0) parts.Add(string.Format(
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, maxRight));
+			}
 			if (parts.Count == 0) return;
 
 			string extentDirs = string.Join(", ", parts);

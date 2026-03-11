@@ -218,7 +218,8 @@ namespace STRINGS {
 		public class RECEPTACLE {
 			// {0} = number of depositable items (int)
 			public static LocString ITEM_COUNT = "{0} items";
-			// {0} = extent directions (e.g. "2 up, 1 right")
+			// {0} = comma-separated extent directions from BUILD_MENU.EXTENT_* (e.g. "2 up, 1 right")
+			// Spoken when selecting a multi-cell plant in a farm tile
 			public static LocString EXTENT_CLEAR = "extends {0}, clear";
 			public static LocString EXTENT_BLOCKED = "extends {0}, blocked";
 		}
