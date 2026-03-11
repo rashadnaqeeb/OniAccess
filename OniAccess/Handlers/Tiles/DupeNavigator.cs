@@ -196,6 +196,8 @@ namespace OniAccess.Handlers.Tiles {
 					(string)STRINGS.DUPLICANTS.STATUSITEMS.STRESSED.NAME),
 				new StatusCheck(creatureItems.Scalding,
 					(string)STRINGS.CREATURES.STATUSITEMS.SCALDING.NAME),
+				new StatusCheck(dupeItems.ExitingHot,
+					(string)STRINGS.DUPLICANTS.STATUSITEMS.EXITINGHOT.NAME),
 				new StatusCheck(dupeItems.ExitingCold,
 					(string)STRINGS.DUPLICANTS.STATUSITEMS.EXITINGCOLD.NAME),
 				new StatusCheck(
