@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Klei.AI;
+using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Speech;
 using OniAccess.Util;
 
@@ -34,7 +35,7 @@ namespace OniAccess.Handlers.Tiles {
 					return;
 				}
 				_dupeIndex = ((_dupeIndex + direction) % dupes.Count + dupes.Count) % dupes.Count;
-				SpeechPipeline.SpeakInterrupt(BuildAnnouncement(dupes[_dupeIndex]));
+				SpeechPipeline.SpeakInterrupt(BuildAnnouncement(dupes[_dupeIndex], TileCursor.Instance.Cell));
 			} catch (System.Exception ex) {
 				Log.Error($"DupeNavigator.CycleDupe: {ex}");
 			}
@@ -74,18 +75,21 @@ namespace OniAccess.Handlers.Tiles {
 			return Components.LiveMinionIdentities.GetWorldItems(worldId);
 		}
 
-		private static string BuildAnnouncement(MinionIdentity mi) {
+		private static string BuildAnnouncement(MinionIdentity mi, int cursorCell) {
 			string name = mi.GetProperName();
 			string task = BuildTaskPart(mi);
 			string statuses = BuildStatusPart(mi);
 			bool trapped = IsTrapped(mi);
+			string position = AnnouncementFormatter.FormatDistance(cursorCell, Grid.PosToCell(mi));
 			var parts = new System.Text.StringBuilder(name);
 			if (trapped)
 				parts.Append(", ").Append(
 					(string)STRINGS.UI.COLONY_DIAGNOSTICS.TRAPPEDDUPLICANTDIAGNOSTIC.ALL_NAME);
-			parts.Append(", ").Append(task);
 			if (statuses != null)
 				parts.Append(", ").Append(statuses);
+			if (position.Length > 0)
+				parts.Append(", ").Append(position);
+			parts.Append(", ").Append(task);
 			return parts.ToString();
 		}
 
