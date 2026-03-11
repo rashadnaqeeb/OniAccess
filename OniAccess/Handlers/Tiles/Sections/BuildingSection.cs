@@ -166,6 +166,9 @@ namespace OniAccess.Handlers.Tiles.Sections {
 						seen, cell, activeMode, tokens);
 					CheckScanCell(nc, (int)ObjectLayer.FoundationTile,
 						seen, cell, activeMode, tokens);
+					if (activeMode == OverlayModes.Logic.ID)
+						CheckScanCell(nc, (int)ObjectLayer.LogicGate,
+							seen, cell, activeMode, tokens);
 				}
 			}
 		}
