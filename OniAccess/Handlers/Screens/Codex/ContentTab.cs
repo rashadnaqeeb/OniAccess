@@ -313,7 +313,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 					}
 
 					string text = WidgetTextExtractor.GetText(widget, entryId);
-					if (text == null) continue;
+					if (string.IsNullOrEmpty(text)) continue;
 
 					_items.Add(new ContentItem {
 						text = text,
