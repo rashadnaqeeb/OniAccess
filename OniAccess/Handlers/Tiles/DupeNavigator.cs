@@ -163,6 +163,8 @@ namespace OniAccess.Handlers.Tiles {
 
 		private void OnStatusAdded(StatusItemGroup.Entry entry, StatusItemCategory category) {
 			try {
+				if (category == Db.Get().StatusItemCategories.Main)
+					return;
 				SpeechPipeline.SpeakQueued(entry.GetName());
 			} catch (Exception ex) {
 				Log.Warn($"DupeNavigator.OnStatusAdded: {ex}");
@@ -171,6 +173,8 @@ namespace OniAccess.Handlers.Tiles {
 
 		private void OnStatusRemoved(StatusItemGroup.Entry entry, bool immediate) {
 			try {
+				if (entry.category == Db.Get().StatusItemCategories.Main)
+					return;
 				SpeechPipeline.SpeakQueued(string.Format(
 					(string)STRINGS.ONIACCESS.DUPES.FOLLOW.STATUS_ENDED,
 					entry.GetName()));
