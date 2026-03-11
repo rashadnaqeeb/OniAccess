@@ -34,7 +34,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 						tokens.Add(GetBuildingName(backwallGo, selectable));
 				}
 
-				ReadPortCell(cell, buildingGo, foundationGo, tokens);
+				ReadPortCell(cell, buildingGo, foundationGo, ctx, tokens);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"BuildingSection.Read: {ex}");
 			}
@@ -103,14 +103,14 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		/// </summary>
 		private static void ReadPortCell(
 				int cell, GameObject buildingGo, GameObject foundationGo,
-				List<string> tokens) {
+				CellContext ctx, List<string> tokens) {
 			if (OverlayScreen.Instance == null) return;
 			var activeMode = OverlayScreen.Instance.GetMode();
 
 			if (activeMode == OverlayModes.Logic.ID
 				|| activeMode == OverlayModes.Radiation.ID) {
 				ScanNearbyForPorts(cell, buildingGo, foundationGo,
-					activeMode, tokens);
+					activeMode, ctx, tokens);
 				return;
 			}
 
@@ -150,7 +150,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 		private static void ScanNearbyForPorts(
 				int cell, GameObject buildingGo, GameObject foundationGo,
-				HashedString activeMode, List<string> tokens) {
+				HashedString activeMode, CellContext ctx, List<string> tokens) {
 			int cx = Grid.CellColumn(cell);
 			int cy = Grid.CellRow(cell);
 			var seen = new HashSet<GameObject>();
@@ -163,12 +163,19 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					if (!Grid.IsValidCell(nc)) continue;
 
 					CheckScanCell(nc, (int)ObjectLayer.Building,
-						seen, cell, activeMode, tokens);
+						seen, cell, activeMode, ctx, tokens);
 					CheckScanCell(nc, (int)ObjectLayer.FoundationTile,
-						seen, cell, activeMode, tokens);
-					if (activeMode == OverlayModes.Logic.ID)
+						seen, cell, activeMode, ctx, tokens);
+					if (activeMode == OverlayModes.Logic.ID) {
 						CheckScanCell(nc, (int)ObjectLayer.LogicGate,
-							seen, cell, activeMode, tokens);
+							seen, cell, activeMode, ctx, tokens);
+						CheckScanCell(nc, (int)ObjectLayer.AttachableBuilding,
+							seen, cell, activeMode, ctx, tokens);
+						CheckScanCell(nc, (int)ObjectLayer.Gantry,
+							seen, cell, activeMode, ctx, tokens);
+						CheckScanCell(nc, (int)ObjectLayer.Backwall,
+							seen, cell, activeMode, ctx, tokens);
+					}
 				}
 			}
 		}
@@ -176,7 +183,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		private static void CheckScanCell(
 				int nearbyCell, int layer, HashSet<GameObject> seen,
 				int targetCell, HashedString activeMode,
-				List<string> tokens) {
+				CellContext ctx, List<string> tokens) {
 			var go = Grid.Objects[nearbyCell, layer];
 			if (go == null || !seen.Add(go)) return;
 
@@ -191,7 +198,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			else
 				ReadRadboltPorts(building, origin, targetCell, tokens);
 
-			if (tokens.Count > beforeCount) {
+			if (tokens.Count > beforeCount && !ctx.Claimed.Contains(go)) {
 				var selectable = go.GetComponent<KSelectable>();
 				if (selectable != null)
 					tokens.Add(GetBuildingName(go, selectable));
