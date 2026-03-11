@@ -18,17 +18,59 @@ namespace OniAccess.Handlers.Screens.Codex {
 		};
 
 		/// <summary>
-		/// Get top-level categories from HOME, filtered and ordered.
+		/// Get top-level categories, combining HOME's programmatic CategoryEntry
+		/// children with YAML-based categories discovered from entry.category
+		/// strings. The game discovers categories dynamically from the category
+		/// field in CategorizeEntries; programmatic categories use the
+		/// CategoryEntry.entriesInCategory tree.
 		/// </summary>
 		internal static List<CodexEntry> GetTopCategories() {
-			if (!CodexCache.entries.TryGetValue("HOME", out var home)) return new List<CodexEntry>();
-			var cat = home as CategoryEntry;
-			if (cat == null) return new List<CodexEntry>();
-
+			var seen = new HashSet<string>();
 			var filtered = new List<CodexEntry>();
-			foreach (var entry in cat.entriesInCategory) {
-				if (IsEntryVisible(entry))
-					filtered.Add(entry);
+
+			// Programmatic categories from HOME.entriesInCategory
+			if (CodexCache.entries.TryGetValue("HOME", out var home)) {
+				var cat = home as CategoryEntry;
+				if (cat != null) {
+					foreach (var entry in cat.entriesInCategory) {
+						if (!IsTopCategoryVisible(entry)) continue;
+						seen.Add(entry.id);
+						filtered.Add(entry);
+					}
+				}
+			}
+
+			// YAML-based categories: scan all entries for category strings
+			// that don't map to a known CategoryEntry already in the list.
+			var yamlCatIds = new HashSet<string>();
+			foreach (var kvp in CodexCache.entries) {
+				var entry = kvp.Value;
+				if (entry.searchOnly) continue;
+				if (string.IsNullOrEmpty(entry.category)) continue;
+				string catId = entry.category;
+				if (catId == "Root") continue;
+				if (seen.Contains(catId)) continue;
+				if (!IsEntryVisible(entry)) continue;
+				yamlCatIds.Add(catId);
+			}
+
+			foreach (string catId in yamlCatIds) {
+				if (seen.Contains(catId)) continue;
+				seen.Add(catId);
+				// Use the named CodexEntry for this category if one exists.
+				// YAML directories often have an entry whose ID matches
+				// the folder name (e.g. MYLOG, EMAILS).
+				if (CodexCache.entries.TryGetValue(catId, out var catEntry)) {
+					filtered.Add(catEntry);
+				} else {
+					// No dedicated entry for this category. Create a
+					// lightweight stand-in entry so the category appears.
+					// The stand-in has no content of its own.
+					var standIn = new CodexEntry(catId, new List<ContentContainer>(),
+						ResolveCategoryName(catId));
+					standIn.id = catId;
+					filtered.Add(standIn);
+				}
 			}
 
 			filtered.Sort((a, b) => {
@@ -42,17 +84,62 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		/// <summary>
-		/// Get entries within a category, filtered. Returns entries from
-		/// CategoryEntry.entriesInCategory if the entry is a CategoryEntry.
+		/// Whether a top-level category should appear. CategoryEntry objects
+		/// are always visible (they have ungated title containers). Other
+		/// entries use the standard IsEntryVisible check.
+		/// </summary>
+		private static bool IsTopCategoryVisible(CodexEntry entry) {
+			if (entry is CategoryEntry) {
+				if (entry.disabled) return false;
+				if (!Game.IsCorrectDlcActiveForCurrentSave(entry)) return false;
+				return true;
+			}
+			return IsEntryVisible(entry);
+		}
+
+		/// <summary>
+		/// Whether an entry acts as a category with drillable children.
+		/// True for CategoryEntry objects and for YAML-based categories
+		/// that have child entries with matching category strings.
+		/// </summary>
+		internal static bool IsCategory(CodexEntry entry) {
+			if (entry is CategoryEntry) return true;
+			return GetEntriesForYAMLCategory(entry.id).Count > 0;
+		}
+
+		/// <summary>
+		/// Get entries within a category, filtered. For programmatic
+		/// CategoryEntry objects, returns entriesInCategory. For YAML-based
+		/// categories, returns all entries whose category field matches.
 		/// </summary>
 		internal static List<CodexEntry> GetEntriesInCategory(CodexEntry category) {
 			var cat = category as CategoryEntry;
-			if (cat == null) return new List<CodexEntry>();
+			if (cat != null) {
+				var filtered = new List<CodexEntry>();
+				foreach (var entry in cat.entriesInCategory) {
+					if (IsEntryVisible(entry))
+						filtered.Add(entry);
+				}
+				return filtered;
+			}
 
+			return GetEntriesForYAMLCategory(category.id);
+		}
+
+		/// <summary>
+		/// Find all visible entries whose category field matches a given
+		/// category ID. Excludes searchOnly entries and the category
+		/// entry itself.
+		/// </summary>
+		private static List<CodexEntry> GetEntriesForYAMLCategory(string categoryId) {
 			var filtered = new List<CodexEntry>();
-			foreach (var entry in cat.entriesInCategory) {
-				if (IsEntryVisible(entry))
-					filtered.Add(entry);
+			foreach (var kvp in CodexCache.entries) {
+				var entry = kvp.Value;
+				if (entry.id == categoryId) continue;
+				if (entry.category != categoryId) continue;
+				if (entry.searchOnly) continue;
+				if (!IsEntryVisible(entry)) continue;
+				filtered.Add(entry);
 			}
 			return filtered;
 		}
@@ -84,6 +171,31 @@ namespace OniAccess.Handlers.Screens.Codex {
 				if (CategoryOrder[i] == id) return i;
 			}
 			return CategoryOrder.Length;
+		}
+
+		/// <summary>
+		/// Resolve category display name from STRINGS.UI.CODEX.CATEGORYNAMES
+		/// or the named CodexEntry.
+		/// </summary>
+		private static string ResolveCategoryName(string categoryId) {
+			if (CodexCache.entries.TryGetValue(categoryId, out var catEntry))
+				return GetEntryName(catEntry);
+
+			string loc = Strings.Get("STRINGS.UI.CODEX.CATEGORYNAMES." + categoryId.ToUpper());
+			if (!string.IsNullOrEmpty(loc)) return loc;
+
+			return categoryId;
+		}
+
+		/// <summary>
+		/// Resolve category display name for a top-level entry. For
+		/// CategoryEntry objects, uses the entry name. For YAML categories,
+		/// looks up the localized name from STRINGS.UI.CODEX.CATEGORYNAMES.
+		/// </summary>
+		internal static string GetCategoryDisplayName(CodexEntry entry) {
+			if (entry is CategoryEntry)
+				return GetEntryName(entry);
+			return ResolveCategoryName(entry.id);
 		}
 
 		/// <summary>
@@ -131,11 +243,11 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// <summary>
 		/// Get visible SubEntries for drilling. Returns empty if count &lt;= 1
 		/// (a single SubEntry IS the entry content, not worth drilling into).
-		/// CategoryEntries never have SubEntries worth drilling.
+		/// Categories never have SubEntries worth drilling.
 		/// </summary>
 		internal static List<SubEntry> GetVisibleSubEntries(CodexEntry entry) {
 			var result = new List<SubEntry>();
-			if (entry == null || entry is CategoryEntry) return result;
+			if (entry == null || IsCategory(entry)) return result;
 			if (entry.subEntries == null || entry.subEntries.Count <= 1) return result;
 			foreach (var sub in entry.subEntries)
 				if (IsSubEntryVisible(sub)) result.Add(sub);

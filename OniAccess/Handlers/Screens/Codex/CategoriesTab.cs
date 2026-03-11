@@ -5,7 +5,7 @@ using OniAccess.Speech;
 namespace OniAccess.Handlers.Screens.Codex {
 	/// <summary>
 	/// Categories tab: 4-level NestedMenuHandler.
-	/// Level 0 = top categories from HOME.entriesInCategory
+	/// Level 0 = top categories (programmatic CategoryEntry + YAML-based)
 	/// Level 1 = entries or sub-categories within a category
 	/// Level 2 = entries within a sub-category (CategoryEntry children)
 	///           OR SubEntries of a level 1 entry (critter morphs, etc.)
@@ -75,7 +75,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 		protected override bool ShouldDrillOnActivate() {
 			var entry = ResolveEntryAtLevel(Level);
-			return entry is CategoryEntry;
+			return entry != null && CodexHelper.IsCategory(entry);
 		}
 
 		protected override int GetItemCount(int level, int[] indices) {
@@ -85,7 +85,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			var parent = ResolveEntryAtLevel(level - 1, indices);
 			if (parent == null) return 0;
 
-			if (parent is CategoryEntry)
+			if (CodexHelper.IsCategory(parent))
 				return CodexHelper.GetEntriesInCategory(parent).Count;
 
 			return CodexHelper.GetVisibleSubEntries(parent).Count;
@@ -95,13 +95,13 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (level == 0) {
 				var topCats = CodexHelper.GetTopCategories();
 				if (indices[0] < 0 || indices[0] >= topCats.Count) return null;
-				return CodexHelper.GetEntryName(topCats[indices[0]]);
+				return CodexHelper.GetCategoryDisplayName(topCats[indices[0]]);
 			}
 
 			var parent = ResolveEntryAtLevel(level - 1, indices);
 			if (parent == null) return null;
 
-			if (parent is CategoryEntry) {
+			if (CodexHelper.IsCategory(parent)) {
 				var children = CodexHelper.GetEntriesInCategory(parent);
 				if (indices[level] < 0 || indices[level] >= children.Count) return null;
 				return CodexHelper.GetEntryName(children[indices[level]]);
@@ -116,6 +116,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (level <= 0) return null;
 			var parent = ResolveEntryAtLevel(level - 1, indices);
 			if (parent == null) return null;
+			if (level == 1) return CodexHelper.GetCategoryDisplayName(parent);
 			return CodexHelper.GetEntryName(parent);
 		}
 
@@ -198,7 +199,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 		/// <summary>
 		/// Walk the category tree to resolve the CodexEntry at a given level.
-		/// Only traverses CategoryEntry children (not SubEntries).
+		/// Traverses both CategoryEntry and YAML-based category children.
 		/// </summary>
 		private static CodexEntry ResolveEntryAtLevel(int level, int[] indices) {
 			var topCats = CodexHelper.GetTopCategories();
@@ -207,7 +208,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 			CodexEntry current = topCats[indices[0]];
 			for (int l = 1; l <= level; l++) {
-				if (!(current is CategoryEntry)) return null;
+				if (!CodexHelper.IsCategory(current)) return null;
 				var children = CodexHelper.GetEntriesInCategory(current);
 				if (indices[l] < 0 || indices[l] >= children.Count) return null;
 				current = children[indices[l]];
@@ -222,7 +223,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		private SubEntry ResolveSubEntry(int[] indices) {
 			if (Level < 1) return null;
 			var parent = ResolveEntryAtLevel(Level - 1, indices);
-			if (parent == null || parent is CategoryEntry) return null;
+			if (parent == null || CodexHelper.IsCategory(parent)) return null;
 			var subs = CodexHelper.GetVisibleSubEntries(parent);
 			if (subs.Count == 0) return null;
 			if (indices[Level] < 0 || indices[Level] >= subs.Count) return null;
@@ -270,8 +271,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 			for (int c = 0; c < topCats.Count; c++) {
 				var entries = CodexHelper.GetEntriesInCategory(topCats[c]);
 				for (int e = 0; e < entries.Count; e++) {
-					if (entries[e] is CategoryEntry subCat) {
-						var subEntries = CodexHelper.GetEntriesInCategory(subCat);
+					if (CodexHelper.IsCategory(entries[e])) {
+						var subEntries = CodexHelper.GetEntriesInCategory(entries[e]);
 						for (int s = 0; s < subEntries.Count; s++) {
 							result.Add(new FlatEntry {
 								entry = subEntries[s],
