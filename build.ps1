@@ -50,7 +50,7 @@ if (-not $env:ONI_MANAGED) {
 }
 
 $ProjectDir  = "$PSScriptRoot\OniAccess"
-$BuildOutput = "$ProjectDir\bin\Debug\net472\OniAccess.dll"
+$BuildOutput = "$ProjectDir\bin\Release\net472\OniAccess.dll"
 $DocsDir     = [Environment]::GetFolderPath("MyDocuments")
 $ModDir      = "$DocsDir\Klei\OxygenNotIncluded\mods\local\OniAccess"
 $ModsJson    = "$DocsDir\Klei\OxygenNotIncluded\mods\mods.json"
@@ -58,7 +58,7 @@ $ModsJson    = "$DocsDir\Klei\OxygenNotIncluded\mods\mods.json"
 # --- Build ---
 if (-not $NoBuild) {
     Write-Host "Building OniAccess..." -ForegroundColor Cyan
-    dotnet build "$ProjectDir\OniAccess.csproj" -c Debug
+    dotnet build "$ProjectDir\OniAccess.csproj" -c Release
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Build FAILED." -ForegroundColor Red
         exit 1
