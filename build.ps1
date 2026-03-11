@@ -85,6 +85,7 @@ if (-not (Test-Path $ModDir)) {
 }
 Copy-Item $BuildOutput "$ModDir\OniAccess.dll" -Force
 Copy-Item "$ProjectDir\mod_info.yaml" "$ModDir\mod_info.yaml" -Force
+Copy-Item "$ProjectDir\mod.yaml" "$ModDir\mod.yaml" -Force
 
 # Tolk and screen reader driver DLLs go in a "native" subfolder so ONI's
 # mod loader doesn't try to load them as .NET assemblies (BadImageFormatException).
