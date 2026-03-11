@@ -190,10 +190,10 @@ namespace OniAccess.Handlers.Build {
 				default:
 					if (horizontalFlow) {
 						orientation = orientation switch {
-							Orientation.R90 => Orientation.Neutral,
-							Orientation.R180 => Orientation.R90,
-							Orientation.R270 => Orientation.R180,
-							_ => Orientation.R270,
+							Orientation.R90 => Orientation.R180,
+							Orientation.R180 => Orientation.R270,
+							Orientation.R270 => Orientation.Neutral,
+							_ => Orientation.R90,
 						};
 					}
 					switch (orientation) {
@@ -203,6 +203,22 @@ namespace OniAccess.Handlers.Build {
 						default: return (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP;
 					}
 			}
+		}
+
+		/// <summary>
+		/// Returns the placement offset with minimum x — the input end of a
+		/// horizontal flow building at Neutral orientation.
+		/// </summary>
+		internal static CellOffset InputEndOffset(BuildingDef def) {
+			int minX = int.MaxValue;
+			CellOffset result = default;
+			foreach (var offset in def.PlacementOffsets) {
+				if (offset.x < minX) {
+					minX = offset.x;
+					result = offset;
+				}
+			}
+			return result;
 		}
 
 		internal static bool IsHorizontalFlowBuilding(BuildingDef def) {

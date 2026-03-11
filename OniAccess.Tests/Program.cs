@@ -211,7 +211,7 @@ namespace OniAccess.Tests {
 			// --- BuildMenuData ---
 			results.Add(OrientationNameCoversAllKnownValues());
 			results.Add(OrientationNameDefaultReturnsUp());
-			results.Add(OrientationNameHorizontalFlowShiftsCCW());
+			results.Add(OrientationNameHorizontalFlowShiftsCW());
 
 			// --- CleanTooltipEntry ---
 			results.Add(CleanTooltipSingleNewline());
@@ -2133,14 +2133,14 @@ namespace OniAccess.Tests {
 				$"got \"{result}\", expected \"{expected}\"");
 		}
 
-		private static (string, bool, string) OrientationNameHorizontalFlowShiftsCCW() {
+		private static (string, bool, string) OrientationNameHorizontalFlowShiftsCW() {
 			var failures = new List<string>();
-			Check(Orientation.Neutral, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT, "Neutral");
-			Check(Orientation.R90, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP, "R90");
-			Check(Orientation.R180, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT, "R180");
-			Check(Orientation.R270, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN, "R270");
+			Check(Orientation.Neutral, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT, "Neutral");
+			Check(Orientation.R90, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN, "R90");
+			Check(Orientation.R180, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_LEFT, "R180");
+			Check(Orientation.R270, (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP, "R270");
 			bool ok = failures.Count == 0;
-			return Assert("OrientationNameHorizontalFlowShiftsCCW", ok,
+			return Assert("OrientationNameHorizontalFlowShiftsCW", ok,
 				ok ? "all correct" : string.Join("; ", failures));
 
 			void Check(Orientation o, string expected, string label) {

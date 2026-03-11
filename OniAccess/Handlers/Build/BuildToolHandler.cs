@@ -89,9 +89,21 @@ namespace OniAccess.Handlers.Build {
 			return new CellOffset(-minX, -minY);
 		}
 
+		/// <summary>
+		/// Returns the offset from the rotated input-end cell to the
+		/// placement origin for a horizontal flow building.
+		/// </summary>
+		internal static CellOffset InputEndToOriginOffset(BuildingDef def, Orientation orientation) {
+			var inputEnd = BuildMenuData.InputEndOffset(def);
+			var rotated = Rotatable.GetRotatedCellOffset(inputEnd, orientation);
+			return new CellOffset(-rotated.x, -rotated.y);
+		}
+
 		private int GetOriginCell() {
 			var orientation = BuildMenuData.GetCurrentOrientation();
-			var shift = BottomLeftToOriginOffset(_def, orientation);
+			var shift = BuildMenuData.IsHorizontalFlowBuilding(_def)
+				? InputEndToOriginOffset(_def, orientation)
+				: BottomLeftToOriginOffset(_def, orientation);
 			return Grid.OffsetCell(TileCursor.Instance.Cell, shift);
 		}
 
@@ -742,14 +754,17 @@ namespace OniAccess.Handlers.Build {
 
 		/// <summary>
 		/// Builds an extent description like "extends 2 right, 1 up"
-		/// for buildings larger than 1x1. Extents are relative to the
-		/// bottom-left corner (the cursor position).
+		/// for buildings larger than 1x1. For normal buildings, extents are
+		/// relative to the bottom-left corner. For horizontal flow buildings,
+		/// extents are relative to the rotated input-end position.
 		/// </summary>
 		internal static string BuildExtentText(Orientation orientation) {
 			var handler = Instance;
 			if (handler == null || handler._def == null) return null;
 			var offsets = handler._def.PlacementOffsets;
 			if (offsets == null || offsets.Length <= 1) return null;
+
+			bool horizontalFlow = BuildMenuData.IsHorizontalFlowBuilding(handler._def);
 
 			int minX = 0, maxX = 0, minY = 0, maxY = 0;
 			foreach (var offset in offsets) {
@@ -760,16 +775,37 @@ namespace OniAccess.Handlers.Build {
 				if (rotated.y > maxY) maxY = rotated.y;
 			}
 
-			int right = maxX - minX;
-			int up = maxY - minY;
-
 			var parts = new List<string>();
-			if (right > 0)
-				parts.Add(string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, right));
-			if (up > 0)
-				parts.Add(string.Format(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, up));
+
+			if (horizontalFlow) {
+				var inputEnd = Rotatable.GetRotatedCellOffset(
+					BuildMenuData.InputEndOffset(handler._def), orientation);
+				int right = maxX - inputEnd.x;
+				int left = inputEnd.x - minX;
+				int up = maxY - inputEnd.y;
+				int down = inputEnd.y - minY;
+				if (right > 0)
+					parts.Add(string.Format(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, right));
+				if (left > 0)
+					parts.Add(string.Format(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT, left));
+				if (up > 0)
+					parts.Add(string.Format(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, up));
+				if (down > 0)
+					parts.Add(string.Format(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN, down));
+			} else {
+				int right = maxX - minX;
+				int up = maxY - minY;
+				if (right > 0)
+					parts.Add(string.Format(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, right));
+				if (up > 0)
+					parts.Add(string.Format(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, up));
+			}
 
 			if (parts.Count == 0) return null;
 			return string.Format(
@@ -1001,20 +1037,27 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
-			// Bottom-left of the rotated footprint, for offset adjustment
-			int minX = 0, minY = 0;
-			foreach (var offset in _def.PlacementOffsets) {
-				var rotated = Rotatable.GetRotatedCellOffset(offset, orientation);
-				if (rotated.x < minX) minX = rotated.x;
-				if (rotated.y < minY) minY = rotated.y;
+			// Reference point for offset descriptions: input end for
+			// horizontal flow buildings, bottom-left otherwise
+			CellOffset refPoint;
+			if (BuildMenuData.IsHorizontalFlowBuilding(_def)) {
+				refPoint = Rotatable.GetRotatedCellOffset(
+					BuildMenuData.InputEndOffset(_def), orientation);
+			} else {
+				int minX = 0, minY = 0;
+				foreach (var offset in _def.PlacementOffsets) {
+					var rotated = Rotatable.GetRotatedCellOffset(offset, orientation);
+					if (rotated.x < minX) minX = rotated.x;
+					if (rotated.y < minY) minY = rotated.y;
+				}
+				refPoint = new CellOffset(minX, minY);
 			}
-			var bottomLeft = new CellOffset(minX, minY);
 
 			var groupStrings = new List<string>();
 			foreach (var group in ports.Select(p => p.group).Distinct()) {
 				var items = ports.Where(p => p.group == group);
 				var formatted = items.Select(p =>
-					FormatPort(p.label, Rotatable.GetRotatedCellOffset(p.offset, orientation), bottomLeft));
+					FormatPort(p.label, Rotatable.GetRotatedCellOffset(p.offset, orientation), refPoint));
 				groupStrings.Add(string.Join(", ", formatted));
 			}
 
