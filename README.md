@@ -2,6 +2,11 @@
 
 An accessibility mod for Oxygen Not Included that makes the game playable for blind users. All game information is delivered through speech output via your screen reader (using the Tolk bridge). The mod is read-only -- it doesn't change game behavior, only adds speech.
 
+## System requirements
+
+- Windows
+- A screen reader such as NVDA or JAWS. If none is running, the mod falls back to SAPI (the Windows built-in speech engine).
+
 ## Install
 
 The build script handles this automatically for development. Full install instructions will be added when the install process is finalized.
