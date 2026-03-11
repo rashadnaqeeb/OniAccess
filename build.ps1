@@ -137,7 +137,7 @@ if (Test-Path $ModsJson) {
         Write-Host "Mod entry not found in mods.json - game will discover it on next launch." -ForegroundColor Yellow
         Write-Host "Enable it in the Mods screen, then future deploys will keep it enabled."
     } else {
-        $jsonText = $json | ConvertTo-Json -Depth 10
+        $jsonText = $json | ConvertTo-Json -Depth 4
         [System.IO.File]::WriteAllText($ModsJson, $jsonText, [System.Text.UTF8Encoding]::new($false))
         Write-Host "Patched mods.json - mod is enabled." -ForegroundColor Green
     }
