@@ -1,6 +1,6 @@
 # Changelog
 
-- Dupe navigator ([ / ]) now announces position relative to cursor (e.g. "3 up 2 left") and speaks statuses before the current chore. Dupes are no longer included in the scanner
+- Dupe navigator ([ / ]) now announces position relative to cursor (e.g. "3 up 2 left") and speaks statuses before the current chore
 - Database: lore categories (emails, journals, research notes, personal logs, investigations, notices) now appear in the categories tab alongside game-data categories
 - Fix: type-ahead search in the Database no longer causes a crash
 - Database: critter morphs and other sub-entries are now navigable via Right arrow from the parent entry, and appear in type-ahead search
