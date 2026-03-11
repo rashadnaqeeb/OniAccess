@@ -19,11 +19,15 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
+			var bridgeConnections = (UtilityConnections)0;
 			foreach (int layer in _layers) {
 				var go = Grid.Objects[cell, layer];
 				if (go == null || ctx.Claimed.Contains(go)) continue;
 				if (IsPortRegistration(go, layer)) continue;
-				if (IsBridgeEndpoint(go)) continue;
+				if (IsBridgeEndpoint(go)) {
+					bridgeConnections |= GetBridgeDirection(go, cell);
+					continue;
+				}
 				ctx.Claimed.Add(go);
 				var sel = go.GetComponent<KSelectable>();
 				if (sel != null)
@@ -31,9 +35,22 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			}
 			if (tokens.Count > 0)
 				tokens.Add(FormatConnections(
-					_getManager().GetConnections(cell, true)));
+					_getManager().GetConnections(cell, true)
+					| bridgeConnections));
 			FindBridgeMiddle(cell, _layers, ctx, tokens);
 			return tokens;
+		}
+
+		internal static UtilityConnections GetBridgeDirection(
+				UnityEngine.GameObject go, int cell) {
+			var building = go.GetComponent<Building>();
+			int origin = Grid.PosToCell(building.transform.GetPosition());
+			int dx = Grid.CellColumn(origin) - Grid.CellColumn(cell);
+			int dy = Grid.CellRow(origin) - Grid.CellRow(cell);
+			if (dx > 0) return UtilityConnections.Right;
+			if (dx < 0) return UtilityConnections.Left;
+			if (dy > 0) return UtilityConnections.Up;
+			return UtilityConnections.Down;
 		}
 
 		/// <summary>

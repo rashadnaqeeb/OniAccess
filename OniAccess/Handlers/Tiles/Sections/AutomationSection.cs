@@ -11,10 +11,15 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
+			var bridgeConnections = (UtilityConnections)0;
 			foreach (int layer in _layers) {
 				var go = Grid.Objects[cell, layer];
 				if (go == null || !ctx.Claimed.Add(go)) continue;
-				if (ConduitSection.IsBridgeEndpoint(go)) continue;
+				if (ConduitSection.IsBridgeEndpoint(go)) {
+					bridgeConnections |= ConduitSection.GetBridgeDirection(
+						go, cell);
+					continue;
+				}
 				var sel = go.GetComponent<KSelectable>();
 				if (sel != null)
 					tokens.Add(sel.GetName());
@@ -22,7 +27,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (tokens.Count > 0) {
 				var conn = ConduitSection.FormatConnections(
 					Game.Instance.logicCircuitSystem
-						.GetConnections(cell, true));
+						.GetConnections(cell, true)
+					| bridgeConnections);
 				if (conn != null)
 					tokens.Add(conn);
 			}
