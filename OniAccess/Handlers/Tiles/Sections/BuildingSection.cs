@@ -429,14 +429,20 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (OverlayScreen.Instance.GetMode() != OverlayModes.Logic.ID) return;
 
 			var logicPorts = building.GetComponent<LogicPorts>();
-			if (logicPorts == null) return;
+			if (logicPorts != null) {
+				var orientation = building.Orientation;
+				ReadAutomationPortArray(
+					logicPorts.inputPortInfo, orientation, origin, cell, tokens);
+				ReadAutomationPortArray(
+					logicPorts.outputPortInfo, orientation, origin, cell, tokens);
+				return;
+			}
 
-			var orientation = building.Orientation;
-
-			ReadAutomationPortArray(
-				logicPorts.inputPortInfo, orientation, origin, cell, tokens);
-			ReadAutomationPortArray(
-				logicPorts.outputPortInfo, orientation, origin, cell, tokens);
+			var gate = building.GetComponent<LogicGate>();
+			if (gate != null && gate.TryGetPortAtCell(cell, out var portId)) {
+				var desc = gate.GetPortDescription(portId);
+				tokens.Add(desc.name);
+			}
 		}
 
 		private static void ReadAutomationPortArray(

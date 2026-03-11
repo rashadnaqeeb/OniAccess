@@ -1,5 +1,6 @@
 # Changelog
 
+- Fix: logic gate ports (NOT, AND, OR, XOR, buffer, filter, multiplexer, demultiplexer) now announce port names in the automation overlay
 - Conduits and wires announce shapes instead of raw directions (e.g. "vertical", "up right corner", "right tee junction" instead of "connects up, down")
 - Details screen navigation is now stable when the game reorders widgets between keypresses (errands, storage, and other tabs no longer jump to unexpected items)
 - Material picker now announces material effects (overheat temperature modifier, thermal conductivity, etc.) alongside name and quantity
