@@ -97,7 +97,6 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			public const string Geothermal = "Geothermal";
 
 			// Life
-			public const string Duplicants = "Duplicants";
 			public const string Robots = "Robots";
 			public const string TameCritters = "Tame Critters";
 			public const string WildCritters = "Wild Critters";
@@ -149,8 +148,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 					Subcategories.Molten, Subcategories.Geothermal,
 				}},
 				{ Categories.Life, new[] {
-					Subcategories.All, Subcategories.Duplicants,
-					Subcategories.Robots,
+					Subcategories.All, Subcategories.Robots,
 					Subcategories.TameCritters, Subcategories.WildCritters,
 					Subcategories.WildPlants, Subcategories.FarmPlants,
 				}},

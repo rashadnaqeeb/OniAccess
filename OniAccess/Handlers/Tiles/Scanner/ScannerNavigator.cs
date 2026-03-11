@@ -532,7 +532,6 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ ScannerTaxonomy.Subcategories.Orders, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ORDERS },
 				{ ScannerTaxonomy.Subcategories.Rooms, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROOMS },
 				{ ScannerTaxonomy.Subcategories.Biomes, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.BIOMES },
-				{ ScannerTaxonomy.Subcategories.Duplicants, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.DUPLICANTS },
 				{ ScannerTaxonomy.Subcategories.Robots, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.ROBOTS },
 				{ ScannerTaxonomy.Subcategories.TameCritters, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.TAME_CRITTERS },
 				{ ScannerTaxonomy.Subcategories.WildCritters, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_CRITTERS },

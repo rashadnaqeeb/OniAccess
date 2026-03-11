@@ -24,8 +24,6 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				yield return entry;
 			foreach (var entry in ScanDebris(worldId))
 				yield return entry;
-			foreach (var entry in ScanDuplicants(worldId))
-				yield return entry;
 			foreach (var entry in ScanRobots(worldId))
 				yield return entry;
 			foreach (var entry in ScanCritters(worldId))
@@ -134,23 +132,6 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 					BackendData = go,
 					Category = ScannerTaxonomy.Categories.Debris,
 					Subcategory = subcategory,
-					ItemName = go.GetComponent<KSelectable>()?.GetName() ?? go.name,
-				};
-			}
-		}
-
-		private IEnumerable<ScanEntry> ScanDuplicants(int worldId) {
-			foreach (var identity in Components.LiveMinionIdentities.GetWorldItems(worldId)) {
-				var go = identity.gameObject;
-				int cell = Grid.PosToCell(go.transform.GetPosition());
-				if (!Grid.IsVisible(cell)) continue;
-
-				yield return new ScanEntry {
-					Cell = cell,
-					Backend = this,
-					BackendData = go,
-					Category = ScannerTaxonomy.Categories.Life,
-					Subcategory = ScannerTaxonomy.Subcategories.Duplicants,
 					ItemName = go.GetComponent<KSelectable>()?.GetName() ?? go.name,
 				};
 			}
