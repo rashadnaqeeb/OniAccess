@@ -1,5 +1,7 @@
 # Changelog
 
+- Database: lore categories (emails, journals, research notes, personal logs, investigations, notices) now appear in the categories tab alongside game-data categories
+- Fix: type-ahead search in the Database no longer causes a crash
 - Database: critter morphs and other sub-entries are now navigable via Right arrow from the parent entry, and appear in type-ahead search
 - Shift+G opens disinfect threshold settings when germ overlay is active (toggle auto-disinfect, adjust threshold via slider or direct number entry)
 - Cycling dupes with [ / ] now announces "trapped" after the dupe's name when they can't pathfind to other dupes, the telepad, or their bed

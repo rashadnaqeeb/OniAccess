@@ -17,6 +17,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 	/// </summary>
 	internal class CategoriesTab: NestedMenuHandler, IScreenTab {
 		private readonly CodexScreenHandler _parent;
+		private List<FlatEntry> _flatEntries;
 
 		internal CategoriesTab(CodexScreenHandler parent) : base(screen: null) {
 			_parent = parent;
@@ -43,6 +44,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// the user was reading.
 		/// </summary>
 		internal void OnTabActivatedOnEntry(bool announce, string entryId) {
+			_flatEntries = null;
 			if (entryId == null || !NavigateToEntry(entryId))
 				ResetState();
 			if (announce)
@@ -266,6 +268,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		private List<FlatEntry> GetAllSearchableEntries() {
+			if (_flatEntries != null) return _flatEntries;
 			var result = new List<FlatEntry>();
 			var topCats = CodexHelper.GetTopCategories();
 			for (int c = 0; c < topCats.Count; c++) {
@@ -304,6 +307,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 					isCategory = true
 				});
 			}
+			_flatEntries = result;
 			return result;
 		}
 
