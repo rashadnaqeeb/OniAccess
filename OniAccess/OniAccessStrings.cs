@@ -1378,8 +1378,11 @@ namespace STRINGS {
 
 		// Disinfect threshold settings (germ overlay sidebar panel)
 		public class DISINFECT_SETTINGS {
+			// Toggle label: spoken as "auto-disinfect, on" or "auto-disinfect, off"
 			public static LocString AUTO_DISINFECT = "auto-disinfect";
+			// Text input label: spoken as "threshold, 10000 Germs"
 			public static LocString THRESHOLD_INPUT = "threshold";
+			// Help screen entry for Shift+G
 			public static LocString HELP_OPEN = "Open disinfect settings";
 		}
 
