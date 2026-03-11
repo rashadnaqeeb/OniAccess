@@ -20,6 +20,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				var foundationGo = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
 				var backwallGo = Grid.Objects[cell, (int)ObjectLayer.Backwall];
 
+				ReadPortCell(cell, buildingGo, foundationGo, ctx, tokens);
+
 				if (buildingGo != null && !ctx.Claimed.Contains(buildingGo))
 					ReadBuilding(buildingGo, cell, tokens);
 
@@ -33,8 +35,6 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					if (selectable != null)
 						tokens.Add(GetBuildingName(backwallGo, selectable));
 				}
-
-				ReadPortCell(cell, buildingGo, foundationGo, ctx, tokens);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"BuildingSection.Read: {ex}");
 			}

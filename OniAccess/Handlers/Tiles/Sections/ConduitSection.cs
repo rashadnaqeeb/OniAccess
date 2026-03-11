@@ -23,6 +23,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				var go = Grid.Objects[cell, layer];
 				if (go == null || ctx.Claimed.Contains(go)) continue;
 				if (IsPortRegistration(go, layer)) continue;
+				if (IsBridgeEndpoint(go)) continue;
 				ctx.Claimed.Add(go);
 				var sel = go.GetComponent<KSelectable>();
 				if (sel != null)
@@ -31,7 +32,61 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (tokens.Count > 0)
 				tokens.Add(FormatConnections(
 					_getManager().GetConnections(cell, true)));
+			FindBridgeMiddle(cell, _layers, ctx, tokens);
 			return tokens;
+		}
+
+		/// <summary>
+		/// Bridges (Conduit, WireBridge, LogicBridge build rules) are not
+		/// registered on any object layer at their middle cell. Scan
+		/// adjacent cells on the given layers for buildings whose
+		/// PlacementCells include the current cell.
+		/// </summary>
+		internal static void FindBridgeMiddle(
+				int cell, int[] layers, CellContext ctx,
+				List<string> tokens) {
+			int cx = Grid.CellColumn(cell);
+			int cy = Grid.CellRow(cell);
+			foreach (int layer in layers) {
+				CheckBridgeNeighbor(Grid.XYToCell(cx - 1, cy),
+					layer, cell, ctx, tokens);
+				CheckBridgeNeighbor(Grid.XYToCell(cx + 1, cy),
+					layer, cell, ctx, tokens);
+				CheckBridgeNeighbor(Grid.XYToCell(cx, cy - 1),
+					layer, cell, ctx, tokens);
+				CheckBridgeNeighbor(Grid.XYToCell(cx, cy + 1),
+					layer, cell, ctx, tokens);
+			}
+		}
+
+		private static void CheckBridgeNeighbor(
+				int neighbor, int layer, int targetCell,
+				CellContext ctx, List<string> tokens) {
+			if (!Grid.IsValidCell(neighbor)) return;
+			var go = Grid.Objects[neighbor, layer];
+			if (go == null || ctx.Claimed.Contains(go)) return;
+			if (!IsBridgeEndpoint(go)) return;
+			var building = go.GetComponent<Building>();
+			if (!building.PlacementCellsContainCell(targetCell)) return;
+			ctx.Claimed.Add(go);
+			var sel = go.GetComponent<KSelectable>();
+			if (sel != null)
+				tokens.Add(string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE,
+					sel.GetName()));
+		}
+
+		/// <summary>
+		/// True when the object is a bridge endpoint. Bridge endpoints
+		/// are handled by BuildingSection (port labels + name), not here.
+		/// </summary>
+		internal static bool IsBridgeEndpoint(UnityEngine.GameObject go) {
+			var building = go.GetComponent<Building>();
+			if (building == null) return false;
+			var rule = building.Def.BuildLocationRule;
+			return rule == BuildLocationRule.Conduit
+				|| rule == BuildLocationRule.WireBridge
+				|| rule == BuildLocationRule.LogicBridge;
 		}
 
 		/// <summary>

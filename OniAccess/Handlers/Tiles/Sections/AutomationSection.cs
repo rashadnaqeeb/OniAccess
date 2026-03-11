@@ -13,11 +13,11 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var tokens = new List<string>();
 			foreach (int layer in _layers) {
 				var go = Grid.Objects[cell, layer];
-				if (go != null && ctx.Claimed.Add(go)) {
-					var sel = go.GetComponent<KSelectable>();
-					if (sel != null)
-						tokens.Add(sel.GetName());
-				}
+				if (go == null || !ctx.Claimed.Add(go)) continue;
+				if (ConduitSection.IsBridgeEndpoint(go)) continue;
+				var sel = go.GetComponent<KSelectable>();
+				if (sel != null)
+					tokens.Add(sel.GetName());
 			}
 			if (tokens.Count > 0) {
 				var conn = ConduitSection.FormatConnections(
@@ -26,6 +26,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (conn != null)
 					tokens.Add(conn);
 			}
+			ConduitSection.FindBridgeMiddle(cell, _layers, ctx, tokens);
 			return tokens;
 		}
 	}

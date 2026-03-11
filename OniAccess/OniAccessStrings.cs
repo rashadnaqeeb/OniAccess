@@ -608,6 +608,8 @@ namespace STRINGS {
 			// Building extension cells: {0} = building name
 			public static LocString INTAKE_PIPE = "{0} intake pipe";
 			public static LocString LURE = "{0} lure";
+			// Bridge middle cell (between the two endpoints): {0} = building name
+			public static LocString BRIDGE_MIDDLE = "{0} middle";
 
 			// Decor overlay value. {0} = sign prefix ("+" or ""), {1} = decor value (int)
 			public static LocString OVERLAY_DECOR = "{0}{1} decor";
