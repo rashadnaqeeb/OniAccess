@@ -2502,9 +2502,9 @@ namespace OniAccess.Widgets {
 			if (seedPrefab == null) return;
 			var seed = seedPrefab.GetComponent<PlantableSeed>();
 			if (seed == null) return;
-			var plantPrefab = Assets.GetPrefab(seed.PlantID);
-			if (plantPrefab == null) return;
-			var occupyArea = plantPrefab.GetComponent<OccupyArea>();
+			var previewPrefab = Assets.GetPrefab(seed.PreviewID);
+			if (previewPrefab == null) return;
+			var occupyArea = previewPrefab.GetComponent<OccupyArea>();
 			if (occupyArea == null) return;
 
 			var offsets = occupyArea.OccupiedCellsOffsets;
