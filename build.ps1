@@ -55,6 +55,15 @@ $DocsDir     = [Environment]::GetFolderPath("MyDocuments")
 $ModDir      = "$DocsDir\Klei\OxygenNotIncluded\mods\local\OniAccess"
 $ModsJson    = "$DocsDir\Klei\OxygenNotIncluded\mods\mods.json"
 
+# --- Sync version from .csproj to mod_info.yaml ---
+$CsprojPath = "$ProjectDir\OniAccess.csproj"
+$ModInfoPath = "$ProjectDir\mod_info.yaml"
+[xml]$csproj = Get-Content $CsprojPath
+$Version = $csproj.Project.PropertyGroup.Version
+$modInfo = Get-Content $ModInfoPath -Raw
+$modInfo = $modInfo -replace 'version: ".*"', "version: `"$Version`""
+[System.IO.File]::WriteAllText($ModInfoPath, $modInfo)
+
 # --- Build ---
 if (-not $NoBuild) {
     Write-Host "Building OniAccess..." -ForegroundColor Cyan
