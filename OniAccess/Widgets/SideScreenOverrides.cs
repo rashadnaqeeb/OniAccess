@@ -42,6 +42,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<FilterSideScreen>(WalkFilterSideScreen);
 			SideScreenWalker.RegisterOverride<AssignPilotAndCrewSideScreen>(WalkAssignPilotAndCrew);
 			SideScreenWalker.RegisterOverride<RocketRestrictionSideScreen>(WalkRocketRestriction);
+			SideScreenWalker.RegisterOverride<PlanterSideScreen>(WalkPlanter);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -2478,6 +2479,85 @@ namespace OniAccess.Widgets {
 				};
 				break;
 			}
+		}
+
+		static void WalkPlanter(PlanterSideScreen screen, List<Widget> items) {
+			SideScreenWalker.WalkDefault(screen, items);
+
+			var targetReceptacle = Traverse.Create(screen)
+				.Field<SingleEntityReceptacle>("targetReceptacle").Value;
+			if (targetReceptacle == null) return;
+
+			var plot = targetReceptacle as PlantablePlot;
+			if (plot == null) return;
+
+			if (plot.Occupant != null) return;
+			if (plot.GetActiveRequest != null) return;
+
+			var selectedTag = Traverse.Create(screen)
+				.Field<Tag>("selectedDepositObjectTag").Value;
+			if (!selectedTag.IsValid) return;
+
+			var seedPrefab = Assets.GetPrefab(selectedTag);
+			if (seedPrefab == null) return;
+			var seed = seedPrefab.GetComponent<PlantableSeed>();
+			if (seed == null) return;
+			var plantPrefab = Assets.GetPrefab(seed.PlantID);
+			if (plantPrefab == null) return;
+			var occupyArea = plantPrefab.GetComponent<OccupyArea>();
+			if (occupyArea == null) return;
+
+			var offsets = occupyArea.OccupiedCellsOffsets;
+			if (offsets == null || offsets.Length <= 1) return;
+
+			int up = 0, down = 0, left = 0, right = 0;
+			foreach (var o in offsets) {
+				if (o.y > up) up = o.y;
+				if (o.y < 0 && -o.y > down) down = -o.y;
+				if (o.x > right) right = o.x;
+				if (o.x < 0 && -o.x > left) left = -o.x;
+			}
+
+			var parts = new List<string>();
+			if (up > 0) parts.Add(string.Format(
+				(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_UP, up));
+			if (down > 0) parts.Add(string.Format(
+				(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_DOWN, down));
+			if (left > 0) parts.Add(string.Format(
+				(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_LEFT, left));
+			if (right > 0) parts.Add(string.Format(
+				(string)STRINGS.ONIACCESS.BUILD_MENU.EXTENT_RIGHT, right));
+			if (parts.Count == 0) return;
+
+			string extentDirs = string.Join(", ", parts);
+			var capturedPlot = plot;
+
+			var requestBtn = Traverse.Create(screen)
+				.Field<KButton>("requestSelectedEntityBtn").Value;
+			int insertIndex = -1;
+			for (int i = 0; i < items.Count; i++) {
+				if (items[i].Component == requestBtn) { insertIndex = i; break; }
+			}
+			if (insertIndex == -1 && requestBtn != null) {
+				for (int i = 0; i < items.Count; i++) {
+					if (items[i].GameObject == requestBtn.gameObject) { insertIndex = i; break; }
+				}
+			}
+			if (insertIndex == -1) insertIndex = items.Count;
+
+			items.Insert(insertIndex, new LabelWidget {
+				Label = string.Format(
+					(string)STRINGS.ONIACCESS.RECEPTACLE.EXTENT_CLEAR, extentDirs),
+				GameObject = requestBtn?.gameObject,
+				SpeechFunc = () => {
+					bool blocked = !capturedPlot.ValidPlant;
+					return string.Format(
+						blocked
+							? (string)STRINGS.ONIACCESS.RECEPTACLE.EXTENT_BLOCKED
+							: (string)STRINGS.ONIACCESS.RECEPTACLE.EXTENT_CLEAR,
+						extentDirs);
+				}
+			});
 		}
 	}
 }

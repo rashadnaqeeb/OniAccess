@@ -1,5 +1,6 @@
 # Changelog
 
+- Farm tiles now announce plant extent and blocked status (e.g. "extends 2 up, blocked") when selecting a multi-cell plant
 - Pipe bridges, logic gates, and wire bridges now place the cursor on the input end and announce the output direction (e.g. "right" means flow goes right)
 - Fix: logic gate ports (NOT, AND, OR, XOR, buffer, filter, multiplexer, demultiplexer) now announce port names in the automation overlay
 - Conduits and wires announce shapes instead of raw directions (e.g. "vertical", "up right corner", "right tee junction" instead of "connects up, down")
