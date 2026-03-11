@@ -1349,6 +1349,21 @@ msgctxt "STRINGS.ONIACCESS.DLC.OWNED_NOT_ACTIVE"
 msgid "Owned, not active"
 msgstr "Possédé, non actif"
 
+#. STRINGS.ONIACCESS.DUPES.FOLLOW.FOLLOWING
+msgctxt "STRINGS.ONIACCESS.DUPES.FOLLOW.FOLLOWING"
+msgid "following {0}"
+msgstr "suivi de {0}"
+
+#. STRINGS.ONIACCESS.DUPES.FOLLOW.HELP_FOLLOW
+msgctxt "STRINGS.ONIACCESS.DUPES.FOLLOW.HELP_FOLLOW"
+msgid "Follow current duplicant with camera"
+msgstr "Suivre le duplicant actuel avec la caméra"
+
+#. STRINGS.ONIACCESS.DUPES.FOLLOW.STATUS_ENDED
+msgctxt "STRINGS.ONIACCESS.DUPES.FOLLOW.STATUS_ENDED"
+msgid "ended {0}"
+msgstr "terminé {0}"
+
 #. STRINGS.ONIACCESS.DUPES.HEALTH_CRITICAL
 msgctxt "STRINGS.ONIACCESS.DUPES.HEALTH_CRITICAL"
 msgid "critical health"
