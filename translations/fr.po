@@ -2404,6 +2404,16 @@ msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.TOOLBAR"
 msgid "Toolbar"
 msgstr "Barre d'outils"
 
+#. STRINGS.ONIACCESS.RECEPTACLE.EXTENT_BLOCKED
+msgctxt "STRINGS.ONIACCESS.RECEPTACLE.EXTENT_BLOCKED"
+msgid "extends {0}, blocked"
+msgstr "s'étend {0}, bloqué"
+
+#. STRINGS.ONIACCESS.RECEPTACLE.EXTENT_CLEAR
+msgctxt "STRINGS.ONIACCESS.RECEPTACLE.EXTENT_CLEAR"
+msgid "extends {0}, clear"
+msgstr "s'étend {0}, dégagé"
+
 #. STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT
 msgctxt "STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT"
 msgid "{0} items"
