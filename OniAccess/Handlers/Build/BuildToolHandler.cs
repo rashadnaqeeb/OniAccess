@@ -47,7 +47,7 @@ namespace OniAccess.Handlers.Build {
 			new ConsumedKey(KKeyCode.R, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Tab),
 			new ConsumedKey(KKeyCode.I),
-			new ConsumedKey(KKeyCode.P),
+			new ConsumedKey(KKeyCode.P, Modifier.Shift),
 			new ConsumedKey(KKeyCode.G, Modifier.Ctrl),
 			new ConsumedKey(KKeyCode.Alpha0),
 			new ConsumedKey(KKeyCode.Alpha1),
@@ -114,7 +114,7 @@ namespace OniAccess.Handlers.Build {
 			new HelpEntry("Shift+R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE_REVERSE),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO),
-			new HelpEntry("P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
+			new HelpEntry("Shift+P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
 			new HelpEntry("0-9", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY),
 			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_CANCEL_CONSTRUCTION),
 			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.CLOSE),
@@ -128,7 +128,7 @@ namespace OniAccess.Handlers.Build {
 			new HelpEntry("Shift+R", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE_REVERSE),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO),
-			new HelpEntry("P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
+			new HelpEntry("Shift+P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
 			new HelpEntry("0-9", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY),
 			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_CANCEL_CONSTRUCTION),
 			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.CLOSE),
@@ -141,7 +141,7 @@ namespace OniAccess.Handlers.Build {
 			new HelpEntry("Ctrl+G", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_BUILDING_LIST),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_INFO),
-			new HelpEntry("P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
+			new HelpEntry("Shift+P", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_PORTS),
 			new HelpEntry("0-9", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY),
 			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.CLOSE),
 		}.AsReadOnly();
@@ -383,7 +383,7 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.P)
-				&& !InputUtil.AnyModifierHeld()) {
+				&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld() && !InputUtil.AltHeld()) {
 				AnnouncePortLayout();
 				return true;
 			}

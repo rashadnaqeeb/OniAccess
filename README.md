@@ -149,14 +149,16 @@ At the building level, navigation wraps across subcategories and categories -- y
 Selecting a building enters placement mode:
 
 - **Space** -- place one copy at the cursor
-- **Enter** -- place and return to the map immediately.
-- **R** -- rotate (announces new orientation and extent for multi-tile buildings). Not all buildings are rotatable. Some have only 2 orientations.
+- **Enter** -- place and return to the map immediately
+- **R** -- rotate (announces new orientation and extent for multi-tile buildings). Not all buildings are rotatable. Some have only 2 orientations
 - **Tab** -- return to the building list at the same position
-- **I** -- read building description, effects, and material requirements. Material and facade can be changed from here.
+- **I** -- read building description, effects, and material requirements. Material and facade can be changed from here
+- **Shift+P** -- announce port layout (input/output positions for pipes, wires, automation, etc.)
+- **Ctrl+G** -- toggle rectangle mode (single-cell buildings only). Space sets corners, Enter fills the rectangle
 - **0-9** -- set construction priority
 - **Shift+Space** -- cancel existing construction at the cursor
 
-For single-cell buildings (tiles, drywall, etc.), **G** toggles rectangle mode where you define areas with Space and fill them all at once with Enter.
+The cursor is always at the bottom-left corner of the building footprint. Multi-tile buildings extend up and to the right from the cursor. Rotating changes which corner faces down-left. Utility bridges are the exception: the cursor is always at the input end, and the rotation direction points toward the output. For example, a bridge rotated down has the cursor at the top (input) and the output below.
 
 Utility buildings (pipes and wires) use line placement: Space sets the start, then move in a straight line and Space again to complete the run. If any tiles along the line are invalid, the placement will fail.
 
