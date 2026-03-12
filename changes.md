@@ -1,5 +1,6 @@
 # Changelog
 
+- Fix: build tool now allows placing replacement tiles (e.g. sandstone ladder over wood ladder) instead of rejecting as obstructed
 - Build tool: port layout hotkey changed from P to Shift+P, freeing bare P for the game's Prioritize tool
 - Story trait popups (discovery and completion) and gameplay event popups (meteor showers, food fights, etc.) are now spoken with title, description, and action buttons
 - Ctrl+\ follows the current duplicant with the camera, announcing status and chore changes in real time; [ / ] switches the follow target; any cursor movement stops following

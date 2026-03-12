@@ -435,7 +435,9 @@ namespace OniAccess.Handlers.Build {
 			var pos = Grid.CellToPosCBC(originCell, _def.SceneLayer);
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			string failReason;
-			if (!_def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, out failReason)) {
+			if (!_def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, out failReason)
+				&& !(_def.ReplacementLayer != ObjectLayer.NumLayers
+					&& _def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, replace_tile: true, out failReason))) {
 				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
 				return;
@@ -741,7 +743,9 @@ namespace OniAccess.Handlers.Build {
 				var pos = Grid.CellToPosCBC(originCell, _def.SceneLayer);
 				string failReason;
 				if (!_def.IsValidPlaceLocation(
-						BuildTool.Instance.visualizer, pos, orientation, out failReason))
+						BuildTool.Instance.visualizer, pos, orientation, out failReason)
+					&& !(_def.ReplacementLayer != ObjectLayer.NumLayers
+						&& _def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, replace_tile: true, out failReason)))
 					parts.Add(failReason ?? (string)STRINGS.ONIACCESS.BUILD_MENU.OBSTRUCTED);
 			}
 
@@ -910,7 +914,9 @@ namespace OniAccess.Handlers.Build {
 
 							var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
 							if (!_def.IsValidPlaceLocation(
-									BuildTool.Instance.visualizer, pos, orientation, out _))
+									BuildTool.Instance.visualizer, pos, orientation, out _)
+								&& !(_def.ReplacementLayer != ObjectLayer.NumLayers
+									&& _def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, replace_tile: true, out _)))
 								continue;
 
 							BuildTool.Instance.visualizer.transform.SetPosition(pos);
@@ -944,8 +950,10 @@ namespace OniAccess.Handlers.Build {
 		private int CountValidPlacements(int cell) {
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
-			return _def.IsValidPlaceLocation(
-				BuildTool.Instance.visualizer, pos, orientation, out _) ? 1 : 0;
+			return (_def.IsValidPlaceLocation(
+				BuildTool.Instance.visualizer, pos, orientation, out _)
+				|| (_def.ReplacementLayer != ObjectLayer.NumLayers
+					&& _def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, replace_tile: true, out _))) ? 1 : 0;
 		}
 
 		private static string ReadBuildPriority() {
