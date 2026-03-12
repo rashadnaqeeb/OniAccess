@@ -129,7 +129,7 @@ if (Test-Path $TranslationsSrc) {
 # a BOM which corrupts the file for Unity's Mono JSON parser, causing the
 # game to silently discard all mod state and re-discover mods as disabled.
 if (Test-Path $ModsJson) {
-    $json = Get-Content $ModsJson -Raw | ConvertFrom-Json
+    $json = Get-Content $ModsJson -Raw -Encoding UTF8 | ConvertFrom-Json
 
     $found = $false
     foreach ($mod in $json.mods) {
