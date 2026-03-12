@@ -2,6 +2,7 @@
 
 ## Changes since 1.0.0
 
+- Automation wires now announce their signal color (green/red) after connection directions; ribbons announce all 4 bits
 - F12 settings: "Lock zoom level" option lets you keep your current zoom when moving the tile cursor (on by default)
 - F12 opens a settings screen where you can view and adjust all config options (coordinate mode, auto-move cursor) in one place
 

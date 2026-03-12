@@ -12,6 +12,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
 			var bridgeConnections = (UtilityConnections)0;
+			LogicWire wire = null;
 			foreach (int layer in _layers) {
 				var go = Grid.Objects[cell, layer];
 				if (go == null || !ctx.Claimed.Add(go)) continue;
@@ -20,6 +21,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 						go, cell);
 					continue;
 				}
+				if (wire == null)
+					wire = go.GetComponent<LogicWire>();
 				var sel = go.GetComponent<KSelectable>();
 				if (sel != null)
 					tokens.Add(sel.GetName());
@@ -31,9 +34,33 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					| bridgeConnections);
 				if (conn != null)
 					tokens.Add(conn);
+				if (wire != null) {
+					var signal = FormatSignal(cell, wire);
+					if (signal != null)
+						tokens.Add(signal);
+				}
 			}
 			ConduitSection.FindBridgeMiddle(cell, _layers, ctx, tokens);
 			return tokens;
+		}
+
+		private static string FormatSignal(int cell, LogicWire wire) {
+			var network = Game.Instance.logicCircuitManager
+				.GetNetworkForCell(cell) as LogicCircuitNetwork;
+			if (network == null)
+				return null;
+			if (wire.MaxBitDepth == LogicWire.BitDepth.OneBit)
+				return BitLabel(network.IsBitActive(0));
+			var bits = new string[4];
+			for (int i = 0; i < 4; i++)
+				bits[i] = BitLabel(network.IsBitActive(i));
+			return string.Join(" ", bits);
+		}
+
+		private static string BitLabel(bool active) {
+			return active
+				? STRINGS.UI.OVERLAYS.LOGIC.ONE
+				: STRINGS.UI.OVERLAYS.LOGIC.ZERO;
 		}
 	}
 }
