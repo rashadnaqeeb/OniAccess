@@ -42,7 +42,7 @@ namespace OniAccess.Handlers.Tiles {
 			KInputManager.isMousePosLocked = false;
 		}
 
-		public CoordinateMode Mode { get; private set; } = ConfigManager.Config.CoordinateMode;
+		public CoordinateMode Mode { get; internal set; } = ConfigManager.Config.CoordinateMode;
 
 		public int Cell => _cell;
 

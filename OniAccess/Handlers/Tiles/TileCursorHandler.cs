@@ -260,6 +260,7 @@ namespace OniAccess.Handlers.Tiles {
 			_dupeNavigator?.StopFollowAndClear();
 			TileCursor.Destroy();
 			CursorRuler.Destroy();
+			ScannerNavigator.Destroy();
 			_scanner = null;
 			_dupeNavigator = null;
 			_pathabilityChecker = null;

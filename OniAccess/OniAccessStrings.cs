@@ -69,6 +69,13 @@ namespace STRINGS {
 			public static LocString DIAGNOSTICS = "Diagnostics";
 			public static LocString WORLD_SELECTOR = "World list";
 			public static LocString DISINFECT_SETTINGS = "disinfect settings";
+			public static LocString CONFIG = "Settings";
+		}
+
+		// Config screen option labels
+		public class CONFIG {
+			public static LocString COORDINATE_MODE = "Tile cursor coordinate mode";
+			public static LocString AUTO_MOVE_CURSOR = "Auto-move cursor when cycling scanner entries";
 		}
 
 		// Supply closet (Klei rewards) screen messages
@@ -104,6 +111,8 @@ namespace STRINGS {
 			public static LocString GO_BACK = "Go back";
 			public static LocString JUMP_GROUP = "Jump to next or previous group";
 			public static LocString CYCLE_RECIPE = "Cycle recipe";
+			public static LocString TOGGLE_OPTION = "Toggle option";
+			public static LocString OPEN_CONFIG = "Open settings";
 
 			// Help entries for tool-specific keys
 			public class TOOLS_HELP {

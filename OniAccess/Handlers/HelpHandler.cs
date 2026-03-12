@@ -33,6 +33,7 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		private static readonly List<HelpEntry> _commonEntries
 			= new List<HelpEntry> {
+			new HelpEntry("F12", STRINGS.ONIACCESS.HELP.OPEN_CONFIG),
 			new HelpEntry("Ctrl+Shift+F12", STRINGS.ONIACCESS.HOTKEYS.TOGGLE_MOD),
 		};
 

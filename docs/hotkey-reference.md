@@ -56,6 +56,7 @@ These have no Root-context game binding, making them safe for the mod without ne
 | Key | Action | Game Conflict |
 |-----|--------|---------------|
 | Ctrl+Shift+F12 | Toggle mod on/off | Debug Trigger Error in debug mode only -- negligible risk |
+| F12 | Open settings | Steam screenshot -- outside game input system, most users disable or rebind it in Steam |
 | Shift+/ (?) | Context help | / is Toggle Open in Building context, but Building context isn't active when help opens |
 
 ### Tile Cursor (TileCursorHandler -- main gameplay)

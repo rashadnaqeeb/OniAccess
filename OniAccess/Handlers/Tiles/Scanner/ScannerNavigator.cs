@@ -10,6 +10,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 	/// and teleport. Called from TileCursorHandler.Tick() for keybind dispatch.
 	/// </summary>
 	public class ScannerNavigator {
+		public static ScannerNavigator Instance { get; private set; }
+
 		private ScannerSnapshot _snapshot;
 		private int _categoryIndex;
 		private int _subcategoryIndex;
@@ -33,9 +35,18 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		private static readonly Dictionary<string, LocString> _subcategoryNames = BuildSubcategoryNames();
 
 		public ScannerNavigator() {
+			Instance = this;
 			var biomeResolver = new BiomeNameResolver();
 			_gridScanner = new GridScanner(biomeResolver);
 			_entityBackend = new EntityBackend(new BuildingRouter());
+		}
+
+		public static void Destroy() {
+			Instance = null;
+		}
+
+		internal void SetAutoMove(bool value) {
+			_autoMove = value;
 		}
 
 		/// <summary>

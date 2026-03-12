@@ -50,6 +50,14 @@ namespace OniAccess.Input {
 			// are cleaned up, not just the top.
 			HandlerStack.RemoveStaleHandlers();
 
+			// F12 (bare): open config screen
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
+				&& !InputUtil.ShiftHeld() && !InputUtil.CtrlHeld() && !InputUtil.AltHeld()
+				&& !(HandlerStack.ActiveHandler is ConfigHandler)) {
+				HandlerStack.Push(new ConfigHandler());
+				return;
+			}
+
 			// Shift+/ (?): open help with entries from all reachable handlers.
 			// Centralized here to prevent double-push when layered non-capturing
 			// handlers both detect the key in the same frame.

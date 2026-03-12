@@ -2,6 +2,8 @@
 
 ## Changes since 1.0.0
 
+- F12 opens a settings screen where you can view and adjust all config options (coordinate mode, auto-move cursor) in one place
+
 ## Pre-release
 
 - Fix: wire bridge and joint plate connection points now announce "connection port" in the power overlay, so players can find where to attach wires
