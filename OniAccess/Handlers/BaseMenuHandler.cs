@@ -217,29 +217,29 @@ namespace OniAccess.Handlers {
 			if (UnityEngine.Time.frameCount == _searchSuppressFrame)
 				return false;
 
+			bool consumed = false;
+
 			// Letters (no modifiers) — start or continue search
 			if (!ctrlHeld && !altHeld) {
 				string inputStr = UnityEngine.Input.inputString;
-				bool consumed = false;
 				for (int i = 0; i < inputStr.Length; i++) {
 					char c = inputStr[i];
 					if (char.IsLetter(c))
 						consumed |= _search.HandleChar(c, this);
 				}
-				if (consumed) return true;
 			}
 
 			// Space captured by search when active (otherwise passes through to handler)
 			if (_search.IsSearchActive && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space))
-				return _search.HandleKey(UnityEngine.KeyCode.Space, ctrlHeld, altHeld, this);
+				consumed |= _search.HandleKey(UnityEngine.KeyCode.Space, ctrlHeld, altHeld, this);
 
 			// Navigation keys captured by search when active
 			for (int i = 0; i < _searchNavKeys.Length; i++) {
 				if (UnityEngine.Input.GetKeyDown(_searchNavKeys[i]))
-					return _search.HandleKey(_searchNavKeys[i], ctrlHeld, altHeld, this);
+					consumed |= _search.HandleKey(_searchNavKeys[i], ctrlHeld, altHeld, this);
 			}
 
-			return false;
+			return consumed;
 		}
 
 		// ========================================

@@ -187,11 +187,6 @@ namespace OniAccess.Handlers {
 							return true;
 						}
 						return false;
-					default:
-						// Non-search key: cursor is already at search result from SearchMoveTo.
-						// Just clear search and let handler process the key normally.
-						Clear();
-						return false;
 				}
 			}
 
