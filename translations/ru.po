@@ -1554,6 +1554,11 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.CONDUIT_SOLID"
 msgid "solid"
 msgstr "твёрдое"
 
+#. STRINGS.ONIACCESS.GLANCE.CONNECTION
+msgctxt "STRINGS.ONIACCESS.GLANCE.CONNECTION"
+msgid "connection port"
+msgstr "порт подключения"
+
 #. STRINGS.ONIACCESS.GLANCE.DISEASE_CLEAR
 msgctxt "STRINGS.ONIACCESS.GLANCE.DISEASE_CLEAR"
 msgid "clean"
