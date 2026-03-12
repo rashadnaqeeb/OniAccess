@@ -21,7 +21,7 @@ Updates are delivered automatically through the Steam Workshop.
 
 Oxygen Not Included is a colony survival sim. You manage a group of duplicants (dupes) stranded inside an asteroid. They need oxygen, food, water, and a place to sleep. You don't control them directly -- you build infrastructure and set priorities, and they carry out the work autonomously. If you stop building, they stop progressing. If you forget oxygen or food, they die.
 
-The world is a 2D side-view grid. This means that you move up, down, right, and left, rather than in cardinal directions. Each tile contains an element (granite, dirt, oxygen, water, etc.) and may have  buildings, creatures, or debris on it. 
+The world is a 2D side-view grid. This means that you move up, down, right, and left, rather than in cardinal directions. Each tile contains an element (granite, dirt, oxygen, water, etc.) and may have buildings, creatures, or debris on it.
 
 ## Getting started
 
@@ -37,7 +37,7 @@ Tab opens the action menu. Browse categories of buildings with Up/Down, select a
 
 ### Tools
 
-Tools like Dig, Deconstruct, and Mop let you give orders on the map. You'll find them in the action menu under the Tools category. With a tool active, move the cursor to one corner of the area you want to affect, press Space, move to the opposite corner, and press Space again to mark the rectangle. Enter confirms the order. You can also just press Enter without setting corners to apply the tool to a single tile. Escape cancels the tool.
+Tools like Dig, Deconstruct, and Mop let you give orders on the map. You'll find them in the action menu under the Tools category. With a tool active, move the cursor to one corner of the area you want to affect, press Space, move to the opposite corner, and press Space again to mark the rectangle. Enter confirms the order. You can also just press Enter without setting corners to apply the tool to a single tile. Escape cancels the tool and returns to the map.
 
 ### Overlays
 
@@ -49,7 +49,14 @@ While on the map, S reads a summary of your colony: how many dupes you have, foo
 
 ### Scanner
 
-End scans your entire asteroid and catalogs everything: elements, buildings, creatures, debris. Results are organized into a four-level hierarchy. For example, to find the second patch of Iron Ore: Ctrl+PageUp/Down to reach the Solids category, Shift+PageUp/Down to reach the Metals subcategory, PageUp/Down to reach Iron Ore, then Alt+PageUp/Down to cycle through individual patches sorted by distance. Home teleports the cursor to whichever patch you've selected. Ctrl+F searches by name if you know what you're looking for; End clears the search and returns to the full results. The scan is not live-updated -- press End again to refresh. This is because in the late game, the scan can take several hundred milliseconds, and refreshing it on every key press would be annoying.
+End scans your entire asteroid and catalogs everything: elements, buildings, creatures, debris. Results are organized into a four-level hierarchy. To find something, say the second patch of Iron Ore:
+
+1. Ctrl+PageUp/Down to reach the Solids category
+2. Shift+PageUp/Down to reach the Metals subcategory
+3. PageUp/Down to reach Iron Ore
+4. Alt+PageUp/Down to cycle through individual patches, sorted by distance
+
+Home teleports the cursor to whichever patch you've selected. Ctrl+F searches by name if you already know what you're looking for. The scan is not live-updated -- press End again to refresh.
 
 ### Duplicants
 

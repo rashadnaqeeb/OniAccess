@@ -87,7 +87,7 @@ The scanner clears automatically when you switch asteroids.
 
 ## Tools
 
-Selecting a tool (Dig, Deconstruct, Mop, etc.) enters tool mode. The cursor still moves normally, but you now place orders instead of inspecting.
+Selecting a tool (Dig, Deconstruct, Mop, etc.) from the action menu (Tab) enters tool mode. The cursor still moves normally, but you now place orders instead of inspecting.
 
 ### Rectangle selection
 
@@ -95,7 +95,7 @@ Selecting a tool (Dig, Deconstruct, Mop, etc.) enters tool mode. The cursor stil
 - **Enter** -- confirm all pending rectangles. If no rectangle is set, Enter confirms a single cell under the cursor
 - **Shift+Space** -- clear the rectangle under the cursor
 
-With a big cursor active, Space sets both corners at once, creating a rectangle the size of the cursor area. Enter also applies the full cursor rectangle but confirms immediately, closing the tool. The disconnect tool always uses single-cell selection regardless of cursor size.
+With a big cursor active, Space sets both corners at once, creating a rectangle the size of the cursor area. Enter also applies the full cursor rectangle but confirms immediately, closing the tool. The disconnect tool (for splitting pipe/wire segments) always uses single-cell selection regardless of cursor size.
 
 ### Priority
 
@@ -190,7 +190,9 @@ New notifications are batched over a short window and collapsed by title (e.g., 
 
 ## Details screen
 
-The details screen has three sections: main tabs (Status, Personality, etc.), side screens (building-specific config panels), and action buttons. **Tab/Shift+Tab** cycles within the current section. **Ctrl+Tab/Ctrl+Shift+Tab** jumps between sections.
+The details screen has three sections: main tabs, side screens, and action buttons. **Tab/Shift+Tab** cycles within the current section. **Ctrl+Tab/Ctrl+Shift+Tab** jumps between sections.
+
+Main tabs vary by entity but include: Status (vitals, storage, process conditions, status items), Personality (bio, traits, attributes, resume, equipment), Chores (pending errands with assigned dupes), and Properties (germs, immune system, power generators/consumers/batteries). Side screens hold building-specific config panels -- sliders, toggles, dropdowns, and material selection. The action buttons section has context actions (e.g., cancel building, empty storage), priority adjustment, and links to the codex entry or rename.
 
 ### Sliders
 
