@@ -117,6 +117,19 @@ namespace OniAccess.Handlers.Screens {
 			HelpEntries = BuildHelpEntries();
 		}
 
+		public override void OnActivate() {
+			base.OnActivate();
+
+			try {
+				var field = HarmonyLib.Traverse.Create(_screen).Field("coordinate")
+					.GetValue<KInputTextField>();
+				if (field != null)
+					field.DeactivateInputField();
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"ColonySetupHandler: failed to deactivate coordinate field: {ex.Message}");
+			}
+		}
+
 		// ========================================
 		// TAB NAVIGATION (Customize sub-tabs only)
 		// ========================================

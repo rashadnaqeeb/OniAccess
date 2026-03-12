@@ -31,6 +31,16 @@ namespace OniAccess.Handlers.Resources {
 		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
 			base.OnActivate();
+
+			try {
+				var field = HarmonyLib.Traverse.Create(_screen).Field("searchInputField")
+					.GetValue<KInputTextField>();
+				if (field != null)
+					field.DeactivateInputField();
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"ResourceBrowserHandler: failed to deactivate search field: {ex.Message}");
+			}
+
 			string first = GetItemLabel(0, new int[MaxLevel + 1]);
 			if (first != null)
 				SpeechPipeline.SpeakQueued(first);

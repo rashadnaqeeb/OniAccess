@@ -50,6 +50,16 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 		public override void OnActivate() {
 			base.OnActivate();
+
+			try {
+				var field = HarmonyLib.Traverse.Create(_screen).Field("searchInputField")
+					.GetValue<KInputTextField>();
+				if (field != null)
+					field.DeactivateInputField();
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"CodexScreenHandler: failed to deactivate search field: {ex.Message}");
+			}
+
 			ActiveTabIndex = (int)TabId.Categories;
 			_categoriesTab.OnTabActivated(announce: false);
 		}
