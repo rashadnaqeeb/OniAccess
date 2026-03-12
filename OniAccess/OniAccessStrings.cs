@@ -59,6 +59,7 @@ namespace STRINGS {
 			public static LocString ITEM_DROP = "Claim blueprints";
 			public static LocString WELCOME_MESSAGE = "Welcome message";
 			public static LocString STORY_MESSAGE = "Story message";
+			public static LocString EVENT_INFO = "Event";
 			public static LocString VIDEO = "Video";
 			public static LocString COLONY_VIEW = "Colony View";
 			public static LocString ENTITY_PICKER = "object selection";

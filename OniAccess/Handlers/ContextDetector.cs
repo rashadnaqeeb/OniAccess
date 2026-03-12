@@ -235,6 +235,9 @@ namespace OniAccess.Handlers {
 			// WattsonMessage (KScreen -- welcome narrative at colony start)
 			Register<WattsonMessage>(screen => new WattsonMessageHandler(screen));
 
+			// EventInfoScreen (KModalScreen -- story trait popups and gameplay events)
+			Register<EventInfoScreen>(screen => new EventInfoHandler(screen));
+
 			// StoryMessageScreen (KScreen -- victory sequence story popup)
 			Register<StoryMessageScreen>(screen => new StoryMessageHandler(screen));
 

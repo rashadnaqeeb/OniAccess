@@ -1,5 +1,6 @@
 # Changelog
 
+- Story trait popups (discovery and completion) and gameplay event popups (meteor showers, food fights, etc.) are now spoken with title, description, and action buttons
 - Ctrl+\ follows the current duplicant with the camera, announcing status and chore changes in real time; [ / ] switches the follow target; any cursor movement stops following
 - Dupe navigator ([ / ]) now announces position relative to cursor (e.g. "3 up 2 left") and speaks statuses before the current chore
 - Database: lore categories (emails, journals, research notes, personal logs, investigations, notices) now appear in the categories tab alongside game-data categories
