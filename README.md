@@ -1,6 +1,6 @@
 # OniAccess
 
-An accessibility mod for Oxygen Not Included that makes the game playable for blind users. All game information is delivered through speech output via your screen reader (using the Tolk bridge). The mod is read-only -- it doesn't change game behavior, only adds speech.
+An accessibility mod for Oxygen Not Included that makes the game playable for blind users. All game information is delivered through speech output via your screen reader (using the Tolk library). The mod doesn't change game behavior, only adds speech.
 
 ## System requirements
 
@@ -17,16 +17,11 @@ An accessibility mod for Oxygen Not Included that makes the game playable for bl
 
 Updates are delivered automatically through the Steam Workshop.
 
-## Quick start
-
-- **Ctrl+Shift+F12** toggles the mod on/off
-- **?** (Shift+/) opens context-sensitive help listing every key available on the current screen
-- Arrow keys navigate everything -- tile cursor in gameplay, items in menus
-- Enter activates, Escape closes, Tab cycles sections
+# Features
 
 ## Context help and mod toggle
 
-**?** (Shift+/) opens an interactive help list tailored to whatever screen you're on. The list changes depending on context -- the help you see in the colony view is different from the help inside a details screen or the build menu. The list is navigable and supports type-ahead search, so you can type part of a key name to jump to it.
+**?** (Shift+/) opens an interactive help list tailored to whatever screen you're on. The list changes depending on context -- the help you see in the colony view is different from the help inside a details screen or while building a building. The list  supports type-ahead search, so you can type part of a key name to jump to it.
 
 **Ctrl+Shift+F12** toggles the entire mod off. All speech stops and every key passes through to the game as if the mod weren't installed. Press it again to re-enable. This is the only key that works while the mod is disabled.
 
@@ -194,11 +189,13 @@ The mod also announces automatically without input: pause/unpause (with speed on
 
 ## Duplicant tracking
 
-**[** and **]** cycle through all living duplicants on the current asteroid. Each announcement includes the dupe's name, current task (with target building), and any critical statuses. The status checks cover: incapacitated, critical health, injured, severe wounds, suffocating, holding breath, nervous breakdown, stressed, scalding, hypothermia, sick, starving, entombed, fleeing, and bionic battery states.
+**[** and **]** cycle through all living duplicants on the current asteroid. Each announcement includes the dupe's name, critical statuses, position relative to the cursor (e.g. "3 up 2 left"), and current task with target building. Dupes who can't pathfind to other dupes, the telepad, or their bed are announced as "trapped." The status checks cover: incapacitated, critical health, injured, severe wounds, suffocating, holding breath, nervous breakdown, stressed, scalding, overheating, hypothermia, sick, starving, entombed, fleeing, and bionic battery states.
 
 **Backslash** is a two-stage key. First press jumps the cursor to the current dupe's location. Second press (when already on their tile) selects them and opens their details screen.
 
 **Shift+Backslash** checks if the current dupe can reach the cursor tile, reporting path cost if reachable or the nearest reachable tile toward the dupe if not.
+
+**Ctrl+Backslash** follows the current dupe with the camera, announcing status and chore changes in real time. **[** and **]** switch the follow target. Any cursor movement stops following.
 
 ## Details screen
 
@@ -315,7 +312,7 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 
 ## Management screen hotkeys
 
-These are base game hotkeys that open management screens from the colony view. They are not mod keys, but the game does not allow remapping them.
+These are base game hotkeys that open management screens from the colony view. They are not mod keys, so the game allows remapping them.
 
 - **L** -- Priorities
 - **F** -- Consumables
@@ -369,7 +366,6 @@ The cluster map has its own scanner with the same keys as the tile scanner (End,
 
 - **Player log location**: `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`
 - **Mod log lines** are prefixed with `[OniAccess]`
-- If a screen isn't being read, check that your screen reader is running and try ? (Shift+/) to see if the mod recognizes the current context.
 
 ## Credits
 
