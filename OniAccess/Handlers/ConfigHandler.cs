@@ -115,6 +115,12 @@ namespace OniAccess.Handlers {
 				}
 			));
 
+			items.Add(new BoolConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM,
+				() => ConfigManager.Config.LockZoom,
+				value => ConfigManager.Config.LockZoom = value
+			));
+
 			return items;
 		}
 	}

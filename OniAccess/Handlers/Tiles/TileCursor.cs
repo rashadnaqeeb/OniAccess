@@ -319,7 +319,10 @@ namespace OniAccess.Handlers.Tiles {
 				return;
 			}
 			Vector3 worldPos = Grid.CellToPosCCC(cell, Grid.SceneLayer.Move);
-			CameraController.Instance.SnapTo(worldPos, 10f);
+			if (ConfigManager.Config.LockZoom)
+				CameraController.Instance.SnapTo(worldPos, 10f);
+			else
+				CameraController.Instance.SnapTo(worldPos);
 		}
 
 		private string AttachCoordinates(string content) {

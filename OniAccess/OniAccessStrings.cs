@@ -76,6 +76,7 @@ namespace STRINGS {
 		public class CONFIG {
 			public static LocString COORDINATE_MODE = "Tile cursor coordinate mode";
 			public static LocString AUTO_MOVE_CURSOR = "Auto-move cursor when cycling scanner entries";
+			public static LocString LOCK_ZOOM = "Lock zoom level when moving tile cursor";
 		}
 
 		// Supply closet (Klei rewards) screen messages
