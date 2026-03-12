@@ -5,11 +5,17 @@ An accessibility mod for Oxygen Not Included that makes the game playable for bl
 ## System requirements
 
 - Windows
+- Oxygen Not Included on Steam
 - A screen reader such as NVDA or JAWS. If none is running, the mod falls back to SAPI (the Windows built-in speech engine).
 
 ## Install
 
-The build script handles this automatically for development. Full install instructions will be added when the install process is finalized.
+1. Subscribe to the mod on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3683507975).
+2. Launch the game once, then close it. This lets the game discover the mod.
+3. Download and run the [enable script](https://github.com/rashadnaqeeb/OniAccess/raw/main/enable-mod.cmd). It enables the mod in the game's config so you don't have to navigate the mod manager. If the mod ever crashes and the game disables it, run this script again to re-enable it.
+4. Launch the game. The mod will announce when it's ready.
+
+Updates are delivered automatically through the Steam Workshop.
 
 ## Quick start
 
