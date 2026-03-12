@@ -1,6 +1,6 @@
 # OniAccess Reference
 
-Full feature reference for OniAccess. For install instructions and getting started, see [getting-started.md](getting-started.md).
+OniAccess is an accessibility mod that makes Oxygen Not Included playable for blind users through screen reader speech output. This is the full feature reference. For install instructions and getting started, see [getting-started.md](getting-started.md).
 
 ## Context help and mod toggle
 
@@ -109,7 +109,7 @@ Switching overlays while a tool is active automatically changes the tool's filte
 
 ### Sandbox
 
-Sandbox mode must be enabled in the game settings when starting a new colony. Once enabled, **Shift+S** toggles it on and off. Sandbox tools are listed under the Sandbox Tools category in the build menu (Tab). Rectangle-mode tools (Brush, Sprinkle, Heat, Stress, Clear Floor, Destroyer, Fog of War, Critter) use the same two-press corner selection as regular tools. Single-cell tools (Flood, Spawner, Story Trait) apply at the cursor with Space or Enter.
+Sandbox mode must be enabled in the game settings when starting a new colony. Once enabled, **Shift+S** toggles it on and off. Sandbox tools are listed under the Sandbox Tools category in the action menu (Tab). Rectangle-mode tools (Brush, Sprinkle, Heat, Stress, Clear Floor, Destroyer, Fog of War, Critter) use the same two-press corner selection as regular tools. Single-cell tools (Flood, Spawner, Story Trait) apply at the cursor with Space or Enter.
 
 - **Space** -- set corners (rectangle tools) or apply (single-cell tools)
 - **Enter** -- confirm and exit the tool
@@ -121,7 +121,7 @@ Big cursor works with sandbox tools the same way it does with regular tools: Spa
 
 ## Building
 
-**Tab** from the colony view opens the build menu. It has three levels: categories (Tools, Housing, Food, Power, etc.), subcategories, and individual buildings.
+**Tab** from the colony view opens the action menu. It has three levels: categories (Tools, Housing, Food, Power, etc.), subcategories, and individual buildings.
 
 At the building level, navigation wraps across subcategories and categories -- you can scroll continuously through every building without backing out. **Ctrl+Up/Down** jumps between subcategory boundaries. Type-ahead search works across all buildings and tools regardless of category. All nested menus in the mod work like this.
 
@@ -176,8 +176,13 @@ New notifications are batched over a short window and collapsed by title (e.g., 
 
 ## Spatial tools
 
+### Ruler
+
 - **Ctrl+B** -- place an alignment ruler at the cursor. The ruler provides audio feedback in three zones as you move: a click at the exact crosshair (same row and column), a higher-pitched tone on the same row or column, and a lower-pitched tone one tile away from the line. Skip movement stops at ruler lines
 - **Ctrl+Shift+B** -- clear the ruler
+
+### Bookmarks and jump home
+
 - **Ctrl+1-0** -- save the current position as a bookmark (uses the game's native bookmark system)
 - **Shift+1-0** -- jump to a saved bookmark
 - **Alt+1-0** -- report direction and distance to a bookmark without moving
@@ -254,7 +259,7 @@ Techs grouped into three buckets: Available, Locked, and Completed. Each tech an
 
 ### Queue tab
 
-Shows banked research points at the top, then queued techs in order. Enter cancels all techs. The queue is really not a queue in the traditional sense. it exists to allow you to queue a research while missing the prerequisites, but doesn't allow you to queue multiple things in any other context. cancel one thing and it cancels everything.
+Shows banked research points at the top, then queued techs in order. The queue allows queuing a tech whose prerequisites aren't met. Cancelling any queued tech cancels all queued techs.
 
 ### Tree tab
 
@@ -310,7 +315,7 @@ These are base game hotkeys that open management screens from the colony view. T
 
 ### Tool hotkeys
 
-The game assigns letter keys to activate tools directly from the colony view. Since the mod activates tools through its own build menu, these hotkeys are extra but still work. **I** and **K** are overwritten by the mod (tooltip and coordinates). All of these can be remapped from the game's Input Bindings options menu -- the number row is a good alternative if you want them back.
+The game assigns letter keys to activate tools directly from the colony view. Since the mod activates tools through its own action menu, these hotkeys are extra but still work. **I** and **K** are overwritten by the mod (tooltip and coordinates). All of these can be remapped from the game's Input Bindings options menu -- the number row is a good alternative if you want them back.
 
 - **G** -- Dig
 - **C** -- Cancel construction
@@ -347,3 +352,10 @@ These are base game hotkeys that toggle information overlays. Each overlay chang
 ## Troubleshooting
 
 If something isn't working, the player log usually has the answer. It's at `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`. When reporting a bug, please include this file.
+
+## Credits
+
+- **aaronr7734** — His work on Rimworld Access directly inspired many of the mod's complex UI adaptations, including the schedule screen, type-ahead search, and scanner search.
+- **Alexandr Epaneshnikov (alex19EP)** — Started the OniAccess project and provided much of the initial research.
+- **Austin Hicks (ahicks)** — His general advice and work on Factorio Access inspired much of the mod's infrastructure. Many of the mod's core systems are lifted directly from Factorio Access.
+- **Brad Renshaw (chaosbringer216)** — Helped me keep my code organized, teaching me OOP along the way. His Slay the Spire mod inspired the graph/node tree approach.

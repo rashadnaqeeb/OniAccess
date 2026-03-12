@@ -29,11 +29,11 @@ The world is a 2D side-view grid. This means that you move up, down, right, and 
 
 ### Navigation
 
-Arrow keys move the tile cursor one tile at a time. Each tile announces what's there: buildings, element and mass, entities, orders, debris. Enter opens a menu with all items present on a tile. enter again on any of them opens a details screen for that item. this screen is very information dense, and is split into three sections. navigate between sections with ctrl tab, and within sections with tab.
+Arrow keys move the tile cursor one tile at a time. Each tile announces what's there: buildings, element and mass, entities, orders, debris. Enter opens a menu with all items present on a tile. Enter again on any of them opens a details screen for that item. This screen is very information dense, and is split into three sections. Navigate between sections with Ctrl+Tab, and within sections with Tab.
 
 ### Building
 
-Tab opens the action menu. Browse categories of buildings with Up/Down, select a building, then use the tile curser to decide where it should go. when ready to place, hit space. R rotates the building. enter places and immediately exits, saving a keypress if you're only placing a single building.
+Tab opens the action menu. Browse categories of buildings with Up/Down, select a building, then use the tile cursor to decide where it should go. When ready to place, hit Space. R rotates the building. Enter places and immediately exits, saving a keypress if you're only placing a single building.
 
 ### Tools
 
@@ -45,7 +45,7 @@ The game has overlays -- filtered views that focus on one system. F2 shows power
 
 ### Colony status
 
-While on the map, S reads a summary of your colony: how many dupes you have, food supply, stress levels. Q reads the current cycle (day) number. D reads diagnostic alerts if anything is going wrong. the diagnostics can be customised with shift D, where you can decide what's worth your attention.
+While on the map, S reads a summary of your colony: how many dupes you have, food supply, stress levels. Q reads the current cycle (day) number. D reads diagnostic alerts if anything is going wrong. The diagnostics can be customised with Shift+D, where you can decide what's worth your attention.
 
 ### Scanner
 
@@ -57,10 +57,10 @@ End scans your entire asteroid and catalogs everything: elements, buildings, cre
 
 ### Notifications
 
-The mod announces new alerts automatically. Shift+N opens the notification menu where you can review and act on them. this doesn't include diagnosis alerts, which are things like you're running out of food etc. for those, see d and shift d.
+The mod announces new alerts automatically. Shift+N opens the notification menu where you can review and act on them. This doesn't include diagnostic alerts, which are things like you're running out of food etc. For those, see D and Shift+D.
 
 ### The ? key
 
 Every screen has different controls. The action menu, details screens, research screen, schedule screen -- they all have their own keys. Rather than memorizing everything up front, press ? whenever you're on a new screen. It will list every key that works in that context.
 
-The game also has its own hotkeys for opening management screens (Research, Priorities, Schedule, etc.). These are listed in the [README](README.md) along with the full feature reference. For acknowledgements, see [credits](credits.md).
+The game has dedicated screens for managing things like research, duplicant priorities, schedules, and skills. Each has a single-key hotkey from the colony view (e.g. R for Research, L for Priorities). These hotkeys and the full feature reference are in the [README](README.md).
