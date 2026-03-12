@@ -1,5 +1,7 @@
 # Changelog
 
+- Fix: wire bridge and joint plate connection points now announce "connection port" in the power overlay, so players can find where to attach wires
+- Fix: wire shapes next to joint plates now correctly include the joint plate connection direction
 - Fix: build tool now allows placing replacement tiles (e.g. sandstone ladder over wood ladder) instead of rejecting as obstructed
 - Build tool: port layout hotkey changed from P to Shift+P, freeing bare P for the game's Prioritize tool
 - Story trait popups (discovery and completion) and gameplay event popups (meteor showers, food fights, etc.) are now spoken with title, description, and action buttons

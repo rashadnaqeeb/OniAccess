@@ -127,7 +127,12 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				return;
 
 			var portGo = Grid.Objects[cell, (int)portLayer];
-			if (portGo == null) return;
+			if (portGo == null) {
+				if (activeMode == OverlayModes.Power.ID)
+					ScanNearbyForWireLinks(cell, buildingGo, foundationGo,
+						ctx, tokens);
+				return;
+			}
 
 			// Already processed through building or foundation layers
 			if (portGo == buildingGo || portGo == foundationGo) return;
@@ -143,6 +148,60 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				var selectable = portGo.GetComponent<KSelectable>();
 				if (selectable != null)
 					tokens.Add(GetBuildingName(portGo, selectable));
+			}
+		}
+
+		/// <summary>
+		/// High-watt joint plates (1x1, HighWattBridgeTile) have link cells
+		/// outside their footprint that aren't registered on any object layer.
+		/// Scan adjacent cells on Building and FoundationTile for buildings
+		/// with WireUtilityNetworkLink whose link cells match the cursor.
+		/// </summary>
+		private static void ScanNearbyForWireLinks(
+				int cell, GameObject buildingGo, GameObject foundationGo,
+				CellContext ctx, List<string> tokens) {
+			int cx = Grid.CellColumn(cell);
+			int cy = Grid.CellRow(cell);
+			var seen = new HashSet<GameObject>();
+			if (buildingGo != null) seen.Add(buildingGo);
+			if (foundationGo != null) seen.Add(foundationGo);
+
+			for (int dy = -1; dy <= 1; dy++) {
+				for (int dx = -1; dx <= 1; dx++) {
+					if (dx == 0 && dy == 0) continue;
+					int nc = Grid.XYToCell(cx + dx, cy + dy);
+					if (!Grid.IsValidCell(nc)) continue;
+
+					CheckWireLinkNeighbor(nc, (int)ObjectLayer.Building,
+						seen, cell, ctx, tokens);
+					CheckWireLinkNeighbor(nc, (int)ObjectLayer.FoundationTile,
+						seen, cell, ctx, tokens);
+				}
+			}
+		}
+
+		private static void CheckWireLinkNeighbor(
+				int nearbyCell, int layer, HashSet<GameObject> seen,
+				int targetCell, CellContext ctx, List<string> tokens) {
+			var go = Grid.Objects[nearbyCell, layer];
+			if (go == null || !seen.Add(go)) return;
+
+			var building = go.GetComponent<Building>();
+			if (building == null) return;
+
+			var wireLink = go.GetComponent<WireUtilityNetworkLink>();
+			if (wireLink == null) return;
+
+			int origin = Grid.PosToCell(building.transform.GetPosition());
+			wireLink.GetCells(origin, building.Orientation,
+				out int linkCell1, out int linkCell2);
+			if (targetCell != linkCell1 && targetCell != linkCell2) return;
+
+			tokens.Add((string)STRINGS.ONIACCESS.GLANCE.CONNECTION);
+			if (!ctx.Claimed.Contains(go)) {
+				var selectable = go.GetComponent<KSelectable>();
+				if (selectable != null)
+					tokens.Add(GetBuildingName(go, selectable));
 			}
 		}
 
@@ -373,6 +432,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 						def.PowerOutputOffset, orientation);
 					if (Grid.OffsetCell(origin, rotated) == cell)
 						tokens.Add((string)STRINGS.ONIACCESS.GLANCE.POWER_OUTPUT);
+				}
+				var wireLink = go.GetComponent<WireUtilityNetworkLink>();
+				if (wireLink != null) {
+					wireLink.GetCells(origin, orientation,
+						out int linkCell1, out int linkCell2);
+					if (cell == linkCell1 || cell == linkCell2)
+						tokens.Add((string)STRINGS.ONIACCESS.GLANCE.CONNECTION);
 				}
 			}
 

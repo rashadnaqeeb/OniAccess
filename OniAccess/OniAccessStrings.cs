@@ -624,6 +624,9 @@ namespace STRINGS {
 			public static LocString LURE = "{0} lure";
 			// Bridge middle cell (between the two endpoints): {0} = building name
 			public static LocString BRIDGE_MIDDLE = "{0} middle";
+			// Wire bridge endpoint where wires attach. Spoken before the building
+			// name, e.g. "connection port, Heavy-Watt Joint Plate".
+			public static LocString CONNECTION = "connection port";
 
 			// Decor overlay value. {0} = sign prefix ("+" or ""), {1} = decor value (int)
 			public static LocString OVERLAY_DECOR = "{0}{1} decor";

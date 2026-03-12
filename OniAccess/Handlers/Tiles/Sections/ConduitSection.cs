@@ -33,6 +33,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (sel != null)
 					tokens.Add(sel.GetName());
 			}
+			bridgeConnections |= FindJointPlateConnections(cell);
 			if (tokens.Count > 0)
 				tokens.Add(FormatConnections(
 					_getManager().GetConnections(cell, true)
@@ -51,6 +52,61 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (dx < 0) return UtilityConnections.Left;
 			if (dy > 0) return UtilityConnections.Up;
 			return UtilityConnections.Down;
+		}
+
+		/// <summary>
+		/// Joint plates (HighWattBridgeTile) have link cells outside their
+		/// 1x1 footprint that aren't on any conduit layer. Scan adjacent
+		/// cells on Building/FoundationTile for WireUtilityNetworkLink
+		/// components whose link cells match the cursor, and return the
+		/// bridge direction so it's included in the wire shape.
+		/// </summary>
+		private static UtilityConnections FindJointPlateConnections(int cell) {
+			if (OverlayScreen.Instance == null
+				|| OverlayScreen.Instance.GetMode() != OverlayModes.Power.ID)
+				return (UtilityConnections)0;
+
+			var result = (UtilityConnections)0;
+			int cx = Grid.CellColumn(cell);
+			int cy = Grid.CellRow(cell);
+			var seen = new HashSet<UnityEngine.GameObject>();
+
+			for (int dy = -1; dy <= 1; dy++) {
+				for (int dx = -1; dx <= 1; dx++) {
+					if (dx == 0 && dy == 0) continue;
+					int nc = Grid.XYToCell(cx + dx, cy + dy);
+					if (!Grid.IsValidCell(nc)) continue;
+
+					result |= CheckJointPlateAt(nc, (int)ObjectLayer.Building,
+						seen, cell);
+					result |= CheckJointPlateAt(nc, (int)ObjectLayer.FoundationTile,
+						seen, cell);
+				}
+			}
+			return result;
+		}
+
+		private static UtilityConnections CheckJointPlateAt(
+				int nearbyCell, int layer,
+				HashSet<UnityEngine.GameObject> seen, int targetCell) {
+			var go = Grid.Objects[nearbyCell, layer];
+			if (go == null || !seen.Add(go)) return (UtilityConnections)0;
+
+			var building = go.GetComponent<Building>();
+			if (building == null) return (UtilityConnections)0;
+			if (building.Def.BuildLocationRule != BuildLocationRule.HighWattBridgeTile)
+				return (UtilityConnections)0;
+
+			var wireLink = go.GetComponent<WireUtilityNetworkLink>();
+			if (wireLink == null) return (UtilityConnections)0;
+
+			int origin = Grid.PosToCell(building.transform.GetPosition());
+			wireLink.GetCells(origin, building.Orientation,
+				out int linkCell1, out int linkCell2);
+			if (targetCell != linkCell1 && targetCell != linkCell2)
+				return (UtilityConnections)0;
+
+			return GetBridgeDirection(go, targetCell);
 		}
 
 		/// <summary>
@@ -103,7 +159,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var rule = building.Def.BuildLocationRule;
 			return rule == BuildLocationRule.Conduit
 				|| rule == BuildLocationRule.WireBridge
-				|| rule == BuildLocationRule.LogicBridge;
+				|| rule == BuildLocationRule.LogicBridge
+				|| rule == BuildLocationRule.HighWattBridgeTile;
 		}
 
 		/// <summary>
