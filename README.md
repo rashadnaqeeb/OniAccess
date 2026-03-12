@@ -1,27 +1,10 @@
-# OniAccess
+# OniAccess Reference
 
-An accessibility mod for Oxygen Not Included that makes the game playable for blind users. All game information is delivered through speech output via your screen reader (using the Tolk library). The mod doesn't change game behavior, only adds speech.
-
-## System requirements
-
-- Windows
-- Oxygen Not Included on Steam
-- A screen reader such as NVDA or JAWS. If none is running, the mod falls back to SAPI (the Windows built-in speech engine).
-
-## Install
-
-1. Subscribe to the mod on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3683507975).
-2. Launch the game once, then close it. This lets the game discover the mod.
-3. Download and run the [enable script](https://github.com/rashadnaqeeb/OniAccess/raw/main/enable-mod.cmd). It enables the mod in the game's config so you don't have to navigate the mod manager. If the mod ever crashes and the game disables it, run this script again to re-enable it.
-4. Launch the game. The mod will announce when it's ready.
-
-Updates are delivered automatically through the Steam Workshop.
-
-# Features
+Full feature reference for OniAccess. For install instructions and getting started, see [getting-started.md](getting-started.md).
 
 ## Context help and mod toggle
 
-**?** (Shift+/) opens an interactive help list tailored to whatever screen you're on. The list changes depending on context -- the help you see in the colony view is different from the help inside a details screen or while building a building. The list  supports type-ahead search, so you can type part of a key name to jump to it.
+**?** (Shift+/) opens an interactive help list tailored to whatever screen you're on. The list changes depending on context -- the help you see in the colony view is different from the help inside a details screen or while building a building. The list supports type-ahead search, so you can type part of a key name to jump to it.
 
 **Ctrl+Shift+F12** toggles the entire mod off. All speech stops and every key passes through to the game as if the mod weren't installed. Press it again to re-enable. This is the only key that works while the mod is disabled.
 
@@ -29,7 +12,7 @@ Updates are delivered automatically through the Steam Workshop.
 
 The tile cursor is your primary way of exploring the map. Arrow keys move one tile at a time. Each tile announces any building, its element (with mass), entities, active orders, and debris -- in that order. Gases are suppressed when a building or foundation covers the cell.
 
-Most overlays prepend one extra reading before the standard information. Temperature adds the temperature (with a warning near phase transitions), Light adds lux, Radiation adds rads, Decor adds the value with sign, and Disease adds germ counts by type or "clean." The utility overlays (Power, Plumbing, Ventilation, Conveyor) add network/conduit data, and Automation adds signal state. Rooms prepends the room name, announced once per room rather than every tile.
+Most overlays prepend one extra reading before the standard tile information. Temperature adds the temperature (with a warning near phase transitions), Light adds lux, Radiation adds rads, Decor adds the value with sign, and Disease adds germ counts by type or "clean." The utility overlays (Power, Plumbing, Ventilation, Conveyor) add network/conduit data, and Automation adds signal state. Rooms prepends the room name, announced once per room rather than every tile.
 
 ### Skip
 
@@ -80,16 +63,15 @@ If a tile has multiple selectable objects, **Enter** opens a picker listing them
 
 The scanner catalogs everything on the current asteroid into a four-level hierarchy: category, subcategory, item, instance.
 
-**End** performs a full scan. This scan is not live-updated, except to prune no-longer-valid data. It must be manually refreshed with End. This is because in the late game, the scan can take several hundred milliseconds, and so refreshing it on every key press would be annoying. Results are organized into categories (Solids, Liquids, Gases, Buildings, Networks, Automation, Debris, Zones, Life), each with subcategories and an "all" subcategory containing everything in that category. Navigate with:
-
+- **End** -- perform a full scan. Results are organized into categories (Solids, Liquids, Gases, Buildings, Networks, Automation, Debris, Zones, Life), each with subcategories and an "all" subcategory. Each item announces its name, distance from you, and list position, sorted by distance from the cursor. Destroyed entities are silently pruned.
 - **Ctrl+PageUp/Down** -- cycle categories
 - **Shift+PageUp/Down** -- cycle subcategories
 - **PageUp/Down** -- cycle items
 - **Alt+PageUp/Down** -- cycle instances of the current item
-
-Each item announces its name, distance from you (vertical then horizontal), and position within the list. Items are sorted by distance from your cursor. If an entity has been destroyed since the last scan, it's silently removed and the next result is shown.
-
-**Home** teleports the cursor to the current instance. **Backspace** returns to where you were before the teleport (one position is saved; teleporting again overwrites it). **Shift+Home** announces the distance from the cursor to the current item. **Shift+End** toggles auto-move: when enabled, the cursor teleports automatically as you cycle. When auto-move is on, distances are measured from where you were when you scanned rather than the cursor's current position.
+- **Home** -- teleport the cursor to the current instance
+- **Backspace** -- return to your position before the last teleport (one position saved)
+- **Shift+Home** -- announce distance from the cursor to the current item
+- **Shift+End** -- toggle auto-move. When on, the cursor teleports automatically as you cycle, and distances are measured from where you scanned rather than the cursor's current position
 
 ### Clustering
 
@@ -109,11 +91,11 @@ Selecting a tool (Dig, Deconstruct, Mop, etc.) enters tool mode. The cursor stil
 
 ### Rectangle selection
 
-**Space** sets the first corner. Move to the opposite corner and press **Space** again to complete the rectangle. A drag sound plays whose pitch reflects the selection size. The confirmation announces dimensions and valid cell count. You can place multiple rectangles before confirming.
+- **Space** -- set the first corner. Move to the opposite corner and press Space again to complete the rectangle. A drag sound plays whose pitch reflects the selection size. You can place multiple rectangles before confirming
+- **Enter** -- confirm all pending rectangles. If no rectangle is set, Enter confirms a single cell under the cursor
+- **Shift+Space** -- clear the rectangle under the cursor
 
-**Enter** confirms all pending rectangles. If no rectangle is set, Enter confirms a single cell under the cursor. **Shift+Space** clears the rectangle under the cursor.
-
-With a big cursor active, **Space** sets both corners at once, creating a rectangle the size of the cursor area. You can move and press Space again to add more rectangles. **Enter** also applies the full cursor rectangle but confirms immediately, closing the tool. The disconnect tool always uses single-cell selection regardless of cursor size.
+With a big cursor active, Space sets both corners at once, creating a rectangle the size of the cursor area. Enter also applies the full cursor rectangle but confirms immediately, closing the tool. The disconnect tool always uses single-cell selection regardless of cursor size.
 
 ### Priority
 
@@ -125,21 +107,17 @@ With a big cursor active, **Space** sets both corners at once, creating a rectan
 
 Switching overlays while a tool is active automatically changes the tool's filter to match. For example, switching to the plumbing overlay while deconstructing changes the filter to target pipes.
 
-### Base game tool hotkeys
+### Sandbox
 
-The game assigns letter keys to activate tools directly from the colony view. Since the mod activates tools through its own build menu, these hotkeys are extra but still work. **I** and **K** are overwritten by the mod (tooltip and coordinates). All of these can be remapped from the game's Input Bindings options menu -- the number row is a good alternative if you want them back.
+Sandbox mode must be enabled in the game settings when starting a new colony. Once enabled, **Shift+S** toggles it on and off. Sandbox tools are listed under the Sandbox Tools category in the build menu (Tab). Rectangle-mode tools (Brush, Sprinkle, Heat, Stress, Clear Floor, Destroyer, Fog of War, Critter) use the same two-press corner selection as regular tools. Single-cell tools (Flood, Spawner, Story Trait) apply at the cursor with Space or Enter.
 
-- **G** -- Dig
-- **C** -- Cancel construction
-- **X** -- Deconstruct
-- **P** -- Prioritize
-- **M** -- Mop
-- **K** -- Sweep (overwritten by mod -- coordinates)
-- **I** -- Disinfect (overwritten by mod -- tooltip)
-- **T** -- Attack
-- **N** -- Capture / Wrangle
-- **Y** -- Harvest
-- **B** -- Copy building
+- **Space** -- set corners (rectangle tools) or apply (single-cell tools)
+- **Enter** -- confirm and exit the tool
+- **F** -- open the parameter menu (element, entity, mass, temperature, etc.). Sliders adjust with Left/Right, selectors open a nested picker with Enter
+- **Ctrl+Space** -- sample the tile under the cursor into the parameter menu
+- **Shift+Space** -- clear the rectangle under the cursor
+
+Big cursor works with sandbox tools the same way it does with regular tools: Space sets both corners at once.
 
 ## Building
 
@@ -167,35 +145,43 @@ Utility buildings (pipes and wires) use line placement: Space sets the start, th
 
 These readouts are available from the colony view:
 
-**Q** -- cycle number, current schedule block, and alert state (red/yellow alert if active).
-
-**Shift+Q** -- total hours played.
-
-**S** -- colony summary: duplicant count (local and cluster-wide if Spaced Out), sick count (if any), rations with trend, max stress with trend, and electrobank energy with trend (only if bionic duplicants are present). Trends are "rising" or "falling" based on 10-minute history, with per-resource thresholds to filter out noise.
-
-**Shift+P** -- all pinned resource amounts.
-
-**Backtick (`)** -- cycle game speed (1x, 2x, 3x).
-
-**D** -- diagnostic alerts sorted by severity (worst first). Only diagnostics pinned to the sidebar are included. Each announces name, status, and current value.
-
-**Shift+D** -- open the diagnostics browser (see below).
-
-**Ctrl+R** -- toggle red alert.
-
-**W** -- open the world selector (Spaced Out DLC). Lists all discovered asteroids with type-ahead search. Switching worlds moves the cursor to the new asteroid.
+- **Q** -- cycle number, current schedule block, and alert state (red/yellow alert if active)
+- **Shift+Q** -- total hours played
+- **S** -- colony summary: duplicant count (local and cluster-wide if Spaced Out), sick count (if any), rations with trend, max stress with trend, and electrobank energy with trend (only if bionic duplicants are present). Trends are "rising" or "falling" based on 10-minute history
+- **Shift+P** -- all pinned resource amounts
+- **Backtick (`)** -- cycle game speed (1x, 2x, 3x)
+- **D** -- diagnostic alerts sorted by severity (worst first). Only diagnostics pinned to the sidebar are included. Each announces name, status, and current value
+- **Shift+D** -- open the diagnostics browser (see below)
+- **Ctrl+R** -- toggle red alert
+- **W** -- open the world selector (Spaced Out DLC). Lists all discovered asteroids with type-ahead search. Switching worlds moves the cursor to the new asteroid
 
 The mod also announces automatically without input: pause/unpause (with speed on unpause), speed changes, new cycles, and red/yellow alert transitions. During initial game load, notifications are suppressed until you first unpause.
 
 ## Duplicant tracking
 
-**[** and **]** cycle through all living duplicants on the current asteroid. Each announcement includes the dupe's name, critical statuses, position relative to the cursor (e.g. "3 up 2 left"), and current task with target building. Dupes who can't pathfind to other dupes, the telepad, or their bed are announced as "trapped." The status checks cover: incapacitated, critical health, injured, severe wounds, suffocating, holding breath, nervous breakdown, stressed, scalding, overheating, hypothermia, sick, starving, entombed, fleeing, and bionic battery states.
+- **[** and **]** -- cycle through all living duplicants on the current asteroid. Each announcement includes the dupe's name, critical statuses, position relative to the cursor (e.g. "3 up 2 left"), and current task with target building. Dupes who can't pathfind to other dupes, the telepad, or their bed are announced as "trapped"
+- **Backslash** -- jump the cursor to the current dupe's location. Press again when already on their tile to select them and open their details screen
+- **Shift+Backslash** -- check if the current dupe can reach the cursor tile, reporting path cost if reachable or the nearest reachable tile if not
+- **Ctrl+Backslash** -- follow the current dupe with the camera, announcing status and chore changes in real time. [ and ] switch the follow target. Any cursor movement stops following
 
-**Backslash** is a two-stage key. First press jumps the cursor to the current dupe's location. Second press (when already on their tile) selects them and opens their details screen.
+The status checks cover: incapacitated, critical health, injured, severe wounds, suffocating, holding breath, nervous breakdown, stressed, scalding, overheating, hypothermia, sick, starving, entombed, fleeing, and bionic battery states.
 
-**Shift+Backslash** checks if the current dupe can reach the cursor tile, reporting path cost if reachable or the nearest reachable tile toward the dupe if not.
+## Notifications
 
-**Ctrl+Backslash** follows the current dupe with the camera, announcing status and chore changes in real time. **[** and **]** switch the follow target. Any cursor movement stops following.
+New notifications are batched over a short window and collapsed by title (e.g., "Stress Alert x3"). During game load, all notifications are held until you first unpause.
+
+- **Shift+N** -- open the notification menu. Groups are listed by title with count
+- **Enter** -- activate a notification (focuses the camera on the source, selects the entity, or opens a message dialog). Groups with multiple members drill into a submenu listing individual notifications with their source name and location
+- **Delete** -- dismiss a group
+
+## Spatial tools
+
+- **Ctrl+B** -- place an alignment ruler at the cursor. The ruler provides audio feedback in three zones as you move: a click at the exact crosshair (same row and column), a higher-pitched tone on the same row or column, and a lower-pitched tone one tile away from the line. Skip movement stops at ruler lines
+- **Ctrl+Shift+B** -- clear the ruler
+- **Ctrl+1-0** -- save the current position as a bookmark (uses the game's native bookmark system)
+- **Shift+1-0** -- jump to a saved bookmark
+- **Alt+1-0** -- report direction and distance to a bookmark without moving
+- **H** -- teleport the cursor to the Printing Pod
 
 ## Details screen
 
@@ -223,28 +209,6 @@ From an entity's details, the move-to command enters a cursor mode. Navigate to 
 ### Recipe queue
 
 When a fabricator has a recipe queue side screen, it shows the recipe info, material slots, and queue. Tab/Shift+Tab cycles recipes. Left/Right adjusts the queue count using the same step sizes as sliders.
-
-## Notifications
-
-New notifications are batched over a short window and collapsed by title (e.g., "Stress Alert x3"). During game load, all notifications are held until you first unpause.
-
-**Shift+N** opens the notification menu. Groups are listed by title with count. **Enter** on a single notification activates it (focuses the camera on the source, selects the entity, or opens a message dialog depending on type). Groups with multiple members drill into a submenu listing individual notifications with their source name and location. **Delete** dismisses a group.
-
-## Spatial tools
-
-### Ruler
-
-**Ctrl+B** places an alignment ruler at the cursor. The ruler provides audio feedback in three zones as you move: a click at the exact crosshair (same row and column), a higher-pitched tone on the same row or column, and a lower-pitched tone one tile away from the line. Skip movement stops at ruler lines.
-
-**Ctrl+Shift+B** clears the ruler.
-
-### Bookmarks
-
-**Ctrl+1-0** saves the current position (uses the game's native bookmark system). **Shift+1-0** jumps to a saved bookmark. **Alt+1-0** reports direction and distance to a bookmark without moving.
-
-### Jump home
-
-**H** teleports the cursor to the Printing Pod.
 
 ## Priority screen
 
@@ -306,11 +270,31 @@ Both browsers use the same nested navigation: Up/Down moves within a level, Ente
 
 **Shift+D** opens the diagnostics browser, listing all colony diagnostics sorted alphabetically. Each diagnostic announces its name, status (normal, warning, bad, etc.), value, and pin state. Enter drills into individual criteria. **Space** at the top level cycles pin state (Always, Never, Alert Only). **Space** on a criterion toggles it on or off. Diagnostic conditions that worsen are also announced automatically without needing the browser open.
 
+## Cluster map (Spaced Out DLC)
+
+**Z** opens the starmap, which is a hex grid of asteroids, rockets, POIs, and other space entities. The cursor starts on the asteroid you opened from.
+
+Six keys map to hex directions matching the keyboard layout: **U** (northwest), **O** (northeast), **J** (west), **L** (east), **N** (southwest), **.** (southeast). Arrow keys also work: Left/Right are always west/east, Up/Down alternate diagonals based on row parity so they zigzag north or south. Each hex announces its entities and fog-of-war state (unexplored, unknown object detected, or entity names).
+
+**K** reads hex distance and compass direction from the starting asteroid. **I** reads detailed entity status items, only available on rockets and showers.
+
+**Enter** selects an entity (or opens a picker if multiple share the hex). **Ctrl+Enter** switches your active world to the asteroid at the cursor. When the map is in destination-selection mode (from a rocket's "Select Destination" side screen), Enter confirms the destination and Escape cancels.
+
+### Pathfinder
+
+**Space** sets a start point. **D** calculates the shortest path from start to cursor and announces the hex count. If a shorter path exists through fog, both distances are reported.
+
+### Scanner
+
+The cluster map has its own scanner with the same keys as the tile scanner (End, PageUp/Down, etc.) but a simpler three-level hierarchy: category (Asteroids, Rockets, POIs, Meteor Showers, Unknown), item, instance. Peeked entities that the game deliberately hides are grouped under "Unknown." Ctrl+F searches across all entities.
+
 ## Type-ahead search
 
 Most menu screens support type-ahead: start typing to filter. Matches are ranked in five tiers from start-of-string exact matches down to substring matches. Typing a single letter repeatedly cycles through items starting with that letter. Backspace edits the query. Escape clears the search.
 
-## Management screen hotkeys
+## Base game hotkeys
+
+### Management screens
 
 These are base game hotkeys that open management screens from the colony view. They are not mod keys, so the game allows remapping them.
 
@@ -324,7 +308,23 @@ These are base game hotkeys that open management screens from the colony view. T
 - **U** -- Database (Codex)
 - **Z** -- Starmap
 
-## Overlay hotkeys
+### Tool hotkeys
+
+The game assigns letter keys to activate tools directly from the colony view. Since the mod activates tools through its own build menu, these hotkeys are extra but still work. **I** and **K** are overwritten by the mod (tooltip and coordinates). All of these can be remapped from the game's Input Bindings options menu -- the number row is a good alternative if you want them back.
+
+- **G** -- Dig
+- **C** -- Cancel construction
+- **X** -- Deconstruct
+- **P** -- Prioritize
+- **M** -- Mop
+- **K** -- Sweep (overwritten by mod -- coordinates)
+- **I** -- Disinfect (overwritten by mod -- tooltip)
+- **T** -- Attack
+- **N** -- Capture / Wrangle
+- **Y** -- Harvest
+- **B** -- Copy building
+
+### Overlay hotkeys
 
 These are base game hotkeys that toggle information overlays. Each overlay changes what the tile cursor and big cursor area scan report. Pressing the same overlay key again returns to the default view. These keys can be remapped from the game's Input Bindings menu.
 
@@ -344,32 +344,6 @@ These are base game hotkeys that toggle information overlays. Each overlay chang
 - **Shift+F3** -- Conveyor (requires Solid Transport research)
 - **Shift+F4** -- Radiation (Spaced Out DLC only)
 
-## Cluster map (Spaced Out DLC)
-
-**Z** opens the starmap, which is a hex grid of asteroids, rockets, POIs, and other space entities. The cursor starts on the asteroid you opened from.
-
-Six keys map to hex directions matching the keyboard layout: **U** (northwest), **O** (northeast), **J** (west), **L** (east), **N** (southwest), **.** (southeast). Arrow keys also work: Left/Right are always west/east, Up/Down alternate diagonals based on row parity so they zigzag north or south. Each hex announces its entities and fog-of-war state (unexplored, unknown object detected, or entity names).
-
-**K** reads hex distance and compass direction from the starting asteroid. **I** reads detailed entity status items, only available on rockets and showers.
-
-**Enter** selects an entity (or opens a picker if multiple share the hex). **Ctrl+Enter** switches your active world to the asteroid at the cursor. When the map is in destination-selection mode (from a rocket's "Select Destination" side screen), Enter confirms the destination and Escape cancels.
-
-### Pathfinder
-
-**Space** sets a start point. **D** calculates the shortest path from start to cursor and announces the hex count. If a shorter path exists through fog, both distances are reported.
-
-### Scanner
-
-The cluster map has its own scanner with the same keys as the tile scanner (End, PageUp/Down, etc.) but a simpler three-level hierarchy: category (Asteroids, Rockets, POIs, Meteor Showers, Unknown), item, instance. Peeked entities that the game deliberately hides are grouped under "Unknown." Ctrl+F searches across all entities.
-
 ## Troubleshooting
 
-- **Player log location**: `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`
-- **Mod log lines** are prefixed with `[OniAccess]`
-
-## Credits
-
-- **aaronr7734** — His work on Rimworld Access directly inspired many of the mod's complex UI adaptations, including the schedule screen, type-ahead search, and scanner search.
-- **Alexandr Epaneshnikov (alex19EP)** — Started the OniAccess project and provided much of the initial research.
-- **Austin Hicks (ahicks)** — His general advice and work on Factorio Access inspired much of the mod's infrastructure. Many of the mod's core systems are lifted directly from Factorio Access.
-- **Brad Renshaw (chaosbringer216)** — Helped me keep my code organized, teaching me OOP along the way. His Slay the Spire mod inspired the graph/node tree approach.
+If something isn't working, the player log usually has the answer. It's at `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`. When reporting a bug, please include this file.
