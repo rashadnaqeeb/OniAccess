@@ -1,7 +1,8 @@
 namespace OniAccess.Handlers.Tiles.Skip {
 	/// <summary>
 	/// Distinguishes cells by what occupies them: each building type,
-	/// each tile type, each liquid element, natural solid, or empty gas.
+	/// each tile type, each liquid element, or natural solid.
+	/// All gases are treated as one zone.
 	/// Used for the default view and all unmapped overlays.
 	/// </summary>
 	public class DefaultSkipStrategy: ISkipStrategy {
@@ -14,7 +15,11 @@ namespace OniAccess.Handlers.Tiles.Skip {
 			if (tile != null)
 				return tile.PrefabID();
 
-			return Grid.Element[cell].tag;
+			var element = Grid.Element[cell];
+			if (element.IsGas)
+				return new Tag("gas");
+
+			return element.tag;
 		}
 	}
 }
