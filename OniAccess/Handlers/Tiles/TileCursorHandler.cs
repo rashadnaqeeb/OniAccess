@@ -38,6 +38,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Tab),
 			new ConsumedKey(KKeyCode.BackQuote),
 			new ConsumedKey(KKeyCode.F, Modifier.Ctrl),
+			// A overwrites PanLeft (camera pan — mod cursor replaces camera navigation)
 			new ConsumedKey(KKeyCode.A),
 			new ConsumedKey(KKeyCode.I),
 			new ConsumedKey(KKeyCode.I, Modifier.Shift),

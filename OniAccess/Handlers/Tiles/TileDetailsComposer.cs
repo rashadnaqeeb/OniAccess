@@ -9,34 +9,37 @@ namespace OniAccess.Handlers.Tiles {
 	/// </summary>
 	public class TileDetailsComposer {
 		private readonly BiomeNameResolver _biomeResolver;
-		private readonly CellContext _ctx = new CellContext();
 
 		public TileDetailsComposer(BiomeNameResolver biomeResolver) {
 			_biomeResolver = biomeResolver;
 		}
 
 		public string Compose(int cell) {
+			var ctx = new CellContext();
 			var tokens = new List<string>();
 
-			AddSection(tokens, GlanceComposer.Temperature, cell);
+			AddSection(tokens, GlanceComposer.Temperature, cell, ctx);
 			AddRoom(tokens, cell);
-			AddDisease(tokens, cell);
+			AddSection(tokens, GlanceComposer.Disease, cell, ctx,
+				skip: (string)STRINGS.ONIACCESS.GLANCE.DISEASE_CLEAR);
 
 			if (Grid.Radiation[cell] > 0f)
-				AddSection(tokens, GlanceComposer.Radiation, cell);
+				AddSection(tokens, GlanceComposer.Radiation, cell, ctx);
 
-			AddSection(tokens, GlanceComposer.Light, cell);
-			AddSection(tokens, GlanceComposer.Decor, cell);
+			if (Grid.LightIntensity[cell] > 0)
+				AddSection(tokens, GlanceComposer.Light, cell, ctx);
+			AddSection(tokens, GlanceComposer.Decor, cell, ctx);
 			AddBiome(tokens, cell);
 
 			if (tokens.Count == 0) return null;
 			return string.Join(", ", tokens);
 		}
 
-		private void AddSection(List<string> tokens, ICellSection section, int cell) {
+		private static void AddSection(List<string> tokens, ICellSection section,
+				int cell, CellContext ctx, string skip = null) {
 			try {
-				foreach (var token in section.Read(cell, _ctx)) {
-					if (!string.IsNullOrEmpty(token))
+				foreach (var token in section.Read(cell, ctx)) {
+					if (!string.IsNullOrEmpty(token) && token != skip)
 						tokens.Add(token);
 				}
 			} catch (System.Exception ex) {
@@ -46,21 +49,13 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private static void AddRoom(List<string> tokens, int cell) {
-			var cavity = Game.Instance.roomProber.GetCavityForCell(cell);
-			if (cavity?.room == null) return;
-			if (cavity.room.roomType == Db.Get().RoomTypes.Neutral) return;
-			tokens.Add(cavity.room.roomType.Name);
-		}
-
-		private void AddDisease(List<string> tokens, int cell) {
 			try {
-				foreach (var token in GlanceComposer.Disease.Read(cell, _ctx)) {
-					if (!string.IsNullOrEmpty(token)
-						&& token != (string)STRINGS.ONIACCESS.GLANCE.DISEASE_CLEAR)
-						tokens.Add(token);
-				}
+				var cavity = Game.Instance.roomProber.GetCavityForCell(cell);
+				if (cavity?.room == null) return;
+				if (cavity.room.roomType == Db.Get().RoomTypes.Neutral) return;
+				tokens.Add(cavity.room.roomType.Name);
 			} catch (System.Exception ex) {
-				Util.Log.Error($"TileDetailsComposer: DiseaseSection threw: {ex}");
+				Util.Log.Error($"TileDetailsComposer: AddRoom threw: {ex}");
 			}
 		}
 
