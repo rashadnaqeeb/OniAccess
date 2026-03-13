@@ -2,6 +2,7 @@
 
 ## Changes since 1.0.0
 
+- Audio earcons play when moving the tile cursor: impassable tiles get a distinct sound, and wires, pipes, and rails each have unique tones in the default overlay (toggle each set in F12 settings)
 - Press A on any tile to hear temperature, room type, germs, radiation, light, decor, and biome at once
 - Biome name announced when crossing into a different biome during tile-by-tile movement (toggle in F12 settings)
 - Radbolt output ports now announce their direction (e.g. "radbolt output, right") in the radiation overlay

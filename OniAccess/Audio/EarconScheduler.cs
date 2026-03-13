@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using OniAccess.Util;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ namespace OniAccess.Audio {
 		private bool[] _poolInUse;
 		private Coroutine _activeSequence;
 		private readonly List<Coroutine> _releaseCoroutines = new List<Coroutine>();
+		private readonly List<EarconSet> _sets = new List<EarconSet>();
 
 		private void Awake() {
 			Instance = this;
@@ -28,9 +30,34 @@ namespace OniAccess.Audio {
 
 				string audioDir = Path.Combine(Mod.ModDir, "audio");
 				StartCoroutine(_library.Load(audioDir));
+
+				RegisterSet(new PassabilityEarconSet());
+				RegisterSet(new UtilityPresenceEarconSet());
 			} catch (System.Exception ex) {
 				Log.Error($"EarconScheduler.Awake failed: {ex}");
 			}
+		}
+
+		private void RegisterSet(EarconSet set) {
+			_sets.Add(set);
+			_sets.Sort((a, b) => a.Priority.CompareTo(b.Priority));
+		}
+
+		public void PlayForCell(int cell, HashedString overlayMode) {
+			var allBatches = new List<SoundBatch>();
+			foreach (var set in _sets) {
+				if (!set.IsActive(overlayMode)) continue;
+				if (!IsSetEnabled(set)) continue;
+				allBatches.AddRange(set.GetBatches(cell));
+			}
+			Play(allBatches);
+		}
+
+		private static bool IsSetEnabled(EarconSet set) {
+			var prop = typeof(ModConfig).GetProperty(
+				set.ConfigKey, BindingFlags.Public | BindingFlags.Instance);
+			if (prop == null) return true;
+			return (bool)prop.GetValue(ConfigManager.Config);
 		}
 
 		private void OnDestroy() {

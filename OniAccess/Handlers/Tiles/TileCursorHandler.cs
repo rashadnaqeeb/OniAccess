@@ -628,8 +628,18 @@ namespace OniAccess.Handlers.Tiles {
 
 		private void SpeakMove(Direction direction) {
 			string speech = TileCursor.Instance.Move(direction);
-			if (speech != null)
+			if (speech != null) {
 				SpeechPipeline.SpeakInterrupt(speech);
+				if (Audio.EarconScheduler.Instance != null) {
+					HashedString mode = OverlayScreen.Instance != null
+						? OverlayScreen.Instance.GetMode()
+						: OverlayModes.None.ID;
+					Audio.EarconScheduler.Instance.PlayForCell(
+						TileCursor.Instance.Cell, mode);
+				}
+			} else {
+				Audio.EarconScheduler.Instance?.CancelAll();
+			}
 		}
 
 		private void OpenActionMenu() {
