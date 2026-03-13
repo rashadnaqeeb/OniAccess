@@ -363,14 +363,14 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private void UpdateBiomeTracking() {
-			if (World.Instance == null) return;
+			if (World.Instance?.zoneRenderData == null) return;
 			var zoneType = World.Instance.zoneRenderData.GetSubWorldZoneType(_cell);
 			_lastBiomeName = _biomeResolver.GetName(zoneType);
 		}
 
 		private string PrependBiomeName(string content) {
 			if (!ConfigManager.Config.AnnounceBiomeChanges) return content;
-			if (World.Instance == null) return content;
+			if (World.Instance?.zoneRenderData == null) return content;
 			var zoneType = World.Instance.zoneRenderData.GetSubWorldZoneType(_cell);
 			string biomeName = _biomeResolver.GetName(zoneType);
 			if (biomeName == _lastBiomeName)
