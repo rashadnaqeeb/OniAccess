@@ -39,7 +39,12 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			int blockIdx = timetableIdx * 24 + col;
 			var block = schedule.GetBlock(blockIdx);
 			string groupName = GetGroupName(block.GroupId);
-			return string.Format(STRINGS.ONIACCESS.SCHEDULE.BLOCK_LABEL, groupName, col);
+			string label = string.Format(STRINGS.ONIACCESS.SCHEDULE.BLOCK_LABEL, groupName, col);
+			if (col < TUNING.TRAITS.EARLYBIRD_SCHEDULEBLOCK)
+				label += ", " + STRINGS.ONIACCESS.SCHEDULE.MORNING;
+			else if (col >= 21)
+				label += ", " + STRINGS.ONIACCESS.SCHEDULE.NIGHT;
+			return label;
 		}
 
 		internal static string BuildWarnings(global::Schedule schedule) {

@@ -1161,6 +1161,10 @@ namespace STRINGS {
 			public static LocString OPTIONS_DELETE_ROW = "Delete timetable row";
 			// {0} = schedule group name (e.g. "Sleep", "Work"), {1} = block/hour number (int, 0-23)
 			public static LocString BLOCK_LABEL = "{0}, block {1}";
+			// Hours 0–4: Early Bird trait bonus window
+			public static LocString MORNING = "morning";
+			// Hours 21–23: Night Owl trait bonus window
+			public static LocString NIGHT = "night";
 			// Announced when painting a block that already has the selected type.
 			// {0} = block number (int), {1} = schedule group name
 			public static LocString BLOCK_ALREADY = "block {0}, already {1}";
