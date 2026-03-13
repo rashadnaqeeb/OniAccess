@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using FMOD;
+using FMODUnity;
 using OniAccess.Util;
 using UnityEngine;
 
@@ -9,27 +11,19 @@ namespace OniAccess.Audio {
 	public class EarconScheduler : MonoBehaviour {
 		public static EarconScheduler Instance { get; private set; }
 
-		private const int PoolSize = 8;
 		private const float BatchDelaySeconds = 0.125f;
 
 		private AudioLibrary _library;
-		private AudioSource[] _pool;
-		private bool[] _poolInUse;
 		private Coroutine _activeSequence;
-		private readonly List<Coroutine> _releaseCoroutines = new List<Coroutine>();
+		private readonly List<Channel> _activeChannels = new List<Channel>();
 		private readonly List<EarconSet> _sets = new List<EarconSet>();
 
 		private void Awake() {
 			Instance = this;
 			try {
 				_library = new AudioLibrary();
-				_pool = new AudioSource[PoolSize];
-				_poolInUse = new bool[PoolSize];
-				for (int i = 0; i < PoolSize; i++)
-					_pool[i] = gameObject.AddComponent<AudioSource>();
-
 				string audioDir = Path.Combine(Mod.ModDir, "audio");
-				StartCoroutine(_library.Load(audioDir));
+				_library.Load(audioDir);
 
 				RegisterSet(new PassabilityEarconSet());
 				RegisterSet(new UtilityPresenceEarconSet());
@@ -46,10 +40,19 @@ namespace OniAccess.Audio {
 		public void PlayForCell(int cell, HashedString overlayMode) {
 			var allBatches = new List<SoundBatch>();
 			foreach (var set in _sets) {
-				if (!set.IsActive(overlayMode)) continue;
-				if (!IsSetEnabled(set)) continue;
-				allBatches.AddRange(set.GetBatches(cell));
+				if (!set.IsActive(overlayMode)) {
+					Log.Debug($"EarconScheduler: {set.GetType().Name} not active for overlay");
+					continue;
+				}
+				if (!IsSetEnabled(set)) {
+					Log.Debug($"EarconScheduler: {set.GetType().Name} disabled in config");
+					continue;
+				}
+				var batches = set.GetBatches(cell);
+				Log.Debug($"EarconScheduler: {set.GetType().Name} returned {batches.Count} batch(es) for cell {cell}");
+				allBatches.AddRange(batches);
 			}
+			Log.Debug($"EarconScheduler: playing {allBatches.Count} total batch(es)");
 			Play(allBatches);
 		}
 
@@ -61,7 +64,10 @@ namespace OniAccess.Audio {
 		}
 
 		private void OnDestroy() {
-			if (Instance == this) Instance = null;
+			if (Instance == this) {
+				_library?.ReleaseAll();
+				Instance = null;
+			}
 		}
 
 		public void Play(List<SoundBatch> batches) {
@@ -75,13 +81,9 @@ namespace OniAccess.Audio {
 				StopCoroutine(_activeSequence);
 				_activeSequence = null;
 			}
-			foreach (var co in _releaseCoroutines)
-				StopCoroutine(co);
-			_releaseCoroutines.Clear();
-			for (int i = 0; i < PoolSize; i++) {
-				_pool[i].Stop();
-				_poolInUse[i] = false;
-			}
+			foreach (var ch in _activeChannels)
+				ch.stop();
+			_activeChannels.Clear();
 		}
 
 		private IEnumerator RunSequence(List<SoundBatch> batches) {
@@ -95,38 +97,22 @@ namespace OniAccess.Audio {
 
 		private void PlayBatch(SoundBatch batch) {
 			foreach (var spec in batch.Specs) {
-				if (!_library.TryGet(spec.ClipName, out var clip)) {
+				if (!_library.TryGet(spec.ClipName, out var sound)) {
 					Log.Warn($"EarconScheduler: clip not found: {spec.ClipName}");
 					continue;
 				}
-				int index = AcquireSource();
-				if (index < 0) {
-					Log.Warn("EarconScheduler: audio source pool exhausted");
-					return;
+				var result = RuntimeManager.CoreSystem.playSound(
+					sound, default(ChannelGroup), false, out var channel);
+				if (result != RESULT.OK) {
+					Log.Warn($"EarconScheduler: FMOD playSound failed for '{spec.ClipName}': {result}");
+					continue;
 				}
-				var source = _pool[index];
-				source.clip = clip;
-				source.pitch = spec.Pitch;
-				source.panStereo = spec.Pan;
-				source.Play();
-				_releaseCoroutines.Add(StartCoroutine(ReleaseWhenDone(index)));
+				channel.setVolume(1.0f);
+				channel.setPitch(spec.Pitch);
+				channel.setPan(spec.Pan);
+				_activeChannels.Add(channel);
+				Log.Debug($"EarconScheduler: playing '{spec.ClipName}' pitch={spec.Pitch} pan={spec.Pan}");
 			}
-		}
-
-		private int AcquireSource() {
-			for (int i = 0; i < PoolSize; i++) {
-				if (!_poolInUse[i]) {
-					_poolInUse[i] = true;
-					return i;
-				}
-			}
-			return -1;
-		}
-
-		private IEnumerator ReleaseWhenDone(int index) {
-			while (_pool[index].isPlaying)
-				yield return null;
-			_poolInUse[index] = false;
 		}
 	}
 }

@@ -1,46 +1,48 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using FMOD;
+using FMODUnity;
 using OniAccess.Util;
-using UnityEngine;
-using UnityEngine.Networking;
 
 namespace OniAccess.Audio {
 	public class AudioLibrary {
-		private readonly Dictionary<string, AudioClip> _clips
-			= new Dictionary<string, AudioClip>();
+		private readonly Dictionary<string, Sound> _sounds
+			= new Dictionary<string, Sound>();
 
-		public bool LoadComplete { get; private set; }
-
-		public IEnumerator Load(string audioDir) {
+		public void Load(string audioDir) {
 			if (!Directory.Exists(audioDir)) {
 				Log.Warn($"AudioLibrary: audio directory not found: {audioDir}");
-				LoadComplete = true;
-				yield break;
+				return;
 			}
 
 			string[] files = Directory.GetFiles(audioDir, "*.ogg");
 			foreach (string file in files) {
-				string uri = "file:///" + file.Replace('\\', '/');
-				using (var request = UnityWebRequestMultimedia.GetAudioClip(uri, AudioType.OGGVORBIS)) {
-					yield return request.SendWebRequest();
-					if (request.result != UnityWebRequest.Result.Success) {
-						Log.Warn($"AudioLibrary: failed to load {file}: {request.error}");
+				try {
+					var result = RuntimeManager.CoreSystem.createSound(
+						file, MODE.DEFAULT, out var sound);
+					if (result != RESULT.OK) {
+						Log.Warn($"AudioLibrary: FMOD createSound failed for {file}: {result}");
 						continue;
 					}
-					var clip = DownloadHandlerAudioClip.GetContent(request);
 					string name = Path.GetFileNameWithoutExtension(file);
-					clip.name = name;
-					_clips[name] = clip;
+					_sounds[name] = sound;
+				} catch (Exception ex) {
+					Log.Warn($"AudioLibrary: failed to load {file}: {ex.Message}");
 				}
 			}
 
-			LoadComplete = true;
-			Log.Info($"AudioLibrary: loaded {_clips.Count} clip(s) from {audioDir}");
+			Log.Info($"AudioLibrary: loaded {_sounds.Count} sound(s) from {audioDir}");
 		}
 
-		public bool TryGet(string clipName, out AudioClip clip) {
-			return _clips.TryGetValue(clipName, out clip);
+		public bool TryGet(string clipName, out Sound sound) {
+			return _sounds.TryGetValue(clipName, out sound);
+		}
+
+		public void ReleaseAll() {
+			foreach (var sound in _sounds.Values)
+				sound.release();
+			_sounds.Clear();
 		}
 	}
 }
