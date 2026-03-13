@@ -72,6 +72,7 @@ namespace OniAccess.Handlers.Tiles.Skip {
 
 				if (!startedUnexplored) {
 					object sig = strategy.GetSignature(current);
+					Util.Log.Debug($"SkipEngine: cell {current} startType={startSignature?.GetType()} sigType={sig?.GetType()} start=[{startSignature}] sig=[{sig}]");
 					if (!object.Equals(startSignature, sig)) {
 						string cellSpeech = cursor.JumpTo(current);
 						return FormatTileCount(steps) + ", " + cellSpeech;
