@@ -36,7 +36,10 @@ namespace OniAccess.Handlers.Screens.Details {
 					ds, DetailsScreen.SidescreenTabTypes.Config)) {
 				var section = new DetailSection();
 				section.Key = screen.GetType().Name;
-				section.Header = screen.GetTitle();
+				string title = screen.GetTitle();
+				if (title != null && title.StartsWith("MISSING"))
+					title = GetFallbackTitle(screen);
+				section.Header = title;
 				SideScreenWalker.Walk(screen, section.Items);
 				foreach (var item in section.Items) {
 					if (item.Key == null && item.GameObject != null)
@@ -45,6 +48,16 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (section.Items.Count > 0)
 					sections.Add(section);
 			}
+		}
+
+		private static string GetFallbackTitle(SideScreenContent screen) {
+			var lt = screen.GetComponentInChildren<LocText>(false);
+			if (lt != null) {
+				string text = lt.GetParsedText();
+				if (SideScreenWalker.HasVisibleContent(text))
+					return text;
+			}
+			return screen.GetType().Name;
 		}
 
 		internal static IEnumerable<SideScreenContent> GetActiveScreens(

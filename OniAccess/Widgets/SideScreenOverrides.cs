@@ -43,6 +43,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<AssignPilotAndCrewSideScreen>(WalkAssignPilotAndCrew);
 			SideScreenWalker.RegisterOverride<RocketRestrictionSideScreen>(WalkRocketRestriction);
 			SideScreenWalker.RegisterOverride<PlanterSideScreen>(WalkPlanter);
+			SideScreenWalker.RegisterOverride<ProgressBarSideScreen>(WalkProgressBar);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -2570,6 +2571,15 @@ namespace OniAccess.Widgets {
 							: (string)STRINGS.ONIACCESS.RECEPTACLE.EXTENT_CLEAR,
 						extentDirs);
 				}
+			});
+		}
+		static void WalkProgressBar(ProgressBarSideScreen screen, List<Widget> items) {
+			if (screen.targetObject == null) return;
+			var captured = screen.targetObject;
+			items.Add(new LabelWidget {
+				Label = captured.GetProgressBarLabel(),
+				GameObject = screen.gameObject,
+				SpeechFunc = () => captured.GetProgressBarLabel()
 			});
 		}
 	}
