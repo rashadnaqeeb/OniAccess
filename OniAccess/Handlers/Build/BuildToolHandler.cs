@@ -434,6 +434,10 @@ namespace OniAccess.Handlers.Build {
 			int originCell = GetOriginCell();
 			var pos = Grid.CellToPosCBC(originCell, _def.SceneLayer);
 			var orientation = BuildMenuData.GetCurrentOrientation();
+			// Move the visualizer before validation: IsValidPlaceLocation
+			// reads link cells from the visualizer transform (GetCells),
+			// and TryBuild checks Grid.PosToCell(visualizer) == cell.
+			BuildTool.Instance.visualizer.transform.SetPosition(pos);
 			string failReason;
 			if (!_def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, out failReason)
 				&& !(_def.ReplacementLayer != ObjectLayer.NumLayers
@@ -444,10 +448,6 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			bool hasMaterials = HasSufficientMaterials();
-			// Move the visualizer to the origin cell so the game's
-			// TryBuild check (Grid.PosToCell(visualizer) == cell) passes
-			// for buildings with LogicPorts/LogicGateBase.
-			BuildTool.Instance.visualizer.transform.SetPosition(pos);
 			try {
 				_buildToolLastDragCell.SetValue(BuildTool.Instance, -1);
 			} catch (System.Exception ex) {
@@ -741,6 +741,7 @@ namespace OniAccess.Handlers.Build {
 			if (PlayerController.Instance.ActiveTool is BuildTool) {
 				int originCell = GetOriginCell();
 				var pos = Grid.CellToPosCBC(originCell, _def.SceneLayer);
+				BuildTool.Instance.visualizer.transform.SetPosition(pos);
 				string failReason;
 				if (!_def.IsValidPlaceLocation(
 						BuildTool.Instance.visualizer, pos, orientation, out failReason)
@@ -913,13 +914,12 @@ namespace OniAccess.Handlers.Build {
 								continue;
 
 							var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
+							BuildTool.Instance.visualizer.transform.SetPosition(pos);
 							if (!_def.IsValidPlaceLocation(
 									BuildTool.Instance.visualizer, pos, orientation, out _)
 								&& !(_def.ReplacementLayer != ObjectLayer.NumLayers
 									&& _def.IsValidPlaceLocation(BuildTool.Instance.visualizer, pos, orientation, replace_tile: true, out _)))
 								continue;
-
-							BuildTool.Instance.visualizer.transform.SetPosition(pos);
 							_buildToolLastDragCell.SetValue(BuildTool.Instance, -1);
 							BuildTool.Instance.OnLeftClickDown(pos);
 							BuildTool.Instance.OnLeftClickUp(pos);
@@ -950,6 +950,7 @@ namespace OniAccess.Handlers.Build {
 		private int CountValidPlacements(int cell) {
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			var pos = Grid.CellToPosCBC(cell, _def.SceneLayer);
+			BuildTool.Instance.visualizer.transform.SetPosition(pos);
 			return (_def.IsValidPlaceLocation(
 				BuildTool.Instance.visualizer, pos, orientation, out _)
 				|| (_def.ReplacementLayer != ObjectLayer.NumLayers
