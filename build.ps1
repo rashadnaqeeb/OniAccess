@@ -122,6 +122,22 @@ if (Test-Path $TranslationsSrc) {
     }
 }
 
+# --- Copy audio files ---
+$AudioSrc = "$PSScriptRoot\audio"
+if (Test-Path $AudioSrc) {
+    $OggFiles = Get-ChildItem "$AudioSrc\*.ogg" -ErrorAction SilentlyContinue
+    if ($OggFiles.Count -gt 0) {
+        $AudioDest = "$ModDir\audio"
+        if (-not (Test-Path $AudioDest)) {
+            New-Item -ItemType Directory -Path $AudioDest -Force | Out-Null
+        }
+        foreach ($ogg in $OggFiles) {
+            Copy-Item $ogg.FullName "$AudioDest\$($ogg.Name)" -Force
+        }
+        Write-Host "Deployed $($OggFiles.Count) audio file(s) to $AudioDest" -ForegroundColor Green
+    }
+}
+
 # --- Patch mods.json ---
 # Ensures the mod entry has enabledForDlc covering both base game ("") and
 # Spaced Out ("EXPANSION1_ID"), crash_count reset to 0, enabled = true.

@@ -77,6 +77,9 @@ namespace STRINGS {
 			public static LocString COORDINATE_MODE = "Tile cursor coordinate mode";
 			public static LocString AUTO_MOVE_CURSOR = "Auto-move cursor when cycling scanner entries";
 			public static LocString LOCK_ZOOM = "Lock zoom level when moving tile cursor";
+			public static LocString UTILITY_PRESENCE_EARCONS = "Utility presence earcons";
+			public static LocString PIPE_SHAPE_EARCONS = "Pipe shape earcons";
+			public static LocString PASSABILITY_EARCONS = "Passability earcons";
 		}
 
 		// Supply closet (Klei rewards) screen messages

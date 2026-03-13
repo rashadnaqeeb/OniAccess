@@ -121,6 +121,24 @@ namespace OniAccess.Handlers {
 				value => ConfigManager.Config.LockZoom = value
 			));
 
+			items.Add(new BoolConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS,
+				() => ConfigManager.Config.UtilityPresenceEarcons,
+				value => ConfigManager.Config.UtilityPresenceEarcons = value
+			));
+
+			items.Add(new BoolConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS,
+				() => ConfigManager.Config.PipeShapeEarcons,
+				value => ConfigManager.Config.PipeShapeEarcons = value
+			));
+
+			items.Add(new BoolConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS,
+				() => ConfigManager.Config.PassabilityEarcons,
+				value => ConfigManager.Config.PassabilityEarcons = value
+			));
+
 			return items;
 		}
 	}

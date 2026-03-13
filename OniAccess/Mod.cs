@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using HarmonyLib;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Tiles.Sections;
+using OniAccess.Audio;
 using OniAccess.Input;
 using OniAccess.Speech;
 using OniAccess.Util;
@@ -56,6 +57,10 @@ namespace OniAccess {
 			var go = new GameObject("OniAccess_Input");
 			UnityEngine.Object.DontDestroyOnLoad(go);
 			go.AddComponent<KeyPoller>();
+
+			var audioGo = new GameObject("OniAccess_Audio");
+			UnityEngine.Object.DontDestroyOnLoad(audioGo);
+			audioGo.AddComponent<EarconScheduler>();
 
 			// Register screen-to-handler mappings for ContextDetector
 			ContextDetector.RegisterMenuHandlers();
