@@ -8,5 +8,6 @@ namespace OniAccess {
 		public bool UtilityPresenceEarcons { get; set; } = true;
 		public bool PipeShapeEarcons { get; set; } = true;
 		public bool PassabilityEarcons { get; set; } = true;
+		public bool AnnounceBiomeChanges { get; set; } = true;
 	}
 }

@@ -80,6 +80,7 @@ namespace STRINGS {
 			public static LocString UTILITY_PRESENCE_EARCONS = "Utility presence earcons";
 			public static LocString PIPE_SHAPE_EARCONS = "Pipe shape earcons";
 			public static LocString PASSABILITY_EARCONS = "Passability earcons";
+			public static LocString ANNOUNCE_BIOME_CHANGES = "Announce biome changes";
 		}
 
 		// Supply closet (Klei rewards) screen messages

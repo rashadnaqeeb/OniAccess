@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ProcGen;
 using UnityEngine;
 
 namespace OniAccess.Handlers.Tiles {
@@ -21,6 +22,8 @@ namespace OniAccess.Handlers.Tiles {
 		private int _cell;
 		private bool _wasPanning;
 		private string _lastRoomName;
+		private string _lastBiomeName;
+		private readonly Scanner.Routing.BiomeNameResolver _biomeResolver = new Scanner.Routing.BiomeNameResolver();
 		private readonly Overlays.OverlayProfileRegistry _registry;
 
 		public GlanceComposer ActiveToolComposer { get; set; }
@@ -54,6 +57,7 @@ namespace OniAccess.Handlers.Tiles {
 			_cell = Util.GridCoordinates.GetOriginCell();
 			LockMouseToCell(_cell);
 			SnapCameraToCell(_cell);
+			UpdateBiomeTracking();
 		}
 
 		// ========================================
@@ -145,7 +149,7 @@ namespace OniAccess.Handlers.Tiles {
 			}
 			LockMouseToCell(_cell);
 			SnapCameraToCell(_cell);
-			return BuildCellSpeech();
+			return BuildCellSpeech(announceBiome: true);
 		}
 
 		/// <summary>
@@ -191,8 +195,10 @@ namespace OniAccess.Handlers.Tiles {
 			if (Camera.main == null) return null;
 			Vector3 center = Camera.main.transform.position;
 			int cell = Grid.PosToCell(center);
-			if (Grid.IsValidCell(cell) && cell != _cell && IsInWorldBounds(cell))
+			if (Grid.IsValidCell(cell) && cell != _cell && IsInWorldBounds(cell)) {
 				_cell = cell;
+				UpdateBiomeTracking();
+			}
 			LockMouseToCell(_cell);
 
 			bool panning = CameraController.Instance != null
@@ -210,14 +216,16 @@ namespace OniAccess.Handlers.Tiles {
 			_cell = cell;
 			LockMouseToCell(_cell);
 			SnapCameraToCell(_cell);
-			return BuildCellSpeech();
+			var speech = BuildCellSpeech();
+			UpdateBiomeTracking();
+			return speech;
 		}
 
 		// ========================================
 		// PRIVATE
 		// ========================================
 
-		private string BuildCellSpeech() {
+		private string BuildCellSpeech(bool announceBiome = false) {
 			if (Radius > 0) {
 				HashedString scanMode = OverlayScreen.Instance != null
 					? OverlayScreen.Instance.GetMode()
@@ -251,6 +259,9 @@ namespace OniAccess.Handlers.Tiles {
 
 			if (mode == OverlayModes.Rooms.ID)
 				content2 = PrependRoomName(content2);
+
+			if (announceBiome)
+				content2 = PrependBiomeName(content2);
 
 			return AttachCoordinates(content2);
 		}
@@ -349,6 +360,23 @@ namespace OniAccess.Handlers.Tiles {
 				return content;
 			_lastRoomName = roomName;
 			return roomName + ", " + content;
+		}
+
+		private void UpdateBiomeTracking() {
+			if (World.Instance == null) return;
+			var zoneType = World.Instance.zoneRenderData.GetSubWorldZoneType(_cell);
+			_lastBiomeName = _biomeResolver.GetName(zoneType);
+		}
+
+		private string PrependBiomeName(string content) {
+			if (!ConfigManager.Config.AnnounceBiomeChanges) return content;
+			if (World.Instance == null) return content;
+			var zoneType = World.Instance.zoneRenderData.GetSubWorldZoneType(_cell);
+			string biomeName = _biomeResolver.GetName(zoneType);
+			if (biomeName == _lastBiomeName)
+				return content;
+			_lastBiomeName = biomeName;
+			return biomeName + ", " + content;
 		}
 
 		private static void PlayBoundarySound() {

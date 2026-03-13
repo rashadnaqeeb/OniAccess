@@ -2,6 +2,7 @@
 
 ## Changes since 1.0.0
 
+- Biome name announced when crossing into a different biome during tile-by-tile movement (toggle in F12 settings)
 - Radbolt output ports now announce their direction (e.g. "radbolt output, right") in the radiation overlay
 - Fix: wire bridges, joint plates, and power transformers no longer falsely announce "placed" when placement is invalid
 - Automation wires now announce their signal color (green/red) after connection directions; ribbons announce all 4 bits
