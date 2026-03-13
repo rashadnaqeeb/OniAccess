@@ -1104,6 +1104,21 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM"
 msgid "Lock zoom level when moving tile cursor"
 msgstr "Verrouiller le niveau de zoom lors du déplacement du curseur de tuile"
 
+#. STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS"
+msgid "Passability earcons"
+msgstr "Earcons de praticabilité"
+
+#. STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS"
+msgid "Pipe shape earcons"
+msgstr "Earcons de forme de tuyau"
+
+#. STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS"
+msgid "Utility presence earcons"
+msgstr "Earcons de présence de réseau"
+
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"
 msgid "all forbidden"

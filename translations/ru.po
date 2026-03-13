@@ -1104,6 +1104,21 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM"
 msgid "Lock zoom level when moving tile cursor"
 msgstr "Зафиксировать масштаб при перемещении курсора плитки"
 
+#. STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS"
+msgid "Passability earcons"
+msgstr "Звуковые сигналы проходимости"
+
+#. STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS"
+msgid "Pipe shape earcons"
+msgstr "Звуковые сигналы формы труб"
+
+#. STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS"
+msgid "Utility presence earcons"
+msgstr "Звуковые сигналы наличия сетей"
+
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"
 msgid "all forbidden"
