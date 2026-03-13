@@ -44,6 +44,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<RocketRestrictionSideScreen>(WalkRocketRestriction);
 			SideScreenWalker.RegisterOverride<PlanterSideScreen>(WalkPlanter);
 			SideScreenWalker.RegisterOverride<ProgressBarSideScreen>(WalkProgressBar);
+			SideScreenWalker.RegisterOverride<SingleSliderSideScreen>(WalkSingleSlider);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -2573,6 +2574,39 @@ namespace OniAccess.Widgets {
 				}
 			});
 		}
+		static void WalkSingleSlider(SingleSliderSideScreen screen, List<Widget> items) {
+			foreach (var set in screen.sliderSets) {
+				if (set.valueSlider == null) continue;
+				var captured = set;
+				var labelLt = set.targetLabel;
+				string label = SideScreenWalker.ReadLocText(labelLt, set.valueSlider.transform.name);
+				items.Add(new SliderWidget {
+					Label = label,
+					Component = set.valueSlider,
+					GameObject = set.valueSlider.gameObject,
+					SpeechFunc = () => {
+						if (labelLt != null) labelLt.ForceMeshUpdate();
+						string lbl = SideScreenWalker.ReadLocText(labelLt, captured.valueSlider.transform.name);
+						return $"{lbl}, {WidgetOps.FormatSliderValue(captured.valueSlider)}, {(string)STRINGS.ONIACCESS.STATES.SLIDER}";
+					}
+				});
+				if (set.numberInput == null) continue;
+				var capturedInput = set.numberInput;
+				var unitsLt = set.unitsLabel;
+				string inputLabel = SideScreenWalker.ReadLocText(unitsLt, "value");
+				items.Add(new TextInputWidget {
+					Label = inputLabel,
+					Component = capturedInput,
+					GameObject = capturedInput.gameObject,
+					SpeechFunc = () => {
+						string units = SideScreenWalker.ReadLocText(unitsLt, "value");
+						string val = capturedInput.field != null ? capturedInput.field.text : "";
+						return $"{units}, {val}, {(string)STRINGS.ONIACCESS.STATES.INPUT_FIELD}";
+					}
+				});
+			}
+		}
+
 		static void WalkProgressBar(ProgressBarSideScreen screen, List<Widget> items) {
 			if (screen.targetObject == null) return;
 			var captured = screen.targetObject;
