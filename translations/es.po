@@ -3481,6 +3481,11 @@ msgctxt "STRINGS.ONIACCESS.SCHEDULE.HELP_SELECT_BRUSH"
 msgid "Select brush"
 msgstr "Seleccionar pincel"
 
+#. STRINGS.ONIACCESS.SCHEDULE.MORNING
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.MORNING"
+msgid "morning"
+msgstr "mañana"
+
 #. STRINGS.ONIACCESS.SCHEDULE.MOVED_DOWN
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.MOVED_DOWN"
 msgid "moved down"
@@ -3490,6 +3495,11 @@ msgstr "movido abajo"
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.MOVED_UP"
 msgid "moved up"
 msgstr "movido arriba"
+
+#. STRINGS.ONIACCESS.SCHEDULE.NIGHT
+msgctxt "STRINGS.ONIACCESS.SCHEDULE.NIGHT"
+msgid "night"
+msgstr "noche"
 
 #. STRINGS.ONIACCESS.SCHEDULE.OPTIONS_ADD_ROW
 msgctxt "STRINGS.ONIACCESS.SCHEDULE.OPTIONS_ADD_ROW"
