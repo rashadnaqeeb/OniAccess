@@ -575,8 +575,31 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (def.UseHighEnergyParticleOutputPort) {
 				var rotated = Rotatable.GetRotatedCellOffset(
 					def.HighEnergyParticleOutputOffset, orientation);
-				if (Grid.OffsetCell(origin, rotated) == cell)
-					tokens.Add((string)STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT);
+				if (Grid.OffsetCell(origin, rotated) == cell) {
+					var dirComponent = building.gameObject
+						.GetComponent<IHighEnergyParticleDirection>();
+					if (dirComponent != null) {
+						var dirString = EightDirectionToString(dirComponent.Direction);
+						tokens.Add(string.Format(
+							(string)STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT, dirString));
+					} else {
+						tokens.Add("radbolt output");
+					}
+				}
+			}
+		}
+
+		private static string EightDirectionToString(EightDirection dir) {
+			switch (dir) {
+				case EightDirection.Up: return (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_UP;
+				case EightDirection.UpLeft: return (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_LEFT;
+				case EightDirection.Left: return (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT;
+				case EightDirection.DownLeft: return (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_LEFT;
+				case EightDirection.Down: return (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN;
+				case EightDirection.DownRight: return (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_RIGHT;
+				case EightDirection.Right: return (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT;
+				case EightDirection.UpRight: return (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_RIGHT;
+				default: return dir.ToString();
 			}
 		}
 

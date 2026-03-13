@@ -615,7 +615,7 @@ namespace STRINGS {
 
 			// Radbolt (radiation bolt) port labels
 			public static LocString RADBOLT_INPUT = "radbolt input";
-			public static LocString RADBOLT_OUTPUT = "radbolt output";
+			public static LocString RADBOLT_OUTPUT = "radbolt output, {0}";
 
 			// Conduit/network type labels
 			public static LocString CONDUIT_LIQUID = "liquid";
@@ -705,6 +705,10 @@ namespace STRINGS {
 			public static LocString DIRECTION_DOWN = "down";
 			public static LocString DIRECTION_LEFT = "left";
 			public static LocString DIRECTION_RIGHT = "right";
+			public static LocString DIRECTION_UP_LEFT = "up left";
+			public static LocString DIRECTION_UP_RIGHT = "up right";
+			public static LocString DIRECTION_DOWN_LEFT = "down left";
+			public static LocString DIRECTION_DOWN_RIGHT = "down right";
 
 			// Distance templates: {0} = tile count, {1} = direction word
 			public static LocString DISTANCE_VERTICAL = "{0} {1}";
