@@ -1240,31 +1240,34 @@ namespace OniAccess.Widgets {
 			});
 		}
 
+		// Game direction order: N(0), NW(1), W(2), SW(3), S(4), SE(5), E(6), NE(7)
+		static readonly System.Func<string>[] HEPDirLabels = new System.Func<string>[] {
+			() => STRINGS.ONIACCESS.SCANNER.DIRECTION_UP,
+			() => STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_LEFT,
+			() => STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT,
+			() => STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_LEFT,
+			() => STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN,
+			() => STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_RIGHT,
+			() => STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT,
+			() => STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_RIGHT,
+		};
+
 		static void WalkHEPDirection(
 				HighEnergyParticleDirectionSideScreen screen, List<Widget> items) {
-			string[] dirStrings;
-			try {
-				dirStrings = Traverse.Create(screen)
-					.Field<string[]>("directionStrings").Value;
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"WalkHEPDirection: directionStrings read failed: {ex.Message}");
-				return;
-			}
-			if (dirStrings == null) return;
-
-			for (int i = 0; i < screen.Buttons.Count && i < dirStrings.Length; i++) {
+			for (int i = 0; i < screen.Buttons.Count && i < HEPDirLabels.Length; i++) {
 				var btn = screen.Buttons[i];
 				var capturedBtn = btn;
-				string dirLabel = dirStrings[i];
+				var capturedLabel = HEPDirLabels[i];
 				items.Add(new ToggleWidget {
-					Label = dirLabel,
+					Label = capturedLabel(),
 					Component = capturedBtn,
 					GameObject = capturedBtn.gameObject,
 					SuppressTooltip = true,
 					IsInteractable = true,
 					SpeechFunc = () => {
+						string dirLabel = capturedLabel();
 						if (!capturedBtn.isInteractable)
-							return $"{dirLabel}, {(string)STRINGS.ONIACCESS.STATES.SELECTED}";
+							return $"{(string)STRINGS.ONIACCESS.STATES.SELECTED}, {dirLabel}";
 						return dirLabel;
 					}
 				});
