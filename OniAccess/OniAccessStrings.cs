@@ -609,9 +609,9 @@ namespace STRINGS {
 			// {0} = order label (e.g. "dig priority 5")
 			public static LocString ORDER_UNREACHABLE = "unreachable {0}";
 			// {0} = order label (e.g. "dig priority 5")
-			public static LocString ORDER_NEEDS_SKILL = "needs skill, {0}";
+			public static LocString ORDER_NEEDS_SKILL = "needs skill {0}";
 			// {0} = order label (e.g. "sweep priority 5")
-			public static LocString ORDER_CANT_STORE = "can't store, {0}";
+			public static LocString ORDER_CANT_STORE = "can't store {0}";
 
 			// Point-of-interest marker on a tile
 			public static LocString TILE_OF_INTEREST = "P O I";

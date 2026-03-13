@@ -1660,7 +1660,7 @@ msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_CANT_STORE
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_CANT_STORE"
-msgid "can't store, {0}"
+msgid "can't store {0}"
 msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_CAPTURE
@@ -1700,7 +1700,7 @@ msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_NEEDS_SKILL
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_NEEDS_SKILL"
-msgid "needs skill, {0}"
+msgid "needs skill {0}"
 msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY

@@ -1666,8 +1666,8 @@ msgstr "построить"
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_CANT_STORE
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_CANT_STORE"
-msgid "can't store, {0}"
-msgstr "некуда хранить, {0}"
+msgid "can't store {0}"
+msgstr "некуда хранить {0}"
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_CAPTURE
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_CAPTURE"
@@ -1706,8 +1706,8 @@ msgstr "протереть"
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_NEEDS_SKILL
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_NEEDS_SKILL"
-msgid "needs skill, {0}"
-msgstr "нужен навык, {0}"
+msgid "needs skill {0}"
+msgstr "нужен навык {0}"
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY"
