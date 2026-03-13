@@ -10,7 +10,7 @@ namespace OniAccess.Audio {
 	public class EarconScheduler : MonoBehaviour {
 		public static EarconScheduler Instance { get; private set; }
 
-		private const float BatchDelaySeconds = 0.125f;
+		private const float BatchDelaySeconds = 0.05f;
 
 		private AudioLibrary _library;
 		private Coroutine _activeSequence;
