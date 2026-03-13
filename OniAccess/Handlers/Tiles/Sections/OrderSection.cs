@@ -32,7 +32,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var go = Grid.Objects[cell, (int)ObjectLayer.DigPlacer];
 			if (go == null) return;
 			if (go.GetComponent<Diggable>() == null) return;
-			string label = MaybeUnreachable(
+			string label = MaybeBlocked(
 				(string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG,
 				go, Db.Get().BuildingStatusItems.DigUnreachable);
 			parts.Add(FormatOrder(label, go));
@@ -42,7 +42,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var go = Grid.Objects[cell, (int)ObjectLayer.MopPlacer];
 			if (go == null) return;
 			if (go.GetComponent<Moppable>() == null) return;
-			string label = MaybeUnreachable(
+			string label = MaybeBlocked(
 				(string)STRINGS.ONIACCESS.GLANCE.ORDER_MOP,
 				go, Db.Get().BuildingStatusItems.MopUnreachable);
 			parts.Add(FormatOrder(label, go));
@@ -58,7 +58,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			while (item != null) {
 				var clearable = item.gameObject.GetComponent<Clearable>();
 				if (clearable != null && IsMarkedForClear(clearable)) {
-					string label = MaybeUnreachable(
+					string label = MaybeBlocked(
 						(string)STRINGS.ONIACCESS.GLANCE.ORDER_SWEEP,
 						item.gameObject,
 						Db.Get().MiscStatusItems.PickupableUnreachable);
@@ -189,12 +189,25 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				|| group.HasStatusItemID("EmptySolidConduit");
 		}
 
-		private static string MaybeUnreachable(
-				string label, GameObject go, StatusItem statusItem) {
+		private static string MaybeBlocked(
+				string label, GameObject go, StatusItem unreachableItem) {
 			var selectable = go.GetComponent<KSelectable>();
-			if (selectable != null && selectable.HasStatusItem(statusItem))
+			if (selectable == null) return label;
+
+			var skillItems = Db.Get().BuildingStatusItems;
+			if (selectable.HasStatusItem(skillItems.ColonyLacksRequiredSkillPerk)
+				|| selectable.HasStatusItem(skillItems.ClusterColonyLacksRequiredSkillPerk))
+				return string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.ORDER_NEEDS_SKILL, label);
+
+			if (selectable.HasStatusItem(Db.Get().MiscStatusItems.PendingClearNoStorage))
+				return string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.ORDER_CANT_STORE, label);
+
+			if (selectable.HasStatusItem(unreachableItem))
 				return string.Format(
 					(string)STRINGS.ONIACCESS.GLANCE.ORDER_UNREACHABLE, label);
+
 			return label;
 		}
 
