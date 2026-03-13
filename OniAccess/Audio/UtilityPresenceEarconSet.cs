@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace OniAccess.Audio {
 	public class UtilityPresenceEarconSet : EarconSet {
 		public override int Priority => 2;
-		public override string ConfigKey => nameof(ModConfig.UtilityPresenceEarcons);
+		public override bool IsEnabled => ConfigManager.Config.UtilityPresenceEarcons;
 
 		public override bool IsActive(HashedString overlayMode) {
 			return overlayMode == OverlayModes.None.ID;

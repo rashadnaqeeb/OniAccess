@@ -28,7 +28,7 @@ namespace OniAccess.Audio {
 					string name = Path.GetFileNameWithoutExtension(file);
 					_sounds[name] = sound;
 				} catch (Exception ex) {
-					Log.Warn($"AudioLibrary: failed to load {file}: {ex.Message}");
+					Log.Warn($"AudioLibrary: failed to load {file}: {ex}");
 				}
 			}
 

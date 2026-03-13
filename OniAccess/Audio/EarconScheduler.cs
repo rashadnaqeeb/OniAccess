@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using FMOD;
 using FMODUnity;
 using OniAccess.Util;
@@ -44,7 +43,7 @@ namespace OniAccess.Audio {
 					Log.Debug($"EarconScheduler: {set.GetType().Name} not active for overlay");
 					continue;
 				}
-				if (!IsSetEnabled(set)) {
+				if (!set.IsEnabled) {
 					Log.Debug($"EarconScheduler: {set.GetType().Name} disabled in config");
 					continue;
 				}
@@ -56,15 +55,9 @@ namespace OniAccess.Audio {
 			Play(allBatches);
 		}
 
-		private static bool IsSetEnabled(EarconSet set) {
-			var prop = typeof(ModConfig).GetProperty(
-				set.ConfigKey, BindingFlags.Public | BindingFlags.Instance);
-			if (prop == null) return true;
-			return (bool)prop.GetValue(ConfigManager.Config);
-		}
-
 		private void OnDestroy() {
 			if (Instance == this) {
+				CancelAll();
 				_library?.ReleaseAll();
 				Instance = null;
 			}
@@ -92,6 +85,7 @@ namespace OniAccess.Audio {
 				if (i < batches.Count - 1)
 					yield return new WaitForSecondsRealtime(BatchDelaySeconds);
 			}
+			_activeChannels.Clear();
 			_activeSequence = null;
 		}
 
