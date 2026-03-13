@@ -2,6 +2,7 @@
 
 ## Changes since 1.0.0
 
+- Press A on any tile to hear temperature, room type, germs, radiation, light, decor, and biome at once
 - Biome name announced when crossing into a different biome during tile-by-tile movement (toggle in F12 settings)
 - Radbolt output ports now announce their direction (e.g. "radbolt output, right") in the radiation overlay
 - Fix: wire bridges, joint plates, and power transformers no longer falsely announce "placed" when placement is invalid

@@ -110,6 +110,7 @@ namespace STRINGS {
 			public static LocString READ_COORDS = "Read coordinates";
 			public static LocString CYCLE_COORD_MODE = "Cycle coordinate display";
 			public static LocString READ_TOOLTIP_SUMMARY = "Read tooltip summary at cursor";
+			public static LocString READ_TILE_DETAILS = "Read tile environment details";
 			public static LocString CYCLE_GAME_SPEED = "Cycle game speed";
 			public static LocString SELECT_ENTITY = "Select object at cursor";
 			public static LocString OPEN_GROUP = "Open group";

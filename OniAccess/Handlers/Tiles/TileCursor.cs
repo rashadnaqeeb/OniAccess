@@ -25,6 +25,7 @@ namespace OniAccess.Handlers.Tiles {
 		private string _lastBiomeName;
 		private readonly Scanner.Routing.BiomeNameResolver _biomeResolver = new Scanner.Routing.BiomeNameResolver();
 		private readonly Overlays.OverlayProfileRegistry _registry;
+		private readonly TileDetailsComposer _detailsComposer;
 
 		public GlanceComposer ActiveToolComposer { get; set; }
 
@@ -33,6 +34,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		public TileCursor(Overlays.OverlayProfileRegistry registry) {
 			_registry = registry;
+			_detailsComposer = new TileDetailsComposer(_biomeResolver);
 		}
 
 		public static TileCursor Create(Overlays.OverlayProfileRegistry registry) {
@@ -158,6 +160,14 @@ namespace OniAccess.Handlers.Tiles {
 		/// </summary>
 		public string ReadCoordinates() {
 			return Util.GridCoordinates.Format(_cell);
+		}
+
+		public string ReadTileDetails() {
+			if (!Grid.IsVisible(_cell))
+				return AttachCoordinates((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+			string details = _detailsComposer.Compose(_cell);
+			if (details == null) return null;
+			return AttachCoordinates(details);
 		}
 
 		/// <summary>

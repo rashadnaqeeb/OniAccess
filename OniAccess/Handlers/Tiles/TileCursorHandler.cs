@@ -38,6 +38,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Tab),
 			new ConsumedKey(KKeyCode.BackQuote),
 			new ConsumedKey(KKeyCode.F, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.A),
 			new ConsumedKey(KKeyCode.I),
 			new ConsumedKey(KKeyCode.I, Modifier.Shift),
 			new ConsumedKey(KKeyCode.P, Modifier.Shift),
@@ -148,6 +149,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Alt+Arrow keys", (string)STRINGS.ONIACCESS.SKIP.HELP_SKIP_DEFAULT),
 			new HelpEntry("Tab", (string)STRINGS.ONIACCESS.BUILD_MENU.HELP_OPEN_ACTION_MENU),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.SELECT_ENTITY),
+			new HelpEntry("A", (string)STRINGS.ONIACCESS.HELP.READ_TILE_DETAILS),
 			new HelpEntry("I", (string)STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY),
 			new HelpEntry("K", (string)STRINGS.ONIACCESS.HELP.READ_COORDS),
 			new HelpEntry("Shift+K", (string)STRINGS.ONIACCESS.HELP.CYCLE_COORD_MODE),
@@ -421,6 +423,13 @@ namespace OniAccess.Handlers.Tiles {
 					SpeechPipeline.SpeakInterrupt(TileCursor.Instance.CycleMode());
 				else
 					SpeechPipeline.SpeakInterrupt(TileCursor.Instance.ReadCoordinates());
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.A)
+				&& !InputUtil.AnyModifierHeld()) {
+				string details = TileCursor.Instance.ReadTileDetails();
+				if (details != null)
+					SpeechPipeline.SpeakInterrupt(details);
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.I)) {
