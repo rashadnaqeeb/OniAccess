@@ -1088,6 +1088,11 @@ msgctxt "STRINGS.ONIACCESS.COLORS.WHITE"
 msgid "white"
 msgstr "blanco"
 
+#. STRINGS.ONIACCESS.CONFIG.ANNOUNCE_BIOME_CHANGES
+msgctxt "STRINGS.ONIACCESS.CONFIG.ANNOUNCE_BIOME_CHANGES"
+msgid "Announce biome changes"
+msgstr "Anunciar cambios de bioma"
+
 #. STRINGS.ONIACCESS.CONFIG.AUTO_MOVE_CURSOR
 msgctxt "STRINGS.ONIACCESS.CONFIG.AUTO_MOVE_CURSOR"
 msgid "Auto-move cursor when cycling scanner entries"
@@ -1755,8 +1760,8 @@ msgstr "entrada de radbolt"
 
 #. STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT"
-msgid "radbolt output"
-msgstr "salida de radbolt"
+msgid "radbolt output, {0}"
+msgstr "salida de radbolt, {0}"
 
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE"
@@ -2066,6 +2071,11 @@ msgstr "Abrir grupo"
 msgctxt "STRINGS.ONIACCESS.HELP.READ_COORDS"
 msgid "Read coordinates"
 msgstr "Leer coordenadas"
+
+#. STRINGS.ONIACCESS.HELP.READ_TILE_DETAILS
+msgctxt "STRINGS.ONIACCESS.HELP.READ_TILE_DETAILS"
+msgid "Read tile environment details"
+msgstr "Leer detalles ambientales del mosaico"
 
 #. STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY
 msgctxt "STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY"
@@ -2976,6 +2986,16 @@ msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN"
 msgid "down"
 msgstr "abajo"
 
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_LEFT
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_LEFT"
+msgid "down left"
+msgstr "abajo izquierda"
+
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_RIGHT
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_RIGHT"
+msgid "down right"
+msgstr "abajo derecha"
+
 #. STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT
 msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT"
 msgid "left"
@@ -2990,6 +3010,16 @@ msgstr "derecha"
 msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_UP"
 msgid "up"
 msgstr "arriba"
+
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_LEFT
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_LEFT"
+msgid "up left"
+msgstr "arriba izquierda"
+
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_RIGHT
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_RIGHT"
+msgid "up right"
+msgstr "arriba derecha"
 
 #. STRINGS.ONIACCESS.SCANNER.DISTANCE_BOTH
 msgctxt "STRINGS.ONIACCESS.SCANNER.DISTANCE_BOTH"

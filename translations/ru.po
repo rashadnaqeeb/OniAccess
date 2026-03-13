@@ -1089,6 +1089,11 @@ msgctxt "STRINGS.ONIACCESS.COLORS.WHITE"
 msgid "white"
 msgstr "белый"
 
+#. STRINGS.ONIACCESS.CONFIG.ANNOUNCE_BIOME_CHANGES
+msgctxt "STRINGS.ONIACCESS.CONFIG.ANNOUNCE_BIOME_CHANGES"
+msgid "Announce biome changes"
+msgstr "Объявлять смену биома"
+
 #. STRINGS.ONIACCESS.CONFIG.AUTO_MOVE_CURSOR
 msgctxt "STRINGS.ONIACCESS.CONFIG.AUTO_MOVE_CURSOR"
 msgid "Auto-move cursor when cycling scanner entries"
@@ -1756,8 +1761,8 @@ msgstr "вход радболтов"
 
 #. STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT"
-msgid "radbolt output"
-msgstr "выход радболтов"
+msgid "radbolt output, {0}"
+msgstr "выход радболтов, {0}"
 
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE"
@@ -2068,6 +2073,11 @@ msgstr "Открыть группу"
 msgctxt "STRINGS.ONIACCESS.HELP.READ_COORDS"
 msgid "Read coordinates"
 msgstr "Прочитать координаты"
+
+#. STRINGS.ONIACCESS.HELP.READ_TILE_DETAILS
+msgctxt "STRINGS.ONIACCESS.HELP.READ_TILE_DETAILS"
+msgid "Read tile environment details"
+msgstr "Прочитать параметры окружения клетки"
 
 #. STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY
 msgctxt "STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY"
@@ -2979,6 +2989,16 @@ msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN"
 msgid "down"
 msgstr "вниз"
 
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_LEFT
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_LEFT"
+msgid "down left"
+msgstr "вниз влево"
+
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_RIGHT
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN_RIGHT"
+msgid "down right"
+msgstr "вниз вправо"
+
 #. STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT
 msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT"
 msgid "left"
@@ -2993,6 +3013,16 @@ msgstr "вправо"
 msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_UP"
 msgid "up"
 msgstr "вверх"
+
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_LEFT
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_LEFT"
+msgid "up left"
+msgstr "вверх влево"
+
+#. STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_RIGHT
+msgctxt "STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_RIGHT"
+msgid "up right"
+msgstr "вверх вправо"
 
 #. STRINGS.ONIACCESS.SCANNER.DISTANCE_BOTH
 msgctxt "STRINGS.ONIACCESS.SCANNER.DISTANCE_BOTH"
