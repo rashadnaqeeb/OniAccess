@@ -1,6 +1,8 @@
 # Changelog
 
-## Changes since 1.0.0
+## Changes since 1.0.1
+
+## 1.0.1
 
 - Recipe screen ingredient slots now show how many other material options are available
 - Cluster selector on the new game screen now explains left/right and enter controls
