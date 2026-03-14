@@ -2,6 +2,7 @@
 
 ## Changes since 1.0.0
 
+- Codex articles no longer repeat redundant names in conversion and recipe panels
 - Pending orders now announce blockers: "needs skill" for dig orders requiring an unskilled colony, "can't store" for sweep orders with no accepting storage
 - Audio earcons play when moving the tile cursor: impassable tiles get a distinct sound, and wires, pipes, and rails each have unique tones in the default overlay (toggle each set in F12 settings)
 - Press A on any tile to hear temperature, room type, germs, radiation, light, decor, and biome at once

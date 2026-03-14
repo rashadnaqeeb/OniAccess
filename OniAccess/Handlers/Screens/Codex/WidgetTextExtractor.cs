@@ -48,7 +48,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			else if (widget is CodexRecipePanel crp)
 				raw = GetRecipeSpeech(crp, currentEntryId);
 			else if (widget is CodexConversionPanel ccp)
-				raw = GetConversionSpeech(ccp);
+				raw = GetConversionSpeech(ccp, currentEntryId);
 			else if (widget is CodexTemperatureTransitionPanel cttp)
 				raw = GetTemperatureTransitionSpeech(cttp);
 			else if (widget is CodexConfigurableConsumerRecipePanel ccrp)
@@ -188,7 +188,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 					bool isSameArticle = currentEntryId != null &&
 						recipe.fabricators[0].Name.ToUpper() == currentEntryId;
 					sb.Append(". ");
-					if (!isSameArticle) {
+					if (!isSameArticle && !useFabTitle) {
 						sb.Append((string)STRINGS.ONIACCESS.CODEX.MADE_IN);
 						sb.Append(' ');
 						sb.Append(fab.GetProperName());
@@ -244,19 +244,25 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// CONVERSION PANEL
 		// ========================================
 
-		private static string GetConversionSpeech(CodexConversionPanel panel) {
+		private static string GetConversionSpeech(CodexConversionPanel panel, string currentEntryId) {
 			var t = Traverse.Create(panel);
 			string title = t.Field<string>("title").Value;
 			var ins = t.Field<ElementUsage[]>("ins").Value;
 			var outs = t.Field<ElementUsage[]>("outs").Value;
 			var converter = t.Field<UnityEngine.GameObject>("Converter").Value;
 
+			string converterName = converter?.GetProperName();
+
 			var sb = new StringBuilder();
-			if (!string.IsNullOrEmpty(title))
-				sb.Append(title);
+			if (!string.IsNullOrEmpty(title)) {
+				string firstInputName = (ins != null && ins.Length > 0 && ins[0].tag != Tag.Invalid)
+					? ins[0].tag.ProperName() : null;
+				if (title != firstInputName && title != converterName)
+					sb.Append(title);
+			}
 
 			if (ins != null && ins.Length > 0) {
-				sb.Append(". ");
+				if (sb.Length > 0) sb.Append(". ");
 				AppendItemList(sb, ins.Length,
 					i => ins[i].tag,
 					i => {
@@ -269,7 +275,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			}
 
 			if (outs != null && outs.Length > 0) {
-				sb.Append(". ");
+				if (sb.Length > 0) sb.Append(". ");
 				sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
 				sb.Append(' ');
 				AppendItemList(sb, outs.Length,
@@ -283,9 +289,13 @@ namespace OniAccess.Handlers.Screens.Codex {
 					skip: i => outs[i].tag == Tag.Invalid);
 			}
 
-			if (converter != null) {
-				sb.Append(". ");
-				sb.Append(converter.GetProperName());
+			if (converterName != null) {
+				bool isSameArticle = currentEntryId != null
+					&& converter.GetComponent<KPrefabID>()?.PrefabTag.Name.ToUpper() == currentEntryId;
+				if (!isSameArticle) {
+					sb.Append(". ");
+					sb.Append(converterName);
+				}
 			}
 
 			return sb.ToString();
