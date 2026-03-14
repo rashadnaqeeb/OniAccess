@@ -334,6 +334,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			HashedString mode = OverlayScreen.Instance != null
 				? OverlayScreen.Instance.GetMode()
 				: OverlayModes.None.ID;
+			Audio.EarconScheduler.Instance?.ResetTransitionState();
 			if (Audio.EarconScheduler.Instance != null)
 				Audio.EarconScheduler.Instance.PlayForCell(entry.Cell, mode);
 			Audio.SonifierController.Instance.OnCursorMoved(entry.Cell, mode);

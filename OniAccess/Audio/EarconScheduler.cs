@@ -16,6 +16,7 @@ namespace OniAccess.Audio {
 		private Coroutine _activeSequence;
 		private readonly List<Channel> _activeChannels = new List<Channel>();
 		private readonly List<EarconSet> _sets = new List<EarconSet>();
+		private TemperatureBandEarconSet _temperatureBandSet;
 
 		private void Awake() {
 			Instance = this;
@@ -24,6 +25,8 @@ namespace OniAccess.Audio {
 				string audioDir = Path.Combine(Mod.ModDir, "audio");
 				_library.Load(audioDir);
 
+				_temperatureBandSet = new TemperatureBandEarconSet();
+				RegisterSet(_temperatureBandSet);
 				RegisterSet(new PassabilityEarconSet());
 				RegisterSet(new UtilityPresenceEarconSet());
 			} catch (System.Exception ex) {
@@ -67,6 +70,10 @@ namespace OniAccess.Audio {
 			CancelAll();
 			if (batches.Count == 0) return;
 			_activeSequence = StartCoroutine(RunSequence(batches));
+		}
+
+		public void ResetTransitionState() {
+			_temperatureBandSet?.Reset();
 		}
 
 		public void CancelAll() {

@@ -74,6 +74,13 @@ namespace OniAccess.Handlers.Resources {
 				string speech = Tiles.TileCursor.Instance.JumpTo(cell);
 				if (speech != null)
 					SpeechPipeline.SpeakInterrupt(speech);
+				HashedString mode = OverlayScreen.Instance != null
+					? OverlayScreen.Instance.GetMode()
+					: OverlayModes.None.ID;
+				Audio.EarconScheduler.Instance?.ResetTransitionState();
+				Audio.EarconScheduler.Instance?.PlayForCell(cell, mode);
+				Audio.ShapeEarconPlayer.Instance?.OnCursorMoved(cell, mode);
+				Audio.SonifierController.Instance?.OnCursorMoved(cell, mode);
 			}
 		}
 

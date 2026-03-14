@@ -10,5 +10,6 @@ namespace OniAccess {
 		public bool PassabilityEarcons { get; set; } = false;
 		public bool AnnounceBiomeChanges { get; set; } = true;
 		public bool FlowSonification { get; set; } = false;
+		public bool TemperatureBandEarcons { get; set; } = false;
 	}
 }

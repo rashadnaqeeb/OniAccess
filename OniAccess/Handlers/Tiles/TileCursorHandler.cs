@@ -312,6 +312,7 @@ namespace OniAccess.Handlers.Tiles {
 			string arrived = TileCursor.Instance.SyncToCamera();
 			if (arrived != null) {
 				SpeechPipeline.SpeakInterrupt(arrived);
+				Audio.EarconScheduler.Instance?.ResetTransitionState();
 				UpdateAudioForCell();
 			}
 
@@ -510,6 +511,7 @@ namespace OniAccess.Handlers.Tiles {
 				if (!InputUtil.AnyModifierHeld()) {
 					_preJumpCell = TileCursor.Instance.Cell;
 					_dupeNavigator.JumpOrSelect();
+					Audio.EarconScheduler.Instance?.ResetTransitionState();
 					UpdateAudioForCell();
 					return true;
 				}
@@ -555,6 +557,7 @@ namespace OniAccess.Handlers.Tiles {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.H)
 				&& !InputUtil.AnyModifierHeld()) {
 				SpeechPipeline.SpeakInterrupt(CursorBookmarks.JumpHome());
+				Audio.EarconScheduler.Instance?.ResetTransitionState();
 				UpdateAudioForCell();
 				return true;
 			}
@@ -563,6 +566,7 @@ namespace OniAccess.Handlers.Tiles {
 				int idx = bmDigit == 0 ? 9 : bmDigit - 1;
 				if (InputUtil.ShiftHeld()) {
 					SpeechPipeline.SpeakInterrupt(_bookmarks.Goto(idx));
+					Audio.EarconScheduler.Instance?.ResetTransitionState();
 					UpdateAudioForCell();
 					return true;
 				}
@@ -601,6 +605,7 @@ namespace OniAccess.Handlers.Tiles {
 				if (!InputUtil.AnyModifierHeld()) {
 					_preJumpCell = TileCursor.Instance.Cell;
 					_scanner.Teleport();
+					Audio.EarconScheduler.Instance?.ResetTransitionState();
 					UpdateAudioForCell();
 					return true;
 				}
@@ -613,6 +618,7 @@ namespace OniAccess.Handlers.Tiles {
 					string speech = TileCursor.Instance.JumpTo(savedCell);
 					if (speech != null) {
 						SpeechPipeline.SpeakInterrupt(speech);
+						Audio.EarconScheduler.Instance?.ResetTransitionState();
 						UpdateAudioForCell();
 					}
 				}

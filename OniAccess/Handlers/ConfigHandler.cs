@@ -140,6 +140,12 @@ namespace OniAccess.Handlers {
 			));
 
 			items.Add(new BoolConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS,
+				() => ConfigManager.Config.TemperatureBandEarcons,
+				value => ConfigManager.Config.TemperatureBandEarcons = value
+			));
+
+			items.Add(new BoolConfigItem(
 				(string)STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION,
 				() => ConfigManager.Config.FlowSonification,
 				value => ConfigManager.Config.FlowSonification = value

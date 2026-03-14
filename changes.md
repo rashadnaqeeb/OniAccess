@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.1
 
+- Temperature band earcons: plays a rising or falling tone when the cursor crosses a temperature band boundary. Toggle in F12 settings (off by default)
 - Flow sonification now works on wires in the power overlay — pitch tracks circuit load
 - Shape earcons: when enabled, plays tonal sequences to convey pipe, wire, and rail connection shapes in overlay views instead of speaking them. Toggle in F12 settings (off by default)
 - Flow sonification: fix buzzing artifacts from loop seam and abrupt volume changes; reduce volume
