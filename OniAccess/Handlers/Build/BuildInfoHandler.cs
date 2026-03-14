@@ -293,14 +293,16 @@ namespace OniAccess.Handlers.Build {
 			bool insufficient = false;
 
 			try {
-				var selected = panel.GetSelectedElementAsList;
-				if (selected != null && index < selected.Count) {
-					var tag = selected[index];
-					selectedName = tag.ProperName();
-					float available = ClusterManager.Instance.activeWorld.worldInventory
-						.GetAmount(tag, includeRelatedWorlds: true);
-					insufficient = available < ingredient.amount
-						&& !MaterialSelector.AllowInsufficientMaterialBuild();
+				if (panel.AllSelectorsSelected()) {
+					var selected = panel.GetSelectedElementAsList;
+					if (index < selected.Count) {
+						var tag = selected[index];
+						selectedName = tag.ProperName();
+						float available = ClusterManager.Instance.activeWorld.worldInventory
+							.GetAmount(tag, includeRelatedWorlds: true);
+						insufficient = available < ingredient.amount
+							&& !MaterialSelector.AllowInsufficientMaterialBuild();
+					}
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"BuildInfoHandler.BuildMaterialLabel: {ex.Message}");
