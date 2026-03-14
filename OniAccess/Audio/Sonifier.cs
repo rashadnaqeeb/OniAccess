@@ -9,14 +9,15 @@ namespace OniAccess.Audio {
 		internal static Sonifier Instance { get; private set; }
 
 		// Base pitch: C4 (middle C). Change these to shift the octave.
-		const float BaseFrequencyHz = 261.63f;
+		const float BaseFrequencyHz = 262f;
 		const float OctaveRatio = 2.0f;
 
 		// Volume mapping
 		const float SilenceDb = -60f;
-		const float AverageWindowSeconds = 0.1f;
+		const float MaxVolume = 0.15f;
+		const float VolumeFadeSeconds = 0.1f;
 
-		// Fade ramp to prevent click artifacts
+		// Fade ramp to prevent click artifacts on start/stop
 		const float FadeSeconds = 0.01f;
 
 		// ~100ms window at 60fps
@@ -34,10 +35,11 @@ namespace OniAccess.Audio {
 		// Fade state
 		private float _fadeGain;
 		private float _fadeTarget;
+		private float _smoothedVolume;
 
 		private void Awake() {
 			Instance = this;
-			_toneSound = ToneGenerator.CreateLoopingSineWave(BaseFrequencyHz, 0.1f);
+			_toneSound = ToneGenerator.CreateLoopingSineWave(BaseFrequencyHz, 1.0f);
 
 			_presenceBuffer = new float[PresenceBufferSize];
 		}
@@ -65,10 +67,12 @@ namespace OniAccess.Audio {
 				}
 			}
 
-			// Apply current fade-scaled volume
+			// Smooth volume toward target to prevent artifacts
 			if (_channel.hasHandle()) {
-				float volume = ComputeVolume() * _fadeGain;
-				_channel.setVolume(volume);
+				float targetVolume = ComputeVolume();
+				float fadeStep = Time.unscaledDeltaTime / VolumeFadeSeconds;
+				_smoothedVolume = Mathf.MoveTowards(_smoothedVolume, targetVolume, fadeStep);
+				_channel.setVolume(_smoothedVolume * _fadeGain);
 			}
 		}
 
@@ -116,6 +120,7 @@ namespace OniAccess.Audio {
 			_playing = false;
 			_fadeGain = 0f;
 			_fadeTarget = 0f;
+			_smoothedVolume = 0f;
 		}
 
 		private void RecordPresence(float value) {
@@ -143,7 +148,7 @@ namespace OniAccess.Audio {
 
 			// Map average to dB: at average=1 → 0dB, at average=0 → SilenceDb
 			float gainDb = SilenceDb * (1f - average);
-			return Mathf.Pow(10f, gainDb / 20f);
+			return Mathf.Pow(10f, gainDb / 20f) * MaxVolume;
 		}
 	}
 }
