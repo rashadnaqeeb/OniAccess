@@ -819,6 +819,11 @@ msgctxt "STRINGS.ONIACCESS.CODEX.TIME"
 msgid "time:"
 msgstr "시간:"
 
+#. STRINGS.ONIACCESS.COLONY_SETUP.CLUSTER_SELECTOR_HINT
+msgctxt "STRINGS.ONIACCESS.COLONY_SETUP.CLUSTER_SELECTOR_HINT"
+msgid "left and right to switch, enter for details"
+msgstr "좌우로 전환, 엔터로 상세 정보"
+
 #. STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE
 msgctxt "STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE"
 msgid "last cycle"
@@ -2528,6 +2533,11 @@ msgstr "{0} 확장, 비어 있음"
 msgctxt "STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT"
 msgid "{0} items"
 msgstr "{0}개 항목"
+
+#. STRINGS.ONIACCESS.RECIPE.OTHER_OPTIONS
+msgctxt "STRINGS.ONIACCESS.RECIPE.OTHER_OPTIONS"
+msgid "{0} other options"
+msgstr "{0}개의 다른 옵션"
 
 #. STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT
 msgctxt "STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT"

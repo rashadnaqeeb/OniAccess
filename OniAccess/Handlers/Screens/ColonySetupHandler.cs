@@ -455,6 +455,12 @@ namespace OniAccess.Handlers.Screens {
 				label += $", {moonCount} {STRINGS.ONIACCESS.PANELS.PLANETOIDS}";
 			}
 
+			// Navigation hint — normally we avoid inline hints per project rules,
+			// but this is a label widget with hidden left/right cycling and enter
+			// drill-in, which is unlike any other control in the mod.
+			if (includePrefix)
+				label += ". " + (string)STRINGS.ONIACCESS.COLONY_SETUP.CLUSTER_SELECTOR_HINT;
+
 			return label;
 		}
 

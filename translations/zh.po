@@ -819,6 +819,11 @@ msgctxt "STRINGS.ONIACCESS.CODEX.TIME"
 msgid "time:"
 msgstr "时间："
 
+#. STRINGS.ONIACCESS.COLONY_SETUP.CLUSTER_SELECTOR_HINT
+msgctxt "STRINGS.ONIACCESS.COLONY_SETUP.CLUSTER_SELECTOR_HINT"
+msgid "left and right to switch, enter for details"
+msgstr "左右切换，回车查看详情"
+
 #. STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE
 msgctxt "STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE"
 msgid "last cycle"
@@ -2528,6 +2533,11 @@ msgstr "延伸{0}, 畅通"
 msgctxt "STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT"
 msgid "{0} items"
 msgstr "{0}个物品"
+
+#. STRINGS.ONIACCESS.RECIPE.OTHER_OPTIONS
+msgctxt "STRINGS.ONIACCESS.RECIPE.OTHER_OPTIONS"
+msgid "{0} other options"
+msgstr "{0} 个其他选项"
 
 #. STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT
 msgctxt "STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT"

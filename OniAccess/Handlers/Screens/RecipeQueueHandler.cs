@@ -312,6 +312,11 @@ namespace OniAccess.Handlers.Screens {
 					header += ", " + materialName;
 			}
 
+			int otherCount = GetMaterialTagsForSlot(slotIdx).Count - 1;
+			if (otherCount > 0)
+				header += ", " + string.Format(
+					(string)STRINGS.ONIACCESS.RECIPE.OTHER_OPTIONS, otherCount);
+
 			return header;
 		}
 

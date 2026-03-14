@@ -145,6 +145,8 @@ namespace STRINGS {
 		public class RECIPE {
 			// {0} = queue count number or "Forever"
 			public static LocString QUEUE_COUNT = "Queue: {0}";
+			// {0} = number of other material options
+			public static LocString OTHER_OPTIONS = "{0} other options";
 		}
 
 		// Select module side screen section headers
@@ -152,6 +154,11 @@ namespace STRINGS {
 			public static LocString MODULES = "Modules";
 			public static LocString MATERIALS = "Materials";
 			public static LocString FACADE = "Skin";
+		}
+
+		// Colony setup / destination select screen
+		public class COLONY_SETUP {
+			public static LocString CLUSTER_SELECTOR_HINT = "left and right to switch, enter for details";
 		}
 
 		// Labels for colony summary statistics

@@ -819,6 +819,11 @@ msgctxt "STRINGS.ONIACCESS.CODEX.TIME"
 msgid "time:"
 msgstr "tiempo:"
 
+#. STRINGS.ONIACCESS.COLONY_SETUP.CLUSTER_SELECTOR_HINT
+msgctxt "STRINGS.ONIACCESS.COLONY_SETUP.CLUSTER_SELECTOR_HINT"
+msgid "left and right to switch, enter for details"
+msgstr "izquierda y derecha para cambiar, intro para detalles"
+
 #. STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE
 msgctxt "STRINGS.ONIACCESS.COLONY_STATS.LAST_CYCLE"
 msgid "last cycle"
@@ -2526,6 +2531,11 @@ msgstr "se extiende {0}, despejado"
 msgctxt "STRINGS.ONIACCESS.RECEPTACLE.ITEM_COUNT"
 msgid "{0} items"
 msgstr "{0} elementos"
+
+#. STRINGS.ONIACCESS.RECIPE.OTHER_OPTIONS
+msgctxt "STRINGS.ONIACCESS.RECIPE.OTHER_OPTIONS"
+msgid "{0} other options"
+msgstr "{0} otras opciones"
 
 #. STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT
 msgctxt "STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT"

@@ -2,6 +2,8 @@
 
 ## Changes since 1.0.0
 
+- Recipe screen ingredient slots now show how many other material options are available
+- Cluster selector on the new game screen now explains left/right and enter controls
 - Fix assigned amenities list showing absolute world coordinates instead of coordinates relative to the printing pod
 - Fix germ skip skipping past contaminated cells when germs were on buildings, items, or pipe contents rather than the tile surface
 - Codex articles split multi-line text blocks into separate cursor items so each property gets its own line
