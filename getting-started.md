@@ -11,9 +11,13 @@ An accessibility mod for Oxygen Not Included that makes the game playable for bl
 ## Install
 
 1. Subscribe to the mod on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3683507975).
-2. Launch the game once, then close it. This lets the game discover the mod.
-3. Download and run the [enable script](https://github.com/rashadnaqeeb/OniAccess/raw/main/enable-mod.cmd). It enables the mod in the game's config so you don't have to navigate the mod manager. If the mod ever crashes and the game disables it, run this script again to re-enable it.
-4. Launch the game. The mod will announce when it's ready.
+2. Disable two Steam hotkeys that interfere with the mod:
+   - Open Steam > Settings > In-Game.
+   - Uncheck "Enable the Steam Overlay while in-game".
+   - Clear or change the "Screenshot shortcut key".
+3. Launch the game once, then close it. This lets the game discover the mod.
+4. Download and run the [enable script](https://github.com/rashadnaqeeb/OniAccess/raw/main/enable-mod.cmd). It enables the mod in the game's config so you don't have to navigate the mod manager. If the mod ever crashes and the game disables it, run this script again to re-enable it.
+5. Launch the game. The mod will announce when it's ready.
 
 Updates are delivered automatically through the Steam Workshop.
 
