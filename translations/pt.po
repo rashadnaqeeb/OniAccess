@@ -1108,6 +1108,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE"
 msgid "Tile cursor coordinate mode"
 msgstr "Modo de coordenadas do cursor de tile"
 
+#. STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION
+msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION"
+msgid "Flow sonification"
+msgstr "Sonificação de fluxo"
+
 #. STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM
 msgctxt "STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM"
 msgid "Lock zoom level when moving tile cursor"
@@ -2401,6 +2406,11 @@ msgctxt "STRINGS.ONIACCESS.PANELS.VICTORY_CONDITIONS"
 msgid "Victory conditions"
 msgstr "Condições de vitória"
 
+#. STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE
+msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE"
+msgid "active"
+msgstr "ativo"
+
 #. STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS
 msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE_COLORS"
 msgid "active colors"
@@ -2425,6 +2435,11 @@ msgstr "{0} cores"
 msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.PIXEL_SLOT"
 msgid "pixel {0}"
 msgstr "pixel {0}"
+
+#. STRINGS.ONIACCESS.PIXEL_PACK.STANDBY
+msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.STANDBY"
+msgid "standby"
+msgstr "em espera"
 
 #. STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS
 msgctxt "STRINGS.ONIACCESS.PIXEL_PACK.STANDBY_COLORS"
