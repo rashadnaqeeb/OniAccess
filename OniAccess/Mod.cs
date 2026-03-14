@@ -61,6 +61,8 @@ namespace OniAccess {
 			var audioGo = new GameObject("OniAccess_Audio");
 			UnityEngine.Object.DontDestroyOnLoad(audioGo);
 			audioGo.AddComponent<EarconScheduler>();
+			audioGo.AddComponent<Sonifier>();
+			new SonifierController();
 
 			// Register screen-to-handler mappings for ContextDetector
 			ContextDetector.RegisterMenuHandlers();

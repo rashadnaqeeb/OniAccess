@@ -278,6 +278,7 @@ namespace OniAccess.Handlers.Tiles {
 			// (e.g., ManagementMenu.ToggleScreen resets overlay before opening a screen).
 			if (newMode == _lastOverlayMode) return;
 			_lastOverlayMode = newMode;
+			Audio.SonifierController.Instance?.OnOverlayChanged(newMode);
 			if (_queueNextOverlayTtl > 0) {
 				_queueNextOverlayTtl = 0;
 				SpeechPipeline.SpeakQueued(_overlayRegistry.GetOverlayName(newMode));
@@ -630,15 +631,17 @@ namespace OniAccess.Handlers.Tiles {
 			string speech = TileCursor.Instance.Move(direction);
 			if (speech != null) {
 				SpeechPipeline.SpeakInterrupt(speech);
-				if (Audio.EarconScheduler.Instance != null) {
-					HashedString mode = OverlayScreen.Instance != null
-						? OverlayScreen.Instance.GetMode()
-						: OverlayModes.None.ID;
+				HashedString mode = OverlayScreen.Instance != null
+					? OverlayScreen.Instance.GetMode()
+					: OverlayModes.None.ID;
+				if (Audio.EarconScheduler.Instance != null)
 					Audio.EarconScheduler.Instance.PlayForCell(
 						TileCursor.Instance.Cell, mode);
-				}
+				Audio.SonifierController.Instance.OnCursorMoved(
+					TileCursor.Instance.Cell, mode);
 			} else {
 				Audio.EarconScheduler.Instance?.CancelAll();
+				Audio.SonifierController.Instance.Stop();
 			}
 		}
 

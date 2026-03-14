@@ -140,6 +140,12 @@ namespace OniAccess.Handlers {
 			));
 
 			items.Add(new BoolConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION,
+				() => ConfigManager.Config.FlowSonification,
+				value => ConfigManager.Config.FlowSonification = value
+			));
+
+			items.Add(new BoolConfigItem(
 				(string)STRINGS.ONIACCESS.CONFIG.ANNOUNCE_BIOME_CHANGES,
 				() => ConfigManager.Config.AnnounceBiomeChanges,
 				value => ConfigManager.Config.AnnounceBiomeChanges = value

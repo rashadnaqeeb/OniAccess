@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.1
 
+- Flow sonification: a continuous tone plays when the cursor is on a pipe in the liquid or gas overlay. Pitch maps fill level (C4 empty to C5 full), volume reflects how often fluid is present. Toggle in F12 settings (off by default)
 - Pixel pack announces the signal state and color of each pixel at the cursor
 - Duplicants no longer appear in scanner snapshots (still findable via Ctrl+F search)
 - Enter now completes the rectangle when a first corner is set, instead of canceling
