@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Tiles {
 	/// Three items: auto-disinfect toggle, germ threshold slider, threshold text input.
 	/// Opened by Shift+G from TileCursorHandler when the germ overlay is active.
 	/// </summary>
-	public class DisinfectSettingsHandler : BaseMenuHandler {
+	public class DisinfectSettingsHandler: BaseMenuHandler {
 		private enum Item { Toggle = 0, Slider = 1, Input = 2 }
 		private const int ItemTotal = 3;
 		private const int SliderConversion = 1000;

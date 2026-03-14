@@ -7,7 +7,7 @@ using OniAccess.Util;
 using UnityEngine;
 
 namespace OniAccess.Audio {
-	public class EarconScheduler : MonoBehaviour {
+	public class EarconScheduler: MonoBehaviour {
 		public static EarconScheduler Instance { get; private set; }
 
 		private const float BatchDelaySeconds = 0.05f;

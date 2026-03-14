@@ -5,7 +5,7 @@ using OniAccess.Util;
 using UnityEngine;
 
 namespace OniAccess.Audio {
-	public class Sonifier : MonoBehaviour {
+	public class Sonifier: MonoBehaviour {
 		internal static Sonifier Instance { get; private set; }
 
 		// Base pitch: C4 (middle C). Change these to shift the octave.

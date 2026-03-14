@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Screens {
 	/// SetEventData runs after StartScreen returns, so content is empty on the first
 	/// DiscoverWidgets call. Uses the _firstDiscovery deferral pattern.
 	/// </summary>
-	public class EventInfoHandler : BaseWidgetHandler {
+	public class EventInfoHandler: BaseWidgetHandler {
 		private bool _firstDiscovery = true;
 		private string _title;
 

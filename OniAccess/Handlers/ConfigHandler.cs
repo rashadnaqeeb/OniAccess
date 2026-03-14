@@ -5,7 +5,7 @@ using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Input;
 
 namespace OniAccess.Handlers {
-	public class ConfigHandler : BaseMenuHandler {
+	public class ConfigHandler: BaseMenuHandler {
 		private readonly List<ConfigItem> _items;
 
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.CONFIG;

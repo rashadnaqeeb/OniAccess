@@ -12,7 +12,7 @@ namespace OniAccess.Config {
 		public abstract void Cycle(int direction);
 	}
 
-	public class BoolConfigItem : ConfigItem {
+	public class BoolConfigItem: ConfigItem {
 		private readonly Func<bool> _getter;
 		private readonly Action<bool> _setter;
 
@@ -34,7 +34,7 @@ namespace OniAccess.Config {
 		}
 	}
 
-	public class EnumConfigItem<T> : ConfigItem where T : struct {
+	public class EnumConfigItem<T>: ConfigItem where T : struct {
 		private readonly Func<T> _getter;
 		private readonly Action<T> _setter;
 		private readonly T[] _values;

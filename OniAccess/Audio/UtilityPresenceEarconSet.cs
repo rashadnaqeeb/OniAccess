@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace OniAccess.Audio {
-	public class UtilityPresenceEarconSet : EarconSet {
+	public class UtilityPresenceEarconSet: EarconSet {
 		public override int Priority => 2;
 		public override bool IsEnabled => ConfigManager.Config.UtilityPresenceEarcons;
 

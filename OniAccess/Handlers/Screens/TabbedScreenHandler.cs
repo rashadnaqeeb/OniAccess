@@ -18,7 +18,7 @@ namespace OniAccess.Handlers.Screens {
 	/// select the initial tab. Override HandleTabKey for custom Tab behavior
 	/// (e.g., CodexScreenHandler) and HandleKeyDown for custom Escape handling.
 	/// </summary>
-	public abstract class TabbedScreenHandler : BaseScreenHandler {
+	public abstract class TabbedScreenHandler: BaseScreenHandler {
 		private IScreenTab[] _tabArray;
 		private int _activeTabIndex;
 
