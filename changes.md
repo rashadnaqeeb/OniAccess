@@ -2,6 +2,7 @@
 
 ## Changes since 1.0.0
 
+- Fix germ skip skipping past contaminated cells when germs were on buildings, items, or pipe contents rather than the tile surface
 - Codex articles split multi-line text blocks into separate cursor items so each property gets its own line
 - Codex articles no longer repeat redundant names in conversion and recipe panels
 - Pending orders now announce blockers: "needs skill" for dig orders requiring an unskilled colony, "can't store" for sweep orders with no accepting storage
