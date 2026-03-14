@@ -213,10 +213,12 @@ namespace OniAccess.Handlers.Tiles {
 
 		private static string GetTrend(WorldTracker tracker, float threshold) {
 			if (tracker == null) return null;
-			float delta = tracker.GetDelta(600f);
-			if (delta > threshold)
+			float recent = tracker.GetAverageValue(30f);
+			float longer = tracker.GetAverageValue(150f);
+			float diff = recent - longer;
+			if (diff > threshold)
 				return (string)STRINGS.ONIACCESS.RESOURCES.RISING;
-			if (delta < -threshold)
+			if (diff < -threshold)
 				return (string)STRINGS.ONIACCESS.RESOURCES.FALLING;
 			return null;
 		}
