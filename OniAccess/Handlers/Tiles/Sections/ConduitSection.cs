@@ -34,7 +34,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					tokens.Add(sel.GetName());
 			}
 			bridgeConnections |= FindJointPlateConnections(cell);
-			if (tokens.Count > 0)
+			if (tokens.Count > 0 && !ConfigManager.Config.PipeShapeEarcons)
 				tokens.Add(FormatConnections(
 					_getManager().GetConnections(cell, true)
 					| bridgeConnections));

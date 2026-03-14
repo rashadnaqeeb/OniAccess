@@ -62,6 +62,7 @@ namespace OniAccess {
 			UnityEngine.Object.DontDestroyOnLoad(audioGo);
 			audioGo.AddComponent<EarconScheduler>();
 			audioGo.AddComponent<Sonifier>();
+			audioGo.AddComponent<ShapeEarconPlayer>();
 			new SonifierController();
 
 			// Register screen-to-handler mappings for ContextDetector

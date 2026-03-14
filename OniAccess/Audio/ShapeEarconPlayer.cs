@@ -1,0 +1,256 @@
+using System.Collections;
+using FMOD;
+using FMODUnity;
+using OniAccess.Util;
+using UnityEngine;
+
+namespace OniAccess.Audio {
+	public class ShapeEarconPlayer: MonoBehaviour {
+		public static ShapeEarconPlayer Instance { get; private set; }
+
+		const float SegmentSeconds = 0.1f;
+		const float GapSeconds = 0.025f;
+		const float FadeSeconds = 0.005f;
+		const float Volume = 0.15f;
+
+		const float PanLeft = -0.79f;
+		const float PanRight = 0.79f;
+		const float PanCenter = 0f;
+
+		// Harmonic profiles: [fundamental, 2nd, 3rd...]
+		static readonly float[] WireHarmonics = { 1.0f };
+		static readonly float[] PipeHarmonics = { 1.0f, 0.9f };
+		static readonly float[] RailHarmonics = { 1.0f };
+
+		// Each category has 3 tones: index 0 = up, 1 = down, 2 = horizontal
+		const int ToneUp = 0;
+		const int ToneDown = 1;
+		const int ToneHorizontal = 2;
+		const int TonesPerCategory = 3;
+
+		enum ToneCategory { Wire, Pipe, Rail, Count }
+
+		static readonly float[][] Frequencies = {
+			// Wire: up, down, horizontal
+			new[] { 709f, 297f, 457f },
+			// Pipe: same pitch range, different timbre
+			new[] { 709f, 297f, 457f },
+			// Rail: higher frequency range
+			new[] { 9000f, 5000f, 7000f },
+		};
+
+		readonly struct Segment {
+			public readonly int ToneIndex;
+			public readonly float Pan;
+			public Segment(int toneIndex, float pan) {
+				ToneIndex = toneIndex;
+				Pan = pan;
+			}
+		}
+
+		private Sound[] _tones;
+		private Coroutine _activeSequence;
+		private Channel _channel;
+
+		private void Awake() {
+			Instance = this;
+			GenerateTones();
+		}
+
+		private void OnDestroy() {
+			CancelAll();
+			if (_tones != null) {
+				foreach (var sound in _tones)
+					if (sound.hasHandle())
+						sound.release();
+			}
+			if (Instance == this)
+				Instance = null;
+		}
+
+		private void GenerateTones() {
+			int total = (int)ToneCategory.Count * TonesPerCategory;
+			_tones = new Sound[total];
+
+			var harmonicSets = new[] { WireHarmonics, PipeHarmonics, RailHarmonics };
+			for (int cat = 0; cat < (int)ToneCategory.Count; cat++) {
+				for (int tone = 0; tone < TonesPerCategory; tone++) {
+					int idx = cat * TonesPerCategory + tone;
+					_tones[idx] = ToneGenerator.CreateSegmentTone(
+						Frequencies[cat][tone], SegmentSeconds,
+						FadeSeconds, harmonicSets[cat]);
+				}
+			}
+		}
+
+		public void OnCursorMoved(int cell, HashedString overlayMode) {
+			if (!ConfigManager.Config.PipeShapeEarcons
+				|| !Grid.IsValidCell(cell)
+				|| Game.Instance == null) {
+				CancelAll();
+				return;
+			}
+
+			var mapping = GetOverlayMapping(overlayMode);
+			if (mapping == null) {
+				CancelAll();
+				return;
+			}
+
+			var (category, getManager, segmentLayer) = mapping.Value;
+			if (Grid.Objects[cell, (int)segmentLayer] == null) {
+				CancelAll();
+				return;
+			}
+
+			var connections = getManager().GetConnections(cell, true);
+			var segments = GetSegments(connections, category);
+			if (segments == null) {
+				CancelAll();
+				return;
+			}
+
+			CancelAll();
+			_activeSequence = StartCoroutine(RunSequence(segments));
+		}
+
+		public void CancelAll() {
+			if (_activeSequence != null) {
+				StopCoroutine(_activeSequence);
+				_activeSequence = null;
+			}
+			StopChannel();
+		}
+
+		private IEnumerator RunSequence(Segment[] segments) {
+			for (int i = 0; i < segments.Length; i++) {
+				PlaySegment(segments[i]);
+				yield return new WaitForSecondsRealtime(SegmentSeconds);
+				StopChannel();
+				if (i < segments.Length - 1)
+					yield return new WaitForSecondsRealtime(GapSeconds);
+			}
+			_activeSequence = null;
+		}
+
+		private void PlaySegment(Segment seg) {
+			if (seg.ToneIndex < 0 || seg.ToneIndex >= _tones.Length
+				|| !_tones[seg.ToneIndex].hasHandle()) {
+				Log.Warn($"ShapeEarconPlayer: invalid tone index {seg.ToneIndex}");
+				return;
+			}
+			var result = RuntimeManager.CoreSystem.playSound(
+				_tones[seg.ToneIndex], default(ChannelGroup), false,
+				out _channel);
+			if (result != RESULT.OK) {
+				Log.Warn($"ShapeEarconPlayer: playSound failed: {result}");
+				return;
+			}
+			_channel.setVolume(Volume);
+			_channel.setPan(seg.Pan);
+		}
+
+		private void StopChannel() {
+			if (_channel.hasHandle())
+				_channel.stop();
+			_channel = default;
+		}
+
+		private static Segment[] GetSegments(
+				UtilityConnections connections, ToneCategory category) {
+			bool up = (connections & UtilityConnections.Up) != 0;
+			bool down = (connections & UtilityConnections.Down) != 0;
+			bool left = (connections & UtilityConnections.Left) != 0;
+			bool right = (connections & UtilityConnections.Right) != 0;
+			int count = (up ? 1 : 0) + (down ? 1 : 0)
+				+ (left ? 1 : 0) + (right ? 1 : 0);
+
+			int b = (int)category * TonesPerCategory;
+			int u = b + ToneUp;
+			int d = b + ToneDown;
+			int h = b + ToneHorizontal;
+
+			switch (count) {
+				case 0:
+					return null;
+				case 1:
+					if (up) return new[] { new Segment(u, PanCenter) };
+					if (down) return new[] { new Segment(d, PanCenter) };
+					if (left) return new[] { new Segment(h, PanLeft) };
+					return new[] { new Segment(h, PanRight) };
+				case 2:
+					if (up && down)
+						return new[] {
+							new Segment(u, PanCenter),
+							new Segment(d, PanCenter)
+						};
+					if (left && right)
+						return new[] {
+							new Segment(h, PanLeft),
+							new Segment(h, PanRight)
+						};
+					// Corner
+					return new[] {
+						new Segment(up ? u : d, PanCenter),
+						new Segment(h, left ? PanLeft : PanRight)
+					};
+				case 3:
+					if (!up)
+						return new[] {
+							new Segment(h, PanLeft),
+							new Segment(d, PanCenter),
+							new Segment(h, PanRight)
+						};
+					if (!down)
+						return new[] {
+							new Segment(h, PanLeft),
+							new Segment(u, PanCenter),
+							new Segment(h, PanRight)
+						};
+					if (!left)
+						return new[] {
+							new Segment(u, PanCenter),
+							new Segment(h, PanRight),
+							new Segment(d, PanCenter)
+						};
+					return new[] {
+						new Segment(u, PanCenter),
+						new Segment(h, PanLeft),
+						new Segment(d, PanCenter)
+					};
+				default:
+					return new[] {
+						new Segment(u, PanCenter),
+						new Segment(h, PanRight),
+						new Segment(d, PanCenter),
+						new Segment(h, PanLeft)
+					};
+			}
+		}
+
+		private static (ToneCategory, System.Func<IUtilityNetworkMgr>, ObjectLayer)?
+				GetOverlayMapping(HashedString overlayMode) {
+			if (overlayMode == OverlayModes.Power.ID)
+				return (ToneCategory.Wire,
+					() => Game.Instance.electricalConduitSystem,
+					ObjectLayer.Wire);
+			if (overlayMode == OverlayModes.LiquidConduits.ID)
+				return (ToneCategory.Pipe,
+					() => Game.Instance.liquidConduitSystem,
+					ObjectLayer.LiquidConduit);
+			if (overlayMode == OverlayModes.GasConduits.ID)
+				return (ToneCategory.Pipe,
+					() => Game.Instance.gasConduitSystem,
+					ObjectLayer.GasConduit);
+			if (overlayMode == OverlayModes.SolidConveyor.ID)
+				return (ToneCategory.Rail,
+					() => Game.Instance.solidConduitSystem,
+					ObjectLayer.SolidConduit);
+			if (overlayMode == OverlayModes.Logic.ID)
+				return (ToneCategory.Wire,
+					() => Game.Instance.logicCircuitSystem,
+					ObjectLayer.LogicWire);
+			return null;
+		}
+	}
+}

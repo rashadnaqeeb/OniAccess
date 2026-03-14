@@ -28,12 +28,14 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					tokens.Add(sel.GetName());
 			}
 			if (tokens.Count > 0) {
-				var conn = ConduitSection.FormatConnections(
-					Game.Instance.logicCircuitSystem
-						.GetConnections(cell, true)
-					| bridgeConnections);
-				if (conn != null)
-					tokens.Add(conn);
+				if (!ConfigManager.Config.PipeShapeEarcons) {
+					var conn = ConduitSection.FormatConnections(
+						Game.Instance.logicCircuitSystem
+							.GetConnections(cell, true)
+						| bridgeConnections);
+					if (conn != null)
+						tokens.Add(conn);
+				}
 				if (wire != null) {
 					var signal = FormatSignal(cell, wire);
 					if (signal != null)

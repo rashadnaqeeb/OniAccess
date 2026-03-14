@@ -650,6 +650,7 @@ namespace OniAccess.Handlers.Tiles {
 				UpdateAudioForCell();
 			} else {
 				Audio.EarconScheduler.Instance?.CancelAll();
+				Audio.ShapeEarconPlayer.Instance?.CancelAll();
 				Audio.SonifierController.Instance.Stop();
 			}
 		}
@@ -661,6 +662,8 @@ namespace OniAccess.Handlers.Tiles {
 			if (Audio.EarconScheduler.Instance != null)
 				Audio.EarconScheduler.Instance.PlayForCell(
 					TileCursor.Instance.Cell, mode);
+			Audio.ShapeEarconPlayer.Instance?.OnCursorMoved(
+				TileCursor.Instance.Cell, mode);
 			Audio.SonifierController.Instance.OnCursorMoved(
 				TileCursor.Instance.Cell, mode);
 		}

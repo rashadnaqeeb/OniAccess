@@ -9,6 +9,73 @@ namespace OniAccess.Audio {
 		private const int SampleRate = 48000;
 		private const int ChannelCount = 1;
 
+		/// <summary>
+		/// Creates a short non-looping tone with fade-in/out envelope.
+		/// Harmonics array specifies relative amplitudes for overtones
+		/// (index 0 = fundamental, index 1 = 2nd harmonic, etc.).
+		/// </summary>
+		public static Sound CreateSegmentTone(
+				float frequencyHz, float durationSeconds,
+				float fadeSeconds, float[] harmonics) {
+			int sampleCount = (int)(SampleRate * durationSeconds);
+			uint byteLength = (uint)(sampleCount * sizeof(float));
+			int fadeSamples = (int)(SampleRate * fadeSeconds);
+
+			var exinfo = new CREATESOUNDEXINFO();
+			exinfo.cbsize = Marshal.SizeOf(exinfo);
+			exinfo.length = byteLength;
+			exinfo.numchannels = ChannelCount;
+			exinfo.defaultfrequency = SampleRate;
+			exinfo.format = SOUND_FORMAT.PCMFLOAT;
+
+			var result = RuntimeManager.CoreSystem.createSound(
+				(string)null, MODE.OPENRAW | MODE.OPENUSER,
+				ref exinfo, out var sound);
+			if (result != RESULT.OK) {
+				Log.Error($"ToneGenerator: createSound failed: {result}");
+				return default;
+			}
+
+			result = sound.@lock(0, byteLength, out var ptr1, out var ptr2,
+				out var len1, out var len2);
+			if (result != RESULT.OK) {
+				Log.Error($"ToneGenerator: lock failed: {result}");
+				sound.release();
+				return default;
+			}
+
+			var samples = new float[sampleCount];
+			for (int i = 0; i < sampleCount; i++) {
+				float t = (float)i / SampleRate;
+				float sample = 0f;
+				for (int h = 0; h < harmonics.Length; h++) {
+					if (harmonics[h] == 0f) continue;
+					sample += harmonics[h]
+						* (float)Math.Sin(2.0 * Math.PI * frequencyHz * (h + 1) * t);
+				}
+				// Fade envelope
+				float env = 1f;
+				if (i < fadeSamples)
+					env = (float)i / fadeSamples;
+				else if (i > sampleCount - fadeSamples)
+					env = (float)(sampleCount - i) / fadeSamples;
+				samples[i] = sample * env;
+			}
+
+			Marshal.Copy(samples, 0, ptr1, (int)(len1 / sizeof(float)));
+			if (ptr2 != IntPtr.Zero && len2 > 0)
+				Marshal.Copy(samples, (int)(len1 / sizeof(float)), ptr2,
+					(int)(len2 / sizeof(float)));
+
+			result = sound.unlock(ptr1, ptr2, len1, len2);
+			if (result != RESULT.OK) {
+				Log.Error($"ToneGenerator: unlock failed: {result}");
+				sound.release();
+				return default;
+			}
+			return sound;
+		}
+
 		public static Sound CreateLoopingSineWave(float frequencyHz, float durationSeconds) {
 			int sampleCount = (int)(SampleRate * durationSeconds);
 			uint byteLength = (uint)(sampleCount * sizeof(float));

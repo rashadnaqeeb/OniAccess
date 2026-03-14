@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.1
 
+- Shape earcons: when enabled, plays tonal sequences to convey pipe, wire, and rail connection shapes in overlay views instead of speaking them. Toggle in F12 settings (off by default)
 - Flow sonification: fix buzzing artifacts from loop seam and abrupt volume changes; reduce volume
 - Flow sonification: a continuous tone plays when the cursor is on a pipe in the liquid or gas overlay. Pitch maps fill level (C4 empty to C5 full), volume reflects how often fluid is present. Toggle in F12 settings (off by default)
 - Pixel pack announces the signal state and color of each pixel at the cursor
