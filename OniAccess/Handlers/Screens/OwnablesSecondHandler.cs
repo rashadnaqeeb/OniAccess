@@ -84,8 +84,7 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			int cell = Grid.PosToCell(item.transform.position);
-			Grid.CellToXY(cell, out int x, out int y);
-			itemLabel += $". {x}, {y}";
+			itemLabel += ". " + Util.GridCoordinates.Format(cell);
 
 			if (isCurrentItem)
 				itemLabel = (string)STRINGS.ONIACCESS.STATES.SELECTED + ", " + itemLabel;
