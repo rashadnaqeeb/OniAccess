@@ -20,7 +20,6 @@ namespace OniAccess.Audio {
 		// Harmonic profiles: [fundamental, 2nd, 3rd...]
 		static readonly float[] WireHarmonics = { 1.0f };
 		static readonly float[] PipeHarmonics = { 1.0f, 0.9f };
-		static readonly float[] RailHarmonics = { 1.0f };
 
 		// Each category has 3 tones: index 0 = up, 1 = down, 2 = horizontal
 		const int ToneUp = 0;
@@ -28,15 +27,13 @@ namespace OniAccess.Audio {
 		const int ToneHorizontal = 2;
 		const int TonesPerCategory = 3;
 
-		enum ToneCategory { Wire, Pipe, Rail, Count }
+		enum ToneCategory { Wire, Pipe, Count }
 
 		static readonly float[][] Frequencies = {
 			// Wire: up, down, horizontal
 			new[] { 709f, 297f, 457f },
-			// Pipe: same pitch range, different timbre
+			// Pipe (also used for rail): same pitch range, different timbre
 			new[] { 709f, 297f, 457f },
-			// Rail: higher frequency range
-			new[] { 9000f, 5000f, 7000f },
 		};
 
 		readonly struct Segment {
@@ -72,7 +69,7 @@ namespace OniAccess.Audio {
 			int total = (int)ToneCategory.Count * TonesPerCategory;
 			_tones = new Sound[total];
 
-			var harmonicSets = new[] { WireHarmonics, PipeHarmonics, RailHarmonics };
+			var harmonicSets = new[] { WireHarmonics, PipeHarmonics };
 			for (int cat = 0; cat < (int)ToneCategory.Count; cat++) {
 				for (int tone = 0; tone < TonesPerCategory; tone++) {
 					int idx = cat * TonesPerCategory + tone;
@@ -243,7 +240,7 @@ namespace OniAccess.Audio {
 					() => Game.Instance.gasConduitSystem,
 					ObjectLayer.GasConduit);
 			if (overlayMode == OverlayModes.SolidConveyor.ID)
-				return (ToneCategory.Rail,
+				return (ToneCategory.Pipe,
 					() => Game.Instance.solidConduitSystem,
 					ObjectLayer.SolidConduit);
 			if (overlayMode == OverlayModes.Logic.ID)
