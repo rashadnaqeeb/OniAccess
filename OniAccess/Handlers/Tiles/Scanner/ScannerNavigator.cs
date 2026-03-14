@@ -81,6 +81,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				return;
 			}
 
+			allEntries.RemoveAll(e => e.Subcategory == ScannerTaxonomy.Subcategories.Duplicants);
 			_snapshot = new ScannerSnapshot(allEntries, cursorCell);
 
 			// Preserve category position if possible
