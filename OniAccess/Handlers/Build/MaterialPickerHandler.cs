@@ -63,6 +63,11 @@ namespace OniAccess.Handlers.Build {
 				return;
 
 			var entry = _materials[CurrentIndex];
+			if (!entry.Sufficient) {
+				PlaySound("Negative");
+				SpeechPipeline.SpeakInterrupt(_materials[CurrentIndex].Label);
+				return;
+			}
 			SelectMaterial(entry.Tag);
 			HandlerStack.Pop();
 		}
@@ -122,7 +127,7 @@ namespace OniAccess.Handlers.Build {
 					label += ", " + string.Join(", ", effects.ToArray());
 				}
 
-				var entry = new MaterialEntry { Tag = tag, Label = label };
+				var entry = new MaterialEntry { Tag = tag, Label = label, Sufficient = hasSufficient };
 				if (hasSufficient)
 					sufficient.Add(entry);
 				else
@@ -189,6 +194,7 @@ namespace OniAccess.Handlers.Build {
 		private struct MaterialEntry {
 			public Tag Tag;
 			public string Label;
+			public bool Sufficient;
 		}
 	}
 }
