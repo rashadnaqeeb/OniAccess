@@ -34,37 +34,64 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// Returns speech text for a widget, or null if the widget should be skipped.
 		/// </summary>
 		internal static string GetText(ICodexWidget widget, string currentEntryId = null) {
-			string raw;
-			if (widget is CodexText ct)
-				raw = GetCodexTextSpeech(ct);
-			else if (widget is CodexTextWithTooltip ctwt)
-				raw = GetCodexTextWithTooltipSpeech(ctwt);
-			else if (widget is CodexLabelWithLargeIcon clli)
-				raw = clli.label?.text;
-			else if (widget is CodexLabelWithIcon cli)
-				raw = cli.label?.text;
-			else if (widget is CodexIndentedLabelWithIcon cili)
-				raw = cili.label?.text;
-			else if (widget is CodexRecipePanel crp)
-				raw = GetRecipeSpeech(crp, currentEntryId);
-			else if (widget is CodexConversionPanel ccp)
-				raw = GetConversionSpeech(ccp, currentEntryId);
-			else if (widget is CodexTemperatureTransitionPanel cttp)
-				raw = GetTemperatureTransitionSpeech(cttp);
-			else if (widget is CodexConfigurableConsumerRecipePanel ccrp)
-				raw = GetConsumerRecipeSpeech(ccrp);
-			else if (widget is CodexCollapsibleHeader cch)
-				raw = GetCollapsibleHeaderSpeech(cch);
-			else if (widget is CodexVideo cv)
-				raw = GetVideoSpeech(cv);
-			else if (widget is CodexContentLockedIndicator)
-				raw = (string)STRINGS.ONIACCESS.CODEX.LOCKED_CONTENT;
-			else
-				// Skip visual-only widgets: CodexImage, CodexDividerLine,
-				// CodexSpacer, CodexLargeSpacer, CodexCritterLifecycleWidget
-				return null;
-
+			string raw = GetRawText(widget, currentEntryId);
 			return Widgets.WidgetOps.CleanTooltipEntry(raw);
+		}
+
+		/// <summary>
+		/// Returns one content line per newline-separated segment in the widget text.
+		/// Element descriptions, critter descriptions, etc. pack multiple properties
+		/// into a single CodexText separated by newlines. Splitting them gives each
+		/// property its own cursor position.
+		/// </summary>
+		internal static List<string> GetTextLines(ICodexWidget widget, string currentEntryId = null) {
+			string raw = GetRawText(widget, currentEntryId);
+			if (string.IsNullOrEmpty(raw)) return null;
+
+			string[] parts = raw.Split('\n');
+			if (parts.Length <= 1) {
+				string cleaned = Widgets.WidgetOps.CleanTooltipEntry(raw);
+				if (string.IsNullOrEmpty(cleaned)) return null;
+				return new List<string> { cleaned };
+			}
+
+			var result = new List<string>();
+			foreach (string part in parts) {
+				string cleaned = Widgets.WidgetOps.CleanTooltipEntry(part);
+				if (!string.IsNullOrEmpty(cleaned))
+					result.Add(cleaned);
+			}
+			return result.Count > 0 ? result : null;
+		}
+
+		private static string GetRawText(ICodexWidget widget, string currentEntryId) {
+			if (widget is CodexText ct)
+				return GetCodexTextSpeech(ct);
+			if (widget is CodexTextWithTooltip ctwt)
+				return GetCodexTextWithTooltipSpeech(ctwt);
+			if (widget is CodexLabelWithLargeIcon clli)
+				return clli.label?.text;
+			if (widget is CodexLabelWithIcon cli)
+				return cli.label?.text;
+			if (widget is CodexIndentedLabelWithIcon cili)
+				return cili.label?.text;
+			if (widget is CodexRecipePanel crp)
+				return GetRecipeSpeech(crp, currentEntryId);
+			if (widget is CodexConversionPanel ccp)
+				return GetConversionSpeech(ccp, currentEntryId);
+			if (widget is CodexTemperatureTransitionPanel cttp)
+				return GetTemperatureTransitionSpeech(cttp);
+			if (widget is CodexConfigurableConsumerRecipePanel ccrp)
+				return GetConsumerRecipeSpeech(ccrp);
+			if (widget is CodexCollapsibleHeader cch)
+				return GetCollapsibleHeaderSpeech(cch);
+			if (widget is CodexVideo cv)
+				return GetVideoSpeech(cv);
+			if (widget is CodexContentLockedIndicator)
+				return (string)STRINGS.ONIACCESS.CODEX.LOCKED_CONTENT;
+			// Skip visual-only widgets: CodexImage, CodexDividerLine,
+			// CodexSpacer, CodexLargeSpacer, CodexCritterLifecycleWidget
+			return null;
 		}
 
 		/// <summary>
@@ -289,16 +316,28 @@ namespace OniAccess.Handlers.Screens.Codex {
 					skip: i => outs[i].tag == Tag.Invalid);
 			}
 
-			if (converterName != null) {
-				bool isSameArticle = currentEntryId != null
-					&& converter.GetComponent<KPrefabID>()?.PrefabTag.Name.ToUpper() == currentEntryId;
-				if (!isSameArticle) {
-					sb.Append(". ");
-					sb.Append(converterName);
-				}
+			if (converterName != null && !IsConverterSameArticle(converter, currentEntryId)) {
+				sb.Append(". ");
+				sb.Append(converterName);
 			}
 
 			return sb.ToString();
+		}
+
+		/// <summary>
+		/// Whether the converter GameObject belongs to the article currently being viewed.
+		/// Matches both standalone entries (buildings) and SubEntries (critter morphs
+		/// whose parent entry is the active article).
+		/// </summary>
+		private static bool IsConverterSameArticle(UnityEngine.GameObject converter, string currentEntryId) {
+			if (currentEntryId == null) return false;
+			var kpid = converter.GetComponent<KPrefabID>();
+			if (kpid == null) return false;
+			string prefabId = kpid.PrefabTag.Name;
+			if (prefabId.ToUpper() == currentEntryId) return true;
+			if (CodexCache.subEntries.TryGetValue(prefabId, out var sub))
+				return sub.parentEntryID.ToUpper() == currentEntryId;
+			return false;
 		}
 
 		private static List<(string id, string text)> GetConversionLinks(CodexConversionPanel panel) {

@@ -312,15 +312,29 @@ namespace OniAccess.Handlers.Screens.Codex {
 						continue;
 					}
 
-					string text = WidgetTextExtractor.GetText(widget, entryId);
-					if (string.IsNullOrEmpty(text)) continue;
+					var lines = WidgetTextExtractor.GetTextLines(widget, entryId);
+					if (lines == null) continue;
 
-					_items.Add(new ContentItem {
-						text = text,
-						isHeading = WidgetTextExtractor.IsSectionHeading(widget),
-						links = WidgetTextExtractor.GetLinks(widget),
-						video = widget as CodexVideo,
-					});
+					bool isHeading = WidgetTextExtractor.IsSectionHeading(widget);
+					var links = WidgetTextExtractor.GetLinks(widget);
+					var video = widget as CodexVideo;
+
+					if (lines.Count == 1) {
+						_items.Add(new ContentItem {
+							text = lines[0],
+							isHeading = isHeading,
+							links = links,
+							video = video,
+						});
+					} else {
+						foreach (string line in lines) {
+							_items.Add(new ContentItem {
+								text = line,
+								isHeading = false,
+								links = null,
+							});
+						}
+					}
 				}
 			}
 		}
