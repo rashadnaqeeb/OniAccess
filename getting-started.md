@@ -23,6 +23,8 @@ Oxygen Not Included is a colony survival sim. You manage a group of duplicants (
 
 The world is a 2D side-view grid. This means that you move up, down, right, and left, rather than in cardinal directions. Each tile contains an element (granite, dirt, oxygen, water, etc.) and may have buildings, creatures, or debris on it.
 
+There is a [Getting Started guide on Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=1359110726) written for sighted players. It contains a lot of screenshots, but the text is detailed enough to be reasonably followable.
+
 ## Getting started
 
 **?** (Shift+/) is context-sensitive help. Press it on any screen to see every key available in that context. This is the fastest way to learn the mod.
