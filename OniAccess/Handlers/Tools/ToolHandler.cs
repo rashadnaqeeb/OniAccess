@@ -313,6 +313,29 @@ namespace OniAccess.Handlers.Tools {
 				}
 			}
 
+			if (Selection.PendingFirstCorner != Grid.InvalidCell) {
+				int cell = TileCursor.Instance.Cell;
+				if (!Grid.IsVisible(cell)) {
+					PlaySound("Negative");
+					SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+					return;
+				}
+				if (_toolInfo != null && _toolInfo.IsLineMode) {
+					int col1 = Grid.CellColumn(Selection.PendingFirstCorner);
+					int row1 = Grid.CellRow(Selection.PendingFirstCorner);
+					int col2 = Grid.CellColumn(cell);
+					int row2 = Grid.CellRow(cell);
+					bool sameCol = col1 == col2;
+					bool sameRow = row1 == row2;
+					if ((!sameCol && !sameRow)
+						|| (sameRow ? Math.Abs(col2 - col1) : Math.Abs(row2 - row1)) > 1) {
+						SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.DISCONNECT_TOO_FAR);
+						return;
+					}
+				}
+				Selection.SetCorner(cell, out _);
+			}
+
 			if (Selection.RectangleCount == 0) {
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.CANCELED);
 				PlayDeactivateSound();

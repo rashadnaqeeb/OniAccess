@@ -2,6 +2,8 @@
 
 ## Changes since 1.0.1
 
+- Enter now completes the rectangle when a first corner is set, instead of canceling
+
 ## 1.0.1
 
 - Recipe screen ingredient slots now show how many other material options are available
