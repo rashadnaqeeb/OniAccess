@@ -299,6 +299,18 @@ The cluster map has its own scanner with the same keys as the tile scanner (End,
 
 Most menu screens support type-ahead: start typing to filter. Matches are ranked in five tiers from start-of-string exact matches down to substring matches. Typing a single letter repeatedly cycles through items starting with that letter. Backspace edits the query. Escape clears the search.
 
+## Settings (F12)
+
+**F12** opens the settings screen. All settings persist across sessions. Navigate with Up/Down, toggle with Enter or Left/Right. Type-ahead search works here too.
+
+- **Tile cursor coordinate mode** (Off / Append / Prepend) -- controls whether X,Y coordinates are included in every tile announcement. Off by default
+- **Auto-move cursor when cycling scanner entries** -- when on, the cursor teleports as you cycle scanner instances, and distances are measured from where you scanned. Off by default
+- **Lock zoom level when moving tile cursor** -- locks the camera zoom to level 10, which is the best level for audio. On by default
+- **Utility presence earcons** -- work in progress, not a complete feature yet. Off by default
+- **Pipe shape earcons** -- work in progress, not a complete feature yet. Off by default
+- **Passability earcons** -- work in progress, not a complete feature yet. Off by default
+- **Announce biome changes** -- speaks the biome name when the tile cursor crosses into a different biome. On by default
+
 ## Base game hotkeys
 
 ### Management screens
