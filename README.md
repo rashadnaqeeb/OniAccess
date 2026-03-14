@@ -1,6 +1,6 @@
 # OniAccess Reference
 
-OniAccess is an accessibility mod that makes Oxygen Not Included playable for blind users through screen reader speech output. This is the full feature reference. For install instructions and getting started, see [getting-started.md](getting-started.md).
+OniAccess is an accessibility mod that makes Oxygen Not Included playable for blind users through screen reader speech output. This is the full feature reference. For install instructions and getting started, see [getting-started.md](getting-started.md). For recent changes, see [changes.md](changes.md).
 
 ## Context help and mod toggle
 
