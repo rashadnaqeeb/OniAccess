@@ -84,14 +84,17 @@ namespace OniAccess.Handlers.Build {
 			if (recipe == null || _selectorIndex >= recipe.Ingredients.Count)
 				return;
 
-			var ingredient = recipe.Ingredients[_selectorIndex];
-			var validTags = MaterialSelector.GetValidMaterials(ingredient.tag);
+			var selector = GetSelector();
+			if (selector == null)
+				return;
 
+			var ingredient = recipe.Ingredients[_selectorIndex];
 			var sufficient = new List<MaterialEntry>();
 			var insufficient = new List<MaterialEntry>();
 
-			foreach (var tag in validTags) {
-				if (!DiscoveredResources.Instance.IsDiscovered(tag))
+			foreach (var pair in selector.ElementToggles) {
+				var tag = pair.Key;
+				if (!pair.Value.gameObject.activeSelf)
 					continue;
 
 				float available = ClusterManager.Instance.activeWorld.worldInventory
@@ -148,20 +151,35 @@ namespace OniAccess.Handlers.Build {
 			}
 		}
 
-		private void SelectMaterial(Tag tag) {
+		private MaterialSelector GetSelector() {
 			try {
 				var panel = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel;
-				if (_selectorIndex == 0)
-					panel.ForceSelectPrimaryTag(tag);
-				else {
-					// Access the materialSelectors list via reflection
-					var field = HarmonyLib.AccessTools.Field(
-						typeof(MaterialSelectionPanel), "materialSelectors");
-					var selectors = (List<MaterialSelector>)field.GetValue(panel);
-					if (_selectorIndex < selectors.Count)
-						selectors[_selectorIndex].OnSelectMaterial(
-							tag, _def.CraftRecipe, false);
+				var field = HarmonyLib.AccessTools.Field(
+					typeof(MaterialSelectionPanel), "materialSelectors");
+				var selectors = (List<MaterialSelector>)field.GetValue(panel);
+				if (_selectorIndex < selectors.Count)
+					return selectors[_selectorIndex];
+			} catch (System.Exception ex) {
+				Util.Log.Error($"MaterialPickerHandler.GetSelector: {ex}");
+			}
+			return null;
+		}
+
+		private void SelectMaterial(Tag tag) {
+			try {
+				var selector = GetSelector();
+				if (selector == null)
+					return;
+
+				if (!selector.ElementToggles.ContainsKey(tag)) {
+					Util.Log.Warn(
+						$"MaterialPickerHandler.SelectMaterial: " +
+						$"'{tag}' not in ElementToggles " +
+						$"(count={selector.ElementToggles.Count})");
+					return;
 				}
+
+				selector.OnSelectMaterial(tag, _def.CraftRecipe, false);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"MaterialPickerHandler.SelectMaterial: {ex}");
 			}
