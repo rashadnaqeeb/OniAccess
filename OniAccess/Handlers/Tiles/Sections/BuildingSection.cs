@@ -32,8 +32,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (backwallGo != null && !ctx.Claimed.Contains(backwallGo)
 					&& !IsOverlayFocused()) {
 					var selectable = backwallGo.GetComponent<KSelectable>();
-					if (selectable != null)
+					if (selectable != null) {
 						tokens.Add(GetBuildingName(backwallGo, selectable));
+						ReadPixelPack(backwallGo, cell, tokens);
+					}
 				}
 			} catch (System.Exception ex) {
 				Util.Log.Error($"BuildingSection.Read: {ex}");
@@ -648,6 +650,48 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					return building.Def.Name;
 			}
 			return selectable.GetName();
+		}
+
+		private static void ReadPixelPack(
+				GameObject go, int cell, List<string> tokens) {
+			var pixelPack = go.GetComponent<PixelPack>();
+			if (pixelPack == null || pixelPack.colorSettings == null) return;
+
+			var building = go.GetComponent<Building>();
+			if (building == null) return;
+
+			int origin = Grid.PosToCell(building.transform.GetPosition());
+			int pixelIndex = -1;
+			for (int x = 0; x < 4; x++) {
+				var offset = new CellOffset(x, 0);
+				var rotated = Rotatable.GetRotatedCellOffset(offset, building.Orientation);
+				if (Grid.OffsetCell(origin, rotated) == cell) {
+					pixelIndex = x;
+					break;
+				}
+			}
+			if (pixelIndex < 0 || pixelIndex >= pixelPack.colorSettings.Count)
+				return;
+
+			var logicPorts = go.GetComponent<LogicPorts>();
+			int bit = pixelIndex;
+			if (logicPorts != null
+				&& logicPorts.GetConnectedWireBitDepth(PixelPack.PORT_ID)
+					== LogicWire.BitDepth.OneBit)
+				bit = 0;
+
+			bool active = LogicCircuitNetwork.IsBitActive(bit, pixelPack.logicValue);
+			var colorPair = pixelPack.colorSettings[pixelIndex];
+			Color color = active ? colorPair.activeColor : colorPair.standbyColor;
+
+			string state = active
+				? (string)STRINGS.ONIACCESS.PIXEL_PACK.ACTIVE
+				: (string)STRINGS.ONIACCESS.PIXEL_PACK.STANDBY;
+			string colorName = Widgets.ColorNameUtil.GetColorName(color);
+			if (colorName != null)
+				tokens.Add($"{state}, {colorName}");
+			else
+				tokens.Add(state);
 		}
 	}
 }

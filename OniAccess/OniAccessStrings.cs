@@ -902,8 +902,10 @@ namespace STRINGS {
 			public static LocString PALE_GREEN = "pale green";
 		}
 
-		// Pixel Pack building side screen
+		// Pixel Pack building side screen and cursor announcement
 		public class PIXEL_PACK {
+			public static LocString ACTIVE = "active";
+			public static LocString STANDBY = "standby";
 			public static LocString PALETTE = "color palette";
 			public static LocString ACTIVE_COLORS = "active colors";
 			public static LocString STANDBY_COLORS = "standby colors";

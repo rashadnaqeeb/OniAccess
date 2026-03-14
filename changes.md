@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.1
 
+- Pixel pack announces the signal state and color of each pixel at the cursor
 - Duplicants no longer appear in scanner snapshots (still findable via Ctrl+F search)
 - Enter now completes the rectangle when a first corner is set, instead of canceling
 
