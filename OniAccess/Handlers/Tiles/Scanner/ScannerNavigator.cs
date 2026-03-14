@@ -331,6 +331,12 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			var entry = CurrentEntry();
 			if (entry == null) return;
 			TileCursor.Instance.JumpTo(entry.Cell);
+			HashedString mode = OverlayScreen.Instance != null
+				? OverlayScreen.Instance.GetMode()
+				: OverlayModes.None.ID;
+			if (Audio.EarconScheduler.Instance != null)
+				Audio.EarconScheduler.Instance.PlayForCell(entry.Cell, mode);
+			Audio.SonifierController.Instance.OnCursorMoved(entry.Cell, mode);
 		}
 
 		private ScannerSubcategory CurrentSubcategory() {

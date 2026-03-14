@@ -3257,7 +3257,8 @@ namespace OniAccess.Tests {
 
 		private static (string, bool, string) FormatResultVisibleOnly() {
 			var r = new HexPathfinder.PathResult {
-				HasVisiblePath = true, VisiblePathLength = 5
+				HasVisiblePath = true,
+				VisiblePathLength = 5
 			};
 			string result = HexPathfinder.FormatResult(r);
 			string expected = string.Format(
@@ -3269,7 +3270,9 @@ namespace OniAccess.Tests {
 
 		private static (string, bool, string) FormatResultFogOnly() {
 			var r = new HexPathfinder.PathResult {
-				HasFogPath = true, FogPathLength = 7, FogCellCount = 3
+				HasFogPath = true,
+				FogPathLength = 7,
+				FogCellCount = 3
 			};
 			string result = HexPathfinder.FormatResult(r);
 			string expected = string.Format(
@@ -3281,8 +3284,11 @@ namespace OniAccess.Tests {
 
 		private static (string, bool, string) FormatResultBothFogShorter() {
 			var r = new HexPathfinder.PathResult {
-				HasVisiblePath = true, VisiblePathLength = 10,
-				HasFogPath = true, FogPathLength = 6, FogCellCount = 2
+				HasVisiblePath = true,
+				VisiblePathLength = 10,
+				HasFogPath = true,
+				FogPathLength = 6,
+				FogCellCount = 2
 			};
 			string result = HexPathfinder.FormatResult(r);
 			string expected = string.Format(
@@ -3295,8 +3301,11 @@ namespace OniAccess.Tests {
 
 		private static (string, bool, string) FormatResultBothVisibleShorter() {
 			var r = new HexPathfinder.PathResult {
-				HasVisiblePath = true, VisiblePathLength = 4,
-				HasFogPath = true, FogPathLength = 8, FogCellCount = 3
+				HasVisiblePath = true,
+				VisiblePathLength = 4,
+				HasFogPath = true,
+				FogPathLength = 8,
+				FogCellCount = 3
 			};
 			string result = HexPathfinder.FormatResult(r);
 			string expected = string.Format(
@@ -3569,7 +3578,8 @@ namespace OniAccess.Tests {
 
 		static (string, bool, string) MergerChildrenMerged() {
 			var parent = new LabelWidget {
-				Key = "p", Label = "Parent",
+				Key = "p",
+				Label = "Parent",
 				Children = new List<Widget> {
 					new LabelWidget { Key = "c1", Label = "Child1" },
 					new LabelWidget { Key = "c2", Label = "Child2" }
@@ -3581,7 +3591,8 @@ namespace OniAccess.Tests {
 			};
 
 			var freshParent = new LabelWidget {
-				Key = "p", Label = "ParentNew",
+				Key = "p",
+				Label = "ParentNew",
 				Children = new List<Widget> {
 					new LabelWidget { Key = "c2", Label = "Child2New" },
 					new LabelWidget { Key = "c1", Label = "Child1New" }
@@ -3636,10 +3647,16 @@ namespace OniAccess.Tests {
 		}
 
 		static (string, bool, string) MergerUpdateFromCopiesFields() {
-			var oldW = new LabelWidget { Key = "k", Label = "Old",
-				SuppressTooltip = false };
-			var newW = new LabelWidget { Key = "k", Label = "New",
-				SuppressTooltip = true };
+			var oldW = new LabelWidget {
+				Key = "k",
+				Label = "Old",
+				SuppressTooltip = false
+			};
+			var newW = new LabelWidget {
+				Key = "k",
+				Label = "New",
+				SuppressTooltip = true
+			};
 			oldW.UpdateFrom(newW);
 			bool ok = oldW.Label == "New" && oldW.SuppressTooltip;
 			return Assert("MergerUpdateFromCopiesFields", ok,

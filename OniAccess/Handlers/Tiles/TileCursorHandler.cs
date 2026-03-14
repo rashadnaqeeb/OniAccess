@@ -310,8 +310,10 @@ namespace OniAccess.Handlers.Tiles {
 			LoadGate.Tick();
 
 			string arrived = TileCursor.Instance.SyncToCamera();
-			if (arrived != null)
+			if (arrived != null) {
 				SpeechPipeline.SpeakInterrupt(arrived);
+				UpdateAudioForCell();
+			}
 
 			CursorRuler.Instance.OnCursorMoved(TileCursor.Instance.Cell);
 
@@ -363,41 +365,49 @@ namespace OniAccess.Handlers.Tiles {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
 				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Up));
+				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)
 				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Down));
+				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)
 				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Left));
+				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)
 				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Right));
+				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
 				&& InputUtil.CtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Up));
+				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)
 				&& InputUtil.CtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Down));
+				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)
 				&& InputUtil.CtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Left));
+				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)
 				&& InputUtil.CtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Right));
+				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
@@ -500,6 +510,7 @@ namespace OniAccess.Handlers.Tiles {
 				if (!InputUtil.AnyModifierHeld()) {
 					_preJumpCell = TileCursor.Instance.Cell;
 					_dupeNavigator.JumpOrSelect();
+					UpdateAudioForCell();
 					return true;
 				}
 			}
@@ -544,6 +555,7 @@ namespace OniAccess.Handlers.Tiles {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.H)
 				&& !InputUtil.AnyModifierHeld()) {
 				SpeechPipeline.SpeakInterrupt(CursorBookmarks.JumpHome());
+				UpdateAudioForCell();
 				return true;
 			}
 			int bmDigit = InputUtil.GetDigitKeyDown();
@@ -551,6 +563,7 @@ namespace OniAccess.Handlers.Tiles {
 				int idx = bmDigit == 0 ? 9 : bmDigit - 1;
 				if (InputUtil.ShiftHeld()) {
 					SpeechPipeline.SpeakInterrupt(_bookmarks.Goto(idx));
+					UpdateAudioForCell();
 					return true;
 				}
 				if (InputUtil.AltHeld()) {
@@ -588,6 +601,7 @@ namespace OniAccess.Handlers.Tiles {
 				if (!InputUtil.AnyModifierHeld()) {
 					_preJumpCell = TileCursor.Instance.Cell;
 					_scanner.Teleport();
+					UpdateAudioForCell();
 					return true;
 				}
 			}
@@ -597,8 +611,10 @@ namespace OniAccess.Handlers.Tiles {
 					int savedCell = _preJumpCell;
 					_preJumpCell = Grid.InvalidCell;
 					string speech = TileCursor.Instance.JumpTo(savedCell);
-					if (speech != null)
+					if (speech != null) {
 						SpeechPipeline.SpeakInterrupt(speech);
+						UpdateAudioForCell();
+					}
 				}
 				return true;
 			}
@@ -631,18 +647,22 @@ namespace OniAccess.Handlers.Tiles {
 			string speech = TileCursor.Instance.Move(direction);
 			if (speech != null) {
 				SpeechPipeline.SpeakInterrupt(speech);
-				HashedString mode = OverlayScreen.Instance != null
-					? OverlayScreen.Instance.GetMode()
-					: OverlayModes.None.ID;
-				if (Audio.EarconScheduler.Instance != null)
-					Audio.EarconScheduler.Instance.PlayForCell(
-						TileCursor.Instance.Cell, mode);
-				Audio.SonifierController.Instance.OnCursorMoved(
-					TileCursor.Instance.Cell, mode);
+				UpdateAudioForCell();
 			} else {
 				Audio.EarconScheduler.Instance?.CancelAll();
 				Audio.SonifierController.Instance.Stop();
 			}
+		}
+
+		private void UpdateAudioForCell() {
+			HashedString mode = OverlayScreen.Instance != null
+				? OverlayScreen.Instance.GetMode()
+				: OverlayModes.None.ID;
+			if (Audio.EarconScheduler.Instance != null)
+				Audio.EarconScheduler.Instance.PlayForCell(
+					TileCursor.Instance.Cell, mode);
+			Audio.SonifierController.Instance.OnCursorMoved(
+				TileCursor.Instance.Cell, mode);
 		}
 
 		private void OpenActionMenu() {
