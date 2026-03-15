@@ -8,8 +8,8 @@ namespace OniAccess.Audio {
 	public class ShapeEarconPlayer: MonoBehaviour {
 		public static ShapeEarconPlayer Instance { get; private set; }
 
-		const float SegmentSeconds = 0.1f;
-		const float GapSeconds = 0.025f;
+		const float SegmentSeconds = 0.055f;
+		const float GapSeconds = 0.01f;
 		const float FadeSeconds = 0.005f;
 		const float Volume = 0.15f;
 
