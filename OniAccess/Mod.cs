@@ -39,11 +39,29 @@ namespace OniAccess {
 			// needs them already in process since SetDllDirectory can be reset
 			// by Harmony patching or other mods.
 			string nativeDir = Path.Combine(ModDir, "native");
-			foreach (var dll in new[] { "nvdaControllerClient64.dll", "SAAPI64.dll", "Tolk.dll" }) {
+			foreach (var dll in new[] { "nvdaControllerClient64.dll", "SAAPI64.dll" }) {
 				string path = Path.Combine(nativeDir, dll);
 				if (LoadLibrary(path) == IntPtr.Zero) {
 					Log.Warn($"Failed to pre-load {dll} from: {path}");
 				}
+			}
+
+			// If tolk_override.dll exists in native/, use it instead of the
+			// bundled Tolk.dll. P/Invoke resolves by module base name, so the
+			// override is copied to a temp directory as "Tolk.dll".
+			string overridePath = Path.Combine(nativeDir, "tolk_override.dll");
+			string tolkLoadPath;
+			if (File.Exists(overridePath)) {
+				string tempDir = Path.Combine(Path.GetTempPath(), "OniAccess");
+				Directory.CreateDirectory(tempDir);
+				tolkLoadPath = Path.Combine(tempDir, "Tolk.dll");
+				File.Copy(overridePath, tolkLoadPath, true);
+				Log.Info("Loading tolk_override.dll");
+			} else {
+				tolkLoadPath = Path.Combine(nativeDir, "Tolk.dll");
+			}
+			if (LoadLibrary(tolkLoadPath) == IntPtr.Zero) {
+				Log.Warn($"Failed to pre-load Tolk from: {tolkLoadPath}");
 			}
 
 			base.OnLoad(harmony);
