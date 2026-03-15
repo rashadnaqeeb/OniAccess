@@ -249,6 +249,21 @@ msgctxt "STRINGS.ONIACCESS.BOOKMARKS.ORIENT_HERE"
 msgid "here. {0}"
 msgstr "여기. {0}"
 
+#. STRINGS.ONIACCESS.BOTS.HELP_CYCLE
+msgctxt "STRINGS.ONIACCESS.BOTS.HELP_CYCLE"
+msgid "Cycle through bots"
+msgstr "봇 순환"
+
+#. STRINGS.ONIACCESS.BOTS.KEY_SHIFT_BRACKETS
+msgctxt "STRINGS.ONIACCESS.BOTS.KEY_SHIFT_BRACKETS"
+msgid "Shift+Left bracket / Shift+Right bracket"
+msgstr "Shift+왼쪽 대괄호 / Shift+오른쪽 대괄호"
+
+#. STRINGS.ONIACCESS.BOTS.NO_BOTS
+msgctxt "STRINGS.ONIACCESS.BOTS.NO_BOTS"
+msgid "no bots"
+msgstr "봇 없음"
+
 #. STRINGS.ONIACCESS.BUILD_MENU.ACTION_MENU
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.ACTION_MENU"
 msgid "action menu"
@@ -754,6 +769,11 @@ msgctxt "STRINGS.ONIACCESS.CLUSTER_MAP.UNSEEN"
 msgid "unseen"
 msgstr "미확인"
 
+#. STRINGS.ONIACCESS.CODEX.BUILDING_TEMPERATURE
+msgctxt "STRINGS.ONIACCESS.CODEX.BUILDING_TEMPERATURE"
+msgid "building temperature"
+msgstr "건물 온도"
+
 #. STRINGS.ONIACCESS.CODEX.CATEGORIES_TAB
 msgctxt "STRINGS.ONIACCESS.CODEX.CATEGORIES_TAB"
 msgid "Categories"
@@ -774,6 +794,11 @@ msgctxt "STRINGS.ONIACCESS.CODEX.HISTORY_FORWARD_HELP"
 msgid "Go forward"
 msgstr "앞으로 가기"
 
+#. STRINGS.ONIACCESS.CODEX.INPUT_TEMPERATURE
+msgctxt "STRINGS.ONIACCESS.CODEX.INPUT_TEMPERATURE"
+msgid "input temperature"
+msgstr "입력 온도"
+
 #. STRINGS.ONIACCESS.CODEX.LINK_MENU
 msgctxt "STRINGS.ONIACCESS.CODEX.LINK_MENU"
 msgid "{0} links"
@@ -788,6 +813,11 @@ msgstr "잠긴 내용"
 msgctxt "STRINGS.ONIACCESS.CODEX.MADE_IN"
 msgid "made in"
 msgstr "제작 장소"
+
+#. STRINGS.ONIACCESS.CODEX.MINIMUM_TEMPERATURE
+msgctxt "STRINGS.ONIACCESS.CODEX.MINIMUM_TEMPERATURE"
+msgid "minimum {0}"
+msgstr "최소 {0}"
 
 #. STRINGS.ONIACCESS.CODEX.NO_ARTICLE
 msgctxt "STRINGS.ONIACCESS.CODEX.NO_ARTICLE"
@@ -813,6 +843,11 @@ msgstr "생산"
 msgctxt "STRINGS.ONIACCESS.CODEX.REQUIRES"
 msgid "requires"
 msgstr "필요"
+
+#. STRINGS.ONIACCESS.CODEX.TAKES
+msgctxt "STRINGS.ONIACCESS.CODEX.TAKES"
+msgid "takes"
+msgstr "소요"
 
 #. STRINGS.ONIACCESS.CODEX.TIME
 msgctxt "STRINGS.ONIACCESS.CODEX.TIME"
