@@ -26,7 +26,9 @@ namespace OniAccess.Handlers.Tiles {
 		private NotificationTracker _notificationTracker;
 		private NotificationAnnouncer _notificationAnnouncer;
 		private DupeNavigator _dupeNavigator;
+		private BotNavigator _botNavigator;
 		private PathabilityChecker _pathabilityChecker;
+		private bool _lastCycledBots;
 		private bool _overlaySubscribed;
 		private int _preJumpCell = Grid.InvalidCell;
 		private int _queueNextOverlayTtl;
@@ -129,9 +131,11 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Keypad8, Modifier.Alt),
 			new ConsumedKey(KKeyCode.Keypad9, Modifier.Alt),
 			new ConsumedKey(KKeyCode.Keypad0, Modifier.Alt),
-			// Dupe cycling keybinds
+			// Dupe and bot cycling keybinds
 			new ConsumedKey(KKeyCode.LeftBracket),
 			new ConsumedKey(KKeyCode.RightBracket),
+			new ConsumedKey(KKeyCode.LeftBracket, Modifier.Shift),
+			new ConsumedKey(KKeyCode.RightBracket, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Backslash),
 			new ConsumedKey(KKeyCode.Backslash, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Backslash, Modifier.Ctrl),
@@ -181,6 +185,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Ctrl+B", (string)STRINGS.ONIACCESS.RULER.HELP_PLACE),
 			new HelpEntry("Ctrl+Shift+B", (string)STRINGS.ONIACCESS.RULER.HELP_CLEAR),
 			new HelpEntry((string)STRINGS.ONIACCESS.DUPES.KEY_BRACKETS, (string)STRINGS.ONIACCESS.DUPES.HELP_CYCLE),
+			new HelpEntry((string)STRINGS.ONIACCESS.BOTS.KEY_SHIFT_BRACKETS, (string)STRINGS.ONIACCESS.BOTS.HELP_CYCLE),
 			new HelpEntry("\\", (string)STRINGS.ONIACCESS.DUPES.HELP_JUMP),
 			new HelpEntry("Ctrl+\\", (string)STRINGS.ONIACCESS.DUPES.FOLLOW.HELP_FOLLOW),
 			new HelpEntry("Shift+\\", (string)STRINGS.ONIACCESS.DUPES.HELP_CHECK_PATH),
@@ -216,6 +221,7 @@ namespace OniAccess.Handlers.Tiles {
 				_bookmarks = new CursorBookmarks();
 				_monitor = new GameStateMonitor();
 				_dupeNavigator = new DupeNavigator();
+				_botNavigator = new BotNavigator();
 				_pathabilityChecker = new PathabilityChecker();
 				if (NotificationManager.Instance != null) {
 					_notificationTracker = new NotificationTracker();
@@ -261,11 +267,13 @@ namespace OniAccess.Handlers.Tiles {
 			_notificationTracker?.Detach();
 			_notificationTracker = null;
 			_dupeNavigator?.StopFollowAndClear();
+			_botNavigator?.StopFollowAndClear();
 			TileCursor.Destroy();
 			CursorRuler.Destroy();
 			ScannerNavigator.Destroy();
 			_scanner = null;
 			_dupeNavigator = null;
+			_botNavigator = null;
 			_pathabilityChecker = null;
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
@@ -307,6 +315,7 @@ namespace OniAccess.Handlers.Tiles {
 			_monitor.Tick();
 			_notificationAnnouncer?.Tick();
 			_dupeNavigator.TickFollow();
+			_botNavigator.TickFollow();
 			LoadGate.Tick();
 
 			string arrived = TileCursor.Instance.SyncToCamera();
@@ -488,29 +497,50 @@ namespace OniAccess.Handlers.Tiles {
 			// Dupe cycling
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftBracket)
 				&& !InputUtil.AnyModifierHeld()) {
+				_lastCycledBots = false;
 				_dupeNavigator.CycleDupe(-1);
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightBracket)
 				&& !InputUtil.AnyModifierHeld()) {
+				_lastCycledBots = false;
 				_dupeNavigator.CycleDupe(1);
 				return true;
 			}
+			// Bot cycling
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftBracket)
+				&& InputUtil.ShiftHeld()) {
+				_lastCycledBots = true;
+				_botNavigator.CycleBot(-1);
+				return true;
+			}
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightBracket)
+				&& InputUtil.ShiftHeld()) {
+				_lastCycledBots = true;
+				_botNavigator.CycleBot(1);
+				return true;
+			}
+			// Jump/follow/pathability — targets whichever entity type was last cycled
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backslash)) {
 				if (InputUtil.CtrlHeld() && !InputUtil.ShiftHeld()) {
-					string speech = _dupeNavigator.StartFollow();
+					string speech = _lastCycledBots
+						? _botNavigator.StartFollow()
+						: _dupeNavigator.StartFollow();
 					if (speech != null)
 						SpeechPipeline.SpeakInterrupt(speech);
 					return true;
 				}
 				if (InputUtil.ShiftHeld()) {
 					SpeechPipeline.SpeakInterrupt(
-						_pathabilityChecker.Check(_dupeNavigator));
+						_pathabilityChecker.Check(_dupeNavigator, _botNavigator, _lastCycledBots));
 					return true;
 				}
 				if (!InputUtil.AnyModifierHeld()) {
 					_preJumpCell = TileCursor.Instance.Cell;
-					_dupeNavigator.JumpOrSelect();
+					if (_lastCycledBots)
+						_botNavigator.JumpOrSelect();
+					else
+						_dupeNavigator.JumpOrSelect();
 					Audio.EarconScheduler.Instance?.ResetTransitionState();
 					UpdateAudioForCell();
 					return true;

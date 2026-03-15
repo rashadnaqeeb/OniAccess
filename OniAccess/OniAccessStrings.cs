@@ -732,6 +732,13 @@ namespace STRINGS {
 			}
 		}
 
+		// Bot cycle navigator (Shift+[ / Shift+] keys)
+		public class BOTS {
+			public static LocString NO_BOTS = "no bots";
+			public static LocString KEY_SHIFT_BRACKETS = "Shift+Left bracket / Shift+Right bracket";
+			public static LocString HELP_CYCLE = "Cycle through bots";
+		}
+
 		// Game clock and speed announcements
 		public class GAME_STATE {
 			// {0} = speed name (e.g. "1x", "2x", "3x")

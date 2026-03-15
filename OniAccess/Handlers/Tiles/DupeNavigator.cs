@@ -85,17 +85,7 @@ namespace OniAccess.Handlers.Tiles {
 					return null;
 				}
 				StopFollow();
-				_followedDupe = mi;
-				_onStatusAdded = OnStatusAdded;
-				_onStatusRemoved = OnStatusRemoved;
-				_onChoreChanged = OnChoreChanged;
-				var group = mi.GetComponent<KSelectable>().GetStatusItemGroup();
-				group.OnAddStatusItem = (Action<StatusItemGroup.Entry, StatusItemCategory>)
-					Delegate.Combine(group.OnAddStatusItem, _onStatusAdded);
-				group.OnRemoveStatusItem = (Action<StatusItemGroup.Entry, bool>)
-					Delegate.Combine(group.OnRemoveStatusItem, _onStatusRemoved);
-				mi.gameObject.Subscribe(-1988963660, _onChoreChanged);
-				CameraController.Instance.SetFollowTarget(mi.transform);
+				AttachFollow(mi);
 				return string.Format(
 					(string)STRINGS.ONIACCESS.DUPES.FOLLOW.FOLLOWING,
 					mi.GetProperName());
@@ -145,20 +135,24 @@ namespace OniAccess.Handlers.Tiles {
 				StopFollow();
 				var mi = GetCurrentDupe();
 				if (mi == null) return;
-				_followedDupe = mi;
-				_onStatusAdded = OnStatusAdded;
-				_onStatusRemoved = OnStatusRemoved;
-				_onChoreChanged = OnChoreChanged;
-				var group = mi.GetComponent<KSelectable>().GetStatusItemGroup();
-				group.OnAddStatusItem = (Action<StatusItemGroup.Entry, StatusItemCategory>)
-					Delegate.Combine(group.OnAddStatusItem, _onStatusAdded);
-				group.OnRemoveStatusItem = (Action<StatusItemGroup.Entry, bool>)
-					Delegate.Combine(group.OnRemoveStatusItem, _onStatusRemoved);
-				mi.gameObject.Subscribe(-1988963660, _onChoreChanged);
-				CameraController.Instance.SetFollowTarget(mi.transform);
+				AttachFollow(mi);
 			} catch (Exception ex) {
 				Log.Error($"DupeNavigator.SwitchFollowTarget: {ex}");
 			}
+		}
+
+		private void AttachFollow(MinionIdentity mi) {
+			_followedDupe = mi;
+			_onStatusAdded = OnStatusAdded;
+			_onStatusRemoved = OnStatusRemoved;
+			_onChoreChanged = OnChoreChanged;
+			var group = mi.GetComponent<KSelectable>().GetStatusItemGroup();
+			group.OnAddStatusItem = (Action<StatusItemGroup.Entry, StatusItemCategory>)
+				Delegate.Combine(group.OnAddStatusItem, _onStatusAdded);
+			group.OnRemoveStatusItem = (Action<StatusItemGroup.Entry, bool>)
+				Delegate.Combine(group.OnRemoveStatusItem, _onStatusRemoved);
+			mi.gameObject.Subscribe(-1988963660, _onChoreChanged);
+			CameraController.Instance.SetFollowTarget(mi.transform);
 		}
 
 		private void OnStatusAdded(StatusItemGroup.Entry entry, StatusItemCategory category) {
@@ -198,7 +192,7 @@ namespace OniAccess.Handlers.Tiles {
 			return Components.LiveMinionIdentities.GetWorldItems(worldId);
 		}
 
-		private static string BuildAnnouncement(MinionIdentity mi, int cursorCell) {
+		private string BuildAnnouncement(MinionIdentity mi, int cursorCell) {
 			string name = mi.GetProperName();
 			string task = BuildTaskPart(mi);
 			string statuses = BuildStatusPart(mi);
@@ -294,9 +288,9 @@ namespace OniAccess.Handlers.Tiles {
 
 		// Each entry maps a check to a spoken label. Add/remove/reorder
 		// entries here to change which statuses are announced.
-		private static StatusCheck[] _statusChecks;
+		private StatusCheck[] _statusChecks;
 
-		private static StatusCheck[] GetStatusChecks() {
+		private StatusCheck[] GetStatusChecks() {
 			if (_statusChecks != null)
 				return _statusChecks;
 			var dupeItems = Db.Get().DuplicantStatusItems;
@@ -344,7 +338,7 @@ namespace OniAccess.Handlers.Tiles {
 			return _statusChecks;
 		}
 
-		private static string BuildStatusPart(MinionIdentity mi) {
+		private string BuildStatusPart(MinionIdentity mi) {
 			var results = new List<string>();
 			var selectable = mi.GetComponent<KSelectable>();
 			try {

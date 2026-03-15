@@ -163,6 +163,7 @@ The mod also announces automatically without input: pause/unpause (with speed on
 - **Backslash** -- jump the cursor to the current dupe's location. Press again when already on their tile to select them and open their details screen
 - **Shift+Backslash** -- check if the current dupe can reach the cursor tile, reporting path cost if reachable or the nearest reachable tile if not
 - **Ctrl+Backslash** -- follow the current dupe with the camera, announcing status and chore changes in real time. [ and ] switch the follow target. Any cursor movement stops following
+- **Shift+[** and **Shift+]** -- cycle through autonomous bots (Sweepy, Flydo, Rover, Biobot, Remote Worker) the same way. Backslash, Shift+Backslash, and Ctrl+Backslash work on whichever entity type was last cycled to
 
 The status checks cover: incapacitated, critical health, injured, severe wounds, suffocating, holding breath, nervous breakdown, stressed, scalding, overheating, hypothermia, sick, starving, entombed, fleeing, and bionic battery states.
 
@@ -306,10 +307,36 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 - **Tile cursor coordinate mode** (Off / Append / Prepend) -- controls whether X,Y coordinates are included in every tile announcement. Off by default
 - **Auto-move cursor when cycling scanner entries** -- when on, the cursor teleports as you cycle scanner instances, and distances are measured from where you scanned. Off by default
 - **Lock zoom level when moving tile cursor** -- locks the camera zoom to level 10, which is the best level for audio. On by default
-- **Utility presence earcons** -- work in progress, not a complete feature yet. Off by default
-- **Pipe shape earcons** -- work in progress, not a complete feature yet. Off by default
-- **Passability earcons** -- work in progress, not a complete feature yet. Off by default
+- **Utility presence earcons** -- plays a sound when the cursor lands on hidden infrastructure in the default overlay. See Earcons below. Off by default
+- **Pipe shape earcons** -- plays directional tones showing how pipes and wires connect at each tile. See Earcons below. Off by default
+- **Passability earcons** -- plays a warning sound on tiles duplicants can't walk through. See Earcons below. Off by default
+- **Temperature band earcons** -- plays a rising or falling tone when the cursor crosses a temperature threshold. See Earcons below. Off by default
+- **Flow sonification** -- continuous tone reflecting conduit fill or circuit load. See Earcons below. Off by default
 - **Announce biome changes** -- speaks the biome name when the tile cursor crosses into a different biome. On by default
+
+## Earcons
+
+Earcons are short non-speech audio cues that play as you move the tile cursor. They convey spatial information faster than speech alone. All earcons are off by default and can be toggled in Settings (F12). Multiple earcon types can be active at once; they play in sequence with short gaps between them.
+
+### Utility presence earcons
+
+Active in the default overlay only. When the cursor lands on a tile that has pipes or wires running through it, a sound identifies what's there: one sound for power wire, a different sound for automation wire, and a combined sound when both are present. Pipes work the same way -- distinct sounds for liquid, gas, both, and conveyor rail. Wire and pipe sounds can play together on the same tile. This lets you find hidden infrastructure without switching overlays. 
+
+### Pipe shape earcons
+
+Active in utility overlays (Power, Plumbing, Ventilation, Conveyor, Automation). Plays a rapid sequence of synthesized tones that encode which directions the pipe or wire connects to. Each connection plays as a short tone: high pitch for up, low for down, mid for horizontal. Horizontal tones pan left or right in stereo to match the connection side. A straight vertical pipe plays high-then-low; a corner plays the vertical direction then the horizontal one.  Tiles with no connections are silent.
+
+### Passability earcons
+
+Active in all overlays. Plays a warning sound on tiles that duplicants cannot walk through -- solid tiles, walls, and other impassable obstacles. Passable tiles are silent. 
+
+### Temperature band earcons
+
+Active in all overlays. Plays a rising tone when the cursor moves into a warmer temperature band, and a falling tone for a cooler one. Silent when staying in the same band or moving into vacuum. The bands match the temperature skip thresholds, so you hear a tone at the same boundaries where Ctrl+Arrow would stop.
+
+### Flow sonification
+
+Active in the Power, Plumbing, and Ventilation overlays. Plays a continuous tone whose pitch reflects how full the conduit is or how much power the circuit is drawing. Pitch ranges from C4 (empty pipe or idle circuit) up one octave to C5 (full pipe or max safe wattage). The volume rises when the conduit is actively carrying contents and fades when empty. Moving the cursor to a tile without a conduit or wire silences the tone. This gives real-time feedback about system activity without needing to mash the I key.
 
 ## Base game hotkeys
 
@@ -373,3 +400,4 @@ If something isn't working, the player log usually has the answer. It's at `%USE
 - **Alexandr Epaneshnikov (alex19EP)** — Started the OniAccess project and provided much of the initial research.
 - **Austin Hicks (ahicks)** — His general advice and work on Factorio Access inspired much of the mod's infrastructure. Many of the mod's core systems are lifted directly from Factorio Access.
 - **Brad Renshaw (chaosbringer216)** — Helped me keep my code organized, teaching me OOP along the way. His Slay the Spire mod inspired the graph/node tree approach.
+- **Keltosh_** — Provided the earcon sounds used for pipe and wire presence detection.

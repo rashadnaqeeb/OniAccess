@@ -5,34 +5,44 @@ using OniAccess.Util;
 
 namespace OniAccess.Handlers.Tiles {
 	/// <summary>
-	/// Checks whether the currently selected dupe can reach the cursor tile.
-	/// When unreachable, searches toward the dupe to find the nearest
+	/// Checks whether the currently selected dupe or bot can reach the cursor
+	/// tile. When unreachable, searches toward the entity to find the nearest
 	/// reachable cell and reports its offset from the cursor.
 	/// </summary>
 	public class PathabilityChecker {
 		private const int MaxSearchRadius = 20;
 
-		public string Check(DupeNavigator dupeNav) {
+		public string Check(DupeNavigator dupeNav, BotNavigator botNav, bool useBots) {
+			if (useBots) {
+				var bot = botNav.GetCurrentBot();
+				if (bot == null) {
+					BaseScreenHandler.PlaySound("Negative");
+					return (string)STRINGS.ONIACCESS.BOTS.NO_BOTS;
+				}
+				return CheckEntity(bot, Grid.PosToCell(bot));
+			}
 			var mi = dupeNav.GetCurrentDupe();
 			if (mi == null) {
 				BaseScreenHandler.PlaySound("Negative");
 				return (string)STRINGS.ONIACCESS.DUPES.NO_DUPLICANTS;
 			}
+			return CheckEntity(mi.gameObject, Grid.PosToCell(mi));
+		}
 
+		private string CheckEntity(UnityEngine.GameObject entity, int entityCell) {
 			try {
 				int cursorCell = TileCursor.Instance.Cell;
-				int dupeCell = Grid.PosToCell(mi);
 
-				if (cursorCell == dupeCell)
+				if (cursorCell == entityCell)
 					return (string)STRINGS.ONIACCESS.SCANNER.HERE;
 
-				var navigator = mi.GetComponent<Navigator>();
+				var navigator = entity.GetComponent<Navigator>();
 				int cost = navigator.GetNavigationCost(cursorCell);
 				if (cost != -1)
 					return string.Format(
 						(string)STRINGS.ONIACCESS.DUPES.PATHABILITY.REACHABLE, cost);
 
-				string nearest = FindNearestReachable(cursorCell, dupeCell, navigator);
+				string nearest = FindNearestReachable(cursorCell, entityCell, navigator);
 				if (nearest != null)
 					return string.Format(
 						(string)STRINGS.ONIACCESS.DUPES.PATHABILITY.UNREACHABLE_NEAREST,
@@ -75,8 +85,8 @@ namespace OniAccess.Handlers.Tiles {
 						if (Math.Abs(dx) != ring && Math.Abs(dy) != ring)
 							continue;
 
-						// Only search the dupe's half-plane
-						if (dx * toDupeX + dy * toDupeY <= 0)
+						// Only search the entity's half-plane
+						if (dx * toDupeX + dy * toDupeY < 0)
 							continue;
 
 						int x = cursorX + dx;

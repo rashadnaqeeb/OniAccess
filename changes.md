@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.1
 
+- Bot navigator: Shift+[ / Shift+] cycles through all autonomous bots (Sweepy, Flydo, Rover, Biobot, Remote Worker) on the current world. Jump, follow, and pathability check (\, Ctrl+\, Shift+\) work on whichever entity type was last cycled to
 - Codex effects for multi-converter buildings (e.g. Desalinator) now group each converter's outputs with its input instead of listing duplicates
 - Build tool now reads existing conduits when placing bridges (liquid, gas, solid, wire, and automation)
 - Scanner now finds POI and story buildings: Thermo-Nullifier, Teleportal Pad, Hijacked Headquarters, warp conduits, fossil dig sites, and other Gravitas structures
