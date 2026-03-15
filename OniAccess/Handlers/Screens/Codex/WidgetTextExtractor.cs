@@ -473,6 +473,80 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		// ========================================
+		// GROUPED CONVERTER EFFECTS
+		// ========================================
+
+		/// <summary>
+		/// For buildings with multiple ElementConverters, returns grouped per-converter
+		/// speech items that pair each input with its outputs and temperature info.
+		/// Returns null if not applicable (not a building, single converter, etc.).
+		/// The int is the count of individual output items being replaced.
+		/// </summary>
+		internal static (List<string> items, int replacementCount)? GetGroupedConverterItems(string entryId) {
+			var buildingDef = Assets.GetBuildingDef(entryId);
+			if (buildingDef == null) return null;
+
+			var converters = buildingDef.BuildingComplete.GetComponents<ElementConverter>();
+			if (converters == null || converters.Length <= 1) return null;
+
+			var groupedItems = new List<string>();
+			int outputCount = 0;
+
+			foreach (var converter in converters) {
+				if (!converter.showDescriptors) continue;
+
+				// Count active outputs for replacement tracking
+				foreach (var output in converter.outputElements) {
+					if (output.IsActive) outputCount++;
+				}
+
+				var sb = new StringBuilder();
+
+				// Inputs
+				bool firstInput = true;
+				foreach (var input in converter.consumedElements) {
+					if (!input.IsActive) continue;
+					if (!firstInput) sb.Append(". ");
+					firstInput = false;
+					sb.Append(input.Name);
+					sb.Append(", ");
+					sb.Append(GameUtil.GetFormattedMass(input.MassConsumptionRate, GameUtil.TimeSlice.PerSecond));
+				}
+
+				// Outputs
+				bool firstOutput = true;
+				foreach (var output in converter.outputElements) {
+					if (!output.IsActive) continue;
+					if (firstOutput) {
+						sb.Append(". ");
+						sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
+						sb.Append(' ');
+						firstOutput = false;
+					} else {
+						sb.Append(". ");
+					}
+					sb.Append(output.Name);
+					sb.Append(", ");
+					sb.Append(GameUtil.GetFormattedMass(output.massGenerationRate, GameUtil.TimeSlice.PerSecond));
+					sb.Append(", ");
+					if (output.useEntityTemperature)
+						sb.Append((string)STRINGS.ONIACCESS.CODEX.AT_BUILDING_TEMPERATURE);
+					else if (output.minOutputTemperature > 0f)
+						sb.Append(string.Format((string)STRINGS.ONIACCESS.CODEX.AT_LEAST_TEMPERATURE,
+							GameUtil.GetFormattedTemperature(output.minOutputTemperature)));
+					else
+						sb.Append((string)STRINGS.ONIACCESS.CODEX.AT_INPUT_TEMPERATURE);
+				}
+
+				if (sb.Length > 0)
+					groupedItems.Add(sb.ToString());
+			}
+
+			if (groupedItems.Count == 0) return null;
+			return (groupedItems, outputCount);
+		}
+
+		// ========================================
 		// LINK HELPERS
 		// ========================================
 

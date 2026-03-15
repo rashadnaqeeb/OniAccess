@@ -1551,6 +1551,11 @@ namespace STRINGS {
 			public static LocString NO_BACK = "nothing to go back to";
 			public static LocString NO_FORWARD = "nothing to go forward to";
 			public static LocString HISTORY_FORWARD_HELP = "Go forward";
+			// Output temperature descriptions for grouped converter effects
+			public static LocString AT_INPUT_TEMPERATURE = "at input temperature";
+			public static LocString AT_BUILDING_TEMPERATURE = "at building temperature";
+			// {0} = formatted temperature value
+			public static LocString AT_LEAST_TEMPERATURE = "at least {0}";
 		}
 
 		// Measurement ruler tool on tile cursor

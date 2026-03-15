@@ -337,6 +337,39 @@ namespace OniAccess.Handlers.Screens.Codex {
 					}
 				}
 			}
+
+			GroupMultiConverterEffects(entryId);
+		}
+
+		private void GroupMultiConverterEffects(string entryId) {
+			var result = WidgetTextExtractor.GetGroupedConverterItems(entryId);
+			if (result == null) return;
+
+			var (groupedItems, replacementCount) = result.Value;
+
+			// Find the "Effects" subtitle
+			string effectsHeader = (string)STRINGS.CODEX.HEADERS.BUILDINGEFFECTS;
+			int subtitleIndex = -1;
+			for (int i = 0; i < _items.Count; i++) {
+				if (_items[i].isHeading && _items[i].text == effectsHeader) {
+					subtitleIndex = i;
+					break;
+				}
+			}
+			if (subtitleIndex < 0) return;
+
+			int removeStart = subtitleIndex + 1;
+			if (removeStart + replacementCount > _items.Count) return;
+
+			_items.RemoveRange(removeStart, replacementCount);
+
+			for (int i = 0; i < groupedItems.Count; i++) {
+				_items.Insert(removeStart + i, new ContentItem {
+					text = groupedItems[i],
+					isHeading = false,
+					links = null,
+				});
+			}
 		}
 
 		private void AddElementCategoryItems(CodexElementCategoryList widget) {
