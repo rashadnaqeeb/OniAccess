@@ -307,7 +307,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 				lastLockedId = null;
 
 				if (cc.content == null) continue;
-				if (TryAddSubEntriesItem(cc)) continue;
+				if (TryAddSubEntriesItem(cc, entry)) continue;
 				for (int w = 0; w < cc.content.Count; w++) {
 					var widget = cc.content[w];
 					if (!CodexHelper.IsWidgetVisible(widget)) continue;
@@ -428,7 +428,9 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// whose only visible non-spacer widgets are one Subtitle and body
 		/// CodexTexts that are all link markup (no plain body text).
 		/// </summary>
-		private bool TryAddSubEntriesItem(ContentContainer cc) {
+		private bool TryAddSubEntriesItem(ContentContainer cc, CodexEntry entry) {
+			if (entry.subEntries == null || entry.subEntries.Count < 2) return false;
+
 			CodexText header = null;
 			var names = new List<string>();
 			var links = new List<(string id, string text)>();
@@ -442,9 +444,13 @@ namespace OniAccess.Handlers.Screens.Codex {
 						continue;
 					}
 					var widgetLinks = CodexHelper.ExtractTextLinks(ct.text);
-					// Every body text must be a link; plain text means this
-					// isn't the SubEntries container.
 					if (widgetLinks.Count == 0) return false;
+					// Every link must target a sub-entry of this article.
+					// External links (to other codex articles) mean this
+					// isn't the SubEntries container.
+					foreach (var (id, _) in widgetLinks) {
+						if (!IsSubEntryOfArticle(id, entry)) return false;
+					}
 					names.Add(Widgets.WidgetOps.CleanTooltipEntry(ct.text));
 					links.AddRange(widgetLinks);
 					continue;
@@ -463,6 +469,14 @@ namespace OniAccess.Handlers.Screens.Codex {
 				links = links,
 			});
 			return true;
+		}
+
+		private static bool IsSubEntryOfArticle(string linkId, CodexEntry entry) {
+			foreach (var sub in entry.subEntries) {
+				if (string.Equals(sub.id, linkId, System.StringComparison.OrdinalIgnoreCase))
+					return true;
+			}
+			return false;
 		}
 
 		private void SpeakCurrentItemQueued() {
