@@ -496,39 +496,68 @@ namespace OniAccess.Handlers.Screens.Codex {
 			var converters = buildingDef.BuildingComplete.GetComponents<ElementConverter>();
 			if (converters == null || converters.Length == 0) return null;
 
-			var groupedItems = new List<string>();
+			// Collect groups: each group has inputs and outputs.
+			// A converter with inputs starts a new group.
+			// A converter without inputs (e.g. Algae Terrarium's second converter
+			// that just emits Dirty Water) folds its outputs into the previous group.
+			var groups = new List<(List<ElementConverter.ConsumedElement> inputs,
+				List<ElementConverter.OutputElement> outputs)>();
 			int inputCount = 0;
 			int outputCount = 0;
 
 			foreach (var converter in converters) {
 				if (!converter.showDescriptors) continue;
 
-				foreach (var input in converter.consumedElements) {
-					if (input.IsActive) inputCount++;
-				}
-				foreach (var output in converter.outputElements) {
-					if (output.IsActive) outputCount++;
+				bool hasInputs = false;
+				if (converter.consumedElements != null) {
+					foreach (var input in converter.consumedElements) {
+						if (input.IsActive) { hasInputs = true; inputCount++; }
+					}
 				}
 
+				if (converter.outputElements != null) {
+					foreach (var output in converter.outputElements) {
+						if (output.IsActive) outputCount++;
+					}
+				}
+
+				if (hasInputs || groups.Count == 0) {
+					var inputs = new List<ElementConverter.ConsumedElement>();
+					if (converter.consumedElements != null) {
+						foreach (var input in converter.consumedElements)
+							if (input.IsActive) inputs.Add(input);
+					}
+					groups.Add((inputs, new List<ElementConverter.OutputElement>()));
+				}
+
+				if (converter.outputElements != null) {
+					foreach (var output in converter.outputElements)
+						if (output.IsActive) groups[groups.Count - 1].outputs.Add(output);
+				}
+			}
+
+			if (groups.Count == 0) return null;
+
+			// Build speech strings
+			var groupedItems = new List<string>();
+			foreach (var (inputs, outputs) in groups) {
 				var sb = new StringBuilder();
 				sb.Append((string)STRINGS.ONIACCESS.CODEX.TAKES);
 				sb.Append(' ');
 
-				// Inputs
-				bool firstInput = true;
-				foreach (var input in converter.consumedElements) {
-					if (!input.IsActive) continue;
-					if (!firstInput) sb.Append(". ");
-					firstInput = false;
+				bool first = true;
+				foreach (var input in inputs) {
+					if (!first) sb.Append(". ");
+					first = false;
 					sb.Append(input.Name);
 					sb.Append(", ");
 					sb.Append(GameUtil.GetFormattedMass(input.MassConsumptionRate, GameUtil.TimeSlice.PerSecond));
 				}
 
-				// Outputs
 				bool firstOutput = true;
-				foreach (var output in converter.outputElements) {
-					if (!output.IsActive) continue;
+				foreach (var output in outputs) {
+					var outputElement = ElementLoader.FindElementByHash(output.elementHash);
+					if (outputElement == null) continue;
 					if (firstOutput) {
 						sb.Append(". ");
 						sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
@@ -537,7 +566,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 					} else {
 						sb.Append(". ");
 					}
-					sb.Append(output.Name);
+					sb.Append(outputElement.tag.ProperName());
 					sb.Append(", ");
 					sb.Append(GameUtil.GetFormattedMass(output.massGenerationRate, GameUtil.TimeSlice.PerSecond));
 					sb.Append(", ");

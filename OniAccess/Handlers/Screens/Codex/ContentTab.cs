@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using HarmonyLib;
 
 using OniAccess.Input;
-using OniAccess.Util;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens.Codex {
