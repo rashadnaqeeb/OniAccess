@@ -1,6 +1,7 @@
 using System.Collections;
 using FMOD;
 using FMODUnity;
+using OniAccess.Handlers.Tiles.Sections;
 using OniAccess.Util;
 using UnityEngine;
 
@@ -94,13 +95,14 @@ namespace OniAccess.Audio {
 				return;
 			}
 
-			var (category, getManager, segmentLayer) = mapping.Value;
-			if (Grid.Objects[cell, (int)segmentLayer] == null) {
+			var (category, getManager, layers) = mapping.Value;
+			if (Grid.Objects[cell, layers[0]] == null) {
 				CancelAll();
 				return;
 			}
 
-			var connections = getManager().GetConnections(cell, true);
+			var connections = getManager().GetConnections(cell, true)
+				| GetBridgeConnections(cell, layers);
 			var segments = GetSegments(connections, category);
 			if (segments == null) {
 				CancelAll();
@@ -225,28 +227,45 @@ namespace OniAccess.Audio {
 			}
 		}
 
-		private static (ToneCategory, System.Func<IUtilityNetworkMgr>, ObjectLayer)?
+		private static UtilityConnections GetBridgeConnections(
+				int cell, int[] layers) {
+			var result = (UtilityConnections)0;
+			foreach (int layer in layers) {
+				var go = Grid.Objects[cell, layer];
+				if (go == null) continue;
+				if (ConduitSection.IsBridgeEndpoint(go))
+					result |= ConduitSection.GetBridgeDirection(go, cell);
+			}
+			result |= ConduitSection.FindJointPlateConnections(cell);
+			return result;
+		}
+
+		private static (ToneCategory, System.Func<IUtilityNetworkMgr>, int[])?
 				GetOverlayMapping(HashedString overlayMode) {
 			if (overlayMode == OverlayModes.Power.ID)
 				return (ToneCategory.Wire,
 					() => Game.Instance.electricalConduitSystem,
-					ObjectLayer.Wire);
+					new[] { (int)ObjectLayer.Wire,
+						(int)ObjectLayer.WireConnectors });
 			if (overlayMode == OverlayModes.LiquidConduits.ID)
 				return (ToneCategory.Pipe,
 					() => Game.Instance.liquidConduitSystem,
-					ObjectLayer.LiquidConduit);
+					new[] { (int)ObjectLayer.LiquidConduit,
+						(int)ObjectLayer.LiquidConduitConnection });
 			if (overlayMode == OverlayModes.GasConduits.ID)
 				return (ToneCategory.Pipe,
 					() => Game.Instance.gasConduitSystem,
-					ObjectLayer.GasConduit);
+					new[] { (int)ObjectLayer.GasConduit,
+						(int)ObjectLayer.GasConduitConnection });
 			if (overlayMode == OverlayModes.SolidConveyor.ID)
 				return (ToneCategory.Pipe,
 					() => Game.Instance.solidConduitSystem,
-					ObjectLayer.SolidConduit);
+					new[] { (int)ObjectLayer.SolidConduit,
+						(int)ObjectLayer.SolidConduitConnection });
 			if (overlayMode == OverlayModes.Logic.ID)
 				return (ToneCategory.Wire,
 					() => Game.Instance.logicCircuitSystem,
-					ObjectLayer.LogicWire);
+					new[] { (int)ObjectLayer.LogicWire });
 			return null;
 		}
 	}

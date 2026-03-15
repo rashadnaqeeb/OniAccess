@@ -61,7 +61,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		/// components whose link cells match the cursor, and return the
 		/// bridge direction so it's included in the wire shape.
 		/// </summary>
-		private static UtilityConnections FindJointPlateConnections(int cell) {
+		internal static UtilityConnections FindJointPlateConnections(int cell) {
 			if (OverlayScreen.Instance == null
 				|| OverlayScreen.Instance.GetMode() != OverlayModes.Power.ID)
 				return (UtilityConnections)0;
