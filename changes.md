@@ -2,6 +2,9 @@
 
 ## Unreleased changes since 1.0.2
 
+- Support for tolk_override.dll: drop in a custom Tolk replacement to use additional screen reader drivers
+- Codex articles collapse sub-bullets onto their parent line, skip markup-only fragments, and improve content tab readability
+- Shape earcons now include bridge connections; fixed down-corner segment order; reduced flow sonifier volume
 - Recipe queue screen now includes a continuous toggle to set or clear infinite production
 - Direction toggle buttons (e.g. wash basin) now announce the current direction before the toggle action
 
