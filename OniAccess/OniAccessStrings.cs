@@ -413,6 +413,30 @@ namespace STRINGS {
 
 		public class VIDEO {
 			public static LocString PLAYING = "Video playing";
+
+			/// Audio descriptions for tutorial videos.
+			/// Translators: these describe visual content in short videos that play
+			/// during in-game tutorials. Each string is spoken at a specific timestamp.
+			public class DESCRIPTIONS {
+				/// The "Digging" tutorial video (40s). A Duplicant demonstrates
+				/// movement rules: jumping gaps, climbing walls, ceiling clearance.
+				public class DIGGING {
+					// [00:00] Opening shot: dupe waves from a platform
+					public static LocString INTRO = "A smiling Duplicant waves from a platform against a blueprint background. They approach a two-tile gap.";
+					// [00:05] Gap too wide, then shrinks to one tile and dupe jumps
+					public static LocString GAP = "A red X indicates the gap is too wide to jump. The gap shrinks to a single tile. A green checkmark appears, and the dupe happily jumps across.";
+					// [00:14] Wall too high to climb
+					public static LocString WALL = "Now facing a wall, a red X shows the dupe cannot climb three tiles high. The wall is lowered to two tiles.";
+					// [00:17] Dupe climbs two-tile wall, Shine Bug appears
+					public static LocString CLIMB = "With a green checkmark indicating success, the dupe grabs the ledge and hoists themself up. A glowing Shine Bug flutters into view.";
+					// [00:24] Low ceiling, two tiles needed
+					public static LocString CEILING = "The dupe readies to run under a low ceiling. A green checkmark confirms they need two tiles of vertical clearance to walk.";
+					// [00:28] Dupe hits Shine Bug, can't fit in one tile
+					public static LocString BLOCKED = "As they run, they smack right into the Shine Bug hanging on the ceiling! They fall backward, and a red X shows dupes cannot squeeze through a one-tile high space.";
+					// [00:34] Dupe befriends the Shine Bug
+					public static LocString HUG = "The dupe cowers as the bug hovers closer. Relieved that it's just a friendly critter, the dupe throws their arms up and gives the Shine Bug a big hug.";
+				}
+			}
 		}
 
 		// Dupe cycle navigator ([ / ] / \ keys)

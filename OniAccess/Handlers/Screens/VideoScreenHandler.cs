@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using HarmonyLib;
+using UnityEngine.Video;
 
 using OniAccess.Util;
 using OniAccess.Widgets;
@@ -29,6 +30,8 @@ namespace OniAccess.Handlers.Screens {
 	public class VideoScreenHandler: BaseWidgetHandler {
 		private bool _announcedPlaying;
 		private bool _inVictoryLoop;
+		private int _descCursor;
+		private string _currentClipName;
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.VIDEO;
 
@@ -41,6 +44,8 @@ namespace OniAccess.Handlers.Screens {
 		public override void OnActivate() {
 			_announcedPlaying = false;
 			_inVictoryLoop = false;
+			_descCursor = 0;
+			_currentClipName = null;
 			base.OnActivate();
 		}
 
@@ -86,6 +91,28 @@ namespace OniAccess.Handlers.Screens {
 			if (!_announcedPlaying) {
 				_announcedPlaying = true;
 				Speech.SpeechPipeline.SpeakQueued((string)STRINGS.ONIACCESS.VIDEO.PLAYING);
+			}
+
+			try {
+				var videoPlayer = Traverse.Create(_screen)
+					.Field<VideoPlayer>("videoPlayer").Value;
+				if (videoPlayer != null && videoPlayer.clip != null) {
+					var clipName = videoPlayer.clip.name;
+					if (clipName != _currentClipName) {
+						_currentClipName = clipName;
+						_descCursor = 0;
+					}
+					var descs = VideoDescriptions.GetDescriptions(clipName);
+					if (descs != null) {
+						var time = videoPlayer.time;
+						while (_descCursor < descs.Count && descs[_descCursor].time <= time) {
+							Speech.SpeechPipeline.SpeakQueued(descs[_descCursor].text);
+							_descCursor++;
+						}
+					}
+				}
+			} catch (System.Exception ex) {
+				Log.Error($"VideoScreenHandler: description polling failed: {ex.Message}");
 			}
 
 			if (!_inVictoryLoop) {
