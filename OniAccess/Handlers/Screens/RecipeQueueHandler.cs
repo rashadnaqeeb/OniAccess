@@ -57,7 +57,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_ownerRecipeTogglesField == null) Util.Log.Warn("RecipeQueueHandler: ComplexFabricatorSideScreen.recipeToggles field not found");
 		}
 
-		private enum ItemKind { RecipeInfo, IngredientSlot, QueueCount, Confirm }
+		private enum ItemKind { RecipeInfo, IngredientSlot, QueueCount, InfiniteToggle, Confirm }
 
 		public override string DisplayName => null;
 
@@ -87,15 +87,16 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		/// <summary>
-		/// Level 0 items: [RecipeInfo, Slot0, Slot1, ..., QueueCount, Confirm].
+		/// Level 0 items: [RecipeInfo, Slot0, Slot1, ..., QueueCount, InfiniteToggle, Confirm].
 		/// </summary>
-		private int Level0Count => 1 + IngredientCount + 2;
+		private int Level0Count => 1 + IngredientCount + 3;
 
 		private ItemKind GetItemKind(int index) {
 			if (index == 0) return ItemKind.RecipeInfo;
 			int ingredientCount = IngredientCount;
 			if (index <= ingredientCount) return ItemKind.IngredientSlot;
 			if (index == ingredientCount + 1) return ItemKind.QueueCount;
+			if (index == ingredientCount + 2) return ItemKind.InfiniteToggle;
 			return ItemKind.Confirm;
 		}
 
@@ -133,6 +134,8 @@ namespace OniAccess.Handlers.Screens {
 				var kind = GetItemKind(indices[0]);
 				if (kind == ItemKind.Confirm) {
 					CloseScreen();
+				} else if (kind == ItemKind.InfiniteToggle) {
+					ToggleInfinite();
 				} else if (kind == ItemKind.IngredientSlot) {
 					SpeakUndiscovered();
 				}
@@ -239,6 +242,8 @@ namespace OniAccess.Handlers.Screens {
 					return BuildSlotLabel(GetSlotIndex(index));
 				case ItemKind.QueueCount:
 					return BuildQueueLabel();
+				case ItemKind.InfiniteToggle:
+					return BuildInfiniteLabel();
 				case ItemKind.Confirm:
 					return (string)STRINGS.UI.CONFIRMDIALOG.OK;
 				default:
@@ -332,6 +337,16 @@ namespace OniAccess.Handlers.Screens {
 				return string.Format(STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT,
 					(string)STRINGS.UI.UISIDESCREENS.FABRICATORSIDESCREEN.RECIPE_FOREVER);
 			return string.Format(STRINGS.ONIACCESS.RECIPE.QUEUE_COUNT, count);
+		}
+
+		private string BuildInfiniteLabel() {
+			var target = GetTarget();
+			var recipe = GetSelectedRecipe();
+			if (target == null || recipe == null) return null;
+
+			bool isInfinite = target.GetRecipeQueueCount(recipe) == ComplexFabricator.QUEUE_INFINITE;
+			return (string)STRINGS.UI.UISIDESCREENS.FABRICATORSIDESCREEN.RECIPE_FOREVER
+				+ ", " + (string)(isInfinite ? STRINGS.ONIACCESS.STATES.ON : STRINGS.ONIACCESS.STATES.OFF);
 		}
 
 		private string GetMaterialLabel(int slotIdx, int rowIdx) {
@@ -432,6 +447,11 @@ namespace OniAccess.Handlers.Screens {
 				PlaySound("Slider_Move");
 
 			SpeechPipeline.SpeakInterrupt(BuildQueueLabel());
+		}
+
+		private void ToggleInfinite() {
+			RecipeScreen.InfiniteButton.SignalClick(KKeyCode.Mouse0);
+			SpeechPipeline.SpeakInterrupt(BuildInfiniteLabel());
 		}
 
 		private void SpeakUndiscovered() {

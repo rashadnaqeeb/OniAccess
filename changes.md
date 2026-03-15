@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.2
 
+- Recipe queue screen now includes a continuous toggle to set or clear infinite production
 - Direction toggle buttons (e.g. wash basin) now announce the current direction before the toggle action
 
 ## 1.0.2
