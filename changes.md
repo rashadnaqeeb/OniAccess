@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.1
 
+- Codex effects for multi-converter buildings (e.g. Desalinator) now group each converter's outputs with its input instead of listing duplicates
 - Build tool now reads existing conduits when placing bridges (liquid, gas, solid, wire, and automation)
 - Scanner now finds POI and story buildings: Thermo-Nullifier, Teleportal Pad, Hijacked Headquarters, warp conduits, fossil dig sites, and other Gravitas structures
 - Audio descriptions for tutorial videos: timed narration of visual content queues to the screen reader as the video plays (digging tutorial)
