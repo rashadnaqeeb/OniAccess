@@ -29,6 +29,8 @@ The world is a 2D side-view grid. This means that you move up, down, right, and 
 
 There is a [Getting Started guide on Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=1359110726) written for sighted players. It contains a lot of screenshots, but the text is detailed enough to be reasonably followable.
 
+The game has a built-in Database (U) covering every building, creature, element, geyser, disease, and game mechanic. It also contains tutorials that explain core concepts like power, plumbing, and morale. Some tutorials link to short audio described videos. New tutorials unlock as you play and show up in your notifications (Shift+N).
+
 ## Getting started
 
 **?** (Shift+/) is context-sensitive help. Press it on any screen to see every key available in that context. This is the fastest way to learn the mod.
