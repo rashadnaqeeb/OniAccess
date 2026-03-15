@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.0.2
+## Unreleased changes since 1.0.3
+
+## 1.0.3
 
 - Support for tolk_override.dll: drop in a custom Tolk replacement to use additional screen reader drivers
 - Codex articles collapse sub-bullets onto their parent line, skip markup-only fragments, and improve content tab readability
