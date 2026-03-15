@@ -844,6 +844,11 @@ msgctxt "STRINGS.ONIACCESS.CODEX.REQUIRES"
 msgid "requires"
 msgstr "requer"
 
+#. STRINGS.ONIACCESS.CODEX.SUBENTRIES
+msgctxt "STRINGS.ONIACCESS.CODEX.SUBENTRIES"
+msgid "entries"
+msgstr "entradas"
+
 #. STRINGS.ONIACCESS.CODEX.TAKES
 msgctxt "STRINGS.ONIACCESS.CODEX.TAKES"
 msgid "takes"
