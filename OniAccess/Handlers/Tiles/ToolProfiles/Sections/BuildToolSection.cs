@@ -58,11 +58,21 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 
 		private static ICellSection MapDefToSection(ObjectLayer layer) {
 			switch (layer) {
-				case ObjectLayer.Wire: return GlanceComposer.Power;
-				case ObjectLayer.GasConduit: return GlanceComposer.Ventilation;
-				case ObjectLayer.LiquidConduit: return GlanceComposer.Plumbing;
-				case ObjectLayer.SolidConduit: return GlanceComposer.Conveyor;
-				case ObjectLayer.LogicWire: return GlanceComposer.Automation;
+				case ObjectLayer.Wire:
+				case ObjectLayer.WireConnectors:
+					return GlanceComposer.Power;
+				case ObjectLayer.GasConduit:
+				case ObjectLayer.GasConduitConnection:
+					return GlanceComposer.Ventilation;
+				case ObjectLayer.LiquidConduit:
+				case ObjectLayer.LiquidConduitConnection:
+					return GlanceComposer.Plumbing;
+				case ObjectLayer.SolidConduit:
+				case ObjectLayer.SolidConduitConnection:
+					return GlanceComposer.Conveyor;
+				case ObjectLayer.LogicWire:
+				case ObjectLayer.LogicGate:
+					return GlanceComposer.Automation;
 				default: return null;
 			}
 		}
