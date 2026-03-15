@@ -1129,6 +1129,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS"
 msgid "Pipe shape earcons"
 msgstr "Звуковые сигналы формы труб"
 
+#. STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS"
+msgid "Temperature band earcons"
+msgstr "Звуковые сигналы температурных зон"
+
 #. STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS"
 msgid "Utility presence earcons"
@@ -4623,6 +4628,491 @@ msgstr "продолжение"
 msgctxt "STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP"
 msgid "no tooltip"
 msgstr "нет подсказки"
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT.CARRYING
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT.CARRYING"
+msgid "The duplicant hurries through a museum room carrying the teapot. They scurry past several Pedestals, which are already proudly displaying a variety of other curious space artifacts."
+msgstr "Дупликант спешит через музейный зал, неся чайник. Он пробегает мимо нескольких Пьедесталов, на которых уже гордо выставлены самые разнообразные диковинные космические артефакты."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT.CELEBRATE
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT.CELEBRATE"
+msgid "With the collection finally complete, the two duplicants celebrate their grand success. They throw their hands in the air and jump for joy among their completed museum of shiny space junk."
+msgstr "Коллекция наконец-то собрана, и два дупликанта празднуют свой грандиозный успех. Они вскидывают руки и прыгают от радости посреди своего завершённого музея сверкающего космического хлама."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT.CHECKLIST
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT.CHECKLIST"
+msgid "The view switches to the official looking clipboard, which holds a checklist of various artifact icons. A hand reaches in with a thick red marker and eagerly checks off the final artifact on the grid."
+msgstr "Вид переключается на солидный планшет с зажимом, на котором закреплён контрольный список с иконками различных артефактов. Чья-то рука с толстым красным маркером с энтузиазмом ставит галочку напротив последнего артефакта в таблице."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT.DISPLAY
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT.DISPLAY"
+msgid "They carefully place the Old Teapot onto an empty Pedestal and strike a triumphant pose. A fellow duplicant, looking official with a clipboard and a snazzy hat, nods in approval at the new addition."
+msgstr "Они бережно устанавливают Старый чайник на пустой Пьедестал и принимают триумфальную позу. Другой дупликант, выглядящий весьма официально с планшетом и щегольской шляпой, одобрительно кивает, оценивая новое приобретение."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT.STATION
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT.STATION"
+msgid "A duplicant operates an Artifact Analysis Station. The machine whirs and clanks, stripping away a layer of neutronium to reveal a pristine Old Teapot artifact. The cheerful dupe eagerly snatches up their newly uncovered treasure."
+msgstr "Дупликант работает за Станцией анализа артефактов. Машина жужжит и лязгает, снимая слой нейтрониума и обнажая безупречный артефакт — Старый чайник. Радостный дуп с нетерпением хватает свою свежераскопанную добычу."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT_LOOP.CORKBOARD
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT_LOOP.CORKBOARD"
+msgid "Behind the collection hangs a messy corkboard covered in pinned notes photographs and a blueprint featuring the Gravitas corporation logo. A solitary clipboard with a red pen lies carelessly discarded on the floor beneath the displays."
+msgstr "Позади коллекции висит пробковая доска, заваленная приколотыми записками, фотографиями и чертежом с логотипом корпорации Гравитас. Одинокий планшет с красной ручкой небрежно валяется на полу под витринами."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT_LOOP.DISPLAY
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT_LOOP.DISPLAY"
+msgid "A quiet museum display showcases the hard won treasures of your colony's cosmic archeological efforts. Several terrestrial artifacts rest proudly on pristine white pedestals against a muted blue wall."
+msgstr "Тихая музейная экспозиция демонстрирует с трудом добытые сокровища космических археологических экспедиций вашей колонии. Несколько земных артефактов гордо покоятся на белоснежных пьедесталах на фоне приглушённо-голубой стены."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT_LOOP.PEDESTALS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.ARTIFACT_LOOP.PEDESTALS"
+msgid "On the pedestals sit a vintage brick cell phone followed by a mesmerizing pink plasma globe. Beside the globe is a simple red teapot and finally a strange mechanical arm. The bright pink energy inside the glass globe arcs and dances continuously bringing a little spark of life to the serene room."
+msgstr "На пьедесталах стоят винтажный кирпичный мобильный телефон, за ним — завораживающий розовый плазменный шар. Рядом с шаром — простой красный чайник и, наконец, странная механическая рука. Ярко-розовая энергия внутри стеклянного шара непрерывно искрит и пляшет, привнося искорку жизни в безмятежную комнату."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.BUILDING
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.BUILDING"
+msgid "Using her multi-tool, the second dupe blasts the materials together to construct the shiny new Microbe Musher. A red alert immediately pops up on the machine, indicating that it lacks the resources to operate."
+msgstr "Используя свой мультиинструмент, второй дуп сплавляет материалы воедино и собирает сверкающий новенький Измельчитель микробов. На машине тут же выскакивает красное предупреждение — ей не хватает ресурсов для работы."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.DIRT
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.DIRT"
+msgid "To whip up a batch of dubious survival food they need a lump of dirt. Another dig command marks a target overhead which is quickly lasered down and chucked straight into the Musher hopper."
+msgstr "Чтобы приготовить партию сомнительной еды для выживания, им нужен ком грязи. Ещё одна команда копать отмечает цель на потолке, которую быстро срезают лазером и закидывают прямо в бункер Измельчителя."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.FLOOD
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.FLOOD"
+msgid "A massive uncontained reservoir of water comes crashing down and instantly floods their little workspace. The soaking wet dupes stand bewildered in the dark as this lesson in fluid dynamics comes to a splashy end."
+msgstr "Огромный неукрощённый резервуар воды обрушивается вниз и мгновенно затапливает их маленькое рабочее пространство. Промокшие до нитки дупы стоят в темноте, ошарашенные, пока этот урок гидродинамики подходит к своему мокрому финалу."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.GREETING
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.GREETING"
+msgid "A solitary duplicant stands in an empty blue void waving cheerfully to the player. He is soon joined by a fellow dupe who gestures towards a blueprint for a Microbe Musher, an early game cooking station."
+msgstr "Одинокий дупликант стоит в пустой голубой пустоте, радостно махая игроку. Вскоре к нему присоединяется другой дуп, который указывает на чертёж Измельчителя микробов — кухонной станции ранней игры."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.MINING
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.MINING"
+msgid "Before they can cook they need building materials. A glowing dig command appears on the rocky ceiling overhead, and the first dupe eagerly fires up his mining laser to zap a chunk of raw ore loose."
+msgstr "Прежде чем готовить, им нужны строительные материалы. На каменном потолке над головой появляется светящаяся команда копать, и первый дуп с энтузиазмом включает свой горнодобывающий лазер, чтобы выбить кусок сырой руды."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.RECKLESS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.DIGGING.RECKLESS"
+msgid "The recipe also calls for water, prompting a rather reckless row of dig commands across the entire ceiling. Our happy-go-lucky miner blasts away the rocky barrier, completely oblivious to what is resting directly on top of it."
+msgstr "Для рецепта также нужна вода, что приводит к довольно безрассудной цепочке команд копать вдоль всего потолка. Наш беспечный шахтёр разносит каменный барьер в пыль, совершенно не подозревая о том, что покоится прямо на нём."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL.CELEBRATE
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL.CELEBRATE"
+msgid "The duplicants throw their hands in the air to celebrate their hard-earned victory as the plant efficiently cycles energy. With geothermal power finally flowing steadily, the scene slowly fades away."
+msgstr "Дупликанты вскидывают руки в воздух, празднуя свою заслуженную победу, пока установка эффективно перерабатывает энергию. Геотермальная энергия наконец-то пошла стабильным потоком, и сцена медленно угасает."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL.LID
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL.LID"
+msgid "The top of a massive metallic machine sits quietly within a bare tiled room. Suddenly the pressure releases and the heavy lid pops up with a visible hiss of steam."
+msgstr "Верхушка массивной металлической машины тихо покоится в голой комнате, выложенной плиткой. Внезапно давление сбрасывается, и тяжёлая крышка подскакивает с видимым шипением пара."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL.PLANT
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL.PLANT"
+msgid "The camera snaps back to reveal the fully operational Geothermal Plant as its giant accordion-like bellow pumps forcefully up and down. Two duplicants stand on either side of the massive structure and cheer wildly at their monumental achievement."
+msgstr "Камера отъезжает, показывая полностью работающую Геотермальную установку — её гигантский мех-гармошка мощно качает вверх-вниз. Два дупликанта стоят по обе стороны массивной конструкции и бурно ликуют, празднуя своё монументальное достижение."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL_LOOP.DANCING
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL_LOOP.DANCING"
+msgid "Over on the right a second duplicant in a yellow hard hat taps their foot and nods along rhythmically while holding a clipboard. The entire scene continues to bounce along in a lively endless loop of geothermal triumph."
+msgstr "Справа второй дупликант в жёлтой каске притоптывает ногой и ритмично кивает, держа в руках планшет. Вся сцена продолжает пружинить в бесконечном бодром цикле геотермального триумфа."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL_LOOP.MACHINE
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL_LOOP.MACHINE"
+msgid "A massive piece of industrial machinery sits in the center of a metal paneled room flanked by tall ladders. This is the background for the Geothermal Plant victory screen which loops continuously to celebrate your colony's success."
+msgstr "Массивная промышленная машина стоит в центре комнаты с металлическими панелями, по бокам возвышаются высокие лестницы. Это фон экрана победы Геотермальной установки, который бесконечно зацикливается в честь успеха вашей колонии."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL_LOOP.PUMPING
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.GEOTHERMAL_LOOP.PUMPING"
+msgid "The machine rhythmically pumps upwards to reveal a large purple bellows expanding in its midsection before compressing back down. On the left side of the room a duplicant dances joyfully while waving a wrench in the air."
+msgstr "Машина ритмично качает вверх, обнажая большие фиолетовые мехи, расширяющиеся в её средней части, прежде чем сжаться обратно. В левой части комнаты дупликант радостно танцует, размахивая гаечным ключом в воздухе."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.COOLING
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.COOLING"
+msgid "With the revived duplicant back to cranking the fan, the cool blue air now bounces safely off the insulated interior walls. The chilling effect remains perfectly trapped inside their new enclosed room."
+msgstr "Оживший дупликант снова крутит ручку вентилятора, и прохладный голубой воздух теперь безопасно отскакивает от изолированных внутренних стен. Охлаждающий эффект идеально удерживается внутри их нового герметичного помещения."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.FREEZE
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.FREEZE"
+msgid "The sealed room quickly drops to a crisp, icy temperature. The two duplicants flash a triumphant thumbs-up to celebrate their survival, but immediately hug themselves and chatter their teeth as they start to freeze across the room."
+msgstr "Герметичная комната быстро остывает до бодряще ледяной температуры. Два дупликанта победно показывают большой палец вверх, празднуя своё выживание, но тут же обхватывают себя руками и начинают стучать зубами, замерзая прямо на месте."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.HEAT_BLOCKED
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.HEAT_BLOCKED"
+msgid "Meanwhile, scorching orange arrows of heat from the outside environment bounce harmlessly off the exterior of the new structure. The Insulated Tiles successfully block the sweltering temperatures from ruining their cooling efforts."
+msgstr "Тем временем обжигающие оранжевые стрелки тепла из внешней среды безвредно отскакивают от наружных стен новой конструкции. Изолированная плитка успешно блокирует палящие температуры, не давая им свести на нет все усилия по охлаждению."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.HEAT_RETURNS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.HEAT_RETURNS"
+msgid "Unfortunately, glowing orange arrows indicate that the surrounding environmental heat is forcefully seeping right back into the area. Exhausted from fighting an unwinnable battle against the relentless warmth, the duplicant collapses onto the machine."
+msgstr "К сожалению, светящиеся оранжевые стрелки показывают, что окружающее тепло с силой просачивается обратно в помещение. Измотанный безнадёжной борьбой с неумолимой жарой, дупликант валится на машину."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.ICE_FAN
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.ICE_FAN"
+msgid "An Ice Fan is constructed beside the crops, and our sweaty duplicant starts furiously cranking its handle. Cool blue arrows of chilling air flow out of the machine, slowly dropping the temperature and turning the room a more pleasant green."
+msgstr "Рядом с посевами строится Ледяной вентилятор, и наш вспотевший дупликант начинает яростно крутить его ручку. Прохладные голубые стрелки морозного воздуха вырываются из машины, постепенно снижая температуру и окрашивая комнату в более приятный зелёный цвет."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.IDEA
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.IDEA"
+msgid "Another duplicant arrives and crosses her arms at the pitiful display. She taps her chin in thought, then snaps her fingers as a brilliant engineering idea strikes her."
+msgstr "Приходит другой дупликант и скрещивает руки, глядя на жалкое зрелище. Она задумчиво постукивает по подбородку, а затем щёлкает пальцами — блестящая инженерная идея осенила её."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.INSULATED_WALLS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.INSULATED_WALLS"
+msgid "In a poof of construction dust, a thick continuous border of Insulated Tiles is built. It completely encloses the planted crops and the Ice Fan, creating a sealed, heat-resistant greenhouse."
+msgstr "В облаке строительной пыли возводится толстая сплошная стена из Изолированной плитки. Она полностью окружает посаженные растения и Ледяной вентилятор, создавая герметичную жаростойкую теплицу."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.OVERLAY
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.OVERLAY"
+msgid "The Temperature Overlay activates on the screen, painting the room in harsh shades of orange and yellow. This reveals that intense environmental heat is leaking in, baking both the delicate plants and the poor duplicant."
+msgstr "На экране включается Наложение температуры, окрашивая комнату в резкие оттенки оранжевого и жёлтого. Это показывает, что интенсивное тепло окружающей среды проникает внутрь, выжигая и нежные растения, и бедного дупликанта."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.PEACEFUL
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.PEACEFUL"
+msgid "A cheerful duplicant waves playfully while standing next to a healthy row of blooming Bristle Blossoms. A ceiling light shines down, and everything seems perfectly peaceful in the colony."
+msgstr "Весёлый дупликант игриво машет рукой, стоя рядом с ровным рядом цветущих Колючих цветков. Потолочный светильник озаряет сцену, и в колонии царит полнейшая идиллия."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.WILT
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.INSULATION.WILT"
+msgid "Suddenly, the Bristle Blossoms completely wither and close up. The duplicant begins to sweat profusely, tugging uncomfortably at her collar as the area becomes dangerously sweltering."
+msgstr "Внезапно Колючие цветки полностью увядают и сворачиваются. Дупликант начинает обильно потеть, нервно дёргая воротник — в помещении становится опасно жарко."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_DEFEATED.ASTEROID
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_DEFEATED.ASTEROID"
+msgid "A massive rocky asteroid floats menacingly against a starry blue space background. This is the Large Impactor, threatening the very existence of your colony before glowing rockets strike it from all sides."
+msgstr "Массивный каменистый астероид зловеще парит на фоне звёздного голубого космоса. Это Крупный импактор, угрожающий самому существованию вашей колонии, прежде чем светящиеся ракеты поражают его со всех сторон."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_DEFEATED.EXPLOSION
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_DEFEATED.EXPLOSION"
+msgid "A brilliant white explosion rocks the screen, expanding outward with bright yellow energy rings. As the flash fades, the Large Impactor is revealed to be completely shattered into harmless chunks of space rock."
+msgstr "Ослепительный белый взрыв сотрясает экран, расширяясь наружу яркими жёлтыми кольцами энергии. Когда вспышка рассеивается, Крупный импактор оказывается полностью разбитым на безобидные обломки космической породы."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_DEFEATED.FIREWORKS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_DEFEATED.FIREWORKS"
+msgid "Dazzling fireworks burst around the floating debris, marking the glorious destruction of the planetary threat. The remnants drift peacefully through the cosmos."
+msgstr "Ослепительные фейерверки вспыхивают вокруг парящих обломков, знаменуя славное уничтожение планетарной угрозы. Остатки мирно дрейфуют в космосе."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_DEFEATED.RELIEF
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_DEFEATED.RELIEF"
+msgid "The third duplicant sheds a single, dramatic tear of absolute relief. The colony is completely saved, and another catastrophic existential crisis has been successfully averted."
+msgstr "Третий дупликант роняет одну-единственную драматичную слезу абсолютного облегчения. Колония полностью спасена, и ещё один катастрофический экзистенциальный кризис успешно предотвращён."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_DEFEATED.WATCHING
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_DEFEATED.WATCHING"
+msgid "Back inside the base, three duplicants are gathered around a clunky monitor watching the spectacular event. Two joyful dupes leap into a celebratory hug as colorful confetti rains from the ceiling."
+msgstr "Внутри базы трое дупликантов столпились вокруг громоздкого монитора, наблюдая за впечатляющим зрелищем. Два радостных дупа бросаются друг другу в объятия, пока разноцветное конфетти сыплется с потолка."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_SPACE_POI.DEBRIS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_SPACE_POI.DEBRIS"
+msgid "A quiet scene unfolds in deep space, showing a scattering of jagged asteroid fragments drifting slowly against a backdrop of blue nebulae and twinkling stars. The shattered remains of the large impactor tumble gently through the void."
+msgstr "Тихая сцена разворачивается в глубоком космосе: россыпь зазубренных обломков астероида медленно дрейфует на фоне голубых туманностей и мерцающих звёзд. Разбитые останки Крупного импактора плавно кувыркаются в пустоте."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_SPACE_POI.DETAILS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LARGE_IMPACTOR_SPACE_POI.DETAILS"
+msgid "Some of the larger chunks of space rock show distinct surface details or exposed colorful ores on their broken edges. The debris field continues its peaceful, endless orbit as the dust settles on a hard fought victory."
+msgstr "На некоторых крупных обломках космической породы видны отчётливые детали поверхности или обнажённые разноцветные руды на сколах. Поле обломков продолжает свою мирную бесконечную орбиту, пока пыль оседает после тяжёлой победы."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE.APPROACH
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE.APPROACH"
+msgid "A swirling, vividly colored portal called the Temporal Tear ripples through the dark expanse of space. A multi stage rocket cruises past floating asteroids, heading straight for the glowing anomaly."
+msgstr "Вихревой, ярко окрашенный портал — Временной разрыв — пульсирует в тёмных просторах космоса. Многоступенчатая ракета проплывает мимо парящих астероидов, направляясь прямо к светящейся аномалии."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE.CROSSING
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE.CROSSING"
+msgid "Back in the cockpit, the pilot's momentary confusion quickly melts into an eager grin as the intense light of the Temporal Tear washes over her. Her joyful, starry eyed face flashes across a blinding white screen as she embarks on the colony's ultimate journey."
+msgstr "В кабине мимолётное замешательство пилота быстро тает, сменяясь нетерпеливой ухмылкой, пока ослепительный свет Временного разрыва заливает её. Её радостное, восторженное лицо мелькает на ослепительно белом экране — она отправляется в главное путешествие колонии."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE.ENTRY
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE.ENTRY"
+msgid "Inside the spacecraft, a cheerful duplicant pilot grips the steering controls with a determined little smile. On the outside, the ship plunges directly into the bright white center of the portal."
+msgstr "Внутри космического корабля весёлый дупликант-пилот сжимает штурвал с решительной улыбкой. Снаружи корабль устремляется прямо в ярко-белый центр портала."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE.MISSION_CONTROL
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE.MISSION_CONTROL"
+msgid "Down at Mission Control, a headset wearing operator looks anxious as she tracks the flight. She punches a large green button on her terminal, then breaks into a proud smile and delivers a crisp salute while the rest of the crew cheers."
+msgstr "В Центре управления оператор в гарнитуре с тревогой следит за полётом. Она нажимает большую зелёную кнопку на своём терминале, затем расплывается в гордой улыбке и чётко отдаёт честь, пока остальная команда ликует."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE_LOOP.ASTEROIDS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE_LOOP.ASTEROIDS"
+msgid "Several jagged asteroids float silently in the foreground around the massive anomaly. The distant starry background remains still while the colorful cosmic whirlpool slowly ripples."
+msgstr "Несколько зазубренных астероидов безмолвно парят на переднем плане вокруг массивной аномалии. Далёкий звёздный фон остаётся неподвижным, пока красочный космический водоворот медленно рябит."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE_LOOP.CONTEXT
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE_LOOP.CONTEXT"
+msgid "This serene looping view of the Temporal Tear plays endlessly on the victory screen. Our intrepid duplicants have finally escaped through the tear into the great unknown."
+msgstr "Этот безмятежный зацикленный вид Временного разрыва бесконечно воспроизводится на экране победы. Наши отважные дупликанты наконец-то ускользнули через разрыв в великую неизвестность."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE_LOOP.VORTEX
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LEAVE_LOOP.VORTEX"
+msgid "A vibrant glowing vortex swirls continuously in the dark expanse of space. At its center shines a brilliant white light surrounded by undulating rings of soft teal and deep purple."
+msgstr "Яркий светящийся вихрь непрерывно вращается в тёмных просторах космоса. В его центре сияет ослепительный белый свет, окружённый волнистыми кольцами мягкого бирюзового и глубокого пурпурного цветов."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.COLLISION
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.COLLISION"
+msgid "Sprinting after the Shine Bug, the overly eager dupe smacks face-first into a low-hanging ceiling. They fall backward and hit the ground, rubbing their head in a dizzy daze."
+msgstr "Преследуя Светлячка на полной скорости, чересчур увлечённый дуп со всего маху врезается лицом в низкий потолок. Он падает назад и плюхается на землю, потирая голову в головокружительном ступоре."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.CORRIDOR
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.CORRIDOR"
+msgid "The duplicant heads toward a narrow corridor. A green checkmark overlay confirms that dupes require a passage at least two tiles high to walk through safely."
+msgstr "Дупликант направляется к узкому коридору. Наложение с зелёной галочкой подтверждает, что дупам нужен проход высотой не менее двух клеток для безопасного прохождения."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.GAP_BLOCKED
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.GAP_BLOCKED"
+msgid "The duplicant approaches a two-tile-wide gap. An overlay featuring a red X indicates that gaps wider than one tile are too far to jump across, leaving the dupe looking quite dejected."
+msgstr "Дупликант подходит к пролому шириной в две клетки. Наложение с красным крестом указывает, что пролом шире одной клетки слишком далёк для прыжка, и дуп выглядит весьма подавленным."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.GAP_JUMP
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.GAP_JUMP"
+msgid "The gap closes to a single tile. A green checkmark overlay shows this is a manageable distance, and the duplicant cheerfully leaps across the small chasm."
+msgstr "Пролом сужается до одной клетки. Наложение с зелёной галочкой показывает, что это преодолимое расстояние, и дупликант весело перепрыгивает через небольшую пропасть."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.REUNION
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.REUNION"
+msgid "Fortunately, the floating Shine Bug has no such movement restrictions. The glowing bug easily glides through the tiny gap to reunite with the duplicant, who celebrates the moment with a joyful and much-needed hug."
+msgstr "К счастью, у парящего Светлячка нет таких ограничений в перемещении. Светящийся жучок легко проскальзывает сквозь крошечный проём, чтобы воссоединиться с дупликантом, который отмечает момент радостными и столь необходимыми объятиями."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.SHINE_BUG
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.SHINE_BUG"
+msgid "A glowing Shine Bug gracefully floats down from above. The duplicant smiles broadly and reaches out, eager to greet the friendly critter."
+msgstr "Сияющий Светлячок грациозно спускается сверху. Дупликант широко улыбается и тянет руку, желая поприветствовать дружелюбное существо."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.STUCK
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.STUCK"
+msgid "A red X overlay confirms that duplicants simply cannot squeeze through a tight one-tile-high gap. The poor dupe cowers in fear, feeling completely trapped and alone."
+msgstr "Наложение с красным крестом подтверждает, что дупликанты просто не могут протиснуться в узкий проход высотой в одну клетку. Бедный дуп сжимается от страха, чувствуя себя совершенно пойманным в ловушку и одиноким."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.WALL_BLOCKED
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.WALL_BLOCKED"
+msgid "Next up is a steep vertical wall. A red X overlay demonstrates that a three-tile-high ledge is unfortunately just out of reach for a jumping duplicant."
+msgstr "Следующее препятствие — крутая вертикальная стена. Наложение с красным крестом показывает, что уступ высотой в три клетки, к сожалению, находится за пределами досягаемости прыжка дупликанта."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.WALL_CLIMB
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.WALL_CLIMB"
+msgid "When the ledge is suddenly lowered to a two-tile height, a reassuring green checkmark appears. Our determined friend easily clambers up the shorter wall."
+msgstr "Когда уступ внезапно снижается до высоты в две клетки, появляется обнадёживающая зелёная галочка. Наш решительный друг без труда вскарабкивается на укороченную стену."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.WAVE
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.LOCOMOTION.WAVE"
+msgid "A smiling duplicant stands on a suspended platform, happily waving hello. This little clone is ready to demonstrate the basics of colony navigation."
+msgstr "Улыбающийся дупликант стоит на подвешенной платформе, радостно маша рукой. Этот маленький клон готов продемонстрировать основы навигации по колонии."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.ARCADE
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.ARCADE"
+msgid "She marches toward an Arcade Cabinet, plucking him out of the scanner and hurling him at the controls. They aggressively mash the buttons, adding three green morale blocks to his meter, but he soon starts pouting again."
+msgstr "Она направляется к Игровому автомату, выдёргивает его из сканера и швыряет к пульту управления. Они яростно молотят по кнопкам, добавляя три зелёных блока морали к его шкале, но вскоре он снова начинает дуться."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.BED
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.BED"
+msgid "Out of patience, she hurls him across the base into a Comfy Bed surrounded by paintings. He smiles as he settles into the blankets, gaining one final green block to perfectly balance his morale."
+msgstr "Потеряв терпение, она зашвыривает его через всю базу в Удобную кровать, окружённую картинами. Он улыбается, устраиваясь в одеялах, и получает последний зелёный блок, идеально уравновешивая свою мораль."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.FOOD
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.FOOD"
+msgid "She excitedly tosses a Mush Bar, followed by a spiky Bristle Berry, straight into his face. He happily munches the snacks, his spirits instantly restored as he cheers."
+msgstr "Она с энтузиазмом швыряет ему в лицо Батончик из каши, а следом — колючую Колючую ягоду. Он радостно жуёт угощение, мгновенно воспрянув духом и ликуя."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.INTRO
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.INTRO"
+msgid "A cheerful duplicant stands beside a towering Neural Vacillator. A meter above his head shows one green and one red block, indicating his morale is balanced. He gives a double thumbs-up."
+msgstr "Весёлый дупликант стоит рядом с возвышающимся Нейронным осциллятором. Шкала над его головой показывает один зелёный и один красный блок, указывая на сбалансированную мораль. Он показывает два больших пальца вверх."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.MISERABLE
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.MISERABLE"
+msgid "Back outside, the duplicant is now slumped over and absolutely miserable. Another duplicant walks by, notices his distress, and strokes her chin thoughtfully."
+msgstr "Снаружи дупликант уже совсем поник и выглядит абсолютно несчастным. Мимо проходит другой дупликант, замечает его страдания и задумчиво поглаживает подбородок."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.SECOND_SKILL
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.SECOND_SKILL"
+msgid "The Vacillator unexpectedly springs to life and scans him again. A third red gear drops into the mental display, granting his brain an advanced skill."
+msgstr "Осциллятор неожиданно оживает и снова сканирует его. Третья красная шестерёнка падает на ментальную проекцию, наделяя его мозг продвинутым навыком."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.SKILL
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.SKILL"
+msgid "He hops inside, and a mechanical scanner lowers over his head. A stylized animation shows his brain glowing as it receives a new skill, represented by a pair of spinning gears."
+msgstr "Он запрыгивает внутрь, и механический сканер опускается ему на голову. Стилизованная анимация показывает, как его мозг светится, получая новый навык, представленный парой вращающихся шестерёнок."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.STRESS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.MORALE.STRESS"
+msgid "This upgrade increases his demands, dropping a second red block onto his morale meter. He slumps over from the stress, prompting his companion to roll her eyes."
+msgstr "Это улучшение повышает его требования, и второй красный блок падает на его шкалу морали. Он сникает от стресса, заставляя свою напарницу закатить глаза."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.LESSON
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.LESSON"
+msgid "The drenched duplicant groans in disgust. The video freezes to highlight the golden rule of plumbing: a white box with a downward arrow marks an input, while a green box with an upward arrow marks an output."
+msgstr "Промокший дупликант стонет от отвращения. Видео замирает, чтобы подчеркнуть золотое правило сантехники: белый квадрат со стрелкой вниз обозначает вход, а зелёный квадрат со стрелкой вверх — выход."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.MISERABLE
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.MISERABLE"
+msgid "A duplicant stands alone, looking completely miserable. Searching for a solution to his caffeine deprivation, he sighs heavily and points downward."
+msgstr "Дупликант стоит в одиночестве, выглядя совершенно несчастным. В поисках решения своей кофеиновой депривации он тяжело вздыхает и указывает вниз."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.OVERLAY
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.OVERLAY"
+msgid "The plumbing overlay activates, displaying a green output arrow on the pump and a white input arrow on the Espresso Machine. An animated line demonstrates that liquids must flow from a green output to a white input."
+msgstr "Включается наложение сантехники, отображая зелёную стрелку выхода на насосе и белую стрелку входа на Кофемашине. Анимированная линия демонстрирует, что жидкости должны течь от зелёного выхода к белому входу."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.OVERVIEW
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.OVERVIEW"
+msgid "The view expands to reveal a Liquid Pump submerged in a pool of water below him. On the platform next to the duplicant sits an un-plumbed Espresso Machine."
+msgstr "Вид расширяется, показывая Жидкостный насос, погружённый в бассейн с водой под ним. На платформе рядом с дупликантом стоит неподключённая Кофемашина."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.PIPE_BUILT
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.PIPE_BUILT"
+msgid "The duplicant whips out his tools and quickly builds a Liquid Pipe connecting the two ports. Once finished, blue spheres of fresh water automatically begin traveling through the pipes and into the machine's intake."
+msgstr "Дупликант выхватывает инструменты и быстро прокладывает Жидкостную трубу, соединяя два порта. Как только он заканчивает, голубые сферы свежей воды автоматически начинают двигаться по трубам к впускному отверстию машины."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.SPLASH
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.PIPING.SPLASH"
+msgid "A second duplicant wanders by just as the machine begins running. Unfortunately, the Espresso Machine's green output port is piped directly over his head, dumping a steaming splash of polluted water onto him."
+msgstr "Второй дупликант проходит мимо как раз в тот момент, когда машина начинает работать. К несчастью, зелёный порт выхода Кофемашины направлен прямо ему на голову, и дымящийся поток загрязнённой воды обрушивается на него."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.BATTERY
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.BATTERY"
+msgid "Armed with a trusty sci-fi blowtorch, the dupe eagerly constructs a brand new Jumbo Battery. It hooks right up to an existing electrical wire, ready to store some serious juice."
+msgstr "Вооружившись верной научно-фантастической горелкой, дуп с энтузиазмом собирает новенькую Большую батарею. Она тут же подключается к существующему электрическому проводу, готовая накопить изрядный запас энергии."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.IDEA
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.IDEA"
+msgid "Our dupe pauses, tapping his chin in deep thought before raising a finger with a brilliant idea! He whips out a fresh blueprint and gets straight to work fixing the mess."
+msgstr "Наш дуп задумывается, постукивая по подбородку, прежде чем поднять палец — блестящая идея! Он выхватывает свежий чертёж и сразу принимается за исправление этого беспорядка."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.INTRO
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.INTRO"
+msgid "A duplicant with a stylish pompadour stands proudly in front of a blue blueprint backdrop, waving cheerfully. He's ready to learn a little something about power management."
+msgstr "Дупликант со стильным помпадуром гордо стоит на фоне голубого чертежа, весело помахивая рукой. Он готов узнать кое-что об управлении энергией."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.OVERLAY
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.OVERLAY"
+msgid "The view shifts into the Power Overlay, revealing a disastrously long line of buildings all crammed onto one single wire. The overloaded circuit pulses bright red as power shuts down across the entire room."
+msgstr "Вид переключается на Наложение энергии, показывая катастрофически длинную цепочку зданий, сгрудившихся на одном-единственном проводе. Перегруженная сеть пульсирует ярко-красным, и энергия отключается по всему помещению."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.OVERLOAD
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.OVERLOAD"
+msgid "Suddenly, the battery sparks wildly and belches smoke with a loud pop! A broken connection icon pops up as the attached wire turns an angry red, buckling under the excessive electrical strain."
+msgstr "Внезапно батарея дико искрит и извергает дым с громким хлопком! Появляется значок разрыва соединения, а подключённый провод раскаляется до злобно-красного цвета, не выдерживая чрезмерной электрической нагрузки."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.REBUILD
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.REBUILD"
+msgid "A massive cartoon dust cloud erupts across the screen. Inside the chaos, the dupe rapidly deconstructs and reorganizes the colony's electrical grid."
+msgstr "Массивное мультяшное облако пыли вздымается на весь экран. В этом хаосе дуп стремительно разбирает и реорганизует электросеть колонии."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.RESULT
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.POWER.RESULT"
+msgid "The dust clears to reveal a much smarter setup. The machines are now cleanly divided into two separate, perfectly functioning green power circuits, and our dupe celebrates a job well done!"
+msgstr "Пыль рассеивается, и перед нами куда более продуманная компоновка. Машины теперь аккуратно разделены на две отдельные, безупречно работающие зелёные электрические цепи, и наш дуп празднует отлично выполненную работу!"
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.ASTEROID
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.ASTEROID"
+msgid "A small, rocky asteroid floats peacefully through the cosmos. Tiny, cute buildings are nestled into its craters."
+msgstr "Маленький каменистый астероид мирно плывёт в космосе. Крошечные милые здания ютятся в его кратерах."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.CAVERN
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.CAVERN"
+msgid "A rocky ceiling crumbles, and three soot-covered duplicants plummet down. They crash onto the floor in a tangled, groaning heap."
+msgstr "Каменный потолок рушится, и три покрытых сажей дупликанта летят вниз. Они падают на пол в спутанную стонущую кучу."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.COLLISION
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.COLLISION"
+msgid "The massive, broken planet abruptly materializes right next to the peaceful little asteroid. The control room erupts in wildly flailing chaos."
+msgstr "Массивная разломанная планета внезапно материализуется прямо рядом с мирным маленьким астероидом. В диспетчерской воцаряется неистовый хаос."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.CONTROL_ROOM
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.CONTROL_ROOM"
+msgid "Inside a bustling control room, a cheerful duplicant monitors a screen. A vibrant portal swirls safely on the display."
+msgstr "В оживлённой диспетчерской весёлый дупликант следит за экраном. На дисплее безмятежно вращается яркий портал."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.FLASH
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.FLASH"
+msgid "With a blinding flash of white light, the entire asteroid is shattered into jagged pieces."
+msgstr "В ослепительной вспышке белого света весь астероид раскалывается на зазубренные обломки."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.HATCH
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.HATCH"
+msgid "Out in the cold void, a metal hatch slowly creaks open on a barren surface. A solitary duplicant in a round space helmet cautiously peeks out."
+msgstr "В холодной пустоте космоса металлический люк медленно со скрипом открывается на голой поверхности. Одинокий дупликант в круглом космическом шлеме осторожно выглядывает наружу."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.PANIC
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.PANIC"
+msgid "Back in the control room, the rest of the crew watches with growing panic. On screen, a swarm of rockets frantically orbits the completely fractured planet."
+msgstr "В диспетчерской остальная команда наблюдает с нарастающей паникой. На экране рой ракет лихорадочно кружит вокруг полностью расколотой планеты."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.PEEK
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.PEEK"
+msgid "Two more helmeted dupes awkwardly squeeze their heads out beside her. The view slowly pans out to reveal their new, very permanent predicament."
+msgstr "Ещё два дупа в шлемах неуклюже протискивают головы рядом с ней. Камера медленно отъезжает, показывая их новое, весьма постоянное затруднительное положение."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.ROCKET
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.ROCKET"
+msgid "The duplicant cheers as a rocket ship boldly emerges from the portal. But then, the screen violently glitches."
+msgstr "Дупликант ликует, когда ракета смело вылетает из портала. Но тут экран начинает дико глючить."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.ROCKETS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.ROCKETS"
+msgid "We see the actual rockets soaring through the cosmos. Inside one, a duplicant waves cheerfully, completely oblivious to any impending doom."
+msgstr "Мы видим настоящие ракеты, мчащиеся сквозь космос. Внутри одной из них дупликант весело машет рукой, совершенно не подозревая о надвигающейся беде."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.SHATTERED
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.SHATTERED"
+msgid "The display now shows a shattered planet. The controller gasps in horror as an animation shows a rocket diving into a swirling blue wormhole."
+msgstr "На дисплее теперь показана разбитая планета. Оператор в ужасе ахает, когда анимация показывает ракету, ныряющую в крутящуюся голубую червоточину."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.SPLIT
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.SPLIT"
+msgid "The giant planet splits violently in two. It radiates a volatile blue energy from its exposed core."
+msgstr "Гигантская планета яростно раскалывается надвое. Из обнажённого ядра исходит нестабильная голубая энергия."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.STRANDED
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.STRANDED"
+msgid "They are stranded on a critically tiny fragment of rock. The oblivious trio stares blankly into space, entirely surrounded by floating space debris."
+msgstr "Они застряли на критически крошечном обломке скалы. Ни о чём не подозревающая тройка тупо пялится в пустоту, полностью окружённая парящим космическим мусором."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.STRUCK
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.STRUCK"
+msgid "The asteroid is struck and sent hurtling off course. Glitches suddenly flash across the view, showing bizarre, large-eyed alien critters."
+msgstr "Астероид получает удар и сбивается с курса. По экрану внезапно мелькают глитчи, показывая причудливых большеглазых инопланетных существ."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.WIREFRAME
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.SPACED_OUT_INTRO.WIREFRAME"
+msgid "A glowing blue wireframe appears around the planet, attempting to hold the crumbling pieces together. The wireframe suddenly snaps and vanishes."
+msgstr "Вокруг планеты появляется светящийся голубой каркас, пытающийся удержать рассыпающиеся обломки. Каркас внезапно лопается и исчезает."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY.CHEER
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY.CHEER"
+msgid "A close-up shows a duplicant peacefully closing their eyes, then throwing their hands in the air with a massive joyful cheer. Colorful square confetti begins raining down from above."
+msgstr "Крупный план показывает дупликанта, мирно закрывающего глаза, а затем вскидывающего руки с громким радостным возгласом. Сверху начинает сыпаться разноцветное квадратное конфетти."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY.FADE
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY.FADE"
+msgid "The joyous scene rapidly shrinks into the distance before fading entirely into black."
+msgstr "Радостная сцена стремительно уменьшается вдаль и полностью растворяется в черноте."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY.JOINING
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY.JOINING"
+msgid "The camera pulls back to reveal more duplicants joining the celebration. One cheers in a full atmo suit while another wearing a gas mask happily hoists a giant jar of pickled mealwood."
+msgstr "Камера отъезжает, показывая, как к празднованию присоединяются ещё дупликанты. Один ликует в полном атмокостюме, а другой в противогазе радостно поднимает гигантскую банку маринованного мучного дерева."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY.PARTY
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY.PARTY"
+msgid "The view zooms out further to show a group of duplicants dancing, hugging, and tossing supplies in a pristine plastic-tiled room. Confetti continues to fall as the colony celebrates reaching true sustainability."
+msgstr "Вид отдаляется ещё больше, показывая группу дупликантов, танцующих, обнимающихся и подбрасывающих припасы в безупречной комнате, выложенной пластиковой плиткой. Конфетти продолжает сыпаться, пока колония празднует достижение настоящей самодостаточности."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY_LOOP.DEBRIS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY_LOOP.DEBRIS"
+msgid "The floor is heavily littered with the colorful remnants of a party including scattered confetti and a few overturned drinking cups. A large bright puddle of questionable green sludge stains the floorboards with a stray drinking straw sticking haphazardly out of it."
+msgstr "Пол густо усеян красочными остатками вечеринки: разбросанное конфетти и несколько опрокинутых стаканчиков. Большая яркая лужа сомнительной зелёной жижи пачкает половицы, а из неё кое-как торчит одинокая соломинка."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY_LOOP.DETAILS
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY_LOOP.DETAILS"
+msgid "A single delicate bubble floats gently near the left wall under the rough and uneven rocky ceiling above. Rusty metallic pipes snake along the back wall near an old wooden ladder that stands completely unused in the quiet room."
+msgstr "Одинокий хрупкий пузырёк нежно парит у левой стены под грубым неровным каменным потолком. Ржавые металлические трубы вьются вдоль задней стены рядом со старой деревянной лестницей, стоящей совершенно невостребованной в тихой комнате."
+
+#. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY_LOOP.ROOM
+msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.STAY_LOOP.ROOM"
+msgid "The screen displays an empty room inside the asteroid colony in the quiet aftermath of a massive celebration. This is the continuous background loop of the victory screen playing after your duplicants have successfully established a thriving colony and decided to stay."
+msgstr "На экране пустая комната внутри колонии на астероиде в тихом затишье после грандиозного праздника. Это непрерывный фоновый цикл экрана победы, воспроизводящийся после того, как ваши дупликанты успешно основали процветающую колонию и решили остаться."
 
 #. STRINGS.ONIACCESS.VIDEO.PLAYING
 msgctxt "STRINGS.ONIACCESS.VIDEO.PLAYING"
