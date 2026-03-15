@@ -80,6 +80,15 @@ This mod runs on Harmony patches and reflection. Both fail in ways that produce 
 - `UnityEngine.Input` must be fully qualified inside the `OniAccess.Input` namespace. Bare `Input` resolves to the namespace, not the Unity class
 - **Show-lifecycle patches**: Always check the decompiled source to see whether the screen declares `Show` or `OnShow`, then patch whichever it declares. If it declares neither (e.g. `CodexScreen`), patch `typeof(KScreen)` instead and filter with `__instance is ScreenType` in the postfix — Harmony requires the target method to be declared on the patched type, not just inherited
 
+## Release
+
+1. Bump version in `OniAccess/OniAccess.csproj` (`<Version>`) and `OniAccess/mod_info.yaml` — build.ps1 syncs the csproj version into mod_info.yaml automatically, but update both to be safe
+2. Update `changes.md`: rename "Unreleased changes since X" to the new version number, add a new empty "Unreleased changes since Y" section above it
+3. Commit as "Release X.Y.Z" and tag as `vX.Y.Z`
+4. Push with `git push --tags && git push`
+5. Run `powershell -ExecutionPolicy Bypass -File release.ps1` — populates `release/` with all mod files except the config file
+6. Point the Steam Workshop uploader at the `release/` folder
+
 ## Game Log
 
 The Unity player log is at `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`. Lines prefixed with `[OniAccess]` are mod debug output.
