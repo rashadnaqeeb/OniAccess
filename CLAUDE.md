@@ -42,7 +42,10 @@ powershell -ExecutionPolicy Bypass -File test.ps1
 
 Builds and runs the offline test suite (`OniAccess.Tests`). Tests run without the game. All new tests must work offline — never add tests that require launching the game. Don't test individual screen handlers.
 
-Test systems where bugs hide: algorithmic logic, state machines with multiple transitions, non-obvious side effects (e.g., Pop reactivating the handler underneath), exception safety, time-dependent behavior, and integration seams between modules. Every test should have a plausible failure mode not covered by another test. Don't test the same invariant twice — if a complex test already exercises a simple property, the simple test is redundant. Always test real code paths; never test local helpers that simulate production behavior. TextFilter-style regression suites are the exception — keep full coverage when the code is a chain of replacements where any change can break unrelated cases. Guard speech-boundary code even when it looks simple — a wrong value reaching the speech engine is a silent failure for the user.
+- Every test should have a plausible failure mode not covered by another test — don't test the same invariant twice
+- Always test real code paths; never test local helpers that simulate production behavior
+- Exception: TextFilter-style regression suites keep full coverage (chain of replacements where any change can break unrelated cases)
+- Guard speech-boundary code even when it looks simple — a wrong value reaching the speech engine is a silent failure
 
 ## Project Rules
 
