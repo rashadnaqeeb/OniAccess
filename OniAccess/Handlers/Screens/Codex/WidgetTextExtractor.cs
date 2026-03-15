@@ -55,13 +55,56 @@ namespace OniAccess.Handlers.Screens.Codex {
 				return new List<string> { cleaned };
 			}
 
+			// Merge sub-items (deeper indented bullets) with their parent
+			// line. Top-level items use "    • " (4-space indent), sub-items
+			// use "        • " (8-space). Collapsing sub-items onto the
+			// parent produces e.g. "Atmosphere: Carbon Dioxide, Oxygen".
+			var merged = MergeSubBullets(parts);
+
 			var result = new List<string>();
-			foreach (string part in parts) {
+			foreach (string part in merged) {
 				string cleaned = Widgets.WidgetOps.CleanTooltipEntry(part);
-				if (!string.IsNullOrEmpty(cleaned))
-					result.Add(cleaned);
+				if (string.IsNullOrEmpty(cleaned)) continue;
+				// CleanTooltipEntry preserves rich text tags; a fragment
+				// that is only markup (e.g. "</indent></indent>") would
+				// become empty after FilterForSpeech strips tags.
+				if (string.IsNullOrEmpty(Speech.TextFilter.FilterForSpeech(cleaned))) continue;
+				result.Add(cleaned);
 			}
 			return result.Count > 0 ? result : null;
+		}
+
+		/// <summary>
+		/// Merge lines that are sub-bullets (8+ space indent) into the
+		/// preceding parent line, separated by commas. This collapses
+		/// e.g. "Atmosphere:\n        • CO2\n        • O2" into
+		/// "Atmosphere: CO2, O2".
+		/// </summary>
+		private static List<string> MergeSubBullets(string[] parts) {
+			var result = new List<string>();
+			bool lastWasParent = false;
+			foreach (string part in parts) {
+				if (part.StartsWith("        ") && result.Count > 0) {
+					string stripped = part.TrimStart();
+					if (stripped.StartsWith("\u2022 "))
+						stripped = stripped.Substring(2);
+					else if (stripped.StartsWith("\u2022"))
+						stripped = stripped.Substring(1);
+					stripped = stripped.TrimStart();
+					if (string.IsNullOrEmpty(stripped)) continue;
+					if (lastWasParent) {
+						// First sub-item: parent ends with ": " so just append
+						result[result.Count - 1] = result[result.Count - 1].TrimEnd() + " " + stripped;
+						lastWasParent = false;
+					} else {
+						result[result.Count - 1] += ", " + stripped;
+					}
+				} else {
+					result.Add(part);
+					lastWasParent = true;
+				}
+			}
+			return result;
 		}
 
 		private static string GetRawText(ICodexWidget widget, string currentEntryId) {
