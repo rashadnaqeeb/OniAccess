@@ -201,6 +201,10 @@ namespace OniAccess.Handlers.Screens.Codex {
 		internal void FollowLink(string entryId) {
 			var codexScreen = _parent.CodexScreen;
 			if (codexScreen == null) return;
+			// If the link targets a sub-entry, set pending ID so the cursor
+			// lands on the right section after ChangeArticle rebuilds.
+			if (CodexCache.FindSubEntry(entryId) != null)
+				_pendingSubEntryId = entryId;
 			PlaySound("HUD_Click_Open");
 			codexScreen.ChangeArticle(entryId);
 		}
@@ -303,12 +307,25 @@ namespace OniAccess.Handlers.Screens.Codex {
 				lastLockedId = null;
 
 				if (cc.content == null) continue;
-				foreach (var widget in cc.content) {
+				if (TryAddSubEntriesItem(cc)) continue;
+				for (int w = 0; w < cc.content.Count; w++) {
+					var widget = cc.content[w];
 					if (!CodexHelper.IsWidgetVisible(widget)) continue;
 
 					// CodexElementCategoryList expands to header + individual elements
 					if (widget is CodexElementCategoryList ecl) {
 						AddElementCategoryItems(ecl);
+						continue;
+					}
+
+					// Merge label-with-icon + following body text (e.g. critter drops: "Meat" + "4800 kcal")
+					if (widget is CodexIndentedLabelWithIcon cili) {
+						string label = WidgetTextExtractor.GetText(cili);
+						string suffix = GetNextBodyText(cc.content, ref w);
+						if (suffix != null)
+							label += ", " + suffix;
+						if (!string.IsNullOrEmpty(label))
+							_items.Add(new ContentItem { text = label });
 						continue;
 					}
 
@@ -387,6 +404,65 @@ namespace OniAccess.Handlers.Screens.Codex {
 					links = null,
 				});
 			}
+		}
+
+		/// <summary>
+		/// If the next visible widget after index w is a body-style CodexText,
+		/// returns its cleaned text and advances w past it. Otherwise returns null.
+		/// </summary>
+		private static string GetNextBodyText(List<ICodexWidget> widgets, ref int w) {
+			for (int i = w + 1; i < widgets.Count; i++) {
+				if (!CodexHelper.IsWidgetVisible(widgets[i])) continue;
+				if (widgets[i] is CodexText ct && ct.style == CodexTextStyle.Body) {
+					w = i;
+					return Widgets.WidgetOps.CleanTooltipEntry(ct.text);
+				}
+				break;
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Detects the SubEntries container and collapses it into a single item
+		/// like "entries: Sweetle, Grubgrub". Identified structurally: a container
+		/// whose only visible non-spacer widgets are one Subtitle and body
+		/// CodexTexts that are all link markup (no plain body text).
+		/// </summary>
+		private bool TryAddSubEntriesItem(ContentContainer cc) {
+			CodexText header = null;
+			var names = new List<string>();
+			var links = new List<(string id, string text)>();
+			foreach (var widget in cc.content) {
+				if (!CodexHelper.IsWidgetVisible(widget)) continue;
+				if (widget is CodexSpacer) continue;
+				if (widget is CodexText ct) {
+					if (ct.style == CodexTextStyle.Subtitle) {
+						if (header != null) return false;
+						header = ct;
+						continue;
+					}
+					var widgetLinks = CodexHelper.ExtractTextLinks(ct.text);
+					// Every body text must be a link; plain text means this
+					// isn't the SubEntries container.
+					if (widgetLinks.Count == 0) return false;
+					names.Add(Widgets.WidgetOps.CleanTooltipEntry(ct.text));
+					links.AddRange(widgetLinks);
+					continue;
+				}
+				return false;
+			}
+			if (header == null || names.Count < 2) return false;
+
+			if (links.Count == 0) return false;
+
+			string text = (string)STRINGS.ONIACCESS.CODEX.SUBENTRIES
+				+ ": " + string.Join(", ", names);
+			_items.Add(new ContentItem {
+				text = text,
+				isHeading = true,
+				links = links,
+			});
+			return true;
 		}
 
 		private void SpeakCurrentItemQueued() {

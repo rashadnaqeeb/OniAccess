@@ -124,8 +124,11 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (widget is CodexConversionPanel ccp)
 				links.AddRange(GetConversionLinks(ccp));
 
-			// Filter to entries that actually exist in the codex
-			links.RemoveAll(l => !CodexCache.entries.ContainsKey(l.id));
+			// Filter to entries or sub-entries that actually exist in the codex.
+			// SubEntry IDs are uppercased by FormatLinkID but subEntries keys
+			// are mixed case, so use FindSubEntry for case-insensitive lookup.
+			links.RemoveAll(l => !CodexCache.entries.ContainsKey(l.id)
+				&& CodexCache.FindSubEntry(l.id) == null);
 
 			return links;
 		}

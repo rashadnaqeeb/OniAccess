@@ -1558,6 +1558,9 @@ namespace STRINGS {
 			public static LocString NO_BACK = "nothing to go back to";
 			public static LocString NO_FORWARD = "nothing to go forward to";
 			public static LocString HISTORY_FORWARD_HELP = "Go forward";
+			// Label for the sub-entries line. Followed by a comma-separated list of entry names.
+			// Example: "entries: Sweetle, Grubgrub"
+			public static LocString SUBENTRIES = "entries";
 			// Spoken before the input element in a grouped converter line.
 			// Full example: "takes Salt Water, 5 kg/s. produces Water, 4.65 kg/s, input temperature"
 			public static LocString TAKES = "takes";

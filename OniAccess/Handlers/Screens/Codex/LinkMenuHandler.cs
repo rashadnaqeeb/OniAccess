@@ -19,6 +19,13 @@ namespace OniAccess.Handlers.Screens.Codex {
 		public override string DisplayName => string.Format(
 			STRINGS.ONIACCESS.CODEX.LINK_MENU, _links.Count);
 
+		public override void OnActivate() {
+			CurrentIndex = 0;
+			_search.Clear();
+			SuppressSearchThisFrame();
+			SpeakCurrentItem();
+		}
+
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 			= new List<HelpEntry> {
 				new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
