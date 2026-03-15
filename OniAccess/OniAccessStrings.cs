@@ -419,26 +419,30 @@ namespace STRINGS {
 			/// during in-game tutorials and victory sequences. Each string is spoken
 			/// at a specific timestamp. Comments note what is happening on screen.
 			public class DESCRIPTIONS {
-				/// Artifact collection victory cinematic (14s). Dupes restore and
-				/// display artifacts, then celebrate completing the collection.
+				/// Artifact collection victory cinematic (14s). A dupe uncovers
+				/// the final artifact and completes the museum collection.
 				public class ARTIFACT {
-					// [00:00] Dupe restores a teapot artifact
-					public static LocString RESTORE = "A duplicant in a hardhat pulls a lever on an artifact analysis station. Inside the machine, a chaotic tangle of debris miraculously transforms into a shiny red teapot. The duplicant happily scoops up their newly restored treasure.";
-					// [00:04] Teapot placed on display pedestal
-					public static LocString DISPLAY = "They trot over to a row of display pedestals holding other strange terrestrial artifacts, like an oversized retro brick phone and a plasma globe. Another duplicant holding a clipboard watches as the teapot is proudly placed on an empty pedestal to improve the room's decor.";
+					// [00:00] Dupe operates analysis station
+					public static LocString STATION = "A duplicant operates an Artifact Analysis Station. The machine whirs and clanks, stripping away a layer of neutronium to reveal a pristine Old Teapot artifact. The cheerful dupe eagerly snatches up their newly uncovered treasure.";
+					// [00:03] Carrying teapot through museum
+					public static LocString CARRYING = "The duplicant hurries through a museum room carrying the teapot. They scurry past several Pedestals, which are already proudly displaying a variety of other curious space artifacts.";
+					// [00:05] Placing teapot on pedestal
+					public static LocString DISPLAY = "They carefully place the Old Teapot onto an empty Pedestal and strike a triumphant pose. A fellow duplicant, looking official with a clipboard and a snazzy hat, nods in approval at the new addition.";
 					// [00:08] Clipboard checklist
-					public static LocString CHECKLIST = "The view zooms in closely on the clipboard, which shows a grid of artifact drawings. A hand holding a chunky red marker excitedly scribbles a thick checkmark over the picture of the red teapot.";
+					public static LocString CHECKLIST = "The view switches to the official looking clipboard, which holds a checklist of various artifact icons. A hand reaches in with a thick red marker and eagerly checks off the final artifact on the grid.";
 					// [00:12] Celebration
-					public static LocString CELEBRATE = "Back in the display room, both duplicants throw their arms in the air. They cheer loudly and jump up and down to celebrate their fully completed artifact collection.";
+					public static LocString CELEBRATE = "With the collection finally complete, the two duplicants celebrate their grand success. They throw their hands in the air and jump for joy among their completed museum of shiny space junk.";
 				}
 
-				/// Artifact collection victory loop (10s). A serene display room
-				/// showcasing recovered artifacts on pedestals.
+				/// Artifact collection victory loop (12s). A quiet museum
+				/// displaying recovered space artifacts on pedestals.
 				public class ARTIFACT_LOOP {
-					// [00:00] Display room overview
-					public static LocString DISPLAY = "A charming display of ancient artifacts rests proudly on white pedestals across a blue walled room, offering a hefty decor boost for any cultured duplicants passing by. Among these recovered treasures are a crackling magenta plasma globe and a pristine red teapot.";
-					// [00:05] Right side details
-					public static LocString DETAILS = "On the right sits a detached robotic arm artifact, while a stray can of red spray paint has been left forgotten on the floor. A busy corkboard hangs on the wall behind the display, plastered with messy notes and mysterious blueprints.";
+					// [00:00] Museum overview
+					public static LocString DISPLAY = "A quiet museum display showcases the hard won treasures of your colony's cosmic archeological efforts. Several terrestrial artifacts rest proudly on pristine white pedestals against a muted blue wall.";
+					// [00:04] Pedestal details
+					public static LocString PEDESTALS = "On the pedestals sit a vintage brick cell phone followed by a mesmerizing pink plasma globe. Beside the globe is a simple red teapot and finally a strange mechanical arm. The bright pink energy inside the glass globe arcs and dances continuously bringing a little spark of life to the serene room.";
+					// [00:08] Corkboard and floor details
+					public static LocString CORKBOARD = "Behind the collection hangs a messy corkboard covered in pinned notes photographs and a blueprint featuring the Gravitas corporation logo. A solitary clipboard with a red pen lies carelessly discarded on the floor beneath the displays.";
 				}
 
 				/// "Digging" tutorial video (40s). Dupes mine ore to build a
@@ -458,15 +462,15 @@ namespace STRINGS {
 					public static LocString FLOOD = "A massive uncontained reservoir of water comes crashing down and instantly floods their little workspace. The soaking wet dupes stand bewildered in the dark as this lesson in fluid dynamics comes to a splashy end.";
 				}
 
-				/// Geothermal victory intro cinematic (9s). The Printing Pod
-				/// arrives and boots up a new colony.
+				/// Geothermal victory intro cinematic (9s). The Geothermal
+				/// Plant activates and dupes celebrate.
 				public class GEOTHERMAL {
-					// [00:00] Pod descends
-					public static LocString ARRIVAL = "The video begins in a dark and empty tiled room. A large and complex machine is slowly lowered from the ceiling and lands with a heavy thud.";
-					// [00:03] Pod powers on, dupes appear
-					public static LocString POD_ACTIVATES = "The room suddenly lights up to reveal the Printing Pod, the mechanical heart of your brand new colony. Its accordion-like center expands as it powers on, and three freshly printed duplicants appear around it ready for work.";
-					// [00:06] Dupe waves, fade to black
-					public static LocString WAVE = "One of our endearing new dupes gives a cheerful wave to the camera. The Printing Pod bounces happily in response as the screen fades to black, signaling the start of their perilous survival journey.";
+					// [00:00] Machine lid pops
+					public static LocString LID = "The top of a massive metallic machine sits quietly within a bare tiled room. Suddenly the pressure releases and the heavy lid pops up with a visible hiss of steam.";
+					// [00:02] Full plant revealed, dupes cheer
+					public static LocString PLANT = "The camera snaps back to reveal the fully operational Geothermal Plant as its giant accordion-like bellow pumps forcefully up and down. Two duplicants stand on either side of the massive structure and cheer wildly at their monumental achievement.";
+					// [00:06] Celebration, fade out
+					public static LocString CELEBRATE = "The duplicants throw their hands in the air to celebrate their hard-earned victory as the plant efficiently cycles energy. With geothermal power finally flowing steadily, the scene slowly fades away.";
 				}
 
 				/// "Insulation" tutorial video (67s). Heat destroys crops, an Ice
@@ -494,52 +498,52 @@ namespace STRINGS {
 					public static LocString FREEZE = "The sealed room quickly drops to a crisp, icy temperature. The two duplicants flash a triumphant thumbs-up to celebrate their survival, but immediately hug themselves and chatter their teeth as they start to freeze across the room.";
 				}
 
-				/// Large Impactor defeated cinematic (10s). An asteroid explodes
-				/// and dupes watch on a retro TV.
+				/// Large Impactor defeated cinematic (10s). Rockets destroy the
+				/// asteroid threat and dupes celebrate.
 				public class LARGE_IMPACTOR_DEFEATED {
-					// [00:00] Asteroid in space
-					public static LocString ASTEROID = "A lone rocky asteroid floats peacefully against a vibrant blue, starry expanse of space. Nothing seems amiss in this quiet cosmic scene.";
-					// [00:01] Rockets ignite, asteroid cracks
-					public static LocString ROCKETS = "Suddenly several rockets attached to the asteroid ignite, spewing thick plumes of cartoonish smoke and sparkly exhaust. The immense force is too much and the asteroid begins to violently crack apart before exploding in a brilliant flash.";
-					// [00:03] Explosion rings
-					public static LocString EXPLOSION = "Expanding white rings of energy ripple outward from the blast. The explosion sends debris flying outward in a spectacular display.";
-					// [00:05] Fragments form ring, portal opens
-					public static LocString FRAGMENTS = "The newly formed asteroid fragments stabilize, forming a neat, orbiting ring as a glowing pink portal opens nearby. Welcome to the Spaced Out expansion, where your colony spans multiple smaller asteroids.";
-					// [00:07] Dupes watching on TV
-					public static LocString WATCHING = "The perspective shifts to reveal three Duplicants watching this cosmic disaster unfold on a clunky, retro television monitor. They are standing in a dingy, industrial-looking room.";
-					// [00:08] Two dupes celebrate, one cries
-					public static LocString CELEBRATION = "Two of the dupes cheer wildly and hug each other, throwing confetti as if celebrating a great victory. Meanwhile a third dupe with spiky blonde hair just stares at the screen in solemn silence, a single tear rolling down his cheek.";
+					// [00:00] Asteroid floating, rockets strike
+					public static LocString ASTEROID = "A massive rocky asteroid floats menacingly against a starry blue space background. This is the Large Impactor, threatening the very existence of your colony before glowing rockets strike it from all sides.";
+					// [00:02] Explosion shatters asteroid
+					public static LocString EXPLOSION = "A brilliant white explosion rocks the screen, expanding outward with bright yellow energy rings. As the flash fades, the Large Impactor is revealed to be completely shattered into harmless chunks of space rock.";
+					// [00:04] Fireworks over debris
+					public static LocString FIREWORKS = "Dazzling fireworks burst around the floating debris, marking the glorious destruction of the planetary threat. The remnants drift peacefully through the cosmos.";
+					// [00:06] Dupes watching on monitor
+					public static LocString WATCHING = "Back inside the base, three duplicants are gathered around a clunky monitor watching the spectacular event. Two joyful dupes leap into a celebratory hug as colorful confetti rains from the ceiling.";
+					// [00:08] Third dupe sheds a tear
+					public static LocString RELIEF = "The third duplicant sheds a single, dramatic tear of absolute relief. The colony is completely saved, and another catastrophic existential crisis has been successfully averted.";
 				}
 
-				/// Large Impactor space POI video (18s). Asteroids float
-				/// peacefully in a nebula.
+				/// Large Impactor victory loop (10s). Shattered asteroid
+				/// fragments drift through space.
 				public class LARGE_IMPACTOR_SPACE_POI {
-					// [00:00] Space backdrop
-					public static LocString SPACE = "A vibrant view of outer space unfolds against a backdrop of deep blue swirling nebulas and distant twinkling stars. Several chunky, jagged asteroids float lazily in the void, suspended in calm orbit.";
-					// [00:06] Biome surfaces visible
-					public static LocString BIOMES = "The varied asteroids reveal glimpses of different biomes on their rocky surfaces. Patches of glowing orange magma, icy blue regions, and earthy brown terrain dot the miniature worlds.";
-					// [00:13] Asteroids continue rotating
-					public static LocString ROTATION = "The cluster of floating rocks continues a slow, mesmerizing rotation through the cosmos. Each asteroid drifts peacefully, waiting to be explored by an intrepid and completely oblivious crew.";
+					// [00:00] Debris field in space
+					public static LocString DEBRIS = "A quiet scene unfolds in deep space, showing a scattering of jagged asteroid fragments drifting slowly against a backdrop of blue nebulae and twinkling stars. The shattered remains of the large impactor tumble gently through the void.";
+					// [00:05] Surface details on fragments
+					public static LocString DETAILS = "Some of the larger chunks of space rock show distinct surface details or exposed colorful ores on their broken edges. The debris field continues its peaceful, endless orbit as the dust settles on a hard fought victory.";
 				}
 
 				/// Temporal Tear victory cinematic (10s). A rocket enters
-				/// a mysterious space anomaly.
+				/// the Temporal Tear while mission control watches.
 				public class LEAVE {
-					// [00:00] Rocket approaches portal
-					public static LocString LAUNCH = "A rocket ship zooms through the starry expanse of space toward a swirling blue portal. Inside the cockpit, a determined duplicant pilot grips the flight controls.";
-					// [00:03] Mission control monitors
-					public static LocString MISSION_CONTROL = "Back at Mission Control, an anxious team of dupes monitors the flight on their screens. A technician presses a flashing button on her console and gives a cheerful salute.";
-					// [00:07] Rocket enters anomaly
-					public static LocString PLUNGE = "The pilot bravely braces herself as the rocket plunges directly into the heart of the anomaly. The screen is engulfed in a blinding white light, leaving the ship's fate a magnificent mystery.";
+					// [00:00] Rocket approaches Temporal Tear
+					public static LocString APPROACH = "A swirling, vividly colored portal called the Temporal Tear ripples through the dark expanse of space. A multi stage rocket cruises past floating asteroids, heading straight for the glowing anomaly.";
+					// [00:02] Pilot enters, ship plunges in
+					public static LocString ENTRY = "Inside the spacecraft, a cheerful duplicant pilot grips the steering controls with a determined little smile. On the outside, the ship plunges directly into the bright white center of the portal.";
+					// [00:04] Mission control operator salutes
+					public static LocString MISSION_CONTROL = "Down at Mission Control, a headset wearing operator looks anxious as she tracks the flight. She punches a large green button on her terminal, then breaks into a proud smile and delivers a crisp salute while the rest of the crew cheers.";
+					// [00:08] Pilot crosses through
+					public static LocString CROSSING = "Back in the cockpit, the pilot's momentary confusion quickly melts into an eager grin as the intense light of the Temporal Tear washes over her. Her joyful, starry eyed face flashes across a blinding white screen as she embarks on the colony's ultimate journey.";
 				}
 
-				/// Temporal Tear victory loop (8s). The Temporal Tear
+				/// Temporal Tear victory loop (12s). The Temporal Tear
 				/// pulses in space surrounded by asteroids.
 				public class LEAVE_LOOP {
-					// [00:00] Swirling vortex
-					public static LocString VORTEX = "A swirling vortex dominates the dark expanse of space. A brilliant white core shines brightly out of the starry void, surrounded by softly shifting rings of teal, purple, and dark blue energy.";
-					// [00:04] Asteroids drift nearby
-					public static LocString ASTEROIDS = "Rough jagged asteroids drift lazily in the cold vacuum around the anomaly. This mysterious pulsating phenomenon is known as the Temporal Tear, the ultimate destination for your most adventurous spacefaring duplicants.";
+					// [00:00] Glowing vortex
+					public static LocString VORTEX = "A vibrant glowing vortex swirls continuously in the dark expanse of space. At its center shines a brilliant white light surrounded by undulating rings of soft teal and deep purple.";
+					// [00:05] Asteroids in foreground
+					public static LocString ASTEROIDS = "Several jagged asteroids float silently in the foreground around the massive anomaly. The distant starry background remains still while the colorful cosmic whirlpool slowly ripples.";
+					// [00:08] Looping context
+					public static LocString CONTEXT = "This serene looping view of the Temporal Tear plays endlessly on the victory screen. Our intrepid duplicants have finally escaped through the tear into the great unknown.";
 				}
 
 				/// "Locomotion" tutorial video (40s). A Duplicant demonstrates
@@ -625,70 +629,74 @@ namespace STRINGS {
 					public static LocString RESULT = "The dust clears to reveal a much smarter setup. The machines are now cleanly divided into two separate, perfectly functioning green power circuits, and our dupe celebrates a job well done!";
 				}
 
-				/// Spaced Out intro cinematic (108s). A rocket enters a Temporal
-				/// Tear, duplicates, shatters a planet, and dupes wake on an asteroid.
+				/// Spaced Out intro cinematic (108s). A Temporal Tear accident
+				/// shatters a planet and strands dupes on an asteroid fragment.
 				public class SPACED_OUT_INTRO {
-					// [00:00] Colony on asteroid, mission control
-					public static LocString COLONY = "A floating chunk of rock with a few rudimentary colony structures drifts through space. Inside a cozy mission control room, a cheerful Duplicant operates a retro green monitor.";
-					// [00:04] Astronaut in rocket cockpit
-					public static LocString ROCKET = "On the screen, a lone blonde Duplicant waves from her rocket cockpit. She bravely pilots her vessel toward a swirling, neon Temporal Tear.";
-					// [00:08] Mission control celebrates
-					public static LocString CELEBRATION = "Mission control jumps and cheers as the rocket successfully enters the portal. Their celebration is abruptly interrupted as the monitor begins to flicker.";
-					// [00:13] Astronaut disappears into vortex
-					public static LocString GOODBYE = "The blonde astronaut waves goodbye as her rocket disappears safely into the vortex. Back in mission control, the director looks at the screen with nervous realization.";
-					// [00:20] Portal spits out two rockets
-					public static LocString DUPLICATION = "Instead of closing, the portal suddenly spits out two identical rockets! The team watches in confused silence as the anomaly miraculously duplicates their ship.";
-					// [00:25] Twin pilots confused
-					public static LocString CONFUSION = "The twin rockets float past each other in the starry void. Inside the cockpits, the identically copied pilots look at one another upside down in total confusion.";
-					// [00:32] Portals open around planet
-					public static LocString PORTALS = "Dozens of glowing portals begin opening up around the Earth-like planet. A massive swarm of copied rockets floods the surrounding atmosphere.";
-					// [00:42] Rockets create energy grid
-					public static LocString GRID = "The rockets generate a glowing energetic grid that wraps around the entire planet. As they attempt to pull away into space, the immense strain begins cracking the world apart.";
-					// [00:51] Planet splits open
-					public static LocString SPLIT = "The planet splits right down the middle to expose a glowing blue core. A colossal chunk of rock breaks away and hurtles directly toward the camera.";
-					// [01:03] Asteroid crashes into colony
-					public static LocString CRASH = "Mission control panics as the giant asteroid chunk crashes right into their facility. The screen violently glitches, briefly flashing images of several strange, wide-eyed alien critters.";
-					// [01:12] Planet shatters
-					public static LocString FLASH = "In a blinding white flash, the entire planet shatters into fragmented pieces. The explosion fades out, leaving the screen entirely black.";
-					// [01:18] Dupes wake in cavern
-					public static LocString CAVERN = "Deep inside a dusty cavern, three dazed Duplicants slowly regain consciousness. They groan, waking up tangled among scattered rubble and broken pipes.";
+					// [00:00] Rocky asteroid in space
+					public static LocString ASTEROID = "A small, rocky asteroid floats peacefully through the cosmos. Tiny, cute buildings are nestled into its craters.";
+					// [00:03] Control room, portal on screen
+					public static LocString CONTROL_ROOM = "Inside a bustling control room, a cheerful duplicant monitors a screen. A vibrant portal swirls safely on the display.";
+					// [00:08] Rocket emerges, screen glitches
+					public static LocString ROCKET = "The duplicant cheers as a rocket ship boldly emerges from the portal. But then, the screen violently glitches.";
+					// [00:13] Shattered planet on display
+					public static LocString SHATTERED = "The display now shows a shattered planet. The controller gasps in horror as an animation shows a rocket diving into a swirling blue wormhole.";
+					// [00:23] Rockets soaring through cosmos
+					public static LocString ROCKETS = "We see the actual rockets soaring through the cosmos. Inside one, a duplicant waves cheerfully, completely oblivious to any impending doom.";
+					// [00:31] Crew watches in panic
+					public static LocString PANIC = "Back in the control room, the rest of the crew watches with growing panic. On screen, a swarm of rockets frantically orbits the completely fractured planet.";
+					// [00:42] Wireframe around planet
+					public static LocString WIREFRAME = "A glowing blue wireframe appears around the planet, attempting to hold the crumbling pieces together. The wireframe suddenly snaps and vanishes.";
+					// [00:49] Planet splits in two
+					public static LocString SPLIT = "The giant planet splits violently in two. It radiates a volatile blue energy from its exposed core.";
+					// [00:58] Planet materializes near asteroid
+					public static LocString COLLISION = "The massive, broken planet abruptly materializes right next to the peaceful little asteroid. The control room erupts in wildly flailing chaos.";
+					// [01:05] Asteroid struck, alien flashes
+					public static LocString STRUCK = "The asteroid is struck and sent hurtling off course. Glitches suddenly flash across the view, showing bizarre, large-eyed alien critters.";
+					// [01:11] Blinding flash, asteroid shatters
+					public static LocString FLASH = "With a blinding flash of white light, the entire asteroid is shattered into jagged pieces.";
+					// [01:18] Dupes fall into cavern
+					public static LocString CAVERN = "A rocky ceiling crumbles, and three soot-covered duplicants plummet down. They crash onto the floor in a tangled, groaning heap.";
 					// [01:29] Hatch opens on surface
-					public static LocString SURFACE = "Up on the dark, barren surface of a drifting asteroid chunk, a heavy metal hatch slowly creaks open in the vacuum of space.";
-					// [01:33] Dupe peeks out
-					public static LocString PEEK = "A single Duplicant wearing a glass bubble helmet peeks out to investigate. Two more quickly squeeze their heads through the tight opening right beside her.";
+					public static LocString HATCH = "Out in the cold void, a metal hatch slowly creaks open on a barren surface. A solitary duplicant in a round space helmet cautiously peeks out.";
+					// [01:38] More dupes peek out
+					public static LocString PEEK = "Two more helmeted dupes awkwardly squeeze their heads out beside her. The view slowly pans out to reveal their new, very permanent predicament.";
 					// [01:43] Trio stranded in space
-					public static LocString STRANDED = "The trio stares out in complete bewilderment at the cosmos. They are stranded on a tiny rock, surrounded by the floating, fractured remains of their former home.";
+					public static LocString STRANDED = "They are stranded on a critically tiny fragment of rock. The oblivious trio stares blankly into space, entirely surrounded by floating space debris.";
 				}
 
-				/// Thriving victory cinematic (7s). Dupes throw a party
-				/// with confetti and pickles.
+				/// Thriving victory cinematic (10s). Dupes throw a confetti
+				/// party celebrating colony sustainability.
 				public class STAY {
-					// [00:00] First dupe cheers
-					public static LocString CHEER = "A duplicant with spiky black hair stands with his eyes closed looking peaceful. He suddenly throws his hands up in a cheer as colorful confetti begins to fall.";
-					// [00:02] More dupes join in
-					public static LocString WIDER = "As the view widens another dupe in an astronaut helmet jumps for joy. To the right a third duplicant proudly holds up a jar of pickles while a nearby pipe bursts and sprays green liquid.";
-					// [00:05] Full room celebration
-					public static LocString PARTY = "The camera pulls back to reveal a whole room of dancing and celebrating duplicants. The spiky-haired dupe strikes a heroic pose in the center of the chaos completely unbothered by the leaking pipe in the background.";
+					// [00:00] Close-up, dupe cheers
+					public static LocString CHEER = "A close-up shows a duplicant peacefully closing their eyes, then throwing their hands in the air with a massive joyful cheer. Colorful square confetti begins raining down from above.";
+					// [00:02] More dupes join celebration
+					public static LocString JOINING = "The camera pulls back to reveal more duplicants joining the celebration. One cheers in a full atmo suit while another wearing a gas mask happily hoists a giant jar of pickled mealwood.";
+					// [00:04] Full room party
+					public static LocString PARTY = "The view zooms out further to show a group of duplicants dancing, hugging, and tossing supplies in a pristine plastic-tiled room. Confetti continues to fall as the colony celebrates reaching true sustainability.";
+					// [00:08] Scene fades
+					public static LocString FADE = "The joyous scene rapidly shrinks into the distance before fading entirely into black.";
 				}
 
-				/// Thriving victory loop (10s). A messy, neglected room
-				/// deep inside the asteroid.
+				/// Thriving victory loop (10s). The messy aftermath of a
+				/// colony celebration in a neglected room.
 				public class STAY_LOOP {
-					// [00:00] Messy room overview
-					public static LocString MESS = "The scene opens on a heavily neglected room deep within the asteroid. The floor is littered with dropped items, discarded packaging, and a suspiciously glowing puddle of green polluted water that is just begging to be mopped up.";
-					// [00:05] Ladder and raw ceiling
-					public static LocString LADDER = "A disconnected plumbing pipe sits abandoned near the center of the room, while a simple wooden ladder leads up toward an unfinished ceiling of raw rock. A solitary oxygen bubble floats quietly in this messy area, highlighting the colony's urgent need for a sweeping errand.";
+					// [00:00] Empty room after party
+					public static LocString ROOM = "The screen displays an empty room inside the asteroid colony in the quiet aftermath of a massive celebration. This is the continuous background loop of the victory screen playing after your duplicants have successfully established a thriving colony and decided to stay.";
+					// [00:04] Floor littered with party remnants
+					public static LocString DEBRIS = "The floor is heavily littered with the colorful remnants of a party including scattered confetti and a few overturned drinking cups. A large bright puddle of questionable green sludge stains the floorboards with a stray drinking straw sticking haphazardly out of it.";
+					// [00:07] Bubble, pipes, and ladder
+					public static LocString DETAILS = "A single delicate bubble floats gently near the left wall under the rough and uneven rocky ceiling above. Rusty metallic pipes snake along the back wall near an old wooden ladder that stands completely unused in the quiet room.";
 				}
 
-				/// Geothermal victory loop (12s). Dupes watch a Gas Reservoir
-				/// expand and contract as it processes gas.
+				/// Geothermal victory loop (10s). The Geothermal Plant pumps
+				/// rhythmically while dupes celebrate.
 				public class GEOTHERMAL_LOOP {
-					// [00:00] Dupes flanking Gas Reservoir
-					public static LocString DUPES = "Two cheerful duplicants stand in a tiled room flanking a Gas Reservoir, a towering tank used for safely storing your colony's excess gases. The little clones gaze up at the machinery and pump their fists in excitement.";
-					// [00:04] Tank fills up
-					public static LocString FILLING = "As gas is piped into the tank, the reservoir's black bellows expand vertically and push its domed lid toward the ceiling. When the stored gas empties out, the central bellows instantly collapse back down like a heavy accordion.";
-					// [00:08] Rhythmic cycle
-					public static LocString CYCLING = "This rhythmic stretching and squishing repeats happily as the tank continues to process gas. Thanks to this distinct bouncing animation, you can immediately tell how full your gas supply is just by glancing at the building.";
+					// [00:00] Machine in metal room
+					public static LocString MACHINE = "A massive piece of industrial machinery sits in the center of a metal paneled room flanked by tall ladders. This is the background for the Geothermal Plant victory screen which loops continuously to celebrate your colony's success.";
+					// [00:03] Bellows pumping, left dupe dances
+					public static LocString PUMPING = "The machine rhythmically pumps upwards to reveal a large purple bellows expanding in its midsection before compressing back down. On the left side of the room a duplicant dances joyfully while waving a wrench in the air.";
+					// [00:06] Right dupe taps along
+					public static LocString DANCING = "Over on the right a second duplicant in a yellow hard hat taps their foot and nods along rhythmically while holding a clipboard. The entire scene continues to bounce along in a lively endless loop of geothermal triumph.";
 				}
 			}
 		}
