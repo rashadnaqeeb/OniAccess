@@ -32,6 +32,7 @@ namespace OniAccess.Handlers.Screens {
 		private bool _inVictoryLoop;
 		private int _descCursor;
 		private string _currentClipName;
+		private bool _volumeLowered;
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.VIDEO;
 
@@ -46,6 +47,7 @@ namespace OniAccess.Handlers.Screens {
 			_inVictoryLoop = false;
 			_descCursor = 0;
 			_currentClipName = null;
+			_volumeLowered = false;
 			base.OnActivate();
 		}
 
@@ -94,9 +96,15 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			try {
-				var videoPlayer = Traverse.Create(_screen)
-					.Field<VideoPlayer>("videoPlayer").Value;
+				var t = Traverse.Create(_screen);
+				var videoPlayer = t.Field<VideoPlayer>("videoPlayer").Value;
 				if (videoPlayer != null && videoPlayer.clip != null) {
+					if (!_volumeLowered) {
+						_volumeLowered = true;
+						var audioHandle = t.Field<FMOD.Studio.EventInstance>("audioHandle").Value;
+						if (audioHandle.isValid())
+							audioHandle.setVolume(0.3f);
+					}
 					var clipName = videoPlayer.clip.name;
 					if (clipName != _currentClipName) {
 						_currentClipName = clipName;
