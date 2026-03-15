@@ -1551,11 +1551,19 @@ namespace STRINGS {
 			public static LocString NO_BACK = "nothing to go back to";
 			public static LocString NO_FORWARD = "nothing to go forward to";
 			public static LocString HISTORY_FORWARD_HELP = "Go forward";
-			// Output temperature descriptions for grouped converter effects
-			public static LocString AT_INPUT_TEMPERATURE = "at input temperature";
-			public static LocString AT_BUILDING_TEMPERATURE = "at building temperature";
-			// {0} = formatted temperature value
-			public static LocString AT_LEAST_TEMPERATURE = "at least {0}";
+			// Spoken before the input element in a grouped converter line.
+			// Full example: "takes Salt Water, 5 kg/s. produces Water, 4.65 kg/s, input temperature"
+			public static LocString TAKES = "takes";
+			// Output temperature mode: element is emitted at the same temperature as the input
+			// Example: "produces Water, 4.65 kg/s, input temperature"
+			public static LocString INPUT_TEMPERATURE = "input temperature";
+			// Output temperature mode: element is emitted at the building's own temperature
+			// Example: "produces Oxygen, 0.5 kg/s, building temperature"
+			public static LocString BUILDING_TEMPERATURE = "building temperature";
+			// Output temperature mode: element is emitted at least at a fixed temperature.
+			// {0} = formatted temperature value (e.g. "40 °C")
+			// Example: "produces Water, 5 kg/s, minimum 40 °C"
+			public static LocString MINIMUM_TEMPERATURE = "minimum {0}";
 		}
 
 		// Measurement ruler tool on tile cursor

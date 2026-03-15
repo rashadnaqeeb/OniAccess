@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 
 using OniAccess.Input;
+using OniAccess.Util;
 using OniAccess.Speech;
 
 namespace OniAccess.Handlers.Screens.Codex {
@@ -345,23 +346,21 @@ namespace OniAccess.Handlers.Screens.Codex {
 			var result = WidgetTextExtractor.GetGroupedConverterItems(entryId);
 			if (result == null) return;
 
-			var (groupedItems, replacementCount) = result.Value;
+			var (groupedItems, inputCount, outputCount) = result.Value;
 
-			// Find the "Effects" subtitle
+			// Remove input items from Requirements section
+			string reqHeader = (string)STRINGS.CODEX.HEADERS.BUILDINGREQUIREMENTS;
+			int reqIndex = FindHeadingIndex(reqHeader);
+			if (reqIndex >= 0 && reqIndex + inputCount < _items.Count)
+				_items.RemoveRange(reqIndex + 1, inputCount);
+
+			// Replace output items in Effects section with grouped items
 			string effectsHeader = (string)STRINGS.CODEX.HEADERS.BUILDINGEFFECTS;
-			int subtitleIndex = -1;
-			for (int i = 0; i < _items.Count; i++) {
-				if (_items[i].isHeading && _items[i].text == effectsHeader) {
-					subtitleIndex = i;
-					break;
-				}
-			}
-			if (subtitleIndex < 0) return;
+			int effectsIndex = FindHeadingIndex(effectsHeader);
+			if (effectsIndex < 0 || effectsIndex + outputCount >= _items.Count) return;
 
-			int removeStart = subtitleIndex + 1;
-			if (removeStart + replacementCount > _items.Count) return;
-
-			_items.RemoveRange(removeStart, replacementCount);
+			int removeStart = effectsIndex + 1;
+			_items.RemoveRange(removeStart, outputCount);
 
 			for (int i = 0; i < groupedItems.Count; i++) {
 				_items.Insert(removeStart + i, new ContentItem {
@@ -370,6 +369,14 @@ namespace OniAccess.Handlers.Screens.Codex {
 					links = null,
 				});
 			}
+		}
+
+		private int FindHeadingIndex(string text) {
+			for (int i = 0; i < _items.Count; i++) {
+				if (_items[i].isHeading && _items[i].text == text)
+					return i;
+			}
+			return -1;
 		}
 
 		private void AddElementCategoryItems(CodexElementCategoryList widget) {

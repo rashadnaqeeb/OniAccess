@@ -482,25 +482,37 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// Returns null if not applicable (not a building, single converter, etc.).
 		/// The int is the count of individual output items being replaced.
 		/// </summary>
-		internal static (List<string> items, int replacementCount)? GetGroupedConverterItems(string entryId) {
-			var buildingDef = Assets.GetBuildingDef(entryId);
+		internal static (List<string> items, int inputCount, int outputCount)? GetGroupedConverterItems(string entryId) {
+			// Codex entry IDs are uppercase but PrefabIDs are mixed case
+			BuildingDef buildingDef = null;
+			foreach (var def in Assets.BuildingDefs) {
+				if (def.PrefabID.ToUpperInvariant() == entryId) {
+					buildingDef = def;
+					break;
+				}
+			}
 			if (buildingDef == null) return null;
 
 			var converters = buildingDef.BuildingComplete.GetComponents<ElementConverter>();
-			if (converters == null || converters.Length <= 1) return null;
+			if (converters == null || converters.Length == 0) return null;
 
 			var groupedItems = new List<string>();
+			int inputCount = 0;
 			int outputCount = 0;
 
 			foreach (var converter in converters) {
 				if (!converter.showDescriptors) continue;
 
-				// Count active outputs for replacement tracking
+				foreach (var input in converter.consumedElements) {
+					if (input.IsActive) inputCount++;
+				}
 				foreach (var output in converter.outputElements) {
 					if (output.IsActive) outputCount++;
 				}
 
 				var sb = new StringBuilder();
+				sb.Append((string)STRINGS.ONIACCESS.CODEX.TAKES);
+				sb.Append(' ');
 
 				// Inputs
 				bool firstInput = true;
@@ -530,20 +542,19 @@ namespace OniAccess.Handlers.Screens.Codex {
 					sb.Append(GameUtil.GetFormattedMass(output.massGenerationRate, GameUtil.TimeSlice.PerSecond));
 					sb.Append(", ");
 					if (output.useEntityTemperature)
-						sb.Append((string)STRINGS.ONIACCESS.CODEX.AT_BUILDING_TEMPERATURE);
+						sb.Append((string)STRINGS.ONIACCESS.CODEX.BUILDING_TEMPERATURE);
 					else if (output.minOutputTemperature > 0f)
-						sb.Append(string.Format((string)STRINGS.ONIACCESS.CODEX.AT_LEAST_TEMPERATURE,
+						sb.Append(string.Format((string)STRINGS.ONIACCESS.CODEX.MINIMUM_TEMPERATURE,
 							GameUtil.GetFormattedTemperature(output.minOutputTemperature)));
 					else
-						sb.Append((string)STRINGS.ONIACCESS.CODEX.AT_INPUT_TEMPERATURE);
+						sb.Append((string)STRINGS.ONIACCESS.CODEX.INPUT_TEMPERATURE);
 				}
 
-				if (sb.Length > 0)
-					groupedItems.Add(sb.ToString());
+				groupedItems.Add(sb.ToString());
 			}
 
 			if (groupedItems.Count == 0) return null;
-			return (groupedItems, outputCount);
+			return (groupedItems, inputCount, outputCount);
 		}
 
 		// ========================================
