@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.0.2
 
+- Direction toggle buttons (e.g. wash basin) now announce the current direction before the toggle action
+
 ## 1.0.2
 
 - Bot navigator: Shift+[ / Shift+] cycles through all autonomous bots (Sweepy, Flydo, Rover, Biobot, Remote Worker) on the current world. Jump, follow, and pathability check (\, Ctrl+\, Shift+\) work on whichever entity type was last cycled to

@@ -30,7 +30,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			section.Key = "actions";
 			section.Header = (string)STRINGS.ONIACCESS.DETAILS.ACTIONS_TAB;
 
-			AddUserMenuButtons(ds, section.Items);
+			AddUserMenuButtons(ds, target, section.Items);
 			AddPriorityWidget(target, section.Items);
 			AddTitleBarButtons(ds, section.Items);
 
@@ -38,8 +38,14 @@ namespace OniAccess.Handlers.Screens.Details {
 				sections.Add(section);
 		}
 
+		private static readonly string[] directionNames = new[] {
+			(string)STRINGS.ONIACCESS.DETAILS.DIRECTION_BOTH,
+			(string)STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT,
+			(string)STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT
+		};
+
 		private static void AddUserMenuButtons(
-				DetailsScreen ds, List<Widget> items) {
+				DetailsScreen ds, GameObject target, List<Widget> items) {
 			var userMenu = GetUserMenuScreen(ds);
 			if (userMenu == null) return;
 
@@ -67,19 +73,42 @@ namespace OniAccess.Handlers.Screens.Details {
 			}
 			if (buttonInfos == null) return;
 
+			var dirCtrl = target.GetComponent<DirectionControl>();
+
 			foreach (var info in buttonInfos) {
 				if (info == null) continue;
 				var captured = info;
+				var speechPrefix = GetDirectionPrefix(captured, dirCtrl);
 				items.Add(new UserMenuButtonWidget {
 					Key = captured.text,
 					Label = captured.text,
-					SpeechFunc = () => string.IsNullOrEmpty(captured.tooltipText)
-						? captured.text
-						: $"{captured.text}, {captured.tooltipText}",
+					SpeechFunc = () => {
+						var text = string.IsNullOrEmpty(captured.tooltipText)
+							? captured.text
+							: $"{captured.text}, {captured.tooltipText}";
+						return speechPrefix != null
+							? $"{speechPrefix} {text}"
+							: text;
+					},
 					OnClick = captured.onClick,
 					IsInteractableFunc = () => captured.isInteractable
 				});
 			}
+		}
+
+		private static string GetDirectionPrefix(
+				KIconButtonMenu.ButtonInfo button,
+				DirectionControl dirCtrl) {
+			if (dirCtrl == null) return null;
+			if (button.iconName == null ||
+				!button.iconName.StartsWith("action_direction_"))
+				return null;
+
+			int idx = (int)dirCtrl.allowedDirection;
+			if (idx < 0 || idx >= directionNames.Length) return null;
+			return string.Format(
+				(string)STRINGS.ONIACCESS.DETAILS.CURRENT_DIRECTION,
+				directionNames[idx]);
 		}
 
 		private static UserMenuScreen GetUserMenuScreen(DetailsScreen ds) {

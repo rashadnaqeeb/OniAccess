@@ -1240,6 +1240,12 @@ namespace STRINGS {
 			public static LocString CURRENT_TASK = "Current task";
 			public static LocString ACTIONS_TAB = "Actions";
 			public static LocString NO_ACTIONS = "No actions";
+			// "both" as in "both directions" (left and right); used in
+			// CURRENT_DIRECTION to describe a building that accepts
+			// duplicants from either side (e.g. "Current direction: both.")
+			public static LocString DIRECTION_BOTH = "both";
+			// {0} = direction word (e.g. "both", "left", "right")
+			public static LocString CURRENT_DIRECTION = "Current direction: {0}.";
 			public static LocString PRIORITY = "Priority";
 			public static LocString PIN_RESOURCE = "Pin resource";
 			// {0} = duplicant name, {1} = hat/role name, {2} = skills subtitle
