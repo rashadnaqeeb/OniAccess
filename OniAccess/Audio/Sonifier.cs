@@ -14,7 +14,7 @@ namespace OniAccess.Audio {
 
 		// Volume mapping
 		const float SilenceDb = -60f;
-		const float MaxVolume = 0.15f;
+		const float MaxVolume = 0.1f;
 		const float VolumeFadeSeconds = 0.1f;
 
 		// Fade ramp to prevent click artifacts on start/stop
