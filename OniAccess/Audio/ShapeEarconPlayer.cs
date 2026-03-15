@@ -188,7 +188,7 @@ namespace OniAccess.Audio {
 							new Segment(h, PanLeft),
 							new Segment(h, PanRight)
 						};
-						// Corner — up corners lead with up; down corners
+					// Corner — up corners lead with up; down corners
 					// lead with horizontal to match T-form ordering.
 					if (up)
 						return new[] {
