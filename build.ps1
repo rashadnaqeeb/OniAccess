@@ -95,7 +95,7 @@ if (-not (Test-Path $NativeDir)) {
     New-Item -ItemType Directory -Path $NativeDir -Force | Out-Null
 }
 $TolkSrc = "$PSScriptRoot\tolk\dist"
-$TolkDlls = @("Tolk.dll", "nvdaControllerClient64.dll", "SAAPI64.dll")
+$TolkDlls = @("Tolk.dll", "nvdaControllerClient64.dll", "SAAPI64.dll", "BoyCtrl-x64.dll", "ZDSRAPI_x64.dll", "boyctrl.ini", "ZDSRAPI.ini")
 foreach ($dll in $TolkDlls) {
     $src = Join-Path $TolkSrc $dll
     if (Test-Path $src) {
