@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.0.1
+## Unreleased changes since 1.0.2
+
+## 1.0.2
 
 - Bot navigator: Shift+[ / Shift+] cycles through all autonomous bots (Sweepy, Flydo, Rover, Biobot, Remote Worker) on the current world. Jump, follow, and pathability check (\, Ctrl+\, Shift+\) work on whichever entity type was last cycled to
 - Codex effects for multi-converter buildings (e.g. Desalinator) now group each converter's outputs with its input instead of listing duplicates
