@@ -67,6 +67,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		protected override void ActivateCurrentItem() {
+			if (!EnsureComponents()) return;
 			switch ((Item)CurrentIndex) {
 				case Item.Toggle:
 					_toggle.Click();
@@ -85,6 +86,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		protected override void AdjustCurrentItem(int direction, int stepLevel) {
 			if ((Item)CurrentIndex != Item.Slider) return;
+			if (!EnsureComponents()) return;
 
 			float step = InputUtil.StepForLevel(stepLevel);
 			float oldValue = _slider.value;
@@ -148,6 +150,23 @@ namespace OniAccess.Handlers.Tiles {
 				default:
 					return null;
 			}
+		}
+
+		/// <summary>
+		/// The timelapse screenshot system toggles the overlay off and back on,
+		/// which destroys and recreates the DisinfectThresholdDiagram. If that
+		/// happens while this handler is active, our component references die.
+		/// Re-resolve from the new diagram instance when that's detected.
+		/// </summary>
+		private bool EnsureComponents() {
+			if (_toggle && _slider && _inputField)
+				return true;
+			if (!ResolveComponents()) {
+				Util.Log.Warn("DisinfectSettingsHandler: diagram destroyed, closing");
+				Close();
+				return false;
+			}
+			return true;
 		}
 
 		private bool ResolveComponents() {
