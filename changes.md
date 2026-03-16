@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.0.3
 
+- Earcons no longer play on unexplored tiles; moving into fog of war silences all earcons and resets temperature tracking
+
 ## 1.0.3
 
 - Support for tolk_override.dll: drop in a custom Tolk replacement to use additional screen reader drivers

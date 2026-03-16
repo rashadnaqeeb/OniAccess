@@ -692,16 +692,21 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private void UpdateAudioForCell() {
+			int cell = TileCursor.Instance.Cell;
+			if (!Grid.IsVisible(cell)) {
+				Audio.EarconScheduler.Instance?.CancelAll();
+				Audio.EarconScheduler.Instance?.ResetTransitionState();
+				Audio.ShapeEarconPlayer.Instance?.CancelAll();
+				Audio.SonifierController.Instance.Stop();
+				return;
+			}
 			HashedString mode = OverlayScreen.Instance != null
 				? OverlayScreen.Instance.GetMode()
 				: OverlayModes.None.ID;
 			if (Audio.EarconScheduler.Instance != null)
-				Audio.EarconScheduler.Instance.PlayForCell(
-					TileCursor.Instance.Cell, mode);
-			Audio.ShapeEarconPlayer.Instance?.OnCursorMoved(
-				TileCursor.Instance.Cell, mode);
-			Audio.SonifierController.Instance.OnCursorMoved(
-				TileCursor.Instance.Cell, mode);
+				Audio.EarconScheduler.Instance.PlayForCell(cell, mode);
+			Audio.ShapeEarconPlayer.Instance?.OnCursorMoved(cell, mode);
+			Audio.SonifierController.Instance.OnCursorMoved(cell, mode);
 		}
 
 		private void OpenActionMenu() {
