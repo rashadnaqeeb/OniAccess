@@ -25,7 +25,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (element.IsVacuum)
 				return new[] { element.name };
 			float kg = Grid.Mass[cell];
-			return new[] { $"{element.name}, {FormatGlanceMass(kg)}" };
+			string text = $"{element.name}, {FormatGlanceMass(kg)}";
+			if (Game.Instance.GetComponent<EntombedItemVisualizer>().IsEntombedItem(cell))
+				text += ", " + (string)STRINGS.MISC.STATUSITEMS.BURIEDITEM.NAME;
+			return new[] { text };
 		}
 
 		/// <summary>
