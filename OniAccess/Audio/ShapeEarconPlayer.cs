@@ -50,6 +50,8 @@ namespace OniAccess.Audio {
 		private Coroutine _activeSequence;
 		private Channel _channel;
 
+		internal int ActiveChannelCount => _channel.hasHandle() ? 1 : 0;
+
 		private void Awake() {
 			Instance = this;
 			GenerateTones();

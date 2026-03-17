@@ -18,6 +18,8 @@ namespace OniAccess.Audio {
 		private readonly List<EarconSet> _sets = new List<EarconSet>();
 		private TemperatureBandEarconSet _temperatureBandSet;
 
+		internal int ActiveChannelCount => _activeChannels.Count;
+
 		private void Awake() {
 			Instance = this;
 			try {

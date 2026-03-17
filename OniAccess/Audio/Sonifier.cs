@@ -37,6 +37,10 @@ namespace OniAccess.Audio {
 		private float _fadeTarget;
 		private float _smoothedVolume;
 
+		// Temporary diagnostics for audio channel leak investigation
+		const float DiagnosticIntervalSeconds = 60f;
+		private float _diagnosticTimer = DiagnosticIntervalSeconds;
+
 		private void Awake() {
 			Instance = this;
 			_toneSound = ToneGenerator.CreateLoopingSineWave(BaseFrequencyHz, 1.0f);
@@ -54,6 +58,7 @@ namespace OniAccess.Audio {
 
 		private void Update() {
 			SonifierController.Instance.Tick();
+			UpdateDiagnostics();
 
 			if (!_playing) return;
 
@@ -136,6 +141,25 @@ namespace OniAccess.Audio {
 			Array.Clear(_presenceBuffer, 0, _presenceBuffer.Length);
 			_presenceIndex = 0;
 			_presenceCount = 0;
+		}
+
+		private void UpdateDiagnostics() {
+			_diagnosticTimer -= Time.unscaledDeltaTime;
+			if (_diagnosticTimer > 0f) return;
+			_diagnosticTimer = DiagnosticIntervalSeconds;
+
+			var result = RuntimeManager.CoreSystem.getChannelsPlaying(
+				out int total, out int real);
+			if (result != RESULT.OK) return;
+
+			int ours = (_playing ? 1 : 0)
+				+ (ShapeEarconPlayer.Instance?.ActiveChannelCount ?? 0)
+				+ (EarconScheduler.Instance?.ActiveChannelCount ?? 0);
+
+			if (total > 100)
+				Log.Warn($"FMOD channels: {total} total ({real} real), mod owns {ours}");
+			else
+				Log.Info($"FMOD channels: {total} total ({real} real), mod owns {ours}");
 		}
 
 		private float ComputeVolume() {
