@@ -379,7 +379,7 @@ namespace OniAccess.Handlers.Tiles {
 		/// pushed back by ConstrainToWorld. Replicates the game's clamping
 		/// logic: viewport rays at the 1/3 mark must stay within world bounds.
 		/// </summary>
-		private static bool IsCameraReachable(int cell) {
+		internal static bool IsCameraReachable(int cell) {
 			var cam = Camera.main;
 			if (cam == null) return true;
 			var world = ClusterManager.Instance.activeWorld;
