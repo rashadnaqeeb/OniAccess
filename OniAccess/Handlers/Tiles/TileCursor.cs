@@ -20,6 +20,8 @@ namespace OniAccess.Handlers.Tiles {
 		private static readonly int[] RadiusSteps = { 0, 1, 2, 4, 10 };
 		private int _radiusStepIndex;
 		private int _cell;
+		private int _lastWorldId = -1;
+		private int _lastMovedFrom = Grid.InvalidCell;
 		private bool _wasPanning;
 		private string _lastRoomName;
 		private string _lastBiomeName;
@@ -56,10 +58,32 @@ namespace OniAccess.Handlers.Tiles {
 		/// Falls back to world center if no telepad exists.
 		/// </summary>
 		public void Initialize() {
+			_lastWorldId = ClusterManager.Instance.activeWorldId;
+			_lastMovedFrom = Grid.InvalidCell;
 			_cell = Util.GridCoordinates.GetOriginCell();
 			LockMouseToCell(_cell);
 			SnapCameraToCell(_cell);
 			UpdateBiomeTracking();
+		}
+
+		/// <summary>
+		/// Detect world switch and re-initialize cursor for the new world.
+		/// Called every tick from TileCursorHandler. Returns the world name
+		/// speech if a switch occurred, null otherwise.
+		/// </summary>
+		public string CheckWorldSwitch() {
+			int worldId = ClusterManager.Instance.activeWorldId;
+			if (worldId == _lastWorldId) return null;
+			_lastWorldId = worldId;
+			_lastMovedFrom = Grid.InvalidCell;
+			Util.GridCoordinates.ClearOrigin();
+			_cell = Util.GridCoordinates.GetOriginCell();
+			_lastRoomName = null;
+			_lastBiomeName = null;
+			_wasPanning = false;
+			LockMouseToCell(_cell);
+			UpdateBiomeTracking();
+			return BuildCellSpeech();
 		}
 
 		// ========================================
@@ -119,15 +143,17 @@ namespace OniAccess.Handlers.Tiles {
 		/// </summary>
 		public string Move(Direction direction) {
 			if (Radius == 0) {
-				if (IsAtWorldEdge(_cell, direction)) {
+				if (_cell == _lastMovedFrom) {
 					PlayBoundarySound();
 					return null;
 				}
 				int candidate = GetNeighbor(_cell, direction);
 				if (candidate == Grid.InvalidCell || !IsInWorldBounds(candidate)) {
+					_lastMovedFrom = Grid.InvalidCell;
 					PlayBoundarySound();
 					return null;
 				}
+				_lastMovedFrom = _cell;
 				_cell = candidate;
 			} else {
 				int cx = Grid.CellColumn(_cell);
@@ -227,6 +253,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		public string JumpTo(int cell) {
 			if (!IsInWorldBounds(cell)) return null;
+			_lastMovedFrom = Grid.InvalidCell;
 			_cell = cell;
 			LockMouseToCell(_cell);
 			SnapCameraToCell(_cell);

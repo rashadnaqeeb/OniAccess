@@ -311,6 +311,12 @@ namespace OniAccess.Handlers.Tiles {
 				_overlaySubscribed = true;
 			}
 
+			string worldSwitchSpeech = TileCursor.Instance.CheckWorldSwitch();
+			if (worldSwitchSpeech != null) {
+				SpeechPipeline.SpeakInterrupt(worldSwitchSpeech);
+				Audio.EarconScheduler.Instance?.ResetTransitionState();
+				UpdateAudioForCell();
+			}
 			_scanner.CheckWorldSwitch();
 			_monitor.Tick();
 			_notificationAnnouncer?.Tick();
