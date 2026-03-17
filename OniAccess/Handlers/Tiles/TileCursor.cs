@@ -21,7 +21,6 @@ namespace OniAccess.Handlers.Tiles {
 		private int _radiusStepIndex;
 		private int _cell;
 		private int _lastWorldId = -1;
-		private int _lastMovedFrom = Grid.InvalidCell;
 		private bool _wasPanning;
 		private string _lastRoomName;
 		private string _lastBiomeName;
@@ -59,7 +58,6 @@ namespace OniAccess.Handlers.Tiles {
 		/// </summary>
 		public void Initialize() {
 			_lastWorldId = ClusterManager.Instance.activeWorldId;
-			_lastMovedFrom = Grid.InvalidCell;
 			_cell = Util.GridCoordinates.GetOriginCell();
 			LockMouseToCell(_cell);
 			SnapCameraToCell(_cell);
@@ -75,7 +73,6 @@ namespace OniAccess.Handlers.Tiles {
 			int worldId = ClusterManager.Instance.activeWorldId;
 			if (worldId == _lastWorldId) return null;
 			_lastWorldId = worldId;
-			_lastMovedFrom = Grid.InvalidCell;
 			Util.GridCoordinates.ClearOrigin();
 			_cell = Util.GridCoordinates.GetOriginCell();
 			_lastRoomName = null;
@@ -143,17 +140,12 @@ namespace OniAccess.Handlers.Tiles {
 		/// </summary>
 		public string Move(Direction direction) {
 			if (Radius == 0) {
-				if (_cell == _lastMovedFrom) {
-					PlayBoundarySound();
-					return null;
-				}
 				int candidate = GetNeighbor(_cell, direction);
-				if (candidate == Grid.InvalidCell || !IsInWorldBounds(candidate)) {
-					_lastMovedFrom = Grid.InvalidCell;
+				if (candidate == Grid.InvalidCell || !IsInWorldBounds(candidate)
+						|| !IsCameraReachable(candidate)) {
 					PlayBoundarySound();
 					return null;
 				}
-				_lastMovedFrom = _cell;
 				_cell = candidate;
 			} else {
 				int cx = Grid.CellColumn(_cell);
@@ -253,7 +245,6 @@ namespace OniAccess.Handlers.Tiles {
 
 		public string JumpTo(int cell) {
 			if (!IsInWorldBounds(cell)) return null;
-			_lastMovedFrom = Grid.InvalidCell;
 			_cell = cell;
 			LockMouseToCell(_cell);
 			SnapCameraToCell(_cell);
@@ -381,6 +372,30 @@ namespace OniAccess.Handlers.Tiles {
 			Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
 			KInputManager.isMousePosLocked = true;
 			KInputManager.lockedMousePos = screenPos;
+		}
+
+		/// <summary>
+		/// Check whether the camera can center on this cell without being
+		/// pushed back by ConstrainToWorld. Replicates the game's clamping
+		/// logic: viewport rays at the 1/3 mark must stay within world bounds.
+		/// </summary>
+		private static bool IsCameraReachable(int cell) {
+			var cam = Camera.main;
+			if (cam == null) return true;
+			var world = ClusterManager.Instance.activeWorld;
+			Vector3 cellPos = Grid.CellToPosCCC(cell, Grid.SceneLayer.Move);
+			float ortho = cam.orthographicSize;
+			float aspect = cam.aspect;
+			float viewHalfH = ortho * 0.33f;
+			float viewHalfW = ortho * aspect * 0.33f;
+			float minX = (float)world.minimumBounds.x * Grid.CellSizeInMeters;
+			float maxX = (float)world.maximumBounds.x * Grid.CellSizeInMeters;
+			float minY = (float)world.minimumBounds.y * Grid.CellSizeInMeters;
+			float maxY = (float)world.maximumBounds.y * Grid.CellSizeInMeters * 1.1f;
+			return cellPos.x - viewHalfW >= minX
+				&& cellPos.x + viewHalfW <= maxX
+				&& cellPos.y - viewHalfH >= minY
+				&& cellPos.y + viewHalfH <= maxY;
 		}
 
 		private static void SnapCameraToCell(int cell) {
