@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.3
 
+- Fix boundary sound not playing reliably at map edges, especially on rockets and side edges
 - Fix crash in disinfect threshold settings when the timelapse screenshot fires while the panel is open
 - Earcons no longer play on unexplored tiles; moving into fog of war silences all earcons and resets temperature tracking
 

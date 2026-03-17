@@ -119,6 +119,10 @@ namespace OniAccess.Handlers.Tiles {
 		/// </summary>
 		public string Move(Direction direction) {
 			if (Radius == 0) {
+				if (IsAtWorldEdge(_cell, direction)) {
+					PlayBoundarySound();
+					return null;
+				}
 				int candidate = GetNeighbor(_cell, direction);
 				if (candidate == Grid.InvalidCell || !IsInWorldBounds(candidate)) {
 					PlayBoundarySound();
@@ -321,6 +325,24 @@ namespace OniAccess.Handlers.Tiles {
 				&& x <= (int)world.maximumBounds.x
 				&& y >= (int)world.minimumBounds.y
 				&& y <= (int)world.maximumBounds.y;
+		}
+
+		/// <summary>
+		/// Check if the cell is at the edge of the active world in the given
+		/// direction. Uses coordinate comparison against world bounds directly,
+		/// independent of Grid.CellAbove/Below/Left/Right and WorldIdx.
+		/// </summary>
+		internal static bool IsAtWorldEdge(int cell, Direction direction) {
+			var world = ClusterManager.Instance.activeWorld;
+			int x = Grid.CellColumn(cell);
+			int y = Grid.CellRow(cell);
+			switch (direction) {
+				case Direction.Up: return y >= (int)world.maximumBounds.y;
+				case Direction.Down: return y <= (int)world.minimumBounds.y;
+				case Direction.Left: return x <= (int)world.minimumBounds.x;
+				case Direction.Right: return x >= (int)world.maximumBounds.x;
+				default: return false;
+			}
 		}
 
 		private static void LockMouseToCell(int cell) {

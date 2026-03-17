@@ -46,6 +46,8 @@ namespace OniAccess.Handlers.Tiles.Skip {
 			int current = startCell;
 			int steps = 0;
 			while (true) {
+				if (TileCursor.IsAtWorldEdge(current, direction))
+					break;
 				int next = TileCursor.GetNeighbor(current, direction);
 				if (next == Grid.InvalidCell || !TileCursor.IsInWorldBounds(next))
 					break;
