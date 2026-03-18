@@ -1153,6 +1153,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION"
 msgid "Flow sonification"
 msgstr "Sonificación de flujo"
 
+#. STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS"
+msgid "Follow movement earcons"
+msgstr "Earcons de movimiento de seguimiento"
+
 #. STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM
 msgctxt "STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM"
 msgid "Lock zoom level when moving tile cursor"
@@ -1167,6 +1172,11 @@ msgstr "Earcons de transitabilidad"
 msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS"
 msgid "Pipe shape earcons"
 msgstr "Earcons de forma de tubería"
+
+#. STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT
+msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT"
+msgid "Scanner mass readout"
+msgstr "Lectura de masa del escáner"
 
 #. STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS"
@@ -2557,6 +2567,11 @@ msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_ON"
 msgid "Proximity, on"
 msgstr "Proximidad, activada"
 
+#. STRINGS.ONIACCESS.PRIORITY_SCREEN.RESET
+msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.RESET"
+msgid "Reset all priorities"
+msgstr "Restablecer todas las prioridades"
+
 #. STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_DECREASED
 msgctxt "STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_DECREASED"
 msgid "row decreased"
@@ -3191,6 +3206,11 @@ msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_NO_DISTANCE"
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
 
+#. STRINGS.ONIACCESS.SCANNER.INSTANCE_NO_DISTANCE_MASS
+msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_NO_DISTANCE_MASS"
+msgid "{0}, {1}, {2}"
+msgstr "{0}, {1}, {2}"
+
 #. STRINGS.ONIACCESS.SCANNER.INSTANCE_OF
 msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_OF"
 msgid "{0} of {1}"
@@ -3201,6 +3221,11 @@ msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_WITH_DISTANCE"
 msgid "{0}, {1}, {2}"
 msgstr "{0}, {1}, {2}"
 
+#. STRINGS.ONIACCESS.SCANNER.INSTANCE_WITH_DISTANCE_MASS
+msgctxt "STRINGS.ONIACCESS.SCANNER.INSTANCE_WITH_DISTANCE_MASS"
+msgid "{0}, {1}, {2}, {3}"
+msgstr "{0}, {1}, {2}, {3}"
+
 #. STRINGS.ONIACCESS.SCANNER.INVALID
 msgctxt "STRINGS.ONIACCESS.SCANNER.INVALID"
 msgid "gone"
@@ -3210,6 +3235,11 @@ msgstr "desaparecido"
 msgctxt "STRINGS.ONIACCESS.SCANNER.LOOSE_NAME"
 msgid "Loose {0}"
 msgstr "{0} suelto"
+
+#. STRINGS.ONIACCESS.SCANNER.MASS_AVERAGE
+msgctxt "STRINGS.ONIACCESS.SCANNER.MASS_AVERAGE"
+msgid "{0} average"
+msgstr "{0} promedio"
 
 #. STRINGS.ONIACCESS.SCANNER.MIXED
 msgctxt "STRINGS.ONIACCESS.SCANNER.MIXED"
@@ -4464,6 +4494,11 @@ msgstr "{0} marcados para barrer con prioridad {1}"
 msgctxt "STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_ACTIVATION"
 msgid "{0}, copy settings"
 msgstr "{0}, copiar ajustes"
+
+#. STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_FAILED
+msgctxt "STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_FAILED"
+msgid "settings not applied"
+msgstr "ajustes no aplicados"
 
 #. STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_NO_TARGET
 msgctxt "STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_NO_TARGET"
