@@ -154,7 +154,8 @@ namespace OniAccess.Audio {
 
 			int ours = (_playing ? 1 : 0)
 				+ (ShapeEarconPlayer.Instance?.ActiveChannelCount ?? 0)
-				+ (EarconScheduler.Instance?.ActiveChannelCount ?? 0);
+				+ (EarconScheduler.Instance?.ActiveChannelCount ?? 0)
+				+ (FollowMovementEarcon.Instance?.ActiveChannelCount ?? 0);
 
 			if (total > 100)
 				Log.Warn($"FMOD channels: {total} total ({real} real), mod owns {ours}");

@@ -12,5 +12,6 @@ namespace OniAccess {
 		public bool AnnounceBiomeChanges { get; set; } = true;
 		public bool FlowSonification { get; set; } = false;
 		public bool TemperatureBandEarcons { get; set; } = false;
+		public bool FollowMovementEarcons { get; set; } = false;
 	}
 }

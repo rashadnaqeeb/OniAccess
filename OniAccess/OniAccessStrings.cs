@@ -84,6 +84,7 @@ namespace STRINGS {
 			public static LocString ANNOUNCE_BIOME_CHANGES = "Announce biome changes";
 			public static LocString FLOW_SONIFICATION = "Flow sonification";
 			public static LocString TEMPERATURE_BAND_EARCONS = "Temperature band earcons";
+			public static LocString FOLLOW_MOVEMENT_EARCONS = "Follow movement earcons";
 		}
 
 		// Supply closet (Klei rewards) screen messages

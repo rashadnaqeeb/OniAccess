@@ -162,7 +162,7 @@ The mod also announces automatically without input: pause/unpause (with speed on
 - **[** and **]** -- cycle through all living duplicants on the current asteroid. Each announcement includes the dupe's name, critical statuses, position relative to the cursor (e.g. "3 up 2 left"), and current task with target building. Dupes who can't pathfind to other dupes, the telepad, or their bed are announced as "trapped"
 - **Backslash** -- jump the cursor to the current dupe's location. Press again when already on their tile to select them and open their details screen
 - **Shift+Backslash** -- check if the current dupe can reach the cursor tile, reporting path cost if reachable or the nearest reachable tile if not
-- **Ctrl+Backslash** -- follow the current dupe with the camera, announcing status and chore changes in real time. [ and ] switch the follow target. Any cursor movement stops following
+- **Ctrl+Backslash** -- follow the current dupe with the camera, announcing status and chore changes in real time. When follow movement earcons are enabled (F12 settings), a directional tone plays on each tile moved. [ and ] switch the follow target. Any cursor movement stops following
 - **Shift+[** and **Shift+]** -- cycle through autonomous bots (Sweepy, Flydo, Rover, Biobot, Remote Worker) the same way. Backslash, Shift+Backslash, and Ctrl+Backslash work on whichever entity type was last cycled to
 
 The status checks cover: incapacitated, critical health, injured, severe wounds, suffocating, holding breath, nervous breakdown, stressed, scalding, overheating, hypothermia, sick, starving, entombed, fleeing, and bionic battery states.
@@ -313,6 +313,7 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 - **Passability earcons** -- plays a warning sound on tiles duplicants can't walk through. See Earcons below. Off by default
 - **Temperature band earcons** -- plays a rising or falling tone when the cursor crosses a temperature threshold. See Earcons below. Off by default
 - **Flow sonification** -- continuous tone reflecting conduit fill or circuit load. See Earcons below. Off by default
+- **Follow movement earcons** -- plays a directional tone matching the dupe or bot's movement direction during follow mode. See Earcons below. Off by default
 - **Announce biome changes** -- speaks the biome name when the tile cursor crosses into a different biome. On by default
 
 ## Earcons
@@ -338,6 +339,10 @@ Active in all overlays. Plays a rising tone when the cursor moves into a warmer 
 ### Flow sonification
 
 Active in the Power, Plumbing, and Ventilation overlays. Plays a continuous tone whose pitch reflects how full the conduit is or how much power the circuit is drawing. Pitch ranges from C4 (empty pipe or idle circuit) up one octave to C5 (full pipe or max safe wattage). The volume rises when the conduit is actively carrying contents and fades when empty. Moving the cursor to a tile without a conduit or wire silences the tone. This gives real-time feedback about system activity without needing to mash the I key.
+
+### Follow movement earcons
+
+Active during follow mode (Ctrl+Backslash). Plays a short tone on each tile the dupe or bot moves through. The tone encodes the movement direction using the same pitch and pan scheme as pipe shape earcons: high pitch for up, low for down, mid for horizontal. Horizontal movement pans left or right to match direction. Diagonal movement combines the vertical pitch with horizontal panning -- for example, moving up-right plays a high tone panned right. The tone plays on every movement, not just direction changes, giving continuous feedback about where the entity is heading.
 
 ## Base game hotkeys
 
