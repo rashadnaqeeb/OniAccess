@@ -76,6 +76,7 @@ namespace STRINGS {
 		public class CONFIG {
 			public static LocString COORDINATE_MODE = "Tile cursor coordinate mode";
 			public static LocString AUTO_MOVE_CURSOR = "Auto-move cursor when cycling scanner entries";
+			public static LocString SCANNER_MASS_READOUT = "Scanner mass readout";
 			public static LocString LOCK_ZOOM = "Lock zoom level when moving tile cursor";
 			public static LocString UTILITY_PRESENCE_EARCONS = "Utility presence earcons";
 			public static LocString PIPE_SHAPE_EARCONS = "Pipe shape earcons";
@@ -993,6 +994,12 @@ namespace STRINGS {
 			public static LocString INSTANCE_WITH_DISTANCE = "{0}, {1}, {2}";
 			// Announcement format: {0} = name/label, {1} = index-of-count
 			public static LocString INSTANCE_NO_DISTANCE = "{0}, {1}";
+			// {0} = name, {1} = distance, {2} = mass, {3} = index-of-count
+			public static LocString INSTANCE_WITH_DISTANCE_MASS = "{0}, {1}, {2}, {3}";
+			// {0} = name, {1} = mass, {2} = index-of-count
+			public static LocString INSTANCE_NO_DISTANCE_MASS = "{0}, {1}, {2}";
+			// {0} = formatted mass string (e.g. "1.2 kg")
+			public static LocString MASS_AVERAGE = "{0} average";
 			// {0} = tile count, {1} = item name
 			public static LocString CLUSTER_LABEL = "{0} {1}";
 			// {0} = order type, {1} = target name

@@ -4,6 +4,7 @@ namespace OniAccess {
 	public class ModConfig {
 		public CoordinateMode CoordinateMode { get; set; } = CoordinateMode.Off;
 		public bool AutoMoveCursor { get; set; } = false;
+		public bool ScannerMassReadout { get; set; } = true;
 		public bool LockZoom { get; set; } = true;
 		public bool UtilityPresenceEarcons { get; set; } = false;
 		public bool PipeShapeEarcons { get; set; } = false;

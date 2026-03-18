@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.3
 
+- Scanner announcements now include mass: total kg for solids/liquids, average kg per tile for gases. Togglable in F12 settings
 - Priority screen: Ctrl+R resets all priorities from anywhere in the table
 - Copy settings now announces "settings not applied" when copying plant settings to a farm tile that can't accept them (e.g. already has a different plant, or placement is blocked)
 - Tile cursor coordinate origin (0,0) is now the ground tile below the Printing Pod, not the building itself

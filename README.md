@@ -306,6 +306,7 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 
 - **Tile cursor coordinate mode** (Off / Append / Prepend) -- controls whether X,Y coordinates are included in every tile announcement. Off by default
 - **Auto-move cursor when cycling scanner entries** -- when on, the cursor teleports as you cycle scanner instances, and distances are measured from where you scanned. Off by default
+- **Scanner mass readout** -- includes mass in scanner announcements: total kg for solids and liquids, average kg per tile for gases. On by default
 - **Lock zoom level when moving tile cursor** -- locks the camera zoom to level 10, which is the best level for audio. On by default
 - **Utility presence earcons** -- plays a sound when the cursor lands on hidden infrastructure in the default overlay. See Earcons below. Off by default
 - **Pipe shape earcons** -- plays directional tones showing how pipes and wires connect at each tile. See Earcons below. Off by default

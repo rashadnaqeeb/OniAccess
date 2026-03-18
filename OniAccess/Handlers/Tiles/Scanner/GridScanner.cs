@@ -17,6 +17,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		public string Subcategory;
 		public string ElementName;
 		public List<int> Cells = new List<int>();
+		public float TotalMass;
 	}
 
 	public class TileCluster {
@@ -528,6 +529,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				_elementClusters[root] = cluster;
 			}
 			cluster.Cells.Add(cell);
+			cluster.TotalMass += Grid.Mass[cell];
 		}
 
 		private void ExtractTile(int cell) {

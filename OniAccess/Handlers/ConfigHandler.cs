@@ -116,6 +116,12 @@ namespace OniAccess.Handlers {
 			));
 
 			items.Add(new BoolConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT,
+				() => ConfigManager.Config.ScannerMassReadout,
+				value => ConfigManager.Config.ScannerMassReadout = value
+			));
+
+			items.Add(new BoolConfigItem(
 				(string)STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM,
 				() => ConfigManager.Config.LockZoom,
 				value => ConfigManager.Config.LockZoom = value

@@ -5,10 +5,20 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 	/// </summary>
 	public static class AnnouncementFormatter {
 		public static string FormatEntityInstance(
-			string name, int cursorCell, int targetCell, int index, int count) {
+			string name, int cursorCell, int targetCell, int index, int count,
+			string massInfo = null) {
 			string distance = FormatDistance(cursorCell, targetCell);
 			string position = string.Format(
 				(string)STRINGS.ONIACCESS.SCANNER.INSTANCE_OF, index, count);
+			if (massInfo != null) {
+				if (distance.Length > 0)
+					return string.Format(
+						(string)STRINGS.ONIACCESS.SCANNER.INSTANCE_WITH_DISTANCE_MASS,
+						name, distance, massInfo, position);
+				return string.Format(
+					(string)STRINGS.ONIACCESS.SCANNER.INSTANCE_NO_DISTANCE_MASS,
+					name, massInfo, position);
+			}
 			if (distance.Length > 0)
 				return string.Format(
 					(string)STRINGS.ONIACCESS.SCANNER.INSTANCE_WITH_DISTANCE,

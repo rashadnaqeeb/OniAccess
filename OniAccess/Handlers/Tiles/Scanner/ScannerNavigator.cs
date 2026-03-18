@@ -390,9 +390,25 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 		private string FormatAnnouncement(ScanEntry entry, ScannerItem item) {
 			string name = entry.Backend.FormatName(entry);
+			string massInfo = null;
+			if (ConfigManager.Config.ScannerMassReadout
+				&& entry.Backend is Backends.ElementClusterBackend) {
+				var cluster = (ElementCluster)entry.BackendData;
+				if (cluster.TotalMass > 0f) {
+					if (cluster.Category == ScannerTaxonomy.Categories.Gases
+						&& cluster.Cells.Count > 1) {
+						string formatted = Sections.ElementSection.FormatGlanceMass(
+							cluster.TotalMass / cluster.Cells.Count);
+						massInfo = string.Format(
+							(string)STRINGS.ONIACCESS.SCANNER.MASS_AVERAGE, formatted);
+					} else {
+						massInfo = Sections.ElementSection.FormatGlanceMass(cluster.TotalMass);
+					}
+				}
+			}
 			return AnnouncementFormatter.FormatEntityInstance(
 				name, ReferenceCell(), entry.Cell,
-				_instanceIndex + 1, item.Instances.Count);
+				_instanceIndex + 1, item.Instances.Count, massInfo);
 		}
 
 		private int ReferenceCell() {
