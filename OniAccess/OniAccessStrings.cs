@@ -1303,6 +1303,7 @@ namespace STRINGS {
 			public static LocString ADJUST_COLUMN = "Adjust all priorities in column";
 			public static LocString SET_COLUMN = "Set all priorities in column";
 			public static LocString ADJUST_CELL = "Adjust priority of current cell";
+			public static LocString RESET = "Reset all priorities";
 		}
 
 		// Vitals table screen (health, stress, calories)

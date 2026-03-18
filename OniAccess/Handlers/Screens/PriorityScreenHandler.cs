@@ -30,6 +30,7 @@ namespace OniAccess.Handlers.Screens {
 			new HelpEntry("Ctrl+Left/Right", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_ROW),
 			new HelpEntry("Shift+Up/Down", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_CELL),
 			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.PRIORITY_SCREEN.ADJUST_COLUMN),
+			new HelpEntry("Ctrl+R", STRINGS.ONIACCESS.PRIORITY_SCREEN.RESET),
 		};
 
 		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
@@ -200,15 +201,21 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		void ActivateToolbarItem() {
-			if (_col == 0) {
-				HarmonyLib.Traverse.Create(_screen).Method("OnResetSettingsClicked").GetValue();
-				SpeechPipeline.SpeakInterrupt((string)STRINGS.UI.JOBSSCREEN.RESET_SETTINGS);
-			} else if (_col == 1) {
+			if (_col == 0)
+				ActivateReset();
+			else if (_col == 1) {
+				PlaySound("HUD_Click_Open");
 				Game.Instance.advancedPersonalPriorities = !Game.Instance.advancedPersonalPriorities;
 				SpeechPipeline.SpeakInterrupt(Game.Instance.advancedPersonalPriorities
 					? (string)STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_ON
 					: (string)STRINGS.ONIACCESS.PRIORITY_SCREEN.PROXIMITY_OFF);
 			}
+		}
+
+		void ActivateReset() {
+			PlaySound("HUD_Click_Open");
+			HarmonyLib.Traverse.Create(_screen).Method("OnResetSettingsClicked").GetValue();
+			SpeechPipeline.SpeakInterrupt((string)STRINGS.UI.JOBSSCREEN.RESET_SETTINGS);
 		}
 
 		// ========================================
@@ -278,6 +285,7 @@ namespace OniAccess.Handlers.Screens {
 			if (row.Kind == TableRowKind.Toolbar || row.Kind == TableRowKind.ColumnHeader) return;
 
 			if (row.Kind == TableRowKind.StoredMinion) {
+				PlaySound("Negative");
 				string msg = string.Format(
 					STRINGS.UI.JOBSSCREEN.CANNOT_ADJUST_PRIORITY,
 					row.Identity.GetProperName(),
@@ -289,12 +297,14 @@ namespace OniAccess.Handlers.Screens {
 			var manager = GetPriorityManager(row);
 			var group = _choreGroups[_col];
 			if (manager.IsChoreGroupDisabled(group)) {
+				PlaySound("Negative");
 				string traitName = GetDisablingTraitName(row.Identity, group);
 				SpeechPipeline.SpeakInterrupt(
 					string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT, traitName));
 				return;
 			}
 
+			PlaySound("HUD_Click");
 			manager.SetPersonalPriority(group, value);
 			SpeakCell();
 		}
@@ -313,6 +323,7 @@ namespace OniAccess.Handlers.Screens {
 				manager.SetPersonalPriority(group, newVal);
 			}
 
+			PlaySound(delta > 0 ? "HUD_Click" : "HUD_Click_Deselect");
 			string announcement = delta > 0
 				? (string)STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_INCREASED
 				: (string)STRINGS.ONIACCESS.PRIORITY_SCREEN.ROW_DECREASED;
@@ -332,6 +343,7 @@ namespace OniAccess.Handlers.Screens {
 				manager.SetPersonalPriority(group, value);
 			}
 
+			PlaySound("HUD_Click");
 			_lastSpokenRow = -1;
 			_lastSpokenCol = -1;
 			SpeechPipeline.SpeakInterrupt(
@@ -346,6 +358,7 @@ namespace OniAccess.Handlers.Screens {
 				|| row.Kind == TableRowKind.WorldDivider) return;
 
 			if (row.Kind == TableRowKind.StoredMinion) {
+				PlaySound("Negative");
 				string msg = string.Format(
 					STRINGS.UI.JOBSSCREEN.CANNOT_ADJUST_PRIORITY,
 					row.Identity.GetProperName(),
@@ -357,12 +370,14 @@ namespace OniAccess.Handlers.Screens {
 			var manager = GetPriorityManager(row);
 			var group = _choreGroups[_col];
 			if (manager.IsChoreGroupDisabled(group)) {
+				PlaySound("Negative");
 				string traitName = GetDisablingTraitName(row.Identity, group);
 				SpeechPipeline.SpeakInterrupt(
 					string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.DISABLED_TRAIT, traitName));
 				return;
 			}
 
+			PlaySound(delta > 0 ? "HUD_Click" : "HUD_Click_Deselect");
 			int current = manager.GetPersonalPriority(group);
 			int newVal = UnityEngine.Mathf.Clamp(current + delta, 0, 5);
 			manager.SetPersonalPriority(group, newVal);
@@ -382,6 +397,7 @@ namespace OniAccess.Handlers.Screens {
 				manager.SetPersonalPriority(group, newVal);
 			}
 
+			PlaySound(delta > 0 ? "HUD_Click" : "HUD_Click_Deselect");
 			string announcement = delta > 0
 				? (string)STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_INCREASED
 				: (string)STRINGS.ONIACCESS.PRIORITY_SCREEN.COLUMN_DECREASED;
@@ -410,6 +426,11 @@ namespace OniAccess.Handlers.Screens {
 
 			bool ctrlHeld = InputUtil.CtrlHeld();
 			bool shiftHeld = InputUtil.ShiftHeld();
+
+			if (ctrlHeld && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)) {
+				ActivateReset();
+				return true;
+			}
 
 			if (!ctrlHeld) {
 				int digit = InputUtil.GetDigitKeyDown();

@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.3
 
+- Priority screen: Ctrl+R resets all priorities from anywhere in the table
 - Copy settings now announces "settings not applied" when copying plant settings to a farm tile that can't accept them (e.g. already has a different plant, or placement is blocked)
 - Tile cursor coordinate origin (0,0) is now the ground tile below the Printing Pod, not the building itself
 - Fix "MISSING" being spoken after story trait popup text and buttons
