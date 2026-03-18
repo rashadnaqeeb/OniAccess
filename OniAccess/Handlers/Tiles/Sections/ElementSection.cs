@@ -40,11 +40,14 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		internal static string FormatGlanceMass(float kg) {
 			if (kg < 0.1f) {
 				float g = kg * 1000f;
-				return $"{g:0} g";
+				return $"{g:0}{STRINGS.UI.UNITSUFFIXES.MASS.GRAM}";
 			}
 			if (kg <= 10f)
-				return $"{kg:0.00} kg";
-			return $"{kg:0} kg";
+				return $"{kg:0.00}{STRINGS.UI.UNITSUFFIXES.MASS.KILOGRAM}";
+			if (kg < 5000f)
+				return $"{kg:0}{STRINGS.UI.UNITSUFFIXES.MASS.KILOGRAM}";
+			float t = kg / 1000f;
+			return $"{t:0.#}{STRINGS.UI.UNITSUFFIXES.MASS.TONNE}";
 		}
 	}
 }
