@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.0.3
+## Unreleased changes since 1.0.4
+
+## 1.0.4
 
 - Follow mode now plays a directional tone matching the dupe or bot's movement direction. Togglable in F12 settings
 - Scanner announcements now include mass: total kg for solids/liquids, average kg per tile for gases. Togglable in F12 settings
