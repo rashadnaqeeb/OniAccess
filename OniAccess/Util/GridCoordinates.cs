@@ -1,10 +1,11 @@
 namespace OniAccess.Util {
 	/// <summary>
 	/// Formats a grid cell as coordinates relative to an origin point:
-	/// the Printing Pod on colonies, or the Rocket Control Station
-	/// inside rocket interiors. Falls back to world center if neither
-	/// exists yet, but keeps retrying so early callers don't lock in
-	/// the wrong origin.
+	/// one cell below the bottom-left of the Printing Pod on colonies,
+	/// or one cell below the Rocket Control Station inside rocket
+	/// interiors. Falls back to world center if neither exists yet,
+	/// but keeps retrying so early callers don't lock in the wrong
+	/// origin.
 	/// </summary>
 	internal static class GridCoordinates {
 		private static int? _originCell;
@@ -57,7 +58,7 @@ namespace OniAccess.Util {
 			try {
 				var stations = Components.RocketControlStations.GetWorldItems(world.id);
 				if (stations != null && stations.Count > 0)
-					return Grid.PosToCell(stations[0].transform.GetPosition());
+					return CellBelowBuilding(stations[0]);
 			} catch (System.Exception ex) {
 				Log.Warn($"GridCoordinates.FindRocketControlStationCell: {ex.Message}");
 			}
@@ -68,11 +69,17 @@ namespace OniAccess.Util {
 			try {
 				var telepads = Components.Telepads.GetWorldItems(world.id);
 				if (telepads != null && telepads.Count > 0)
-					return Grid.PosToCell(telepads[0].transform.GetPosition());
+					return CellBelowBuilding(telepads[0]);
 			} catch (System.Exception ex) {
 				Log.Warn($"GridCoordinates.FindTelepadCell: {ex.Message}");
 			}
 			return Grid.InvalidCell;
+		}
+
+		private static int CellBelowBuilding(KMonoBehaviour component) {
+			int bottomLeft = Grid.PosToCell(component.transform.GetPosition());
+			int below = Grid.CellBelow(bottomLeft);
+			return Grid.IsValidCell(below) ? below : bottomLeft;
 		}
 
 		private static int FindWorldCenter(WorldContainer world) {

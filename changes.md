@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.3
 
+- Tile cursor coordinate origin (0,0) is now the ground tile below the Printing Pod, not the building itself
 - Fix "MISSING" being spoken after story trait popup text and buttons
 - Tile cursor now announces buried objects inside solid tiles
 - Fix boundary sound not playing reliably at map edges, especially on rockets and side edges

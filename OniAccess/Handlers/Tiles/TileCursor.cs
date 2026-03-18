@@ -177,8 +177,8 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		/// <summary>
-		/// Return coordinates for the current cell, relative to the
-		/// Printing Pod (0,0). Falls back to world center if no telepad.
+		/// Return coordinates for the current cell, relative to the cell
+		/// below the Printing Pod (0,0). Falls back to world center.
 		/// </summary>
 		public string ReadCoordinates() {
 			return Util.GridCoordinates.Format(_cell);
