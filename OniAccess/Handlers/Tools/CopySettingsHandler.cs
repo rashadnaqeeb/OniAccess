@@ -72,12 +72,19 @@ namespace OniAccess.Handlers.Tools {
 
 			bool success = CopyBuildingSettings.ApplyCopy(cell, sourceGO);
 			if (success) {
-				BaseScreenHandler.PlaySound("HUD_Click");
-				string targetName = GetTargetName(cell, sourceGO);
-				string appliedText = targetName != null
-					? targetName + ", " + (string)STRINGS.UI.COPIED_SETTINGS
-					: (string)STRINGS.UI.COPIED_SETTINGS;
-				SpeechPipeline.SpeakInterrupt(appliedText);
+				var targetGO = GetTargetGO(cell, sourceGO);
+				if (FarmCopyFailed(sourceGO, targetGO)) {
+					BaseScreenHandler.PlaySound("Negative");
+					SpeechPipeline.SpeakInterrupt(
+						(string)STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_FAILED);
+				} else {
+					BaseScreenHandler.PlaySound("HUD_Click");
+					string targetName = targetGO?.GetComponent<KSelectable>()?.GetName();
+					string appliedText = targetName != null
+						? targetName + ", " + (string)STRINGS.UI.COPIED_SETTINGS
+						: (string)STRINGS.UI.COPIED_SETTINGS;
+					SpeechPipeline.SpeakInterrupt(appliedText);
+				}
 			} else {
 				BaseScreenHandler.PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
@@ -116,17 +123,32 @@ namespace OniAccess.Handlers.Tools {
 				(string)STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_ACTIVATION, name);
 		}
 
-		private static string GetTargetName(int cell, GameObject sourceGO) {
+		private static GameObject GetTargetGO(int cell, GameObject sourceGO) {
 			ObjectLayer layer = ObjectLayer.Building;
 			if (sourceGO.GetComponent<MoverLayerOccupier>() != null)
 				layer = ObjectLayer.Mover;
 			var building = sourceGO.GetComponent<BuildingComplete>();
 			if (building != null)
 				layer = building.Def.ObjectLayer;
-			var targetGO = Grid.Objects[cell, (int)layer];
-			if (targetGO == null) return null;
-			var sel = targetGO.GetComponent<KSelectable>();
-			return sel?.GetName();
+			return Grid.Objects[cell, (int)layer];
+		}
+
+		private static bool FarmCopyFailed(GameObject sourceGO, GameObject targetGO) {
+			if (targetGO == null) return false;
+			var destPlot = targetGO.GetComponent<PlantablePlot>();
+			if (destPlot == null) return false;
+			var sourcePlot = sourceGO.GetComponent<PlantablePlot>();
+			if (sourcePlot == null) return false;
+			return GetEffectiveSeedTag(sourcePlot) != GetEffectiveSeedTag(destPlot);
+		}
+
+		private static Tag GetEffectiveSeedTag(PlantablePlot plot) {
+			if (plot.Occupant != null) {
+				var seedProducer = plot.Occupant.GetComponent<SeedProducer>();
+				if (seedProducer != null)
+					return TagManager.Create(seedProducer.seedInfo.seedId);
+			}
+			return plot.requestedEntityTag;
 		}
 	}
 }

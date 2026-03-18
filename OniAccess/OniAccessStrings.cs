@@ -864,6 +864,10 @@ namespace STRINGS {
 			// {0} = source building name
 			public static LocString COPY_SETTINGS_ACTIVATION = "{0}, copy settings";
 			public static LocString COPY_SETTINGS_NO_TARGET = "no matching building";
+			// Spoken when copy-settings targets a farm tile but the plant could not
+			// be changed (e.g. destination already has a different plant, or
+			// something blocks placement)
+			public static LocString COPY_SETTINGS_FAILED = "settings not applied";
 			public static LocString COPY_SETTINGS_UNAVAILABLE = "no copyable settings";
 			// {0} = item being placed
 			public static LocString PLACE_ACTIVATION = "place, {0}";
