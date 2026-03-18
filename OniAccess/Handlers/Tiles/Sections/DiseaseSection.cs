@@ -3,7 +3,8 @@ using System.Collections.Generic;
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Aggregates germs by disease type across all sources at a cell:
-	/// tile surface, buildings, pickupables, and pipe contents.
+	/// tile surface, buildings (including stored items), pickupables,
+	/// and conduit contents (liquid, gas, and solid).
 	/// Returns one token per disease type, or "clean" if total is zero.
 	/// </summary>
 	public class DiseaseSection: ICellSection {
@@ -44,6 +45,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		private static void AddBuildings(int cell, Dictionary<byte, int> totals) {
 			AddBuildingLayer(cell, ObjectLayer.Building, totals);
 			AddBuildingLayer(cell, ObjectLayer.FoundationTile, totals);
+			AddStorage(cell, ObjectLayer.Building, totals);
+			AddStorage(cell, ObjectLayer.FoundationTile, totals);
 		}
 
 		private static void AddBuildingLayer(
@@ -53,6 +56,20 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var pe = go.GetComponent<PrimaryElement>();
 			if (pe == null) return;
 			Accumulate(totals, pe.DiseaseIdx, pe.DiseaseCount);
+		}
+
+		private static void AddStorage(
+				int cell, ObjectLayer layer, Dictionary<byte, int> totals) {
+			var go = Grid.Objects[cell, (int)layer];
+			if (go == null) return;
+			var storage = go.GetComponent<Storage>();
+			if (storage == null) return;
+			foreach (var item in storage.items) {
+				if (item == null) continue;
+				var pe = item.GetComponent<PrimaryElement>();
+				if (pe == null) continue;
+				Accumulate(totals, pe.DiseaseIdx, pe.DiseaseCount);
+			}
 		}
 
 		private static void AddPickupables(int cell, Dictionary<byte, int> totals) {
@@ -72,12 +89,24 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		private static void AddConduits(int cell, Dictionary<byte, int> totals) {
 			AddConduitFlow(Game.Instance.liquidConduitFlow, cell, totals);
 			AddConduitFlow(Game.Instance.gasConduitFlow, cell, totals);
+			AddSolidConduit(cell, totals);
 		}
 
 		private static void AddConduitFlow(
 				ConduitFlow flow, int cell, Dictionary<byte, int> totals) {
 			var contents = flow.GetContents(cell);
 			Accumulate(totals, contents.diseaseIdx, contents.diseaseCount);
+		}
+
+		private static void AddSolidConduit(int cell, Dictionary<byte, int> totals) {
+			var contents = Game.Instance.solidConduitFlow.GetContents(cell);
+			if (!contents.pickupableHandle.IsValid()) return;
+			var pickupable = Game.Instance.solidConduitFlow.GetPickupable(
+				contents.pickupableHandle);
+			if (pickupable == null) return;
+			var pe = pickupable.GetComponent<PrimaryElement>();
+			if (pe == null) return;
+			Accumulate(totals, pe.DiseaseIdx, pe.DiseaseCount);
 		}
 	}
 }

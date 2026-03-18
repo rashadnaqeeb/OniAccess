@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.0.4
 
+- Tile cursor germ readout now includes germs on items inside building storage (e.g. germy water in a reservoir) and items on conveyor rails
+
 ## 1.0.4
 
 - Follow mode now plays a directional tone matching the dupe or bot's movement direction. Togglable in F12 settings
