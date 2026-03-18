@@ -48,14 +48,28 @@ namespace OniAccess.Widgets {
 
 			if (widget.GameObject == null) return null;
 
-			var tooltip = widget.GameObject.GetComponent<ToolTip>();
-			if (tooltip == null)
-				tooltip = widget.GameObject.GetComponentInChildren<ToolTip>();
-			if (tooltip == null)
-				tooltip = widget.GameObject.GetComponentInParent<ToolTip>();
+			var tooltip = GetEnabledTooltip(widget.GameObject);
 			if (tooltip == null) return null;
 
 			return ReadAllTooltipText(tooltip);
+		}
+
+		/// <summary>
+		/// Search self, children, then parents for the first enabled ToolTip.
+		/// Disabled tooltips (e.g., prefab defaults the game turns off) often
+		/// contain unresolved MISSING.STRINGS keys.
+		/// </summary>
+		private static ToolTip GetEnabledTooltip(UnityEngine.GameObject go) {
+			var tt = go.GetComponent<ToolTip>();
+			if (tt != null && tt.enabled) return tt;
+
+			tt = go.GetComponentInChildren<ToolTip>();
+			if (tt != null && tt.enabled) return tt;
+
+			tt = go.GetComponentInParent<ToolTip>();
+			if (tt != null && tt.enabled) return tt;
+
+			return null;
 		}
 
 		/// <summary>
