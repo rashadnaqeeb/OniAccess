@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.0.4
+## Unreleased changes since 1.0.5
+
+## 1.0.5
 
 - Tools: Ctrl+G toggles single-cell selection mode (Space selects one cell at a time instead of rectangle corners)
 - Tools: Shift+Space now removes a single cell from the selection instead of the entire rectangle
