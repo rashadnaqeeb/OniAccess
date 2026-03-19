@@ -2219,6 +2219,11 @@ msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_TOOL"
 msgid "Cancel tool"
 msgstr "Annuler l'outil"
 
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_CELL
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_CELL"
+msgid "Clear cell at cursor"
+msgstr "Effacer la cellule au curseur"
+
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT"
 msgid "Clear rectangle at cursor"
@@ -2234,6 +2239,11 @@ msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_FILTER"
 msgid "Change filter"
 msgstr "Changer le filtre"
 
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.SELECT_CELL
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.SELECT_CELL"
+msgid "Select cell"
+msgstr "Sélectionner la cellule"
+
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER"
 msgid "Set rectangle corner"
@@ -2243,6 +2253,11 @@ msgstr "Définir le coin du rectangle"
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY"
 msgid "Set priority"
 msgstr "Définir la priorité"
+
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.TOGGLE_MODE
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.TOGGLE_MODE"
+msgid "Toggle selection mode"
+msgstr "Basculer le mode de sélection"
 
 #. STRINGS.ONIACCESS.HELP.TYPE_SEARCH
 msgctxt "STRINGS.ONIACCESS.HELP.TYPE_SEARCH"
@@ -4434,6 +4449,16 @@ msgctxt "STRINGS.ONIACCESS.TOOLS.CANCELED"
 msgid "canceled"
 msgstr "annulé"
 
+#. STRINGS.ONIACCESS.TOOLS.CELL_CLEARED
+msgctxt "STRINGS.ONIACCESS.TOOLS.CELL_CLEARED"
+msgid "cleared"
+msgstr "effacé"
+
+#. STRINGS.ONIACCESS.TOOLS.CELL_SELECTED
+msgctxt "STRINGS.ONIACCESS.TOOLS.CELL_SELECTED"
+msgid "selected"
+msgstr "sélectionné"
+
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_ATTACK
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_ATTACK"
 msgid "marked {0} for attack at priority {1}"
@@ -4693,6 +4718,16 @@ msgstr "{0}x{1}, {2} valide, {3} invalide"
 msgctxt "STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED"
 msgid "selection cleared"
 msgstr "sélection effacée"
+
+#. STRINGS.ONIACCESS.TOOLS.SINGLE_MODE_OFF
+msgctxt "STRINGS.ONIACCESS.TOOLS.SINGLE_MODE_OFF"
+msgid "rectangle selection"
+msgstr "sélection rectangulaire"
+
+#. STRINGS.ONIACCESS.TOOLS.SINGLE_MODE_ON
+msgctxt "STRINGS.ONIACCESS.TOOLS.SINGLE_MODE_ON"
+msgid "single selection"
+msgstr "sélection individuelle"
 
 #. STRINGS.ONIACCESS.TOOLTIP.CANNOT_CONTINUE
 msgctxt "STRINGS.ONIACCESS.TOOLTIP.CANNOT_CONTINUE"

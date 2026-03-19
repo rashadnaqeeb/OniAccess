@@ -2219,6 +2219,11 @@ msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_TOOL"
 msgid "Cancel tool"
 msgstr "도구 취소"
 
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_CELL
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_CELL"
+msgid "Clear cell at cursor"
+msgstr "커서 위치의 셀 지우기"
+
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT"
 msgid "Clear rectangle at cursor"
@@ -2234,6 +2239,11 @@ msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_FILTER"
 msgid "Change filter"
 msgstr "필터 변경"
 
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.SELECT_CELL
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.SELECT_CELL"
+msgid "Select cell"
+msgstr "셀 선택"
+
 #. STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER"
 msgid "Set rectangle corner"
@@ -2243,6 +2253,11 @@ msgstr "사각형 꼭짓점 설정"
 msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY"
 msgid "Set priority"
 msgstr "우선순위 설정"
+
+#. STRINGS.ONIACCESS.HELP.TOOLS_HELP.TOGGLE_MODE
+msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.TOGGLE_MODE"
+msgid "Toggle selection mode"
+msgstr "선택 모드 전환"
 
 #. STRINGS.ONIACCESS.HELP.TYPE_SEARCH
 msgctxt "STRINGS.ONIACCESS.HELP.TYPE_SEARCH"
@@ -4434,6 +4449,16 @@ msgctxt "STRINGS.ONIACCESS.TOOLS.CANCELED"
 msgid "canceled"
 msgstr "취소됨"
 
+#. STRINGS.ONIACCESS.TOOLS.CELL_CLEARED
+msgctxt "STRINGS.ONIACCESS.TOOLS.CELL_CLEARED"
+msgid "cleared"
+msgstr "지워짐"
+
+#. STRINGS.ONIACCESS.TOOLS.CELL_SELECTED
+msgctxt "STRINGS.ONIACCESS.TOOLS.CELL_SELECTED"
+msgid "selected"
+msgstr "선택됨"
+
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_ATTACK
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_ATTACK"
 msgid "marked {0} for attack at priority {1}"
@@ -4693,6 +4718,16 @@ msgstr "{0}x{1}, {2} 유효, {3} 무효"
 msgctxt "STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED"
 msgid "selection cleared"
 msgstr "선택 해제"
+
+#. STRINGS.ONIACCESS.TOOLS.SINGLE_MODE_OFF
+msgctxt "STRINGS.ONIACCESS.TOOLS.SINGLE_MODE_OFF"
+msgid "rectangle selection"
+msgstr "사각형 선택"
+
+#. STRINGS.ONIACCESS.TOOLS.SINGLE_MODE_ON
+msgctxt "STRINGS.ONIACCESS.TOOLS.SINGLE_MODE_ON"
+msgid "single selection"
+msgstr "단일 선택"
 
 #. STRINGS.ONIACCESS.TOOLTIP.CANNOT_CONTINUE
 msgctxt "STRINGS.ONIACCESS.TOOLTIP.CANNOT_CONTINUE"
