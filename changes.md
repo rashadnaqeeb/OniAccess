@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.5
 
+- Fix crash when toggling the mod off and back on during duplicant selection or other screens
 - Fix germ overlay skip not detecting germs in building storage or on conveyor rails
 
 ## 1.0.5

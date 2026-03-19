@@ -341,14 +341,12 @@ namespace OniAccess.Handlers {
 			// Filter to registered, visible screens
 			var matches = new System.Collections.Generic.List<KScreen>();
 			foreach (var screen in allScreens) {
-				if (!screen.gameObject.activeInHierarchy) continue;
+				if (!screen.IsScreenActive()) continue;
 				if (!_registry.ContainsKey(screen.GetType())) continue;
 				matches.Add(screen);
 			}
 
 			if (matches.Count > 0) {
-				// Sort by position in KScreenManager.screenStack (layering order).
-				// Screens not in screenStack sort to the front (bottom of our handler stack).
 				System.Collections.Generic.List<KScreen> screenStack = null;
 				if (KScreenManager.Instance != null) {
 					try {
@@ -361,21 +359,36 @@ namespace OniAccess.Handlers {
 						Util.Log.Warn("DetectAndActivate: screenStack field not found; handler order may be wrong");
 				}
 
-				if (screenStack != null && matches.Count > 1) {
-					matches.Sort((a, b) => {
-						int idxA = screenStack.IndexOf(a);
-						int idxB = screenStack.IndexOf(b);
-						if (idxA < 0) idxA = -1;
-						if (idxB < 0) idxB = -1;
-						return idxA.CompareTo(idxB);
+				// Build handlers, then sort: non-capturing handlers (e.g.
+				// TileCursorHandler) push first (bottom of stack), capturing
+				// handlers (menus) push last (top). During normal play Harmony
+				// patches push one at a time so menus naturally land on top;
+				// when reconstructing we must enforce that order explicitly.
+				// Within each group, screenStack position breaks ties.
+				var handlers = new System.Collections.Generic.List<(KScreen screen, IAccessHandler handler)>();
+				foreach (var screen in matches)
+					handlers.Add((screen, _registry[screen.GetType()](screen)));
+
+				if (handlers.Count > 1) {
+					handlers.Sort((a, b) => {
+						int capA = a.handler.CapturesAllInput ? 1 : 0;
+						int capB = b.handler.CapturesAllInput ? 1 : 0;
+						if (capA != capB) return capA.CompareTo(capB);
+						if (screenStack != null) {
+							int idxA = screenStack.IndexOf(a.screen);
+							int idxB = screenStack.IndexOf(b.screen);
+							if (idxA < 0) idxA = -1;
+							if (idxB < 0) idxB = -1;
+							return idxA.CompareTo(idxB);
+						}
+						return 0;
 					});
 				}
 
 				HandlerStack.Push(new BaselineHandler());
-				foreach (var screen in matches) {
-					var handler = _registry[screen.GetType()](screen);
-					HandlerStack.Push(handler);
-					Util.Log.Debug($"DetectAndActivate: pushed handler for {screen.GetType().Name}");
+				foreach (var entry in handlers) {
+					HandlerStack.Push(entry.handler);
+					Util.Log.Debug($"DetectAndActivate: pushed handler for {entry.screen.GetType().Name}");
 				}
 				return;
 			}
