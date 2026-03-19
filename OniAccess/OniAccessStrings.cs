@@ -856,6 +856,7 @@ namespace STRINGS {
 			public static LocString FILTER_REMOVED = "filter removed";
 			public static LocString SELECTION_CLEARED = "selection cleared";
 			public static LocString RECT_CLEARED = "rectangle cleared";
+			// Single-cell selection mode (Ctrl+G toggle, Shift+Space cell removal)
 			public static LocString CELL_CLEARED = "cleared";
 			public static LocString CELL_SELECTED = "selected";
 			public static LocString SINGLE_MODE_ON = "single selection";
