@@ -23,6 +23,7 @@ namespace OniAccess.Handlers.Tools {
 		private ModToolInfo _toolInfo;
 		private string _lastFilterKey;
 		private bool _skipFirstTick;
+		private bool _singleMode;
 
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Space),
@@ -49,22 +50,35 @@ namespace OniAccess.Handlers.Tools {
 			new ConsumedKey(KKeyCode.Keypad7),
 			new ConsumedKey(KKeyCode.Keypad8),
 			new ConsumedKey(KKeyCode.Keypad9),
+			new ConsumedKey(KKeyCode.G, Modifier.Ctrl),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
 		public override string DisplayName => BuildActivationAnnouncement();
 		public override bool CapturesAllInput => false;
 
-		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
+		private static readonly IReadOnlyList<HelpEntry> _rectModeHelp = new List<HelpEntry> {
 			new HelpEntry("Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_CORNER),
 			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CONFIRM_TOOL),
 			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_TOOL),
+			new HelpEntry("Ctrl+G", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.TOGGLE_MODE),
 			new HelpEntry("0-9", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY),
 			new HelpEntry("F", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_FILTER),
-			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_RECT),
+			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_CELL),
 		}.AsReadOnly();
 
-		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
+		private static readonly IReadOnlyList<HelpEntry> _singleModeHelp = new List<HelpEntry> {
+			new HelpEntry("Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SELECT_CELL),
+			new HelpEntry("Enter", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CONFIRM_TOOL),
+			new HelpEntry("Escape", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_TOOL),
+			new HelpEntry("Ctrl+G", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.TOGGLE_MODE),
+			new HelpEntry("0-9", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.SET_PRIORITY),
+			new HelpEntry("F", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.OPEN_FILTER),
+			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_CELL),
+		}.AsReadOnly();
+
+		public override IReadOnlyList<HelpEntry> HelpEntries =>
+			_singleMode ? _singleModeHelp : _rectModeHelp;
 
 		// ========================================
 		// LIFECYCLE
@@ -120,6 +134,7 @@ namespace OniAccess.Handlers.Tools {
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 
 			_lastFilterKey = null;
+			_singleMode = false;
 			Selection.ClearAll();
 		}
 
@@ -191,13 +206,22 @@ namespace OniAccess.Handlers.Tools {
 				}
 			}
 
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.G)
+				&& InputUtil.CtrlHeld() && !InputUtil.ShiftHeld() && !InputUtil.AltHeld()) {
+				ToggleSingleMode();
+				return true;
+			}
+
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)) {
 				if (InputUtil.ShiftHeld()) {
-					ClearRectAtCursor();
+					ClearCellAtCursor();
 					return true;
 				}
 				if (!InputUtil.AnyModifierHeld()) {
-					SetCorner();
+					if (_singleMode)
+						SingleSelect();
+					else
+						SetCorner();
 					return true;
 				}
 			}
@@ -388,10 +412,33 @@ namespace OniAccess.Handlers.Tools {
 
 		public bool IsCellSelected(int cell) => Selection.IsCellSelected(cell);
 
-		private void ClearRectAtCursor() {
+		private void ClearCellAtCursor() {
 			int cell = TileCursor.Instance.Cell;
-			if (Selection.ClearRectAtCursor(cell))
-				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.RECT_CLEARED);
+			if (Selection.ExcludeCell(cell))
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.CELL_CLEARED);
+		}
+
+		private void ToggleSingleMode() {
+			_singleMode = !_singleMode;
+			if (_singleMode) {
+				if (Selection.PendingFirstCorner != Grid.InvalidCell)
+					Selection.ClearAll();
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.SINGLE_MODE_ON);
+			} else {
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.SINGLE_MODE_OFF);
+			}
+		}
+
+		private void SingleSelect() {
+			int cell = TileCursor.Instance.Cell;
+			if (!Grid.IsVisible(cell)) {
+				PlaySound("Negative");
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
+				return;
+			}
+			Selection.AddRectangle(cell, cell);
+			PlayDragSound(1);
+			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.CELL_SELECTED);
 		}
 
 		// ========================================

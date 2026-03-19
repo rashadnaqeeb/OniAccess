@@ -85,6 +85,40 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
+		/// Removes a single cell from the selection by decomposing
+		/// the containing rectangle into up to 4 sub-rectangles.
+		/// Returns true if the cell was found and excluded.
+		/// </summary>
+		public bool ExcludeCell(int cell) {
+			for (int i = _rectangles.Count - 1; i >= 0; i--) {
+				if (!_rectangles[i].Contains(cell)) continue;
+				var r = _rectangles[i];
+				_rectangles.RemoveAt(i);
+				r.GetBounds(out int minX, out int maxX, out int minY, out int maxY);
+				int cx = Grid.CellColumn(cell);
+				int cy = Grid.CellRow(cell);
+				if (cy > minY)
+					_rectangles.Add(new RectCorners {
+						Cell1 = Grid.XYToCell(minX, minY),
+						Cell2 = Grid.XYToCell(maxX, cy - 1) });
+				if (cy < maxY)
+					_rectangles.Add(new RectCorners {
+						Cell1 = Grid.XYToCell(minX, cy + 1),
+						Cell2 = Grid.XYToCell(maxX, maxY) });
+				if (cx > minX)
+					_rectangles.Add(new RectCorners {
+						Cell1 = Grid.XYToCell(minX, cy),
+						Cell2 = Grid.XYToCell(cx - 1, cy) });
+				if (cx < maxX)
+					_rectangles.Add(new RectCorners {
+						Cell1 = Grid.XYToCell(cx + 1, cy),
+						Cell2 = Grid.XYToCell(maxX, cy) });
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
 		/// Removes the last rectangle containing the given cell.
 		/// Returns true if a rectangle was removed.
 		/// </summary>

@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.0.4
 
+- Tools: Ctrl+G toggles single-cell selection mode (Space selects one cell at a time instead of rectangle corners)
+- Tools: Shift+Space now removes a single cell from the selection instead of the entire rectangle
 - Tile cursor germ readout now includes germs on items inside building storage (e.g. germy water in a reservoir) and items on conveyor rails
 
 ## 1.0.4

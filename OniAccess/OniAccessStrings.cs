@@ -129,6 +129,9 @@ namespace STRINGS {
 
 				public static LocString SET_CORNER = "Set rectangle corner";
 				public static LocString CLEAR_RECT = "Clear rectangle at cursor";
+				public static LocString CLEAR_CELL = "Clear cell at cursor";
+				public static LocString SELECT_CELL = "Select cell";
+				public static LocString TOGGLE_MODE = "Toggle selection mode";
 				public static LocString CONFIRM_TOOL = "Apply tool at cursor and dismiss";
 				public static LocString APPLY_SETTINGS = "Apply settings";
 				public static LocString APPLY_AND_EXIT = "Apply settings and exit";
@@ -853,6 +856,10 @@ namespace STRINGS {
 			public static LocString FILTER_REMOVED = "filter removed";
 			public static LocString SELECTION_CLEARED = "selection cleared";
 			public static LocString RECT_CLEARED = "rectangle cleared";
+			public static LocString CELL_CLEARED = "cleared";
+			public static LocString CELL_SELECTED = "selected";
+			public static LocString SINGLE_MODE_ON = "single selection";
+			public static LocString SINGLE_MODE_OFF = "rectangle selection";
 			// Tool activation announcements.
 			// {0} = tool name, {1} = filter or priority text, {2} = priority text
 			public static LocString ACTIVATION_PLAIN = "{0}";

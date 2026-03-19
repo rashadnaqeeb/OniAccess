@@ -93,7 +93,8 @@ Selecting a tool (Dig, Deconstruct, Mop, etc.) from the action menu (Tab) enters
 
 - **Space** -- set the first corner. Move to the opposite corner and press Space again to complete the rectangle. A drag sound plays whose pitch reflects the selection size. You can place multiple rectangles before confirming
 - **Enter** -- confirm all pending rectangles. If no rectangle is set, Enter confirms a single cell under the cursor
-- **Shift+Space** -- clear the rectangle under the cursor
+- **Ctrl+G** -- toggle single-cell selection mode. In single mode, Space selects one cell at a time instead of setting rectangle corners
+- **Shift+Space** -- remove the cell under the cursor from the selection
 
 With a big cursor active, Space sets both corners at once, creating a rectangle the size of the cursor area. Enter also applies the full cursor rectangle but confirms immediately, closing the tool. The disconnect tool (for splitting pipe/wire segments) always uses single-cell selection regardless of cursor size.
 
