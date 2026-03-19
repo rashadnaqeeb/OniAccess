@@ -1,7 +1,8 @@
 namespace OniAccess.Handlers.Tiles.Skip {
 	/// <summary>
 	/// Skips until the set of disease types changes. Checks all sources:
-	/// tile surface, buildings, pickupables, and conduit contents.
+	/// tile surface, buildings (including stored items), pickupables,
+	/// and conduit contents (liquid, gas, and solid).
 	/// Uses a bitmask of present disease indices as the signature.
 	/// </summary>
 	public class DiseaseSkipStrategy: ISkipStrategy {
@@ -22,6 +23,8 @@ namespace OniAccess.Handlers.Tiles.Skip {
 		private static void AddBuildings(int cell, ref int mask) {
 			AddBuildingLayer(cell, ObjectLayer.Building, ref mask);
 			AddBuildingLayer(cell, ObjectLayer.FoundationTile, ref mask);
+			AddStorage(cell, ObjectLayer.Building, ref mask);
+			AddStorage(cell, ObjectLayer.FoundationTile, ref mask);
 		}
 
 		private static void AddBuildingLayer(
@@ -31,6 +34,20 @@ namespace OniAccess.Handlers.Tiles.Skip {
 			var pe = go.GetComponent<PrimaryElement>();
 			if (pe == null) return;
 			AccumulateBit(ref mask, pe.DiseaseIdx, pe.DiseaseCount);
+		}
+
+		private static void AddStorage(
+				int cell, ObjectLayer layer, ref int mask) {
+			var go = Grid.Objects[cell, (int)layer];
+			if (go == null) return;
+			var storage = go.GetComponent<Storage>();
+			if (storage == null) return;
+			foreach (var item in storage.items) {
+				if (item == null) continue;
+				var pe = item.GetComponent<PrimaryElement>();
+				if (pe == null) continue;
+				AccumulateBit(ref mask, pe.DiseaseIdx, pe.DiseaseCount);
+			}
 		}
 
 		private static void AddPickupables(int cell, ref int mask) {
@@ -50,12 +67,24 @@ namespace OniAccess.Handlers.Tiles.Skip {
 		private static void AddConduits(int cell, ref int mask) {
 			AddConduitFlow(Game.Instance.liquidConduitFlow, cell, ref mask);
 			AddConduitFlow(Game.Instance.gasConduitFlow, cell, ref mask);
+			AddSolidConduit(cell, ref mask);
 		}
 
 		private static void AddConduitFlow(
 				ConduitFlow flow, int cell, ref int mask) {
 			var contents = flow.GetContents(cell);
 			AccumulateBit(ref mask, contents.diseaseIdx, contents.diseaseCount);
+		}
+
+		private static void AddSolidConduit(int cell, ref int mask) {
+			var contents = Game.Instance.solidConduitFlow.GetContents(cell);
+			if (!contents.pickupableHandle.IsValid()) return;
+			var pickupable = Game.Instance.solidConduitFlow.GetPickupable(
+				contents.pickupableHandle);
+			if (pickupable == null) return;
+			var pe = pickupable.GetComponent<PrimaryElement>();
+			if (pe == null) return;
+			AccumulateBit(ref mask, pe.DiseaseIdx, pe.DiseaseCount);
 		}
 	}
 }

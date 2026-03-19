@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.0.5
 
+- Fix germ overlay skip not detecting germs in building storage or on conveyor rails
+
 ## 1.0.5
 
 - Tools: Ctrl+G toggles single-cell selection mode (Space selects one cell at a time instead of rectangle corners)
