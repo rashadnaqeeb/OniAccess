@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.0.5
+## Unreleased changes since 1.0.6
+
+## 1.0.6
 
 - Fix path check reporting inconsistent nearest reachable cells when moving the cursor
 - Alt+arrows now skips coarsely, grouping all floor tiles, all ladders, all plants, all decorations, all liquids, and all natural solids as single zones
