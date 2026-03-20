@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.5
 
+- Status and chore changes are now announced when using the game's Follow Cam on any entity (critters, buildings, etc.)
 - Bot navigation now finds all five bot types including Sweepies and Remote Workers, with status announcements for each
 - Fix tile cursor jumping to the printing pod during timelapse screenshots
 - Fix crash when toggling the mod off and back on during duplicant selection or other screens

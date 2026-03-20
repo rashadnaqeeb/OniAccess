@@ -27,6 +27,7 @@ namespace OniAccess.Handlers.Tiles {
 		private NotificationAnnouncer _notificationAnnouncer;
 		private DupeNavigator _dupeNavigator;
 		private BotNavigator _botNavigator;
+		private ExternalFollowListener _externalFollow;
 		private PathabilityChecker _pathabilityChecker;
 		private bool _lastCycledBots;
 		private bool _overlaySubscribed;
@@ -222,6 +223,7 @@ namespace OniAccess.Handlers.Tiles {
 				_monitor = new GameStateMonitor();
 				_dupeNavigator = new DupeNavigator();
 				_botNavigator = new BotNavigator();
+				_externalFollow = new ExternalFollowListener();
 				_pathabilityChecker = new PathabilityChecker();
 				if (NotificationManager.Instance != null) {
 					_notificationTracker = new NotificationTracker();
@@ -266,6 +268,7 @@ namespace OniAccess.Handlers.Tiles {
 			_notificationAnnouncer = null;
 			_notificationTracker?.Detach();
 			_notificationTracker = null;
+			_externalFollow?.StopFollow();
 			_dupeNavigator?.StopFollowAndClear();
 			_botNavigator?.StopFollowAndClear();
 			TileCursor.Destroy();
@@ -274,6 +277,7 @@ namespace OniAccess.Handlers.Tiles {
 			_scanner = null;
 			_dupeNavigator = null;
 			_botNavigator = null;
+			_externalFollow = null;
 			_pathabilityChecker = null;
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
@@ -322,6 +326,7 @@ namespace OniAccess.Handlers.Tiles {
 			_notificationAnnouncer?.Tick();
 			_dupeNavigator.TickFollow();
 			_botNavigator.TickFollow();
+			_externalFollow.TickFollow(_dupeNavigator.IsFollowing, _botNavigator.IsFollowing);
 			LoadGate.Tick();
 
 			string arrived = TileCursor.Instance.SyncToCamera();
