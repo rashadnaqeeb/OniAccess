@@ -90,6 +90,7 @@ namespace OniAccess {
 			audioGo.AddComponent<ShapeEarconPlayer>();
 			audioGo.AddComponent<FollowMovementEarcon>();
 			new SonifierController();
+			new FootstepPlayer();
 
 			// Register screen-to-handler mappings for ContextDetector
 			ContextDetector.RegisterMenuHandlers();

@@ -13,5 +13,6 @@ namespace OniAccess {
 		public bool FlowSonification { get; set; } = false;
 		public bool TemperatureBandEarcons { get; set; } = false;
 		public bool FollowMovementEarcons { get; set; } = false;
+		public bool FootstepEarcons { get; set; } = true;
 	}
 }

@@ -337,7 +337,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			Audio.EarconScheduler.Instance?.ResetTransitionState();
 			if (Audio.EarconScheduler.Instance != null)
 				Audio.EarconScheduler.Instance.PlayForCell(entry.Cell, mode);
-			Audio.SonifierController.Instance.OnCursorMoved(entry.Cell, mode);
+			Audio.SonifierController.Instance?.OnCursorMoved(entry.Cell, mode);
 		}
 
 		private ScannerSubcategory CurrentSubcategory() {

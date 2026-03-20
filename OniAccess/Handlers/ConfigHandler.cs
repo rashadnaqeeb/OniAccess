@@ -164,6 +164,12 @@ namespace OniAccess.Handlers {
 			));
 
 			items.Add(new BoolConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.FOOTSTEP_EARCONS,
+				() => ConfigManager.Config.FootstepEarcons,
+				value => ConfigManager.Config.FootstepEarcons = value
+			));
+
+			items.Add(new BoolConfigItem(
 				(string)STRINGS.ONIACCESS.CONFIG.ANNOUNCE_BIOME_CHANGES,
 				() => ConfigManager.Config.AnnounceBiomeChanges,
 				value => ConfigManager.Config.AnnounceBiomeChanges = value

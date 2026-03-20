@@ -718,7 +718,7 @@ namespace OniAccess.Handlers.Tiles {
 			} else {
 				Audio.EarconScheduler.Instance?.CancelAll();
 				Audio.ShapeEarconPlayer.Instance?.CancelAll();
-				Audio.SonifierController.Instance.Stop();
+				Audio.SonifierController.Instance?.Stop();
 			}
 		}
 
@@ -728,7 +728,7 @@ namespace OniAccess.Handlers.Tiles {
 				Audio.EarconScheduler.Instance?.CancelAll();
 				Audio.EarconScheduler.Instance?.ResetTransitionState();
 				Audio.ShapeEarconPlayer.Instance?.CancelAll();
-				Audio.SonifierController.Instance.Stop();
+				Audio.SonifierController.Instance?.Stop();
 				return;
 			}
 			HashedString mode = OverlayScreen.Instance != null
@@ -737,7 +737,8 @@ namespace OniAccess.Handlers.Tiles {
 			if (Audio.EarconScheduler.Instance != null)
 				Audio.EarconScheduler.Instance.PlayForCell(cell, mode);
 			Audio.ShapeEarconPlayer.Instance?.OnCursorMoved(cell, mode);
-			Audio.SonifierController.Instance.OnCursorMoved(cell, mode);
+			Audio.FootstepPlayer.Instance?.Play(cell);
+			Audio.SonifierController.Instance?.OnCursorMoved(cell, mode);
 		}
 
 		private void OpenActionMenu() {
