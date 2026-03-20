@@ -132,14 +132,14 @@ namespace OniAccess.Audio {
 			int toneIndex;
 			float pan;
 			switch (direction) {
-				case MoveDirection.Up:        toneIndex = ToneUp;         pan = PanCenter; break;
-				case MoveDirection.Down:      toneIndex = ToneDown;       pan = PanCenter; break;
-				case MoveDirection.Left:      toneIndex = ToneHorizontal; pan = PanLeft;   break;
-				case MoveDirection.Right:     toneIndex = ToneHorizontal; pan = PanRight;  break;
-				case MoveDirection.UpLeft:    toneIndex = ToneUp;         pan = PanLeft;   break;
-				case MoveDirection.UpRight:   toneIndex = ToneUp;         pan = PanRight;  break;
-				case MoveDirection.DownLeft:  toneIndex = ToneDown;       pan = PanLeft;   break;
-				case MoveDirection.DownRight: toneIndex = ToneDown;       pan = PanRight;  break;
+				case MoveDirection.Up: toneIndex = ToneUp; pan = PanCenter; break;
+				case MoveDirection.Down: toneIndex = ToneDown; pan = PanCenter; break;
+				case MoveDirection.Left: toneIndex = ToneHorizontal; pan = PanLeft; break;
+				case MoveDirection.Right: toneIndex = ToneHorizontal; pan = PanRight; break;
+				case MoveDirection.UpLeft: toneIndex = ToneUp; pan = PanLeft; break;
+				case MoveDirection.UpRight: toneIndex = ToneUp; pan = PanRight; break;
+				case MoveDirection.DownLeft: toneIndex = ToneDown; pan = PanLeft; break;
+				case MoveDirection.DownRight: toneIndex = ToneDown; pan = PanRight; break;
 				default: return;
 			}
 			StopChannel();

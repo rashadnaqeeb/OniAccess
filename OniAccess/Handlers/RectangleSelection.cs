@@ -100,19 +100,23 @@ namespace OniAccess.Handlers {
 				if (cy > minY)
 					_rectangles.Add(new RectCorners {
 						Cell1 = Grid.XYToCell(minX, minY),
-						Cell2 = Grid.XYToCell(maxX, cy - 1) });
+						Cell2 = Grid.XYToCell(maxX, cy - 1)
+					});
 				if (cy < maxY)
 					_rectangles.Add(new RectCorners {
 						Cell1 = Grid.XYToCell(minX, cy + 1),
-						Cell2 = Grid.XYToCell(maxX, maxY) });
+						Cell2 = Grid.XYToCell(maxX, maxY)
+					});
 				if (cx > minX)
 					_rectangles.Add(new RectCorners {
 						Cell1 = Grid.XYToCell(minX, cy),
-						Cell2 = Grid.XYToCell(cx - 1, cy) });
+						Cell2 = Grid.XYToCell(cx - 1, cy)
+					});
 				if (cx < maxX)
 					_rectangles.Add(new RectCorners {
 						Cell1 = Grid.XYToCell(cx + 1, cy),
-						Cell2 = Grid.XYToCell(maxX, cy) });
+						Cell2 = Grid.XYToCell(maxX, cy)
+					});
 				return true;
 			}
 			return false;
