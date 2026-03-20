@@ -67,11 +67,6 @@ namespace OniAccess.Handlers.Tiles {
 			int dupeX = Grid.CellColumn(dupeCell);
 			int dupeY = Grid.CellRow(dupeCell);
 
-			// Direction vector from cursor to dupe (unnormalized is fine
-			// for dot product sign checks)
-			int toDupeX = dupeX - cursorX;
-			int toDupeY = dupeY - cursorY;
-
 			int bestCell = Grid.InvalidCell;
 			int bestDist = int.MaxValue;
 			int bestDupeDist = int.MaxValue;
@@ -83,10 +78,6 @@ namespace OniAccess.Handlers.Tiles {
 				for (int dx = -ring; dx <= ring; dx++) {
 					for (int dy = -ring; dy <= ring; dy++) {
 						if (Math.Abs(dx) != ring && Math.Abs(dy) != ring)
-							continue;
-
-						// Only search the entity's half-plane
-						if (dx * toDupeX + dy * toDupeY < 0)
 							continue;
 
 						int x = cursorX + dx;
