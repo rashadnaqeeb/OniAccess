@@ -98,6 +98,8 @@ namespace OniAccess.Handlers.Tiles {
 			}
 		}
 
+		public bool IsFollowing => _followedBot != null;
+
 		public void TickFollow() {
 			if (_followedBot == null) return;
 			if (CameraController.Instance.followTarget == null)
@@ -188,15 +190,29 @@ namespace OniAccess.Handlers.Tiles {
 
 		/// <summary>
 		/// Returns bots on the active world, sorted for stable naming.
+		/// Covers all 5 bot types: Sweepy, Scout Rover, Morb Rover, Flydo,
+		/// and Remote Worker.
 		/// </summary>
 		private static List<GameObject> GetWorldBots() {
 			int worldId = ClusterManager.Instance.activeWorldId;
-			var all = Components.LiveRobotsIdentities.Items;
+			var seen = new HashSet<int>();
 			var result = new List<GameObject>();
-			for (int i = 0; i < all.Count; i++) {
-				var smi = all[i];
-				if (smi.gameObject.GetMyWorldId() == worldId)
-					result.Add(smi.gameObject);
+			foreach (var brain in Components.Brains.GetWorldItems(worldId)) {
+				var go = brain.gameObject;
+				if (!go.GetComponent<KPrefabID>().HasTag(GameTags.Robot)) continue;
+				seen.Add(go.GetInstanceID());
+				result.Add(go);
+			}
+			var docks = Components.RemoteWorkerDocks.GetItems(worldId);
+			if (docks != null) {
+				foreach (var dock in docks) {
+					var rw = dock.RemoteWorker;
+					if (rw == null) continue;
+					if (rw.Docked) continue;
+					var go = rw.gameObject;
+					if (seen.Add(go.GetInstanceID()))
+						result.Add(go);
+				}
 			}
 			result.Sort((a, b) => a.GetComponent<KPrefabID>().InstanceID
 				.CompareTo(b.GetComponent<KPrefabID>().InstanceID));
@@ -287,8 +303,18 @@ namespace OniAccess.Handlers.Tiles {
 				new StatusCheck(robotItems.DeadBatteryFlydo),
 				new StatusCheck(robotItems.CantReachStation),
 				new StatusCheck(robotItems.DustBinFull),
+				new StatusCheck(robotItems.Working),
+				new StatusCheck(robotItems.UnloadingStorage),
+				new StatusCheck(robotItems.MovingToChargeStation),
 				new StatusCheck(creatureItems.HealthStatus),
 				new StatusCheck(dupeItems.UnreachableDock),
+				new StatusCheck(dupeItems.NoHomeDock),
+				new StatusCheck(dupeItems.RemoteWorkerLowPower),
+				new StatusCheck(dupeItems.RemoteWorkerOutOfPower),
+				new StatusCheck(dupeItems.RemoteWorkerHighGunkLevel),
+				new StatusCheck(dupeItems.RemoteWorkerFullGunkLevel),
+				new StatusCheck(dupeItems.RemoteWorkerLowOil),
+				new StatusCheck(dupeItems.RemoteWorkerOutOfOil),
 			};
 			return _statusChecks;
 		}

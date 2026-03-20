@@ -95,6 +95,8 @@ namespace OniAccess.Handlers.Tiles {
 			}
 		}
 
+		public bool IsFollowing => _followedDupe != null;
+
 		public void TickFollow() {
 			if (_followedDupe == null) return;
 			if (CameraController.Instance.followTarget == null)

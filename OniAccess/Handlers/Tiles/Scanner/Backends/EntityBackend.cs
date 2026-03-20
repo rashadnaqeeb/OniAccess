@@ -157,9 +157,11 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 		}
 
 		private IEnumerable<ScanEntry> ScanRobots(int worldId) {
+			var seen = new HashSet<int>();
 			foreach (var brain in Components.Brains.GetWorldItems(worldId)) {
 				var go = brain.gameObject;
 				if (!go.GetComponent<KPrefabID>().HasTag(GameTags.Robot)) continue;
+				seen.Add(go.GetInstanceID());
 
 				int cell = Grid.PosToCell(go.transform.GetPosition());
 				if (!Grid.IsVisible(cell)) continue;
@@ -172,6 +174,27 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 					Subcategory = ScannerTaxonomy.Subcategories.Robots,
 					ItemName = go.GetComponent<KSelectable>()?.GetName() ?? go.name,
 				};
+			}
+			var docks = Components.RemoteWorkerDocks.GetItems(worldId);
+			if (docks != null) {
+				foreach (var dock in docks) {
+					var rw = dock.RemoteWorker;
+					if (rw == null) continue;
+					var go = rw.gameObject;
+					if (!seen.Add(go.GetInstanceID())) continue;
+
+					int cell = Grid.PosToCell(go.transform.GetPosition());
+					if (!Grid.IsVisible(cell)) continue;
+
+					yield return new ScanEntry {
+						Cell = cell,
+						Backend = this,
+						BackendData = go,
+						Category = ScannerTaxonomy.Categories.Life,
+						Subcategory = ScannerTaxonomy.Subcategories.Robots,
+						ItemName = go.GetComponent<KSelectable>()?.GetName() ?? go.name,
+					};
+				}
 			}
 		}
 

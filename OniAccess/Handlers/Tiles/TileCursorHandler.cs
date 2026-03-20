@@ -504,26 +504,46 @@ namespace OniAccess.Handlers.Tiles {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftBracket)
 				&& !InputUtil.AnyModifierHeld()) {
 				_lastCycledBots = false;
+				bool wasFollowingBot = _botNavigator.IsFollowing;
+				if (wasFollowingBot)
+					_botNavigator.StopFollowAndClear();
 				_dupeNavigator.CycleDupe(-1);
+				if (wasFollowingBot)
+					_dupeNavigator.StartFollow();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightBracket)
 				&& !InputUtil.AnyModifierHeld()) {
 				_lastCycledBots = false;
+				bool wasFollowingBot = _botNavigator.IsFollowing;
+				if (wasFollowingBot)
+					_botNavigator.StopFollowAndClear();
 				_dupeNavigator.CycleDupe(1);
+				if (wasFollowingBot)
+					_dupeNavigator.StartFollow();
 				return true;
 			}
 			// Bot cycling
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftBracket)
 				&& InputUtil.ShiftHeld()) {
 				_lastCycledBots = true;
+				bool wasFollowingDupe = _dupeNavigator.IsFollowing;
+				if (wasFollowingDupe)
+					_dupeNavigator.StopFollowAndClear();
 				_botNavigator.CycleBot(-1);
+				if (wasFollowingDupe)
+					_botNavigator.StartFollow();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightBracket)
 				&& InputUtil.ShiftHeld()) {
 				_lastCycledBots = true;
+				bool wasFollowingDupe = _dupeNavigator.IsFollowing;
+				if (wasFollowingDupe)
+					_dupeNavigator.StopFollowAndClear();
 				_botNavigator.CycleBot(1);
+				if (wasFollowingDupe)
+					_botNavigator.StartFollow();
 				return true;
 			}
 			// Jump/follow/pathability — targets whichever entity type was last cycled
