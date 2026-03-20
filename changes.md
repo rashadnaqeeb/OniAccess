@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.0.6
 
+- Fix big cursor area scan not detecting germs in building storage or on conveyor rails
+
 ## 1.0.6
 
 - Fix path check reporting inconsistent nearest reachable cells when moving the cursor
