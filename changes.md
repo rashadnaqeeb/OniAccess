@@ -2,8 +2,6 @@
 
 ## Unreleased changes since 1.0.6
 
-- Fix big cursor area scan not detecting germs in building storage or on conveyor rails
-
 ## 1.0.6
 
 - Fix path check reporting inconsistent nearest reachable cells when moving the cursor
@@ -12,7 +10,7 @@
 - Bot navigation now finds all five bot types including Sweepies and Remote Workers, with status announcements for each
 - Fix tile cursor jumping to the printing pod during timelapse screenshots
 - Fix crash when toggling the mod off and back on during duplicant selection or other screens
-- Fix germ overlay skip not detecting germs in building storage or on conveyor rails
+- Fix germ overlay skip and big cursor area scan not detecting germs in building storage or on conveyor rails
 
 ## 1.0.5
 
