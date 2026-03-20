@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.5
 
+- Alt+arrows now skips coarsely, grouping all floor tiles, all ladders, all plants, all decorations, all liquids, and all natural solids as single zones
 - Status and chore changes are now announced when using the game's Follow Cam on any entity (critters, buildings, etc.)
 - Bot navigation now finds all five bot types including Sweepies and Remote Workers, with status announcements for each
 - Fix tile cursor jumping to the printing pod during timelapse screenshots

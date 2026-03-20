@@ -6,6 +6,7 @@ namespace OniAccess.Handlers.Tiles.Skip {
 	/// </summary>
 	public class SkipEngine {
 		private readonly SkipStrategyRegistry _registry;
+		private readonly ISkipStrategy _coarse = new CoarseSkipStrategy();
 
 		public SkipEngine(SkipStrategyRegistry registry) {
 			_registry = registry;
@@ -30,7 +31,7 @@ namespace OniAccess.Handlers.Tiles.Skip {
 
 		public string SkipDefault(Direction direction) {
 			try {
-				return SkipCore(direction, _registry.GetStrategy(OverlayModes.None.ID));
+				return SkipCore(direction, _coarse);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"SkipEngine.SkipDefault: {ex}");
 				return (string)STRINGS.ONIACCESS.SKIP.NO_CHANGE_BOUNDARY;
