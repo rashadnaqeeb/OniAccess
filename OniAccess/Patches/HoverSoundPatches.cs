@@ -7,8 +7,7 @@ namespace OniAccess.Patches {
 	internal static class KButton_OnPointerEnter_Patch {
 		static void Prefix(ButtonSoundPlayer ___soundPlayer, out bool __state) {
 			__state = ___soundPlayer.Enabled;
-			if (ConfigManager.Config.FootstepEarcons
-				&& KInputManager.isMousePosLocked)
+			if (KInputManager.isMousePosLocked)
 				___soundPlayer.Enabled = false;
 		}
 
@@ -21,8 +20,7 @@ namespace OniAccess.Patches {
 	internal static class KToggle_OnPointerEnter_Patch {
 		static void Prefix(ToggleSoundPlayer ___soundPlayer, out bool __state) {
 			__state = ___soundPlayer.Enabled;
-			if (ConfigManager.Config.FootstepEarcons
-				&& KInputManager.isMousePosLocked)
+			if (KInputManager.isMousePosLocked)
 				___soundPlayer.Enabled = false;
 		}
 
@@ -34,8 +32,7 @@ namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(KSelectable), nameof(KSelectable.Hover))]
 	internal static class KSelectable_Hover_Patch {
 		static void Prefix(ref bool playAudio) {
-			if (ConfigManager.Config.FootstepEarcons
-				&& KInputManager.isMousePosLocked)
+			if (KInputManager.isMousePosLocked)
 				playAudio = false;
 		}
 	}
