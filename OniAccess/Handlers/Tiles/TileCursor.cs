@@ -22,11 +22,15 @@ namespace OniAccess.Handlers.Tiles {
 		private int _cell;
 		private int _lastWorldId = -1;
 		private bool _wasPanning;
+		private bool _wasTimelapsing;
 		private string _lastRoomName;
 		private string _lastBiomeName;
 		private readonly Scanner.Routing.BiomeNameResolver _biomeResolver = new Scanner.Routing.BiomeNameResolver();
 		private readonly Overlays.OverlayProfileRegistry _registry;
 		private readonly TileDetailsComposer _detailsComposer;
+
+		private static bool IsTimelapsing =>
+			Game.Instance?.timelapser?.CapturingTimelapseScreenshot == true;
 
 		public GlanceComposer ActiveToolComposer { get; set; }
 
@@ -224,6 +228,16 @@ namespace OniAccess.Handlers.Tiles {
 		/// Returns tile speech when the camera finishes a pan, null otherwise.
 		/// </summary>
 		public string SyncToCamera() {
+			if (IsTimelapsing) {
+				_wasTimelapsing = true;
+				return null;
+			}
+			if (_wasTimelapsing) {
+				_wasTimelapsing = false;
+				SnapCameraToCell(_cell);
+				LockMouseToCell(_cell);
+				return null;
+			}
 			if (Camera.main == null) return null;
 			Vector3 center = Camera.main.transform.position;
 			int cell = Grid.PosToCell(center);
@@ -399,6 +413,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		private static void SnapCameraToCell(int cell) {
+			if (IsTimelapsing) return;
 			if (CameraController.Instance == null) {
 				Util.Log.Warn("TileCursor.SnapCameraToCell: CameraController.Instance is null");
 				return;
