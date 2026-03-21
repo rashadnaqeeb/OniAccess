@@ -1153,11 +1153,27 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION"
 msgid "Flow sonification"
 msgstr "Sonificación de flujo"
 
+#. STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION_VOLUME
+msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION_VOLUME"
+msgid "Flow sonification volume"
+msgstr "Volumen de sonificación de flujo"
 #. STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS"
 msgid "Follow movement earcons"
 msgstr "Earcons de movimiento de seguimiento"
 
+#. STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_VOLUME
+msgctxt "STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_VOLUME"
+msgid "Follow movement volume"
+msgstr "Volumen de movimiento de seguimiento"
+#. STRINGS.ONIACCESS.CONFIG.FOOTSTEP_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.FOOTSTEP_EARCONS"
+msgid "Footstep earcons"
+msgstr "Earcons de pasos"
+#. STRINGS.ONIACCESS.CONFIG.FOOTSTEP_VOLUME
+msgctxt "STRINGS.ONIACCESS.CONFIG.FOOTSTEP_VOLUME"
+msgid "Footstep volume"
+msgstr "Volumen de pasos"
 #. STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM
 msgctxt "STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM"
 msgid "Lock zoom level when moving tile cursor"
@@ -1168,11 +1184,19 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS"
 msgid "Passability earcons"
 msgstr "Earcons de transitabilidad"
 
+#. STRINGS.ONIACCESS.CONFIG.PASSABILITY_VOLUME
+msgctxt "STRINGS.ONIACCESS.CONFIG.PASSABILITY_VOLUME"
+msgid "Passability volume"
+msgstr "Volumen de transitabilidad"
 #. STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS"
 msgid "Pipe shape earcons"
 msgstr "Earcons de forma de tubería"
 
+#. STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_VOLUME
+msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_VOLUME"
+msgid "Pipe shape volume"
+msgstr "Volumen de forma de tubería"
 #. STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT
 msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT"
 msgid "Scanner mass readout"
@@ -1183,11 +1207,19 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS"
 msgid "Temperature band earcons"
 msgstr "Earcons de banda de temperatura"
 
+#. STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_VOLUME
+msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_VOLUME"
+msgid "Temperature band volume"
+msgstr "Volumen de banda de temperatura"
 #. STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS"
 msgid "Utility presence earcons"
 msgstr "Earcons de presencia de servicios"
 
+#. STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_VOLUME
+msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_VOLUME"
+msgid "Utility presence volume"
+msgstr "Volumen de presencia de servicios"
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"
 msgid "all forbidden"
@@ -1845,9 +1877,13 @@ msgstr "entrada de radbolt"
 
 #. STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT"
+msgid "radbolt output"
+msgstr "salida de radbolt"
+
+#. STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT_DIRECTION
+msgctxt "STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT_DIRECTION"
 msgid "radbolt output, {0}"
 msgstr "salida de radbolt, {0}"
-
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE"
 msgid "unconnected"
