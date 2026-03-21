@@ -7,14 +7,14 @@ namespace OniAccess.Audio {
 	public class FootstepPlayer {
 		public static FootstepPlayer Instance { get; private set; }
 
-		const float Volume = 1.15f;
+		const float Volume = 1.5f;
 
-		private static readonly MethodInfo _getFloorCategory =
-			AccessTools.Method(typeof(Substance), "GetFloorEventAudioCategory");
+		private static readonly MethodInfo _getOreBumpSound =
+			AccessTools.Method(typeof(Substance), "GetOreBumpSound");
 
 		static FootstepPlayer() {
-			if (_getFloorCategory == null)
-				Log.Warn("FootstepPlayer: Substance.GetFloorEventAudioCategory not found");
+			if (_getOreBumpSound == null)
+				Log.Warn("FootstepPlayer: Substance.GetOreBumpSound not found");
 		}
 
 		public FootstepPlayer() {
@@ -30,13 +30,13 @@ namespace OniAccess.Audio {
 			if (!Grid.IsValidCell(cell)) return;
 
 			if (Grid.Foundation[cell]) {
-				PlayEvent(GetFoundationCategory(cell) + "_land", cell);
+				PlayEvent(GetFoundationCategory(cell) + "_footstep", cell);
 				return;
 			}
 
 			Element element = Grid.Element[cell];
 			if (element.IsSolid) {
-				PlayEvent(GetSolidCategory(element) + "_land", cell);
+				PlayEvent("Ore_bump_" + GetOreBumpCategory(element), cell);
 				return;
 			}
 
@@ -61,7 +61,7 @@ namespace OniAccess.Audio {
 		private void PlayEvent(string name, int cell) {
 			string sound = GlobalAssets.GetSound(name, true);
 			if (sound == null)
-				sound = GlobalAssets.GetSound("Rock_land", true);
+				sound = GlobalAssets.GetSound("Ore_bump_rock", true);
 			if (sound == null) return;
 
 			Vector3 pos = SoundListenerController.Instance != null
@@ -104,14 +104,14 @@ namespace OniAccess.Audio {
 			return null;
 		}
 
-		private static string GetSolidCategory(Element element) {
-			if (_getFloorCategory != null) {
-				string category = (string)_getFloorCategory.Invoke(element.substance, null);
+		private static string GetOreBumpCategory(Element element) {
+			if (_getOreBumpSound != null) {
+				string category = (string)_getOreBumpSound.Invoke(element.substance, null);
 				if (!string.IsNullOrEmpty(category)) return category;
 			}
 			if (element.HasTag(GameTags.RefinedMetal)) return "RefinedMetal";
 			if (element.HasTag(GameTags.Metal)) return "RawMetal";
-			return "Rock";
+			return "rock";
 		}
 	}
 }
