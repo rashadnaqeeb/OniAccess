@@ -16,7 +16,7 @@ Most overlays prepend one extra reading before the standard tile information. Te
 
 ### Skip
 
-**Ctrl+Arrow** skips in a direction until something changes, then announces how many tiles were crossed. **Alt+Arrow** always skips by the default criterion (building, tile type, or element) regardless of which overlay is active. What counts as a "change" for Ctrl+Arrow depends on the active overlay:
+**Ctrl+Arrow** skips in a direction until something changes, then announces how many tiles were crossed. What counts as a "change" depends on the active overlay:
 
 - **Default view**: different building, tile type, or element
 - **Temperature**: different temperature band (8 bands from below freezing to above 1800 C)
@@ -26,6 +26,8 @@ Most overlays prepend one extra reading before the standard tile information. Te
 - **Light / Radiation / Decor**: different value band, set by the game
 
 Skip also stops at the alignment ruler if one is placed, and at world boundaries.
+
+**Alt+Arrow** skips using the default overlay regardless of which overlay is active, but with coarser grouping: all floor tiles count as one zone, all ladders as one zone, all plants, all decorations, all liquids, and all natural solids likewise. This is useful for jumping between major areas without stopping at every material or building change.
 
 ### Big cursor
 
@@ -309,6 +311,7 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 - **Auto-move cursor when cycling scanner entries** -- when on, the cursor teleports as you cycle scanner instances, and distances are measured from where you scanned. Off by default
 - **Scanner mass readout** -- includes mass in scanner announcements: total kg for solids and liquids, average kg per tile for gases. On by default
 - **Lock zoom level when moving tile cursor** -- locks the camera zoom to level 10, which is the best level for audio. On by default
+- **Footstep earcons** -- plays the game's footstep sound for the tile surface when moving the cursor. See Earcons below. On by default
 - **Utility presence earcons** -- plays a sound when the cursor lands on hidden infrastructure in the default overlay. See Earcons below. Off by default
 - **Pipe shape earcons** -- plays directional tones showing how pipes and wires connect at each tile. See Earcons below. Off by default
 - **Passability earcons** -- plays a warning sound on tiles duplicants can't walk through. See Earcons below. Off by default
@@ -320,6 +323,10 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 ## Earcons
 
 Earcons are short non-speech audio cues that play as you move the tile cursor. They convey spatial information faster than speech alone. All earcons are off by default and can be toggled in Settings (F12). Multiple earcon types can be active at once; they play in sequence with short gaps between them.
+
+### Footstep earcons
+
+Active in all overlays. Plays the game's own footstep sound for whatever surface the cursor lands on -- metal tiles sound different from natural rock, plastic ladders from metal ones, and liquids from solids. Tiles with no walkable surface (gas, vacuum without a ladder) are silent. This gives a sense of terrain as you move without waiting for speech.
 
 ### Utility presence earcons
 
