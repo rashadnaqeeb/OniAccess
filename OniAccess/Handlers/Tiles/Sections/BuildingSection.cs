@@ -79,8 +79,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (OverlayScreen.Instance != null
 				&& OverlayScreen.Instance.GetMode() == OverlayModes.Temperature.ID) {
 				var pe = go.GetComponent<PrimaryElement>();
-				if (pe != null)
-					tokens.Add(GameUtil.GetFormattedTemperature(pe.Temperature));
+				if (pe != null) {
+					float cellTemp = Grid.Temperature[cell];
+					float buildingTemp = pe.Temperature;
+					if (cellTemp <= 0f
+						|| System.Math.Abs(buildingTemp - cellTemp) >= 1f)
+						tokens.Add(GameUtil.GetFormattedTemperature(buildingTemp));
+				}
 			}
 
 			if (building != null && building.PlacementCells.Length > 1) {

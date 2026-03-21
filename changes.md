@@ -2,7 +2,7 @@
 
 ## Unreleased changes since 1.0.6
 
-- Temperature overlay now speaks building temperature after the building name
+- Temperature overlay now speaks building temperature after the building name, skipped when within 1 degree of the cell temperature
 - Fix radbolt output port announced as "{0}" instead of direction when previewing building ports
 - Footstep earcons: moving the cursor plays the game's footstep sound for the tile surface, enabled by default (toggle in config)
 - Suppress UI hover sounds triggered by camera movement when footstep earcons are on
