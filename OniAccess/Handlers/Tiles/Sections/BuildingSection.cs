@@ -76,6 +76,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			bool isPlant = go.GetComponent<Growing>() != null;
 			ReadStatusItems(selectable, isPlant, tokens);
 
+			if (OverlayScreen.Instance != null
+				&& OverlayScreen.Instance.GetMode() == OverlayModes.Temperature.ID) {
+				var pe = go.GetComponent<PrimaryElement>();
+				if (pe != null)
+					tokens.Add(GameUtil.GetFormattedTemperature(pe.Temperature));
+			}
+
 			if (building != null && building.PlacementCells.Length > 1) {
 				int origin = Grid.PosToCell(building.transform.GetPosition());
 				ReadCellOfInterest(go, building, origin, cell, tokens);
