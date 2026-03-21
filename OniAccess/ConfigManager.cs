@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Klei;
 using OniAccess.Util;
+using YamlDotNet.Serialization;
 
 namespace OniAccess {
 	public static class ConfigManager {
@@ -33,7 +34,14 @@ namespace OniAccess {
 
 		public static void Save() {
 			try {
-				YamlIO.Save(Config, _path);
+				// Serialize directly instead of using YamlIO.Save because ONI's
+				// bundled YamlDotNet omits properties equal to the type default
+				// (e.g. false for bool). Properties like FootstepEarcons that
+				// default to true in the initializer would lose a user's "false"
+				// choice on reload since the deserializer never sees the key.
+				using (var writer = new StreamWriter(_path))
+					new SerializerBuilder().EmitDefaults().Build()
+						.Serialize(writer, Config);
 			} catch (Exception ex) {
 				Log.Warn($"Failed to save config to {_path}: {ex.Message}");
 			}
