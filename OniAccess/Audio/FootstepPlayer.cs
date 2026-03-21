@@ -45,17 +45,13 @@ namespace OniAccess.Audio {
 				return;
 			}
 
-			// Gas/vacuum: check for non-tile buildings (ladders, fire poles, etc.)
+			// Gas/vacuum: only ladders get footstep sounds
 			var building = GetBuilding(cell);
-			if (building != null) {
-				if (building.GetComponent<Ladder>() != null) {
-					string name = building.Def.PrefabID == "LadderFast"
-						? "Ladder_footstep_Plastic"
-						: "Ladder_footstep";
-					PlayEvent(name, cell);
-				} else {
-					PlayEvent(building.Def.AudioCategory + "_footstep", cell);
-				}
+			if (building != null && building.GetComponent<Ladder>() != null) {
+				string name = building.Def.PrefabID == "LadderFast"
+					? "Ladder_footstep_Plastic"
+					: "Ladder_footstep";
+				PlayEvent(name, cell);
 				return;
 			}
 
