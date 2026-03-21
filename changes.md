@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.6
 
+- Fix radbolt output port announced as "{0}" instead of direction when previewing building ports
 - Footstep earcons: moving the cursor plays the game's footstep sound for the tile surface, enabled by default (toggle in config)
 - Suppress UI hover sounds triggered by camera movement when footstep earcons are on
 - Disable the game's pause audio snapshot so all sounds play clearly while paused

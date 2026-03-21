@@ -938,7 +938,8 @@ namespace STRINGS {
 
 			// Radbolt (radiation bolt) port labels
 			public static LocString RADBOLT_INPUT = "radbolt input";
-			public static LocString RADBOLT_OUTPUT = "radbolt output, {0}";
+			public static LocString RADBOLT_OUTPUT = "radbolt output";
+			public static LocString RADBOLT_OUTPUT_DIRECTION = "radbolt output, {0}";
 
 			// Conduit/network type labels
 			public static LocString CONDUIT_LIQUID = "liquid";

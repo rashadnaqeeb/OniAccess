@@ -583,9 +583,9 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					if (dirComponent != null) {
 						var dirString = EightDirectionToString(dirComponent.Direction);
 						tokens.Add(string.Format(
-							(string)STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT, dirString));
+							(string)STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT_DIRECTION, dirString));
 					} else {
-						tokens.Add("radbolt output");
+						tokens.Add((string)STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT);
 					}
 				}
 			}
