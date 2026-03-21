@@ -47,7 +47,15 @@ namespace OniAccess.Handlers {
 		}
 
 		protected override void AdjustCurrentItem(int direction, int stepLevel) {
-			CycleCurrentItem(direction);
+			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
+			var item = _items[CurrentIndex];
+			if (item is FloatConfigItem floatItem) {
+				floatItem.Adjust(direction, InputUtil.FractionForLevel(stepLevel));
+				PlaySound("HUD_Click");
+				SpeakCurrentItem();
+			} else {
+				CycleCurrentItem(direction);
+			}
 		}
 
 		private void CycleCurrentItem(int direction) {
@@ -132,11 +140,23 @@ namespace OniAccess.Handlers {
 				() => ConfigManager.Config.UtilityPresenceEarcons,
 				value => ConfigManager.Config.UtilityPresenceEarcons = value
 			));
+			items.Add(new FloatConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_VOLUME,
+				() => ConfigManager.Config.UtilityPresenceVolume,
+				value => ConfigManager.Config.UtilityPresenceVolume = value,
+				0f, 2f
+			));
 
 			items.Add(new BoolConfigItem(
 				(string)STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS,
 				() => ConfigManager.Config.PipeShapeEarcons,
 				value => ConfigManager.Config.PipeShapeEarcons = value
+			));
+			items.Add(new FloatConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_VOLUME,
+				() => ConfigManager.Config.PipeShapeVolume,
+				value => ConfigManager.Config.PipeShapeVolume = value,
+				0f, 2f
 			));
 
 			items.Add(new BoolConfigItem(
@@ -144,11 +164,23 @@ namespace OniAccess.Handlers {
 				() => ConfigManager.Config.PassabilityEarcons,
 				value => ConfigManager.Config.PassabilityEarcons = value
 			));
+			items.Add(new FloatConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.PASSABILITY_VOLUME,
+				() => ConfigManager.Config.PassabilityVolume,
+				value => ConfigManager.Config.PassabilityVolume = value,
+				0f, 2f
+			));
 
 			items.Add(new BoolConfigItem(
 				(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS,
 				() => ConfigManager.Config.TemperatureBandEarcons,
 				value => ConfigManager.Config.TemperatureBandEarcons = value
+			));
+			items.Add(new FloatConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_VOLUME,
+				() => ConfigManager.Config.TemperatureBandVolume,
+				value => ConfigManager.Config.TemperatureBandVolume = value,
+				0f, 2f
 			));
 
 			items.Add(new BoolConfigItem(
@@ -156,17 +188,35 @@ namespace OniAccess.Handlers {
 				() => ConfigManager.Config.FlowSonification,
 				value => ConfigManager.Config.FlowSonification = value
 			));
+			items.Add(new FloatConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION_VOLUME,
+				() => ConfigManager.Config.FlowSonificationVolume,
+				value => ConfigManager.Config.FlowSonificationVolume = value,
+				0f, 2f
+			));
 
 			items.Add(new BoolConfigItem(
 				(string)STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS,
 				() => ConfigManager.Config.FollowMovementEarcons,
 				value => ConfigManager.Config.FollowMovementEarcons = value
 			));
+			items.Add(new FloatConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_VOLUME,
+				() => ConfigManager.Config.FollowMovementVolume,
+				value => ConfigManager.Config.FollowMovementVolume = value,
+				0f, 2f
+			));
 
 			items.Add(new BoolConfigItem(
 				(string)STRINGS.ONIACCESS.CONFIG.FOOTSTEP_EARCONS,
 				() => ConfigManager.Config.FootstepEarcons,
 				value => ConfigManager.Config.FootstepEarcons = value
+			));
+			items.Add(new FloatConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.FOOTSTEP_VOLUME,
+				() => ConfigManager.Config.FootstepVolume,
+				value => ConfigManager.Config.FootstepVolume = value,
+				0f, 2f
 			));
 
 			items.Add(new BoolConfigItem(

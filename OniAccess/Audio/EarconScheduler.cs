@@ -54,7 +54,9 @@ namespace OniAccess.Audio {
 				}
 				var batches = set.GetBatches(cell);
 				Log.Debug($"EarconScheduler: {set.GetType().Name} returned {batches.Count} batch(es) for cell {cell}");
-				allBatches.AddRange(batches);
+				float volume = set.Volume;
+				foreach (var batch in batches)
+					allBatches.Add(new SoundBatch(volume, batch.Specs));
 			}
 			Log.Debug($"EarconScheduler: playing {allBatches.Count} total batch(es)");
 			Play(allBatches);
@@ -110,7 +112,7 @@ namespace OniAccess.Audio {
 					Log.Warn($"EarconScheduler: FMOD playSound failed for '{spec.ClipName}': {result}");
 					continue;
 				}
-				channel.setVolume(1.0f);
+				channel.setVolume(batch.Volume);
 				channel.setPitch(spec.Pitch);
 				channel.setPan(spec.Pan);
 				_activeChannels.Add(channel);

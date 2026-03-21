@@ -4,6 +4,7 @@ namespace OniAccess.Audio {
 	public class PassabilityEarconSet: EarconSet {
 		public override int Priority => 1;
 		public override bool IsEnabled => ConfigManager.Config.PassabilityEarcons;
+		public override float Volume => ConfigManager.Config.PassabilityVolume;
 
 		public override bool IsActive(HashedString overlayMode) => true;
 

@@ -86,6 +86,13 @@ namespace STRINGS {
 			public static LocString TEMPERATURE_BAND_EARCONS = "Temperature band earcons";
 			public static LocString FOLLOW_MOVEMENT_EARCONS = "Follow movement earcons";
 			public static LocString FOOTSTEP_EARCONS = "Footstep earcons";
+			public static LocString UTILITY_PRESENCE_VOLUME = "Utility presence volume";
+			public static LocString PIPE_SHAPE_VOLUME = "Pipe shape volume";
+			public static LocString PASSABILITY_VOLUME = "Passability volume";
+			public static LocString TEMPERATURE_BAND_VOLUME = "Temperature band volume";
+			public static LocString FLOW_SONIFICATION_VOLUME = "Flow sonification volume";
+			public static LocString FOLLOW_MOVEMENT_VOLUME = "Follow movement volume";
+			public static LocString FOOTSTEP_VOLUME = "Footstep volume";
 		}
 
 		// Supply closet (Klei rewards) screen messages

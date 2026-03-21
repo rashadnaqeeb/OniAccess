@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace OniAccess.Config {
 	public abstract class ConfigItem {
@@ -30,6 +31,38 @@ namespace OniAccess.Config {
 
 		public override void Cycle(int direction) {
 			_setter(!_getter());
+			ConfigManager.Save();
+		}
+	}
+
+	public class FloatConfigItem: ConfigItem {
+		private readonly Func<float> _getter;
+		private readonly Action<float> _setter;
+		private readonly float _min;
+		private readonly float _max;
+
+		public FloatConfigItem(string label, Func<float> getter, Action<float> setter,
+				float min, float max)
+			: base(label) {
+			_getter = getter;
+			_setter = setter;
+			_min = min;
+			_max = max;
+		}
+
+		public override string GetDisplayValue() {
+			return _getter().ToString("F2");
+		}
+
+		public override void Cycle(int direction) {
+			Adjust(direction, 0.01f);
+		}
+
+		public void Adjust(int direction, float step) {
+			float value = _getter() + direction * step;
+			value = Mathf.Clamp(value, _min, _max);
+			value = Mathf.Round(value * 100f) / 100f;
+			_setter(value);
 			ConfigManager.Save();
 		}
 	}

@@ -4,6 +4,7 @@ namespace OniAccess.Audio {
 	public class UtilityPresenceEarconSet: EarconSet {
 		public override int Priority => 2;
 		public override bool IsEnabled => ConfigManager.Config.UtilityPresenceEarcons;
+		public override float Volume => ConfigManager.Config.UtilityPresenceVolume;
 
 		public override bool IsActive(HashedString overlayMode) {
 			return overlayMode == OverlayModes.None.ID;

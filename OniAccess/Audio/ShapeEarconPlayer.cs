@@ -12,7 +12,7 @@ namespace OniAccess.Audio {
 		const float SegmentSeconds = 0.055f;
 		const float GapSeconds = 0.01f;
 		const float FadeSeconds = 0.005f;
-		const float Volume = 0.15f;
+		static float Volume => ConfigManager.Config.PipeShapeVolume;
 
 		const float PanLeft = -0.79f;
 		const float PanRight = 0.79f;

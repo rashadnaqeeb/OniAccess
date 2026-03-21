@@ -9,7 +9,7 @@ namespace OniAccess.Audio {
 
 		const float SegmentSeconds = 0.055f;
 		const float FadeSeconds = 0.005f;
-		const float Volume = 0.1125f;
+		static float Volume => ConfigManager.Config.FollowMovementVolume;
 
 		const float PanLeft = -0.79f;
 		const float PanRight = 0.79f;

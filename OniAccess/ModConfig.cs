@@ -14,5 +14,13 @@ namespace OniAccess {
 		public bool TemperatureBandEarcons { get; set; } = false;
 		public bool FollowMovementEarcons { get; set; } = false;
 		public bool FootstepEarcons { get; set; } = true;
+
+		public float UtilityPresenceVolume { get; set; } = 1.0f;
+		public float PipeShapeVolume { get; set; } = 0.15f;
+		public float PassabilityVolume { get; set; } = 0.25f;
+		public float TemperatureBandVolume { get; set; } = 0.25f;
+		public float FlowSonificationVolume { get; set; } = 0.05f;
+		public float FollowMovementVolume { get; set; } = 0.11f;
+		public float FootstepVolume { get; set; } = 1.5f;
 	}
 }

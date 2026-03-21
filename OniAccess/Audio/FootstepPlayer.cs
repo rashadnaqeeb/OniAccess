@@ -7,7 +7,7 @@ namespace OniAccess.Audio {
 	public class FootstepPlayer {
 		public static FootstepPlayer Instance { get; private set; }
 
-		const float Volume = 1.5f;
+		static float Volume => ConfigManager.Config.FootstepVolume;
 
 		private static readonly MethodInfo _getOreBumpSound =
 			AccessTools.Method(typeof(Substance), "GetOreBumpSound");

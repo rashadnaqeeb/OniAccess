@@ -7,6 +7,7 @@ namespace OniAccess.Audio {
 
 		public override int Priority => 0;
 		public override bool IsEnabled => ConfigManager.Config.TemperatureBandEarcons;
+		public override float Volume => ConfigManager.Config.TemperatureBandVolume;
 		public override bool IsActive(HashedString overlayMode) => true;
 
 		public void Reset() {
