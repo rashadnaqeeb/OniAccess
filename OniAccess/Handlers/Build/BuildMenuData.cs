@@ -167,13 +167,16 @@ namespace OniAccess.Handlers.Build {
 				return orientation == Orientation.R90 || orientation == Orientation.R270
 					? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL
 					: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL;
+			bool isReverseFlow = def.UseHighEnergyParticleInputPort
+				&& def.UseHighEnergyParticleOutputPort;
 			return GetOrientationName(
-				orientation, def.PermittedRotations, IsHorizontalFlowBuilding(def));
+				orientation, def.PermittedRotations,
+				IsHorizontalFlowBuilding(def), isReverseFlow);
 		}
 
 		internal static string GetOrientationName(
 				Orientation orientation, PermittedRotations permitted,
-				bool horizontalFlow = false) {
+				bool horizontalFlow = false, bool reverseFlow = false) {
 			switch (permitted) {
 				case PermittedRotations.R90:
 					return orientation == Orientation.Neutral
@@ -188,7 +191,14 @@ namespace OniAccess.Handlers.Build {
 						? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_DOWN
 						: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_UP;
 				default:
-					if (horizontalFlow) {
+					if (reverseFlow) {
+						orientation = orientation switch {
+							Orientation.R90 => Orientation.Neutral,
+							Orientation.R180 => Orientation.R90,
+							Orientation.R270 => Orientation.R180,
+							_ => Orientation.R270,
+						};
+					} else if (horizontalFlow) {
 						orientation = orientation switch {
 							Orientation.R90 => Orientation.R180,
 							Orientation.R180 => Orientation.R270,
