@@ -7,7 +7,7 @@ namespace OniAccess.Audio {
 	public class FootstepPlayer {
 		public static FootstepPlayer Instance { get; private set; }
 
-		const float Volume = 1.5f;
+		const float Volume = 1.15f;
 
 		private static readonly MethodInfo _getFloorCategory =
 			AccessTools.Method(typeof(Substance), "GetFloorEventAudioCategory");
@@ -30,13 +30,13 @@ namespace OniAccess.Audio {
 			if (!Grid.IsValidCell(cell)) return;
 
 			if (Grid.Foundation[cell]) {
-				PlayEvent(GetFoundationCategory(cell) + "_footstep", cell);
+				PlayEvent(GetFoundationCategory(cell) + "_land", cell);
 				return;
 			}
 
 			Element element = Grid.Element[cell];
 			if (element.IsSolid) {
-				PlayEvent(GetSolidCategory(element) + "_footstep", cell);
+				PlayEvent(GetSolidCategory(element) + "_land", cell);
 				return;
 			}
 
@@ -61,7 +61,7 @@ namespace OniAccess.Audio {
 		private void PlayEvent(string name, int cell) {
 			string sound = GlobalAssets.GetSound(name, true);
 			if (sound == null)
-				sound = GlobalAssets.GetSound("Rock_footstep", true);
+				sound = GlobalAssets.GetSound("Rock_land", true);
 			if (sound == null) return;
 
 			Vector3 pos = SoundListenerController.Instance != null
