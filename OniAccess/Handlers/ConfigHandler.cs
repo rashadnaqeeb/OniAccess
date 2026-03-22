@@ -195,6 +195,17 @@ namespace OniAccess.Handlers {
 							value => ConfigManager.Config.FootstepVolume = value,
 							0f, 2f
 						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS,
+							() => ConfigManager.Config.TemperatureBandEarcons,
+							value => ConfigManager.Config.TemperatureBandEarcons = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_VOLUME,
+							() => ConfigManager.Config.TemperatureBandVolume,
+							value => ConfigManager.Config.TemperatureBandVolume = value,
+							0f, 2f
+						),
 					}
 				},
 
@@ -254,17 +265,6 @@ namespace OniAccess.Handlers {
 							(string)STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_VOLUME,
 							() => ConfigManager.Config.PipeShapeVolume,
 							value => ConfigManager.Config.PipeShapeVolume = value,
-							0f, 2f
-						),
-						new BoolConfigItem(
-							(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS,
-							() => ConfigManager.Config.TemperatureBandEarcons,
-							value => ConfigManager.Config.TemperatureBandEarcons = value
-						),
-						new FloatConfigItem(
-							(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_VOLUME,
-							() => ConfigManager.Config.TemperatureBandVolume,
-							value => ConfigManager.Config.TemperatureBandVolume = value,
 							0f, 2f
 						),
 						new BoolConfigItem(
