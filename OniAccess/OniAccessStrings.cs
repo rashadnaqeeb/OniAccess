@@ -93,6 +93,8 @@ namespace STRINGS {
 			public static LocString FLOW_SONIFICATION_VOLUME = "Flow sonification volume";
 			public static LocString FOLLOW_MOVEMENT_VOLUME = "Follow movement volume";
 			public static LocString FOOTSTEP_VOLUME = "Footstep volume";
+			public static LocString SCANNER_DIRECTION_EARCONS = "Scanner direction earcons";
+			public static LocString SCANNER_DIRECTION_VOLUME = "Scanner direction volume";
 			public static LocString FLOW_DIRECTION_READOUT = "Flow direction readout";
 		}
 

@@ -159,6 +159,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			if (itemAnnouncement != null)
 				SpeechPipeline.SpeakQueued(itemAnnouncement);
 			AutoMoveIfEnabled();
+			PlayDirectionEarcon();
 		}
 
 		public void CycleSubcategory(int direction) {
@@ -186,6 +187,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			if (itemAnnouncement != null)
 				SpeechPipeline.SpeakQueued(itemAnnouncement);
 			AutoMoveIfEnabled();
+			PlayDirectionEarcon();
 		}
 
 		public void CycleItem(int direction) {
@@ -211,6 +213,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			if (announcement != null)
 				SpeechPipeline.SpeakInterrupt(announcement);
 			AutoMoveIfEnabled();
+			PlayDirectionEarcon();
 		}
 
 		public void CycleInstance(int direction) {
@@ -234,6 +237,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			if (announcement != null)
 				SpeechPipeline.SpeakInterrupt(announcement);
 			AutoMoveIfEnabled();
+			PlayDirectionEarcon();
 		}
 
 		public string ToggleAutoMove() {
@@ -324,6 +328,13 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			if (_snapshot != null) return false;
 			Refresh();
 			return true;
+		}
+
+		private void PlayDirectionEarcon() {
+			var entry = CurrentEntry();
+			if (entry == null) return;
+			Audio.ScannerDirectionEarcon.Instance?.Play(
+				ReferenceCell(), entry.Cell);
 		}
 
 		private void AutoMoveIfEnabled() {

@@ -130,6 +130,18 @@ namespace OniAccess.Handlers {
 			));
 
 			items.Add(new BoolConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_EARCONS,
+				() => ConfigManager.Config.ScannerDirectionEarcons,
+				value => ConfigManager.Config.ScannerDirectionEarcons = value
+			));
+			items.Add(new FloatConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_VOLUME,
+				() => ConfigManager.Config.ScannerDirectionVolume,
+				value => ConfigManager.Config.ScannerDirectionVolume = value,
+				0f, 2f
+			));
+
+			items.Add(new BoolConfigItem(
 				(string)STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM,
 				() => ConfigManager.Config.LockZoom,
 				value => ConfigManager.Config.LockZoom = value

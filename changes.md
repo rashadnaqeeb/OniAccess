@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.6
 
+- Scanner direction earcons: optional tones indicate distance and direction when cycling scanner results (off by default)
 - Fix config not persisting toggle options set to false
 - Fix radbolt joint plate reporting wrong orientation
 - Strip degree unit letter from temperature speech so screen readers no longer say "C" or "F" after every value

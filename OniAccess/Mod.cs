@@ -89,6 +89,7 @@ namespace OniAccess {
 			audioGo.AddComponent<Sonifier>();
 			audioGo.AddComponent<ShapeEarconPlayer>();
 			audioGo.AddComponent<FollowMovementEarcon>();
+			audioGo.AddComponent<ScannerDirectionEarcon>();
 			new SonifierController();
 			new FootstepPlayer();
 
