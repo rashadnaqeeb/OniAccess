@@ -36,6 +36,14 @@ namespace OniAccess.Speech {
 		private static readonly Regex TmpSpriteTagRegex =
 			new Regex(@"\[[^\]]+\]\s*", RegexOptions.Compiled);
 
+		// Temperature unit suffixes (°C, °F). Kelvin (" K") skipped — too
+		// likely to false-match. Players pick a unit once; repeating it on
+		// every temperature readout is noise.
+		// Strip just the unit letter after the degree sign, keeping ° so
+		// screen readers still say "degrees".
+		private static readonly Regex TempUnitRegex =
+			new Regex(@"(?<=°)[CF]\b", RegexOptions.Compiled);
+
 		// Normalize whitespace (collapse multiple spaces/newlines/tabs)
 		private static readonly Regex WhitespaceRegex =
 			new Regex(@"\s+", RegexOptions.Compiled);
@@ -95,6 +103,9 @@ namespace OniAccess.Speech {
 			// Replace masculine ordinal indicator (º, U+00BA) with degree sign (°, U+00B0).
 			// Screen readers mispronounce º; ONI uses it in temperature strings.
 			text = text.Replace('\u00BA', '\u00B0');
+
+			// Strip temperature unit suffixes now that º is normalized to °.
+			text = TempUnitRegex.Replace(text, "");
 
 			// Strip bullet (•, U+2022). ONI uses it as a list prefix in diagnostic
 			// messages and tooltips. Screen readers announce it as "bullet" which

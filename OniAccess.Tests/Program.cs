@@ -120,6 +120,9 @@ namespace OniAccess.Tests {
 			results.Add(TextFilterMismatchedTags());
 			results.Add(TextFilterSpriteNameCaseInsensitive());
 			results.Add(TextFilterReplacesMasculineOrdinalDegree());
+			results.Add(TextFilterStripsTempUnitCelsius());
+			results.Add(TextFilterStripsTempUnitFahrenheit());
+			results.Add(TextFilterPreservesKelvin());
 			results.Add(TextFilterStripsBullet());
 			results.Add(TextFilterPreservesNumericBrackets());
 			results.Add(TextFilterStripsControlChars());
@@ -1131,7 +1134,7 @@ namespace OniAccess.Tests {
 		private static (string, bool, string) TextFilterPreservesPlainText() {
 			string input = "Copper Ore, 200 kg, 25\u00B0C";
 			string result = TextFilter.FilterForSpeech(input);
-			bool ok = result == input;
+			bool ok = result == "Copper Ore, 200 kg, 25\u00B0";
 			return Assert("TextFilterPreservesPlainText", ok, $"got \"{result}\"");
 		}
 
@@ -1167,8 +1170,26 @@ namespace OniAccess.Tests {
 
 		private static (string, bool, string) TextFilterReplacesMasculineOrdinalDegree() {
 			string result = TextFilter.FilterForSpeech("21.9 \u00BAC");
-			bool ok = result == "21.9 \u00B0C";
+			bool ok = result == "21.9 \u00B0";
 			return Assert("TextFilterReplacesMasculineOrdinalDegree", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TextFilterStripsTempUnitCelsius() {
+			string result = TextFilter.FilterForSpeech("21.9 \u00B0C");
+			bool ok = result == "21.9 \u00B0";
+			return Assert("TextFilterStripsTempUnitCelsius", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TextFilterStripsTempUnitFahrenheit() {
+			string result = TextFilter.FilterForSpeech("71.4 \u00B0F");
+			bool ok = result == "71.4 \u00B0";
+			return Assert("TextFilterStripsTempUnitFahrenheit", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TextFilterPreservesKelvin() {
+			string result = TextFilter.FilterForSpeech("294.3 K");
+			bool ok = result == "294.3 K";
+			return Assert("TextFilterPreservesKelvin", ok, $"got \"{result}\"");
 		}
 
 		private static (string, bool, string) TextFilterStripsBullet() {
