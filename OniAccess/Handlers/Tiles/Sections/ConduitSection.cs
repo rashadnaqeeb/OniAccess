@@ -25,13 +25,20 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (go == null || ctx.Claimed.Contains(go)) continue;
 				if (IsPortRegistration(go, layer)) continue;
 				if (IsBridgeEndpoint(go)) {
-					bridgeConnections |= GetBridgeDirection(go, cell);
+					if (go.GetComponent<Constructable>() != null) {
+						ctx.Claimed.Add(go);
+						var bsel = go.GetComponent<KSelectable>();
+						if (bsel != null)
+							tokens.Add(ConstructionName(go, bsel));
+					} else {
+						bridgeConnections |= GetBridgeDirection(go, cell);
+					}
 					continue;
 				}
 				ctx.Claimed.Add(go);
 				var sel = go.GetComponent<KSelectable>();
 				if (sel != null)
-					tokens.Add(sel.GetName());
+					tokens.Add(ConstructionName(go, sel));
 			}
 			bridgeConnections |= FindJointPlateConnections(cell);
 			if (tokens.Count > 0 && !ConfigManager.Config.PipeShapeEarcons)
@@ -146,7 +153,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (sel != null)
 				tokens.Add(string.Format(
 					(string)STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE,
-					sel.GetName()));
+					ConstructionName(go, sel)));
 		}
 
 		/// <summary>
@@ -161,6 +168,15 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				|| rule == BuildLocationRule.WireBridge
 				|| rule == BuildLocationRule.LogicBridge
 				|| rule == BuildLocationRule.HighWattBridgeTile;
+		}
+
+		internal static string ConstructionName(
+				UnityEngine.GameObject go, KSelectable sel) {
+			string name = sel.GetName();
+			if (go.GetComponent<Constructable>() != null)
+				return string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION, name);
+			return name;
 		}
 
 		/// <summary>

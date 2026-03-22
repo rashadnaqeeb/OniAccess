@@ -17,15 +17,21 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				var go = Grid.Objects[cell, layer];
 				if (go == null || !ctx.Claimed.Add(go)) continue;
 				if (ConduitSection.IsBridgeEndpoint(go)) {
-					bridgeConnections |= ConduitSection.GetBridgeDirection(
-						go, cell);
+					if (go.GetComponent<Constructable>() != null) {
+						var bsel = go.GetComponent<KSelectable>();
+						if (bsel != null)
+							tokens.Add(ConduitSection.ConstructionName(go, bsel));
+					} else {
+						bridgeConnections |= ConduitSection.GetBridgeDirection(
+							go, cell);
+					}
 					continue;
 				}
 				if (wire == null)
 					wire = go.GetComponent<LogicWire>();
 				var sel = go.GetComponent<KSelectable>();
 				if (sel != null)
-					tokens.Add(sel.GetName());
+					tokens.Add(ConduitSection.ConstructionName(go, sel));
 			}
 			if (tokens.Count > 0) {
 				if (!ConfigManager.Config.PipeShapeEarcons) {

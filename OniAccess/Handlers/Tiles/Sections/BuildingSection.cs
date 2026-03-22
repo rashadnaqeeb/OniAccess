@@ -33,7 +33,12 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					&& !IsOverlayFocused()) {
 					var selectable = backwallGo.GetComponent<KSelectable>();
 					if (selectable != null) {
-						tokens.Add(GetBuildingName(backwallGo, selectable));
+						string backwallName = GetBuildingName(backwallGo, selectable);
+						if (backwallGo.GetComponent<Constructable>() != null)
+							backwallName = string.Format(
+								(string)STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION,
+								backwallName);
+						tokens.Add(backwallName);
 						ReadPixelPack(backwallGo, cell, tokens);
 					}
 				}
@@ -150,6 +155,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 			// Already processed through building or foundation layers
 			if (portGo == buildingGo || portGo == foundationGo) return;
+			if (ctx.Claimed.Contains(portGo)) return;
 
 			var building = portGo.GetComponent<Building>();
 			if (building == null) return;
