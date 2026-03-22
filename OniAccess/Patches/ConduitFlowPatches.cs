@@ -1,5 +1,6 @@
 using HarmonyLib;
 using OniAccess.ConduitTracking;
+using UnityEngine;
 
 namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(Game), "OnPrefabInit")]
@@ -29,6 +30,7 @@ namespace OniAccess.Patches {
 			var tracker = __instance.conduitType == ConduitType.Gas
 				? FlowTracker.Gas : FlowTracker.Liquid;
 			tracker.RecordFluid(__instance);
+			BridgeFlowCapture.Clear();
 		}
 	}
 
@@ -46,6 +48,32 @@ namespace OniAccess.Patches {
 				bool __state) {
 			if (!__state) return;
 			FlowTracker.Solid.RecordSolid(__instance);
+		}
+	}
+
+	[HarmonyPatch(typeof(ConduitBridge), "ConduitUpdate")]
+	internal static class ConduitBridge_ConduitUpdate_Patch {
+		private static void Postfix(ConduitBridge __instance) {
+			var trav = Traverse.Create(__instance);
+			int inputCell = trav.Field<int>("inputCell").Value;
+			int outputCell = trav.Field<int>("outputCell").Value;
+			ConduitType type = __instance.type;
+			var flow = Conduit.GetFlowManager(type);
+			var contents = flow.GetContents(outputCell);
+			if (contents.element == SimHashes.Vacuum) return;
+
+			var building = __instance.GetComponent<Building>();
+			int origin = Grid.PosToCell(
+				building.transform.GetPosition());
+			int dx = Grid.CellColumn(origin) - Grid.CellColumn(inputCell);
+			int dy = Grid.CellRow(origin) - Grid.CellRow(inputCell);
+			int dir;
+			if (dx > 0) dir = FlowTracker.DirRight;
+			else if (dx < 0) dir = FlowTracker.DirLeft;
+			else if (dy > 0) dir = FlowTracker.DirUp;
+			else dir = FlowTracker.DirDown;
+
+			BridgeFlowCapture.Record(inputCell, contents.element, dir);
 		}
 	}
 }

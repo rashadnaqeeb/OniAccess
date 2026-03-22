@@ -50,8 +50,19 @@ namespace OniAccess.ConduitTracking {
 			int baseIdx = _writePos * _conduitCount;
 			for (int i = 0; i < count; i++) {
 				var info = flow.soaInfo.GetLastFlowInfo(i);
-				_buffer[baseIdx + i] = NormalizeFluidDirection(info.direction);
-				_elementBuffer[baseIdx + i] = info.contents.element;
+				int dir = NormalizeFluidDirection(info.direction);
+				SimHashes element = info.contents.element;
+				if (dir == DirNone) {
+					int cell = flow.soaInfo.GetCell(i);
+					if (BridgeFlowCapture.TryGet(cell,
+							out SimHashes bridgeElement,
+							out int bridgeDir)) {
+						dir = bridgeDir;
+						element = bridgeElement;
+					}
+				}
+				_buffer[baseIdx + i] = dir;
+				_elementBuffer[baseIdx + i] = element;
 			}
 			AdvanceWritePos();
 		}
