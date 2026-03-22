@@ -82,9 +82,14 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 			RegisterNameOnly(registry, OverlayModes.Oxygen.ID,
 				(string)STRINGS.UI.OVERLAYS.OXYGEN.BUTTON, defaultComposer,
 				new OxygenAreaScanner());
+			var tempSections = new[] {
+				GlanceComposer.Element, GlanceComposer.Building,
+				GlanceComposer.Entity, GlanceComposer.Debris,
+				GlanceComposer.Order
+			};
 			RegisterCustomProfile(registry, OverlayModes.Temperature.ID,
 				(string)STRINGS.UI.OVERLAYS.TEMPERATURE.BUTTON,
-				GlanceComposer.Temperature, defaultSections,
+				GlanceComposer.Temperature, tempSections,
 				new TemperatureAreaScanner());
 
 			// Utility overlays fall back to default area scanner (null)
