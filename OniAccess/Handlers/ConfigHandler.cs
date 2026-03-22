@@ -194,7 +194,7 @@ namespace OniAccess.Handlers {
 				value => ConfigManager.Config.FlowSonificationVolume = value,
 				0f, 2f
 			));
-
+	
 			items.Add(new BoolConfigItem(
 				(string)STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS,
 				() => ConfigManager.Config.FollowMovementEarcons,
@@ -217,6 +217,12 @@ namespace OniAccess.Handlers {
 				() => ConfigManager.Config.FootstepVolume,
 				value => ConfigManager.Config.FootstepVolume = value,
 				0f, 2f
+			));
+
+			items.Add(new BoolConfigItem(
+				(string)STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT,
+				() => ConfigManager.Config.FlowDirectionReadout,
+				value => ConfigManager.Config.FlowDirectionReadout = value
 			));
 
 			items.Add(new BoolConfigItem(

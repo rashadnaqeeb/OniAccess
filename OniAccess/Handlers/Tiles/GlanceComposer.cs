@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OniAccess.ConduitTracking;
 
 namespace OniAccess.Handlers.Tiles {
 	/// <summary>
@@ -29,12 +30,18 @@ namespace OniAccess.Handlers.Tiles {
 			(int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors);
 		internal static readonly ICellSection Plumbing = new Sections.ConduitSection(
 			() => Game.Instance.liquidConduitSystem,
+			() => FlowTracker.Liquid,
+			cell => Game.Instance.liquidConduitFlow.GetConduit(cell).idx,
 			(int)ObjectLayer.LiquidConduit, (int)ObjectLayer.LiquidConduitConnection);
 		internal static readonly ICellSection Ventilation = new Sections.ConduitSection(
 			() => Game.Instance.gasConduitSystem,
+			() => FlowTracker.Gas,
+			cell => Game.Instance.gasConduitFlow.GetConduit(cell).idx,
 			(int)ObjectLayer.GasConduit, (int)ObjectLayer.GasConduitConnection);
 		internal static readonly ICellSection Conveyor = new Sections.ConduitSection(
 			() => Game.Instance.solidConduitSystem,
+			() => FlowTracker.Solid,
+			cell => Game.Instance.solidConduitFlow.GetConduit(cell).idx,
 			(int)ObjectLayer.SolidConduit, (int)ObjectLayer.SolidConduitConnection);
 		internal static readonly ICellSection Automation = new Sections.AutomationSection();
 		internal static readonly ICellSection Temperature = new Sections.TemperatureSection();

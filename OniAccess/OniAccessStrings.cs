@@ -93,6 +93,7 @@ namespace STRINGS {
 			public static LocString FLOW_SONIFICATION_VOLUME = "Flow sonification volume";
 			public static LocString FOLLOW_MOVEMENT_VOLUME = "Follow movement volume";
 			public static LocString FOOTSTEP_VOLUME = "Footstep volume";
+			public static LocString FLOW_DIRECTION_READOUT = "Flow direction readout";
 		}
 
 		// Supply closet (Klei rewards) screen messages
@@ -999,6 +1000,11 @@ namespace STRINGS {
 			public static LocString SHAPE_END = "ends {0}";
 			// Pipe segment with no connections to neighbors
 			public static LocString SHAPE_ALONE = "unconnected";
+
+			// Flow direction readout. Appended to pipe glance when enabled
+			public static LocString FLOW_NOT_FLOWING = "not flowing";
+			// {0} = percentage, {1} = direction name (e.g. "right")
+			public static LocString FLOW_DIRECTION_PERCENT = "{0}% {1}";
 		}
 
 		public class SCANNER {

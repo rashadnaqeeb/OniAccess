@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using OniAccess.ConduitTracking;
 
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
@@ -10,10 +11,21 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	public class ConduitSection: ICellSection {
 		private readonly int[] _layers;
 		private readonly Func<IUtilityNetworkMgr> _getManager;
+		private readonly Func<FlowTracker> _getFlowTracker;
+		private readonly Func<int, int> _getConduitIdx;
 
 		public ConduitSection(Func<IUtilityNetworkMgr> getManager,
+				params int[] layers)
+			: this(getManager, null, null, layers) {
+		}
+
+		public ConduitSection(Func<IUtilityNetworkMgr> getManager,
+				Func<FlowTracker> getFlowTracker,
+				Func<int, int> getConduitIdx,
 				params int[] layers) {
 			_getManager = getManager;
+			_getFlowTracker = getFlowTracker;
+			_getConduitIdx = getConduitIdx;
 			_layers = layers;
 		}
 
@@ -46,6 +58,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					_getManager().GetConnections(cell, true)
 					| bridgeConnections));
 			FindBridgeMiddle(cell, _layers, ctx, tokens);
+			if (tokens.Count > 0 && ConfigManager.Config.FlowDirectionReadout
+					&& _getFlowTracker != null) {
+				var flowText = FlowSpeech.Format(
+					_getFlowTracker(), _getConduitIdx(cell));
+				if (flowText != null)
+					tokens.Add(flowText);
+			}
 			return tokens;
 		}
 
