@@ -99,7 +99,7 @@ namespace OniAccess.Audio {
 			}
 			float wattsUsed = Game.Instance.circuitManager.GetWattsUsedByCircuit(circuitID);
 			float maxWatts = Game.Instance.circuitManager.GetMaxSafeWattageForCircuit(circuitID);
-			float fillRatio = maxWatts > 0f ? UnityEngine.Mathf.Clamp01(wattsUsed / maxWatts) : 0f;
+			float fillRatio = maxWatts > 0f ? wattsUsed / maxWatts : 0f;
 			Sonifier.Instance.UpdateTone(fillRatio, wattsUsed > 0f);
 		}
 
