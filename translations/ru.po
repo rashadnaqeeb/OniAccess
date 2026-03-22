@@ -1203,6 +1203,17 @@ msgstr "Звуковые сигналы формы труб"
 msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_VOLUME"
 msgid "Pipe shape volume"
 msgstr "Громкость формы труб"
+
+#. STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_EARCONS"
+msgid "Scanner direction earcons"
+msgstr "Звуковые сигналы направления сканера"
+
+#. STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_VOLUME
+msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_VOLUME"
+msgid "Scanner direction volume"
+msgstr "Громкость направления сканера"
+
 #. STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT
 msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT"
 msgid "Scanner mass readout"
@@ -1731,6 +1742,11 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT"
 msgid "{0}% {1}"
 msgstr "{0}% {1}"
 
+#. STRINGS.ONIACCESS.GLANCE.FLOW_ELEMENT_DIRECTIONS
+msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_ELEMENT_DIRECTIONS"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
 #. STRINGS.ONIACCESS.GLANCE.FLOW_EMPTY
 msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_EMPTY"
 msgid "empty"
@@ -1969,6 +1985,11 @@ msgstr "неизвестно"
 msgctxt "STRINGS.ONIACCESS.GLANCE.WIRE"
 msgid "wire"
 msgstr "провод"
+
+#. STRINGS.ONIACCESS.GLANCE.WIRE_LOAD_PERCENT
+msgctxt "STRINGS.ONIACCESS.GLANCE.WIRE_LOAD_PERCENT"
+msgid "{0} percent"
+msgstr "{0} процентов"
 
 #. STRINGS.ONIACCESS.HANDLERS.AUDIO_OPTIONS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.AUDIO_OPTIONS"
@@ -4369,6 +4390,11 @@ msgstr "близко к кипению"
 msgctxt "STRINGS.ONIACCESS.TEMPERATURE.NEAR_FREEZING"
 msgid "near freezing"
 msgstr "близко к замерзанию"
+
+#. STRINGS.ONIACCESS.TEMPERATURE.NEAR_OVERHEAT
+msgctxt "STRINGS.ONIACCESS.TEMPERATURE.NEAR_OVERHEAT"
+msgid "near overheat"
+msgstr "близко к перегреву"
 
 #. STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED
 msgctxt "STRINGS.ONIACCESS.TEXT_EDIT.CANCELLED"
