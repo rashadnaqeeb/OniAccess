@@ -5,7 +5,8 @@ namespace OniAccess.ConduitTracking {
 	/// Formats a FlowTracker's direction counts as a speech string.
 	/// </summary>
 	public static class FlowSpeech {
-		public static string Format(FlowTracker tracker, int conduitIdx) {
+		public static string Format(FlowTracker tracker, int conduitIdx,
+				bool currentlyEmpty) {
 			var counts = new int[5];
 			int samples = tracker.GetDirectionCounts(conduitIdx, counts);
 			if (samples == 0) return null;
@@ -15,7 +16,9 @@ namespace OniAccess.ConduitTracking {
 				if (counts[d] > 0) { hasFlow = true; break; }
 			}
 			if (!hasFlow)
-				return STRINGS.ONIACCESS.GLANCE.FLOW_NOT_FLOWING;
+				return currentlyEmpty
+					? STRINGS.ONIACCESS.GLANCE.FLOW_EMPTY
+					: STRINGS.ONIACCESS.GLANCE.FLOW_NOT_FLOWING;
 
 			var parts = new List<DirectionPercent>(4);
 			for (int d = FlowTracker.DirUp; d <= FlowTracker.DirRight; d++) {

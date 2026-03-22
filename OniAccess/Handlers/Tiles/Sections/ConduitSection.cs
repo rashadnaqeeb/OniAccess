@@ -13,19 +13,22 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		private readonly Func<IUtilityNetworkMgr> _getManager;
 		private readonly Func<FlowTracker> _getFlowTracker;
 		private readonly Func<int, int> _getConduitIdx;
+		private readonly Func<int, bool> _isConduitEmpty;
 
 		public ConduitSection(Func<IUtilityNetworkMgr> getManager,
 				params int[] layers)
-			: this(getManager, null, null, layers) {
+			: this(getManager, null, null, null, layers) {
 		}
 
 		public ConduitSection(Func<IUtilityNetworkMgr> getManager,
 				Func<FlowTracker> getFlowTracker,
 				Func<int, int> getConduitIdx,
+				Func<int, bool> isConduitEmpty,
 				params int[] layers) {
 			_getManager = getManager;
 			_getFlowTracker = getFlowTracker;
 			_getConduitIdx = getConduitIdx;
+			_isConduitEmpty = isConduitEmpty;
 			_layers = layers;
 		}
 
@@ -61,7 +64,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (tokens.Count > 0 && ConfigManager.Config.FlowDirectionReadout
 					&& _getFlowTracker != null) {
 				var flowText = FlowSpeech.Format(
-					_getFlowTracker(), _getConduitIdx(cell));
+					_getFlowTracker(), _getConduitIdx(cell),
+					_isConduitEmpty(cell));
 				if (flowText != null)
 					tokens.Add(flowText);
 			}

@@ -1002,6 +1002,7 @@ namespace STRINGS {
 			public static LocString SHAPE_ALONE = "unconnected";
 
 			// Flow direction readout. Appended to pipe glance when enabled
+			public static LocString FLOW_EMPTY = "empty";
 			public static LocString FLOW_NOT_FLOWING = "not flowing";
 			// {0} = percentage, {1} = direction name (e.g. "right")
 			public static LocString FLOW_DIRECTION_PERCENT = "{0}% {1}";
