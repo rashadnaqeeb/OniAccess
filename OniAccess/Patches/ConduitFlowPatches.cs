@@ -53,14 +53,22 @@ namespace OniAccess.Patches {
 
 	[HarmonyPatch(typeof(ConduitBridge), "ConduitUpdate")]
 	internal static class ConduitBridge_ConduitUpdate_Patch {
-		private static void Postfix(ConduitBridge __instance) {
+		private static void Prefix(ConduitBridge __instance,
+				ref ConduitFlow.ConduitContents __state) {
 			var trav = Traverse.Create(__instance);
 			int inputCell = trav.Field<int>("inputCell").Value;
-			int outputCell = trav.Field<int>("outputCell").Value;
-			ConduitType type = __instance.type;
-			var flow = Conduit.GetFlowManager(type);
-			var contents = flow.GetContents(outputCell);
-			if (contents.element == SimHashes.Vacuum) return;
+			var flow = Conduit.GetFlowManager(__instance.type);
+			__state = flow.GetContents(inputCell);
+		}
+
+		private static void Postfix(ConduitBridge __instance,
+				ConduitFlow.ConduitContents __state) {
+			if (__state.element == SimHashes.Vacuum) return;
+			var trav = Traverse.Create(__instance);
+			int inputCell = trav.Field<int>("inputCell").Value;
+			var flow = Conduit.GetFlowManager(__instance.type);
+			var after = flow.GetContents(inputCell);
+			if (after.mass >= __state.mass) return;
 
 			var building = __instance.GetComponent<Building>();
 			int origin = Grid.PosToCell(
@@ -73,7 +81,8 @@ namespace OniAccess.Patches {
 			else if (dy > 0) dir = FlowTracker.DirUp;
 			else dir = FlowTracker.DirDown;
 
-			BridgeFlowCapture.Record(inputCell, contents.element, dir);
+			BridgeFlowCapture.Record(
+				inputCell, __state.element, dir);
 		}
 	}
 }
