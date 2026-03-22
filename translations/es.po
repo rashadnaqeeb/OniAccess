@@ -1148,6 +1148,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE"
 msgid "Tile cursor coordinate mode"
 msgstr "Modo de coordenadas del cursor de casilla"
 
+#. STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT
+msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT"
+msgid "Flow direction readout"
+msgstr "Lectura de dirección de flujo"
+
 #. STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION
 msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION"
 msgid "Flow sonification"
@@ -1719,6 +1724,21 @@ msgstr "{0}, {1}"
 msgctxt "STRINGS.ONIACCESS.GLANCE.FILTERED_PORT"
 msgid "filtered {0}"
 msgstr "{0} filtrado"
+
+#. STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT
+msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT"
+msgid "{0}% {1}"
+msgstr "{0}% {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.FLOW_EMPTY
+msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_EMPTY"
+msgid "empty"
+msgstr "vacío"
+
+#. STRINGS.ONIACCESS.GLANCE.FLOW_NOT_FLOWING
+msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_NOT_FLOWING"
+msgid "not flowing"
+msgstr "sin flujo"
 
 #. STRINGS.ONIACCESS.GLANCE.GAS_INPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.GAS_INPUT"
