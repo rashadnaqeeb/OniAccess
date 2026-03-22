@@ -74,6 +74,10 @@ namespace STRINGS {
 
 		// Config screen option labels
 		public class CONFIG {
+		public static LocString SECTION_TILE_CURSOR = "Tile Cursor Settings";
+		public static LocString SECTION_SCANNER = "Scanner Settings";
+		public static LocString SECTION_UTILITY = "Utility Readouts";
+		public static LocString SECTION_MISC = "Miscellaneous";
 			public static LocString COORDINATE_MODE = "Tile cursor coordinate mode";
 			public static LocString AUTO_MOVE_CURSOR = "Auto-move cursor when cycling scanner entries";
 			public static LocString SCANNER_MASS_READOUT = "Scanner mass readout";

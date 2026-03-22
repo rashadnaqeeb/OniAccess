@@ -3,67 +3,106 @@ using OniAccess.Config;
 using OniAccess.Handlers.Tiles;
 using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Input;
+using OniAccess.Speech;
 
 namespace OniAccess.Handlers {
-	public class ConfigHandler: BaseMenuHandler {
-		private readonly List<ConfigItem> _items;
+	public class ConfigHandler: NestedMenuHandler {
+		private readonly ConfigSection[] _sections;
+		private int _flatCount;
 
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.CONFIG;
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 			= new List<HelpEntry> {
-				new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-				new HelpEntry("Enter/Left/Right", STRINGS.ONIACCESS.HELP.TOGGLE_OPTION),
 				new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
+				new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
+				new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.HELP.JUMP_GROUP),
 				new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
+				new HelpEntry("Enter/Right", STRINGS.ONIACCESS.HELP.OPEN_GROUP),
+				new HelpEntry("Left", STRINGS.ONIACCESS.HELP.GO_BACK),
+				new HelpEntry("Enter", STRINGS.ONIACCESS.HELP.TOGGLE_OPTION),
 			}.AsReadOnly();
 
 		public ConfigHandler() {
-			_items = BuildItems();
+			_sections = BuildSections();
+			_flatCount = 0;
+			for (int i = 0; i < _sections.Length; i++)
+				_flatCount += _sections[i].Items.Count;
 		}
 
-		public override int ItemCount => _items.Count;
+		protected override int MaxLevel => 1;
+		protected override int SearchLevel => 1;
 
-		public override string GetItemLabel(int index) {
-			if (index < 0 || index >= _items.Count) return null;
-			var item = _items[index];
+		protected override int GetItemCount(int level, int[] indices) {
+			if (level == 0) return _sections.Length;
+			return _sections[indices[0]].Items.Count;
+		}
+
+		protected override string GetItemLabel(int level, int[] indices) {
+			if (level == 0) return _sections[indices[0]].Title;
+			var item = _sections[indices[0]].Items[indices[1]];
 			return item.Label + ", " + item.GetDisplayValue();
 		}
 
-		public override void SpeakCurrentItem(string parentContext = null) {
-			if (CurrentIndex >= 0 && CurrentIndex < _items.Count)
-				Speech.SpeechPipeline.SpeakInterrupt(GetItemLabel(CurrentIndex));
+		protected override string GetParentLabel(int level, int[] indices) {
+			return _sections[indices[0]].Title;
 		}
 
-		public override void OnActivate() {
-			PlaySound("HUD_Click_Open");
-			base.OnActivate();
-			if (_items.Count > 0)
-				Speech.SpeechPipeline.SpeakQueued(GetItemLabel(CurrentIndex));
+		protected override void ActivateLeafItem(int[] indices) {
+			var item = _sections[indices[0]].Items[indices[1]];
+			item.Cycle(1);
+			PlaySound("HUD_Click");
+			SpeakCurrentItem();
 		}
 
-		protected override void ActivateCurrentItem() {
-			CycleCurrentItem(1);
-		}
-
-		protected override void AdjustCurrentItem(int direction, int stepLevel) {
-			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
-			var item = _items[CurrentIndex];
+		protected override void HandleLeftRight(int direction, int stepLevel) {
+			if (Level < MaxLevel) {
+				base.HandleLeftRight(direction, stepLevel);
+				return;
+			}
+			var item = _sections[GetIndex(0)].Items[GetIndex(1)];
 			if (item is FloatConfigItem floatItem) {
 				floatItem.Adjust(direction, InputUtil.FractionForLevel(stepLevel));
 				PlaySound("HUD_Click");
 				SpeakCurrentItem();
 			} else {
-				CycleCurrentItem(direction);
+				base.HandleLeftRight(direction, stepLevel);
 			}
 		}
 
-		private void CycleCurrentItem(int direction) {
-			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
-			var item = _items[CurrentIndex];
-			item.Cycle(direction);
-			PlaySound("HUD_Click");
-			SpeakCurrentItem();
+		public override void OnActivate() {
+			PlaySound("HUD_Click_Open");
+			base.OnActivate();
+			if (_sections.Length > 0)
+				SpeechPipeline.SpeakQueued(GetItemLabel(0, new[] { 0 }));
+		}
+
+		// Search: flat across all items in all sections
+
+		protected override int GetSearchItemCount(int[] indices) => _flatCount;
+
+		protected override string GetSearchItemLabel(int flatIndex) {
+			int remaining = flatIndex;
+			for (int s = 0; s < _sections.Length; s++) {
+				int count = _sections[s].Items.Count;
+				if (remaining < count)
+					return _sections[s].Items[remaining].Label;
+				remaining -= count;
+			}
+			return null;
+		}
+
+		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
+			int remaining = flatIndex;
+			for (int s = 0; s < _sections.Length; s++) {
+				int count = _sections[s].Items.Count;
+				if (remaining < count) {
+					outIndices[0] = s;
+					outIndices[1] = remaining;
+					return;
+				}
+				remaining -= count;
+			}
 		}
 
 		public override bool Tick() {
@@ -79,6 +118,10 @@ namespace OniAccess.Handlers {
 			if (base.HandleKeyDown(e))
 				return true;
 			if (e.TryConsume(Action.Escape)) {
+				if (Level > 0) {
+					base.HandleLeftRight(-1, 0);
+					return true;
+				}
 				Close();
 				return true;
 			}
@@ -86,164 +129,181 @@ namespace OniAccess.Handlers {
 		}
 
 		private void Close() {
-			Speech.SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.TOOLTIP.CLOSED);
+			SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.TOOLTIP.CLOSED);
 			PlaySound("HUD_Click_Close");
 			HandlerStack.Pop();
 		}
 
-		private static List<ConfigItem> BuildItems() {
-			var items = new List<ConfigItem>();
+		private class ConfigSection {
+			public string Title;
+			public List<ConfigItem> Items;
+		}
 
-			items.Add(new EnumConfigItem<CoordinateMode>(
-				(string)STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE,
-				() => ConfigManager.Config.CoordinateMode,
-				value => {
-					ConfigManager.Config.CoordinateMode = value;
-					if (TileCursor.Instance != null)
-						TileCursor.Instance.Mode = value;
-				},
-				new[] { CoordinateMode.Off, CoordinateMode.Append, CoordinateMode.Prepend },
-				mode => {
-					switch (mode) {
-						case CoordinateMode.Off: return (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_OFF;
-						case CoordinateMode.Append: return (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_APPEND;
-						case CoordinateMode.Prepend: return (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_PREPEND;
-						default: return mode.ToString();
+		private static ConfigSection[] BuildSections() {
+			return new[] {
+				// --- Tile Cursor Settings ---
+				new ConfigSection {
+					Title = (string)STRINGS.ONIACCESS.CONFIG.SECTION_TILE_CURSOR,
+					Items = new List<ConfigItem> {
+						new EnumConfigItem<CoordinateMode>(
+							(string)STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE,
+							() => ConfigManager.Config.CoordinateMode,
+							value => {
+								ConfigManager.Config.CoordinateMode = value;
+								if (TileCursor.Instance != null)
+									TileCursor.Instance.Mode = value;
+							},
+							new[] { CoordinateMode.Off, CoordinateMode.Append, CoordinateMode.Prepend },
+							mode => {
+								switch (mode) {
+									case CoordinateMode.Off: return (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_OFF;
+									case CoordinateMode.Append: return (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_APPEND;
+									case CoordinateMode.Prepend: return (string)STRINGS.ONIACCESS.TILE_CURSOR.COORD_PREPEND;
+									default: return mode.ToString();
+								}
+							}
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM,
+							() => ConfigManager.Config.LockZoom,
+							value => ConfigManager.Config.LockZoom = value
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.ANNOUNCE_BIOME_CHANGES,
+							() => ConfigManager.Config.AnnounceBiomeChanges,
+							value => ConfigManager.Config.AnnounceBiomeChanges = value
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS,
+							() => ConfigManager.Config.PassabilityEarcons,
+							value => ConfigManager.Config.PassabilityEarcons = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.PASSABILITY_VOLUME,
+							() => ConfigManager.Config.PassabilityVolume,
+							value => ConfigManager.Config.PassabilityVolume = value,
+							0f, 2f
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.FOOTSTEP_EARCONS,
+							() => ConfigManager.Config.FootstepEarcons,
+							value => ConfigManager.Config.FootstepEarcons = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.FOOTSTEP_VOLUME,
+							() => ConfigManager.Config.FootstepVolume,
+							value => ConfigManager.Config.FootstepVolume = value,
+							0f, 2f
+						),
 					}
-				}
-			));
+				},
 
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.AUTO_MOVE_CURSOR,
-				() => ConfigManager.Config.AutoMoveCursor,
-				value => {
-					ConfigManager.Config.AutoMoveCursor = value;
-					if (ScannerNavigator.Instance != null)
-						ScannerNavigator.Instance.SetAutoMove(value);
-				}
-			));
+				// --- Scanner Settings ---
+				new ConfigSection {
+					Title = (string)STRINGS.ONIACCESS.CONFIG.SECTION_SCANNER,
+					Items = new List<ConfigItem> {
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.AUTO_MOVE_CURSOR,
+							() => ConfigManager.Config.AutoMoveCursor,
+							value => {
+								ConfigManager.Config.AutoMoveCursor = value;
+								if (ScannerNavigator.Instance != null)
+									ScannerNavigator.Instance.SetAutoMove(value);
+							}
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT,
+							() => ConfigManager.Config.ScannerMassReadout,
+							value => ConfigManager.Config.ScannerMassReadout = value
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_EARCONS,
+							() => ConfigManager.Config.ScannerDirectionEarcons,
+							value => ConfigManager.Config.ScannerDirectionEarcons = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_VOLUME,
+							() => ConfigManager.Config.ScannerDirectionVolume,
+							value => ConfigManager.Config.ScannerDirectionVolume = value,
+							0f, 2f
+						),
+					}
+				},
 
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT,
-				() => ConfigManager.Config.ScannerMassReadout,
-				value => ConfigManager.Config.ScannerMassReadout = value
-			));
+				// --- Utility Readouts ---
+				new ConfigSection {
+					Title = (string)STRINGS.ONIACCESS.CONFIG.SECTION_UTILITY,
+					Items = new List<ConfigItem> {
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS,
+							() => ConfigManager.Config.UtilityPresenceEarcons,
+							value => ConfigManager.Config.UtilityPresenceEarcons = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_VOLUME,
+							() => ConfigManager.Config.UtilityPresenceVolume,
+							value => ConfigManager.Config.UtilityPresenceVolume = value,
+							0f, 2f
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS,
+							() => ConfigManager.Config.PipeShapeEarcons,
+							value => ConfigManager.Config.PipeShapeEarcons = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_VOLUME,
+							() => ConfigManager.Config.PipeShapeVolume,
+							value => ConfigManager.Config.PipeShapeVolume = value,
+							0f, 2f
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS,
+							() => ConfigManager.Config.TemperatureBandEarcons,
+							value => ConfigManager.Config.TemperatureBandEarcons = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_VOLUME,
+							() => ConfigManager.Config.TemperatureBandVolume,
+							value => ConfigManager.Config.TemperatureBandVolume = value,
+							0f, 2f
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION,
+							() => ConfigManager.Config.FlowSonification,
+							value => ConfigManager.Config.FlowSonification = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION_VOLUME,
+							() => ConfigManager.Config.FlowSonificationVolume,
+							value => ConfigManager.Config.FlowSonificationVolume = value,
+							0f, 2f
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT,
+							() => ConfigManager.Config.FlowDirectionReadout,
+							value => ConfigManager.Config.FlowDirectionReadout = value
+						),
+					}
+				},
 
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_EARCONS,
-				() => ConfigManager.Config.ScannerDirectionEarcons,
-				value => ConfigManager.Config.ScannerDirectionEarcons = value
-			));
-			items.Add(new FloatConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_VOLUME,
-				() => ConfigManager.Config.ScannerDirectionVolume,
-				value => ConfigManager.Config.ScannerDirectionVolume = value,
-				0f, 2f
-			));
-
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM,
-				() => ConfigManager.Config.LockZoom,
-				value => ConfigManager.Config.LockZoom = value
-			));
-
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS,
-				() => ConfigManager.Config.UtilityPresenceEarcons,
-				value => ConfigManager.Config.UtilityPresenceEarcons = value
-			));
-			items.Add(new FloatConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_VOLUME,
-				() => ConfigManager.Config.UtilityPresenceVolume,
-				value => ConfigManager.Config.UtilityPresenceVolume = value,
-				0f, 2f
-			));
-
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS,
-				() => ConfigManager.Config.PipeShapeEarcons,
-				value => ConfigManager.Config.PipeShapeEarcons = value
-			));
-			items.Add(new FloatConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_VOLUME,
-				() => ConfigManager.Config.PipeShapeVolume,
-				value => ConfigManager.Config.PipeShapeVolume = value,
-				0f, 2f
-			));
-
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS,
-				() => ConfigManager.Config.PassabilityEarcons,
-				value => ConfigManager.Config.PassabilityEarcons = value
-			));
-			items.Add(new FloatConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.PASSABILITY_VOLUME,
-				() => ConfigManager.Config.PassabilityVolume,
-				value => ConfigManager.Config.PassabilityVolume = value,
-				0f, 2f
-			));
-
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS,
-				() => ConfigManager.Config.TemperatureBandEarcons,
-				value => ConfigManager.Config.TemperatureBandEarcons = value
-			));
-			items.Add(new FloatConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_VOLUME,
-				() => ConfigManager.Config.TemperatureBandVolume,
-				value => ConfigManager.Config.TemperatureBandVolume = value,
-				0f, 2f
-			));
-
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION,
-				() => ConfigManager.Config.FlowSonification,
-				value => ConfigManager.Config.FlowSonification = value
-			));
-			items.Add(new FloatConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION_VOLUME,
-				() => ConfigManager.Config.FlowSonificationVolume,
-				value => ConfigManager.Config.FlowSonificationVolume = value,
-				0f, 2f
-			));
-	
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS,
-				() => ConfigManager.Config.FollowMovementEarcons,
-				value => ConfigManager.Config.FollowMovementEarcons = value
-			));
-			items.Add(new FloatConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_VOLUME,
-				() => ConfigManager.Config.FollowMovementVolume,
-				value => ConfigManager.Config.FollowMovementVolume = value,
-				0f, 2f
-			));
-
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.FOOTSTEP_EARCONS,
-				() => ConfigManager.Config.FootstepEarcons,
-				value => ConfigManager.Config.FootstepEarcons = value
-			));
-			items.Add(new FloatConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.FOOTSTEP_VOLUME,
-				() => ConfigManager.Config.FootstepVolume,
-				value => ConfigManager.Config.FootstepVolume = value,
-				0f, 2f
-			));
-
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT,
-				() => ConfigManager.Config.FlowDirectionReadout,
-				value => ConfigManager.Config.FlowDirectionReadout = value
-			));
-
-			items.Add(new BoolConfigItem(
-				(string)STRINGS.ONIACCESS.CONFIG.ANNOUNCE_BIOME_CHANGES,
-				() => ConfigManager.Config.AnnounceBiomeChanges,
-				value => ConfigManager.Config.AnnounceBiomeChanges = value
-			));
-
-			return items;
+				// --- Miscellaneous ---
+				new ConfigSection {
+					Title = (string)STRINGS.ONIACCESS.CONFIG.SECTION_MISC,
+					Items = new List<ConfigItem> {
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS,
+							() => ConfigManager.Config.FollowMovementEarcons,
+							value => ConfigManager.Config.FollowMovementEarcons = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_VOLUME,
+							() => ConfigManager.Config.FollowMovementVolume,
+							value => ConfigManager.Config.FollowMovementVolume = value,
+							0f, 2f
+						),
+					}
+				},
+			};
 		}
 	}
 }
