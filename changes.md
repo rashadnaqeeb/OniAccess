@@ -2,6 +2,10 @@
 
 ## Unreleased changes since 1.0.6
 
+- Fix config not persisting toggle options set to false
+- Fix radbolt joint plate reporting wrong orientation
+- Strip degree unit letter from temperature speech so screen readers no longer say "C" or "F" after every value
+- Per-earcon volume sliders in the config menu
 - Wires now speak circuit load percentage when flow direction readout is enabled
 - Power overlay sonification pitch now rises above the safe-load threshold when a circuit is overloaded
 - Flow direction readout now includes the element name (e.g. "water, 80% right 15% up")
