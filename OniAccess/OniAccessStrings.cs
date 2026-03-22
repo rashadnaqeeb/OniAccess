@@ -898,6 +898,7 @@ namespace STRINGS {
 		public class TEMPERATURE {
 			public static LocString NEAR_FREEZING = "near freezing";
 			public static LocString NEAR_BOILING = "near boiling";
+			public static LocString NEAR_OVERHEAT = "near overheat";
 		}
 
 		// Tile cursor glance info: brief summaries of what occupies a tile

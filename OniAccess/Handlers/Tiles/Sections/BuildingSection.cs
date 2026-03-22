@@ -90,6 +90,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					if (cellTemp <= 0f
 						|| System.Math.Abs(buildingTemp - cellTemp) >= 1f)
 						tokens.Add(GameUtil.GetFormattedTemperature(buildingTemp));
+					TemperatureWarnings.AppendPhaseWarnings(pe, tokens);
+					TemperatureWarnings.AppendOverheatWarning(go, pe, tokens);
 				}
 			}
 

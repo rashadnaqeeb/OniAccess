@@ -33,6 +33,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 							if (cellTemp <= 0f
 								|| System.Math.Abs(itemTemp - cellTemp) >= 1f)
 								name += " " + GameUtil.GetFormattedTemperature(itemTemp);
+							var warnings = new List<string>();
+							TemperatureWarnings.AppendPhaseWarnings(pe, warnings);
+							foreach (var w in warnings)
+								name += " " + w;
 						}
 					}
 					tokens.Add(name);
