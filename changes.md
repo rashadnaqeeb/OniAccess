@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.6
 
+- Wires now speak circuit load percentage when flow direction readout is enabled
 - Power overlay sonification pitch now rises above the safe-load threshold when a circuit is overloaded
 - Flow direction readout now includes the element name (e.g. "water, 80% right 15% up")
 - Fix wires, pipes, and backwall buildings not announced as "constructing" when under construction

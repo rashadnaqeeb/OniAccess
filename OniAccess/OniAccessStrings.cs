@@ -1009,6 +1009,9 @@ namespace STRINGS {
 			public static LocString FLOW_DIRECTION_PERCENT = "{0}% {1}";
 			// {0} = element name, {1} = direction percentages (e.g. "80% right 15% up")
 			public static LocString FLOW_ELEMENT_DIRECTIONS = "{0}, {1}";
+
+			// {0} = integer percentage of circuit load (can exceed 100)
+			public static LocString WIRE_LOAD_PERCENT = "{0} percent";
 		}
 
 		public class SCANNER {

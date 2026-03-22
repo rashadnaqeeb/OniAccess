@@ -69,6 +69,20 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (flowText != null)
 					tokens.Add(flowText);
 			}
+			if (tokens.Count > 0 && ConfigManager.Config.FlowDirectionReadout
+					&& OverlayScreen.Instance != null
+					&& OverlayScreen.Instance.GetMode() == OverlayModes.Power.ID) {
+				ushort circuitID = Game.Instance.circuitManager.GetCircuitID(cell);
+				if (circuitID != ushort.MaxValue) {
+					float wattsUsed = Game.Instance.circuitManager.GetWattsUsedByCircuit(circuitID);
+					float maxWatts = Game.Instance.circuitManager.GetMaxSafeWattageForCircuit(circuitID);
+					if (maxWatts > 0f) {
+						int percent = (int)(wattsUsed / maxWatts * 100f);
+						tokens.Add(string.Format(
+							(string)STRINGS.ONIACCESS.GLANCE.WIRE_LOAD_PERCENT, percent));
+					}
+				}
+			}
 			return tokens;
 		}
 
