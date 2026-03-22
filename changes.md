@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.0.6
+## Unreleased changes since 1.1
+
+## 1.1
 
 - Scanner direction earcons: optional tones indicate distance and direction when cycling scanner results (off by default)
 - Fix config not persisting toggle options set to false
