@@ -7,32 +7,47 @@ namespace OniAccess.ConduitTracking {
 	public static class FlowSpeech {
 		public static string Format(FlowTracker tracker, int conduitIdx,
 				bool currentlyEmpty) {
-			var counts = new int[5];
-			int samples = tracker.GetDirectionCounts(conduitIdx, counts);
+			var elementCounts = new Dictionary<SimHashes, int[]>();
+			int samples = tracker.GetElementDirectionCounts(
+				conduitIdx, elementCounts);
 			if (samples == 0) return null;
 
-			bool hasFlow = false;
-			for (int d = FlowTracker.DirUp; d <= FlowTracker.DirRight; d++) {
-				if (counts[d] > 0) { hasFlow = true; break; }
-			}
-			if (!hasFlow)
+			if (elementCounts.Count == 0)
 				return currentlyEmpty
 					? STRINGS.ONIACCESS.GLANCE.FLOW_EMPTY
 					: STRINGS.ONIACCESS.GLANCE.FLOW_NOT_FLOWING;
 
-			var parts = new List<DirectionPercent>(4);
-			for (int d = FlowTracker.DirUp; d <= FlowTracker.DirRight; d++) {
-				if (counts[d] > 0)
-					parts.Add(new DirectionPercent(d,
-						counts[d] * 100 / samples));
+			var elements = new List<ElementGroup>(elementCounts.Count);
+			foreach (var kvp in elementCounts) {
+				int total = 0;
+				var dirs = new List<DirectionPercent>(4);
+				for (int d = FlowTracker.DirUp;
+						d <= FlowTracker.DirRight; d++) {
+					if (kvp.Value[d] > 0) {
+						int pct = kvp.Value[d] * 100 / samples;
+						dirs.Add(new DirectionPercent(d, pct));
+						total += kvp.Value[d];
+					}
+				}
+				dirs.Sort((a, b) => b.Percent - a.Percent);
+				var element = ElementLoader.FindElementByHash(kvp.Key);
+				string name = element != null ? element.name
+					: kvp.Key.ToString();
+				elements.Add(new ElementGroup(name, total, dirs));
 			}
-			parts.Sort((a, b) => b.Percent - a.Percent);
+			elements.Sort((a, b) => b.Total - a.Total);
 
-			var tokens = new List<string>(parts.Count);
-			foreach (var p in parts)
+			var tokens = new List<string>(elements.Count);
+			foreach (var eg in elements) {
+				var dirTokens = new List<string>(eg.Dirs.Count);
+				foreach (var d in eg.Dirs)
+					dirTokens.Add(string.Format(
+						STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT,
+						d.Percent, DirectionName(d.Dir)));
 				tokens.Add(string.Format(
-					STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT,
-					p.Percent, DirectionName(p.Dir)));
+					STRINGS.ONIACCESS.GLANCE.FLOW_ELEMENT_DIRECTIONS,
+					eg.Name, string.Join(" ", dirTokens)));
+			}
 			return string.Join(", ", tokens);
 		}
 
@@ -56,6 +71,18 @@ namespace OniAccess.ConduitTracking {
 			public DirectionPercent(int dir, int percent) {
 				Dir = dir;
 				Percent = percent;
+			}
+		}
+
+		private struct ElementGroup {
+			public string Name;
+			public int Total;
+			public List<DirectionPercent> Dirs;
+			public ElementGroup(string name, int total,
+					List<DirectionPercent> dirs) {
+				Name = name;
+				Total = total;
+				Dirs = dirs;
 			}
 		}
 	}

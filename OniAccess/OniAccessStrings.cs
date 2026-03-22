@@ -1006,6 +1006,8 @@ namespace STRINGS {
 			public static LocString FLOW_NOT_FLOWING = "not flowing";
 			// {0} = percentage, {1} = direction name (e.g. "right")
 			public static LocString FLOW_DIRECTION_PERCENT = "{0}% {1}";
+			// {0} = element name, {1} = direction percentages (e.g. "80% right 15% up")
+			public static LocString FLOW_ELEMENT_DIRECTIONS = "{0}, {1}";
 		}
 
 		public class SCANNER {

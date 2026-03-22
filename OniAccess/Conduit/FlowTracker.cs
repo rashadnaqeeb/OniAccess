@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace OniAccess.ConduitTracking {
 	/// <summary>
 	/// Tracks per-conduit flow direction in a circular buffer.
@@ -18,6 +20,7 @@ namespace OniAccess.ConduitTracking {
 		public const int DirRight = 4;
 
 		private int[] _buffer;
+		private SimHashes[] _elementBuffer;
 		private int _writePos;
 		private int _conduitCount;
 		private int _samplesRecorded;
@@ -34,6 +37,7 @@ namespace OniAccess.ConduitTracking {
 
 		public void Clear() {
 			_buffer = null;
+			_elementBuffer = null;
 			_writePos = 0;
 			_conduitCount = 0;
 			_samplesRecorded = 0;
@@ -47,6 +51,7 @@ namespace OniAccess.ConduitTracking {
 			for (int i = 0; i < count; i++) {
 				var info = flow.soaInfo.GetLastFlowInfo(i);
 				_buffer[baseIdx + i] = NormalizeFluidDirection(info.direction);
+				_elementBuffer[baseIdx + i] = info.contents.element;
 			}
 			AdvanceWritePos();
 		}
@@ -60,6 +65,7 @@ namespace OniAccess.ConduitTracking {
 			for (int i = 0; i < count; i++) {
 				var info = soa.GetLastFlowInfo(i);
 				_buffer[baseIdx + i] = NormalizeSolidDirection(info.direction);
+				_elementBuffer[baseIdx + i] = SimHashes.Vacuum;
 			}
 			AdvanceWritePos();
 		}
@@ -93,9 +99,44 @@ namespace OniAccess.ConduitTracking {
 			return samples;
 		}
 
+		/// <summary>
+		/// Returns per-element direction counts for the given conduit index.
+		/// Each dictionary entry maps an element to a 5-element int array
+		/// indexed by DirNone..DirRight. Only entries with directional flow
+		/// (DirNone excluded) are added. Returns the sample count.
+		/// </summary>
+		public int GetElementDirectionCounts(int conduitIdx,
+				Dictionary<SimHashes, int[]> counts) {
+			counts.Clear();
+			if (_buffer == null || conduitIdx < 0 || conduitIdx >= _conduitCount)
+				return 0;
+
+			int samples = _samplesRecorded < BufferSize
+				? _samplesRecorded : BufferSize;
+			if (samples == 0) return 0;
+
+			int startSlot = _samplesRecorded < BufferSize
+				? 0 : _writePos;
+			for (int i = 0; i < samples; i++) {
+				int slot = (startSlot + i) % BufferSize;
+				int idx = slot * _conduitCount + conduitIdx;
+				int dir = _buffer[idx];
+				if (dir == DirNone) continue;
+				SimHashes element = _elementBuffer[idx];
+				if (!counts.TryGetValue(element, out int[] dirs)) {
+					dirs = new int[5];
+					counts[element] = dirs;
+				}
+				dirs[dir]++;
+			}
+			return samples;
+		}
+
 		private void EnsureCapacity(int conduitCount) {
 			if (_conduitCount == conduitCount && _buffer != null) return;
-			_buffer = new int[conduitCount * BufferSize];
+			int size = conduitCount * BufferSize;
+			_buffer = new int[size];
+			_elementBuffer = new SimHashes[size];
 			_conduitCount = conduitCount;
 			_writePos = 0;
 			_samplesRecorded = 0;
