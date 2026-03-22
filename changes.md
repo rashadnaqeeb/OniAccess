@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.0.6
 
+- Flow direction readout now includes the element name (e.g. "water, 80% right 15% up")
 - Fix wires, pipes, and backwall buildings not announced as "constructing" when under construction
 - Temperature overlay now speaks building temperature after the building name, skipped when within 1 degree of the cell temperature
 - Fix radbolt output port announced as "{0}" instead of direction when previewing building ports
