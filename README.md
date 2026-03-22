@@ -305,24 +305,45 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 
 ## Settings (F12)
 
-**F12** opens the settings screen. All settings persist across sessions. Navigate with Up/Down, toggle with Enter or Left/Right. Type-ahead search works here too.
+**F12** opens the settings screen. All settings persist across sessions. Navigate with Up/Down, toggle with Enter or Left/Right. Type-ahead search works here too. Settings are organized into four sections.
+
+### Tile cursor settings
 
 - **Tile cursor coordinate mode** (Off / Append / Prepend) -- controls whether X,Y coordinates are included in every tile announcement. Off by default
+- **Lock zoom level when moving tile cursor** -- locks the camera zoom to level 10, which is the best level for audio. On by default
+- **Announce biome changes** -- speaks the biome name when the tile cursor crosses into a different biome. On by default
+- **Passability earcons** -- plays a warning sound on tiles duplicants can't walk through. See Earcons below. Off by default
+- **Passability volume** -- volume for passability earcons (0-200%)
+- **Footstep earcons** -- plays the game's footstep sound for the tile surface when moving the cursor. See Earcons below. On by default
+- **Footstep volume** -- volume for footstep earcons (0-200%)
+- **Temperature band earcons** -- plays a rising or falling tone when the cursor crosses a temperature threshold. See Earcons below. Off by default
+- **Temperature band volume** -- volume for temperature band earcons (0-200%)
+
+### Scanner settings
+
 - **Auto-move cursor when cycling scanner entries** -- when on, the cursor teleports as you cycle scanner instances, and distances are measured from where you scanned. Off by default
 - **Scanner mass readout** -- includes mass in scanner announcements: total kg for solids and liquids, average kg per tile for gases. On by default
-- **Lock zoom level when moving tile cursor** -- locks the camera zoom to level 10, which is the best level for audio. On by default
-- **Footstep earcons** -- plays the game's footstep sound for the tile surface when moving the cursor. See Earcons below. On by default
+- **Scanner direction earcons** -- plays a directional tone when cycling scanner entries, indicating the direction and distance to the target. See Earcons below. Off by default
+- **Scanner direction volume** -- volume for scanner direction earcons (0-200%)
+
+### Utility readouts
+
 - **Utility presence earcons** -- plays a sound when the cursor lands on hidden infrastructure in the default overlay. See Earcons below. Off by default
+- **Utility presence volume** -- volume for utility presence earcons (0-200%)
 - **Pipe shape earcons** -- plays directional tones showing how pipes and wires connect at each tile. See Earcons below. Off by default
-- **Passability earcons** -- plays a warning sound on tiles duplicants can't walk through. See Earcons below. Off by default
-- **Temperature band earcons** -- plays a rising or falling tone when the cursor crosses a temperature threshold. See Earcons below. Off by default
+- **Pipe shape volume** -- volume for pipe shape earcons (0-200%)
 - **Flow sonification** -- continuous tone reflecting conduit fill or circuit load. See Earcons below. Off by default
+- **Flow sonification volume** -- volume for flow sonification (0-200%)
+- **Flow direction readout** -- appends flow direction and wire load to conduit and power overlay readings. In conduit overlays, announces which direction contents are flowing (e.g., "Water 80% right"). In the power overlay, announces circuit load as a percentage of safe wattage. On by default
+
+### Miscellaneous
+
 - **Follow movement earcons** -- plays a directional tone matching the dupe or bot's movement direction during follow mode. See Earcons below. Off by default
-- **Announce biome changes** -- speaks the biome name when the tile cursor crosses into a different biome. On by default
+- **Follow movement volume** -- volume for follow movement earcons (0-200%)
 
 ## Earcons
 
-Earcons are short non-speech audio cues that play as you move the tile cursor. They convey spatial information faster than speech alone. All earcons are off by default and can be toggled in Settings (F12). Multiple earcon types can be active at once; they play in sequence with short gaps between them.
+Earcons are short non-speech audio cues that convey spatial information faster than speech alone. Most are off by default (footstep earcons are the exception). All can be toggled in Settings (F12), and each has an adjustable volume slider. Multiple earcon types can be active at once; they play in sequence with short gaps between them.
 
 ### Footstep earcons
 
@@ -347,6 +368,10 @@ Active in all overlays. Plays a rising tone when the cursor moves into a warmer 
 ### Flow sonification
 
 Active in the Power, Plumbing, and Ventilation overlays. Plays a continuous tone whose pitch reflects how full the conduit is or how much power the circuit is drawing. Pitch ranges from C4 (empty pipe or idle circuit) up one octave to C5 (full pipe or max safe wattage). The volume rises when the conduit is actively carrying contents and fades when empty. Moving the cursor to a tile without a conduit or wire silences the tone. This gives real-time feedback about system activity without needing to mash the I key.
+
+### Scanner direction earcons
+
+Active when cycling scanner entries (PageUp/Down, Alt+PageUp/Down, Home). Plays a short tone indicating the direction from the cursor to the scanner target. Uses the same pitch and pan scheme as pipe shape earcons: high pitch for up, low for down, mid for horizontal with left/right panning. Diagonal directions play a two-tone sequence -- vertical pitch first, then horizontal. Volume decreases with distance, giving a sense of how far away the target is. When the target is on the same cell, a centered horizontal tone plays.
 
 ### Follow movement earcons
 
