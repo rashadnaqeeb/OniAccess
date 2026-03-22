@@ -1219,6 +1219,26 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT"
 msgid "Scanner mass readout"
 msgstr "Показание массы сканера"
 
+#. STRINGS.ONIACCESS.CONFIG.SECTION_MISC
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_MISC"
+msgid "Miscellaneous"
+msgstr "Разное"
+
+#. STRINGS.ONIACCESS.CONFIG.SECTION_SCANNER
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_SCANNER"
+msgid "Scanner Settings"
+msgstr "Настройки сканера"
+
+#. STRINGS.ONIACCESS.CONFIG.SECTION_TILE_CURSOR
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_TILE_CURSOR"
+msgid "Tile Cursor Settings"
+msgstr "Настройки курсора плитки"
+
+#. STRINGS.ONIACCESS.CONFIG.SECTION_UTILITY
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_UTILITY"
+msgid "Utility Readouts"
+msgstr "Показания сетей"
+
 #. STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS"
 msgid "Temperature band earcons"

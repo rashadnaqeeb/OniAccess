@@ -1219,6 +1219,26 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT"
 msgid "Scanner mass readout"
 msgstr "Lecture de masse du scanner"
 
+#. STRINGS.ONIACCESS.CONFIG.SECTION_MISC
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_MISC"
+msgid "Miscellaneous"
+msgstr "Divers"
+
+#. STRINGS.ONIACCESS.CONFIG.SECTION_SCANNER
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_SCANNER"
+msgid "Scanner Settings"
+msgstr "Paramètres du scanner"
+
+#. STRINGS.ONIACCESS.CONFIG.SECTION_TILE_CURSOR
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_TILE_CURSOR"
+msgid "Tile Cursor Settings"
+msgstr "Paramètres du curseur de tuile"
+
+#. STRINGS.ONIACCESS.CONFIG.SECTION_UTILITY
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_UTILITY"
+msgid "Utility Readouts"
+msgstr "Lectures de réseau"
+
 #. STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS"
 msgid "Temperature band earcons"
