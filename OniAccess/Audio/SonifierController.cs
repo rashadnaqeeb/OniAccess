@@ -1,3 +1,5 @@
+using OniAccess.ConduitTracking;
+
 namespace OniAccess.Audio {
 	public class SonifierController {
 		public static SonifierController Instance { get; private set; }
@@ -76,6 +78,13 @@ namespace OniAccess.Audio {
 			}
 			var flow = GetConduitFlow(_activeConduitType);
 			var contents = flow.GetContents(_activeCell);
+			if (contents.mass <= 0f
+					&& BridgeFlowCapture.TryGetOutputCell(
+						_activeCell, out int outputCell,
+						out ConduitType bridgeType)
+					&& bridgeType == _activeConduitType) {
+				contents = flow.GetContents(outputCell);
+			}
 			float maxMass = GetMaxMass(_activeConduitType);
 			float fillRatio = UnityEngine.Mathf.Clamp01(contents.mass / maxMass);
 			bool hasContents = contents.mass > 0f;

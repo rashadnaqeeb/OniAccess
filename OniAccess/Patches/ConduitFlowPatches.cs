@@ -66,6 +66,7 @@ namespace OniAccess.Patches {
 			if (__state.element == SimHashes.Vacuum) return;
 			var trav = Traverse.Create(__instance);
 			int inputCell = trav.Field<int>("inputCell").Value;
+			int outputCell = trav.Field<int>("outputCell").Value;
 			var flow = Conduit.GetFlowManager(__instance.type);
 			var after = flow.GetContents(inputCell);
 			if (after.mass >= __state.mass) return;
@@ -81,8 +82,8 @@ namespace OniAccess.Patches {
 			else if (dy > 0) dir = FlowTracker.DirUp;
 			else dir = FlowTracker.DirDown;
 
-			BridgeFlowCapture.Record(
-				inputCell, __state.element, dir);
+			BridgeFlowCapture.Record(inputCell, outputCell,
+				__instance.type, __state.element, dir);
 		}
 	}
 }
