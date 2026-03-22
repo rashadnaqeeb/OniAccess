@@ -167,11 +167,13 @@ namespace OniAccess.Handlers.Build {
 				return orientation == Orientation.R90 || orientation == Orientation.R270
 					? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL
 					: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL;
-			bool isReverseFlow = def.UseHighEnergyParticleInputPort
+			bool isHorizontalFlow = IsHorizontalFlowBuilding(def);
+			bool isReverseFlow = isHorizontalFlow
+				&& def.UseHighEnergyParticleInputPort
 				&& def.UseHighEnergyParticleOutputPort;
 			return GetOrientationName(
 				orientation, def.PermittedRotations,
-				IsHorizontalFlowBuilding(def), isReverseFlow);
+				isHorizontalFlow, isReverseFlow);
 		}
 
 		internal static string GetOrientationName(
