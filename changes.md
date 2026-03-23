@@ -2,6 +2,9 @@
 
 ## Unreleased changes since 1.1
 
+- Transit tube segments now announce their connection shape (vertical, corner, tee junction, etc.)
+- Unconnected transit tube entrance and crossing connection points are announced when the cursor is on them
+
 ## 1.1
 
 - Scanner direction earcons: optional tones indicate distance and direction when cycling scanner results (off by default)

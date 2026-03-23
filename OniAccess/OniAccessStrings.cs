@@ -979,6 +979,8 @@ namespace STRINGS {
 			// Wire bridge endpoint where wires attach. Spoken before the building
 			// name, e.g. "connection port, Heavy-Watt Joint Plate".
 			public static LocString CONNECTION = "connection port";
+			// Unoccupied transit tube connection point near an entrance or crossing.
+			public static LocString TUBE_CONNECTION = "connection";
 
 			// Decor overlay value. {0} = sign prefix ("+" or ""), {1} = decor value (int)
 			public static LocString OVERLAY_DECOR = "{0}{1} decor";

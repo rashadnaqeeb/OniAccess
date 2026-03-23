@@ -29,6 +29,9 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					&& !ctx.Claimed.Contains(foundationGo))
 					ReadBuilding(foundationGo, cell, tokens);
 
+				if (!Grid.HasTube[cell])
+					ScanForTubeConnections(cell, tokens);
+
 				if (backwallGo != null && !ctx.Claimed.Contains(backwallGo)
 					&& !IsOverlayFocused()) {
 					var selectable = backwallGo.GetComponent<KSelectable>();
@@ -78,6 +81,9 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				tokens.Add(displayName);
 			}
 
+			if (Grid.HasTube[cell])
+				AppendTubeShape(cell, tokens);
+
 			bool isPlant = go.GetComponent<Growing>() != null;
 			ReadStatusItems(selectable, isPlant, tokens);
 
@@ -98,6 +104,90 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (building != null && building.PlacementCells.Length > 1) {
 				int origin = Grid.PosToCell(building.transform.GetPosition());
 				ReadCellOfInterest(go, building, origin, cell, tokens);
+			}
+		}
+
+		private static void AppendTubeShape(int cell, List<string> tokens) {
+			if (Game.Instance?.travelTubeSystem == null) return;
+			var connections = Game.Instance.travelTubeSystem
+				.GetConnections(cell, true)
+				| FindTubeLinkConnections(cell, out _);
+			tokens.Add(ConduitSection.FormatConnections(connections));
+		}
+
+		private static void ScanForTubeConnections(
+				int cell, List<string> tokens) {
+			var connections = FindTubeLinkConnections(cell, out string name);
+			if (connections == (UtilityConnections)0) return;
+			if (name != null)
+				tokens.Add(name);
+			tokens.Add((string)STRINGS.ONIACCESS.GLANCE.TUBE_CONNECTION);
+		}
+
+		private static UtilityConnections FindTubeLinkConnections(
+				int cell, out string buildingName) {
+			buildingName = null;
+			var connections = (UtilityConnections)0;
+			int cx = Grid.CellColumn(cell);
+			int cy = Grid.CellRow(cell);
+
+			// Entrance: connection cell is at (tx, ty+2)
+			int belowCell = Grid.XYToCell(cx, cy - 2);
+			if (Grid.IsValidCell(belowCell)) {
+				var go = Grid.Objects[belowCell, (int)ObjectLayer.Building];
+				if (go != null && go.GetComponent<TravelTubeEntrance>() != null) {
+					int tx = (int)go.transform.GetPosition().x;
+					int ty = (int)go.transform.GetPosition().y;
+					if (tx == cx && ty + 2 == cy) {
+						connections |= UtilityConnections.Down;
+						if (buildingName == null) {
+							var sel = go.GetComponent<KSelectable>();
+							if (sel != null)
+								buildingName = sel.GetName();
+						}
+					}
+				}
+			}
+
+			// Wall bridge: link cells at rotated offsets
+			var seen = new HashSet<GameObject>();
+			for (int dy = -1; dy <= 1; dy++) {
+				for (int dx = -1; dx <= 1; dx++) {
+					if (dx == 0 && dy == 0) continue;
+					int nc = Grid.XYToCell(cx + dx, cy + dy);
+					if (!Grid.IsValidCell(nc)) continue;
+					CheckTubeBridgeLink(nc, (int)ObjectLayer.Building,
+						seen, cell, ref connections, ref buildingName);
+					CheckTubeBridgeLink(nc, (int)ObjectLayer.FoundationTile,
+						seen, cell, ref connections, ref buildingName);
+				}
+			}
+			return connections;
+		}
+
+		private static void CheckTubeBridgeLink(
+				int nearbyCell, int layer, HashSet<GameObject> seen,
+				int targetCell, ref UtilityConnections connections,
+				ref string buildingName) {
+			var go = Grid.Objects[nearbyCell, layer];
+			if (go == null || !seen.Add(go)) return;
+
+			var link = go.GetComponent<TravelTubeUtilityNetworkLink>();
+			if (link == null || link.visualizeOnly) return;
+
+			var building = go.GetComponent<Building>();
+			if (building == null) return;
+
+			int origin = Grid.PosToCell(building.transform.GetPosition());
+			link.GetCells(origin, building.Orientation,
+				out int linkCell1, out int linkCell2);
+			if (targetCell != linkCell1 && targetCell != linkCell2) return;
+
+			connections |= ConduitSection.GetBridgeDirection(go, targetCell);
+			if (buildingName == null) {
+				var sel = go.GetComponent<KSelectable>();
+				if (sel != null)
+					buildingName = sel.GetName();
 			}
 		}
 
