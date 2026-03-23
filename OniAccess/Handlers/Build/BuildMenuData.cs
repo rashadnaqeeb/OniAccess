@@ -167,6 +167,10 @@ namespace OniAccess.Handlers.Build {
 				return orientation == Orientation.R90 || orientation == Orientation.R270
 					? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL
 					: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL;
+			if (def.BuildingComplete.GetComponent<TravelTubeBridge>() != null)
+				return orientation == Orientation.Neutral
+					? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL
+					: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL;
 			bool isHorizontalFlow = IsHorizontalFlowBuilding(def);
 			bool isReverseFlow = isHorizontalFlow
 				&& def.UseHighEnergyParticleInputPort
