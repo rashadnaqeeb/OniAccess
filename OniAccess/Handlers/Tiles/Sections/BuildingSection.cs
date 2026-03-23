@@ -111,8 +111,31 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (Game.Instance?.travelTubeSystem == null) return;
 			var connections = Game.Instance.travelTubeSystem
 				.GetConnections(cell, true)
-				| FindTubeLinkConnections(cell, out _);
+				| FindTubeLinkConnections(cell, out _)
+				| FindOwnBridgeConnections(cell);
 			tokens.Add(ConduitSection.FormatConnections(connections));
+		}
+
+		private static UtilityConnections FindOwnBridgeConnections(int cell) {
+			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
+			if (go == null) return (UtilityConnections)0;
+			var link = go.GetComponent<TravelTubeUtilityNetworkLink>();
+			if (link == null || link.visualizeOnly) return (UtilityConnections)0;
+			var building = go.GetComponent<Building>();
+			if (building == null) return (UtilityConnections)0;
+			int origin = Grid.PosToCell(building.transform.GetPosition());
+			link.GetCells(origin, building.Orientation,
+				out int linkCell1, out int linkCell2);
+			return DirectionTo(cell, linkCell1) | DirectionTo(cell, linkCell2);
+		}
+
+		private static UtilityConnections DirectionTo(int from, int to) {
+			int dx = Grid.CellColumn(to) - Grid.CellColumn(from);
+			int dy = Grid.CellRow(to) - Grid.CellRow(from);
+			if (dx > 0) return UtilityConnections.Right;
+			if (dx < 0) return UtilityConnections.Left;
+			if (dy > 0) return UtilityConnections.Up;
+			return UtilityConnections.Down;
 		}
 
 		private static void ScanForTubeConnections(
