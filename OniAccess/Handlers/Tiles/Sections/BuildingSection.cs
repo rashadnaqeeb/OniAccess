@@ -109,10 +109,12 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 		private static void AppendTubeShape(int cell, List<string> tokens) {
 			if (Game.Instance?.travelTubeSystem == null) return;
+			var ownBridge = FindOwnBridgeConnections(cell);
 			var connections = Game.Instance.travelTubeSystem
 				.GetConnections(cell, true)
-				| FindTubeLinkConnections(cell, out _)
-				| FindOwnBridgeConnections(cell);
+				| ownBridge;
+			if (ownBridge == (UtilityConnections)0)
+				connections |= FindTubeLinkConnections(cell, out _);
 			tokens.Add(ConduitSection.FormatConnections(connections));
 		}
 
