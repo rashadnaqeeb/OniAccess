@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.1
 
+- Fix some mod-authored labels (Difficulty, Interest, Colony name, and others) reading in English instead of the translated language
 - Transit tube segments now announce their connection shape (vertical, corner, tee junction, etc.)
 - Unconnected transit tube entrance and crossing connection points are announced when the cursor is on them
 
