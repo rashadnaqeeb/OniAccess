@@ -21,7 +21,7 @@ When a build fails on a type or method signature, look it up in `ONI-Decompiled/
 - `docs/` - design documentation
 - `docs/game-mechanics/` - game mechanics reference (two sources, use both when answering questions):
   - **Topic files** (65 .md files) - exact values and formulas sourced from decompiled code. Authoritative for numerical data (thermal conductivity, mass thresholds, internal constants). Check here first for precise values.
-  - **wiki.json** - 1,442 articles scraped from the ONI wiki.gg wiki (CC BY-SA 3.0). Broader coverage: building descriptions, strategies, critter behaviors, achievements, recipes, tips. Use for general game knowledge, obscure topics not in the .md files, and player-facing descriptions.
+  - **`wiki/`** (1,442 .md files) - articles from the ONI wiki.gg wiki (CC BY-SA 3.0), one file per article. Broader coverage: building descriptions, strategies, critter behaviors, achievements, recipes, tips. Use for general game knowledge, obscure topics not in the topic files, and player-facing descriptions. Searchable with grep.
 - `docs/CODEBASE_INDEX.md` - complete namespace reference for decompiled ONI source
 - `.planning/` - project planning files
 - `changes.md` - changelog for user-facing features and bug fixes

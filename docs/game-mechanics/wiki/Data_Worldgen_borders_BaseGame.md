@@ -1,0 +1,24 @@
+# Data:Worldgen/borders/BaseGame
+
+remove
+Empty array
+add
+impenetrable
+element
+"Unobtanium"
+weight
+1
+hardToDig
+element
+"Katairite"
+weight
+1
+rocky
+element
+"Granite"
+weight
+10
+element
+"IgneousRock"
+weight
+4
