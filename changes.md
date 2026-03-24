@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.1.1
 
+- Config settings and tolk_override.dll now survive Steam Workshop updates (moved to the Klei save directory)
+
 ## 1.1.1
 
 - Fix rotation direction for 2x2 and larger automation gates (AND, OR, XOR, Multiplexer, Demultiplexer) — now matches output direction like bridges

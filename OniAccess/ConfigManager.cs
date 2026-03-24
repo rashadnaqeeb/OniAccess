@@ -11,8 +11,9 @@ namespace OniAccess {
 
 		public static ModConfig Config { get; private set; }
 
-		public static void Load(string modDir) {
-			_path = Path.Combine(modDir, FileName);
+		public static void Load(string dataDir) {
+			Directory.CreateDirectory(dataDir);
+			_path = Path.Combine(dataDir, FileName);
 			if (!File.Exists(_path)) {
 				Config = new ModConfig();
 				Log.Info($"No config file found at {_path}, using defaults");

@@ -15,6 +15,7 @@ namespace OniAccess {
 	public sealed class Mod: KMod.UserMod2 {
 		public static Mod Instance { get; private set; }
 		public static string ModDir { get; private set; }
+		public static string DataDir { get; private set; }
 		public static string Version { get; private set; }
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -26,11 +27,12 @@ namespace OniAccess {
 		public override void OnLoad(Harmony harmony) {
 			Instance = this;
 			ModDir = Path.GetDirectoryName(typeof(Mod).Assembly.Location);
+			DataDir = Path.Combine(global::Util.RootFolder(), "mods", "OniAccess");
 			Version = typeof(Mod).Assembly.GetName().Version.ToString();
 
 			// Switch logging from Console (test default) to Unity's Debug.Log
 			LogUnityBackend.Install();
-			ConfigManager.Load(ModDir);
+			ConfigManager.Load(DataDir);
 
 			// Native DLLs live in a "native" subfolder so ONI's mod loader
 			// doesn't try to load them as .NET assemblies. Pre-load each with
@@ -39,26 +41,31 @@ namespace OniAccess {
 			// needs them already in process since SetDllDirectory can be reset
 			// by Harmony patching or other mods.
 			string nativeDir = Path.Combine(ModDir, "native");
-			string overridePath = Path.Combine(nativeDir, "tolk_override.dll");
+			string overridePath = Path.Combine(DataDir, "tolk_override.dll");
 			bool usingOverride = File.Exists(overridePath);
 
 			// Pre-load every DLL in native/ except Tolk itself so that
-			// whatever screen reader drivers the override needs are
-			// already in-process when Tolk initializes.
+			// screen reader drivers are already in-process when Tolk initializes.
 			foreach (var file in Directory.GetFiles(nativeDir, "*.dll")) {
 				string name = Path.GetFileName(file);
 				if (name.Equals("Tolk.dll", StringComparison.OrdinalIgnoreCase)) continue;
-				if (name.Equals("tolk_override.dll", StringComparison.OrdinalIgnoreCase)) continue;
 				if (LoadLibrary(file) == IntPtr.Zero) {
 					Log.Warn($"Failed to pre-load {name} from: {file}");
 				}
 			}
 
-			// If tolk_override.dll exists in native/, use it instead of the
-			// bundled Tolk.dll. P/Invoke resolves by module base name, so the
-			// override is copied to a temp directory as "Tolk.dll".
+			// tolk_override.dll in the persistent data directory replaces the
+			// bundled Tolk.dll. Users may place companion DLLs (e.g. ZDSR
+			// screen reader drivers) alongside it — pre-load those too.
 			string tolkLoadPath;
 			if (usingOverride) {
+				foreach (var file in Directory.GetFiles(DataDir, "*.dll")) {
+					string name = Path.GetFileName(file);
+					if (name.Equals("tolk_override.dll", StringComparison.OrdinalIgnoreCase)) continue;
+					if (LoadLibrary(file) == IntPtr.Zero) {
+						Log.Warn($"Failed to pre-load {name} from: {file}");
+					}
+				}
 				string tempDir = Path.Combine(Path.GetTempPath(), "OniAccess");
 				Directory.CreateDirectory(tempDir);
 				tolkLoadPath = Path.Combine(tempDir, "Tolk.dll");
