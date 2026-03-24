@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.1.2
 
+- Deconstruction orders on wires, pipes, and other conduits are now announced in their respective overlays and in the scanner
+
 ## 1.1.2
 
 - Config settings and tolk_override.dll now survive Steam Workshop updates (moved to the Klei save directory)
