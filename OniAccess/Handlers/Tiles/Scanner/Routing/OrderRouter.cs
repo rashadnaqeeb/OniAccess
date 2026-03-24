@@ -158,10 +158,29 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 			return go.GetComponent<KSelectable>()?.GetName();
 		}
 
+		private static readonly int[] _deconstructLayers = {
+			(int)ObjectLayer.Building,
+			(int)ObjectLayer.FoundationTile,
+			(int)ObjectLayer.Backwall,
+			(int)ObjectLayer.Gantry,
+			(int)ObjectLayer.Wire,
+			(int)ObjectLayer.WireConnectors,
+			(int)ObjectLayer.LiquidConduit,
+			(int)ObjectLayer.LiquidConduitConnection,
+			(int)ObjectLayer.GasConduit,
+			(int)ObjectLayer.GasConduitConnection,
+			(int)ObjectLayer.SolidConduit,
+			(int)ObjectLayer.SolidConduitConnection,
+			(int)ObjectLayer.LogicWire,
+			(int)ObjectLayer.LogicGate,
+		};
+
 		public static string GetDeconstructOrderType(int cell) {
-			string type = GetDeconstructOnLayer(cell, (int)ObjectLayer.Building);
-			if (type != null) return type;
-			return GetDeconstructOnLayer(cell, (int)ObjectLayer.FoundationTile);
+			for (int i = 0; i < _deconstructLayers.Length; i++) {
+				string type = GetDeconstructOnLayer(cell, _deconstructLayers[i]);
+				if (type != null) return type;
+			}
+			return null;
 		}
 
 		private static string GetDeconstructOnLayer(int cell, int layer) {
@@ -174,9 +193,11 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 		}
 
 		public static string GetDeconstructOrderName(int cell) {
-			string name = GetDeconstructNameOnLayer(cell, (int)ObjectLayer.Building);
-			if (name != null) return name;
-			return GetDeconstructNameOnLayer(cell, (int)ObjectLayer.FoundationTile);
+			for (int i = 0; i < _deconstructLayers.Length; i++) {
+				string name = GetDeconstructNameOnLayer(cell, _deconstructLayers[i]);
+				if (name != null) return name;
+			}
+			return null;
 		}
 
 		private static string GetDeconstructNameOnLayer(int cell, int layer) {
