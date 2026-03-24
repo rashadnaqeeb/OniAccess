@@ -9,6 +9,16 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// Build orders are handled by BuildingSection (Constructable check).
 	/// </summary>
 	public class OrderSection: ICellSection {
+		private readonly int[] _extraDeconstructLayers;
+
+		public OrderSection() {
+			_extraDeconstructLayers = new int[0];
+		}
+
+		public OrderSection(params int[] extraDeconstructLayers) {
+			_extraDeconstructLayers = extraDeconstructLayers;
+		}
+
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var parts = new List<string>();
 			CollectDigOrder(cell, parts);
@@ -69,14 +79,23 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			}
 		}
 
-		private static void CollectDeconstructOrder(int cell, List<string> parts) {
+		private void CollectDeconstructOrder(int cell, List<string> parts) {
 			var buildingGo = Grid.Objects[cell, (int)ObjectLayer.Building];
 			var foundationGo = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
 			var backwallGo = Grid.Objects[cell, (int)ObjectLayer.Backwall];
+			var gantryGo = Grid.Objects[cell, (int)ObjectLayer.Gantry];
 			CollectDeconstructOnLayer(buildingGo, parts);
 			if (foundationGo != null && foundationGo != buildingGo)
 				CollectDeconstructOnLayer(foundationGo, parts);
 			CollectDeconstructOnLayer(backwallGo, parts);
+			CollectDeconstructOnLayer(gantryGo, parts);
+
+			var seen = new HashSet<GameObject> { buildingGo, foundationGo, backwallGo, gantryGo };
+			for (int i = 0; i < _extraDeconstructLayers.Length; i++) {
+				var go = Grid.Objects[cell, _extraDeconstructLayers[i]];
+				if (go != null && seen.Add(go))
+					CollectDeconstructOnLayer(go, parts);
+			}
 		}
 
 		private static void CollectDeconstructOnLayer(

@@ -92,26 +92,32 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 				GlanceComposer.Temperature, tempSections,
 				new TemperatureAreaScanner());
 
-			// Utility overlays fall back to default area scanner (null)
+			// Utility overlays: use overlay-specific Order sections so
+			// deconstruction orders on conduit layers are announced.
 			RegisterCustomProfile(registry, OverlayModes.Power.ID,
 				(string)STRINGS.UI.OVERLAYS.ELECTRICAL.BUTTON,
-				GlanceComposer.Power, defaultSections);
+				GlanceComposer.Power,
+				SectionsWithOrder(defaultSections, GlanceComposer.OrderPower));
 
 			RegisterCustomProfile(registry, OverlayModes.LiquidConduits.ID,
 				(string)STRINGS.UI.OVERLAYS.LIQUIDPLUMBING.BUTTON,
-				GlanceComposer.Plumbing, defaultSections);
+				GlanceComposer.Plumbing,
+				SectionsWithOrder(defaultSections, GlanceComposer.OrderPlumbing));
 
 			RegisterCustomProfile(registry, OverlayModes.GasConduits.ID,
 				(string)STRINGS.UI.OVERLAYS.GASPLUMBING.BUTTON,
-				GlanceComposer.Ventilation, defaultSections);
+				GlanceComposer.Ventilation,
+				SectionsWithOrder(defaultSections, GlanceComposer.OrderVentilation));
 
 			RegisterCustomProfile(registry, OverlayModes.SolidConveyor.ID,
 				(string)STRINGS.UI.OVERLAYS.CONVEYOR.BUTTON,
-				GlanceComposer.Conveyor, defaultSections);
+				GlanceComposer.Conveyor,
+				SectionsWithOrder(defaultSections, GlanceComposer.OrderConveyor));
 
 			RegisterCustomProfile(registry, OverlayModes.Logic.ID,
 				(string)STRINGS.UI.OVERLAYS.LOGIC.BUTTON,
-				GlanceComposer.Automation, defaultSections);
+				GlanceComposer.Automation,
+				SectionsWithOrder(defaultSections, GlanceComposer.OrderAutomation));
 
 			RegisterNameOnly(registry, OverlayModes.Crop.ID,
 				(string)STRINGS.UI.OVERLAYS.CROPS.BUTTON, defaultComposer,
@@ -126,6 +132,15 @@ namespace OniAccess.Handlers.Tiles.Overlays {
 				new MaterialsAreaScanner());
 
 			return registry;
+		}
+
+		private static ICellSection[] SectionsWithOrder(
+				ICellSection[] baseSections, ICellSection orderSection) {
+			var result = new ICellSection[baseSections.Length];
+			for (int i = 0; i < baseSections.Length; i++)
+				result[i] = baseSections[i] == GlanceComposer.Order
+					? orderSection : baseSections[i];
+			return result;
 		}
 
 		private static void RegisterCustomProfile(
