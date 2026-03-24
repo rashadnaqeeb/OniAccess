@@ -1175,6 +1175,55 @@ namespace OniAccess.Handlers.Build {
 			if (_def.LogicOutputPorts != null)
 				foreach (var port in _def.LogicOutputPorts)
 					ports.Add((port.description, port.cellOffset, PortGroup.Logic));
+			CollectLogicGatePorts(ports);
+		}
+
+		private static readonly string[] _gateInputNames = {
+			(string)STRINGS.UI.LOGIC_PORTS.GATE_MULTI_INPUT_ONE_NAME,
+			(string)STRINGS.UI.LOGIC_PORTS.GATE_MULTI_INPUT_TWO_NAME,
+			(string)STRINGS.UI.LOGIC_PORTS.GATE_MULTI_INPUT_THREE_NAME,
+			(string)STRINGS.UI.LOGIC_PORTS.GATE_MULTI_INPUT_FOUR_NAME,
+		};
+
+		private static readonly string[] _gateOutputNames = {
+			(string)STRINGS.UI.LOGIC_PORTS.GATE_MULTI_OUTPUT_ONE_NAME,
+			(string)STRINGS.UI.LOGIC_PORTS.GATE_MULTI_OUTPUT_TWO_NAME,
+			(string)STRINGS.UI.LOGIC_PORTS.GATE_MULTI_OUTPUT_THREE_NAME,
+			(string)STRINGS.UI.LOGIC_PORTS.GATE_MULTI_OUTPUT_FOUR_NAME,
+		};
+
+		private static readonly string[] _gateControlNames = {
+			(string)STRINGS.UI.LOGIC_PORTS.GATE_MULTIPLEXER_CONTROL_ONE_NAME,
+			(string)STRINGS.UI.LOGIC_PORTS.GATE_MULTIPLEXER_CONTROL_TWO_NAME,
+		};
+
+		private void CollectLogicGatePorts(
+				List<(string label, CellOffset offset, PortGroup group)> ports) {
+			var gate = _def.BuildingComplete.GetComponent<LogicGateBase>();
+			if (gate == null) return;
+
+			var inputs = gate.inputPortOffsets;
+			if (inputs != null) {
+				string singleName = (string)STRINGS.UI.LOGIC_PORTS.GATE_SINGLE_INPUT_ONE_NAME;
+				for (int i = 0; i < inputs.Length; i++)
+					ports.Add((
+						inputs.Length == 1 ? singleName : _gateInputNames[i],
+						inputs[i], PortGroup.Logic));
+			}
+
+			var outputs = gate.outputPortOffsets;
+			if (outputs != null) {
+				string singleName = (string)STRINGS.UI.LOGIC_PORTS.GATE_SINGLE_OUTPUT_ONE_NAME;
+				for (int i = 0; i < outputs.Length; i++)
+					ports.Add((
+						outputs.Length == 1 ? singleName : _gateOutputNames[i],
+						outputs[i], PortGroup.Logic));
+			}
+
+			var controls = gate.controlPortOffsets;
+			if (controls != null)
+				for (int i = 0; i < controls.Length; i++)
+					ports.Add((_gateControlNames[i], controls[i], PortGroup.Logic));
 		}
 
 		private void CollectRadboltPorts(
