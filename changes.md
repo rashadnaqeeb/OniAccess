@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.1.1
+## Unreleased changes since 1.1.2
+
+## 1.1.2
 
 - Config settings and tolk_override.dll now survive Steam Workshop updates (moved to the Klei save directory)
 
