@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.1
+## Unreleased changes since 1.1.1
+
+## 1.1.1
 
 - Fix rotation direction for 2x2 and larger automation gates (AND, OR, XOR, Multiplexer, Demultiplexer) — now matches output direction like bridges
 - Fix Shift+P port layout not working for automation gates (AND, OR, NOT, XOR, BUFFER, FILTER, Multiplexer, Demultiplexer)
