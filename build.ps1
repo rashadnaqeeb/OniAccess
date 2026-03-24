@@ -87,24 +87,15 @@ Copy-Item $BuildOutput "$ModDir\OniAccess.dll" -Force
 Copy-Item "$ProjectDir\mod_info.yaml" "$ModDir\mod_info.yaml" -Force
 Copy-Item "$ProjectDir\mod.yaml" "$ModDir\mod.yaml" -Force
 
-# Tolk and screen reader driver DLLs go in a "native" subfolder so ONI's
-# mod loader doesn't try to load them as .NET assemblies (BadImageFormatException).
-# SetDllDirectory(native) lets LoadLibrary find them at runtime.
-$NativeDir = "$ModDir\native"
+# Deploy platform-specific Prism native library.
+# For local development, only the Windows binary is needed.
+$PrismSrc = "$PSScriptRoot\prism\native\win-x64"
+$NativeDir = "$ModDir\native\win-x64"
 if (-not (Test-Path $NativeDir)) {
     New-Item -ItemType Directory -Path $NativeDir -Force | Out-Null
 }
-$TolkSrc = "$PSScriptRoot\tolk\dist"
-$TolkDlls = @("Tolk.dll", "nvdaControllerClient64.dll", "SAAPI64.dll")
-foreach ($dll in $TolkDlls) {
-    $src = Join-Path $TolkSrc $dll
-    if (Test-Path $src) {
-        Copy-Item $src "$NativeDir\$dll" -Force
-    } else {
-        Write-Host "WARNING: $dll not found at $src" -ForegroundColor Yellow
-    }
-}
-Write-Host "Deployed DLL and Tolk libraries to $ModDir" -ForegroundColor Green
+Copy-Item "$PrismSrc\prism.dll" "$NativeDir\prism.dll" -Force
+Write-Host "Deployed Prism native library to $NativeDir" -ForegroundColor Green
 
 # --- Copy translation files ---
 $TranslationsSrc = "$PSScriptRoot\translations"

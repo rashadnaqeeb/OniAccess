@@ -5,7 +5,7 @@ namespace OniAccess.Speech {
 	/// Central speech dispatch point for ALL speech output in the mod.
 	/// No code should call SpeechEngine.Say() directly -- all speech flows through here.
 	///
-	/// Pipeline: Caller -> SpeechPipeline -> TextFilter -> SpeechEngine -> Tolk
+	/// Pipeline: Caller -> SpeechPipeline -> TextFilter -> SpeechEngine -> Prism
 	/// </summary>
 	public static class SpeechPipeline {
 		/// <summary>

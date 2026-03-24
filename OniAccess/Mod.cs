@@ -19,10 +19,12 @@ namespace OniAccess {
 		public static string Version { get; private set; }
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-		private static extern bool SetDllDirectory(string lpPathName);
-
-		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		private static extern IntPtr LoadLibrary(string lpFileName);
+
+		[DllImport("libdl", EntryPoint = "dlopen")]
+		private static extern IntPtr DlOpen(string path, int flags);
+
+		const int RTLD_NOW = 2;
 
 		public override void OnLoad(Harmony harmony) {
 			Instance = this;
@@ -34,48 +36,36 @@ namespace OniAccess {
 			LogUnityBackend.Install();
 			ConfigManager.Load(DataDir);
 
-			// Native DLLs live in a "native" subfolder so ONI's mod loader
-			// doesn't try to load them as .NET assemblies. Pre-load each with
-			// a full path because: (1) Mono's DllImport ignores SetDllDirectory,
-			// and (2) Tolk's internal LoadLibrary for the screen reader drivers
-			// needs them already in process since SetDllDirectory can be reset
-			// by Harmony patching or other mods.
-			string nativeDir = Path.Combine(ModDir, "native");
-			string overridePath = Path.Combine(DataDir, "tolk_override.dll");
-			bool usingOverride = File.Exists(overridePath);
-
-			// Pre-load every DLL in native/ except Tolk itself so that
-			// screen reader drivers are already in-process when Tolk initializes.
-			foreach (var file in Directory.GetFiles(nativeDir, "*.dll")) {
-				string name = Path.GetFileName(file);
-				if (name.Equals("Tolk.dll", StringComparison.OrdinalIgnoreCase)) continue;
-				if (LoadLibrary(file) == IntPtr.Zero) {
-					Log.Warn($"Failed to pre-load {name} from: {file}");
-				}
+			// Pre-load the platform-specific Prism native library so that
+			// SpeechEngine's DllImport("prism") resolves correctly.
+			// Mono's DllImport doesn't reliably search subdirectories,
+			// so we load from an explicit path.
+			string platform;
+			string libName;
+			switch (Application.platform) {
+				case RuntimePlatform.WindowsPlayer:
+					platform = "win-x64";
+					libName = "prism.dll";
+					break;
+				case RuntimePlatform.LinuxPlayer:
+					platform = "linux-x64";
+					libName = "libprism.so";
+					break;
+				case RuntimePlatform.OSXPlayer:
+					platform = "osx";
+					libName = "libprism.dylib";
+					break;
+				default:
+					Log.Error($"Unsupported platform: {Application.platform}");
+					return;
 			}
-
-			// tolk_override.dll in the persistent data directory replaces the
-			// bundled Tolk.dll. Users may place companion DLLs (e.g. ZDSR
-			// screen reader drivers) alongside it — pre-load those too.
-			string tolkLoadPath;
-			if (usingOverride) {
-				foreach (var file in Directory.GetFiles(DataDir, "*.dll")) {
-					string name = Path.GetFileName(file);
-					if (name.Equals("tolk_override.dll", StringComparison.OrdinalIgnoreCase)) continue;
-					if (LoadLibrary(file) == IntPtr.Zero) {
-						Log.Warn($"Failed to pre-load {name} from: {file}");
-					}
-				}
-				string tempDir = Path.Combine(Path.GetTempPath(), "OniAccess");
-				Directory.CreateDirectory(tempDir);
-				tolkLoadPath = Path.Combine(tempDir, "Tolk.dll");
-				File.Copy(overridePath, tolkLoadPath, true);
-				Log.Info("Loading tolk_override.dll");
+			string libPath = Path.Combine(ModDir, "native", platform, libName);
+			if (Application.platform == RuntimePlatform.WindowsPlayer) {
+				if (LoadLibrary(libPath) == IntPtr.Zero)
+					Log.Warn($"Failed to pre-load Prism from: {libPath}");
 			} else {
-				tolkLoadPath = Path.Combine(nativeDir, "Tolk.dll");
-			}
-			if (LoadLibrary(tolkLoadPath) == IntPtr.Zero) {
-				Log.Warn($"Failed to pre-load Tolk from: {tolkLoadPath}");
+				if (DlOpen(libPath, RTLD_NOW) == IntPtr.Zero)
+					Log.Warn($"Failed to pre-load Prism from: {libPath}");
 			}
 
 			base.OnLoad(harmony);

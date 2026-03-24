@@ -1,6 +1,6 @@
 # OniAccess
 
-An accessibility mod for Oxygen Not Included that makes the game playable for blind users. All game information is delivered through speech output via your screen reader (using the Tolk library). The mod doesn't change game behavior, only adds speech.
+An accessibility mod for Oxygen Not Included that makes the game playable for blind users. All game information is delivered through speech output via your screen reader (using the Prism library). The mod doesn't change game behavior, only adds speech.
 
 ## System requirements
 

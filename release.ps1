@@ -23,17 +23,22 @@ Copy-Item $BuildOutput "$ReleaseDir\OniAccess.dll" -Force
 Copy-Item "$ProjectDir\mod_info.yaml" "$ReleaseDir\mod_info.yaml" -Force
 Copy-Item "$ProjectDir\mod.yaml" "$ReleaseDir\mod.yaml" -Force
 
-# Native dependencies
-$NativeDir = "$ReleaseDir\native"
-New-Item -ItemType Directory -Path $NativeDir -Force | Out-Null
-$TolkSrc = "$PSScriptRoot\tolk\dist"
-$TolkDlls = @("Tolk.dll", "nvdaControllerClient64.dll", "SAAPI64.dll")
-foreach ($dll in $TolkDlls) {
-    $src = Join-Path $TolkSrc $dll
-    if (Test-Path $src) {
-        Copy-Item $src "$NativeDir\$dll" -Force
-    } else {
-        Write-Host "WARNING: $dll not found at $src" -ForegroundColor Yellow
+# Native dependencies - all platforms
+$Platforms = @(
+    @{ Src = "win-x64"; Files = @("prism.dll") },
+    @{ Src = "linux-x64"; Files = @("libprism.so") },
+    @{ Src = "osx"; Files = @("libprism.dylib") }
+)
+foreach ($plat in $Platforms) {
+    $destDir = "$ReleaseDir\native\$($plat.Src)"
+    New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+    foreach ($file in $plat.Files) {
+        $src = "$PSScriptRoot\prism\native\$($plat.Src)\$file"
+        if (Test-Path $src) {
+            Copy-Item $src "$destDir\$file" -Force
+        } else {
+            Write-Host "WARNING: $file not found at $src" -ForegroundColor Yellow
+        }
     }
 }
 

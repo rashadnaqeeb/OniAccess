@@ -11,7 +11,7 @@ namespace OniAccess.Patches {
 	/// Game.OnDestroy is intentionally NOT patched. It fires during scene
 	/// transitions (loading a save), not just on application quit. A previous
 	/// patch called SpeechEngine.Shutdown() here, which killed all speech
-	/// after loading a save. Tolk cleanup is handled by OS process exit.
+	/// after loading a save. Prism cleanup is handled by OS process exit.
 	/// </summary>
 
 	[HarmonyPatch(typeof(SaveLoader), nameof(SaveLoader.Save), typeof(string), typeof(bool), typeof(bool))]
