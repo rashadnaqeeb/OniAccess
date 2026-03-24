@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.1
 
+- Fix rotation direction for 2x2 and larger automation gates (AND, OR, XOR, Multiplexer, Demultiplexer) — now matches output direction like bridges
 - Fix Shift+P port layout not working for automation gates (AND, OR, NOT, XOR, BUFFER, FILTER, Multiplexer, Demultiplexer)
 - Fix some mod-authored labels (Difficulty, Interest, Colony name, and others) reading in English instead of the translated language
 - Transit tube segments now announce their connection shape (vertical, corner, tee junction, etc.)

@@ -238,11 +238,11 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		internal static bool IsHorizontalFlowBuilding(BuildingDef def) {
+			if (def.ObjectLayer == ObjectLayer.LogicGate)
+				return true;
 			if (def.WidthInCells <= def.HeightInCells)
 				return false;
 			if (def.InputConduitType != ConduitType.None || def.OutputConduitType != ConduitType.None)
-				return true;
-			if (def.ObjectLayer == ObjectLayer.LogicGate)
 				return true;
 			if (def.BuildLocationRule == BuildLocationRule.WireBridge
 				|| def.BuildLocationRule == BuildLocationRule.HighWattBridgeTile)
