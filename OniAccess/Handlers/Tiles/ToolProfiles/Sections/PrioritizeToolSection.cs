@@ -89,8 +89,12 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 
 			var deconstructable = go.GetComponent<Deconstructable>();
 			if (deconstructable != null && deconstructable.IsMarkedForDeconstruction()) {
+				var sel = go.GetComponent<KSelectable>();
+				string name = sel != null ? sel.GetName() : "";
+				string label = string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.MARKED_DECONSTRUCTION, name);
 				tokens.Add(string.Format(
-					(string)STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT_PRIORITY, priority));
+					(string)STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY, label, priority));
 				return true;
 			}
 
