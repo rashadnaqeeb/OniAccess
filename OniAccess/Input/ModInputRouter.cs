@@ -92,7 +92,8 @@ namespace OniAccess.Input {
 			if (keys.Count == 0) return false;
 			var bindings = GameInputMapping.KeyBindings;
 			for (int i = 0; i < keys.Count; i++) {
-				var mod = keys[i].Modifier;
+				var origMod = keys[i].Modifier;
+				var mod = origMod;
 				if (InputUtil.IsMac) {
 					bool hasCtrl = (mod & Modifier.Ctrl) != 0;
 					bool hasAlt = (mod & Modifier.Alt) != 0;
@@ -102,7 +103,8 @@ namespace OniAccess.Input {
 				}
 				for (int j = 0; j < bindings.Length; j++) {
 					if (bindings[j].mKeyCode == keys[i].KeyCode
-						&& bindings[j].mModifier == mod
+						&& (bindings[j].mModifier == mod
+							|| (InputUtil.IsMac && bindings[j].mModifier == origMod))
 						&& e.IsAction(bindings[j].mAction))
 						return true;
 				}
