@@ -25,6 +25,8 @@ namespace OniAccess.Input {
 			Action.Plan13, Action.Plan14,
 			// Camera pan — not usable without sight
 			Action.PanUp, Action.PanDown, Action.PanLeft, Action.PanRight,
+			// Building search — PlanScreen.OnKeyUp crashes on null BuildingGroupScreen
+			Action.Find,
 		};
 
 		public string handlerName => "OniAccess";
