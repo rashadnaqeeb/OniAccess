@@ -32,10 +32,24 @@ namespace OniAccess.Handlers.Tools {
 		public IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
 
 		public void OnActivate() {
+			if (Game.Instance != null) {
+				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
+			}
 			SpeechPipeline.SpeakInterrupt(DisplayName);
 		}
 
 		public void OnDeactivate() {
+			if (Game.Instance != null)
+				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+		}
+
+		private void OnActiveToolChanged(object data) {
+			if (data is SelectTool) {
+				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLS.CANCELED);
+				PlayCancelSound();
+				HandlerStack.Pop();
+			}
 		}
 
 		public bool Tick() {

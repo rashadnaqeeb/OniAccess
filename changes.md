@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.1.2
 
+- Fix crash when pressing Space or Enter in copy settings mode after opening the build menu
 - Deconstruction orders on wires, pipes, and other conduits are now announced in their respective overlays and in the scanner
 
 ## 1.1.2
