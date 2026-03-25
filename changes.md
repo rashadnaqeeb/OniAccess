@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased changes since 1.1.3
+## Unreleased changes since 1.1.4
 
+## 1.1.4
+
+* Fix biome names showing English in non-English games
 * Deconstruction orders now announce the building name, matching construction orders
 
 ## 1.1.3
