@@ -1,210 +1,215 @@
 # Changelog
 
-## Unreleased changes since 1.1.2
+## Unreleased changes since 1.1.3
 
-- Fix crash when pressing Space or Enter in copy settings mode after opening the build menu
-- Deconstruction orders on wires, pipes, and other conduits are now announced in their respective overlays and in the scanner
+## 1.1.3
+
+ported the mod to the PRISM speech library, adding support for ZDSR, as well as cross-platform support for Mac and Linux.
+
+* Fix crash when pressing Space or Enter in copy settings mode after opening the build menu
+* Deconstruction orders on wires, pipes, and other conduits are now announced in their respective overlays and in the scanner
 
 ## 1.1.2
 
-- Config settings and tolk_override.dll now survive Steam Workshop updates (moved to the Klei save directory)
+* Config settings and tolk\_override.dll now survive Steam Workshop updates (moved to the Klei save directory)
 
 ## 1.1.1
 
-- Fix rotation direction for 2x2 and larger automation gates (AND, OR, XOR, Multiplexer, Demultiplexer) — now matches output direction like bridges
-- Fix Shift+P port layout not working for automation gates (AND, OR, NOT, XOR, BUFFER, FILTER, Multiplexer, Demultiplexer)
-- Fix some mod-authored labels (Difficulty, Interest, Colony name, and others) reading in English instead of the translated language
-- Transit tube segments now announce their connection shape (vertical, corner, tee junction, etc.)
-- Unconnected transit tube entrance and crossing connection points are announced when the cursor is on them
+* Fix rotation direction for 2x2 and larger automation gates (AND, OR, XOR, Multiplexer, Demultiplexer) — now matches output direction like bridges
+* Fix Shift+P port layout not working for automation gates (AND, OR, NOT, XOR, BUFFER, FILTER, Multiplexer, Demultiplexer)
+* Fix some mod-authored labels (Difficulty, Interest, Colony name, and others) reading in English instead of the translated language
+* Transit tube segments now announce their connection shape (vertical, corner, tee junction, etc.)
+* Unconnected transit tube entrance and crossing connection points are announced when the cursor is on them
 
 ## 1.1
 
-- Scanner direction earcons: optional tones indicate distance and direction when cycling scanner results (off by default)
-- Fix config not persisting toggle options set to false
-- Fix radbolt joint plate reporting wrong orientation
-- Strip degree unit letter from temperature speech so screen readers no longer say "C" or "F" after every value
-- Per-earcon volume sliders in the config menu
-- Wires now speak circuit load percentage when flow direction readout is enabled
-- Power overlay sonification pitch now rises above the safe-load threshold when a circuit is overloaded
-- Flow direction readout now includes the element name (e.g. "water, 80% right 15% up")
-- Fix wires, pipes, and backwall buildings not announced as "constructing" when under construction
-- Temperature overlay now speaks building and debris temperature after the name, skipped when within 1 degree of the cell temperature
-- Fix radbolt output port announced as "{0}" instead of direction when previewing building ports
-- Footstep earcons: moving the cursor plays the game's footstep sound for the tile surface, enabled by default (toggle in config)
-- Suppress UI hover sounds triggered by camera movement when footstep earcons are on
-- Disable the game's pause audio snapshot so all sounds play clearly while paused
+* Scanner direction earcons: optional tones indicate distance and direction when cycling scanner results (off by default)
+* Fix config not persisting toggle options set to false
+* Fix radbolt joint plate reporting wrong orientation
+* Strip degree unit letter from temperature speech so screen readers no longer say "C" or "F" after every value
+* Per-earcon volume sliders in the config menu
+* Wires now speak circuit load percentage when flow direction readout is enabled
+* Power overlay sonification pitch now rises above the safe-load threshold when a circuit is overloaded
+* Flow direction readout now includes the element name (e.g. "water, 80% right 15% up")
+* Fix wires, pipes, and backwall buildings not announced as "constructing" when under construction
+* Temperature overlay now speaks building and debris temperature after the name, skipped when within 1 degree of the cell temperature
+* Fix radbolt output port announced as "{0}" instead of direction when previewing building ports
+* Footstep earcons: moving the cursor plays the game's footstep sound for the tile surface, enabled by default (toggle in config)
+* Suppress UI hover sounds triggered by camera movement when footstep earcons are on
+* Disable the game's pause audio snapshot so all sounds play clearly while paused
 
 ## 1.0.6
 
-- Fix path check reporting inconsistent nearest reachable cells when moving the cursor
-- Alt+arrows now skips coarsely, grouping all floor tiles, all ladders, all plants, all decorations, all liquids, and all natural solids as single zones
-- Status and chore changes are now announced when using the game's Follow Cam on any entity (critters, buildings, etc.)
-- Bot navigation now finds all five bot types including Sweepies and Remote Workers, with status announcements for each
-- Fix tile cursor jumping to the printing pod during timelapse screenshots
-- Fix crash when toggling the mod off and back on during duplicant selection or other screens
-- Fix germ overlay skip and big cursor area scan not detecting germs in building storage or on conveyor rails
+* Fix path check reporting inconsistent nearest reachable cells when moving the cursor
+* Alt+arrows now skips coarsely, grouping all floor tiles, all ladders, all plants, all decorations, all liquids, and all natural solids as single zones
+* Status and chore changes are now announced when using the game's Follow Cam on any entity (critters, buildings, etc.)
+* Bot navigation now finds all five bot types including Sweepies and Remote Workers, with status announcements for each
+* Fix tile cursor jumping to the printing pod during timelapse screenshots
+* Fix crash when toggling the mod off and back on during duplicant selection or other screens
+* Fix germ overlay skip and big cursor area scan not detecting germs in building storage or on conveyor rails
 
 ## 1.0.5
 
-- Tools: Ctrl+G toggles single-cell selection mode (Space selects one cell at a time instead of rectangle corners)
-- Tools: Shift+Space now removes a single cell from the selection instead of the entire rectangle
-- Tile cursor germ readout now includes germs on items inside building storage (e.g. germy water in a reservoir) and items on conveyor rails
+* Tools: Ctrl+G toggles single-cell selection mode (Space selects one cell at a time instead of rectangle corners)
+* Tools: Shift+Space now removes a single cell from the selection instead of the entire rectangle
+* Tile cursor germ readout now includes germs on items inside building storage (e.g. germy water in a reservoir) and items on conveyor rails
 
 ## 1.0.4
 
-- Follow mode now plays a directional tone matching the dupe or bot's movement direction. Togglable in F12 settings
-- Scanner announcements now include mass: total kg for solids/liquids, average kg per tile for gases. Togglable in F12 settings
-- Priority screen: Ctrl+R resets all priorities from anywhere in the table
-- Copy settings now announces "settings not applied" when copying plant settings to a farm tile that can't accept them (e.g. already has a different plant, or placement is blocked)
-- Tile cursor coordinate origin (0,0) is now the ground tile below the Printing Pod, not the building itself
-- Fix "MISSING" being spoken after story trait popup text and buttons
-- Tile cursor now announces buried objects inside solid tiles
-- Fix boundary sound not playing reliably at map edges, especially on rockets and side edges
-- Fix crash in disinfect threshold settings when the timelapse screenshot fires while the panel is open
-- Earcons no longer play on unexplored tiles; moving into fog of war silences all earcons and resets temperature tracking
+* Follow mode now plays a directional tone matching the dupe or bot's movement direction. Togglable in F12 settings
+* Scanner announcements now include mass: total kg for solids/liquids, average kg per tile for gases. Togglable in F12 settings
+* Priority screen: Ctrl+R resets all priorities from anywhere in the table
+* Copy settings now announces "settings not applied" when copying plant settings to a farm tile that can't accept them (e.g. already has a different plant, or placement is blocked)
+* Tile cursor coordinate origin (0,0) is now the ground tile below the Printing Pod, not the building itself
+* Fix "MISSING" being spoken after story trait popup text and buttons
+* Tile cursor now announces buried objects inside solid tiles
+* Fix boundary sound not playing reliably at map edges, especially on rockets and side edges
+* Fix crash in disinfect threshold settings when the timelapse screenshot fires while the panel is open
+* Earcons no longer play on unexplored tiles; moving into fog of war silences all earcons and resets temperature tracking
 
 ## 1.0.3
 
-- Support for tolk_override.dll: drop in a custom Tolk replacement to use additional screen reader drivers
-- Codex articles collapse sub-bullets onto their parent line, skip markup-only fragments, and improve content tab readability
-- Shape earcons now include bridge connections; fixed down-corner segment order; reduced flow sonifier volume
-- Recipe queue screen now includes a continuous toggle to set or clear infinite production
-- Direction toggle buttons (e.g. wash basin) now announce the current direction before the toggle action
+* Support for tolk\_override.dll: drop in a custom Tolk replacement to use additional screen reader drivers
+* Codex articles collapse sub-bullets onto their parent line, skip markup-only fragments, and improve content tab readability
+* Shape earcons now include bridge connections; fixed down-corner segment order; reduced flow sonifier volume
+* Recipe queue screen now includes a continuous toggle to set or clear infinite production
+* Direction toggle buttons (e.g. wash basin) now announce the current direction before the toggle action
 
 ## 1.0.2
 
-- Bot navigator: Shift+[ / Shift+] cycles through all autonomous bots (Sweepy, Flydo, Rover, Biobot, Remote Worker) on the current world. Jump, follow, and pathability check (\, Ctrl+\, Shift+\) work on whichever entity type was last cycled to
-- Codex effects for multi-converter buildings (e.g. Desalinator) now group each converter's outputs with its input instead of listing duplicates
-- Build tool now reads existing conduits when placing bridges (liquid, gas, solid, wire, and automation)
-- Scanner now finds POI and story buildings: Thermo-Nullifier, Teleportal Pad, Hijacked Headquarters, warp conduits, fossil dig sites, and other Gravitas structures
-- Audio descriptions for tutorial videos: timed narration of visual content queues to the screen reader as the video plays (digging tutorial)
-- Temperature band earcons: plays a rising or falling tone when the cursor crosses a temperature band boundary. Toggle in F12 settings (off by default)
-- Flow sonification now works on wires in the power overlay — pitch tracks circuit load
-- Shape earcons: when enabled, plays tonal sequences to convey pipe, wire, and rail connection shapes in overlay views instead of speaking them. Toggle in F12 settings (off by default)
-- Flow sonification: fix buzzing artifacts from loop seam and abrupt volume changes; reduce volume
-- Flow sonification: a continuous tone plays when the cursor is on a pipe in the liquid or gas overlay. Pitch maps fill level (C4 empty to C5 full), volume reflects how often fluid is present. Toggle in F12 settings (off by default)
-- Pixel pack announces the signal state and color of each pixel at the cursor
-- Duplicants no longer appear in scanner snapshots (still findable via Ctrl+F search)
-- Enter now completes the rectangle when a first corner is set, instead of canceling
+* Bot navigator: Shift+\[ / Shift+] cycles through all autonomous bots (Sweepy, Flydo, Rover, Biobot, Remote Worker) on the current world. Jump, follow, and pathability check (, Ctrl+, Shift+) work on whichever entity type was last cycled to
+* Codex effects for multi-converter buildings (e.g. Desalinator) now group each converter's outputs with its input instead of listing duplicates
+* Build tool now reads existing conduits when placing bridges (liquid, gas, solid, wire, and automation)
+* Scanner now finds POI and story buildings: Thermo-Nullifier, Teleportal Pad, Hijacked Headquarters, warp conduits, fossil dig sites, and other Gravitas structures
+* Audio descriptions for tutorial videos: timed narration of visual content queues to the screen reader as the video plays (digging tutorial)
+* Temperature band earcons: plays a rising or falling tone when the cursor crosses a temperature band boundary. Toggle in F12 settings (off by default)
+* Flow sonification now works on wires in the power overlay — pitch tracks circuit load
+* Shape earcons: when enabled, plays tonal sequences to convey pipe, wire, and rail connection shapes in overlay views instead of speaking them. Toggle in F12 settings (off by default)
+* Flow sonification: fix buzzing artifacts from loop seam and abrupt volume changes; reduce volume
+* Flow sonification: a continuous tone plays when the cursor is on a pipe in the liquid or gas overlay. Pitch maps fill level (C4 empty to C5 full), volume reflects how often fluid is present. Toggle in F12 settings (off by default)
+* Pixel pack announces the signal state and color of each pixel at the cursor
+* Duplicants no longer appear in scanner snapshots (still findable via Ctrl+F search)
+* Enter now completes the rectangle when a first corner is set, instead of canceling
 
 ## 1.0.1
 
-- Recipe screen ingredient slots now show how many other material options are available
-- Cluster selector on the new game screen now explains left/right and enter controls
-- Fix assigned amenities list showing absolute world coordinates instead of coordinates relative to the printing pod
-- Fix germ skip skipping past contaminated cells when germs were on buildings, items, or pipe contents rather than the tile surface
-- Codex articles split multi-line text blocks into separate cursor items so each property gets its own line
-- Codex articles no longer repeat redundant names in conversion and recipe panels
-- Pending orders now announce blockers: "needs skill" for dig orders requiring an unskilled colony, "can't store" for sweep orders with no accepting storage
-- Audio earcons play when moving the tile cursor: impassable tiles get a distinct sound, and wires, pipes, and rails each have unique tones in the default overlay (toggle each set in F12 settings)
-- Press A on any tile to hear temperature, room type, germs, radiation, light, decor, and biome at once
-- Biome name announced when crossing into a different biome during tile-by-tile movement (toggle in F12 settings)
-- Radbolt output ports now announce their direction (e.g. "radbolt output, right") in the radiation overlay
-- Fix: wire bridges, joint plates, and power transformers no longer falsely announce "placed" when placement is invalid
-- Automation wires now announce their signal color (green/red) after connection directions; ribbons announce all 4 bits
-- F12 settings: "Lock zoom level" option lets you keep your current zoom when moving the tile cursor (on by default)
-- F12 opens a settings screen where you can view and adjust all config options (coordinate mode, auto-move cursor) in one place
+* Recipe screen ingredient slots now show how many other material options are available
+* Cluster selector on the new game screen now explains left/right and enter controls
+* Fix assigned amenities list showing absolute world coordinates instead of coordinates relative to the printing pod
+* Fix germ skip skipping past contaminated cells when germs were on buildings, items, or pipe contents rather than the tile surface
+* Codex articles split multi-line text blocks into separate cursor items so each property gets its own line
+* Codex articles no longer repeat redundant names in conversion and recipe panels
+* Pending orders now announce blockers: "needs skill" for dig orders requiring an unskilled colony, "can't store" for sweep orders with no accepting storage
+* Audio earcons play when moving the tile cursor: impassable tiles get a distinct sound, and wires, pipes, and rails each have unique tones in the default overlay (toggle each set in F12 settings)
+* Press A on any tile to hear temperature, room type, germs, radiation, light, decor, and biome at once
+* Biome name announced when crossing into a different biome during tile-by-tile movement (toggle in F12 settings)
+* Radbolt output ports now announce their direction (e.g. "radbolt output, right") in the radiation overlay
+* Fix: wire bridges, joint plates, and power transformers no longer falsely announce "placed" when placement is invalid
+* Automation wires now announce their signal color (green/red) after connection directions; ribbons announce all 4 bits
+* F12 settings: "Lock zoom level" option lets you keep your current zoom when moving the tile cursor (on by default)
+* F12 opens a settings screen where you can view and adjust all config options (coordinate mode, auto-move cursor) in one place
 
 ## Pre-release
 
-- Fix: wire bridge and joint plate connection points now announce "connection port" in the power overlay, so players can find where to attach wires
-- Fix: wire shapes next to joint plates now correctly include the joint plate connection direction
-- Fix: build tool now allows placing replacement tiles (e.g. sandstone ladder over wood ladder) instead of rejecting as obstructed
-- Build tool: port layout hotkey changed from P to Shift+P, freeing bare P for the game's Prioritize tool
-- Story trait popups (discovery and completion) and gameplay event popups (meteor showers, food fights, etc.) are now spoken with title, description, and action buttons
-- Ctrl+\ follows the current duplicant with the camera, announcing status and chore changes in real time; [ / ] switches the follow target; any cursor movement stops following
-- Dupe navigator ([ / ]) now announces position relative to cursor (e.g. "3 up 2 left") and speaks statuses before the current chore
-- Database: lore categories (emails, journals, research notes, personal logs, investigations, notices) now appear in the categories tab alongside game-data categories
-- Fix: type-ahead search in the Database no longer causes a crash
-- Database: critter morphs and other sub-entries are now navigable via Right arrow from the parent entry, and appear in type-ahead search
-- Shift+G opens disinfect threshold settings when germ overlay is active (toggle auto-disinfect, adjust threshold via slider or direct number entry)
-- Cycling dupes with [ / ] now announces "trapped" after the dupe's name when they can't pathfind to other dupes, the telepad, or their bed
-- Farm tiles now announce plant extent and blocked status (e.g. "extends 2 up, blocked") when selecting a multi-cell plant
-- Pipe bridges, logic gates, and wire bridges now place the cursor on the input end and announce the output direction (e.g. "right" means flow goes right)
-- Fix: logic gate ports (NOT, AND, OR, XOR, buffer, filter, multiplexer, demultiplexer) now announce port names in the automation overlay
-- Conduits and wires announce shapes instead of raw directions (e.g. "vertical", "up right corner", "right tee junction" instead of "connects up, down")
-- Details screen navigation is now stable when the game reorders widgets between keypresses (errands, storage, and other tabs no longer jump to unexpected items)
-- Material picker now announces material effects (overheat temperature modifier, thermal conductivity, etc.) alongside name and quantity
-- Fix: audio rulers no longer disappear when opening and closing menus
-- Translation: replaced concatenation patterns with format strings so translators can reorder words (biome names, bottled/loose labels, colony inventory, starmap research, diet restrictions, material alternatives)
-- Fix: heavy-watt joint plates now announce "horizontal" and "vertical" when rotating instead of meaningless direction names
-- Sandbox mode: all 12 sandbox tools are accessible. Toggle sandbox with Shift+S, pick tools from the Sandbox Tools category in the action menu (B key). Rectangle selection for brush tools (Space for corners, Enter to apply), single-cell apply for flood/spawner/story tools, Ctrl+Space to sample, F to open the parameter menu with sliders and selectors
-- Fix: bare G key was blocked during build placement even after the rectangle mode toggle moved to Ctrl+G
-- Rectangle build mode: press Ctrl+G while placing a 1x1 building (tile, drywall, etc.) to define rectangular areas with Space, then Enter to fill them all at once
-- Alt+Arrow skips by building, tile type, or element regardless of the active overlay
-- Fix: vacuum and void tiles no longer report "0 g" mass
-- Fix: cluster map cursor no longer resets to the active world when returning from a details screen or entity picker
-- Cluster map: H key jumps cursor to the active world's hex location
-- Fix: rocket module side screen now speaks the module name and description instead of silence
-- Module flight utility side screen: duplicant dropdown is now cyclable with left/right arrows
-- Module flight utility side screen: duplicate module names are numbered (e.g. "Cargo Bay 1", "Cargo Bay 2")
-- Rocket restriction side screen now speaks the automation tooltip when restrictions are controlled by a logic wire
-- Pilot and crew side screen now announces when a robo-pilot copilot is active alongside a dupe pilot
-- Fix: rocket landing pad dropdown no longer speaks the pad name twice, removes redundant label, and excludes invalid pads with reasons
-- Side screen dropdown options (e.g. door access, rocket restrictions) now speak their tooltip when selected
-- Disabled buttons and toggles are now navigable and announce "unavailable". Pressing Enter on them plays a negative sound instead of silently failing
-- Announce "Saved" after the game finishes saving (autosave or manual)
-- H key now jumps to the Rocket Control Station when inside a rocket interior. Coordinates are relative to the control station (0,0)
-- Build tool cursor now represents the bottom-left corner of the building. Extent announcements use "right" and "up" only (e.g. "extends 2 right, 1 up"), and port offsets are relative to the corner you're standing on
-- P key in build tool announces all ports with their offset from the cursor (e.g. "liquid input, here, liquid output, 1 up. power input, 1 right."). Offsets update when the building is rotated
-- Shift+R in build tool rotates the building backward (counterclockwise for 4-way rotation)
-- Geysers are now a top-level scanner category (after Zones) with subcategories: Gas, Liquid, Molten, Geothermal
-- Buried geysers no longer appear in the tile cursor or scanner until exposed by digging
-- Backspace returns to pre-jump position after both \ dupe jump and Home scanner teleport
-- Shift+\ checks if the current dupe can reach the cursor tile, reporting cost if reachable or the nearest reachable tile if not
-- Demolior (DLC4 large impactor): spoken announcements for discovery, impact, destruction, and damage milestones; S key reports Demolior health and time remaining; activating the Demolior notification focuses the camera on the impact zone
-- Fix: spurious diagnostic, resource, and world announcements during save load are now suppressed
-- Fix: notification submenu now shows message titles instead of internal UI object names and coordinates
-- Activating an achievement notification announces "opening achievements" and each unlocked achievement name
-- Fix: deconstruct tool now works on Gravitas buildings and other demolishable structures (Gene Shuffler, Cryo Tank, etc.)
-- Gravitas ruins (doors, walls, desks, and other props) now appear in the scanner under Buildings > Gravitas
-- Tile cursor now reports deconstruction orders on backwalls
-- Fix: navigating recipes or side screen items no longer crashes when the game refreshes widgets between actions
-- Fix: foundation tiles no longer double-announce (element was spoken on top of the building)
-- Cluster map scanner now supports Ctrl+F search to filter entities by name
-- Cluster map: hidden and peeked hexes now announce "unexplored" or "unseen" instead of verbose tooltip text
-- Cluster map (Spaced Out DLC starmap): full keyboard navigation with hex cursor, entity selection, scanner, pathfinder, and coordinate reading
-- W opens a navigable world list to switch between asteroids and rockets (Spaced Out DLC)
-- Switching worlds now announces the destination world name, whether via the world list, number hotkeys, or starmap
-- Off-screen world diagnostic degradation is announced with the world name and status
-- Newly discovered worlds are announced by name
-- Fixed rotation direction for horizontal-flow buildings (gas filters, conduit bridges, logic gates, etc.): "facing left" now correctly indicates the input side at Neutral orientation
-- Fix: placing a building, canceling it with Shift+Space, then placing again on the same tile now works correctly
-- Backspace returns to your previous position after a scanner teleport (Home key)
-- Shift+Home announces distance to the current scanner item; auto-move toggle moved to Shift+End
-- Shift+Up/Down adjusts a single cell's priority in the priorities table, complementing Ctrl+Up/Down which adjusts the entire column
-- Numpad number keys now work everywhere the main keyboard number keys do: priority setting, schedule brush selection, and cursor bookmarks
-- D reads current diagnostic alerts (breathability, food, stress, etc.) sorted by severity
-- Shift+D opens a full diagnostics browser with pin state cycling and criteria toggles
-- Diagnostic alerts are now automatically announced when conditions worsen
-- Liquids pooling on buildings are now spoken instead of being suppressed with the gas element
-- Type-ahead search now supports spaces for multi-word queries (e.g., "blue c" to find "Blue Cheese"). Space only enters the search buffer after typing at least one letter, so handler actions like pin toggle still work normally
-- Encyclopedia type-ahead now includes top-level categories in search results, listed after article matches
-- Type-ahead search now sorts matches by position within each tier, so "washroom" ranks before "fried mushroom" when searching "room"
-- Materials overlay area scan now reports only element percentages, without median mass
-- Ctrl+Shift+Down resets big cursor to 1x1 instantly
-- Fixed cursor skip stopping on random unexplored tiles instead of treating the entire fog-of-war region as one block
-- Fixed opening the starmap (Z) or other non-tool screens while in build or tool mode causing errors
-- Big cursor: Shift+Up/Down cycles cursor size (1x1, 3x3, 5x5, 9x9, 21x21). Arrow keys move by the full cursor width, and landing speaks an area scan summary instead of a single tile
-- Area scan adapts to the active overlay: element breakdown for Materials, average temperature/lux/decor/rads for their overlays, O2/PO2 percentages for Oxygen, germ averages for Disease, room types for Rooms, plant growth for Crops
-- With a big cursor active, Space in tool mode sets both corners at once, creating a rectangle the size of the cursor area
-- Clear rectangle in tool mode changed from Delete to Shift+Space, matching build tool mode
-- Help key changed from F12 to ? (Shift+/) to avoid conflict with Steam Screenshot
-- Extension cells below Pitcher Pump and Water Trap now announce as "intake pipe" or "lure" instead of repeating the building name
-- Utility ports now use descriptive labels: filters say "filtered gas output" instead of "gas output 1", overflow valves say "overflow output", preferential flow valves say "priority input"
-- Gas, liquid, and solid filter side screens now present a flat alphabetical list of elements instead of confusing folded categories
-- Door access control now says "passing from right to left" instead of just "left" to clarify the direction of travel
-- Action buttons now include their tooltip in speech (e.g. wash basin direction buttons explain the travel direction)
-- Pressing backslash on the details screen activates copy settings for the selected building, with an error message if the entity has no copyable settings
-- Fixed switching tools (e.g. pressing X for deconstruct while in build mode) not activating the new tool's handler
-- Tile cursor help (F12) now lists the 10 base game management screen hotkeys (Priorities, Consumables, Vitals, etc.)
-- Build menu now announces material costs inline (e.g. "copper 400 kg") so you can compare buildings without opening the info screen
-- Fixed dig tool announcing gas or liquid element behind buildings
-- Fixed dig tool announcing "N/A" hardness for gas and liquid elements
-- Fixed details screen speaking extraneous periods in Category line (e.g., "Category:. . Toilet" now reads "Category:. Toilet")
-- Tile cursor now announces "unreachable" for dig, mop, and sweep orders that no duplicant can reach
-- Fixed utility placement (wires, pipes) rejecting cells with existing utilities, so you can now start drags on existing lines and drag over them to reconnect
-- Fixed copy building key (B) announcing "tool tool" instead of the building name
-- Place tool (cargo lander placement) is now accessible: navigate with tile cursor, Space/Enter to confirm, Escape to cancel
-- Copy settings tool is now accessible: Space to apply, Enter to apply and exit
-- README now lists base game tool hotkeys (noting I and K are overwritten) and management screen hotkeys
+* Fix: wire bridge and joint plate connection points now announce "connection port" in the power overlay, so players can find where to attach wires
+* Fix: wire shapes next to joint plates now correctly include the joint plate connection direction
+* Fix: build tool now allows placing replacement tiles (e.g. sandstone ladder over wood ladder) instead of rejecting as obstructed
+* Build tool: port layout hotkey changed from P to Shift+P, freeing bare P for the game's Prioritize tool
+* Story trait popups (discovery and completion) and gameplay event popups (meteor showers, food fights, etc.) are now spoken with title, description, and action buttons
+* Ctrl+\\ follows the current duplicant with the camera, announcing status and chore changes in real time; \[ / ] switches the follow target; any cursor movement stops following
+* Dupe navigator (\[ / ]) now announces position relative to cursor (e.g. "3 up 2 left") and speaks statuses before the current chore
+* Database: lore categories (emails, journals, research notes, personal logs, investigations, notices) now appear in the categories tab alongside game-data categories
+* Fix: type-ahead search in the Database no longer causes a crash
+* Database: critter morphs and other sub-entries are now navigable via Right arrow from the parent entry, and appear in type-ahead search
+* Shift+G opens disinfect threshold settings when germ overlay is active (toggle auto-disinfect, adjust threshold via slider or direct number entry)
+* Cycling dupes with \[ / ] now announces "trapped" after the dupe's name when they can't pathfind to other dupes, the telepad, or their bed
+* Farm tiles now announce plant extent and blocked status (e.g. "extends 2 up, blocked") when selecting a multi-cell plant
+* Pipe bridges, logic gates, and wire bridges now place the cursor on the input end and announce the output direction (e.g. "right" means flow goes right)
+* Fix: logic gate ports (NOT, AND, OR, XOR, buffer, filter, multiplexer, demultiplexer) now announce port names in the automation overlay
+* Conduits and wires announce shapes instead of raw directions (e.g. "vertical", "up right corner", "right tee junction" instead of "connects up, down")
+* Details screen navigation is now stable when the game reorders widgets between keypresses (errands, storage, and other tabs no longer jump to unexpected items)
+* Material picker now announces material effects (overheat temperature modifier, thermal conductivity, etc.) alongside name and quantity
+* Fix: audio rulers no longer disappear when opening and closing menus
+* Translation: replaced concatenation patterns with format strings so translators can reorder words (biome names, bottled/loose labels, colony inventory, starmap research, diet restrictions, material alternatives)
+* Fix: heavy-watt joint plates now announce "horizontal" and "vertical" when rotating instead of meaningless direction names
+* Sandbox mode: all 12 sandbox tools are accessible. Toggle sandbox with Shift+S, pick tools from the Sandbox Tools category in the action menu (B key). Rectangle selection for brush tools (Space for corners, Enter to apply), single-cell apply for flood/spawner/story tools, Ctrl+Space to sample, F to open the parameter menu with sliders and selectors
+* Fix: bare G key was blocked during build placement even after the rectangle mode toggle moved to Ctrl+G
+* Rectangle build mode: press Ctrl+G while placing a 1x1 building (tile, drywall, etc.) to define rectangular areas with Space, then Enter to fill them all at once
+* Alt+Arrow skips by building, tile type, or element regardless of the active overlay
+* Fix: vacuum and void tiles no longer report "0 g" mass
+* Fix: cluster map cursor no longer resets to the active world when returning from a details screen or entity picker
+* Cluster map: H key jumps cursor to the active world's hex location
+* Fix: rocket module side screen now speaks the module name and description instead of silence
+* Module flight utility side screen: duplicant dropdown is now cyclable with left/right arrows
+* Module flight utility side screen: duplicate module names are numbered (e.g. "Cargo Bay 1", "Cargo Bay 2")
+* Rocket restriction side screen now speaks the automation tooltip when restrictions are controlled by a logic wire
+* Pilot and crew side screen now announces when a robo-pilot copilot is active alongside a dupe pilot
+* Fix: rocket landing pad dropdown no longer speaks the pad name twice, removes redundant label, and excludes invalid pads with reasons
+* Side screen dropdown options (e.g. door access, rocket restrictions) now speak their tooltip when selected
+* Disabled buttons and toggles are now navigable and announce "unavailable". Pressing Enter on them plays a negative sound instead of silently failing
+* Announce "Saved" after the game finishes saving (autosave or manual)
+* H key now jumps to the Rocket Control Station when inside a rocket interior. Coordinates are relative to the control station (0,0)
+* Build tool cursor now represents the bottom-left corner of the building. Extent announcements use "right" and "up" only (e.g. "extends 2 right, 1 up"), and port offsets are relative to the corner you're standing on
+* P key in build tool announces all ports with their offset from the cursor (e.g. "liquid input, here, liquid output, 1 up. power input, 1 right."). Offsets update when the building is rotated
+* Shift+R in build tool rotates the building backward (counterclockwise for 4-way rotation)
+* Geysers are now a top-level scanner category (after Zones) with subcategories: Gas, Liquid, Molten, Geothermal
+* Buried geysers no longer appear in the tile cursor or scanner until exposed by digging
+* Backspace returns to pre-jump position after both \\ dupe jump and Home scanner teleport
+* Shift+\\ checks if the current dupe can reach the cursor tile, reporting cost if reachable or the nearest reachable tile if not
+* Demolior (DLC4 large impactor): spoken announcements for discovery, impact, destruction, and damage milestones; S key reports Demolior health and time remaining; activating the Demolior notification focuses the camera on the impact zone
+* Fix: spurious diagnostic, resource, and world announcements during save load are now suppressed
+* Fix: notification submenu now shows message titles instead of internal UI object names and coordinates
+* Activating an achievement notification announces "opening achievements" and each unlocked achievement name
+* Fix: deconstruct tool now works on Gravitas buildings and other demolishable structures (Gene Shuffler, Cryo Tank, etc.)
+* Gravitas ruins (doors, walls, desks, and other props) now appear in the scanner under Buildings > Gravitas
+* Tile cursor now reports deconstruction orders on backwalls
+* Fix: navigating recipes or side screen items no longer crashes when the game refreshes widgets between actions
+* Fix: foundation tiles no longer double-announce (element was spoken on top of the building)
+* Cluster map scanner now supports Ctrl+F search to filter entities by name
+* Cluster map: hidden and peeked hexes now announce "unexplored" or "unseen" instead of verbose tooltip text
+* Cluster map (Spaced Out DLC starmap): full keyboard navigation with hex cursor, entity selection, scanner, pathfinder, and coordinate reading
+* W opens a navigable world list to switch between asteroids and rockets (Spaced Out DLC)
+* Switching worlds now announces the destination world name, whether via the world list, number hotkeys, or starmap
+* Off-screen world diagnostic degradation is announced with the world name and status
+* Newly discovered worlds are announced by name
+* Fixed rotation direction for horizontal-flow buildings (gas filters, conduit bridges, logic gates, etc.): "facing left" now correctly indicates the input side at Neutral orientation
+* Fix: placing a building, canceling it with Shift+Space, then placing again on the same tile now works correctly
+* Backspace returns to your previous position after a scanner teleport (Home key)
+* Shift+Home announces distance to the current scanner item; auto-move toggle moved to Shift+End
+* Shift+Up/Down adjusts a single cell's priority in the priorities table, complementing Ctrl+Up/Down which adjusts the entire column
+* Numpad number keys now work everywhere the main keyboard number keys do: priority setting, schedule brush selection, and cursor bookmarks
+* D reads current diagnostic alerts (breathability, food, stress, etc.) sorted by severity
+* Shift+D opens a full diagnostics browser with pin state cycling and criteria toggles
+* Diagnostic alerts are now automatically announced when conditions worsen
+* Liquids pooling on buildings are now spoken instead of being suppressed with the gas element
+* Type-ahead search now supports spaces for multi-word queries (e.g., "blue c" to find "Blue Cheese"). Space only enters the search buffer after typing at least one letter, so handler actions like pin toggle still work normally
+* Encyclopedia type-ahead now includes top-level categories in search results, listed after article matches
+* Type-ahead search now sorts matches by position within each tier, so "washroom" ranks before "fried mushroom" when searching "room"
+* Materials overlay area scan now reports only element percentages, without median mass
+* Ctrl+Shift+Down resets big cursor to 1x1 instantly
+* Fixed cursor skip stopping on random unexplored tiles instead of treating the entire fog-of-war region as one block
+* Fixed opening the starmap (Z) or other non-tool screens while in build or tool mode causing errors
+* Big cursor: Shift+Up/Down cycles cursor size (1x1, 3x3, 5x5, 9x9, 21x21). Arrow keys move by the full cursor width, and landing speaks an area scan summary instead of a single tile
+* Area scan adapts to the active overlay: element breakdown for Materials, average temperature/lux/decor/rads for their overlays, O2/PO2 percentages for Oxygen, germ averages for Disease, room types for Rooms, plant growth for Crops
+* With a big cursor active, Space in tool mode sets both corners at once, creating a rectangle the size of the cursor area
+* Clear rectangle in tool mode changed from Delete to Shift+Space, matching build tool mode
+* Help key changed from F12 to ? (Shift+/) to avoid conflict with Steam Screenshot
+* Extension cells below Pitcher Pump and Water Trap now announce as "intake pipe" or "lure" instead of repeating the building name
+* Utility ports now use descriptive labels: filters say "filtered gas output" instead of "gas output 1", overflow valves say "overflow output", preferential flow valves say "priority input"
+* Gas, liquid, and solid filter side screens now present a flat alphabetical list of elements instead of confusing folded categories
+* Door access control now says "passing from right to left" instead of just "left" to clarify the direction of travel
+* Action buttons now include their tooltip in speech (e.g. wash basin direction buttons explain the travel direction)
+* Pressing backslash on the details screen activates copy settings for the selected building, with an error message if the entity has no copyable settings
+* Fixed switching tools (e.g. pressing X for deconstruct while in build mode) not activating the new tool's handler
+* Tile cursor help (F12) now lists the 10 base game management screen hotkeys (Priorities, Consumables, Vitals, etc.)
+* Build menu now announces material costs inline (e.g. "copper 400 kg") so you can compare buildings without opening the info screen
+* Fixed dig tool announcing gas or liquid element behind buildings
+* Fixed dig tool announcing "N/A" hardness for gas and liquid elements
+* Fixed details screen speaking extraneous periods in Category line (e.g., "Category:. . Toilet" now reads "Category:. Toilet")
+* Tile cursor now announces "unreachable" for dig, mop, and sweep orders that no duplicant can reach
+* Fixed utility placement (wires, pipes) rejecting cells with existing utilities, so you can now start drags on existing lines and drag over them to reconnect
+* Fixed copy building key (B) announcing "tool tool" instead of the building name
+* Place tool (cargo lander placement) is now accessible: navigate with tile cursor, Space/Enter to confirm, Escape to cancel
+* Copy settings tool is now accessible: Space to apply, Enter to apply and exit
+* README now lists base game tool hotkeys (noting I and K are overwritten) and management screen hotkeys
+
