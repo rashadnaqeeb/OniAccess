@@ -2,16 +2,14 @@ namespace OniAccess.Input {
 	/// <summary>
 	/// Shared modifier-key helpers used by handlers that detect their own keys
 	/// via UnityEngine.Input.GetKeyDown in Tick().
+	/// On macOS, Ctrl maps to Option and Alt maps to Cmd to avoid OS-level
+	/// conflicts (Mission Control, Spaces, special character input, VoiceOver).
 	/// </summary>
 	public static class InputUtil {
-		public static bool AnyModifierHeld() {
-			return UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftControl)
-				|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightControl)
-				|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
-				|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightShift)
-				|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftAlt)
-				|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightAlt);
-		}
+		public static readonly bool IsMac =
+			UnityEngine.SystemInfo.operatingSystemFamily == UnityEngine.OperatingSystemFamily.MacOSX;
+
+		public static bool AnyModifierHeld() => CtrlHeld() || ShiftHeld() || AltHeld();
 
 		public static bool ShiftHeld() {
 			return UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift)
@@ -19,13 +17,19 @@ namespace OniAccess.Input {
 		}
 
 		public static bool CtrlHeld() {
-			return UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftControl)
-				|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightControl);
+			return IsMac
+				? UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftAlt)
+					|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightAlt)
+				: UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftControl)
+					|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightControl);
 		}
 
 		public static bool AltHeld() {
-			return UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftAlt)
-				|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightAlt);
+			return IsMac
+				? UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftCommand)
+					|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightCommand)
+				: UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftAlt)
+					|| UnityEngine.Input.GetKey(UnityEngine.KeyCode.RightAlt);
 		}
 
 		/// <summary>
