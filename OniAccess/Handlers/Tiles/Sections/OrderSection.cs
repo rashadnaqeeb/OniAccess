@@ -6,25 +6,15 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// Reads pending player orders at a cell. Collects individual order
 	/// labels (with per-order priority), then emits a single token
 	/// prefixed with "pending": e.g. "pending dig priority 5, mop".
-	/// Build orders are handled by BuildingSection (Constructable check).
+	/// Build and deconstruct orders are handled by BuildingSection
+	/// and ConduitSection (Constructable/Deconstructable checks).
 	/// </summary>
 	public class OrderSection: ICellSection {
-		private readonly int[] _extraDeconstructLayers;
-
-		public OrderSection() {
-			_extraDeconstructLayers = new int[0];
-		}
-
-		public OrderSection(params int[] extraDeconstructLayers) {
-			_extraDeconstructLayers = extraDeconstructLayers;
-		}
-
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var parts = new List<string>();
 			CollectDigOrder(cell, parts);
 			CollectMopOrder(cell, parts);
 			CollectSweepOrder(cell, parts);
-			CollectDeconstructOrder(cell, parts);
 			CollectHarvestOrder(cell, parts);
 			CollectUprootOrder(cell, parts);
 			CollectDisinfectOrder(cell, parts);
@@ -77,35 +67,6 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				}
 				item = item.nextItem;
 			}
-		}
-
-		private void CollectDeconstructOrder(int cell, List<string> parts) {
-			var buildingGo = Grid.Objects[cell, (int)ObjectLayer.Building];
-			var foundationGo = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
-			var backwallGo = Grid.Objects[cell, (int)ObjectLayer.Backwall];
-			var gantryGo = Grid.Objects[cell, (int)ObjectLayer.Gantry];
-			CollectDeconstructOnLayer(buildingGo, parts);
-			if (foundationGo != null && foundationGo != buildingGo)
-				CollectDeconstructOnLayer(foundationGo, parts);
-			CollectDeconstructOnLayer(backwallGo, parts);
-			CollectDeconstructOnLayer(gantryGo, parts);
-
-			var seen = new HashSet<GameObject> { buildingGo, foundationGo, backwallGo, gantryGo };
-			for (int i = 0; i < _extraDeconstructLayers.Length; i++) {
-				var go = Grid.Objects[cell, _extraDeconstructLayers[i]];
-				if (go != null && seen.Add(go))
-					CollectDeconstructOnLayer(go, parts);
-			}
-		}
-
-		private static void CollectDeconstructOnLayer(
-				GameObject go, List<string> parts) {
-			if (go == null) return;
-			var deconstructable = go.GetComponent<Deconstructable>();
-			if (deconstructable == null) return;
-			if (!deconstructable.IsMarkedForDeconstruction()) return;
-			parts.Add(FormatOrder(
-				(string)STRINGS.ONIACCESS.GLANCE.ORDER_DECONSTRUCT, go));
 		}
 
 		private static void CollectHarvestOrder(int cell, List<string> parts) {

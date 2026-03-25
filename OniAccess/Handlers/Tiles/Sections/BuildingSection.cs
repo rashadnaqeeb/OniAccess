@@ -41,6 +41,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 							backwallName = string.Format(
 								(string)STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION,
 								backwallName);
+						else {
+							var decon = backwallGo.GetComponent<Deconstructable>();
+							if (decon != null && decon.IsMarkedForDeconstruction())
+								backwallName = string.Format(
+									(string)STRINGS.ONIACCESS.GLANCE.MARKED_DECONSTRUCTION,
+									backwallName);
+						}
 						tokens.Add(backwallName);
 						ReadPixelPack(backwallGo, cell, tokens);
 					}
@@ -78,7 +85,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					(string)STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION,
 					displayName));
 			} else {
-				tokens.Add(displayName);
+				var deconstructable = go.GetComponent<Deconstructable>();
+				if (deconstructable != null && deconstructable.IsMarkedForDeconstruction())
+					tokens.Add(string.Format(
+						(string)STRINGS.ONIACCESS.GLANCE.MARKED_DECONSTRUCTION,
+						displayName));
+				else
+					tokens.Add(displayName);
 			}
 
 			if (Grid.HasTube[cell])

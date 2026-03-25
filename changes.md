@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.1.3
 
+* Deconstruction orders now announce the building name, matching construction orders
+
 ## 1.1.3
 
 ported the mod to the PRISM speech library, adding support for ZDSR, as well as cross-platform support for Mac and Linux.

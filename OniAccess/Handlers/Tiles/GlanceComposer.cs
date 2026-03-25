@@ -20,16 +20,6 @@ namespace OniAccess.Handlers.Tiles {
 		internal static readonly ICellSection Element = new Sections.ElementSection();
 		internal static readonly ICellSection Entity = new Sections.EntitySection();
 		internal static readonly ICellSection Order = new Sections.OrderSection();
-		internal static readonly ICellSection OrderPower = new Sections.OrderSection(
-			(int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors);
-		internal static readonly ICellSection OrderPlumbing = new Sections.OrderSection(
-			(int)ObjectLayer.LiquidConduit, (int)ObjectLayer.LiquidConduitConnection);
-		internal static readonly ICellSection OrderVentilation = new Sections.OrderSection(
-			(int)ObjectLayer.GasConduit, (int)ObjectLayer.GasConduitConnection);
-		internal static readonly ICellSection OrderConveyor = new Sections.OrderSection(
-			(int)ObjectLayer.SolidConduit, (int)ObjectLayer.SolidConduitConnection);
-		internal static readonly ICellSection OrderAutomation = new Sections.OrderSection(
-			(int)ObjectLayer.LogicWire, (int)ObjectLayer.LogicGate);
 		internal static readonly ICellSection Debris = new Sections.DebrisSection();
 		internal static readonly ICellSection Light = new Sections.LightSection();
 		internal static readonly ICellSection Radiation = new Sections.RadiationSection();

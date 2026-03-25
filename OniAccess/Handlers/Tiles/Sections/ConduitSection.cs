@@ -213,6 +213,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (go.GetComponent<Constructable>() != null)
 				return string.Format(
 					(string)STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION, name);
+			var decon = go.GetComponent<Deconstructable>();
+			if (decon != null && decon.IsMarkedForDeconstruction())
+				return string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.MARKED_DECONSTRUCTION, name);
 			return name;
 		}
 

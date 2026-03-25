@@ -911,6 +911,8 @@ namespace STRINGS {
 		public class GLANCE {
 			// {0} = building name being constructed
 			public static LocString UNDER_CONSTRUCTION = "constructing {0}";
+			// {0} = building name marked for deconstruction
+			public static LocString MARKED_DECONSTRUCTION = "deconstructing {0}";
 
 			// Building port type labels
 			public static LocString POWER_INPUT = "power input";
