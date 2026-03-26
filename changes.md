@@ -2,6 +2,9 @@
 
 ## Unreleased changes since 1.1.4
 
+* Rocket module selection now reads module descriptions and effects
+* Material selection in the rocket module screen is now a navigable list instead of a slider
+
 ## 1.1.4
 
 * Fix biome names showing English in non-English games

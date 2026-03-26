@@ -43,14 +43,11 @@ namespace OniAccess.Handlers.Screens {
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
-		protected override int MaxLevel => 1;
+		protected override int MaxLevel => 2;
 		protected override int SearchLevel => 1;
 
 		public SelectModuleHandler(SelectModuleSideScreen screen) : base(screen) {
-			var list = new List<HelpEntry>();
-			list.AddRange(NestedNavHelpEntries);
-			list.Add(new HelpEntry("Left/Right", STRINGS.ONIACCESS.HELP.ADJUST_VALUE));
-			HelpEntries = list.AsReadOnly();
+			HelpEntries = new List<HelpEntry>(NestedNavHelpEntries).AsReadOnly();
 		}
 
 		// ========================================
@@ -165,17 +162,25 @@ namespace OniAccess.Handlers.Screens {
 					default: return 0;
 				}
 			}
+			if (level == 2) {
+				if ((Section)indices[0] == Section.Materials)
+					return GetMaterialsForSlot(indices[1]).Count;
+				return 0;
+			}
 			return 0;
 		}
 
 		protected override string GetItemLabel(int level, int[] indices) {
 			if (level == 0) return GetSectionLabel(indices[0]);
 			if (level == 1) return GetLevel1Label(indices[0], indices[1]);
+			if (level == 2 && (Section)indices[0] == Section.Materials)
+				return GetMaterialItemLabel(indices[1], indices[2]);
 			return null;
 		}
 
 		protected override string GetParentLabel(int level, int[] indices) {
 			if (level == 1) return GetSectionLabel(indices[0]);
+			if (level == 2) return GetLevel1Label(indices[0], indices[1]);
 			return null;
 		}
 
@@ -185,14 +190,16 @@ namespace OniAccess.Handlers.Screens {
 					ClickBuild();
 				return;
 			}
+			if (Level == 2) {
+				if ((Section)indices[0] == Section.Materials)
+					SelectMaterialAtIndex(indices[1], indices[2]);
+				return;
+			}
 			// Level 1
 			var section = (Section)indices[0];
 			switch (section) {
 				case Section.Modules:
 					SelectModuleAtIndex(indices[1]);
-					break;
-				case Section.Materials:
-					CycleMaterialInSlot(indices[1], 1);
 					break;
 				case Section.Skin:
 					SelectFacadeAtIndex(indices[1]);
@@ -221,10 +228,6 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected override void HandleLeftRight(int direction, int stepLevel) {
-			if (Level == 1 && (Section)GetIndex(0) == Section.Materials) {
-				CycleMaterialInSlot(GetIndex(1), direction);
-				return;
-			}
 			if (direction > 0 && Level == 0 && !IsSectionDrillable(GetIndex(0))) {
 				return;
 			}
@@ -310,6 +313,12 @@ namespace OniAccess.Handlers.Screens {
 				label += ", " + (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE;
 			if (def == GetSelectedModuleDef())
 				label += ", " + (string)STRINGS.ONIACCESS.STATES.SELECTED;
+			string desc = def.Desc;
+			if (!string.IsNullOrEmpty(desc))
+				label += ", " + TextFilter.FilterForSpeech(desc);
+			string effect = def.Effect;
+			if (!string.IsNullOrEmpty(effect))
+				label += ", " + TextFilter.FilterForSpeech(effect);
 			return label;
 		}
 
@@ -317,20 +326,39 @@ namespace OniAccess.Handlers.Screens {
 			var selectors = GetActiveSelectors();
 			if (slotIndex < 0 || slotIndex >= selectors.Count) return null;
 			var selector = selectors[slotIndex];
-			// Header text = ingredient category
 			var headerLocText = selector.Headerbar.GetComponentInChildren<LocText>();
 			string header = headerLocText != null
 				? TextFilter.FilterForSpeech(headerLocText.GetParsedText())
 				: (string)STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS;
-			if (selector.CurrentSelectedElement != null) {
-				string materialName = selector.CurrentSelectedElement.ProperName();
-				float available = ClusterManager.Instance.activeWorld.worldInventory
-					.GetAmount(selector.CurrentSelectedElement, includeRelatedWorlds: true);
-				string formattedAvailable = GameUtil.GetFormattedByTag(
-					selector.CurrentSelectedElement, available);
-				header += ", " + materialName + ", " + formattedAvailable;
-			}
+			if (selector.CurrentSelectedElement != null)
+				header += ", " + selector.CurrentSelectedElement.ProperName();
 			return header;
+		}
+
+		private List<Tag> GetMaterialsForSlot(int slotIndex) {
+			var selectors = GetActiveSelectors();
+			if (slotIndex < 0 || slotIndex >= selectors.Count) return new List<Tag>();
+			var selector = selectors[slotIndex];
+			var tags = new List<Tag>();
+			foreach (var kvp in selector.ElementToggles) {
+				if (kvp.Value.gameObject.activeSelf)
+					tags.Add(kvp.Key);
+			}
+			return tags;
+		}
+
+		private string GetMaterialItemLabel(int slotIndex, int materialIndex) {
+			var materials = GetMaterialsForSlot(slotIndex);
+			if (materialIndex < 0 || materialIndex >= materials.Count) return null;
+			var tag = materials[materialIndex];
+			string label = tag.ProperName();
+			float available = ClusterManager.Instance.activeWorld.worldInventory
+				.GetAmount(tag, includeRelatedWorlds: true);
+			label += ", " + GameUtil.GetFormattedByTag(tag, available);
+			var selectors = GetActiveSelectors();
+			if (slotIndex < selectors.Count && selectors[slotIndex].CurrentSelectedElement == tag)
+				label += ", " + (string)STRINGS.ONIACCESS.STATES.SELECTED;
+			return label;
 		}
 
 		private List<string> GetFacadeKeys() {
@@ -375,31 +403,16 @@ namespace OniAccess.Handlers.Screens {
 			SpeakCurrentItem();
 		}
 
-		private void CycleMaterialInSlot(int slotIndex, int direction) {
+		private void SelectMaterialAtIndex(int slotIndex, int materialIndex) {
+			var materials = GetMaterialsForSlot(slotIndex);
+			if (materialIndex < 0 || materialIndex >= materials.Count) return;
 			var selectors = GetActiveSelectors();
 			if (slotIndex < 0 || slotIndex >= selectors.Count) return;
 			var selector = selectors[slotIndex];
-
-			// Get active (visible) tags in order
-			var activeTags = new List<Tag>();
-			foreach (var kvp in selector.ElementToggles) {
-				if (kvp.Value.gameObject.activeSelf)
-					activeTags.Add(kvp.Key);
-			}
-			if (activeTags.Count == 0) return;
-
-			int currentIdx = activeTags.IndexOf(selector.CurrentSelectedElement);
-			int nextIdx = (currentIdx + direction + activeTags.Count) % activeTags.Count;
-			Tag nextTag = activeTags[nextIdx];
-
 			var recipe = _activeRecipeField.GetValue(selector) as Recipe;
-			selector.OnSelectMaterial(nextTag, recipe);
-
-			if ((nextIdx == 0 && direction > 0) || (nextIdx == activeTags.Count - 1 && direction < 0))
-				PlaySound("Slider_Boundary_Low");
-			else
-				PlaySound("Slider_Move");
-
+			selector.OnSelectMaterial(materials[materialIndex], recipe);
+			Level = 0;
+			_search.Clear();
 			SpeakCurrentItem();
 		}
 
