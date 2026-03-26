@@ -26,6 +26,8 @@ namespace OniAccess.Handlers.Screens {
 			.GetField("activeFacadeToggles", BindingFlags.NonPublic | BindingFlags.Instance);
 		private static readonly FieldInfo _activeRecipeField = typeof(MaterialSelector)
 			.GetField("activeRecipe", BindingFlags.NonPublic | BindingFlags.Instance);
+		private static readonly FieldInfo _activeIngredientField = typeof(MaterialSelector)
+			.GetField("activeIngredient", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		static SelectModuleHandler() {
 			if (_selectedModuleDefField == null) Util.Log.Warn("SelectModuleHandler: selectedModuleDef field not found");
@@ -35,6 +37,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_materialSelectorsField == null) Util.Log.Warn("SelectModuleHandler: materialSelectors field not found");
 			if (_activeFacadeTogglesField == null) Util.Log.Warn("SelectModuleHandler: activeFacadeToggles field not found");
 			if (_activeRecipeField == null) Util.Log.Warn("SelectModuleHandler: activeRecipe field not found");
+			if (_activeIngredientField == null) Util.Log.Warn("SelectModuleHandler: activeIngredient field not found");
 		}
 
 		private enum Section { Modules, Materials, Skin, Build }
@@ -113,27 +116,25 @@ namespace OniAccess.Handlers.Screens {
 		// SECTION HELPERS
 		// ========================================
 
-		private int SectionCount => (int)Section.Build + 1;
-
-		private bool HasMaterialSection() {
-			return GetSelectedModuleDef() != null && GetMaterialPanel() != null;
-		}
-
-		private bool HasFacadeSection() {
-			var panel = GetFacadePanel();
-			if (panel == null || !panel.gameObject.activeSelf) return false;
-			var toggles = GetActiveFacadeToggles();
-			return toggles != null && toggles.Count > 0;
-		}
-
-		private bool IsSectionDrillable(int section) {
-			switch ((Section)section) {
-				case Section.Modules: return true;
-				case Section.Materials: return HasMaterialSection();
-				case Section.Skin: return HasFacadeSection();
-				case Section.Build: return false;
-				default: return false;
+		private List<Section> GetVisibleSections() {
+			var sections = new List<Section> { Section.Modules };
+			if (GetSelectedModuleDef() != null && GetMaterialPanel() != null)
+				sections.Add(Section.Materials);
+			var facadePanel = GetFacadePanel();
+			if (facadePanel != null && facadePanel.gameObject.activeSelf) {
+				var toggles = GetActiveFacadeToggles();
+				if (toggles != null && toggles.Count > 0)
+					sections.Add(Section.Skin);
 			}
+			sections.Add(Section.Build);
+			return sections;
+		}
+
+		private Section GetSection(int visibleIndex) {
+			var sections = GetVisibleSections();
+			return (visibleIndex >= 0 && visibleIndex < sections.Count)
+				? sections[visibleIndex]
+				: Section.Modules;
 		}
 
 		private List<MaterialSelector> GetActiveSelectors() {
@@ -152,10 +153,9 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected override int GetItemCount(int level, int[] indices) {
-			if (level == 0) return SectionCount;
+			if (level == 0) return GetVisibleSections().Count;
 			if (level == 1) {
-				var section = (Section)indices[0];
-				switch (section) {
+				switch (GetSection(indices[0])) {
 					case Section.Modules: return GetVisibleModules().Count;
 					case Section.Materials: return GetActiveSelectors().Count;
 					case Section.Skin: return GetFacadeKeys().Count;
@@ -163,7 +163,7 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 			if (level == 2) {
-				if ((Section)indices[0] == Section.Materials)
+				if (GetSection(indices[0]) == Section.Materials)
 					return GetMaterialsForSlot(indices[1]).Count;
 				return 0;
 			}
@@ -171,33 +171,32 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		protected override string GetItemLabel(int level, int[] indices) {
-			if (level == 0) return GetSectionLabel(indices[0]);
-			if (level == 1) return GetLevel1Label(indices[0], indices[1]);
-			if (level == 2 && (Section)indices[0] == Section.Materials)
+			if (level == 0) return GetSectionLabel(GetSection(indices[0]));
+			if (level == 1) return GetLevel1Label(GetSection(indices[0]), indices[1]);
+			if (level == 2 && GetSection(indices[0]) == Section.Materials)
 				return GetMaterialItemLabel(indices[1], indices[2]);
 			return null;
 		}
 
 		protected override string GetParentLabel(int level, int[] indices) {
-			if (level == 1) return GetSectionLabel(indices[0]);
-			if (level == 2) return GetLevel1Label(indices[0], indices[1]);
+			if (level == 1) return GetSectionLabel(GetSection(indices[0]));
+			if (level == 2) return GetLevel1Label(GetSection(indices[0]), indices[1]);
 			return null;
 		}
 
 		protected override void ActivateLeafItem(int[] indices) {
 			if (Level == 0) {
-				if ((Section)indices[0] == Section.Build)
+				if (GetSection(indices[0]) == Section.Build)
 					ClickBuild();
 				return;
 			}
 			if (Level == 2) {
-				if ((Section)indices[0] == Section.Materials)
+				if (GetSection(indices[0]) == Section.Materials)
 					SelectMaterialAtIndex(indices[1], indices[2]);
 				return;
 			}
 			// Level 1
-			var section = (Section)indices[0];
-			switch (section) {
+			switch (GetSection(indices[0])) {
 				case Section.Modules:
 					SelectModuleAtIndex(indices[1]);
 					break;
@@ -219,7 +218,7 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
-			outIndices[0] = (int)Section.Modules;
+			outIndices[0] = 0; // Modules is always the first visible section
 			outIndices[1] = flatIndex;
 		}
 
@@ -228,7 +227,7 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected override void HandleLeftRight(int direction, int stepLevel) {
-			if (direction > 0 && Level == 0 && !IsSectionDrillable(GetIndex(0))) {
+			if (direction > 0 && Level == 0 && GetSection(GetIndex(0)) == Section.Build) {
 				return;
 			}
 			base.HandleLeftRight(direction, stepLevel);
@@ -259,7 +258,7 @@ namespace OniAccess.Handlers.Screens {
 			if (_pendingActivation) {
 				_pendingActivation = false;
 				string title = (string)STRINGS.UI.UISIDESCREENS.SELECTMODULESIDESCREEN.TITLE;
-				string firstSection = GetSectionLabel(0);
+				string firstSection = GetSectionLabel(GetSection(0));
 				SpeechPipeline.SpeakInterrupt(title + ", " + firstSection);
 				return false;
 			}
@@ -270,8 +269,8 @@ namespace OniAccess.Handlers.Screens {
 		// LABELS
 		// ========================================
 
-		private string GetSectionLabel(int section) {
-			switch ((Section)section) {
+		private string GetSectionLabel(Section section) {
+			switch (section) {
 				case Section.Modules: {
 						string label = (string)STRINGS.ONIACCESS.MODULE_SCREEN.MODULES;
 						var selected = GetSelectedModuleDef();
@@ -294,8 +293,8 @@ namespace OniAccess.Handlers.Screens {
 			}
 		}
 
-		private string GetLevel1Label(int section, int itemIndex) {
-			switch ((Section)section) {
+		private string GetLevel1Label(Section section, int itemIndex) {
+			switch (section) {
 				case Section.Modules: return GetModuleLabel(itemIndex);
 				case Section.Materials: return GetMaterialSlotLabel(itemIndex);
 				case Section.Skin: return GetFacadeLabel(itemIndex);
@@ -326,13 +325,16 @@ namespace OniAccess.Handlers.Screens {
 			var selectors = GetActiveSelectors();
 			if (slotIndex < 0 || slotIndex >= selectors.Count) return null;
 			var selector = selectors[slotIndex];
-			var headerLocText = selector.Headerbar.GetComponentInChildren<LocText>();
-			string header = headerLocText != null
-				? TextFilter.FilterForSpeech(headerLocText.GetParsedText())
+			var ingredient = _activeIngredientField.GetValue(selector) as Recipe.Ingredient;
+			string category = ingredient != null
+				? ingredient.tag.ProperName()
 				: (string)STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS;
+			string label = ingredient != null
+				? GameUtil.GetFormattedMass(ingredient.amount) + " " + category
+				: category;
 			if (selector.CurrentSelectedElement != null)
-				header += ", " + selector.CurrentSelectedElement.ProperName();
-			return header;
+				label += ", " + selector.CurrentSelectedElement.ProperName();
+			return label;
 		}
 
 		private List<Tag> GetMaterialsForSlot(int slotIndex) {

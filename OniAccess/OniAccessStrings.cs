@@ -173,9 +173,9 @@ namespace STRINGS {
 
 		// Select module side screen section headers
 		public class MODULE_SCREEN {
-			public static LocString MODULES = "Modules";
-			public static LocString MATERIALS = "Materials";
-			public static LocString FACADE = "Skin";
+			public static LocString MODULES = "Select module";
+			public static LocString MATERIALS = "Select material";
+			public static LocString FACADE = "Select skin";
 		}
 
 		// Colony setup / destination select screen
