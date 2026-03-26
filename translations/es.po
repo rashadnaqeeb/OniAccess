@@ -2456,18 +2456,18 @@ msgstr "Sin asignar"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.FACADE
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.FACADE"
-msgid "Skin"
-msgstr "Aspecto"
+msgid "Select skin"
+msgstr "Seleccionar aspecto"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS"
-msgid "Materials"
-msgstr "Materiales"
+msgid "Select material"
+msgstr "Seleccionar material"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.MODULES
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MODULES"
-msgid "Modules"
-msgstr "Módulos"
+msgid "Select module"
+msgstr "Seleccionar módulo"
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED"

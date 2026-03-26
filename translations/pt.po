@@ -2456,18 +2456,18 @@ msgstr "Sem tecla"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.FACADE
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.FACADE"
-msgid "Skin"
-msgstr "Skin"
+msgid "Select skin"
+msgstr "Selecionar skin"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS"
-msgid "Materials"
-msgstr "Materiais"
+msgid "Select material"
+msgstr "Selecionar material"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.MODULES
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MODULES"
-msgid "Modules"
-msgstr "Módulos"
+msgid "Select module"
+msgstr "Selecionar módulo"
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED"

@@ -2458,18 +2458,18 @@ msgstr "未绑定"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.FACADE
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.FACADE"
-msgid "Skin"
-msgstr "皮肤"
+msgid "Select skin"
+msgstr "选择皮肤"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS"
-msgid "Materials"
-msgstr "材料"
+msgid "Select material"
+msgstr "选择材料"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.MODULES
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MODULES"
-msgid "Modules"
-msgstr "模块"
+msgid "Select module"
+msgstr "选择模块"
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED"

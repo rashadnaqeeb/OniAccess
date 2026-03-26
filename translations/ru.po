@@ -2458,18 +2458,18 @@ msgstr "Не назначено"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.FACADE
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.FACADE"
-msgid "Skin"
-msgstr "Облик"
+msgid "Select skin"
+msgstr "Выбрать облик"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MATERIALS"
-msgid "Materials"
-msgstr "Материалы"
+msgid "Select material"
+msgstr "Выбрать материал"
 
 #. STRINGS.ONIACCESS.MODULE_SCREEN.MODULES
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.MODULES"
-msgid "Modules"
-msgstr "Модули"
+msgid "Select module"
+msgstr "Выбрать модуль"
 
 #. STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.ACHIEVEMENT_EARNED"
