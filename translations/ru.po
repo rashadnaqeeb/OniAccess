@@ -1402,6 +1402,101 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.PARENT_ITEM"
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
 
+#. STRINGS.ONIACCESS.DETAILS.PATHING
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING"
+msgid "Pathing behaviour: {0}"
+msgstr "Способ передвижения: {0}"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DIGGER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DIGGER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. Can also burrow into soft natural tiles and tunnel through solid material, emerging back onto any surface. Cannot dig through very hard materials or refined metals."
+msgstr "Занимает 1 клетку. Ходит по твёрдой земле, карабкается по стенам и ходит вверх ногами по потолкам, свободно переходя между всеми четырьмя поверхностями на углах. Может также зарываться в мягкие природные клетки и прокладывать туннели через твёрдый материал, выходя на любую поверхность. Не может копать очень твёрдые материалы и очищенные металлы."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT"
+msgid "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Falls through larger drops, though will attempt to avoid this."
+msgstr "Размер 1 в ширину и 2 в высоту. Ходит по твёрдой земле и может перемещаться вертикально или горизонтально по лестницам. Может забираться на уступы высотой до 2 клеток, перепрыгивать проёмы шириной 1 клетку и спрыгивать с уступов высотой до 2 клеток. Может также достичь платформы в 2 клетках по горизонтали и 1 клетке вверх, или в 1 клетке по горизонтали и 2 клетках вверх. Падает с больших высот, хотя попытается этого избежать."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER"
+msgid "Occupies 1 tile. Hovers 1 tile above the nearest solid surface or liquid below it, following the terrain contour from above. If submerged by rising liquid, can swim to escape."
+msgstr "Занимает 1 клетку. Парит на 1 клетку выше ближайшей твёрдой поверхности или жидкости внизу, следуя контуру рельефа сверху. Если погружён поднимающейся жидкостью, может плыть, чтобы выбраться."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X1"
+msgid "Occupies 1 tile. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape."
+msgstr "Занимает 1 клетку. Свободно летает по воздуху в любом направлении. Если погружён поднимающейся жидкостью, может плыть, чтобы выбраться."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X2"
+msgid "Occupies 1 wide by 2 tall. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape. Needs more vertical clearance than smaller flyers."
+msgstr "Занимает 1 в ширину и 2 в высоту. Свободно летает по воздуху в любом направлении. Если погружён поднимающейся жидкостью, может плыть, чтобы выбраться. Требует больше вертикального пространства, чем летуны меньшего размера."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_2X2"
+msgid "Occupies 2 wide by 2 tall. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape. Needs significant clearance to navigate."
+msgstr "Занимает 2 в ширину и 2 в высоту. Свободно летает по воздуху в любом направлении. Если погружён поднимающейся жидкостью, может плыть, чтобы выбраться. Требует значительного пространства для перемещения."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT"
+msgid "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Cannot use transit tubes or fire poles."
+msgstr "Размер 1 в ширину и 2 в высоту. Ходит по твёрдой земле и может перемещаться вертикально или горизонтально по лестницам. Может забираться на уступы высотой до 2 клеток, перепрыгивать проёмы шириной 1 клетку и спрыгивать с уступов высотой до 2 клеток. Может также достичь платформы в 2 клетках по горизонтали и 1 клетке вверх, или в 1 клетке по горизонтали и 2 клетках вверх. Не может использовать транспортные трубы и пожарные шесты."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT_FLYER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT_FLYER"
+msgid "Occupies 1 tile. Flies freely through open air in any direction. Can pass through doors. If submerged by rising liquid, can swim to escape."
+msgstr "Занимает 1 клетку. Свободно летает по воздуху в любом направлении. Может проходить через двери. Если погружён поднимающейся жидкостью, может плыть, чтобы выбраться."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. On the floor, can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and reach platforms up to 2 tiles away horizontally and 2 tiles up."
+msgstr "Занимает 1 клетку. Ходит по твёрдой земле, карабкается по стенам и ходит вверх ногами по потолкам, свободно переходя между всеми четырьмя поверхностями на углах. На полу может забираться на уступы высотой до 2 клеток, преодолевать проёмы шириной 1 клетку и достигать платформ в 2 клетках по горизонтали и 2 клетках вверх."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER_BABY
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER_BABY"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. Cannot climb ledges, jump gaps, or cross drops on the floor, unlike an adult."
+msgstr "Занимает 1 клетку. Ходит по твёрдой земле, карабкается по стенам и ходит вверх ногами по потолкам, свободно переходя между всеми четырьмя поверхностями на углах. В отличие от взрослой особи, не может забираться на уступы, перепрыгивать проёмы и преодолевать перепады высот на полу."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1"
+msgid "Occupies 1 tile. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk."
+msgstr "Занимает 1 клетку. Плавает в жидкости в любом направлении. На суше бьётся, ища ближайшую жидкость, но не может ходить."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2"
+msgid "Occupies 2 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs more space to navigate than smaller swimmers."
+msgstr "Занимает 2 в ширину и 2 в высоту. Плавает в жидкости в любом направлении. На суше бьётся, ища ближайшую жидкость, но не может ходить. Требует больше пространства для перемещения, чем пловцы меньшего размера."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. On the floor, can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall."
+msgstr "Занимает 1 клетку. Ходит по твёрдой земле, карабкается по стенам и ходит вверх ногами по потолкам, свободно переходя между всеми четырьмя поверхностями на углах. На полу может забираться на уступы высотой до 2 клеток, преодолевать проёмы шириной 1 клетку и спрыгивать с уступов высотой до 2 клеток."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1"
+msgid "Occupies 1 tile. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall."
+msgstr "Занимает 1 клетку. Ходит по твёрдой земле. Может забираться на уступы высотой до 2 клеток, преодолевать проёмы шириной 1 клетку и спрыгивать с уступов высотой до 2 клеток."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2"
+msgid "Occupies 1 wide by 2 tall. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Needs more vertical clearance than smaller walkers due to its height."
+msgstr "Занимает 1 в ширину и 2 в высоту. Ходит по твёрдой земле. Может забираться на уступы высотой до 2 клеток, преодолевать проёмы шириной 1 клетку и спрыгивать с уступов высотой до 2 клеток. Из-за своего роста требует больше вертикального пространства, чем ходоки меньшего размера."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_2X2"
+msgid "Occupies 2 wide by 2 tall. Walks on solid ground. Can climb or descend 1-tile ledges over a 2-tile horizontal distance, but cannot climb steeper ledges. Needs more clearance than smaller creatures due to its size."
+msgstr "Занимает 2 в ширину и 2 в высоту. Ходит по твёрдой земле. Может подниматься или спускаться по уступам в 1 клетку на горизонтальном расстоянии в 2 клетки, но не может забираться на более крутые уступы. Из-за своего размера требует больше пространства, чем существа меньшего размера."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_BABY
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_BABY"
+msgid "Occupies 1 tile. Walks on solid ground but can only move horizontally on flat surfaces. Cannot climb, jump, or cross gaps, unlike an adult."
+msgstr "Занимает 1 клетку. Ходит по твёрдой земле, но может двигаться только горизонтально по ровным поверхностям. В отличие от взрослой особи, не может карабкаться, прыгать или преодолевать проёмы."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_UNKNOWN
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_UNKNOWN"
+msgid "{0} (unknown)"
+msgstr "{0} (неизвестно)"
+
 #. STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE
 msgctxt "STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE"
 msgid "Pin resource"
@@ -1411,6 +1506,11 @@ msgstr "Закрепить ресурс"
 msgctxt "STRINGS.ONIACCESS.DETAILS.PRIORITY"
 msgid "Priority"
 msgstr "Приоритет"
+
+#. STRINGS.ONIACCESS.DETAILS.RANGE
+msgctxt "STRINGS.ONIACCESS.DETAILS.RANGE"
+msgid "Range: {0} to {1}"
+msgstr "Диапазон: от {0} до {1}"
 
 #. STRINGS.ONIACCESS.DETAILS.SCHEDULE
 msgctxt "STRINGS.ONIACCESS.DETAILS.SCHEDULE"

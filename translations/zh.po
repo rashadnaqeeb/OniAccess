@@ -1402,6 +1402,101 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.PARENT_ITEM"
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
 
+#. STRINGS.ONIACCESS.DETAILS.PATHING
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING"
+msgid "Pathing behaviour: {0}"
+msgstr "移动方式: {0}"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DIGGER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DIGGER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. Can also burrow into soft natural tiles and tunnel through solid material, emerging back onto any surface. Cannot dig through very hard materials or refined metals."
+msgstr "占1格。在固体地面行走，攀爬墙壁，在天花板上倒挂行走，可在四个表面之间的拐角自由转换。还可以钻入柔软的自然方块并在固体材料中挖掘隧道，从任意表面出来。无法挖掘非常坚硬的材料或精炼金属。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT"
+msgid "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Falls through larger drops, though will attempt to avoid this."
+msgstr "宽1格高2格。在固体地面行走，可通过梯子垂直或水平移动。可攀上2格高的台阶，跳过1格宽的缺口，从2格高的台阶跳下。还可到达水平距离2格且高1格的平台，或距离1格且高2格的平台。遇到更大落差会坠落，但会尝试避免。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER"
+msgid "Occupies 1 tile. Hovers 1 tile above the nearest solid surface or liquid below it, following the terrain contour from above. If submerged by rising liquid, can swim to escape."
+msgstr "占1格。悬浮在下方最近的固体表面或液体上方1格处，从上方跟随地形轮廓。如被上升的液体淹没，可游泳逃离。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X1"
+msgid "Occupies 1 tile. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape."
+msgstr "占1格。可在空气中向任意方向自由飞行。如被上升的液体淹没，可游泳逃离。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X2"
+msgid "Occupies 1 wide by 2 tall. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape. Needs more vertical clearance than smaller flyers."
+msgstr "宽1格高2格。可在空气中向任意方向自由飞行。如被上升的液体淹没，可游泳逃离。比较小的飞行生物需要更多垂直空间。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_2X2"
+msgid "Occupies 2 wide by 2 tall. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape. Needs significant clearance to navigate."
+msgstr "宽2格高2格。可在空气中向任意方向自由飞行。如被上升的液体淹没，可游泳逃离。移动需要相当大的空间。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT"
+msgid "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Cannot use transit tubes or fire poles."
+msgstr "宽1格高2格。在固体地面行走，可通过梯子垂直或水平移动。可攀上2格高的台阶，跳过1格宽的缺口，从2格高的台阶跳下。还可到达水平距离2格且高1格的平台，或距离1格且高2格的平台。无法使用运输管道或消防杆。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT_FLYER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT_FLYER"
+msgid "Occupies 1 tile. Flies freely through open air in any direction. Can pass through doors. If submerged by rising liquid, can swim to escape."
+msgstr "占1格。可在空气中向任意方向自由飞行。可穿过门。如被上升的液体淹没，可游泳逃离。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. On the floor, can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and reach platforms up to 2 tiles away horizontally and 2 tiles up."
+msgstr "占1格。在固体地面行走，攀爬墙壁，在天花板上倒挂行走，可在四个表面之间的拐角自由转换。在地面上可攀上2格高的台阶，跨过1格宽的缺口，到达水平距离2格且高2格的平台。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER_BABY
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER_BABY"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. Cannot climb ledges, jump gaps, or cross drops on the floor, unlike an adult."
+msgstr "占1格。在固体地面行走，攀爬墙壁，在天花板上倒挂行走，可在四个表面之间的拐角自由转换。与成体不同，无法在地面上攀上台阶、跳过缺口或跨越落差。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1"
+msgid "Occupies 1 tile. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk."
+msgstr "占1格。在液体中向任意方向游泳。在陆地上会扑腾着寻找附近的液体，但无法行走。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2"
+msgid "Occupies 2 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs more space to navigate than smaller swimmers."
+msgstr "宽2格高2格。在液体中向任意方向游泳。在陆地上会扑腾着寻找附近的液体，但无法行走。比较小的游泳生物需要更多空间来移动。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. On the floor, can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall."
+msgstr "占1格。在固体地面行走，攀爬墙壁，在天花板上倒挂行走，可在四个表面之间的拐角自由转换。在地面上可攀上2格高的台阶，跨过1格宽的缺口，从2格高的台阶跳下。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1"
+msgid "Occupies 1 tile. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall."
+msgstr "占1格。在固体地面行走。可攀上2格高的台阶，跨过1格宽的缺口，从2格高的台阶跳下。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2"
+msgid "Occupies 1 wide by 2 tall. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Needs more vertical clearance than smaller walkers due to its height."
+msgstr "宽1格高2格。在固体地面行走。可攀上2格高的台阶，跨过1格宽的缺口，从2格高的台阶跳下。由于体型较高，比较小的步行生物需要更多垂直空间。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_2X2"
+msgid "Occupies 2 wide by 2 tall. Walks on solid ground. Can climb or descend 1-tile ledges over a 2-tile horizontal distance, but cannot climb steeper ledges. Needs more clearance than smaller creatures due to its size."
+msgstr "宽2格高2格。在固体地面行走。可在2格水平距离内攀上或跳下1格台阶，但无法攀登更陡的台阶。由于体型较大，比较小的生物需要更多空间。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_BABY
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_BABY"
+msgid "Occupies 1 tile. Walks on solid ground but can only move horizontally on flat surfaces. Cannot climb, jump, or cross gaps, unlike an adult."
+msgstr "占1格。在固体地面行走，但只能在平坦表面上水平移动。与成体不同，无法攀爬、跳跃或跨越缺口。"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_UNKNOWN
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_UNKNOWN"
+msgid "{0} (unknown)"
+msgstr "{0}（未知）"
+
 #. STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE
 msgctxt "STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE"
 msgid "Pin resource"
@@ -1411,6 +1506,11 @@ msgstr "固定资源"
 msgctxt "STRINGS.ONIACCESS.DETAILS.PRIORITY"
 msgid "Priority"
 msgstr "优先级"
+
+#. STRINGS.ONIACCESS.DETAILS.RANGE
+msgctxt "STRINGS.ONIACCESS.DETAILS.RANGE"
+msgid "Range: {0} to {1}"
+msgstr "范围: {0}到{1}"
 
 #. STRINGS.ONIACCESS.DETAILS.SCHEDULE
 msgctxt "STRINGS.ONIACCESS.DETAILS.SCHEDULE"

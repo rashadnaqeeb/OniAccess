@@ -1402,6 +1402,101 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.PARENT_ITEM"
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
 
+#. STRINGS.ONIACCESS.DETAILS.PATHING
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING"
+msgid "Pathing behaviour: {0}"
+msgstr "이동 방식: {0}"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DIGGER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DIGGER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. Can also burrow into soft natural tiles and tunnel through solid material, emerging back onto any surface. Cannot dig through very hard materials or refined metals."
+msgstr "1타일 차지. 단단한 바닥 위를 걷고, 벽을 타고, 천장에서 거꾸로 걸으며, 네 표면 사이의 모서리를 자유롭게 전환합니다. 부드러운 자연 타일에 굴을 파고 단단한 물질을 뚫어 어느 표면으로든 나올 수 있습니다. 매우 단단한 물질이나 정제 금속은 파지 못합니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT"
+msgid "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Falls through larger drops, though will attempt to avoid this."
+msgstr "가로 1, 세로 2 크기. 단단한 바닥 위를 걷고 사다리를 통해 수직 또는 수평으로 이동할 수 있습니다. 2타일 높이의 턱을 오르고, 1타일 너비의 틈을 뛰어넘고, 2타일 높이의 턱에서 내려올 수 있습니다. 수평으로 2타일 떨어지고 1타일 위에 있는 발판, 또는 1타일 떨어지고 2타일 위에 있는 발판에도 도달할 수 있습니다. 더 큰 낙차에서는 떨어지지만, 이를 피하려고 시도합니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER"
+msgid "Occupies 1 tile. Hovers 1 tile above the nearest solid surface or liquid below it, following the terrain contour from above. If submerged by rising liquid, can swim to escape."
+msgstr "1타일 차지. 아래의 가장 가까운 단단한 표면이나 액체 위로 1타일 높이에서 떠다니며, 위에서 지형 윤곽을 따라갑니다. 상승하는 액체에 잠기면 수영하여 탈출할 수 있습니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X1"
+msgid "Occupies 1 tile. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape."
+msgstr "1타일 차지. 열린 공기 중을 모든 방향으로 자유롭게 날 수 있습니다. 상승하는 액체에 잠기면 수영하여 탈출할 수 있습니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X2"
+msgid "Occupies 1 wide by 2 tall. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape. Needs more vertical clearance than smaller flyers."
+msgstr "가로 1, 세로 2 차지. 열린 공기 중을 모든 방향으로 자유롭게 날 수 있습니다. 상승하는 액체에 잠기면 수영하여 탈출할 수 있습니다. 작은 비행 생물보다 더 많은 수직 공간이 필요합니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_2X2"
+msgid "Occupies 2 wide by 2 tall. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape. Needs significant clearance to navigate."
+msgstr "가로 2, 세로 2 차지. 열린 공기 중을 모든 방향으로 자유롭게 날 수 있습니다. 상승하는 액체에 잠기면 수영하여 탈출할 수 있습니다. 이동하려면 상당한 공간이 필요합니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT"
+msgid "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Cannot use transit tubes or fire poles."
+msgstr "가로 1, 세로 2 크기. 단단한 바닥 위를 걷고 사다리를 통해 수직 또는 수평으로 이동할 수 있습니다. 2타일 높이의 턱을 오르고, 1타일 너비의 틈을 뛰어넘고, 2타일 높이의 턱에서 내려올 수 있습니다. 수평으로 2타일 떨어지고 1타일 위에 있는 발판, 또는 1타일 떨어지고 2타일 위에 있는 발판에도 도달할 수 있습니다. 이동 튜브나 소방 봉은 사용할 수 없습니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT_FLYER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT_FLYER"
+msgid "Occupies 1 tile. Flies freely through open air in any direction. Can pass through doors. If submerged by rising liquid, can swim to escape."
+msgstr "1타일 차지. 열린 공기 중을 모든 방향으로 자유롭게 날 수 있습니다. 문을 통과할 수 있습니다. 상승하는 액체에 잠기면 수영하여 탈출할 수 있습니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. On the floor, can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and reach platforms up to 2 tiles away horizontally and 2 tiles up."
+msgstr "1타일 차지. 단단한 바닥 위를 걷고, 벽을 타고, 천장에서 거꾸로 걸으며, 네 표면 사이의 모서리를 자유롭게 전환합니다. 바닥에서는 2타일 높이의 턱을 오르고, 1타일 너비의 틈을 건너고, 수평으로 2타일 떨어지고 2타일 위에 있는 발판에 도달할 수 있습니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER_BABY
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER_BABY"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. Cannot climb ledges, jump gaps, or cross drops on the floor, unlike an adult."
+msgstr "1타일 차지. 단단한 바닥 위를 걷고, 벽을 타고, 천장에서 거꾸로 걸으며, 네 표면 사이의 모서리를 자유롭게 전환합니다. 성체와 달리 바닥에서 턱을 오르거나, 틈을 뛰어넘거나, 낙차를 건너지 못합니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1"
+msgid "Occupies 1 tile. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk."
+msgstr "1타일 차지. 액체 속에서 모든 방향으로 수영합니다. 육지에서는 주변 액체를 찾아 퍼덕거리지만 걸을 수 없습니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2"
+msgid "Occupies 2 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs more space to navigate than smaller swimmers."
+msgstr "가로 2, 세로 2 차지. 액체 속에서 모든 방향으로 수영합니다. 육지에서는 주변 액체를 찾아 퍼덕거리지만 걸을 수 없습니다. 작은 수영 생물보다 이동에 더 많은 공간이 필요합니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. On the floor, can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall."
+msgstr "1타일 차지. 단단한 바닥 위를 걷고, 벽을 타고, 천장에서 거꾸로 걸으며, 네 표면 사이의 모서리를 자유롭게 전환합니다. 바닥에서는 2타일 높이의 턱을 오르고, 1타일 너비의 틈을 건너고, 2타일 높이의 턱에서 내려올 수 있습니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1"
+msgid "Occupies 1 tile. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall."
+msgstr "1타일 차지. 단단한 바닥 위를 걷습니다. 2타일 높이의 턱을 오르고, 1타일 너비의 틈을 건너고, 2타일 높이의 턱에서 내려올 수 있습니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2"
+msgid "Occupies 1 wide by 2 tall. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Needs more vertical clearance than smaller walkers due to its height."
+msgstr "가로 1, 세로 2 차지. 단단한 바닥 위를 걷습니다. 2타일 높이의 턱을 오르고, 1타일 너비의 틈을 건너고, 2타일 높이의 턱에서 내려올 수 있습니다. 키가 커서 작은 보행 생물보다 더 많은 수직 공간이 필요합니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_2X2"
+msgid "Occupies 2 wide by 2 tall. Walks on solid ground. Can climb or descend 1-tile ledges over a 2-tile horizontal distance, but cannot climb steeper ledges. Needs more clearance than smaller creatures due to its size."
+msgstr "가로 2, 세로 2 차지. 단단한 바닥 위를 걷습니다. 수평 2타일 거리에 걸쳐 1타일 턱을 오르거나 내려올 수 있지만, 더 가파른 턱은 오르지 못합니다. 크기가 커서 작은 생물보다 더 많은 공간이 필요합니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_BABY
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_BABY"
+msgid "Occupies 1 tile. Walks on solid ground but can only move horizontally on flat surfaces. Cannot climb, jump, or cross gaps, unlike an adult."
+msgstr "1타일 차지. 단단한 바닥 위를 걷지만 평평한 표면에서만 수평으로 이동할 수 있습니다. 성체와 달리 오르거나, 뛰거나, 틈을 건너지 못합니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_UNKNOWN
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_UNKNOWN"
+msgid "{0} (unknown)"
+msgstr "{0} (알 수 없음)"
+
 #. STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE
 msgctxt "STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE"
 msgid "Pin resource"
@@ -1411,6 +1506,11 @@ msgstr "자원 고정"
 msgctxt "STRINGS.ONIACCESS.DETAILS.PRIORITY"
 msgid "Priority"
 msgstr "우선순위"
+
+#. STRINGS.ONIACCESS.DETAILS.RANGE
+msgctxt "STRINGS.ONIACCESS.DETAILS.RANGE"
+msgid "Range: {0} to {1}"
+msgstr "범위: {0}에서 {1}"
 
 #. STRINGS.ONIACCESS.DETAILS.SCHEDULE
 msgctxt "STRINGS.ONIACCESS.DETAILS.SCHEDULE"

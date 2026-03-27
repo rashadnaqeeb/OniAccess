@@ -1402,6 +1402,101 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.PARENT_ITEM"
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
 
+#. STRINGS.ONIACCESS.DETAILS.PATHING
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING"
+msgid "Pathing behaviour: {0}"
+msgstr "Comportement de déplacement : {0}"
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DIGGER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DIGGER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. Can also burrow into soft natural tiles and tunnel through solid material, emerging back onto any surface. Cannot dig through very hard materials or refined metals."
+msgstr "Occupe 1 case. Marche sur le sol solide, grimpe aux murs et marche à l'envers aux plafonds, transitant librement dans les coins entre les quatre surfaces. Peut aussi creuser dans les cases naturelles tendres et tunneler à travers les matériaux solides, émergeant sur n'importe quelle surface. Ne peut pas creuser les matériaux très durs ni les métaux raffinés."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT"
+msgid "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Falls through larger drops, though will attempt to avoid this."
+msgstr "Mesure 1 de large par 2 de haut. Marche sur le sol solide et peut se déplacer verticalement ou horizontalement sur les échelles. Peut escalader des rebords de 2 cases de haut, sauter des trous de 1 case de large et descendre des rebords de 2 cases de haut. Peut aussi atteindre une plateforme à 2 cases horizontalement et 1 case en haut, ou 1 case horizontalement et 2 cases en haut. Tombe dans les chutes plus grandes, mais tentera de les éviter."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER"
+msgid "Occupies 1 tile. Hovers 1 tile above the nearest solid surface or liquid below it, following the terrain contour from above. If submerged by rising liquid, can swim to escape."
+msgstr "Occupe 1 case. Flotte 1 case au-dessus de la surface solide ou du liquide le plus proche en dessous, suivant le contour du terrain par le haut. Si submergé par un liquide montant, peut nager pour s'échapper."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X1"
+msgid "Occupies 1 tile. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape."
+msgstr "Occupe 1 case. Vole librement dans l'air dans toutes les directions. Si submergé par un liquide montant, peut nager pour s'échapper."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X2"
+msgid "Occupies 1 wide by 2 tall. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape. Needs more vertical clearance than smaller flyers."
+msgstr "Occupe 1 de large par 2 de haut. Vole librement dans l'air dans toutes les directions. Si submergé par un liquide montant, peut nager pour s'échapper. Nécessite plus de dégagement vertical que les volants plus petits."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_2X2"
+msgid "Occupies 2 wide by 2 tall. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape. Needs significant clearance to navigate."
+msgstr "Occupe 2 de large par 2 de haut. Vole librement dans l'air dans toutes les directions. Si submergé par un liquide montant, peut nager pour s'échapper. Nécessite un dégagement important pour naviguer."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT"
+msgid "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Cannot use transit tubes or fire poles."
+msgstr "Mesure 1 de large par 2 de haut. Marche sur le sol solide et peut se déplacer verticalement ou horizontalement sur les échelles. Peut escalader des rebords de 2 cases de haut, sauter des trous de 1 case de large et descendre des rebords de 2 cases de haut. Peut aussi atteindre une plateforme à 2 cases horizontalement et 1 case en haut, ou 1 case horizontalement et 2 cases en haut. Ne peut pas utiliser les tubes de transit ni les barres de pompier."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT_FLYER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT_FLYER"
+msgid "Occupies 1 tile. Flies freely through open air in any direction. Can pass through doors. If submerged by rising liquid, can swim to escape."
+msgstr "Occupe 1 case. Vole librement dans l'air dans toutes les directions. Peut traverser les portes. Si submergé par un liquide montant, peut nager pour s'échapper."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. On the floor, can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and reach platforms up to 2 tiles away horizontally and 2 tiles up."
+msgstr "Occupe 1 case. Marche sur le sol solide, grimpe aux murs et marche à l'envers aux plafonds, transitant librement dans les coins entre les quatre surfaces. Au sol, peut escalader des rebords de 2 cases de haut, traverser des trous de 1 case de large et atteindre des plateformes à 2 cases horizontalement et 2 cases en haut."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER_BABY
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER_BABY"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. Cannot climb ledges, jump gaps, or cross drops on the floor, unlike an adult."
+msgstr "Occupe 1 case. Marche sur le sol solide, grimpe aux murs et marche à l'envers aux plafonds, transitant librement dans les coins entre les quatre surfaces. Ne peut pas escalader de rebords, sauter de trous ni traverser de chutes au sol, contrairement à un adulte."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1"
+msgid "Occupies 1 tile. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk."
+msgstr "Occupe 1 case. Nage dans le liquide dans toutes les directions. Sur terre ferme, se débat en cherchant du liquide à proximité mais ne peut pas marcher."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2"
+msgid "Occupies 2 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs more space to navigate than smaller swimmers."
+msgstr "Occupe 2 de large par 2 de haut. Nage dans le liquide dans toutes les directions. Sur terre ferme, se débat en cherchant du liquide à proximité mais ne peut pas marcher. Nécessite plus d'espace pour naviguer que les nageurs plus petits."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER"
+msgid "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. On the floor, can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall."
+msgstr "Occupe 1 case. Marche sur le sol solide, grimpe aux murs et marche à l'envers aux plafonds, transitant librement dans les coins entre les quatre surfaces. Au sol, peut escalader des rebords de 2 cases de haut, traverser des trous de 1 case de large et descendre des rebords de 2 cases de haut."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1"
+msgid "Occupies 1 tile. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall."
+msgstr "Occupe 1 case. Marche sur le sol solide. Peut escalader des rebords de 2 cases de haut, traverser des trous de 1 case de large et descendre des rebords de 2 cases de haut."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2"
+msgid "Occupies 1 wide by 2 tall. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Needs more vertical clearance than smaller walkers due to its height."
+msgstr "Occupe 1 de large par 2 de haut. Marche sur le sol solide. Peut escalader des rebords de 2 cases de haut, traverser des trous de 1 case de large et descendre des rebords de 2 cases de haut. Nécessite plus de dégagement vertical que les marcheurs plus petits en raison de sa taille."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_2X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_2X2"
+msgid "Occupies 2 wide by 2 tall. Walks on solid ground. Can climb or descend 1-tile ledges over a 2-tile horizontal distance, but cannot climb steeper ledges. Needs more clearance than smaller creatures due to its size."
+msgstr "Occupe 2 de large par 2 de haut. Marche sur le sol solide. Peut monter ou descendre des rebords de 1 case sur une distance horizontale de 2 cases, mais ne peut pas escalader de rebords plus raides. Nécessite plus de dégagement que les créatures plus petites en raison de sa taille."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_BABY
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_BABY"
+msgid "Occupies 1 tile. Walks on solid ground but can only move horizontally on flat surfaces. Cannot climb, jump, or cross gaps, unlike an adult."
+msgstr "Occupe 1 case. Marche sur le sol solide mais ne peut se déplacer qu'horizontalement sur des surfaces planes. Ne peut pas grimper, sauter ni traverser de trous, contrairement à un adulte."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_UNKNOWN
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_UNKNOWN"
+msgid "{0} (unknown)"
+msgstr "{0} (inconnu)"
+
 #. STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE
 msgctxt "STRINGS.ONIACCESS.DETAILS.PIN_RESOURCE"
 msgid "Pin resource"
@@ -1411,6 +1506,11 @@ msgstr "Épingler la ressource"
 msgctxt "STRINGS.ONIACCESS.DETAILS.PRIORITY"
 msgid "Priority"
 msgstr "Priorité"
+
+#. STRINGS.ONIACCESS.DETAILS.RANGE
+msgctxt "STRINGS.ONIACCESS.DETAILS.RANGE"
+msgid "Range: {0} to {1}"
+msgstr "Portée : {0} à {1}"
 
 #. STRINGS.ONIACCESS.DETAILS.SCHEDULE
 msgctxt "STRINGS.ONIACCESS.DETAILS.SCHEDULE"
