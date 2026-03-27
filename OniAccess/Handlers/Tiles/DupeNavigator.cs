@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
 using Klei.AI;
 using OniAccess.Handlers.Tiles.Scanner;
 using OniAccess.Speech;
@@ -256,6 +258,9 @@ namespace OniAccess.Handlers.Tiles {
 				|| kpid.HasTag(GameTags.MakingMess);
 		}
 
+		private static readonly FieldInfo ShowProgressBarField = AccessTools.Field(
+			typeof(Workable), "showProgressBar");
+
 		private static string BuildTaskPart(MinionIdentity mi) {
 			try {
 				var chore = mi.GetComponent<ChoreDriver>().GetCurrentChore();
@@ -263,9 +268,17 @@ namespace OniAccess.Handlers.Tiles {
 					return (string)STRINGS.ONIACCESS.DUPES.IDLE;
 				string name = chore.choreType.Name;
 				string target = GetChoreTarget(chore, mi);
-				if (target != null)
-					return $"{name}, {target}";
-				return name;
+				string task = target != null ? $"{name}, {target}" : name;
+				var worker = mi.GetComponent<WorkerBase>();
+				if (worker != null) {
+					var workable = worker.GetWorkable();
+					if (workable != null && ShowProgressBarField.GetValue(workable) is true) {
+						float pct = workable.GetPercentComplete();
+						if (pct >= 0f)
+							task = $"{task}, {(int)(pct * 100)}%";
+					}
+				}
+				return task;
 			} catch (System.Exception ex) {
 				Log.Warn($"DupeNavigator.BuildTaskPart: {ex}");
 				return (string)STRINGS.ONIACCESS.DUPES.IDLE;
