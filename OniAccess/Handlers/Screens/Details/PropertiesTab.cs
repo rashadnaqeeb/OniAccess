@@ -31,6 +31,27 @@ namespace OniAccess.Handlers.Screens.Details {
 			"batteriesPanel",
 		};
 
+		private static readonly Dictionary<string, LocString> NavGridDescriptions =
+			new Dictionary<string, LocString> {
+				{ "MinionNavGrid", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT },
+				{ "WalkerNavGrid1x1", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1 },
+				{ "WalkerBabyNavGrid", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_BABY },
+				{ "WalkerNavGrid1x2", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2 },
+				{ "WalkerNavGrid2x2", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_2X2 },
+				{ "DreckoNavGrid", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER },
+				{ "DreckoBabyNavGrid", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SURFACE_CLIMBER_BABY },
+				{ "SquirrelNavGrid", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER },
+				{ "FloaterNavGrid", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER },
+				{ "FlyerNavGrid1x1", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X1 },
+				{ "FlyerNavGrid1x2", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_1X2 },
+				{ "FlyerNavGrid2x2", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLYER_2X2 },
+				{ "SwimmerNavGrid", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1 },
+				{ "SwimmerGrid2x2", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2 },
+				{ "DiggerNavGrid", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DIGGER },
+				{ "RobotNavGrid", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT },
+				{ "RobotFlyerGrid1x1", STRINGS.ONIACCESS.DETAILS.PATHING_DESC.ROBOT_FLYER },
+			};
+
 		public void Populate(GameObject target, List<DetailSection> sections) {
 			var panel = FindPanel();
 			if (panel == null) {
@@ -63,6 +84,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			}
 
 			AppendRangeWidget(target, sections);
+			AppendPathingWidget(target, sections);
 		}
 
 		private static void AppendRangeWidget(GameObject target, List<DetailSection> sections) {
@@ -104,6 +126,33 @@ namespace OniAccess.Handlers.Screens.Details {
 			return string.Format((string)STRINGS.ONIACCESS.DETAILS.RANGE,
 				GridCoordinates.Format(blX, blY),
 				GridCoordinates.Format(trX, trY));
+		}
+
+		private static void AppendPathingWidget(GameObject target, List<DetailSection> sections) {
+			var navigator = target.GetComponent<Navigator>();
+			if (navigator == null) return;
+
+			var detailsSection = sections.Find(s => s.Key == "detailsPanel");
+			if (detailsSection == null) {
+				detailsSection = new DetailSection { Key = "detailsPanel", Header = "Details" };
+				sections.Add(detailsSection);
+			}
+
+			detailsSection.Items.Add(new LabelWidget {
+				Key = "pathing",
+				SpeechFunc = () => FormatPathing(navigator)
+			});
+		}
+
+		private static string FormatPathing(Navigator navigator) {
+			var gridName = navigator.NavGridName;
+
+			if (NavGridDescriptions.TryGetValue(gridName, out var desc))
+				return string.Format((string)STRINGS.ONIACCESS.DETAILS.PATHING, (string)desc);
+
+			Util.Log.Warn($"PropertiesTab: unmapped NavGrid '{gridName}'");
+			return string.Format((string)STRINGS.ONIACCESS.DETAILS.PATHING,
+				string.Format((string)STRINGS.ONIACCESS.DETAILS.PATHING_UNKNOWN, gridName));
 		}
 
 		private static AdditionalDetailsPanel FindPanel() {

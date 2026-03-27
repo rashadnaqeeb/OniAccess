@@ -1312,6 +1312,30 @@ namespace STRINGS {
 			public static LocString HEADER_ITEM = "{0}, {1}";
 			// {0} = bottom-left coordinates, {1} = top-right coordinates
 			public static LocString RANGE = "Range: {0} to {1}";
+			// {0} = pathing description
+			public static LocString PATHING = "Pathing behaviour: {0}";
+			// {0} = raw NavGrid name for unmapped grids
+			public static LocString PATHING_UNKNOWN = "{0} (unknown)";
+
+			public class PATHING_DESC {
+				public static LocString DUPLICANT = "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Falls through larger drops, though will attempt to avoid this.";
+				public static LocString WALKER_1X1 = "Occupies 1 tile. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall.";
+				public static LocString WALKER_BABY = "Occupies 1 tile. Walks on solid ground but can only move horizontally on flat surfaces. Cannot climb, jump, or cross gaps, unlike an adult.";
+				public static LocString WALKER_1X2 = "Occupies 1 wide by 2 tall. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Needs more vertical clearance than smaller walkers due to its height.";
+				public static LocString WALKER_2X2 = "Occupies 2 wide by 2 tall. Walks on solid ground. Can climb or descend 1-tile ledges over a 2-tile horizontal distance, but cannot climb steeper ledges. Needs more clearance than smaller creatures due to its size.";
+				public static LocString SURFACE_CLIMBER = "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. On the floor, can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and reach platforms up to 2 tiles away horizontally and 2 tiles up.";
+				public static LocString SURFACE_CLIMBER_BABY = "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. Cannot climb ledges, jump gaps, or cross drops on the floor, unlike an adult.";
+				public static LocString TREE_CLIMBER = "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. On the floor, can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall.";
+				public static LocString FLOATER = "Occupies 1 tile. Hovers 1 tile above the nearest solid surface or liquid below it, following the terrain contour from above. If submerged by rising liquid, can swim to escape.";
+				public static LocString FLYER_1X1 = "Occupies 1 tile. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape.";
+				public static LocString FLYER_1X2 = "Occupies 1 wide by 2 tall. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape. Needs more vertical clearance than smaller flyers.";
+				public static LocString FLYER_2X2 = "Occupies 2 wide by 2 tall. Flies freely through open air in any direction. If submerged by rising liquid, can swim to escape. Needs significant clearance to navigate.";
+				public static LocString SWIMMER_1X1 = "Occupies 1 tile. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk.";
+				public static LocString SWIMMER_2X2 = "Occupies 2 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs more space to navigate than smaller swimmers.";
+				public static LocString DIGGER = "Occupies 1 tile. Walks on solid ground, climbs walls, and walks upside-down on ceilings, transitioning freely around corners between all four surfaces. Can also burrow into soft natural tiles and tunnel through solid material, emerging back onto any surface. Cannot dig through very hard materials or refined metals.";
+				public static LocString ROBOT = "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Cannot use transit tubes or fire poles.";
+				public static LocString ROBOT_FLYER = "Occupies 1 tile. Flies freely through open air in any direction. Can pass through doors. If submerged by rising liquid, can swim to escape.";
+			}
 		}
 
 		// Table-based screens (priorities, vitals, consumables)
