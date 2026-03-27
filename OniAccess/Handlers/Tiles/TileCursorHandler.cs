@@ -636,9 +636,10 @@ namespace OniAccess.Handlers.Tiles {
 					return true;
 				}
 				if (InputUtil.CtrlHeld()) {
-					SpeechPipeline.SpeakQueued(string.Format(
-						(string)STRINGS.ONIACCESS.BOOKMARKS.BOOKMARK_SET, idx + 1));
-					return false;
+					string speech = _bookmarks.Set(idx);
+					if (speech != null)
+						SpeechPipeline.SpeakQueued(speech);
+					return true;
 				}
 			}
 

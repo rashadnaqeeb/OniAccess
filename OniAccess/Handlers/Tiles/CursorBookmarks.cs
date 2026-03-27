@@ -59,6 +59,26 @@ namespace OniAccess.Handlers.Tiles {
 			return string.Format(STRINGS.ONIACCESS.BOOKMARKS.ORIENT_DISTANCE, distance, coords);
 		}
 
+		public string Set(int index) {
+			if (_hotkeyNavPointsField == null || _posField == null || _orthoSizeField == null)
+				return null;
+			var userNav = SaveGame.Instance.GetComponent<UserNavigation>();
+			var list = _hotkeyNavPointsField.GetValue(userNav) as IList;
+			if (list == null || index < 0 || index >= list.Count)
+				return null;
+
+			Vector3 pos = Grid.CellToPosCCC(TileCursor.Instance.Cell, Grid.SceneLayer.Move);
+			float orthoSize = CameraController.Instance.baseCamera.orthographicSize;
+
+			object navPoint = list[index];
+			_posField.SetValue(navPoint, pos);
+			_orthoSizeField.SetValue(navPoint, orthoSize);
+			list[index] = navPoint;
+
+			PlaySetSound(index);
+			return string.Format((string)STRINGS.ONIACCESS.BOOKMARKS.BOOKMARK_SET, index + 1);
+		}
+
 		public static string JumpHome() {
 			int cell = FindHomeCell();
 			if (cell == Grid.InvalidCell)
@@ -97,6 +117,15 @@ namespace OniAccess.Handlers.Tiles {
 			if (telepad == null)
 				return Grid.InvalidCell;
 			return Grid.PosToCell(telepad.transform.GetPosition());
+		}
+
+		private static void PlaySetSound(int index) {
+			string sound = GlobalAssets.GetSound("UserNavPoint_set");
+			if (sound != null) {
+				var instance = KFMOD.BeginOneShot(sound, Vector3.zero);
+				instance.setParameterByName("userNavPoint_ID", index);
+				KFMOD.EndOneShot(instance);
+			}
 		}
 
 		private static void PlayRecallSound(int index) {
