@@ -36,41 +36,71 @@ namespace OniAccess {
 			LogUnityBackend.Install();
 			ConfigManager.Load(DataDir);
 
-			// Pre-load the platform-specific Prism native library so that
-			// SpeechEngine's DllImport("prism") resolves correctly.
-			// Mono's DllImport doesn't reliably search subdirectories,
-			// so we load from an explicit path.
-			string platform;
-			string libName;
-			switch (Application.platform) {
-				case RuntimePlatform.WindowsPlayer:
-					platform = "win-x64";
-					libName = "prism.dll";
-					break;
-				case RuntimePlatform.LinuxPlayer:
-					platform = "linux-x64";
-					libName = "libprism.so";
-					break;
-				case RuntimePlatform.OSXPlayer:
-					platform = "osx";
-					libName = "libprism.dylib";
-					break;
-				default:
-					Log.Error($"Unsupported platform: {Application.platform}");
-					return;
-			}
-			string libPath = Path.Combine(ModDir, "native", platform, libName);
-			if (Application.platform == RuntimePlatform.WindowsPlayer) {
-				if (LoadLibrary(libPath) == IntPtr.Zero)
-					Log.Warn($"Failed to pre-load Prism from: {libPath}");
+			// Check for Tolk override on Windows before loading Prism
+			string tolkOverridePath = Path.Combine(DataDir, "tolk_override.dll");
+			bool useTolk = Application.platform == RuntimePlatform.WindowsPlayer
+				&& File.Exists(tolkOverridePath);
+
+			if (useTolk) {
+				Log.Info("Using Tolk override backend");
+				string tempDir = Path.Combine(Path.GetTempPath(), "OniAccess");
+				Directory.CreateDirectory(tempDir);
+
+				// Copy all DLLs from DataDir to temp dir (companion DLLs + Tolk)
+				foreach (string dll in Directory.GetFiles(DataDir, "*.dll")) {
+					string fileName = Path.GetFileName(dll);
+					string destName = fileName.Equals("tolk_override.dll", StringComparison.OrdinalIgnoreCase)
+						? "Tolk.dll"
+						: fileName;
+					File.Copy(dll, Path.Combine(tempDir, destName), true);
+				}
+
+				// Pre-load companion DLLs, then Tolk itself
+				foreach (string dll in Directory.GetFiles(tempDir, "*.dll")) {
+					if (Path.GetFileName(dll).Equals("Tolk.dll", StringComparison.OrdinalIgnoreCase))
+						continue;
+					LoadLibrary(dll);
+				}
+				if (LoadLibrary(Path.Combine(tempDir, "Tolk.dll")) == IntPtr.Zero)
+					Log.Warn("Failed to pre-load Tolk.dll from temp dir");
 			} else {
-				if (DlOpen(libPath, RTLD_NOW) == IntPtr.Zero)
-					Log.Warn($"Failed to pre-load Prism from: {libPath}");
+				// Pre-load the platform-specific Prism native library so that
+				// PrismBackend's DllImport("prism") resolves correctly.
+				string platform;
+				string libName;
+				switch (Application.platform) {
+					case RuntimePlatform.WindowsPlayer:
+						platform = "win-x64";
+						libName = "prism.dll";
+						break;
+					case RuntimePlatform.LinuxPlayer:
+						platform = "linux-x64";
+						libName = "libprism.so";
+						break;
+					case RuntimePlatform.OSXPlayer:
+						platform = "osx";
+						libName = "libprism.dylib";
+						break;
+					default:
+						Log.Error($"Unsupported platform: {Application.platform}");
+						return;
+				}
+				string libPath = Path.Combine(ModDir, "native", platform, libName);
+				if (Application.platform == RuntimePlatform.WindowsPlayer) {
+					if (LoadLibrary(libPath) == IntPtr.Zero)
+						Log.Warn($"Failed to pre-load Prism from: {libPath}");
+				} else {
+					if (DlOpen(libPath, RTLD_NOW) == IntPtr.Zero)
+						Log.Warn($"Failed to pre-load Prism from: {libPath}");
+				}
 			}
 
 			base.OnLoad(harmony);
 
-			SpeechEngine.Initialize();
+			ISpeechBackend speechBackend = useTolk
+				? (ISpeechBackend)new TolkBackend()
+				: new PrismBackend();
+			SpeechEngine.Initialize(speechBackend);
 			TextFilter.InitializeDefaults();
 			StatusFilter.Initialize();
 
