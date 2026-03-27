@@ -1310,6 +1310,8 @@ namespace STRINGS {
 			public static LocString PARENT_ITEM = "{0}, {1}";
 			// {0} = section header label, {1} = first item speech text
 			public static LocString HEADER_ITEM = "{0}, {1}";
+			// {0} = bottom-left coordinates, {1} = top-right coordinates
+			public static LocString RANGE = "Range: {0} to {1}";
 		}
 
 		// Table-based screens (priorities, vitals, consumables)

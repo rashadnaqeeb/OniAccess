@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using OniAccess.Util;
+using OniAccess.Widgets;
 using UnityEngine;
 
 namespace OniAccess.Handlers.Screens.Details {
@@ -58,6 +61,49 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (section.Items.Count > 0)
 					sections.Add(section);
 			}
+
+			AppendRangeWidget(target, sections);
+		}
+
+		private static void AppendRangeWidget(GameObject target, List<DetailSection> sections) {
+			var rangeVis = target.GetComponent<RangeVisualizer>();
+			if (rangeVis == null) return;
+
+			var detailsSection = sections.Find(s => s.Key == "detailsPanel");
+			if (detailsSection == null) {
+				detailsSection = new DetailSection { Key = "range", Header = "Range" };
+				sections.Add(detailsSection);
+			}
+
+			detailsSection.Items.Add(new LabelWidget {
+				Key = "range",
+				SpeechFunc = () => FormatRange(target, rangeVis)
+			});
+		}
+
+		private static string FormatRange(GameObject target, RangeVisualizer rangeVis) {
+			Grid.PosToXY(target.transform.GetPosition(), out int bx, out int by);
+
+			var origin = rangeVis.OriginOffset;
+			var rMin = rangeVis.RangeMin;
+			var rMax = rangeVis.RangeMax;
+
+			if (target.TryGetComponent<Rotatable>(out var rot)) {
+				origin = rot.GetRotatedOffset(origin);
+				var a = rot.GetRotatedOffset(rMin);
+				var b = rot.GetRotatedOffset(rMax);
+				rMin = new Vector2I(Math.Min(a.x, b.x), Math.Min(a.y, b.y));
+				rMax = new Vector2I(Math.Max(a.x, b.x), Math.Max(a.y, b.y));
+			}
+
+			int blX = bx + origin.x + rMin.x;
+			int blY = by + origin.y + rMin.y;
+			int trX = bx + origin.x + rMax.x;
+			int trY = by + origin.y + rMax.y;
+
+			return string.Format((string)STRINGS.ONIACCESS.DETAILS.RANGE,
+				GridCoordinates.Format(blX, blY),
+				GridCoordinates.Format(trX, trY));
 		}
 
 		private static AdditionalDetailsPanel FindPanel() {

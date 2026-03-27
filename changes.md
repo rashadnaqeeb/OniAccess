@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.1.4
 
+* Building details now show range coordinates for buildings like Auto-Sweeper, Robo-Miner, and Meteor Blaster
 * Dupe navigator now announces work progress percentage when cycling dupes
 * Rocket module selection now reads module descriptions and effects
 * Material selection in the rocket module screen is now a navigable list instead of a slider

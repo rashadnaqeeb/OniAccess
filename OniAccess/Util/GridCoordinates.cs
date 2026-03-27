@@ -20,6 +20,14 @@ namespace OniAccess.Util {
 			return string.Format((string)STRINGS.ONIACCESS.TILE_CURSOR.COORDS, x, y);
 		}
 
+		internal static string Format(int worldX, int worldY) {
+			int origin = GetOrResolveOrigin();
+			int originX = Grid.CellColumn(origin);
+			int originY = Grid.CellRow(origin);
+			return string.Format((string)STRINGS.ONIACCESS.TILE_CURSOR.COORDS,
+				worldX - originX, worldY - originY);
+		}
+
 		/// <summary>
 		/// Returns the origin cell (telepad or world center).
 		/// Always re-resolves so TileCursor starts at the freshest position.
