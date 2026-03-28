@@ -74,6 +74,7 @@ namespace OniAccess.Handlers.Tiles {
 		/// speech if a switch occurred, null otherwise.
 		/// </summary>
 		public string CheckWorldSwitch() {
+			if (IsTimelapsing) return null;
 			int worldId = ClusterManager.Instance.activeWorldId;
 			if (worldId == _lastWorldId) return null;
 			_lastWorldId = worldId;

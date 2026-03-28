@@ -286,6 +286,8 @@ namespace OniAccess.Handlers.Tiles {
 
 		private void OnOverlayChanged(HashedString newMode) {
 			TileCursor.Instance.ResetRoomName();
+			// Skip during timelapse — the game toggles overlay off for screenshots
+			if (Game.Instance?.timelapser?.CapturingTimelapseScreenshot == true) return;
 			// Skip redundant announcements when the game resets the overlay to None
 			// (e.g., ManagementMenu.ToggleScreen resets overlay before opening a screen).
 			if (newMode == _lastOverlayMode) return;
