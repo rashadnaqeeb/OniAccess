@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.1.4
+## Unreleased changes since 1.2.0
+
+## 1.2.0
 
 * Table screens (consumables, priorities, vitals) now start the cursor on the active world's duplicants
 * Space POI details now show mass remaining and element composition percentages
