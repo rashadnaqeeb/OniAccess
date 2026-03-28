@@ -83,7 +83,7 @@ namespace OniAccess.Handlers.Screens {
 				}
 
 				foreach (var minion in minions) {
-					_rows.Add(new RowEntry { Kind = TableRowKind.Minion, Identity = minion });
+					_rows.Add(new RowEntry { Kind = TableRowKind.Minion, Identity = minion, WorldId = worldId });
 				}
 			}
 
@@ -92,7 +92,7 @@ namespace OniAccess.Handlers.Screens {
 				if (showDividers)
 					_rows.Add(new RowEntry { Kind = TableRowKind.WorldDivider, WorldId = StoredMinionWorldId });
 				foreach (var smi in stored) {
-					_rows.Add(new RowEntry { Kind = TableRowKind.StoredMinion, Identity = smi });
+					_rows.Add(new RowEntry { Kind = TableRowKind.StoredMinion, Identity = smi, WorldId = StoredMinionWorldId });
 				}
 			}
 

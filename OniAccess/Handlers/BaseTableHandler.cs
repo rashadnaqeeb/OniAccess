@@ -82,14 +82,20 @@ namespace OniAccess.Handlers {
 		protected virtual string GetSearchableColumnName(int col) => GetColumnName(col);
 
 		protected virtual int FindInitialRow() {
+			int activeWorldId = ClusterManager.Instance.activeWorldId;
+			int fallback = -1;
 			for (int i = 0; i < _rows.Count; i++) {
 				var kind = _rows[i].Kind;
-				if (kind != TableRowKind.Toolbar
-					&& kind != TableRowKind.ColumnHeader
-					&& kind != TableRowKind.WorldDivider)
+				if (kind == TableRowKind.Toolbar
+					|| kind == TableRowKind.ColumnHeader
+					|| kind == TableRowKind.WorldDivider)
+					continue;
+				if (_rows[i].WorldId == activeWorldId)
 					return i;
+				if (fallback < 0)
+					fallback = i;
 			}
-			return 0;
+			return fallback >= 0 ? fallback : 0;
 		}
 
 		// ========================================

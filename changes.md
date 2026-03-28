@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.1.4
 
+* Table screens (consumables, priorities, vitals) now start the cursor on the active world's duplicants
 * Space POI details now show mass remaining and element composition percentages
 * Starmap no longer announces, selects, or scans empty harvestable resource containers on hex cells
 * Starmap scanner now finds non-empty harvestable resource containers under POIs
