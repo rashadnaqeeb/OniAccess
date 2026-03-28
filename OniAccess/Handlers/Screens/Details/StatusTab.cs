@@ -34,6 +34,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			AddStatusItems(panel, sections);
 			AddCollapsibleSection(panel, "spacePOIPanel", sections);
 			AddCollapsibleSection(panel, "spaceHexCellStoragePanel", sections);
+			AddHexCellInventory(target, sections);
 			AddCollapsibleSection(panel, "rocketStatusContainer", sections);
 			AddVitals(panel, sections);
 			AddCollapsibleSection(panel, "fertilityPanel", sections);
@@ -487,6 +488,46 @@ namespace OniAccess.Handlers.Screens.Details {
 
 			if (currentSection != null && currentSection.Items.Count > 0)
 				sections.Add(currentSection);
+		}
+
+		// ========================================
+		// HEX CELL INVENTORY (starmap free-floating resources)
+		// ========================================
+
+		private static void AddHexCellInventory(
+				GameObject target, List<DetailSection> sections) {
+			var inventory = target.GetComponent<StarmapHexCellInventory>();
+			if (inventory == null || inventory.Items == null || inventory.Items.Count == 0)
+				return;
+
+			var section = new DetailSection();
+			section.Key = "hexCellInventory";
+			section.Header =
+				(string)STRINGS.UI.CLUSTERMAP.HEXCELL_INVENTORY.UI_PANEL.TITLE;
+
+			var sorted = new System.Collections.Generic.List<StarmapHexCellInventory.SerializedItem>(
+				inventory.Items);
+			sorted.Sort((a, b) => b.Mass.CompareTo(a.Mass));
+
+			foreach (var item in sorted) {
+				var capturedItem = item;
+				section.Items.Add(new LabelWidget {
+					Key = capturedItem.ID.ToString(),
+					SpeechFunc = () => {
+						string name = capturedItem.IsEntity
+							? capturedItem.ID.ProperName()
+							: ElementLoader.GetElement(capturedItem.ID)?.name
+								?? capturedItem.ID.ToString();
+						string mass = capturedItem.IsEntity
+							? GameUtil.GetFormattedUnits(capturedItem.Mass)
+							: GameUtil.GetFormattedMass(capturedItem.Mass);
+						return $"{name}, {mass}";
+					}
+				});
+			}
+
+			if (section.Items.Count > 0)
+				sections.Add(section);
 		}
 
 		// ========================================

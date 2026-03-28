@@ -2,6 +2,9 @@
 
 ## Unreleased changes since 1.1.4
 
+* Starmap no longer announces, selects, or scans empty harvestable resource containers on hex cells
+* Starmap scanner now finds non-empty harvestable resource containers under POIs
+* Entity details now show harvestable resource container contents when items are present
 * Entity details now show pathing behaviour for duplicants and critters, describing how they navigate the world
 * Re-added Tolk override support: drop tolk_override.dll and companion DLLs into the data folder to use Tolk instead of Prism
 * Building details now show range coordinates for buildings like Auto-Sweeper, Robo-Miner, and Meteor Blaster

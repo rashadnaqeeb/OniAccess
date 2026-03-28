@@ -373,7 +373,8 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			// Filter to selectable entities
 			var selectables = new List<ClusterGridEntity>();
 			foreach (var entity in entities) {
-				if (entity.IsVisible && entity.GetComponent<KSelectable>() != null)
+				var sel = entity.GetComponent<KSelectable>();
+				if (entity.IsVisible && sel != null && sel.IsSelectable)
 					selectables.Add(entity);
 			}
 

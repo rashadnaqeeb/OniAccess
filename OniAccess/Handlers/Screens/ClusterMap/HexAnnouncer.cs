@@ -53,8 +53,10 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 				return (string)STRINGS.UI.CLUSTERMAP.TOOLTIP_EMPTY_HEX;
 			var names = new List<string>();
 			foreach (var entity in entities) {
-				if (entity.IsVisible)
-					names.Add(entity.Name);
+				if (!entity.IsVisible) continue;
+				var sel = entity.GetComponent<KSelectable>();
+				if (sel != null && !sel.IsSelectable) continue;
+				names.Add(entity.Name);
 			}
 			if (names.Count == 0)
 				return (string)STRINGS.UI.CLUSTERMAP.TOOLTIP_EMPTY_HEX;
@@ -68,6 +70,8 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			var parts = new List<string>();
 			foreach (var entity in entities) {
 				if (!entity.IsVisible) continue;
+				var sel = entity.GetComponent<KSelectable>();
+				if (sel != null && !sel.IsSelectable) continue;
 				string detail = BuildEntityDetail(entity);
 				if (detail != null)
 					parts.Add(detail);

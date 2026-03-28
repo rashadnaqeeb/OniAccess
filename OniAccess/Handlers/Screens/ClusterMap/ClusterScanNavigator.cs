@@ -204,6 +204,8 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 					// Visible cell - add each visible entity
 					foreach (var entity in kvp.Value) {
 						if (!entity.IsVisible) continue;
+						var sel = entity.GetComponent<KSelectable>();
+						if (sel != null && !sel.IsSelectable) continue;
 						string category = LayerToCategory(entity.Layer);
 						if (category == null) continue;
 						entries.Add(new ClusterScanEntry {
@@ -227,6 +229,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 				case EntityLayer.Craft:
 					return ClusterMapTaxonomy.Categories.Rockets;
 				case EntityLayer.POI:
+				case EntityLayer.Debri:
 					return ClusterMapTaxonomy.Categories.POIs;
 				case EntityLayer.Meteor:
 					return ClusterMapTaxonomy.Categories.Meteors;
