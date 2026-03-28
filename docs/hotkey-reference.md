@@ -174,6 +174,7 @@ Camera pan (WASD) and build category keys (Plan1-14) are globally blocked by `Mo
 | Shift+Space | Clear rectangle | None | Unbound |
 | Return | Confirm/cancel tool | DialogSubmit | No dialog during tool use |
 | F | Open filter menu | ManageConsumables (Management) | Management not open during tool use |
+| Ctrl+Delete | Cancel all on map (cancel tool only) | None | Unbound |
 | 0-9 | Set priority | Build categories | Build menu not open during tool use |
 
 ### Cluster Map (ClusterMapHandler -- Spaced Out starmap)

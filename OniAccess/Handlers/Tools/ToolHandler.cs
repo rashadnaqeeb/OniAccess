@@ -51,6 +51,7 @@ namespace OniAccess.Handlers.Tools {
 			new ConsumedKey(KKeyCode.Keypad8),
 			new ConsumedKey(KKeyCode.Keypad9),
 			new ConsumedKey(KKeyCode.G, Modifier.Ctrl),
+			new ConsumedKey(KKeyCode.Delete, Modifier.Ctrl),
 		};
 		public override IReadOnlyList<ConsumedKey> ConsumedKeys => _consumedKeys;
 
@@ -77,8 +78,18 @@ namespace OniAccess.Handlers.Tools {
 			new HelpEntry("Shift+Space", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CLEAR_CELL),
 		}.AsReadOnly();
 
-		public override IReadOnlyList<HelpEntry> HelpEntries =>
-			_singleMode ? _singleModeHelp : _rectModeHelp;
+		public override IReadOnlyList<HelpEntry> HelpEntries {
+			get {
+				var entries = _singleMode ? _singleModeHelp : _rectModeHelp;
+				if (_toolInfo?.ToolType == typeof(CancelTool)) {
+					var list = new List<HelpEntry>(entries) {
+						new HelpEntry("Ctrl+Delete", (string)STRINGS.ONIACCESS.HELP.TOOLS_HELP.CANCEL_ALL)
+					};
+					return list.AsReadOnly();
+				}
+				return entries;
+			}
+		}
 
 		// ========================================
 		// LIFECYCLE
@@ -247,6 +258,12 @@ namespace OniAccess.Handlers.Tools {
 				}
 			}
 
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Delete)
+				&& InputUtil.CtrlHeld() && !InputUtil.ShiftHeld() && !InputUtil.AltHeld()) {
+				CancelEntireMap();
+				return true;
+			}
+
 			return false;
 		}
 
@@ -403,6 +420,27 @@ namespace OniAccess.Handlers.Tools {
 			}
 
 			SpeechPipeline.SpeakInterrupt(summary);
+			DeactivateToolAndPop();
+		}
+
+		private void CancelEntireMap() {
+			var activeTool = PlayerController.Instance.ActiveTool as CancelTool;
+			if (activeTool == null)
+				return;
+
+			var world = ClusterManager.Instance.activeWorld;
+			var min = world.minimumBounds;
+			var max = world.maximumBounds;
+
+			var pos1 = new UnityEngine.Vector3(min.x, min.y, 0f);
+			var pos2 = new UnityEngine.Vector3(max.x, max.y, 0f);
+
+			activeTool.OnLeftClickDown(pos1);
+			activeTool.OnLeftClickUp(pos2);
+
+			string filterName = ReadActiveFilterName() ?? "all";
+			SpeechPipeline.SpeakInterrupt(
+				string.Format((string)STRINGS.ONIACCESS.TOOLS.CANCEL_ALL_MAP, filterName));
 			DeactivateToolAndPop();
 		}
 

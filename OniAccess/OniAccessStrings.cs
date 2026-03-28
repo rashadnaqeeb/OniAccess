@@ -153,6 +153,7 @@ namespace STRINGS {
 				public static LocString CANCEL_TOOL = "Cancel tool";
 				public static LocString SET_PRIORITY = "Set priority";
 				public static LocString OPEN_FILTER = "Change filter";
+				public static LocString CANCEL_ALL = "Cancel all on map";
 			}
 		}
 
@@ -830,6 +831,8 @@ namespace STRINGS {
 			public static LocString CONFIRM_DECONSTRUCT = "marked {0} for deconstruction at priority {1}";
 			// {0} = count (int), {2} = item type word (singular or plural). No {1} used.
 			public static LocString CONFIRM_CANCEL = "cancelled {0} {2}";
+			// {0} = filter name (e.g. "All", "Buildings")
+			public static LocString CANCEL_ALL_MAP = "cancelled {0} on entire map";
 			// {0} = count (int), {1} = priority level (int), {2} = item type word (singular or plural)
 			public static LocString CONFIRM_PRIORITIZE = "updated {0} {2} to priority {1}";
 			// {0} = plant count (int), {1} = priority level (int)

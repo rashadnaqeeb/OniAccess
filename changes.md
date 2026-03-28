@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.2.0
 
+* Ctrl+Delete cancels all orders on the current map while the cancel tool is active, respecting the active filter
+
 ## 1.2.0
 
 * Table screens (consumables, priorities, vitals) now start the cursor on the active world's duplicants
