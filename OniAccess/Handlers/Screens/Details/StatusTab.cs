@@ -367,7 +367,12 @@ namespace OniAccess.Handlers.Screens.Details {
 						GameObject = child.gameObject,
 						SpeechFunc = () => captured.label.text
 					});
+					continue;
 				}
+
+				var refs = child.GetComponent<HierarchyReferences>();
+				if (refs != null)
+					AddWorldRow(refs, child.gameObject, section);
 			}
 
 			return section;
@@ -582,14 +587,16 @@ namespace OniAccess.Handlers.Screens.Details {
 				sections.Add(section);
 		}
 
+		private static LocText TryGetLocText(HierarchyReferences refs, string name) {
+			if (!refs.HasReference(name)) return null;
+			return refs.GetReference(name) as LocText;
+		}
+
 		private static void AddWorldRow(
 				HierarchyReferences refs, GameObject go, DetailSection section) {
-			LocText nameLabel = refs.HasReference("NameLabel")
-				? refs.GetReference<LocText>("NameLabel") : null;
-			LocText valueLabel = refs.HasReference("ValueLabel")
-				? refs.GetReference<LocText>("ValueLabel") : null;
-			LocText descLabel = refs.HasReference("DescriptionLabel")
-				? refs.GetReference<LocText>("DescriptionLabel") : null;
+			LocText nameLabel = TryGetLocText(refs, "NameLabel");
+			LocText valueLabel = TryGetLocText(refs, "ValueLabel");
+			LocText descLabel = TryGetLocText(refs, "DescriptionLabel");
 
 			if (nameLabel == null) return;
 
