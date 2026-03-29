@@ -46,13 +46,16 @@ namespace OniAccess {
 				string tempDir = Path.Combine(Path.GetTempPath(), "OniAccess");
 				Directory.CreateDirectory(tempDir);
 
-				// Copy all DLLs from DataDir to temp dir (companion DLLs + Tolk)
-				foreach (string dll in Directory.GetFiles(DataDir, "*.dll")) {
-					string fileName = Path.GetFileName(dll);
+				// Copy all DLLs and INI files from DataDir to temp dir
+				foreach (string file in Directory.GetFiles(DataDir, "*.dll")) {
+					string fileName = Path.GetFileName(file);
 					string destName = fileName.Equals("tolk_override.dll", StringComparison.OrdinalIgnoreCase)
 						? "Tolk.dll"
 						: fileName;
-					File.Copy(dll, Path.Combine(tempDir, destName), true);
+					File.Copy(file, Path.Combine(tempDir, destName), true);
+				}
+				foreach (string file in Directory.GetFiles(DataDir, "*.ini")) {
+					File.Copy(file, Path.Combine(tempDir, Path.GetFileName(file)), true);
 				}
 
 				// Pre-load companion DLLs, then Tolk itself
