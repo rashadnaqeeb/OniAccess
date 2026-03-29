@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.2.0
+## Unreleased changes since 1.2.1
+
+## 1.2.1
 
 * Ctrl+Delete cancels all orders on the current map while the cancel tool is active, respecting the active filter
 
