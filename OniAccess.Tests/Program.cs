@@ -391,10 +391,12 @@ namespace OniAccess.Tests {
 			results.Add(FlowTrackerGetDirectionCountsPartialBuffer());
 			results.Add(FlowTrackerGetDirectionCountsWrappedBuffer());
 			results.Add(FlowTrackerGetDirectionCountsMultiConduit());
-			results.Add(FlowTrackerGetElementCountsSkipsDirNone());
-			results.Add(FlowTrackerGetElementCountsGroupsByElement());
-			results.Add(FlowTrackerGetElementCountsWrapped());
+			results.Add(FlowTrackerGetContentCountsSkipsDirNone());
+			results.Add(FlowTrackerGetContentCountsGroupsByContent());
+			results.Add(FlowTrackerGetContentCountsWrapped());
 			results.Add(FlowTrackerClearResetsState());
+			results.Add(FlowSpeechNamesFlowingContent());
+			results.Add(FlowSpeechUnnamedContentKeepsDirection());
 
 			// --- NavTree (lazy-children navigation engine) ---
 			foreach (var r in NavTreeTests.All())
@@ -4427,14 +4429,14 @@ namespace OniAccess.Tests {
 		/// read methods without needing ConduitFlow game objects.
 		/// </summary>
 		static FlowTracker MakeFlowTracker(int conduitCount, int samplesRecorded,
-				int writePos, int[] buffer, SimHashes[] elementBuffer) {
+				int writePos, int[] buffer, Tag[] contentBuffer) {
 			var tracker = new FlowTracker();
 			var t = typeof(FlowTracker);
 			t.GetField("_conduitCount", FTFlags).SetValue(tracker, conduitCount);
 			t.GetField("_samplesRecorded", FTFlags).SetValue(tracker, samplesRecorded);
 			t.GetField("_writePos", FTFlags).SetValue(tracker, writePos);
 			t.GetField("_buffer", FTFlags).SetValue(tracker, buffer);
-			t.GetField("_elementBuffer", FTFlags).SetValue(tracker, elementBuffer);
+			t.GetField("_contentBuffer", FTFlags).SetValue(tracker, contentBuffer);
 			return tracker;
 		}
 
@@ -4452,8 +4454,8 @@ namespace OniAccess.Tests {
 		static (string, bool, string) FlowTrackerGetDirectionCountsOutOfRange() {
 			// 2 conduits, 1 sample — query index 5 (out of range)
 			var buffer = new int[2 * FlowTracker.BufferSize];
-			var elements = new SimHashes[2 * FlowTracker.BufferSize];
-			var tracker = MakeFlowTracker(2, 1, 1, buffer, elements);
+			var tags = new Tag[2 * FlowTracker.BufferSize];
+			var tracker = MakeFlowTracker(2, 1, 1, buffer, tags);
 			var counts = new int[5];
 			int samples = tracker.GetDirectionCounts(5, counts);
 			bool ok = samples == 0;
@@ -4465,9 +4467,9 @@ namespace OniAccess.Tests {
 			// 1 conduit, 1 sample at slot 0 with DirUp
 			int conduits = 1;
 			var buffer = new int[conduits * FlowTracker.BufferSize];
-			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
 			buffer[0] = FlowTracker.DirUp;
-			var tracker = MakeFlowTracker(conduits, 1, 1, buffer, elements);
+			var tracker = MakeFlowTracker(conduits, 1, 1, buffer, tags);
 			var counts = new int[5];
 			int samples = tracker.GetDirectionCounts(0, counts);
 			bool ok = samples == 1 && counts[FlowTracker.DirUp] == 1
@@ -4481,13 +4483,13 @@ namespace OniAccess.Tests {
 			// Pattern: Up, Down, Left, Right, Up
 			int conduits = 1;
 			var buffer = new int[conduits * FlowTracker.BufferSize];
-			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
 			buffer[0] = FlowTracker.DirUp;
 			buffer[1] = FlowTracker.DirDown;
 			buffer[2] = FlowTracker.DirLeft;
 			buffer[3] = FlowTracker.DirRight;
 			buffer[4] = FlowTracker.DirUp;
-			var tracker = MakeFlowTracker(conduits, 5, 5, buffer, elements);
+			var tracker = MakeFlowTracker(conduits, 5, 5, buffer, tags);
 			var counts = new int[5];
 			int samples = tracker.GetDirectionCounts(0, counts);
 			bool ok = samples == 5
@@ -4509,11 +4511,11 @@ namespace OniAccess.Tests {
 			// Reading order starts at slot 3, so we expect 17 Right + 3 Left.
 			int conduits = 1;
 			var buffer = new int[conduits * FlowTracker.BufferSize];
-			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
 			for (int i = 0; i < FlowTracker.BufferSize; i++)
 				buffer[i] = i < 3 ? FlowTracker.DirLeft : FlowTracker.DirRight;
 			// samplesRecorded=25 (> BufferSize), writePos=3
-			var tracker = MakeFlowTracker(conduits, 25, 3, buffer, elements);
+			var tracker = MakeFlowTracker(conduits, 25, 3, buffer, tags);
 			var counts = new int[5];
 			int samples = tracker.GetDirectionCounts(0, counts);
 			bool ok = samples == FlowTracker.BufferSize
@@ -4531,7 +4533,7 @@ namespace OniAccess.Tests {
 			// Slot 1: conduit0=Right, conduit1=Up, conduit2=Down
 			int conduits = 3;
 			var buffer = new int[conduits * FlowTracker.BufferSize];
-			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
 			// Slot 0
 			buffer[0 * conduits + 0] = FlowTracker.DirUp;
 			buffer[0 * conduits + 1] = FlowTracker.DirDown;
@@ -4540,7 +4542,7 @@ namespace OniAccess.Tests {
 			buffer[1 * conduits + 0] = FlowTracker.DirRight;
 			buffer[1 * conduits + 1] = FlowTracker.DirUp;
 			buffer[1 * conduits + 2] = FlowTracker.DirDown;
-			var tracker = MakeFlowTracker(conduits, 2, 2, buffer, elements);
+			var tracker = MakeFlowTracker(conduits, 2, 2, buffer, tags);
 
 			var c0 = new int[5];
 			tracker.GetDirectionCounts(0, c0);
@@ -4558,88 +4560,131 @@ namespace OniAccess.Tests {
 				$"c2: left={c2[FlowTracker.DirLeft]} down={c2[FlowTracker.DirDown]}");
 		}
 
-		static (string, bool, string) FlowTrackerGetElementCountsSkipsDirNone() {
+		static (string, bool, string) FlowTrackerGetContentCountsSkipsDirNone() {
 			// 1 conduit, 3 samples: DirNone, DirUp, DirNone.
-			// GetElementDirectionCounts should only report the DirUp sample.
+			// GetContentDirectionCounts should only report the DirUp sample.
 			int conduits = 1;
+			var water = new Tag("Water");
 			var buffer = new int[conduits * FlowTracker.BufferSize];
-			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
 			buffer[0] = FlowTracker.DirNone;
-			elements[0] = SimHashes.Water;
+			tags[0] = water;
 			buffer[1] = FlowTracker.DirUp;
-			elements[1] = SimHashes.Water;
+			tags[1] = water;
 			buffer[2] = FlowTracker.DirNone;
-			elements[2] = SimHashes.Water;
-			var tracker = MakeFlowTracker(conduits, 3, 3, buffer, elements);
-			var counts = new Dictionary<SimHashes, int[]>();
-			int samples = tracker.GetElementDirectionCounts(0, counts);
-			bool hasWater = counts.TryGetValue(SimHashes.Water, out int[] dirs);
+			tags[2] = water;
+			var tracker = MakeFlowTracker(conduits, 3, 3, buffer, tags);
+			var counts = new Dictionary<Tag, int[]>();
+			int samples = tracker.GetContentDirectionCounts(0, counts);
+			bool hasWater = counts.TryGetValue(water, out int[] dirs);
 			bool ok = samples == 3 && hasWater
 				&& dirs[FlowTracker.DirUp] == 1
 				&& dirs[FlowTracker.DirNone] == 0;
-			return Assert("FlowTrackerGetElementCountsSkipsDirNone", ok,
+			return Assert("FlowTrackerGetContentCountsSkipsDirNone", ok,
 				$"samples={samples}, hasWater={hasWater}, " +
 				$"up={dirs?[FlowTracker.DirUp]}, none={dirs?[FlowTracker.DirNone]}");
 		}
 
-		static (string, bool, string) FlowTrackerGetElementCountsGroupsByElement() {
-			// 1 conduit, 4 samples with two different elements.
+		static (string, bool, string) FlowTrackerGetContentCountsGroupsByContent() {
+			// 1 conduit, 4 samples with two different contents.
 			int conduits = 1;
+			var water = new Tag("Water");
+			var oxygen = new Tag("Oxygen");
 			var buffer = new int[conduits * FlowTracker.BufferSize];
-			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
-			buffer[0] = FlowTracker.DirUp; elements[0] = SimHashes.Water;
-			buffer[1] = FlowTracker.DirDown; elements[1] = SimHashes.Oxygen;
-			buffer[2] = FlowTracker.DirUp; elements[2] = SimHashes.Water;
-			buffer[3] = FlowTracker.DirLeft; elements[3] = SimHashes.Oxygen;
-			var tracker = MakeFlowTracker(conduits, 4, 4, buffer, elements);
-			var counts = new Dictionary<SimHashes, int[]>();
-			int samples = tracker.GetElementDirectionCounts(0, counts);
-			bool hasWater = counts.TryGetValue(SimHashes.Water, out int[] waterDirs);
-			bool hasOxygen = counts.TryGetValue(SimHashes.Oxygen, out int[] oxygenDirs);
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
+			buffer[0] = FlowTracker.DirUp; tags[0] = water;
+			buffer[1] = FlowTracker.DirDown; tags[1] = oxygen;
+			buffer[2] = FlowTracker.DirUp; tags[2] = water;
+			buffer[3] = FlowTracker.DirLeft; tags[3] = oxygen;
+			var tracker = MakeFlowTracker(conduits, 4, 4, buffer, tags);
+			var counts = new Dictionary<Tag, int[]>();
+			int samples = tracker.GetContentDirectionCounts(0, counts);
+			bool hasWater = counts.TryGetValue(water, out int[] waterDirs);
+			bool hasOxygen = counts.TryGetValue(oxygen, out int[] oxygenDirs);
 			bool ok = samples == 4 && counts.Count == 2
 				&& hasWater && waterDirs[FlowTracker.DirUp] == 2
 				&& hasOxygen && oxygenDirs[FlowTracker.DirDown] == 1
 				&& oxygenDirs[FlowTracker.DirLeft] == 1;
-			return Assert("FlowTrackerGetElementCountsGroupsByElement", ok,
-				$"samples={samples}, elements={counts.Count}, " +
+			return Assert("FlowTrackerGetContentCountsGroupsByContent", ok,
+				$"samples={samples}, contents={counts.Count}, " +
 				$"water.up={waterDirs?[FlowTracker.DirUp]}, " +
 				$"oxygen.down={oxygenDirs?[FlowTracker.DirDown]}, " +
 				$"oxygen.left={oxygenDirs?[FlowTracker.DirLeft]}");
 		}
 
-		static (string, bool, string) FlowTrackerGetElementCountsWrapped() {
-			// 1 conduit, buffer wrapped. Verify element counts use correct
+		static (string, bool, string) FlowTrackerGetContentCountsWrapped() {
+			// 1 conduit, buffer wrapped. Verify content counts use correct
 			// start slot and read the full ring.
 			int conduits = 1;
+			var water = new Tag("Water");
+			var oxygen = new Tag("Oxygen");
 			var buffer = new int[conduits * FlowTracker.BufferSize];
-			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
 			// Fill all slots with DirUp/Water, except slot 0 = DirDown/Oxygen
 			for (int i = 0; i < FlowTracker.BufferSize; i++) {
 				buffer[i] = FlowTracker.DirUp;
-				elements[i] = SimHashes.Water;
+				tags[i] = water;
 			}
 			buffer[0] = FlowTracker.DirDown;
-			elements[0] = SimHashes.Oxygen;
+			tags[0] = oxygen;
 			// writePos=1 means slot 1 is oldest, slot 0 is newest
-			var tracker = MakeFlowTracker(conduits, 30, 1, buffer, elements);
-			var counts = new Dictionary<SimHashes, int[]>();
-			int samples = tracker.GetElementDirectionCounts(0, counts);
-			bool hasWater = counts.TryGetValue(SimHashes.Water, out int[] waterDirs);
-			bool hasOxygen = counts.TryGetValue(SimHashes.Oxygen, out int[] oxygenDirs);
+			var tracker = MakeFlowTracker(conduits, 30, 1, buffer, tags);
+			var counts = new Dictionary<Tag, int[]>();
+			int samples = tracker.GetContentDirectionCounts(0, counts);
+			bool hasWater = counts.TryGetValue(water, out int[] waterDirs);
+			bool hasOxygen = counts.TryGetValue(oxygen, out int[] oxygenDirs);
 			bool ok = samples == FlowTracker.BufferSize
 				&& hasWater && waterDirs[FlowTracker.DirUp] == 19
 				&& hasOxygen && oxygenDirs[FlowTracker.DirDown] == 1;
-			return Assert("FlowTrackerGetElementCountsWrapped", ok,
+			return Assert("FlowTrackerGetContentCountsWrapped", ok,
 				$"samples={samples}, water.up={waterDirs?[FlowTracker.DirUp]}, " +
 				$"oxygen.down={oxygenDirs?[FlowTracker.DirDown]}");
+		}
+
+		static (string, bool, string) FlowSpeechNamesFlowingContent() {
+			// A conduit whose samples all carry the same content should
+			// speak that content's name ahead of its direction share.
+			int conduits = 1;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
+			buffer[0] = FlowTracker.DirRight;
+			tags[0] = new Tag("Cuprite");
+			var tracker = MakeFlowTracker(conduits, 1, 1, buffer, tags);
+			string text = FlowSpeech.Format(tracker, 0, currentlyEmpty: true);
+			string expected = string.Format(
+				STRINGS.ONIACCESS.GLANCE.FLOW_ELEMENT_DIRECTIONS,
+				TagManager.GetProperName(new Tag("Cuprite"), stripLink: true),
+				string.Format(STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT,
+					100, (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT));
+			bool ok = text == expected;
+			return Assert("FlowSpeechNamesFlowingContent", ok,
+				$"got \"{text}\", expected \"{expected}\"");
+		}
+
+		static (string, bool, string) FlowSpeechUnnamedContentKeepsDirection() {
+			// Content that could not be identified still reports its
+			// direction rather than dropping to "empty".
+			int conduits = 1;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
+			buffer[0] = FlowTracker.DirLeft;
+			tags[0] = Tag.Invalid;
+			var tracker = MakeFlowTracker(conduits, 1, 1, buffer, tags);
+			string text = FlowSpeech.Format(tracker, 0, currentlyEmpty: true);
+			string expected = string.Format(
+				STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT,
+				100, (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT);
+			bool ok = text == expected;
+			return Assert("FlowSpeechUnnamedContentKeepsDirection", ok,
+				$"got \"{text}\", expected \"{expected}\"");
 		}
 
 		static (string, bool, string) FlowTrackerClearResetsState() {
 			int conduits = 1;
 			var buffer = new int[conduits * FlowTracker.BufferSize];
-			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
 			buffer[0] = FlowTracker.DirUp;
-			var tracker = MakeFlowTracker(conduits, 1, 1, buffer, elements);
+			var tracker = MakeFlowTracker(conduits, 1, 1, buffer, tags);
 			tracker.Clear();
 			var counts = new int[5];
 			int samples = tracker.GetDirectionCounts(0, counts);

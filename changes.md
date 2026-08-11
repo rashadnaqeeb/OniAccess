@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.6.12
 
+* Fixed conveyor rails always reading as carrying nothing in the conveyor overlay. The flow readout reported "vacuum" for every rail because rails carry items rather than elements; it now names the item that passed through, such as "copper ore, 100% right".
 * Fixed the dig tool announcing its filter checkboxes when activated. Unlike other tools, the dig filter is a set of independent checkboxes rather than one choice, so there is no chosen filter to report; press F to review them.
 * Fixed the harvest mode picked from the action menu never being applied: choosing "disable harvest" left the tool set to harvest when ready. The menu also now reads the harvest tool's own modes instead of whatever filters the previously used tool left behind, and announces which mode is currently selected.
 

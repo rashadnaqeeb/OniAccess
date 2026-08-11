@@ -20,7 +20,7 @@ namespace OniAccess.ConduitTracking {
 		public const int DirRight = 4;
 
 		private int[] _buffer;
-		private SimHashes[] _elementBuffer;
+		private Tag[] _contentBuffer;
 		private int _writePos;
 		private int _conduitCount;
 		private int _samplesRecorded;
@@ -37,7 +37,7 @@ namespace OniAccess.ConduitTracking {
 
 		public void Clear() {
 			_buffer = null;
-			_elementBuffer = null;
+			_contentBuffer = null;
 			_writePos = 0;
 			_conduitCount = 0;
 			_samplesRecorded = 0;
@@ -62,7 +62,8 @@ namespace OniAccess.ConduitTracking {
 					}
 				}
 				_buffer[baseIdx + i] = dir;
-				_elementBuffer[baseIdx + i] = element;
+				_contentBuffer[baseIdx + i] = dir == DirNone
+					? Tag.Invalid : ElementTag(element);
 			}
 			AdvanceWritePos();
 		}
@@ -75,10 +76,33 @@ namespace OniAccess.ConduitTracking {
 			int baseIdx = _writePos * _conduitCount;
 			for (int i = 0; i < count; i++) {
 				var info = soa.GetLastFlowInfo(i);
-				_buffer[baseIdx + i] = NormalizeSolidDirection(info.direction);
-				_elementBuffer[baseIdx + i] = SimHashes.Vacuum;
+				int dir = NormalizeSolidDirection(info.direction);
+				_buffer[baseIdx + i] = dir;
+				_contentBuffer[baseIdx + i] = dir == DirNone
+					? Tag.Invalid : CarriedItemTag(flow, soa, i);
 			}
 			AdvanceWritePos();
+		}
+
+		/// <summary>
+		/// Prefab tag of the item that left this conduit cell during the
+		/// step that was just simulated. Initial contents hold the item as
+		/// it was before the move, which is what the direction describes.
+		/// Returns an invalid tag when the item no longer exists: a
+		/// receptacle consuming it in the same step can stack it onto an
+		/// existing pile, which destroys the incoming pickupable. The
+		/// direction is still recorded, it just goes unnamed.
+		/// </summary>
+		private static Tag CarriedItemTag(SolidConduitFlow flow,
+				SolidConduitFlow.SOAInfo soa, int conduitIdx) {
+			var contents = soa.GetInitialContents(conduitIdx);
+			var pickupable = flow.GetPickupable(contents.pickupableHandle);
+			return pickupable != null ? pickupable.PrefabID() : Tag.Invalid;
+		}
+
+		private static Tag ElementTag(SimHashes hash) {
+			var element = ElementLoader.FindElementByHash(hash);
+			return element != null ? element.tag : Tag.Invalid;
 		}
 
 		/// <summary>
@@ -111,13 +135,15 @@ namespace OniAccess.ConduitTracking {
 		}
 
 		/// <summary>
-		/// Returns per-element direction counts for the given conduit index.
-		/// Each dictionary entry maps an element to a 5-element int array
-		/// indexed by DirNone..DirRight. Only entries with directional flow
-		/// (DirNone excluded) are added. Returns the sample count.
+		/// Returns per-content direction counts for the given conduit index.
+		/// Each dictionary entry maps a content tag (pipe element or rail
+		/// item) to a 5-element int array indexed by DirNone..DirRight. Only
+		/// entries with directional flow (DirNone excluded) are added.
+		/// Content that could not be identified groups under Tag.Invalid.
+		/// Returns the sample count.
 		/// </summary>
-		public int GetElementDirectionCounts(int conduitIdx,
-				Dictionary<SimHashes, int[]> counts) {
+		public int GetContentDirectionCounts(int conduitIdx,
+				Dictionary<Tag, int[]> counts) {
 			counts.Clear();
 			if (_buffer == null || conduitIdx < 0 || conduitIdx >= _conduitCount)
 				return 0;
@@ -133,10 +159,10 @@ namespace OniAccess.ConduitTracking {
 				int idx = slot * _conduitCount + conduitIdx;
 				int dir = _buffer[idx];
 				if (dir == DirNone) continue;
-				SimHashes element = _elementBuffer[idx];
-				if (!counts.TryGetValue(element, out int[] dirs)) {
+				Tag content = _contentBuffer[idx];
+				if (!counts.TryGetValue(content, out int[] dirs)) {
 					dirs = new int[5];
-					counts[element] = dirs;
+					counts[content] = dirs;
 				}
 				dirs[dir]++;
 			}
@@ -147,7 +173,7 @@ namespace OniAccess.ConduitTracking {
 			if (_conduitCount == conduitCount && _buffer != null) return;
 			int size = conduitCount * BufferSize;
 			_buffer = new int[size];
-			_elementBuffer = new SimHashes[size];
+			_contentBuffer = new Tag[size];
 			_conduitCount = conduitCount;
 			_writePos = 0;
 			_samplesRecorded = 0;
