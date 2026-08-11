@@ -556,18 +556,25 @@ namespace OniAccess.Handlers.Tools {
 			return string.Format((string)STRINGS.ONIACCESS.TOOLS.ACTIVATION_PLAIN, label);
 		}
 
+		/// <summary>
+		/// Name of the filter the tool is set to. Radio menus have exactly one
+		/// filter on. Checkbox menus (dig) have no single choice: their ticked
+		/// boxes are independent options, so there is no filter name to speak.
+		/// </summary>
 		private static string ReadActiveFilterName() {
 			var toggles = Traverse.Create(ToolMenu.Instance.toolParameterMenu)
 				.Field<ToolParameterMenu.ToggleData[]>("currentTogglesData").Value;
 			if (toggles == null) return null;
-			// Radio menus have exactly one filter on; checkbox menus (dig)
-			// can have several, so list them all
-			var names = new List<string>();
+			// Mirrors ToolParameterMenu.PopulateMenu: one inclusive toggle makes
+			// the whole menu checkboxes
+			foreach (var toggle in toggles) {
+				if (toggle.isToggleInclusive) return null;
+			}
 			foreach (var toggle in toggles) {
 				if (toggle.state == ToolParameterMenu.ToggleState.On)
-					names.Add(Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + toggle.name + ".NAME"));
+					return Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + toggle.name + ".NAME");
 			}
-			return names.Count > 0 ? string.Join(", ", names) : null;
+			return null;
 		}
 
 		private string BuildConfirmSummary(out int total) {
