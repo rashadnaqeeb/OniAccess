@@ -94,6 +94,12 @@ namespace STRINGS {
 			public static LocString SECTION_UTILITY = "Utility Readouts";
 			public static LocString SECTION_MISC = "Miscellaneous";
 			public static LocString COORDINATE_MODE = "Tile cursor coordinate mode";
+			public static LocString RECT_SIZE_MODE = "Rectangle size while selecting";
+			// Placement options shared by settings that position a readout
+			// relative to the rest of the cursor announcement
+			public static LocString MODE_OFF = "off";
+			public static LocString MODE_APPEND = "append";
+			public static LocString MODE_PREPEND = "prepend";
 			public static LocString AUTO_MOVE_CURSOR = "Auto-move cursor when cycling scanner entries";
 			public static LocString SCANNER_MASS_READOUT = "Scanner mass readout";
 			public static LocString LOCK_ZOOM = "Lock zoom level when moving tile cursor";
@@ -921,6 +927,9 @@ namespace STRINGS {
 			public static LocString ITEM_PLURAL = "items";
 			// Announced when first rectangle corner is placed
 			public static LocString CORNER_SET = "corner set";
+			// Appended to the cursor readout while a rectangle is being dragged
+			// out. {0} = width (int), {1} = height (int)
+			public static LocString RECT_DIMENSIONS = "{0}x{1}";
 			// {0} = width (int), {1} = height (int), {2} = valid cell count (int)
 			public static LocString RECT_SUMMARY = "{0}x{1}, {2} valid";
 			// {0} = width (int), {1} = height (int), {2} = valid cell count (int), {3} = invalid cell count (int)

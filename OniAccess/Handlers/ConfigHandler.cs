@@ -173,6 +173,20 @@ namespace OniAccess.Handlers {
 								}
 							}
 						),
+						new EnumConfigItem<RectSizeMode>(
+							(string)STRINGS.ONIACCESS.CONFIG.RECT_SIZE_MODE,
+							() => ConfigManager.Config.RectSizeMode,
+							value => ConfigManager.Config.RectSizeMode = value,
+							new[] { RectSizeMode.Off, RectSizeMode.Append, RectSizeMode.Prepend },
+							mode => {
+								switch (mode) {
+									case RectSizeMode.Off: return (string)STRINGS.ONIACCESS.CONFIG.MODE_OFF;
+									case RectSizeMode.Append: return (string)STRINGS.ONIACCESS.CONFIG.MODE_APPEND;
+									case RectSizeMode.Prepend: return (string)STRINGS.ONIACCESS.CONFIG.MODE_PREPEND;
+									default: return mode.ToString();
+								}
+							}
+						),
 						new BoolConfigItem(
 							(string)STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM,
 							() => ConfigManager.Config.LockZoom,

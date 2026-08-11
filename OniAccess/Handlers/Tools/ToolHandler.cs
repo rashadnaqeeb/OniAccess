@@ -455,6 +455,13 @@ namespace OniAccess.Handlers.Tools {
 
 		public bool IsCellSelected(int cell) => Selection.IsCellSelected(cell);
 
+		/// <summary>
+		/// First corner of a rectangle still being dragged out, or
+		/// Grid.InvalidCell when no rectangle is in progress.
+		/// </summary>
+		public int PendingRectCorner =>
+			_singleMode ? Grid.InvalidCell : Selection.PendingFirstCorner;
+
 		private void ClearCellAtCursor() {
 			int cell = TileCursor.Instance.Cell;
 			if (Selection.ExcludeCell(cell))

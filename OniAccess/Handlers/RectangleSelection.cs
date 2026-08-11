@@ -199,6 +199,16 @@ namespace OniAccess.Handlers {
 			return 2 * width + 2 * height - 4;
 		}
 
+		/// <summary>
+		/// Width by height of the rectangle spanned by the two corners.
+		/// </summary>
+		public static string FormatDimensions(int cell1, int cell2) {
+			int width = Math.Abs(Grid.CellColumn(cell2) - Grid.CellColumn(cell1)) + 1;
+			int height = Math.Abs(Grid.CellRow(cell2) - Grid.CellRow(cell1)) + 1;
+			return string.Format(
+				(string)STRINGS.ONIACCESS.TOOLS.RECT_DIMENSIONS, width, height);
+		}
+
 		public static int TileCountBetween(int cell1, int cell2) {
 			int width = Math.Abs(Grid.CellColumn(cell2) - Grid.CellColumn(cell1)) + 1;
 			int height = Math.Abs(Grid.CellRow(cell2) - Grid.CellRow(cell1)) + 1;

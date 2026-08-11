@@ -217,6 +217,13 @@ namespace OniAccess.Handlers.Sandbox {
 			}
 		}
 
+		/// <summary>
+		/// First corner of a rectangle still being dragged out, or
+		/// Grid.InvalidCell when no rectangle is in progress.
+		/// </summary>
+		public int PendingRectCorner =>
+			_isRectangleTool ? Selection.PendingFirstCorner : Grid.InvalidCell;
+
 		private void ClearRectAtCursor() {
 			if (!_isRectangleTool) return;
 			int cell = TileCursor.Instance.Cell;

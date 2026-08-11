@@ -358,6 +358,7 @@ namespace OniAccess.Tests {
 			results.Add(RectSelectionAddRectangleDirect());
 			results.Add(RectSelectionComputeArea());
 			results.Add(RectSelectionTileCountBetween());
+			results.Add(RectSelectionFormatDimensions());
 			results.Add(RectSelectionComputePerimeter());
 			results.Add(RectSelectionComputePerimeterThinRect());
 			results.Add(RectSelectionHollowEdgesSelectedInteriorNot());
@@ -3917,6 +3918,21 @@ namespace OniAccess.Tests {
 			// 4 wide + 4 tall - 1 = 7
 			bool ok = count == 7;
 			return Assert("RectSelectionTileCountBetween", ok, $"count={count}");
+		}
+
+		private static (string, bool, string) RectSelectionFormatDimensions() {
+			SetupGrid(100);
+			// Corner order must not matter: dragging up-left reads the same
+			// as dragging down-right
+			string forward = RectangleSelection.FormatDimensions(
+				Grid.XYToCell(2, 3), Grid.XYToCell(5, 9));
+			string reverse = RectangleSelection.FormatDimensions(
+				Grid.XYToCell(5, 9), Grid.XYToCell(2, 3));
+			string single = RectangleSelection.FormatDimensions(
+				Grid.XYToCell(4, 4), Grid.XYToCell(4, 4));
+			bool ok = forward == "4x7" && reverse == "4x7" && single == "1x1";
+			return Assert("RectSelectionFormatDimensions", ok,
+				$"forward=\"{forward}\", reverse=\"{reverse}\", single=\"{single}\"");
 		}
 
 		private static (string, bool, string) RectSelectionComputePerimeter() {

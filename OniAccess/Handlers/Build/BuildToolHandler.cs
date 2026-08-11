@@ -820,6 +820,13 @@ namespace OniAccess.Handlers.Build {
 		public bool IsCellSelected(int cell) =>
 			_rectMode != RectMode.Off && _rectSelection.IsCellSelected(cell);
 
+		/// <summary>
+		/// First corner of a rectangle still being dragged out, or
+		/// Grid.InvalidCell when no rectangle is in progress.
+		/// </summary>
+		public int PendingRectCorner =>
+			_rectMode != RectMode.Off ? _rectSelection.PendingFirstCorner : Grid.InvalidCell;
+
 		private void ToggleRectMode() {
 			if (!CanUseRectMode) {
 				SpeechPipeline.SpeakInterrupt(

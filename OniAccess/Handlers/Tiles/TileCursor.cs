@@ -9,6 +9,8 @@ namespace OniAccess.Handlers.Tiles {
 
 	public enum CoordinateMode { Off, Append, Prepend }
 
+	public enum RectSizeMode { Off, Append, Prepend }
+
 	/// <summary>
 	/// Owns a cell index for tile-by-tile world navigation.
 	/// Arrow key movement, world bounds clamping, KInputManager mouse lock,
@@ -298,6 +300,10 @@ namespace OniAccess.Handlers.Tiles {
 		// ========================================
 
 		private string BuildCellSpeech(bool announceBiome = false) {
+			return AttachRectDimensions(BuildCellReadout(announceBiome));
+		}
+
+		private string BuildCellReadout(bool announceBiome) {
 			if (Radius > 0) {
 				HashedString scanMode = OverlayScreen.Instance != null
 					? OverlayScreen.Instance.GetMode()
@@ -440,6 +446,36 @@ namespace OniAccess.Handlers.Tiles {
 				default:
 					return content;
 			}
+		}
+
+		/// <summary>
+		/// While a rectangle is being dragged out, the readout carries the
+		/// size of the rectangle spanned by the pending corner and the cursor.
+		/// Sits outside the coordinates so prepend speaks it first of all.
+		/// </summary>
+		private string AttachRectDimensions(string content) {
+			var mode = ConfigManager.Config.RectSizeMode;
+			if (mode == RectSizeMode.Off) return content;
+			int corner = PendingRectCorner();
+			if (corner == Grid.InvalidCell) return content;
+			string dimensions = RectangleSelection.FormatDimensions(corner, _cell);
+			return mode == RectSizeMode.Prepend
+				? dimensions + ", " + content
+				: content + ", " + dimensions;
+		}
+
+		/// <summary>
+		/// The pending first corner of whichever tool handler is active, or
+		/// Grid.InvalidCell when none is selecting a rectangle.
+		/// </summary>
+		private static int PendingRectCorner() {
+			var tool = OniAccess.Handlers.Tools.ToolHandler.Instance;
+			if (tool != null) return tool.PendingRectCorner;
+			var build = OniAccess.Handlers.Build.BuildToolHandler.Instance;
+			if (build != null) return build.PendingRectCorner;
+			var sandbox = OniAccess.Handlers.Sandbox.SandboxToolHandler.Instance;
+			if (sandbox != null) return sandbox.PendingRectCorner;
+			return Grid.InvalidCell;
 		}
 
 		public void ResetRoomName() {
