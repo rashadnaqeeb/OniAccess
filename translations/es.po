@@ -978,6 +978,7 @@ msgstr "verde azulado oscuro"
 msgctxt "STRINGS.ONIACCESS.COLORS.DEEP_GREEN"
 msgid "deep green"
 msgstr "verde profundo"
+
 #. STRINGS.ONIACCESS.COLORS.DODGER_BLUE
 msgctxt "STRINGS.ONIACCESS.COLORS.DODGER_BLUE"
 msgid "dodger blue"
@@ -1153,6 +1154,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.AUTO_MOVE_CURSOR"
 msgid "Auto-move cursor when cycling scanner entries"
 msgstr "Mover cursor automáticamente al recorrer entradas del escáner"
 
+#. STRINGS.ONIACCESS.CONFIG.BUILDING_SETTINGS_READOUT
+msgctxt "STRINGS.ONIACCESS.CONFIG.BUILDING_SETTINGS_READOUT"
+msgid "Building settings readout"
+msgstr "Lectura de ajustes de construcción"
+
 #. STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE
 msgctxt "STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE"
 msgid "Tile cursor coordinate mode"
@@ -1177,6 +1183,7 @@ msgstr "Sonificación de flujo"
 msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION_VOLUME"
 msgid "Flow sonification volume"
 msgstr "Volumen de sonificación de flujo"
+
 #. STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS"
 msgid "Follow movement earcons"
@@ -1186,18 +1193,36 @@ msgstr "Earcons de movimiento de seguimiento"
 msgctxt "STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_VOLUME"
 msgid "Follow movement volume"
 msgstr "Volumen de movimiento de seguimiento"
+
 #. STRINGS.ONIACCESS.CONFIG.FOOTSTEP_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.FOOTSTEP_EARCONS"
 msgid "Footstep earcons"
 msgstr "Earcons de pasos"
+
 #. STRINGS.ONIACCESS.CONFIG.FOOTSTEP_VOLUME
 msgctxt "STRINGS.ONIACCESS.CONFIG.FOOTSTEP_VOLUME"
 msgid "Footstep volume"
 msgstr "Volumen de pasos"
+
 #. STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM
 msgctxt "STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM"
 msgid "Lock zoom level when moving tile cursor"
 msgstr "Bloquear nivel de zoom al mover el cursor de casilla"
+
+#. STRINGS.ONIACCESS.CONFIG.MODE_APPEND
+msgctxt "STRINGS.ONIACCESS.CONFIG.MODE_APPEND"
+msgid "append"
+msgstr "al final"
+
+#. STRINGS.ONIACCESS.CONFIG.MODE_OFF
+msgctxt "STRINGS.ONIACCESS.CONFIG.MODE_OFF"
+msgid "off"
+msgstr "desactivado"
+
+#. STRINGS.ONIACCESS.CONFIG.MODE_PREPEND
+msgctxt "STRINGS.ONIACCESS.CONFIG.MODE_PREPEND"
+msgid "prepend"
+msgstr "al principio"
 
 #. STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS"
@@ -1208,6 +1233,7 @@ msgstr "Earcons de transitabilidad"
 msgctxt "STRINGS.ONIACCESS.CONFIG.PASSABILITY_VOLUME"
 msgid "Passability volume"
 msgstr "Volumen de transitabilidad"
+
 #. STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS"
 msgid "Pipe shape earcons"
@@ -1217,6 +1243,11 @@ msgstr "Earcons de forma de tubería"
 msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_VOLUME"
 msgid "Pipe shape volume"
 msgstr "Volumen de forma de tubería"
+
+#. STRINGS.ONIACCESS.CONFIG.RECT_SIZE_MODE
+msgctxt "STRINGS.ONIACCESS.CONFIG.RECT_SIZE_MODE"
+msgid "Rectangle size while selecting"
+msgstr "Tamaño del rectángulo al seleccionar"
 
 #. STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_EARCONS"
@@ -1258,6 +1289,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_UTILITY"
 msgid "Utility Readouts"
 msgstr "Lecturas de servicios"
 
+#. STRINGS.ONIACCESS.CONFIG.SWEEPER_ACTIVITY_READOUT
+msgctxt "STRINGS.ONIACCESS.CONFIG.SWEEPER_ACTIVITY_READOUT"
+msgid "Auto-Sweeper activity readout"
+msgstr "Lectura de actividad de la Barredora automática"
+
 #. STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS"
 msgid "Temperature band earcons"
@@ -1267,6 +1303,7 @@ msgstr "Earcons de banda de temperatura"
 msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_VOLUME"
 msgid "Temperature band volume"
 msgstr "Volumen de banda de temperatura"
+
 #. STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS"
 msgid "Utility presence earcons"
@@ -1276,6 +1313,7 @@ msgstr "Earcons de presencia de servicios"
 msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_VOLUME"
 msgid "Utility presence volume"
 msgstr "Volumen de presencia de servicios"
+
 #. STRINGS.ONIACCESS.CONFIG.VERBOSE_UI
 msgctxt "STRINGS.ONIACCESS.CONFIG.VERBOSE_UI"
 msgid "Verbose interface"
@@ -1986,6 +2024,16 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.SKY_CLEAR_AT_HEIGHT"
 msgid "Sky clear at height {0}"
 msgstr "Cielo despejado a altura {0}"
 
+#. STRINGS.ONIACCESS.DETAILS.SWEEPER_DROPPED
+msgctxt "STRINGS.ONIACCESS.DETAILS.SWEEPER_DROPPED"
+msgid "Dropped {0}, to {1}"
+msgstr "Depositó {0}, en {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.SWEEPER_PICKED_UP
+msgctxt "STRINGS.ONIACCESS.DETAILS.SWEEPER_PICKED_UP"
+msgid "Picked up {0}, from {1}"
+msgstr "Recogió {0}, de {1}"
+
 #. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER"
 msgid "Open diagnostics browser"
@@ -2606,6 +2654,31 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.ACCESS_POINT"
 msgid "access point"
 msgstr "punto de acceso"
 
+#. STRINGS.ONIACCESS.GLANCE.ARM_COLLECTING
+msgctxt "STRINGS.ONIACCESS.GLANCE.ARM_COLLECTING"
+msgid "collecting {0}, from {1}"
+msgstr "recogiendo {0}, de {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.ARM_DELIVERING
+msgctxt "STRINGS.ONIACCESS.GLANCE.ARM_DELIVERING"
+msgid "delivering to {0}"
+msgstr "entregando en {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.ARM_HOLDING
+msgctxt "STRINGS.ONIACCESS.GLANCE.ARM_HOLDING"
+msgid "holding {0}, delivering to {1}"
+msgstr "sostiene {0}, entregando en {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.ARM_IDLE
+msgctxt "STRINGS.ONIACCESS.GLANCE.ARM_IDLE"
+msgid "arm idle"
+msgstr "brazo inactivo"
+
+#. STRINGS.ONIACCESS.GLANCE.ARM_OFF
+msgctxt "STRINGS.ONIACCESS.GLANCE.ARM_OFF"
+msgid "arm off"
+msgstr "brazo desactivado"
+
 #. STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE
 msgctxt "STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE"
 msgid "{0} middle"
@@ -2865,6 +2938,127 @@ msgstr "salida de radbolt, {0}"
 msgctxt "STRINGS.ONIACCESS.GLANCE.REPLACING_WITH"
 msgid "replacing with {0}"
 msgstr "reemplazando por {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_ACTIVATION_RANGE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_ACTIVATION_RANGE"
+msgid "{0} {1}, {2} {3}"
+msgstr "{0} {1}, {2} {3}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_AIMED
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_AIMED"
+msgid "aimed {0}"
+msgstr "apuntando {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_ALARM
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_ALARM"
+msgid "alarm {0}"
+msgstr "alarma {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_AUTOMATION_ONLY
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_AUTOMATION_ONLY"
+msgid "automation only"
+msgstr "solo automatización"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_BAIT
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_BAIT"
+msgid "bait {0}"
+msgstr "cebo {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_BITS
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_BITS"
+msgid "bits {0}"
+msgstr "bits {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_BITS_NONE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_BITS_NONE"
+msgid "no bits"
+msgstr "sin bits"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_CAPACITY
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_CAPACITY"
+msgid "capacity {0}"
+msgstr "capacidad {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_CHANNEL
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_CHANNEL"
+msgid "channel {0}"
+msgstr "canal {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_COUNT
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_COUNT"
+msgid "count {0}"
+msgstr "cuenta {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_COUNT_ADVANCED
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_COUNT_ADVANCED"
+msgid "advanced counting"
+msgstr "conteo avanzado"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_CRITTERS
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_CRITTERS"
+msgid "counting critters"
+msgstr "contando criaturas"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_CRITTERS_AND_EGGS
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_CRITTERS_AND_EGGS"
+msgid "counting critters and eggs"
+msgstr "contando criaturas y huevos"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_EGGS
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_EGGS"
+msgid "counting eggs"
+msgstr "contando huevos"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_FILTER
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_FILTER"
+msgid "filter {0}"
+msgstr "filtro {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_FILTER_NONE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_FILTER_NONE"
+msgid "no filter"
+msgstr "sin filtro"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_FLOW
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_FLOW"
+msgid "flow {0}"
+msgstr "flujo {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_LIMIT
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_LIMIT"
+msgid "limit {0}"
+msgstr "límite {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED"
+msgid "selected {0}"
+msgstr "seleccionado {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED_NONE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED_NONE"
+msgid "nothing selected"
+msgstr "nada seleccionado"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_SLIDER
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SLIDER"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_THRESHOLD
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_THRESHOLD"
+msgid "{0} {1} {2}"
+msgstr "{0} {1} {2}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_TIME_RANGE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_TIME_RANGE"
+msgid "start {0}, duration {1}"
+msgstr "inicio {0}, duración {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_TIMER
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_TIMER"
+msgid "on {0}, off {1}"
+msgstr "activado {0}, desactivado {1}"
+
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE"
 msgid "unconnected"
@@ -2959,6 +3153,7 @@ msgstr "Vista de la colonia"
 msgctxt "STRINGS.ONIACCESS.HANDLERS.CONFIG"
 msgid "Settings"
 msgstr "Ajustes"
+
 #. STRINGS.ONIACCESS.HANDLERS.DATA_OPTIONS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.DATA_OPTIONS"
 msgid "Data options"
@@ -4143,6 +4338,7 @@ msgstr "sin recursos anclados"
 msgctxt "STRINGS.ONIACCESS.RESOURCES.OVERDRAWN"
 msgid "overdrawn"
 msgstr "sobregirado"
+
 #. STRINGS.ONIACCESS.RESOURCES.PINNED
 msgctxt "STRINGS.ONIACCESS.RESOURCES.PINNED"
 msgid "pinned"
@@ -5132,6 +5328,7 @@ msgstr "dominada"
 msgctxt "STRINGS.ONIACCESS.SKILLS.MASTERED_BY"
 msgid "mastered by {0}"
 msgstr "dominada por {0}"
+
 #. STRINGS.ONIACCESS.SKILLS.MODIFIER_LINE
 msgctxt "STRINGS.ONIACCESS.SKILLS.MODIFIER_LINE"
 msgid "{0} {1}{2}"
@@ -6041,6 +6238,11 @@ msgstr "prioridad de emergencia"
 msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_CLEARED"
 msgid "rectangle cleared"
 msgstr "rectángulo eliminado"
+
+#. STRINGS.ONIACCESS.TOOLS.RECT_DIMENSIONS
+msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_DIMENSIONS"
+msgid "{0}x{1}"
+msgstr "{0}x{1}"
 
 #. STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY
 msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY"

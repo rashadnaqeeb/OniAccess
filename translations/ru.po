@@ -1154,6 +1154,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.AUTO_MOVE_CURSOR"
 msgid "Auto-move cursor when cycling scanner entries"
 msgstr "Автоматически перемещать курсор при переключении записей сканера"
 
+#. STRINGS.ONIACCESS.CONFIG.BUILDING_SETTINGS_READOUT
+msgctxt "STRINGS.ONIACCESS.CONFIG.BUILDING_SETTINGS_READOUT"
+msgid "Building settings readout"
+msgstr "Озвучивание настроек постройки"
+
 #. STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE
 msgctxt "STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE"
 msgid "Tile cursor coordinate mode"
@@ -1178,6 +1183,7 @@ msgstr "Сонификация потока"
 msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_SONIFICATION_VOLUME"
 msgid "Flow sonification volume"
 msgstr "Громкость сонификации потока"
+
 #. STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_EARCONS"
 msgid "Follow movement earcons"
@@ -1187,18 +1193,36 @@ msgstr "Звуковые сигналы движения при следован
 msgctxt "STRINGS.ONIACCESS.CONFIG.FOLLOW_MOVEMENT_VOLUME"
 msgid "Follow movement volume"
 msgstr "Громкость движения при следовании"
+
 #. STRINGS.ONIACCESS.CONFIG.FOOTSTEP_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.FOOTSTEP_EARCONS"
 msgid "Footstep earcons"
 msgstr "Звуковые сигналы шагов"
+
 #. STRINGS.ONIACCESS.CONFIG.FOOTSTEP_VOLUME
 msgctxt "STRINGS.ONIACCESS.CONFIG.FOOTSTEP_VOLUME"
 msgid "Footstep volume"
 msgstr "Громкость шагов"
+
 #. STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM
 msgctxt "STRINGS.ONIACCESS.CONFIG.LOCK_ZOOM"
 msgid "Lock zoom level when moving tile cursor"
 msgstr "Зафиксировать масштаб при перемещении курсора плитки"
+
+#. STRINGS.ONIACCESS.CONFIG.MODE_APPEND
+msgctxt "STRINGS.ONIACCESS.CONFIG.MODE_APPEND"
+msgid "append"
+msgstr "в конце"
+
+#. STRINGS.ONIACCESS.CONFIG.MODE_OFF
+msgctxt "STRINGS.ONIACCESS.CONFIG.MODE_OFF"
+msgid "off"
+msgstr "выключено"
+
+#. STRINGS.ONIACCESS.CONFIG.MODE_PREPEND
+msgctxt "STRINGS.ONIACCESS.CONFIG.MODE_PREPEND"
+msgid "prepend"
+msgstr "в начале"
 
 #. STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS"
@@ -1209,6 +1233,7 @@ msgstr "Звуковые сигналы проходимости"
 msgctxt "STRINGS.ONIACCESS.CONFIG.PASSABILITY_VOLUME"
 msgid "Passability volume"
 msgstr "Громкость проходимости"
+
 #. STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_EARCONS"
 msgid "Pipe shape earcons"
@@ -1218,6 +1243,11 @@ msgstr "Звуковые сигналы формы труб"
 msgctxt "STRINGS.ONIACCESS.CONFIG.PIPE_SHAPE_VOLUME"
 msgid "Pipe shape volume"
 msgstr "Громкость формы труб"
+
+#. STRINGS.ONIACCESS.CONFIG.RECT_SIZE_MODE
+msgctxt "STRINGS.ONIACCESS.CONFIG.RECT_SIZE_MODE"
+msgid "Rectangle size while selecting"
+msgstr "Размер прямоугольника при выделении"
 
 #. STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_DIRECTION_EARCONS"
@@ -1259,6 +1289,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_UTILITY"
 msgid "Utility Readouts"
 msgstr "Показания сетей"
 
+#. STRINGS.ONIACCESS.CONFIG.SWEEPER_ACTIVITY_READOUT
+msgctxt "STRINGS.ONIACCESS.CONFIG.SWEEPER_ACTIVITY_READOUT"
+msgid "Auto-Sweeper activity readout"
+msgstr "Озвучивание активности Автосборщика"
+
 #. STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS"
 msgid "Temperature band earcons"
@@ -1268,6 +1303,7 @@ msgstr "Звуковые сигналы температурных зон"
 msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_VOLUME"
 msgid "Temperature band volume"
 msgstr "Громкость температурных зон"
+
 #. STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_EARCONS"
 msgid "Utility presence earcons"
@@ -1277,6 +1313,7 @@ msgstr "Звуковые сигналы наличия сетей"
 msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_VOLUME"
 msgid "Utility presence volume"
 msgstr "Громкость наличия сетей"
+
 #. STRINGS.ONIACCESS.CONFIG.VERBOSE_UI
 msgctxt "STRINGS.ONIACCESS.CONFIG.VERBOSE_UI"
 msgid "Verbose interface"
@@ -1987,6 +2024,16 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.SKY_CLEAR_AT_HEIGHT"
 msgid "Sky clear at height {0}"
 msgstr "Небо свободно на высоте {0}"
 
+#. STRINGS.ONIACCESS.DETAILS.SWEEPER_DROPPED
+msgctxt "STRINGS.ONIACCESS.DETAILS.SWEEPER_DROPPED"
+msgid "Dropped {0}, to {1}"
+msgstr "Выгружено {0}, в {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.SWEEPER_PICKED_UP
+msgctxt "STRINGS.ONIACCESS.DETAILS.SWEEPER_PICKED_UP"
+msgid "Picked up {0}, from {1}"
+msgstr "Взято {0}, из {1}"
+
 #. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER"
 msgid "Open diagnostics browser"
@@ -2607,6 +2654,31 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.ACCESS_POINT"
 msgid "access point"
 msgstr "точка доступа"
 
+#. STRINGS.ONIACCESS.GLANCE.ARM_COLLECTING
+msgctxt "STRINGS.ONIACCESS.GLANCE.ARM_COLLECTING"
+msgid "collecting {0}, from {1}"
+msgstr "забирает {0}, из {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.ARM_DELIVERING
+msgctxt "STRINGS.ONIACCESS.GLANCE.ARM_DELIVERING"
+msgid "delivering to {0}"
+msgstr "доставляет в {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.ARM_HOLDING
+msgctxt "STRINGS.ONIACCESS.GLANCE.ARM_HOLDING"
+msgid "holding {0}, delivering to {1}"
+msgstr "держит {0}, доставляет в {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.ARM_IDLE
+msgctxt "STRINGS.ONIACCESS.GLANCE.ARM_IDLE"
+msgid "arm idle"
+msgstr "манипулятор бездействует"
+
+#. STRINGS.ONIACCESS.GLANCE.ARM_OFF
+msgctxt "STRINGS.ONIACCESS.GLANCE.ARM_OFF"
+msgid "arm off"
+msgstr "манипулятор выключен"
+
 #. STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE
 msgctxt "STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE"
 msgid "{0} middle"
@@ -2866,6 +2938,127 @@ msgstr "выход радболтов, {0}"
 msgctxt "STRINGS.ONIACCESS.GLANCE.REPLACING_WITH"
 msgid "replacing with {0}"
 msgstr "замена на {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_ACTIVATION_RANGE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_ACTIVATION_RANGE"
+msgid "{0} {1}, {2} {3}"
+msgstr "{0} {1}, {2} {3}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_AIMED
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_AIMED"
+msgid "aimed {0}"
+msgstr "нацелен {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_ALARM
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_ALARM"
+msgid "alarm {0}"
+msgstr "сигнал {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_AUTOMATION_ONLY
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_AUTOMATION_ONLY"
+msgid "automation only"
+msgstr "только автоматика"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_BAIT
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_BAIT"
+msgid "bait {0}"
+msgstr "приманка {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_BITS
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_BITS"
+msgid "bits {0}"
+msgstr "биты {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_BITS_NONE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_BITS_NONE"
+msgid "no bits"
+msgstr "нет битов"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_CAPACITY
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_CAPACITY"
+msgid "capacity {0}"
+msgstr "вместимость {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_CHANNEL
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_CHANNEL"
+msgid "channel {0}"
+msgstr "канал {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_COUNT
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_COUNT"
+msgid "count {0}"
+msgstr "счёт {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_COUNT_ADVANCED
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_COUNT_ADVANCED"
+msgid "advanced counting"
+msgstr "расширенный подсчёт"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_CRITTERS
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_CRITTERS"
+msgid "counting critters"
+msgstr "считает существ"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_CRITTERS_AND_EGGS
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_CRITTERS_AND_EGGS"
+msgid "counting critters and eggs"
+msgstr "считает существ и яйца"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_EGGS
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_EGGS"
+msgid "counting eggs"
+msgstr "считает яйца"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_FILTER
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_FILTER"
+msgid "filter {0}"
+msgstr "фильтр {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_FILTER_NONE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_FILTER_NONE"
+msgid "no filter"
+msgstr "нет фильтра"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_FLOW
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_FLOW"
+msgid "flow {0}"
+msgstr "поток {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_LIMIT
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_LIMIT"
+msgid "limit {0}"
+msgstr "предел {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED"
+msgid "selected {0}"
+msgstr "выбрано {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED_NONE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED_NONE"
+msgid "nothing selected"
+msgstr "ничего не выбрано"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_SLIDER
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SLIDER"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_THRESHOLD
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_THRESHOLD"
+msgid "{0} {1} {2}"
+msgstr "{0} {1} {2}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_TIME_RANGE
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_TIME_RANGE"
+msgid "start {0}, duration {1}"
+msgstr "начало {0}, длительность {1}"
+
+#. STRINGS.ONIACCESS.GLANCE.SETTING_TIMER
+msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_TIMER"
+msgid "on {0}, off {1}"
+msgstr "включено {0}, выключено {1}"
+
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE"
 msgid "unconnected"
@@ -6045,6 +6238,11 @@ msgstr "экстренный приоритет"
 msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_CLEARED"
 msgid "rectangle cleared"
 msgstr "прямоугольник сброшен"
+
+#. STRINGS.ONIACCESS.TOOLS.RECT_DIMENSIONS
+msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_DIMENSIONS"
+msgid "{0}x{1}"
+msgstr "{0}x{1}"
 
 #. STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY
 msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY"
