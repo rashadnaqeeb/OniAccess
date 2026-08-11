@@ -111,6 +111,7 @@ namespace STRINGS {
 			public static LocString TEMPERATURE_BAND_EARCONS = "Temperature band earcons";
 			public static LocString FOLLOW_MOVEMENT_EARCONS = "Follow movement earcons";
 			public static LocString FOOTSTEP_EARCONS = "Footstep earcons";
+			public static LocString SWEEPER_ACTIVITY_READOUT = "Auto-Sweeper activity readout";
 			public static LocString UTILITY_PRESENCE_VOLUME = "Utility presence volume";
 			public static LocString PIPE_SHAPE_VOLUME = "Pipe shape volume";
 			public static LocString PASSABILITY_VOLUME = "Passability volume";
@@ -1083,6 +1084,20 @@ namespace STRINGS {
 			// {0} = order label (e.g. "sweep priority 5")
 			public static LocString ORDER_CANT_STORE = "can't store {0}";
 
+			// Auto-Sweeper arm state, read by the tile cursor info key. The
+			// arm publishes no status item of its own, so this is the only
+			// readout of what it is doing at that moment.
+			public static LocString ARM_OFF = "arm off";
+			public static LocString ARM_IDLE = "arm idle";
+			// {0} = item and amount in the claw, {1} = destination building
+			public static LocString ARM_HOLDING = "holding {0}, delivering to {1}";
+			// ARM_HOLDING variant for an arm on a delivery run with nothing
+			// readable in its storage. {0} = destination building
+			public static LocString ARM_DELIVERING = "delivering to {0}";
+			// {0} = item and amount being fetched, {1} = the building it is
+			// coming out of, or the coordinates it is lying at
+			public static LocString ARM_COLLECTING = "collecting {0}, from {1}";
+
 			// Point-of-interest marker on a tile
 			public static LocString TILE_OF_INTEREST = "P O I";
 			// Rocket access/output point labels
@@ -1494,6 +1509,13 @@ namespace STRINGS {
 			// Appended to a Robo-Miner item: its dig area overlaps the
 			// sweeper's range, so mined debris lands where the sweeper works
 			public static LocString MINING_OVERLAP = "mining area overlaps";
+			// Spoken each time the open Auto-Sweeper's arm finishes a pickup.
+			// {0} = item and amount, {1} = the building it came out of, or the
+			// coordinates it was lying at when it was loose debris
+			public static LocString SWEEPER_PICKED_UP = "Picked up {0}, from {1}";
+			// Spoken each time the open Auto-Sweeper's arm finishes a delivery.
+			// {0} = item and amount, {1} = destination building
+			public static LocString SWEEPER_DROPPED = "Dropped {0}, to {1}";
 
 			public class PATHING_DESC {
 				public static LocString DUPLICANT = "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Falls through larger drops, though will attempt to avoid this.";

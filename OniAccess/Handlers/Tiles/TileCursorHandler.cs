@@ -958,6 +958,14 @@ namespace OniAccess.Handlers.Tiles {
 			}
 			string summary = TooltipCapture.GetPrioritySummary(
 				TileCursor.Instance.Cell);
+
+			// An Auto-Sweeper's arm is the one thing on a tile the game's
+			// tooltip never describes, because the arm raises no status item.
+			// It leads: on a sweeper it is what the key was pressed for.
+			string arm = SweeperActivity.DescribeAtCell(TileCursor.Instance.Cell);
+			if (arm != null)
+				summary = summary == null ? arm : $"{arm}, {summary}";
+
 			if (summary == null) {
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP);

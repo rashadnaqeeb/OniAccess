@@ -329,6 +329,11 @@ namespace OniAccess.Handlers {
 							value => ConfigManager.Config.FollowMovementVolume = value,
 							0f, 2f
 						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.SWEEPER_ACTIVITY_READOUT,
+							() => ConfigManager.Config.SweeperActivityReadout,
+							value => ConfigManager.Config.SweeperActivityReadout = value
+						),
 					}
 				},
 			};

@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.12
 
+* The tile cursor info key now reports an Auto-Sweeper's arm: what it is holding and where it is delivering, what it is collecting and from where, or that the arm is idle or off. The game gives the arm no status item, so this was previously the one thing on a tile with no readout at all.
+* Selecting an Auto-Sweeper now narrates what its arm is doing: every completed pickup and delivery is announced with the item, the amount, and where it came from or went to. The readout stops as soon as you deselect the sweeper, and can be turned off with "Auto-Sweeper activity readout" under Miscellaneous settings.
 * Added a "Rectangle size while selecting" setting under Tile Cursor Settings. Set it to append or prepend and the cursor readout carries the size of the rectangle being dragged out, such as "4x7", for tools, the build tool, and sandbox tools. Off by default.
 * Fixed conveyor rails always reading as carrying nothing in the conveyor overlay. The flow readout reported "vacuum" for every rail because rails carry items rather than elements; it now names the item that passed through, such as "copper ore, 100% right".
 * Fixed the dig tool announcing its filter checkboxes when activated. Unlike other tools, the dig filter is a set of independent checkboxes rather than one choice, so there is no chosen filter to report; press F to review them.
