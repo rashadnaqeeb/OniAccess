@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.6.12
 
+* Added a "Building settings readout" setting under Tile Cursor Settings. Turn it on and the tile cursor reports how a building is configured, in the overlay that setting belongs to: what a filter is set to and a valve's flow rate in the pipe overlays, every sensor's threshold and direction in the automation overlay, the Smart Battery's charge window in the power overlay, what a planter is set to grow in the farming overlay, and a radbolt redirector's aim in the radiation overlay. Settings that cannot be stated in a line, such as storage filters, are left out. Off by default.
 * The tile cursor info key now reports an Auto-Sweeper's arm: what it is holding and where it is delivering, what it is collecting and from where, or that the arm is idle or off. The game gives the arm no status item, so this was previously the one thing on a tile with no readout at all.
 * Selecting an Auto-Sweeper now narrates what its arm is doing: every completed pickup and delivery is announced with the item, the amount, and where it came from or went to. The readout stops as soon as you deselect the sweeper, and can be turned off with "Auto-Sweeper activity readout" under Miscellaneous settings.
 * Added a "Rectangle size while selecting" setting under Tile Cursor Settings. Set it to append or prepend and the cursor readout carries the size of the rectangle being dragged out, such as "4x7", for tools, the build tool, and sandbox tools. Off by default.

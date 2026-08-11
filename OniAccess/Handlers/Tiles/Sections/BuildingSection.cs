@@ -109,6 +109,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 			bool isPlant = go.GetComponent<Growing>() != null;
 			ReadStatusItems(selectable, isPlant, tokens);
+			BuildingSettings.Append(go, tokens);
 
 			if (OverlayScreen.Instance != null
 				&& OverlayScreen.Instance.GetMode() == OverlayModes.Temperature.ID) {
@@ -808,7 +809,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			}
 		}
 
-		private static string EightDirectionToString(EightDirection dir) {
+		internal static string EightDirectionToString(EightDirection dir) {
 			switch (dir) {
 				case EightDirection.Up: return (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_UP;
 				case EightDirection.UpLeft: return (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_UP_LEFT;

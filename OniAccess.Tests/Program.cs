@@ -415,6 +415,10 @@ namespace OniAccess.Tests {
 			foreach (var r in PrismMarshalTests.All())
 				results.Add(r);
 
+			// --- Building settings readout strings ---
+			foreach (var r in BuildingSettingsStringTests.All())
+				results.Add(r);
+
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
 				if (ok) {

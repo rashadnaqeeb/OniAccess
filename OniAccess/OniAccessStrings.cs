@@ -122,6 +122,7 @@ namespace STRINGS {
 			public static LocString SCANNER_DIRECTION_EARCONS = "Scanner direction earcons";
 			public static LocString SCANNER_DIRECTION_VOLUME = "Scanner direction volume";
 			public static LocString FLOW_DIRECTION_READOUT = "Flow direction readout";
+			public static LocString BUILDING_SETTINGS_READOUT = "Building settings readout";
 			public static LocString CUSTOM_SCANNER_CATEGORIES = "Custom scanner categories";
 		}
 
@@ -1045,6 +1046,50 @@ namespace STRINGS {
 			public static LocString MARKED_DECONSTRUCTION = "deconstructing {0}";
 			// {0} = building name queued as replacement
 			public static LocString REPLACING_WITH = "replacing with {0}";
+
+			// Configurable building settings, spoken under the overlay each one
+			// belongs to when the building settings readout is enabled.
+			// {0} = measured quantity (e.g. "Ambient Pressure"), {1} = "Above" or
+			// "Below" from the game, {2} = formatted threshold value
+			public static LocString SETTING_THRESHOLD = "{0} {1} {2}";
+			// {0} = selected element or material name
+			public static LocString SETTING_FILTER = "filter {0}";
+			public static LocString SETTING_FILTER_NONE = "no filter";
+			// {0} and {2} = slider labels from the game, {1} and {3} = their values
+			public static LocString SETTING_ACTIVATION_RANGE = "{0} {1}, {2} {3}";
+			// {0} = setting name from the game, {1} = value with units
+			public static LocString SETTING_SLIDER = "{0} {1}";
+			// {0} = formatted mass per second
+			public static LocString SETTING_FLOW = "flow {0}";
+			// {0} = formatted mass or unit count
+			public static LocString SETTING_LIMIT = "limit {0}";
+			// {0} = capacity with units
+			public static LocString SETTING_CAPACITY = "capacity {0}";
+			// {0} = target count the counter sends a signal at
+			public static LocString SETTING_COUNT = "count {0}";
+			public static LocString SETTING_COUNT_ADVANCED = "advanced counting";
+			// {0} = green signal duration, {1} = red signal duration
+			public static LocString SETTING_TIMER = "on {0}, off {1}";
+			// {0} = start point in the cycle, {1} = length, both as percentages
+			public static LocString SETTING_TIME_RANGE = "start {0}, duration {1}";
+			public static LocString SETTING_CRITTERS = "counting critters";
+			public static LocString SETTING_EGGS = "counting eggs";
+			public static LocString SETTING_CRITTERS_AND_EGGS = "counting critters and eggs";
+			// {0} = comma separated list of active ribbon bit numbers
+			public static LocString SETTING_BITS = "bits {0}";
+			public static LocString SETTING_BITS_NONE = "no bits";
+			// {0} = player-entered alarm name
+			public static LocString SETTING_ALARM = "alarm {0}";
+			// {0} = name of the broadcaster this receiver is tuned to
+			public static LocString SETTING_CHANNEL = "channel {0}";
+			// {0} = compass direction the redirector fires toward
+			public static LocString SETTING_AIMED = "aimed {0}";
+			public static LocString SETTING_AUTOMATION_ONLY = "automation only";
+			// {0} = seed or egg the receptacle is set to accept
+			public static LocString SETTING_SELECTED = "selected {0}";
+			public static LocString SETTING_SELECTED_NONE = "nothing selected";
+			// {0} = bait element the lure is baited with
+			public static LocString SETTING_BAIT = "bait {0}";
 
 			// Building port type labels
 			public static LocString POWER_INPUT = "power input";

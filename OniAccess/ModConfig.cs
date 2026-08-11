@@ -21,6 +21,7 @@ namespace OniAccess {
 		public bool FootstepEarcons { get; set; } = true;
 		public bool ScannerDirectionEarcons { get; set; } = false;
 		public bool SweeperActivityReadout { get; set; } = true;
+		public bool BuildingSettingsReadout { get; set; } = false;
 
 		public float UtilityPresenceVolume { get; set; } = 1.0f;
 		public float PipeShapeVolume { get; set; } = 0.15f;
