@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.6.12
+## Unreleased changes since 1.7.0
+
+## 1.7.0
 
 * Added a "Building settings readout" setting under Tile Cursor Settings. Turn it on and the tile cursor reports how a building is configured, in the overlay that setting belongs to. For example the specific settings of an automation sensor in the automation overlay. Settings that cannot be stated in a line, such as storage filters, are left out. 
 * The I key now reports if the arm of an autosweeper is currently grabbing something or is idle.
