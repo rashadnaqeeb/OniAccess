@@ -957,12 +957,20 @@ namespace OniAccess.Handlers.Tiles {
 				return;
 			}
 			string summary = TooltipCapture.GetPrioritySummary(
-				TileCursor.Instance.Cell);
+				TileCursor.Instance.Cell, out var described);
 
 			// An Auto-Sweeper's arm is the one thing on a tile the game's
 			// tooltip never describes, because the arm raises no status item.
-			// It leads: on a sweeper it is what the key was pressed for.
-			string arm = SweeperActivity.DescribeAtCell(TileCursor.Instance.Cell);
+			// It leads the summary, being what the key was pressed for - but
+			// only when the summary is the sweeper's own block. Most overlays
+			// answer with their own readout instead, and fronting that with
+			// the arm would answer a question the player did not ask.
+			string arm = null;
+			if (summary == null)
+				arm = SweeperActivity.DescribeAtCell(TileCursor.Instance.Cell);
+			else if (described != null)
+				arm = SweeperActivity.DescribeState(described);
+
 			if (arm != null)
 				summary = summary == null ? arm : $"{arm}, {summary}";
 

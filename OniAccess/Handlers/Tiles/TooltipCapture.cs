@@ -88,21 +88,35 @@ namespace OniAccess.Handlers.Tiles {
 		/// utility overlays), then building, then first block.
 		/// Returns null when no tooltip is captured.
 		/// </summary>
-		internal static string GetPrioritySummary(int cell) {
+		internal static string GetPrioritySummary(int cell) =>
+			GetPrioritySummary(cell, out _);
+
+		/// <summary>
+		/// GetPrioritySummary, also reporting which entity at the cell the
+		/// returned block describes. Only the building branch names one;
+		/// every other branch hands back an overlay, conduit, or fallback
+		/// block, and sets describedEntity to null. Callers that want to
+		/// extend a building's own readout must check this rather than
+		/// assume the summary is about the building they care about, since
+		/// in most overlays it is not.
+		/// </summary>
+		internal static string GetPrioritySummary(
+				int cell, out GameObject describedEntity) {
+			describedEntity = null;
 			var lines = _capturedLines;
 			if (lines == null || lines.Count == 0) return null;
 
-			var buildingNames = GetNonBackwallBuildingNames(cell);
-			var backwallName = GetBackwallName(cell);
-			if (backwallName != null && buildingNames.Count > 0)
-				buildingNames.Add(backwallName);
+			var entities = GetNonBackwallEntities(cell);
+			var backwall = GetBackwall(cell);
+			if (backwall != null && entities.Count > 0)
+				entities.Add(new Entity(backwall.GetProperName(), backwall));
 
 			// Overlay blocks are drawn first. If the active overlay produced
 			// one, lines[0] is the overlay block. Guard against false
 			// positives by checking lines[0] doesn't start with a building
 			// name (overlay titles like "Decor" never match building names).
 			if (HasOverlayTooltipBlock(cell)
-				&& !MatchesAnyName(lines[0], buildingNames))
+				&& MatchEntity(lines[0], entities) == null)
 				return lines[0];
 
 			// In utility overlays, conduit status (circuit load, pipe
@@ -111,13 +125,19 @@ namespace OniAccess.Handlers.Tiles {
 			string conduitResult = FindConduitBlock(lines, cell);
 			if (conduitResult != null) return conduitResult;
 
-			if (buildingNames.Count > 0) {
+			if (entities.Count > 0) {
 				for (int i = 0; i < lines.Count; i++) {
-					if (MatchesAnyName(lines[i], buildingNames))
+					var match = MatchEntity(lines[i], entities);
+					if (match != null) {
+						describedEntity = match;
 						return StripEntityPrefix(lines[i], cell)
 							?? lines[i];
+					}
 				}
 			}
+
+			string backwallName = backwall != null
+				? backwall.GetProperName() : null;
 
 			// When only a backwall building exists, skip past its tooltip line
 			if (backwallName != null) {
@@ -290,18 +310,51 @@ namespace OniAccess.Handlers.Tiles {
 			return false;
 		}
 
-		private static List<string> GetNonBackwallBuildingNames(int cell) {
-			var names = new List<string>(2);
-			AddBuildingName(cell, (int)ObjectLayer.Building, names);
-			AddBuildingName(cell, (int)ObjectLayer.FoundationTile, names);
-			return names;
+		/// <summary>A named thing at a cell, paired with the object it is.</summary>
+		private struct Entity {
+			internal readonly string Name;
+			internal readonly GameObject Go;
+
+			internal Entity(string name, GameObject go) {
+				Name = name;
+				Go = go;
+			}
 		}
 
-		private static string GetBackwallName(int cell) {
+		private static List<Entity> GetNonBackwallEntities(int cell) {
+			var entities = new List<Entity>(2);
+			AddEntity(cell, (int)ObjectLayer.Building, entities);
+			AddEntity(cell, (int)ObjectLayer.FoundationTile, entities);
+			return entities;
+		}
+
+		private static void AddEntity(
+				int cell, int layer, List<Entity> entities) {
+			var go = Grid.Objects[cell, layer];
+			if (go == null) return;
+			string name = go.GetProperName();
+			if (!string.IsNullOrEmpty(name))
+				entities.Add(new Entity(name, go));
+		}
+
+		private static GameObject GetBackwall(int cell) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Backwall];
 			if (go == null) return null;
-			string name = go.GetProperName();
-			return string.IsNullOrEmpty(name) ? null : name;
+			return string.IsNullOrEmpty(go.GetProperName()) ? null : go;
+		}
+
+		/// <summary>
+		/// The entity whose name this tooltip block starts with, or null
+		/// when the block belongs to none of them.
+		/// </summary>
+		private static GameObject MatchEntity(
+				string line, List<Entity> entities) {
+			for (int i = 0; i < entities.Count; i++) {
+				if (line.StartsWith(entities[i].Name,
+						System.StringComparison.OrdinalIgnoreCase))
+					return entities[i].Go;
+			}
+			return null;
 		}
 
 		private static void AddBuildingName(
