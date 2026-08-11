@@ -16,10 +16,8 @@ namespace OniAccess.Handlers.Tools {
 
 		private readonly ToolHandler _owner;
 		private readonly ModToolInfo _pendingTool;
-		private List<string> _filterKeys;
 		private List<string> _filterNames;
-		// Live ToggleData objects from the game's menu, parallel to _filterKeys.
-		// Null when running on the harvest mode-pick fallback (menu not populated).
+		// Live ToggleData objects owned by the tool, parallel to _filterKeys.
 		private List<ToolParameterMenu.ToggleData> _toggles;
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.TOOLS.FILTER_NAME;
@@ -42,7 +40,7 @@ namespace OniAccess.Handlers.Tools {
 			_pendingTool = pendingTool;
 		}
 
-		public override int ItemCount => _filterKeys != null ? _filterKeys.Count : 0;
+		public override int ItemCount => _filterNames != null ? _filterNames.Count : 0;
 
 		public override string GetItemLabel(int index) {
 			if (_filterNames == null || index < 0 || index >= _filterNames.Count) return null;
@@ -60,13 +58,10 @@ namespace OniAccess.Handlers.Tools {
 				SpeechPipeline.SpeakInterrupt(ComposeItem(GetReviewItemText(), CurrentIndex, RoleForItem(CurrentIndex)));
 		}
 
-		// Checkbox (inclusive) filters are on/off toggles; the others (including the
-		// harvest-tool path, where _toggles is null) are a one-of-several selection
-		// spoken as radio buttons.
+		// Checkbox (inclusive) filters are on/off toggles; the others are a
+		// one-of-several selection spoken as radio buttons.
 		private string RoleForItem(int index) {
-			if (_toggles != null && index >= 0 && index < _toggles.Count)
-				return _toggles[index].isToggleInclusive ? Widgets.NavRoles.Toggle : Widgets.NavRoles.Radio;
-			return Widgets.NavRoles.Radio;
+			return _toggles[index].isToggleInclusive ? Widgets.NavRoles.Toggle : Widgets.NavRoles.Radio;
 		}
 
 		/// <summary>
@@ -75,7 +70,6 @@ namespace OniAccess.Handlers.Tools {
 		/// </summary>
 		private string ItemSpeech(int index) {
 			string name = _filterNames[index];
-			if (_toggles == null) return name;
 			var toggle = _toggles[index];
 			// Radio filters: mark the one currently chosen. Spoken in both modes; in
 			// verbose mode it precedes the appended "radio button" role since it is part
@@ -94,23 +88,30 @@ namespace OniAccess.Handlers.Tools {
 			return toggles != null && toggles.Length > 0 ? toggles : null;
 		}
 
+		/// <summary>
+		/// Toggles owned by a tool that has not been activated yet. The shared
+		/// parameter menu still holds whichever tool ran last (ClearMenu leaves
+		/// currentTogglesData behind), so it cannot be trusted before activation.
+		/// </summary>
+		private ToolParameterMenu.ToggleData[] ReadPendingToolToggles() {
+			if (_pendingTool.ToolType != typeof(HarvestTool)) {
+				Util.Log.Warn($"ToolFilterHandler: no mode source for pending tool {_pendingTool.ToolName}");
+				return null;
+			}
+			return Traverse.Create(HarvestTool.Instance)
+				.Field<ToolParameterMenu.ToggleData[]>("options").Value;
+		}
+
 		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
-			_filterKeys = new List<string>();
 			_filterNames = new List<string>();
 			_toggles = null;
 			CurrentIndex = 0;
 			_search.Clear();
 
-			var toggles = ReadMenuToggles();
+			var toggles = _pendingTool != null ? ReadPendingToolToggles() : ReadMenuToggles();
 
-			if (toggles == null && _pendingTool != null
-				&& _pendingTool.ToolType == typeof(HarvestTool)) {
-				_filterKeys.Add(HarvestWhenReadyKey);
-				_filterKeys.Add(DoNotHarvestKey);
-				for (int i = 0; i < _filterKeys.Count; i++)
-					_filterNames.Add(Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + _filterKeys[i] + ".NAME"));
-			} else if (toggles != null) {
+			if (toggles != null) {
 				_toggles = new List<ToolParameterMenu.ToggleData>();
 				int onIndex = 0;
 				int idx = 0;
@@ -118,7 +119,6 @@ namespace OniAccess.Handlers.Tools {
 					if (toggle.state == ToolParameterMenu.ToggleState.Disabled)
 						continue;
 					_toggles.Add(toggle);
-					_filterKeys.Add(toggle.name);
 					_filterNames.Add(Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + toggle.name + ".NAME"));
 					if (toggle.state == ToolParameterMenu.ToggleState.On)
 						onIndex = idx;
@@ -144,60 +144,46 @@ namespace OniAccess.Handlers.Tools {
 		private static System.Reflection.MethodInfo _onChangeMethod;
 
 		protected override void ActivateCurrentItem() {
-			if (_filterKeys == null || CurrentIndex < 0 || CurrentIndex >= _filterKeys.Count)
+			if (_filterNames == null || CurrentIndex < 0 || CurrentIndex >= _filterNames.Count)
 				return;
+
+			// Activating a pending tool pops this menu off the handler stack, and
+			// deactivation resets CurrentIndex, so resolve the choice up front.
+			int index = CurrentIndex;
+			var clicked = _toggles[index];
 
 			if (_pendingTool != null)
 				ToolPickerHandler.ActivateTool(_pendingTool);
 
-			// Activating a pending tool populates the parameter menu, so the
-			// toggles may only exist now. Find the clicked one by key.
-			var toggles = ReadMenuToggles();
-			ToolParameterMenu.ToggleData clicked = null;
-			if (toggles != null) {
-				foreach (var toggle in toggles) {
-					if (toggle.name == _filterKeys[CurrentIndex]
-						&& toggle.state != ToolParameterMenu.ToggleState.Disabled) {
-						clicked = toggle;
-						break;
-					}
-				}
+			// Mirrors the game's ToolParameterMenu.ChangeToSetting, which now
+			// takes a private Widget and can't be invoked with a filter key.
+			// The ToggleData objects are shared with the tool's currentFilters,
+			// so mutating them and firing OnChange updates both the menu
+			// visuals and the tool.
+			if (clicked.isToggleInclusive) {
+				clicked.state = clicked.IsOn
+					? ToolParameterMenu.ToggleState.Off
+					: ToolParameterMenu.ToggleState.On;
+			} else {
+				foreach (var toggle in _toggles)
+					toggle.state = ToolParameterMenu.ToggleState.Off;
+				clicked.state = ToolParameterMenu.ToggleState.On;
 			}
 
-			if (clicked != null) {
-				// Mirrors the game's ToolParameterMenu.ChangeToSetting, which now
-				// takes a private Widget and can't be invoked with a filter key.
-				// The ToggleData objects are shared with the tool's currentFilters,
-				// so mutating them and firing OnChange updates both the menu
-				// visuals and the tool.
-				if (clicked.isToggleInclusive) {
-					clicked.state = clicked.IsOn
-						? ToolParameterMenu.ToggleState.Off
-						: ToolParameterMenu.ToggleState.On;
-				} else {
-					foreach (var toggle in toggles)
-						if (toggle.state != ToolParameterMenu.ToggleState.Disabled)
-							toggle.state = ToolParameterMenu.ToggleState.Off;
-					clicked.state = ToolParameterMenu.ToggleState.On;
-				}
-
-				try {
-					if (_onChangeMethod == null)
-						_onChangeMethod = AccessTools.Method(typeof(ToolParameterMenu), "OnChange");
-					_onChangeMethod.Invoke(ToolMenu.Instance.toolParameterMenu, null);
-				} catch (System.Exception ex) {
-					Util.Log.Error($"ToolFilterHandler.ActivateCurrentItem: filter apply failed: {ex}");
-				}
-			} else {
-				Util.Log.Warn($"ToolFilterHandler.ActivateCurrentItem: filter '{_filterKeys[CurrentIndex]}' not found in menu");
+			try {
+				if (_onChangeMethod == null)
+					_onChangeMethod = AccessTools.Method(typeof(ToolParameterMenu), "OnChange");
+				_onChangeMethod.Invoke(ToolMenu.Instance.toolParameterMenu, null);
+			} catch (System.Exception ex) {
+				Util.Log.Error($"ToolFilterHandler.ActivateCurrentItem: filter apply failed: {ex}");
 			}
 
 			bool hadSelection = _owner != null && _owner.HasSelection;
 			if (_owner != null)
 				_owner.ClearSelection();
 
-			bool isInclusive = clicked != null && clicked.isToggleInclusive;
-			string announcement = isInclusive ? ItemSpeech(CurrentIndex) : _filterNames[CurrentIndex];
+			bool isInclusive = clicked.isToggleInclusive;
+			string announcement = isInclusive ? ItemSpeech(index) : _filterNames[index];
 			if (hadSelection)
 				announcement += ", " + (string)STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED;
 

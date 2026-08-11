@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.12
 
+* Fixed the harvest mode picked from the action menu never being applied: choosing "disable harvest" left the tool set to harvest when ready. The menu also now reads the harvest tool's own modes instead of whatever filters the previously used tool left behind, and announces which mode is currently selected.
+
 ## 1.6.12
 
 * Fixed logic gate blueprints not announcing their input, output, and control ports in the automation overlay. Under-construction gates now read the same port labels as finished ones.
