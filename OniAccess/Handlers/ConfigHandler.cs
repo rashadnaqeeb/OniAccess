@@ -230,6 +230,17 @@ namespace OniAccess.Handlers {
 							value => ConfigManager.Config.TemperatureBandVolume = value,
 							0f, 2f
 						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_EARCONS,
+							() => ConfigManager.Config.SweeperPickupEarcons,
+							value => ConfigManager.Config.SweeperPickupEarcons = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_VOLUME,
+							() => ConfigManager.Config.SweeperPickupVolume,
+							value => ConfigManager.Config.SweeperPickupVolume = value,
+							0f, 2f
+						),
 					}
 				},
 

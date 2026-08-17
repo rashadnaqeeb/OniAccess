@@ -15,10 +15,12 @@ namespace OniAccess.Audio {
 		private AudioLibrary _library;
 		private Coroutine _activeSequence;
 		private readonly List<Channel> _activeChannels = new List<Channel>();
+		private Channel _oneShotChannel;
 		private readonly List<EarconSet> _sets = new List<EarconSet>();
 		private TemperatureBandEarconSet _temperatureBandSet;
 
-		internal int ActiveChannelCount => _activeChannels.Count;
+		internal int ActiveChannelCount =>
+			_activeChannels.Count + (_oneShotChannel.hasHandle() ? 1 : 0);
 
 		private void Awake() {
 			Instance = this;
@@ -65,9 +67,38 @@ namespace OniAccess.Audio {
 		private void OnDestroy() {
 			if (Instance == this) {
 				CancelAll();
+				StopOneShot();
 				_library?.ReleaseAll();
 				Instance = null;
 			}
+		}
+
+		/// <summary>
+		/// Plays one clip outside the cursor-move sequence. Earcons fired by a
+		/// game event arrive on their own schedule, so this neither cancels the
+		/// batches queued for a cursor move nor is cancelled by the next one.
+		/// </summary>
+		public void PlayOneShot(string clipName, float volume) {
+			if (!_library.TryGet(clipName, out var sound)) {
+				Log.Warn($"EarconScheduler: clip not found: {clipName}");
+				return;
+			}
+			StopOneShot();
+			var result = RuntimeManager.CoreSystem.playSound(
+				sound, default(ChannelGroup), false, out _oneShotChannel);
+			if (result != RESULT.OK) {
+				Log.Warn($"EarconScheduler: FMOD playSound failed for one-shot '{clipName}': {result}");
+				_oneShotChannel = default;
+				return;
+			}
+			_oneShotChannel.setVolume(volume);
+			Log.Debug($"EarconScheduler: playing one-shot '{clipName}'");
+		}
+
+		private void StopOneShot() {
+			if (_oneShotChannel.hasHandle())
+				_oneShotChannel.stop();
+			_oneShotChannel = default;
 		}
 
 		public void Play(List<SoundBatch> batches) {

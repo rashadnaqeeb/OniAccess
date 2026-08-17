@@ -21,6 +21,7 @@ namespace OniAccess {
 		public bool FootstepEarcons { get; set; } = true;
 		public bool ScannerDirectionEarcons { get; set; } = false;
 		public bool SweeperActivityReadout { get; set; } = true;
+		public bool SweeperPickupEarcons { get; set; } = true;
 
 		public float UtilityPresenceVolume { get; set; } = 1.0f;
 		public float PipeShapeVolume { get; set; } = 0.15f;
@@ -30,6 +31,7 @@ namespace OniAccess {
 		public float FollowMovementVolume { get; set; } = 0.11f;
 		public float FootstepVolume { get; set; } = 1.5f;
 		public float ScannerDirectionVolume { get; set; } = 0.15f;
+		public float SweeperPickupVolume { get; set; } = 1.0f;
 
 		public List<CustomScannerCategory> CustomScannerCategories { get; set; }
 			= new List<CustomScannerCategory>();

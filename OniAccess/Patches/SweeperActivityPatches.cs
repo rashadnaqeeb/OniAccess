@@ -1,6 +1,7 @@
 using HarmonyLib;
 using UnityEngine;
 
+using OniAccess.Audio;
 using OniAccess.Handlers.Tiles;
 using OniAccess.Speech;
 using OniAccess.Util;
@@ -44,14 +45,17 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
-	/// Pickup half of the sweeper readout. Patched as a prefix because the
-	/// source is only readable before the body runs: Take() moves the item
+	/// Pickup half of the sweeper readout, and the moment the pickup earcon
+	/// marks for a sweeper under the tile cursor. Patched as a prefix because
+	/// the source is only readable before the body runs: Take() moves the item
 	/// into the arm's own storage, after which its position is the arm's and
 	/// Pickupable.storage no longer names where it came from.
 	/// </summary>
 	[HarmonyPatch(typeof(Pickupable), "OnCompleteWork")]
 	internal static class Pickupable_OnCompleteWork_Patch {
 		private static void Prefix(Pickupable __instance, WorkerBase worker) {
+			SweeperPickupEarcon.OnPickupComplete(worker.gameObject);
+
 			if (!SweeperNarration.IsWatched(worker.gameObject)) return;
 			try {
 				var info = worker.GetStartWorkInfo()

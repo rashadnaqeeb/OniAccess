@@ -111,6 +111,7 @@ namespace STRINGS {
 			public static LocString TEMPERATURE_BAND_EARCONS = "Temperature band earcons";
 			public static LocString FOLLOW_MOVEMENT_EARCONS = "Follow movement earcons";
 			public static LocString FOOTSTEP_EARCONS = "Footstep earcons";
+			public static LocString SWEEPER_PICKUP_EARCONS = "Auto-Sweeper pickup earcons";
 			public static LocString SWEEPER_ACTIVITY_READOUT = "Auto-Sweeper activity readout";
 			public static LocString UTILITY_PRESENCE_VOLUME = "Utility presence volume";
 			public static LocString PIPE_SHAPE_VOLUME = "Pipe shape volume";
@@ -119,6 +120,7 @@ namespace STRINGS {
 			public static LocString FLOW_SONIFICATION_VOLUME = "Flow sonification volume";
 			public static LocString FOLLOW_MOVEMENT_VOLUME = "Follow movement volume";
 			public static LocString FOOTSTEP_VOLUME = "Footstep volume";
+			public static LocString SWEEPER_PICKUP_VOLUME = "Auto-Sweeper pickup volume";
 			public static LocString SCANNER_DIRECTION_EARCONS = "Scanner direction earcons";
 			public static LocString SCANNER_DIRECTION_VOLUME = "Scanner direction volume";
 			public static LocString FLOW_DIRECTION_READOUT = "Flow direction readout";
