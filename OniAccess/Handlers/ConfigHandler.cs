@@ -198,11 +198,6 @@ namespace OniAccess.Handlers {
 							value => ConfigManager.Config.AnnounceBiomeChanges = value
 						),
 						new BoolConfigItem(
-							(string)STRINGS.ONIACCESS.CONFIG.BUILDING_SETTINGS_READOUT,
-							() => ConfigManager.Config.BuildingSettingsReadout,
-							value => ConfigManager.Config.BuildingSettingsReadout = value
-						),
-						new BoolConfigItem(
 							(string)STRINGS.ONIACCESS.CONFIG.PASSABILITY_EARCONS,
 							() => ConfigManager.Config.PassabilityEarcons,
 							value => ConfigManager.Config.PassabilityEarcons = value

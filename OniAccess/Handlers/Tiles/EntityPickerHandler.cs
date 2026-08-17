@@ -182,35 +182,44 @@ namespace OniAccess.Handlers.Tiles {
 
 		/// <summary>
 		/// Match each selectable to a tooltip block by comparing entity names
-		/// against block prefixes. Returns a label list parallel to selectables.
+		/// against block prefixes, then extend it with the building settings the
+		/// game's hover text leaves out. Returns a label list parallel to
+		/// selectables.
 		/// </summary>
 		public static IReadOnlyList<string> MatchTooltipLabels(
 				IReadOnlyList<KSelectable> selectables,
 				IReadOnlyList<string> tooltipLines) {
 			var labels = new string[selectables.Count];
-			if (tooltipLines == null || tooltipLines.Count == 0) {
-				for (int i = 0; i < selectables.Count; i++)
-					labels[i] = DebrisNameHelper.GetDisplayName(selectables[i].gameObject);
-				return labels;
-			}
-			var consumed = new bool[tooltipLines.Count];
+			var consumed = tooltipLines != null
+				? new bool[tooltipLines.Count] : null;
 			for (int i = 0; i < selectables.Count; i++) {
-				string rawName = selectables[i].GetName();
-				bool matched = false;
-				for (int j = 0; j < tooltipLines.Count; j++) {
-					if (consumed[j]) continue;
-					if (tooltipLines[j].StartsWith(
-							rawName, StringComparison.OrdinalIgnoreCase)) {
-						labels[i] = tooltipLines[j];
-						consumed[j] = true;
-						matched = true;
-						break;
-					}
-				}
-				if (!matched)
-					labels[i] = DebrisNameHelper.GetDisplayName(selectables[i].gameObject);
+				var selectable = selectables[i];
+				string label = MatchTooltipLine(selectable, tooltipLines, consumed)
+					?? DebrisNameHelper.GetDisplayName(selectable.gameObject);
+				string settings = BuildingSettings.Describe(selectable.gameObject);
+				labels[i] = settings == null ? label : label + ", " + settings;
 			}
 			return labels;
+		}
+
+		/// <summary>
+		/// The first unclaimed tooltip block starting with this entity's name,
+		/// or null when no block describes it.
+		/// </summary>
+		private static string MatchTooltipLine(
+				KSelectable selectable,
+				IReadOnlyList<string> tooltipLines, bool[] consumed) {
+			if (tooltipLines == null) return null;
+			string rawName = selectable.GetName();
+			for (int j = 0; j < tooltipLines.Count; j++) {
+				if (consumed[j]) continue;
+				if (tooltipLines[j].StartsWith(
+						rawName, StringComparison.OrdinalIgnoreCase)) {
+					consumed[j] = true;
+					return tooltipLines[j];
+				}
+			}
+			return null;
 		}
 	}
 }

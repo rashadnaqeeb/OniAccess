@@ -109,7 +109,6 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 			bool isPlant = go.GetComponent<Growing>() != null;
 			ReadStatusItems(selectable, isPlant, tokens);
-			BuildingSettings.Append(go, tokens);
 
 			if (OverlayScreen.Instance != null
 				&& OverlayScreen.Instance.GetMode() == OverlayModes.Temperature.ID) {

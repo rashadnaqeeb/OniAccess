@@ -974,6 +974,15 @@ namespace OniAccess.Handlers.Tiles {
 			if (arm != null)
 				summary = summary == null ? arm : $"{arm}, {summary}";
 
+			// Settings trail the summary: they say how the building was set up,
+			// which extends whatever the tooltip answered rather than replacing
+			// it. Read for the whole cell, not just the entity the summary
+			// describes, so a building's setup is reachable in every overlay.
+			string settings = BuildingSettings.DescribeAtCell(
+				TileCursor.Instance.Cell);
+			if (settings != null)
+				summary = summary == null ? settings : $"{summary}, {settings}";
+
 			if (summary == null) {
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP);

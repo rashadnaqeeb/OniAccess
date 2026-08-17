@@ -122,7 +122,6 @@ namespace STRINGS {
 			public static LocString SCANNER_DIRECTION_EARCONS = "Scanner direction earcons";
 			public static LocString SCANNER_DIRECTION_VOLUME = "Scanner direction volume";
 			public static LocString FLOW_DIRECTION_READOUT = "Flow direction readout";
-			public static LocString BUILDING_SETTINGS_READOUT = "Building settings readout";
 			public static LocString CUSTOM_SCANNER_CATEGORIES = "Custom scanner categories";
 		}
 
@@ -1047,8 +1046,7 @@ namespace STRINGS {
 			// {0} = building name queued as replacement
 			public static LocString REPLACING_WITH = "replacing with {0}";
 
-			// Configurable building settings, spoken under the overlay each one
-			// belongs to when the building settings readout is enabled.
+			// Configurable building settings, spoken with the tooltip readouts.
 			// {0} = measured quantity (e.g. "Ambient Pressure"), {1} = "Above" or
 			// "Below" from the game, {2} = formatted threshold value
 			public static LocString SETTING_THRESHOLD = "{0} {1} {2}";
@@ -1087,7 +1085,6 @@ namespace STRINGS {
 			public static LocString SETTING_AUTOMATION_ONLY = "automation only";
 			// {0} = seed or egg the receptacle is set to accept
 			public static LocString SETTING_SELECTED = "selected {0}";
-			public static LocString SETTING_SELECTED_NONE = "nothing selected";
 			// {0} = bait element the lure is baited with
 			public static LocString SETTING_BAIT = "bait {0}";
 

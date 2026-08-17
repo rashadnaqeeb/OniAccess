@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.7.0
 
+* Building settings now come with the tooltip readouts instead of the tile cursor: pressing I on a building reports how it is configured, and each entry in the Enter picker carries its own settings. They read in every overlay now, so a sensor's threshold or a valve's flow no longer depends on being in the matching overlay. The "Building settings readout" setting is gone, along with the settings being spoken as the cursor moves.
+
 ## 1.7.0
 
 * Added a "Building settings readout" setting under Tile Cursor Settings. Turn it on and the tile cursor reports how a building is configured, in the overlay that setting belongs to. For example the specific settings of an automation sensor in the automation overlay. Settings that cannot be stated in a line, such as storage filters, are left out. 
