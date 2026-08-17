@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.7.0
+## Unreleased changes since 1.7.1
+
+## 1.7.1
 
 * An earcon now plays when an Auto-Sweeper under the tile cursor picks something up, so you know there is something in its claw to check with I. 
 * Backspace now returns from bookmark and fast travel jumps as well.
