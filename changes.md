@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.7.0
 
+* Backspace now returns from bookmark jumps as well: after a Shift+number bookmark jump, a jump home with H, or a jump from the fast travel menu, Backspace takes the cursor back to where it was.
 * Building settings now come with the tooltip readouts instead of the tile cursor: pressing I on a building reports how it is configured, and each entry in the Enter picker carries its own settings. They read in every overlay now, so a sensor's threshold or a valve's flow no longer depends on being in the matching overlay. The "Building settings readout" setting is gone, along with the settings being spoken as the cursor moves.
 
 ## 1.7.0

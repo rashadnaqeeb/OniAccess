@@ -630,7 +630,9 @@ namespace OniAccess.Handlers.Tiles {
 					return true;
 				}
 				if (!InputUtil.AnyModifierHeld()) {
+					int fromCell = TileCursor.Instance.Cell;
 					SpeechPipeline.SpeakInterrupt(CursorBookmarks.JumpHome());
+					RecordJumpReturn(fromCell);
 					Audio.EarconScheduler.Instance?.ResetTransitionState();
 					UpdateAudioForCell();
 					return true;
@@ -640,7 +642,9 @@ namespace OniAccess.Handlers.Tiles {
 			if (bmDigit >= 0) {
 				int idx = bmDigit == 0 ? 9 : bmDigit - 1;
 				if (InputUtil.ShiftHeld()) {
+					int fromCell = TileCursor.Instance.Cell;
 					SpeechPipeline.SpeakInterrupt(_bookmarks.Goto(idx));
+					RecordJumpReturn(fromCell);
 					Audio.EarconScheduler.Instance?.ResetTransitionState();
 					UpdateAudioForCell();
 					return true;
@@ -745,11 +749,23 @@ namespace OniAccess.Handlers.Tiles {
 		/// the colony view (e.g., the fast travel menu).
 		/// </summary>
 		public void TeleportCursorTo(int cell) {
+			int fromCell = TileCursor.Instance.Cell;
 			string speech = TileCursor.Instance.JumpTo(cell);
+			RecordJumpReturn(fromCell);
 			Audio.EarconScheduler.Instance?.ResetTransitionState();
 			UpdateAudioForCell();
 			if (speech != null)
 				SpeechPipeline.SpeakInterrupt(speech);
+		}
+
+		/// <summary>
+		/// Arms Backspace to return to <paramref name="fromCell"/>. Does nothing
+		/// when the cursor did not move, so a jump that failed (missing bookmark,
+		/// out-of-bounds cell) leaves an earlier return point intact.
+		/// </summary>
+		private void RecordJumpReturn(int fromCell) {
+			if (TileCursor.Instance.Cell != fromCell)
+				_preJumpCell = fromCell;
 		}
 
 		private void UpdateAudioForCell() {
