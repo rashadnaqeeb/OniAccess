@@ -1154,11 +1154,6 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.AUTO_MOVE_CURSOR"
 msgid "Auto-move cursor when cycling scanner entries"
 msgstr "Mover cursor automaticamente ao percorrer entradas do scanner"
 
-#. STRINGS.ONIACCESS.CONFIG.BUILDING_SETTINGS_READOUT
-msgctxt "STRINGS.ONIACCESS.CONFIG.BUILDING_SETTINGS_READOUT"
-msgid "Building settings readout"
-msgstr "Leitura de configurações da construção"
-
 #. STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE
 msgctxt "STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE"
 msgid "Tile cursor coordinate mode"
@@ -1293,6 +1288,16 @@ msgstr "Leituras de utilidades"
 msgctxt "STRINGS.ONIACCESS.CONFIG.SWEEPER_ACTIVITY_READOUT"
 msgid "Auto-Sweeper activity readout"
 msgstr "Leitura de atividade da Varredora automática"
+
+#. STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_EARCONS"
+msgid "Auto-Sweeper pickup earcons"
+msgstr "Earcons de coleta da Varredora automática"
+
+#. STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_VOLUME
+msgctxt "STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_VOLUME"
+msgid "Auto-Sweeper pickup volume"
+msgstr "Volume de coleta da Varredora automática"
 
 #. STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS"
@@ -3033,11 +3038,6 @@ msgstr "limite {0}"
 msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED"
 msgid "selected {0}"
 msgstr "selecionado {0}"
-
-#. STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED_NONE
-msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED_NONE"
-msgid "nothing selected"
-msgstr "nada selecionado"
 
 #. STRINGS.ONIACCESS.GLANCE.SETTING_SLIDER
 msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SLIDER"

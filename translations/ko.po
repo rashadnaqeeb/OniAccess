@@ -1154,11 +1154,6 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.AUTO_MOVE_CURSOR"
 msgid "Auto-move cursor when cycling scanner entries"
 msgstr "스캐너 항목 순환 시 커서 자동 이동"
 
-#. STRINGS.ONIACCESS.CONFIG.BUILDING_SETTINGS_READOUT
-msgctxt "STRINGS.ONIACCESS.CONFIG.BUILDING_SETTINGS_READOUT"
-msgid "Building settings readout"
-msgstr "건조물 설정 읽기"
-
 #. STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE
 msgctxt "STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE"
 msgid "Tile cursor coordinate mode"
@@ -1293,6 +1288,16 @@ msgstr "유틸리티 표시"
 msgctxt "STRINGS.ONIACCESS.CONFIG.SWEEPER_ACTIVITY_READOUT"
 msgid "Auto-Sweeper activity readout"
 msgstr "자동정리기 활동 읽기"
+
+#. STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_EARCONS
+msgctxt "STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_EARCONS"
+msgid "Auto-Sweeper pickup earcons"
+msgstr "자동정리기 수거 이어콘"
+
+#. STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_VOLUME
+msgctxt "STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_VOLUME"
+msgid "Auto-Sweeper pickup volume"
+msgstr "자동정리기 수거 볼륨"
 
 #. STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS
 msgctxt "STRINGS.ONIACCESS.CONFIG.TEMPERATURE_BAND_EARCONS"
@@ -3033,11 +3038,6 @@ msgstr "한도 {0}"
 msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED"
 msgid "selected {0}"
 msgstr "{0} 선택됨"
-
-#. STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED_NONE
-msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SELECTED_NONE"
-msgid "nothing selected"
-msgstr "선택 없음"
 
 #. STRINGS.ONIACCESS.GLANCE.SETTING_SLIDER
 msgctxt "STRINGS.ONIACCESS.GLANCE.SETTING_SLIDER"
