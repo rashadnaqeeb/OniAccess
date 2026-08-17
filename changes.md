@@ -2,13 +2,13 @@
 
 ## Unreleased changes since 1.7.0
 
-* An earcon now plays when an Auto-Sweeper under the tile cursor picks something up, so you know there is something in its claw to check with I. Only pickups make the sound; deliveries and idle swings stay silent. On by default, with "Auto-Sweeper pickup earcons" and its volume under Tile Cursor Settings.
-* Backspace now returns from bookmark jumps as well: after a Shift+number bookmark jump, a jump home with H, or a jump from the fast travel menu, Backspace takes the cursor back to where it was.
-* Building settings now come with the tooltip readouts instead of the tile cursor: pressing I on a building reports how it is configured, and each entry in the Enter picker carries its own settings. They read in every overlay now, so a sensor's threshold or a valve's flow no longer depends on being in the matching overlay. The "Building settings readout" setting is gone, along with the settings being spoken as the cursor moves.
+* An earcon now plays when an Auto-Sweeper under the tile cursor picks something up, so you know there is something in its claw to check with I. 
+* Backspace now returns from bookmark and fast travel jumps as well.
+* Building settings now read after the building's tooltip readout instead of the tile cursor. You can either press I on a particular building or find the building in the item picker menu that comes up when you press enter on a tile.
 
 ## 1.7.0
 
-* Added a "Building settings readout" setting under Tile Cursor Settings. Turn it on and the tile cursor reports how a building is configured, in the overlay that setting belongs to. For example the specific settings of an automation sensor in the automation overlay. Settings that cannot be stated in a line, such as storage filters, are left out. 
+* Added a "Building settings readout" setting under Tile Cursor Settings. Turn it on and the tile cursor reports how a building is configured, in the overlay that setting belongs to. For example the specific settings of an automation sensor in the automation overlay. Settings that cannot be stated in a line, such as storage filters, are left out.
 * The I key now reports if the arm of an autosweeper is currently grabbing something or is idle.
 * Opening the details screen of an Auto-Sweeper now narrates what its arm is doing: every completed pickup and delivery is announced with the item, the amount, and where it came from or went to. The readout  can be turned off with "Auto-Sweeper activity readout" under Miscellaneous settings.
 * Added a "Rectangle size while selecting" setting under Tile Cursor Settings. Set it to append or prepend and the cursor readout carries the size of the rectangle being dragged out, such as "4x7", for tools, the build tool, and sandbox tools. Off by default.
