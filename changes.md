@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.7.1
+## Unreleased changes since 1.7.2
+
+## 1.7.2
 
 * Fixed the relocate tool saying "unreachable" when the duplicant or object being moved no longer existed. It now says "target gone".
 * Fixed a crash when applying copied settings after the source building had been destroyed.
