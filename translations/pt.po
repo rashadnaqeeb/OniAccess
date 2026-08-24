@@ -6189,6 +6189,11 @@ msgctxt "STRINGS.ONIACCESS.TOOLS.MOVE_TO_CONFIRMED"
 msgid "destination set"
 msgstr "destino definido"
 
+#. STRINGS.ONIACCESS.TOOLS.MOVE_TO_NO_TARGET
+msgctxt "STRINGS.ONIACCESS.TOOLS.MOVE_TO_NO_TARGET"
+msgid "target gone"
+msgstr "alvo desaparecido"
+
 #. STRINGS.ONIACCESS.TOOLS.MOVE_TO_UNREACHABLE
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOVE_TO_UNREACHABLE"
 msgid "unreachable"
