@@ -2,6 +2,9 @@
 
 ## Unreleased changes since 1.7.1
 
+* Fixed the relocate tool saying "unreachable" when the duplicant or object being moved no longer existed. It now says "target gone".
+* Fixed a crash when applying copied settings after the source building had been destroyed.
+
 ## 1.7.1
 
 * An earcon now plays when an Auto-Sweeper under the tile cursor picks something up, so you know there is something in its claw to check with I. 

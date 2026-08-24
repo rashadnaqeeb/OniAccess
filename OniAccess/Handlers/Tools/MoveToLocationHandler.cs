@@ -79,6 +79,15 @@ namespace OniAccess.Handlers.Tools {
 				return;
 			}
 
+			// The game distinguishes a target that no longer exists from a cell it
+			// simply cannot reach; CanMoveTo returns false for both.
+			if (GetTargetGO(tool) == null) {
+				BaseScreenHandler.PlaySound("Negative");
+				SpeechPipeline.SpeakInterrupt(
+					(string)STRINGS.ONIACCESS.TOOLS.MOVE_TO_NO_TARGET);
+				return;
+			}
+
 			int cell = TileCursor.Instance.Cell;
 			if (!tool.CanMoveTo(cell)) {
 				BaseScreenHandler.PlaySound("Negative");
@@ -105,23 +114,26 @@ namespace OniAccess.Handlers.Tools {
 			if (tool == null)
 				return Strings.Get("STRINGS.UI.TOOLS.MOVETOLOCATION.TOOLNAME");
 
-			string entityName = null;
-			var nav = Traverse.Create(tool).Field("targetNavigator").GetValue<Navigator>();
-			if (nav != null) {
-				var sel = nav.gameObject.GetComponent<KSelectable>();
-				entityName = sel?.GetName();
-			} else {
-				var movable = Traverse.Create(tool).Field("targetMovable").GetValue<Movable>();
-				if (movable != null) {
-					var sel = movable.gameObject.GetComponent<KSelectable>();
-					entityName = sel?.GetName();
-				}
-			}
+			var targetGO = GetTargetGO(tool);
+			string entityName = targetGO != null
+				? targetGO.GetComponent<KSelectable>()?.GetName()
+				: null;
 
 			if (string.IsNullOrEmpty(entityName))
 				return Strings.Get("STRINGS.UI.TOOLS.MOVETOLOCATION.TOOLNAME");
 			return string.Format(
 				(string)STRINGS.ONIACCESS.TOOLS.MOVE_TO_ACTIVATION, entityName);
+		}
+
+		/// <summary>
+		/// The object being relocated, or null once it has been destroyed.
+		/// </summary>
+		private static UnityEngine.GameObject GetTargetGO(MoveToLocationTool tool) {
+			var nav = Traverse.Create(tool).Field("targetNavigator").GetValue<Navigator>();
+			if (nav != null) return nav.gameObject;
+			var movable = Traverse.Create(tool).Field("targetMovable").GetValue<Movable>();
+			if (movable != null) return movable.gameObject;
+			return null;
 		}
 
 		private static void PlayConfirmSound() {

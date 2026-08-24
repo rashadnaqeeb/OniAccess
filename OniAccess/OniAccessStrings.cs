@@ -1016,6 +1016,8 @@ namespace STRINGS {
 			public static LocString MOVE_TO_ACTIVATION = "move to, {0}";
 			public static LocString MOVE_TO_CONFIRMED = "destination set";
 			public static LocString MOVE_TO_UNREACHABLE = "unreachable";
+			// The duplicant or object being relocated no longer exists
+			public static LocString MOVE_TO_NO_TARGET = "target gone";
 			// {0} = source building name
 			public static LocString COPY_SETTINGS_ACTIVATION = "{0}, copy settings";
 			public static LocString COPY_SETTINGS_NO_TARGET = "no matching building";

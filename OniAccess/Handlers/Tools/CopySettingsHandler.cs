@@ -84,14 +84,20 @@ namespace OniAccess.Handlers.Tools {
 			var sourceGO = Traverse.Create(tool)
 				.Field("sourceGameObject").GetValue<GameObject>();
 
-			var targetId = CopyBuildingSettings.ResolveTarget(
-				CopyBuildingSettings.ResolveLayer(sourceGO), cell);
-			var sourceId = sourceGO.GetComponent<KPrefabID>();
-			var sourceSettings = sourceGO.GetComponent<CopyBuildingSettings>();
-
-			bool success = targetId != null && sourceId != null && sourceSettings != null
-				&& targetId.gameObject != sourceGO
-				&& CopyBuildingSettings.ApplyCopy(targetId, sourceGO, sourceId, sourceSettings);
+			// The source can be destroyed while the tool is armed. Unity keeps the
+			// managed wrapper alive, so component lookups on it throw instead of
+			// returning null. The game guards its own drag paths the same way.
+			KPrefabID targetId = null;
+			bool success = false;
+			if (sourceGO != null) {
+				targetId = CopyBuildingSettings.ResolveTarget(
+					CopyBuildingSettings.ResolveLayer(sourceGO), cell);
+				var sourceId = sourceGO.GetComponent<KPrefabID>();
+				var sourceSettings = sourceGO.GetComponent<CopyBuildingSettings>();
+				success = targetId != null && sourceId != null && sourceSettings != null
+					&& targetId.gameObject != sourceGO
+					&& CopyBuildingSettings.ApplyCopy(targetId, sourceGO, sourceId, sourceSettings);
+			}
 			if (success) {
 				var targetGO = targetId.gameObject;
 				if (FarmCopyFailed(sourceGO, targetGO)) {
