@@ -8,6 +8,8 @@ An accessibility mod for Oxygen Not Included that makes the game playable for bl
 - Oxygen Not Included on Steam
 - A screen reader. If none is running, the mod falls back to the OS built-in speech engine.
 
+On Mac, press Option wherever the documentation says Ctrl, and Command wherever it says Alt. macOS reserves Ctrl+Arrow for Mission Control and Option+digits for special characters, and VoiceOver uses Ctrl+Option, so the mod reads the other modifier instead. Shift is unchanged.
+
 ## Install (Steam Workshop)
 
 1. Subscribe to the mod on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3683507975).
@@ -16,7 +18,7 @@ An accessibility mod for Oxygen Not Included that makes the game playable for bl
    - Uncheck "Enable the Steam Overlay while in-game".
    - Clear or change the "Screenshot shortcut key".
 3. Launch the game once, then close it. This lets the game discover the mod.
-4. Download and run the EnableMod tool. On Windows, use [EnableMod.exe](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.exe). On Mac, use [EnableMod.app](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.app.zip) (right-click > Open the first time to bypass Gatekeeper). It enables the mod in the game's config so you don't have to navigate the mod manager, and offers to launch the game. If the mod ever crashes and the game disables it, run it again to re-enable.
+4. Download and run the EnableMod tool. On Windows, use [EnableMod.exe](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.exe). On Mac, download [EnableMod.app.zip](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.app.zip), unzip it if your browser has not already, and open EnableMod.app. macOS blocks it the first time because it is not notarized: click Done, open System Settings > Privacy & Security, find the EnableMod message under Security, and click Open Anyway. After that it opens normally. It enables the mod in the game's config so you don't have to navigate the mod manager, and offers to launch the game. If the mod ever crashes and the game disables it, run it again to re-enable.
 5. Launch the game. The mod will announce when it's ready.
 
 Updates are delivered automatically through the Steam Workshop.
@@ -31,7 +33,7 @@ Use the Steam Workshop install above if at all possible. It handles updates auto
    - Open Steam > Settings > In-Game.
    - Uncheck "Enable the Steam Overlay while in-game".
    - Clear or change the "Screenshot shortcut key".
-4. Download and run the EnableMod tool. On Windows, use [EnableMod.exe](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.exe). On Mac, use [EnableMod.app](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.app.zip) (right-click > Open the first time to bypass Gatekeeper). It enables the mod in the game's config so you don't have to navigate the mod manager, and offers to launch the game. If the mod ever crashes and the game disables it, run it again to re-enable.
+4. Download and run the EnableMod tool. On Windows, use [EnableMod.exe](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.exe). On Mac, download [EnableMod.app.zip](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.app.zip), unzip it if your browser has not already, and open EnableMod.app. macOS blocks it the first time because it is not notarized: click Done, open System Settings > Privacy & Security, find the EnableMod message under Security, and click Open Anyway. After that it opens normally. It enables the mod in the game's config so you don't have to navigate the mod manager, and offers to launch the game. If the mod ever crashes and the game disables it, run it again to re-enable.
 5. Launch the game. The mod will announce when it's ready.
 
 To update, download the new release zip and extract it into the same folder, overwriting the existing files.

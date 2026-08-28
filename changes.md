@@ -2,6 +2,9 @@
 
 ## Unreleased changes since 1.7.2
 
+* Added a Mac version of the EnableMod tool (EnableMod.app.zip). It no longer needs Python, and the install guide explains how to get past Gatekeeper on current macOS.
+* The install guide and reference now say that on Mac, Ctrl means Option and Alt means Command.
+
 ## 1.7.2
 
 * Fixed the relocate tool saying "unreachable" when the duplicant or object being moved no longer existed. It now says "target gone".

@@ -10,6 +10,8 @@ Always use the build script, never `dotnet build` directly.
 powershell -ExecutionPolicy Bypass -File build.ps1
 ```
 
+On Mac, run `./build.sh` instead (same steps, deploys to the Mac game). `EnableMod/mac/package.sh` rebuilds `EnableMod.app.zip` from `EnableMod/mac/EnableMod.js`.
+
 The script builds the DLL, deploys it to the game's local mods directory, and patches mods.json to keep the mod enabled.
 
 When a build fails on a type or method signature, look it up in `ONI-Decompiled/` before guessing at fixes.

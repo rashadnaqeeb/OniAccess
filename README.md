@@ -2,6 +2,8 @@
 
 Vision Not Included is an accessibility mod that makes Oxygen Not Included playable for blind users through screen reader speech output. This is the full feature reference. For install instructions and getting started, see [getting-started.md](getting-started.md). For recent changes, see [changes.md](changes.md).
 
+On Mac, press Option wherever this reference says Ctrl, and Command wherever it says Alt. See [getting-started.md](getting-started.md) for why.
+
 ## Context help and mod toggle
 
 **?** (Shift+/) opens an interactive help list tailored to whatever screen you're on. The list changes depending on context -- the help you see in the colony view is different from the help inside a details screen or while building a building. The list supports type-ahead search, so you can type part of a key name to jump to it.
