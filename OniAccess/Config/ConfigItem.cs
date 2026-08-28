@@ -13,10 +13,19 @@ namespace OniAccess.Config {
 		/// </summary>
 		public Func<string> Tooltip { get; }
 
+		/// <summary>
+		/// Optional live predicate deciding whether the row is listed at all. Null
+		/// means always. Evaluated on every tree build, so a row can appear or vanish
+		/// as a sibling setting changes (voice rows follow the speech backend).
+		/// </summary>
+		public Func<bool> Visible { get; set; }
+
 		protected ConfigItem(string label, Func<string> tooltip = null) {
 			Label = label;
 			Tooltip = tooltip;
 		}
+
+		public bool IsVisible() => Visible == null || Visible();
 
 		public abstract string GetDisplayValue();
 		public abstract void Cycle(int direction);
@@ -87,6 +96,42 @@ namespace OniAccess.Config {
 	}
 
 	/// <summary>
+	/// A whole-number slider (voice rate and volume on a 0-100 scale). Enter and
+	/// Left/Right step by 1; Shift and Ctrl use the larger whole-number steps.
+	/// </summary>
+	public class IntConfigItem: ConfigItem {
+		private readonly Func<int> _getter;
+		private readonly Action<int> _setter;
+		private readonly int _min;
+		private readonly int _max;
+
+		public IntConfigItem(string label, Func<int> getter, Action<int> setter,
+				int min, int max)
+			: base(label) {
+			_getter = getter;
+			_setter = setter;
+			_min = min;
+			_max = max;
+		}
+
+		public override string GetDisplayValue() {
+			return _getter().ToString();
+		}
+
+		public override void Cycle(int direction) {
+			Adjust(direction, 1);
+		}
+
+		public void Adjust(int direction, int step) {
+			int value = Mathf.Clamp(_getter() + direction * step, _min, _max);
+			_setter(value);
+			ConfigManager.Save();
+		}
+
+		public override string RoleKey => NavRoles.Slider;
+	}
+
+	/// <summary>
 	/// A config row that runs an action on Enter instead of cycling a value
 	/// (e.g. opening a sub-menu). The optional value provider supplies the
 	/// spoken suffix; when null the row speaks only its label.
@@ -119,8 +164,8 @@ namespace OniAccess.Config {
 		private readonly Func<T, string> _valueLabeler;
 
 		public EnumConfigItem(string label, Func<T> getter, Action<T> setter,
-				T[] values, Func<T, string> valueLabeler)
-			: base(label) {
+				T[] values, Func<T, string> valueLabeler, Func<string> tooltip = null)
+			: base(label, tooltip) {
 			_getter = getter;
 			_setter = setter;
 			_values = values;

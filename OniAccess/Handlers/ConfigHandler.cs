@@ -42,10 +42,19 @@ namespace OniAccess.Handlers {
 			return roots;
 		}
 
+		/// <summary>The section's rows whose Visible predicate currently holds, in declared order.</summary>
+		private static List<ConfigItem> VisibleItems(ConfigSection section) {
+			var list = new List<ConfigItem>(section.Items.Count);
+			foreach (var item in section.Items)
+				if (item.IsVisible()) list.Add(item);
+			return list;
+		}
+
 		private IReadOnlyList<NavItem> BuildItems(ConfigSection section) {
-			var list = new List<NavItem>(section.Items.Count);
-			for (int i = 0; i < section.Items.Count; i++) {
-				var item = section.Items[i];
+			var items = VisibleItems(section);
+			var list = new List<NavItem>(items.Count);
+			for (int i = 0; i < items.Count; i++) {
+				var item = items[i];
 				list.Add(new MenuNode(
 					() => ItemLabel(item),
 					activate: () => { ActivateConfigItem(item); return true; },
@@ -71,6 +80,8 @@ namespace OniAccess.Handlers {
 			if (item is ActionConfigItem) {
 				// The action opens its own handler, which owns its audio; a
 				// post-activation speak here would clobber the new screen's title.
+				// Closing that handler reactivates this one, which lands back here.
+				_resumePath = new List<int>(Nav.Path);
 				item.Cycle(1);
 				return;
 			}
@@ -81,9 +92,15 @@ namespace OniAccess.Handlers {
 
 		protected override void HandleLeftRight(int direction, int stepLevel) {
 			if (Nav.Depth >= 1) {
-				var item = _sections[Nav.Path[0]].Items[Nav.Path[1]];
+				var item = VisibleItems(_sections[Nav.Path[0]])[Nav.Path[1]];
 				if (item is FloatConfigItem floatItem) {
 					floatItem.Adjust(direction, InputUtil.FractionForLevel(stepLevel));
+					PlaySound("HUD_Click");
+					AnnounceCurrent();
+					return;
+				}
+				if (item is IntConfigItem intItem) {
+					intItem.Adjust(direction, (int)InputUtil.StepForLevel(stepLevel));
 					PlaySound("HUD_Click");
 					AnnounceCurrent();
 					return;
@@ -96,9 +113,16 @@ namespace OniAccess.Handlers {
 		// LIFECYCLE
 		// ========================================
 
+		// Cursor path saved when a row opens a sub-screen, restored when it closes.
+		private IReadOnlyList<int> _resumePath;
+
 		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
 			base.OnActivate();
+			if (_resumePath != null) {
+				Nav.SetPath(_resumePath);
+				_resumePath = null;
+			}
 			AnnounceCurrent(interrupt: false);
 		}
 
@@ -137,6 +161,68 @@ namespace OniAccess.Handlers {
 		}
 
 		private static ConfigSection[] BuildSections() {
+			var sections = new List<ConfigSection>();
+			// Speech output is a Prism choice; the Tolk override has nothing to switch.
+			if (SpeechEngine.Backend is PrismBackend)
+				sections.Add(BuildSpeechSection());
+			sections.AddRange(BuildFeatureSections());
+			return sections.ToArray();
+		}
+
+		private static ConfigSection BuildSpeechSection() {
+			return new ConfigSection {
+				Title = (string)STRINGS.ONIACCESS.CONFIG.SECTION_SPEECH,
+				Items = new List<ConfigItem> {
+					new EnumConfigItem<SpeechOutputMode>(
+						(string)STRINGS.ONIACCESS.CONFIG.SPEECH_OUTPUT,
+						() => ConfigManager.Config.SpeechOutput,
+						value => {
+							ConfigManager.Config.SpeechOutput = value;
+							SpeechOutputSelector.Start();
+						},
+						new[] { SpeechOutputMode.ScreenReader, SpeechOutputMode.SystemVoice },
+						mode => {
+							switch (mode) {
+								case SpeechOutputMode.ScreenReader: return (string)STRINGS.ONIACCESS.CONFIG.SPEECH_OUTPUT_SCREEN_READER;
+								case SpeechOutputMode.SystemVoice: return (string)STRINGS.ONIACCESS.CONFIG.SPEECH_OUTPUT_SYSTEM_VOICE;
+								default: return mode.ToString();
+							}
+						},
+						// Prism's name for what is actually speaking, so a fallback is audible.
+						() => (SpeechEngine.Backend as PrismBackend)?.Name
+					),
+					new ActionConfigItem(
+						(string)STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE,
+						() => HandlerStack.Push(new VoicePickerHandler(SpeechOutputSelector.VoiceControlledBackend)),
+						() => {
+							var backend = SpeechOutputSelector.VoiceControlledBackend;
+							int current = backend.CurrentVoice;
+							return current >= 0 ? SpeechOutputSelector.VoiceLabel(backend, current) : null;
+						}
+					) { Visible = () => SpeechOutputSelector.VoiceControlledBackend != null },
+					new IntConfigItem(
+						(string)STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_RATE,
+						() => SpeechOutputSelector.RatePercent(SpeechOutputSelector.VoiceControlledBackend),
+						value => {
+							ConfigManager.Config.SystemVoiceRate = value;
+							SpeechOutputSelector.VoiceControlledBackend.SetRate(SpeechOutputSelector.ToUnit(value));
+						},
+						0, 100
+					) { Visible = () => SpeechOutputSelector.VoiceControlledBackend != null },
+					new IntConfigItem(
+						(string)STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_VOLUME,
+						() => ConfigManager.Config.SystemVoiceVolume,
+						value => {
+							ConfigManager.Config.SystemVoiceVolume = value;
+							SpeechOutputSelector.VoiceControlledBackend.SetVolume(SpeechOutputSelector.ToUnit(value));
+						},
+						0, 100
+					) { Visible = () => SpeechOutputSelector.VoiceControlledBackend != null },
+				}
+			};
+		}
+
+		private static ConfigSection[] BuildFeatureSections() {
 			return new[] {
 				// --- Interface ---
 				new ConfigSection {

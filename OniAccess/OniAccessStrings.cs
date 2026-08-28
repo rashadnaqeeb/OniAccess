@@ -79,12 +79,21 @@ namespace STRINGS {
 			public static LocString WORLD_SELECTOR = "World list";
 			public static LocString DISINFECT_SETTINGS = "disinfect settings";
 			public static LocString CONFIG = "Settings";
+			public static LocString VOICE_PICKER = "Voices";
 			public static LocString JOY_RESPONSE_DESIGNER = "Overjoyed response designer";
 			public static LocString FAST_TRAVEL = "Fast travel";
 		}
 
 		// Config screen option labels
 		public class CONFIG {
+			public static LocString SECTION_SPEECH = "Speech";
+			public static LocString SPEECH_OUTPUT = "Speech output";
+			public static LocString SPEECH_OUTPUT_SCREEN_READER = "screen reader";
+			public static LocString SPEECH_OUTPUT_SYSTEM_VOICE = "system voice";
+			public static LocString SYSTEM_VOICE = "Voice";
+			public static LocString SYSTEM_VOICE_RATE = "Voice rate";
+			public static LocString SYSTEM_VOICE_VOLUME = "Voice volume";
+			public static LocString HELP_KEEP_VOICE = "Keep this voice";
 			public static LocString SECTION_INTERFACE = "Interface";
 			public static LocString VERBOSE_UI = "Verbose interface";
 			// "Chaosbringer" is a proper name (do not translate).

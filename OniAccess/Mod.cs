@@ -100,10 +100,10 @@ namespace OniAccess {
 
 			base.OnLoad(harmony);
 
-			ISpeechBackend speechBackend = useTolk
-				? (ISpeechBackend)new TolkBackend()
-				: new PrismBackend();
-			SpeechEngine.Initialize(speechBackend);
+			if (useTolk)
+				SpeechEngine.Initialize(new TolkBackend());
+			else
+				SpeechOutputSelector.Start();
 			TextFilter.InitializeDefaults();
 			StatusFilter.Initialize();
 

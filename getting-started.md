@@ -20,6 +20,7 @@ On Mac, press Option wherever the documentation says Ctrl, and Command wherever 
 3. Launch the game once, then close it. This lets the game discover the mod.
 4. Download and run the EnableMod tool. On Windows, use [EnableMod.exe](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.exe). On Mac, download [EnableMod.app.zip](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.app.zip), unzip it if your browser has not already, and open EnableMod.app. It enables the mod in the game's config so you don't have to navigate the mod manager, and offers to launch the game. If the mod ever crashes and the game disables it, run it again to re-enable.
 5. Launch the game. The mod will announce when it's ready.
+6. If you're using a Mac, I recommend pressing F12, pressing Enter on Speech output, and switching to the system voice. This is because VoiceOver has no ability to queue speech.
 
 Updates are delivered automatically through the Steam Workshop.
 
@@ -35,6 +36,7 @@ Use the Steam Workshop install above if at all possible. It handles updates auto
    - Clear or change the "Screenshot shortcut key".
 4. Download and run the EnableMod tool. On Windows, use [EnableMod.exe](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.exe). On Mac, download [EnableMod.app.zip](https://github.com/rashadnaqeeb/VisionNotIncluded/raw/main/EnableMod.app.zip), unzip it if your browser has not already, and open EnableMod.app. It enables the mod in the game's config so you don't have to navigate the mod manager, and offers to launch the game. If the mod ever crashes and the game disables it, run it again to re-enable.
 5. Launch the game. The mod will announce when it's ready.
+6. If you're using a Mac, I recommend pressing F12, pressing Enter on Speech output, and switching to the system voice. This is because VoiceOver has no ability to queue speech.
 
 To update, download the new release zip and extract it into the same folder, overwriting the existing files.
 

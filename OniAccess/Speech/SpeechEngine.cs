@@ -10,7 +10,15 @@ namespace OniAccess.Speech {
 		public static bool IsInitialized => _backend?.IsInitialized ?? false;
 		public static bool IsAvailable => _backend?.IsAvailable ?? false;
 
+		/// <summary>The live backend, for callers that configure it (voice settings). Null before Initialize.</summary>
+		public static ISpeechBackend Backend => _backend;
+
+		/// <summary>
+		/// Install and initialize a backend. Any previous backend is shut down first,
+		/// so this also serves as the restart path when the player switches output.
+		/// </summary>
 		public static bool Initialize(ISpeechBackend backend) {
+			_backend?.Shutdown();
 			_backend = backend;
 			return _backend.Initialize();
 		}

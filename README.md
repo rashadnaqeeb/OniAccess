@@ -318,7 +318,12 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 
 ## Settings (F12)
 
-**F12** opens the settings screen. All settings persist across sessions. Navigate with Up/Down, toggle with Enter or Left/Right. Type-ahead search works here too. Settings are organized into four sections.
+**F12** opens the settings screen. All settings persist across sessions. Navigate with Up/Down, toggle with Enter or Left/Right. Type-ahead search works here too. Settings are organized into five sections.
+
+### Speech
+
+- **Speech output** (screen reader / system voice) -- determines whether the mod speaks through your screen reader or the system voice. Helpful for Mac users, where VoiceOver has no ability to queue speech
+- **Voice**, **Voice rate** (0-100), **Voice volume** (0-100) -- shown only while the system voice is selected. Start configured with your default system voice, changeable in the Windows control panel or in Mac System Settings, Accessibility, Reading and Speaking
 
 ### Tile cursor settings
 

@@ -1,9 +1,20 @@
 using System.Collections.Generic;
 using OniAccess.Handlers.Tiles;
 using OniAccess.Handlers.Tiles.Scanner;
+using OniAccess.Speech;
 
 namespace OniAccess {
 	public class ModConfig {
+		public SpeechOutputMode SpeechOutput { get; set; } = SpeechOutputMode.ScreenReader;
+		// Voice name and language, not index: the OS voice list reorders as voices
+		// are installed, and macOS ships one name (Eddy, Flo, Grandma, ...) in a
+		// dozen languages. An empty name means the operating system's own voice.
+		public string SystemVoice { get; set; } = "";
+		public string SystemVoiceLanguage { get; set; } = "";
+		// 0-100, or Unset to keep the operating system's rate.
+		public int SystemVoiceRate { get; set; } = SpeechOutputSelector.Unset;
+		public int SystemVoiceVolume { get; set; } = SpeechOutputSelector.VolumeDefault;
+
 		public bool VerboseUi { get; set; } = false;
 		public CoordinateMode CoordinateMode { get; set; } = CoordinateMode.Off;
 		public RectSizeMode RectSizeMode { get; set; } = RectSizeMode.Off;

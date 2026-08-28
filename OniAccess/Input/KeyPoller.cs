@@ -1,4 +1,5 @@
 using OniAccess.Handlers;
+using OniAccess.Speech;
 
 namespace OniAccess.Input {
 	/// <summary>
@@ -30,6 +31,16 @@ namespace OniAccess.Input {
 
 			// When mod is off, don't process anything else
 			if (!ModToggle.IsEnabled) return;
+
+			// Control silences the system voice, as it silences a screen reader.
+			// Not consumed: on Windows the same key starts the mod's Ctrl combos.
+			// Screen reader backends stop themselves, so only a voice-controlled
+			// backend gets the call.
+			if ((UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftControl)
+					|| UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightControl))
+				&& SpeechOutputSelector.VoiceControlledBackend != null) {
+				SpeechEngine.Stop();
+			}
 
 			// One-time: MainMenu.Activate fires before Harmony patches, so our
 			// KScreen.Activate postfix misses it. Find it on first frame.

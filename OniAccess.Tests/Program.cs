@@ -424,6 +424,10 @@ namespace OniAccess.Tests {
 			foreach (var r in HelpEntryTests.All())
 				results.Add(r);
 
+			// --- Voice settings to Prism boundaries ---
+			foreach (var r in SpeechOutputTests.All())
+				results.Add(r);
+
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
 				if (ok) {
