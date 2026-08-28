@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.7.2
+## Unreleased changes since 1.7.3
+
+## 1.7.3
 
 * Fixed the main menu being announced and usable on top of the Spaced Out intro video on first launch.
 * Added a Mac version of the EnableMod tool that actually works. writing apps for mac without a mac to test with is hard, it turns out.
