@@ -16,6 +16,10 @@ The script builds the DLL, deploys it to the game's local mods directory, and pa
 
 When a build fails on a type or method signature, look it up in `ONI-Decompiled/` before guessing at fixes.
 
+## Translations
+
+`strings_template.pot` and `translations/*.po` must always carry the same keys in the same order. After adding, removing, or rewording any `LocString`: build, launch the game once so it regenerates the template in the game's `mods/strings_templates/` folder, then run `python3 sync-translations.py` (works on Mac and in the Windows VM). It copies the template into the repo, rewrites every `.po` to match it, and lists the keys whose `msgstr` is empty; translate those, then rerun with `--check` to confirm nothing is left. Entries whose English text changed are blanked (the game speaks a stale `msgstr` verbatim; an empty one falls back to English) and keep the old text as `#|` comment lines until retranslated.
+
 ## Project Structure
 
 - `OniAccess/` - mod source code (C#, .NET Framework 4.8, Harmony patches)

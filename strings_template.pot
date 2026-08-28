@@ -3378,6 +3378,16 @@ msgctxt "STRINGS.ONIACCESS.HELP.JUMP_GROUP"
 msgid "Jump to next or previous group"
 msgstr ""
 
+#. STRINGS.ONIACCESS.HELP.MAC_COMMAND
+msgctxt "STRINGS.ONIACCESS.HELP.MAC_COMMAND"
+msgid "Command"
+msgstr ""
+
+#. STRINGS.ONIACCESS.HELP.MAC_OPTION
+msgctxt "STRINGS.ONIACCESS.HELP.MAC_OPTION"
+msgid "Option"
+msgstr ""
+
 #. STRINGS.ONIACCESS.HELP.MOVE_CURSOR
 msgctxt "STRINGS.ONIACCESS.HELP.MOVE_CURSOR"
 msgid "Move tile cursor"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OniAccess\n"
-"PO-Revision-Date: 2026-03-13\n"
+"PO-Revision-Date: 2026-08-28\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -3383,6 +3383,16 @@ msgstr "跳到首项或末项"
 msgctxt "STRINGS.ONIACCESS.HELP.JUMP_GROUP"
 msgid "Jump to next or previous group"
 msgstr "跳到下一组或上一组"
+
+#. STRINGS.ONIACCESS.HELP.MAC_COMMAND
+msgctxt "STRINGS.ONIACCESS.HELP.MAC_COMMAND"
+msgid "Command"
+msgstr "Command"
+
+#. STRINGS.ONIACCESS.HELP.MAC_OPTION
+msgctxt "STRINGS.ONIACCESS.HELP.MAC_OPTION"
+msgid "Option"
+msgstr "Option"
 
 #. STRINGS.ONIACCESS.HELP.MOVE_CURSOR
 msgctxt "STRINGS.ONIACCESS.HELP.MOVE_CURSOR"
