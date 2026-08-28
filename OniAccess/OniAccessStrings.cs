@@ -198,6 +198,9 @@ namespace STRINGS {
 			public static LocString TYPE_SEARCH = "Type-ahead search";
 			public static LocString REVIEW_LINES = "Review current item line by line";
 			public static LocString NOTHING_TO_REVIEW = "Nothing to review";
+			// Modifier names spoken on macOS, where the mod reads Option for Ctrl and Command for Alt
+			public static LocString MAC_OPTION = "Option";
+			public static LocString MAC_COMMAND = "Command";
 			public static LocString SWITCH_PANEL = "Switch panel";
 			public static LocString SWITCH_SECTION = "Switch section";
 			public static LocString COPY_SETTINGS = "Copy settings";

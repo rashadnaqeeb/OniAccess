@@ -39,6 +39,7 @@ namespace OniAccess.Tests {
 			SpeechPipeline.TimeSource = () => 0f;
 			SpeechPipeline.SpeakAction = (text, intr) => { };
 			HandlerStack.FrameSource = () => 0;
+			HelpEntry.IsMacSource = () => false;
 
 			var results = new List<(string name, bool passed, string detail)>();
 
@@ -417,6 +418,10 @@ namespace OniAccess.Tests {
 
 			// --- Building settings readout strings ---
 			foreach (var r in BuildingSettingsStringTests.All())
+				results.Add(r);
+
+			// --- Help key names on macOS ---
+			foreach (var r in HelpEntryTests.All())
 				results.Add(r);
 
 			int passed = 0, failed = 0;

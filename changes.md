@@ -2,9 +2,10 @@
 
 ## Unreleased changes since 1.7.2
 
-* Fixed the main menu being announced and usable on top of the Spaced Out intro video on first launch. The video now keeps focus: it announces "Video playing", reads its descriptions, and offers the skip button; the menu returns when the video ends or is skipped.
-* Added a Mac version of the EnableMod tool (EnableMod.app.zip). It no longer needs Python, and the install guide explains how to get past Gatekeeper on current macOS.
+* Fixed the main menu being announced and usable on top of the Spaced Out intro video on first launch.
+* Added a Mac version of the EnableMod tool that actually works. writing apps for mac without a mac to test with is hard, it turns out.
 * The install guide and reference now say that on Mac, Ctrl means Option and Alt means Command.
+* On Mac, the ? help list now names the keys you actually press: Option where Windows says Ctrl, Command where it says Alt.
 
 ## 1.7.2
 
