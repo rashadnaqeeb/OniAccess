@@ -14,6 +14,10 @@ On Mac, run `./build.sh` instead (same steps, deploys to the Mac game). `EnableM
 
 The script builds the DLL, deploys it to the game's local mods directory, and patches mods.json to keep the mod enabled.
 
+## Release
+
+On the Mac, `./release.sh <version>` bumps the version in the csproj and `mod_info.yaml`, turns the unreleased section of `changes.md` into the new version's section, builds, commits `Release <version>`, tags `v<version>`, pushes, publishes the GitHub release with `release.zip` and the changelog entries as notes, and fills `release/` with the same files. The Steam Workshop upload is manual: in the Windows VM, point the Oxygen Not Included Mod Uploader at `C:\Users\rashadnaqeeb\Documents\VisionNotIncluded\release` (the shared folder). `--dry-run` does everything up to the commit, prints the notes, and reverts the edits.
+
 When a build fails on a type or method signature, look it up in `ONI-Decompiled/` before guessing at fixes.
 
 ## Translations
