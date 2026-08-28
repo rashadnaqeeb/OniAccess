@@ -197,6 +197,16 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
+		/// True when a BaseScreenHandler for the given KScreen is anywhere on the stack.
+		/// </summary>
+		public static bool ContainsScreen(KScreen screen) {
+			for (int i = _stack.Count - 1; i >= 0; i--) {
+				if (_stack[i] is BaseScreenHandler sh && sh.Screen == screen) return true;
+			}
+			return false;
+		}
+
+		/// <summary>
 		/// Remove a BaseScreenHandler whose Screen matches the given KScreen,
 		/// regardless of stack position. Called by OnScreenDeactivating when
 		/// the handler is buried under other handlers (not on top).

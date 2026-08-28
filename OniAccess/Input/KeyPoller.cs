@@ -37,8 +37,10 @@ namespace OniAccess.Input {
 				_startupDone = true;
 				try {
 					var mainMenu = UnityEngine.Object.FindFirstObjectByType<MainMenu>();
-					if (mainMenu != null)
+					if (mainMenu != null) {
+						Util.Log.Debug("Startup screen detect: MainMenu found");
 						ContextDetector.OnScreenActivated(mainMenu);
+					}
 				} catch (System.Exception ex) {
 					Util.Log.Warn($"Startup screen detect: {ex.Message}");
 				}

@@ -86,9 +86,12 @@ namespace OniAccess.Handlers {
 			// singletons (e.g. TileCursor) that the new handler just created.
 			HandlerStack.RemoveStaleHandlers();
 
-			// Guard: don't push a duplicate handler for the same screen instance
-			var active = HandlerStack.ActiveHandler;
-			if (active is BaseScreenHandler sh && sh.Screen == screen) {
+			// Guard: one handler per screen instance, wherever it sits on the stack.
+			// A screen can be activated again while its handler is buried (the main
+			// menu re-activates under the first-launch intro video); pushing a second
+			// handler would put the menu on top of the modal video and let the player
+			// drive it while the video keeps playing.
+			if (HandlerStack.ContainsScreen(screen)) {
 				Util.Log.Debug($"Screen activated (already handled): {screenType.Name}");
 				return;
 			}
