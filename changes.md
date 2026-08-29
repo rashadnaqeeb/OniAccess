@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.7.3
+## Unreleased changes since 1.7.4
+
+## 1.7.4
 
 * Added a Speech section at the top of Settings (F12). Speech output can now be switched from the screen reader to the system voice (macOS voices on Mac, SAPI on Windows). VoiceOver has no speech queue, so on Mac the system voice is the way to hear multi-part announcements in full. It starts out as the voice and rate your operating system is already set to (Spoken Content on Mac, the Speech control panel on Windows).
 
