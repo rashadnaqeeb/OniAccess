@@ -162,8 +162,8 @@ namespace OniAccess.Handlers {
 
 		private static ConfigSection[] BuildSections() {
 			var sections = new List<ConfigSection>();
-			// Speech output is a Prism choice; the Tolk override has nothing to switch.
-			if (SpeechEngine.Backend is PrismBackend)
+			// The Tolk override has nothing to switch.
+			if (!(SpeechEngine.Backend is TolkBackend))
 				sections.Add(BuildSpeechSection());
 			sections.AddRange(BuildFeatureSections());
 			return sections.ToArray();
@@ -188,17 +188,19 @@ namespace OniAccess.Handlers {
 								default: return mode.ToString();
 							}
 						},
-						// Prism's name for what is actually speaking, so a fallback is audible.
-						() => (SpeechEngine.Backend as PrismBackend)?.Name
+						// What is actually speaking, so a fallback is audible: on Mac whether
+						// the system voice is streamed or on AVSpeech's own queue, elsewhere
+						// Prism's name for its backend.
+						() => SpeechEngine.Backend is MacSystemVoiceBackend mac
+							? (string)(mac.IsStreaming
+								? STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_STREAMED
+								: STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_AVSPEECH_QUEUE)
+							: (SpeechEngine.Backend as PrismBackend)?.Name
 					),
 					new ActionConfigItem(
 						(string)STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE,
 						() => HandlerStack.Push(new VoicePickerHandler(SpeechOutputSelector.VoiceControlledBackend)),
-						() => {
-							var backend = SpeechOutputSelector.VoiceControlledBackend;
-							int current = backend.CurrentVoice;
-							return current >= 0 ? SpeechOutputSelector.VoiceLabel(backend, current) : null;
-						}
+						() => SpeechOutputSelector.CurrentVoiceLabel(SpeechOutputSelector.VoiceControlledBackend)
 					) { Visible = () => SpeechOutputSelector.VoiceControlledBackend != null },
 					new IntConfigItem(
 						(string)STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_RATE,

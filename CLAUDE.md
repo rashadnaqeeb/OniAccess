@@ -85,6 +85,8 @@ ONI has extensive hotkeys. Many are useless to blind players and can be overwrit
 ### No silent failures
 This mod runs on Harmony patches and reflection. Both fail in ways that produce no visible error unless we log it. A swallowed exception in a patch means the feature silently stops working and the user has no idea why. **Every catch block must log via `Log.Warn` or `Log.Error`.** Never write an empty catch, never catch-and-return-default without logging. If something fails, the player log must say what and where. A logged failure is actionable; a silent one is invisible.
 
+`Log.Error` ends the session: it maps to `Debug.LogError`, which ONI's `KCrashReporter` treats as a crash, showing its crash dialog and quitting when it is closed. That is deliberate. Anything that affects the player's experience (lost or degraded speech, a feature that stopped working, a fallback to something worse) is an error worth ending the session over, because otherwise nobody finds out and it never gets fixed. Use `Log.Warn` only for what does not touch play (a config value clamped, a release failing at shutdown). Never downgrade an error to a warning to keep the game running.
+
 ## Architecture Gotchas
 - **Edit discipline** - always Read the exact lines immediately before editing. Never compose old_string from memory or earlier reads; tab depth is easy to miscount. Working tree files use CRLF on Windows (`core.autocrlf=true`, `.gitattributes: * text=auto`); the Edit tool matches bytes exactly, so stale reads will fail on line endings too
 - New screen handlers must be registered in `ContextDetector.RegisterMenuHandlers()` or they will never activate

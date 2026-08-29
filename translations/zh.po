@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OniAccess\n"
-"PO-Revision-Date: 2026-08-28\n"
+"PO-Revision-Date: 2026-08-29\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -1329,10 +1329,20 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE"
 msgid "Voice"
 msgstr "声音"
 
+#. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_AVSPEECH_QUEUE
+msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_AVSPEECH_QUEUE"
+msgid "AVSpeech queue, pauses between lines"
+msgstr "AVSpeech 队列，每行之间有停顿"
+
 #. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_RATE
 msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_RATE"
 msgid "Voice rate"
 msgstr "语速"
+
+#. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_STREAMED
+msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_STREAMED"
+msgid "streamed"
+msgstr "流式"
 
 #. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_VOLUME
 msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_VOLUME"
@@ -1368,6 +1378,16 @@ msgstr "详细界面"
 msgctxt "STRINGS.ONIACCESS.CONFIG.VERBOSE_UI_TOOLTIP"
 msgid "for weaklings like Chaosbringer who get lost in \"basic\" UI"
 msgstr "给像 Chaosbringer 这样连“基础”界面都会迷路的弱鸡用的"
+
+#. STRINGS.ONIACCESS.CONFIG.VOICE_ENHANCED
+msgctxt "STRINGS.ONIACCESS.CONFIG.VOICE_ENHANCED"
+msgid "{0} (Enhanced)"
+msgstr "{0}（增强）"
+
+#. STRINGS.ONIACCESS.CONFIG.VOICE_PREMIUM
+msgctxt "STRINGS.ONIACCESS.CONFIG.VOICE_PREMIUM"
+msgid "{0} (Premium)"
+msgstr "{0}（高级）"
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"

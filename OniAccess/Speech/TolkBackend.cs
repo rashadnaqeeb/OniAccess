@@ -89,6 +89,8 @@ namespace OniAccess.Speech {
 			}
 		}
 
+		public void Update() { }
+
 		public void Stop() {
 			if (!_available) return;
 

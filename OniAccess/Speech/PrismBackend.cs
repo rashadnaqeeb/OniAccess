@@ -4,7 +4,7 @@ using System.Text;
 using OniAccess.Util;
 
 namespace OniAccess.Speech {
-	public class PrismBackend: ISpeechBackend {
+	public class PrismBackend: ISpeechBackend, IVoiceControl {
 		[StructLayout(LayoutKind.Sequential)]
 		private struct PrismConfig {
 			public byte version;
@@ -270,6 +270,8 @@ namespace OniAccess.Speech {
 			}
 		}
 
+		public void Update() { }
+
 		public void Stop() {
 			if (!_available) return;
 
@@ -335,6 +337,9 @@ namespace OniAccess.Speech {
 				return null;
 			}
 		}
+
+		/// <summary>Prism addresses voices by index only, so there is nothing stable to store.</summary>
+		public string GetVoiceIdentifier(int index) => null;
 
 		/// <summary>Index of the voice in use, or -1 on failure.</summary>
 		public int CurrentVoice {

@@ -19,7 +19,10 @@ namespace OniAccess.Tests {
 	/// the backend's live value when nothing is saved, so a truncating float to
 	/// percent conversion would announce 89 for a rate of 0.9; and the macOS Spoken
 	/// Content rate is stored with a period, so a locale-sensitive parse would
-	/// throw it away on any comma-decimal system.
+	/// throw it away on any comma-decimal system. The Mac stream trims rendered
+	/// speech before scheduling it: trimming too little puts the gaps back, trimming
+	/// too much clips the first consonant, and reading past the render's count
+	/// would play whatever the oversized buffer holds.
 	/// </summary>
 	static class SpeechOutputTests {
 		public static IEnumerable<(string, bool, string)> All() {
@@ -33,6 +36,14 @@ namespace OniAccess.Tests {
 			yield return NullNameIsNull();
 			yield return PrimaryLanguageSplitsRegionAndSuffix();
 			yield return PrimaryLanguageOfEmptyIsEmpty();
+			yield return TrimOfSilenceIsEmpty();
+			yield return TrimKeepsEdgesAndStopsAtCount();
+			yield return TrimClampsEdgesAtArrayEnds();
+			yield return TrimThresholdIsInclusive();
+			yield return NormalizeReachesTargetUnderCeiling();
+			yield return LimiterHoldsCeilingThroughSpike();
+			yield return LimiterGainIsDownBeforeThePeak();
+			yield return NormalizeLeavesSilenceAlone();
 		}
 
 		private static (string, bool, string) Assert(string name, bool ok, string detail)
@@ -125,6 +136,105 @@ namespace OniAccess.Tests {
 					return Assert("PrimaryLanguageSplitsRegionAndSuffix", false, $"{tag} -> \"{got}\", expected {expected}");
 			}
 			return Assert("PrimaryLanguageSplitsRegionAndSuffix", true, "");
+		}
+
+		private static (string, bool, string) TrimOfSilenceIsEmpty() {
+			// A line of pure silence schedules nothing, so it costs no time.
+			var samples = new float[200];
+			for (int i = 0; i < samples.Length; i++) samples[i] = 0.001f;
+			int n = SpeechSamples.Trim(samples, samples.Length, 1000).Length;
+			return Assert("TrimOfSilenceIsEmpty", n == 0, $"{n}");
+		}
+
+		private static (string, bool, string) TrimKeepsEdgesAndStopsAtCount() {
+			// At 1000 Hz the kept edge is 5 samples. Speech sits at 20..30 of a
+			// 100-sample render inside a 4096-sample buffer whose tail is garbage.
+			var samples = new float[4096];
+			for (int i = 100; i < samples.Length; i++) samples[i] = 0.9f;
+			for (int i = 20; i <= 30; i++) samples[i] = 0.5f;
+			float[] trimmed = SpeechSamples.Trim(samples, 100, 1000);
+			bool ok = trimmed.Length == 21 && trimmed[0] == 0f && trimmed[5] == 0.5f && trimmed[15] == 0.5f && trimmed[20] == 0f;
+			return Assert("TrimKeepsEdgesAndStopsAtCount", ok, $"length {trimmed.Length}");
+		}
+
+		private static (string, bool, string) TrimClampsEdgesAtArrayEnds() {
+			// Speech at the very start and end: the 5-sample edge cannot go outside the render.
+			var samples = new float[50];
+			samples[2] = 0.5f;
+			samples[48] = 0.5f;
+			float[] trimmed = SpeechSamples.Trim(samples, 50, 1000);
+			bool ok = trimmed.Length == 50 && trimmed[2] == 0.5f && trimmed[48] == 0.5f;
+			return Assert("TrimClampsEdgesAtArrayEnds", ok, $"length {trimmed.Length}");
+		}
+
+		private static (string, bool, string) TrimThresholdIsInclusive() {
+			// Exactly the threshold is silence; just above it is speech, kept with
+			// its 5-sample edges at 1000 Hz.
+			var atThreshold = new float[] { SpeechSamples.SilenceThreshold, -SpeechSamples.SilenceThreshold };
+			var above = new float[300];
+			above[150] = 0.0041f;
+			int a = SpeechSamples.Trim(atThreshold, 2, 1000).Length;
+			int b = SpeechSamples.Trim(above, 300, 1000).Length;
+			return Assert("TrimThresholdIsInclusive", a == 0 && b == 11, $"{a} {b}");
+		}
+
+		private static float Peak(float[] s) {
+			float p = 0f;
+			foreach (float v in s) p = Math.Max(p, Math.Abs(v));
+			return p;
+		}
+
+		private static float Rms(float[] s) {
+			double sum = 0;
+			foreach (float v in s) sum += v * v;
+			return (float)Math.Sqrt(sum / s.Length);
+		}
+
+		private static (string, bool, string) NormalizeReachesTargetUnderCeiling() {
+			// A quiet sine (-23 dBFS RMS, like Zarvox) comes up to the target
+			// loudness with its peaks held under the ceiling; the limiter only has
+			// to shave the tops, so the RMS lands close to the target.
+			var s = new float[22050];
+			for (int i = 0; i < s.Length; i++) s[i] = 0.1f * (float)Math.Sin(2 * Math.PI * 440 * i / 22050.0);
+			SpeechSamples.Normalize(s, 22050);
+			float rms = Rms(s), peak = Peak(s);
+			bool ok = peak <= SpeechSamples.Ceiling + 1e-4f && rms > SpeechSamples.TargetRms * 0.8f && rms <= SpeechSamples.TargetRms * 1.01f;
+			return Assert("NormalizeReachesTargetUnderCeiling", ok, $"rms {rms:F3} peak {peak:F3}");
+		}
+
+		private static (string, bool, string) LimiterHoldsCeilingThroughSpike() {
+			// A lone full-scale spike in quiet speech at 4x gain: the spike is held
+			// under the ceiling and the quiet part still gets its gain.
+			var s = new float[4000];
+			for (int i = 0; i < s.Length; i++) s[i] = 0.05f;
+			s[2000] = 1f;
+			SpeechSamples.Limit(s, 4f, 22050);
+			bool ok = Peak(s) <= SpeechSamples.Ceiling + 1e-4f && Math.Abs(s[100] - 0.2f) < 1e-4f && Math.Abs(s[3900] - 0.2f) < 1e-4f;
+			return Assert("LimiterHoldsCeilingThroughSpike", ok, $"peak {Peak(s):F3} early {s[100]:F3} late {s[3900]:F3}");
+		}
+
+		private static (string, bool, string) LimiterGainIsDownBeforeThePeak() {
+			// The gain ramps down over the look-ahead window ahead of the peak (44
+			// samples at 22050 Hz), not at the peak; a limiter that only reacted at
+			// the peak would let it through or click. At 2x gain a 1.0 spike needs
+			// the envelope at 0.475, a drop of 23 steps starting 43 samples ahead.
+			var s = new float[4000];
+			for (int i = 0; i < s.Length; i++) s[i] = 0.25f;
+			s[2000] = 1f;
+			SpeechSamples.Limit(s, 2f, 22050);
+			bool ramped = s[1900] == 0.5f && s[1970] < 0.5f && s[1970] > s[1990] && Math.Abs(s[1990] - 0.2375f) < 1e-3f;
+			return Assert("LimiterGainIsDownBeforeThePeak", ramped && s[2000] <= SpeechSamples.Ceiling + 1e-4f, $"{s[1900]:F3} {s[1970]:F3} {s[1990]:F3} {s[2000]:F3}");
+		}
+
+		private static (string, bool, string) NormalizeLeavesSilenceAlone() {
+			// Near-silence must not be lifted into audible noise: gain is capped.
+			var s = new float[1000];
+			for (int i = 0; i < s.Length; i++) s[i] = 0.001f;
+			SpeechSamples.Normalize(s, 22050);
+			bool ok = Math.Abs(s[500] - 0.001f * SpeechSamples.MaxGain) < 1e-5f;
+			var z = new float[100];
+			SpeechSamples.Normalize(z, 22050);
+			return Assert("NormalizeLeavesSilenceAlone", ok && z[50] == 0f, $"{s[500]:F5} {z[50]}");
 		}
 
 		private static (string, bool, string) PrimaryLanguageOfEmptyIsEmpty() {

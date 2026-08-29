@@ -112,6 +112,7 @@ namespace OniAccess {
 			var go = new GameObject("OniAccess_Input");
 			UnityEngine.Object.DontDestroyOnLoad(go);
 			go.AddComponent<KeyPoller>();
+			go.AddComponent<SpeechTicker>();
 
 			var audioGo = new GameObject("OniAccess_Audio");
 			UnityEngine.Object.DontDestroyOnLoad(audioGo);

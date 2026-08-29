@@ -6,20 +6,20 @@ using OniAccess.Widgets;
 namespace OniAccess.Handlers {
 	/// <summary>
 	/// Modal list of the system voices in the game's language (every voice when none
-	/// speaks it), pushed from the Speech section of settings. Rows carry Prism's own
-	/// voice indices, so the filter never shifts what Enter or Escape apply.
-	/// Landing on a row switches the backend to that voice before the row is spoken,
-	/// so every announcement is its own preview. Enter keeps the highlighted voice
-	/// and saves its name; Escape puts back the voice that was in use on open.
+	/// speaks it), pushed from the Speech section of settings. Rows carry the
+	/// backend's own voice indices, so the filter never shifts what Enter or Escape
+	/// apply. Landing on a row switches the backend to that voice before the row is
+	/// spoken, so every announcement is its own preview. Enter keeps the highlighted
+	/// voice and saves it; Escape puts back the voice that was in use on open.
 	/// </summary>
 	public class VoicePickerHandler: NavTreeHandler {
-		private readonly PrismBackend _backend;
+		private readonly IVoiceControl _backend;
 		private int _voiceOnOpen = -1;
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.HANDLERS.VOICE_PICKER;
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
-		public VoicePickerHandler(PrismBackend backend) : base(null) {
+		public VoicePickerHandler(IVoiceControl backend) : base(null) {
 			_backend = backend;
 			HelpEntries = new List<HelpEntry> {
 				new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
@@ -71,7 +71,7 @@ namespace OniAccess.Handlers {
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (base.HandleKeyDown(e)) return true;
 			if (e.TryConsume(Action.Escape)) {
-				if (_voiceOnOpen >= 0)
+				if (_backend.CurrentVoice != _voiceOnOpen)
 					_backend.SetVoice(_voiceOnOpen);
 				Close();
 				return true;
@@ -82,6 +82,7 @@ namespace OniAccess.Handlers {
 		private void Keep(int index) {
 			ConfigManager.Config.SystemVoice = _backend.GetVoiceName(index);
 			ConfigManager.Config.SystemVoiceLanguage = _backend.GetVoiceLanguage(index) ?? "";
+			ConfigManager.Config.SystemVoiceIdentifier = _backend.GetVoiceIdentifier(index) ?? "";
 			ConfigManager.Save();
 			_backend.SetVoice(index);
 			PlaySound("HUD_Click");

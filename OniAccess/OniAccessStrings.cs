@@ -94,6 +94,9 @@ namespace STRINGS {
 			public static LocString SYSTEM_VOICE_RATE = "Voice rate";
 			public static LocString SYSTEM_VOICE_VOLUME = "Voice volume";
 			public static LocString HELP_KEEP_VOICE = "Keep this voice";
+			// Status after "system voice" on Mac: which queue is speaking.
+			public static LocString SYSTEM_VOICE_STREAMED = "streamed";
+			public static LocString SYSTEM_VOICE_AVSPEECH_QUEUE = "AVSpeech queue, pauses between lines";
 			public static LocString SECTION_INTERFACE = "Interface";
 			public static LocString VERBOSE_UI = "Verbose interface";
 			// "Chaosbringer" is a proper name (do not translate).

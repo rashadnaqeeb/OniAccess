@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OniAccess\n"
-"PO-Revision-Date: 2026-08-28\n"
+"PO-Revision-Date: 2026-08-29\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -1329,10 +1329,20 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE"
 msgid "Voice"
 msgstr "Голос"
 
+#. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_AVSPEECH_QUEUE
+msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_AVSPEECH_QUEUE"
+msgid "AVSpeech queue, pauses between lines"
+msgstr "очередь AVSpeech, паузы между строками"
+
 #. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_RATE
 msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_RATE"
 msgid "Voice rate"
 msgstr "Скорость голоса"
+
+#. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_STREAMED
+msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_STREAMED"
+msgid "streamed"
+msgstr "потоковый"
 
 #. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_VOLUME
 msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_VOLUME"
@@ -1368,6 +1378,16 @@ msgstr "Подробный интерфейс"
 msgctxt "STRINGS.ONIACCESS.CONFIG.VERBOSE_UI_TOOLTIP"
 msgid "for weaklings like Chaosbringer who get lost in \"basic\" UI"
 msgstr "для слабаков вроде Хаосбрингера, которые теряются в «базовом» интерфейсе"
+
+#. STRINGS.ONIACCESS.CONFIG.VOICE_ENHANCED
+msgctxt "STRINGS.ONIACCESS.CONFIG.VOICE_ENHANCED"
+msgid "{0} (Enhanced)"
+msgstr "{0} (улучшенный)"
+
+#. STRINGS.ONIACCESS.CONFIG.VOICE_PREMIUM
+msgctxt "STRINGS.ONIACCESS.CONFIG.VOICE_PREMIUM"
+msgid "{0} (Premium)"
+msgstr "{0} (премиум)"
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"

@@ -11,6 +11,9 @@ namespace OniAccess {
 		// dozen languages. An empty name means the operating system's own voice.
 		public string SystemVoice { get; set; } = "";
 		public string SystemVoiceLanguage { get; set; } = "";
+		// The backend's own stable id for the voice where it has one (AVSpeech on
+		// Mac), preferred over the name, which is not unique.
+		public string SystemVoiceIdentifier { get; set; } = "";
 		// 0-100, or Unset to keep the operating system's rate.
 		public int SystemVoiceRate { get; set; } = SpeechOutputSelector.Unset;
 		public int SystemVoiceVolume { get; set; } = SpeechOutputSelector.VolumeDefault;

@@ -1,3 +1,5 @@
+using OniAccess.Util;
+
 namespace OniAccess.Speech {
 	/// <summary>
 	/// Static facade delegating to an ISpeechBackend instance.
@@ -28,5 +30,15 @@ namespace OniAccess.Speech {
 		internal static void Say(string text, bool interrupt = true) => _backend?.Say(text, interrupt);
 
 		public static void Stop() => _backend?.Stop();
+
+		/// <summary>Per-frame tick for the backend; see <see cref="ISpeechBackend.Update"/>.</summary>
+		public static void Update() {
+			if (_backend == null) return;
+			try {
+				_backend.Update();
+			} catch (System.Exception ex) {
+				Log.Error($"Speech backend update failed: {ex}");
+			}
+		}
 	}
 }

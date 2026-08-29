@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OniAccess\n"
-"PO-Revision-Date: 2026-08-28\n"
+"PO-Revision-Date: 2026-08-29\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ko\n"
@@ -1329,10 +1329,20 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE"
 msgid "Voice"
 msgstr "음성"
 
+#. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_AVSPEECH_QUEUE
+msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_AVSPEECH_QUEUE"
+msgid "AVSpeech queue, pauses between lines"
+msgstr "AVSpeech 대기열, 줄 사이에 멈춤"
+
 #. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_RATE
 msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_RATE"
 msgid "Voice rate"
 msgstr "음성 속도"
+
+#. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_STREAMED
+msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_STREAMED"
+msgid "streamed"
+msgstr "스트리밍"
 
 #. STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_VOLUME
 msgctxt "STRINGS.ONIACCESS.CONFIG.SYSTEM_VOICE_VOLUME"
@@ -1368,6 +1378,16 @@ msgstr "상세 인터페이스"
 msgctxt "STRINGS.ONIACCESS.CONFIG.VERBOSE_UI_TOOLTIP"
 msgid "for weaklings like Chaosbringer who get lost in \"basic\" UI"
 msgstr "카오스브링어처럼 '기본' UI에서도 길을 잃는 약골들을 위한 기능"
+
+#. STRINGS.ONIACCESS.CONFIG.VOICE_ENHANCED
+msgctxt "STRINGS.ONIACCESS.CONFIG.VOICE_ENHANCED"
+msgid "{0} (Enhanced)"
+msgstr "{0} (향상됨)"
+
+#. STRINGS.ONIACCESS.CONFIG.VOICE_PREMIUM
+msgctxt "STRINGS.ONIACCESS.CONFIG.VOICE_PREMIUM"
+msgid "{0} (Premium)"
+msgstr "{0} (프리미엄)"
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"
