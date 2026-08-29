@@ -990,17 +990,17 @@ namespace STRINGS {
 			// Tile cursor: existing work order labels.
 			// {0} = priority level (int) when present
 			public static LocString DIG_ORDER = "dig order";
-			public static LocString DIG_ORDER_PRIORITY = "dig order, priority {0}";
+			public static LocString DIG_ORDER_PRIORITY = "dig order, {0}";
 			public static LocString MISSING_DIG_SKILL = "missing dig skill";
 			public static LocString MOP_ORDER = "mop order";
-			public static LocString MOP_ORDER_PRIORITY = "mop order, priority {0}";
+			public static LocString MOP_ORDER_PRIORITY = "mop order, {0}";
 			public static LocString MARKED_DISINFECT = "marked for disinfect";
 			public static LocString MARKED_SWEEP = "marked for sweep";
-			public static LocString MARKED_SWEEP_PRIORITY = "marked for sweep, priority {0}";
+			public static LocString MARKED_SWEEP_PRIORITY = "marked for sweep, {0}";
 			public static LocString MARKED_ATTACK = "marked for attack";
 			public static LocString MARKED_CAPTURE = "marked for capture";
 			public static LocString MARKED_DECONSTRUCT = "marked for deconstruct";
-			public static LocString MARKED_DECONSTRUCT_PRIORITY = "marked for deconstruct, priority {0}";
+			public static LocString MARKED_DECONSTRUCT_PRIORITY = "marked for deconstruct, {0}";
 			// Disinfect tool: object with disease info.
 			// {0} = object name, {1} = disease name, {2} = disease germ count (int)
 			public static LocString DISINFECT_OBJECT = "{0}, {1}, {2}";
@@ -1137,7 +1137,7 @@ namespace STRINGS {
 			public static LocString ORDER_CAPTURE = "capture";
 			public static LocString ORDER_EMPTY_PIPE = "empty pipe";
 			// {0} = order type label (e.g. "dig"), {1} = priority level (int)
-			public static LocString ORDER_PRIORITY = "{0} priority {1}";
+			public static LocString ORDER_PRIORITY = "{0} {1}";
 			// {0} = order label (e.g. "dig priority 5")
 			public static LocString ORDER_UNREACHABLE = "unreachable {0}";
 			// {0} = order label (e.g. "dig priority 5")

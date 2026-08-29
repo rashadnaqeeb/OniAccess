@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.7.4
 
+* Orders set to top priority (yellow alert) are now read as emergency priority when reviewing cells and tool selections, instead of priority 1.
 * Fixed the system voice on Mac pausing between the parts of every announcement. The mod now renders each line itself and plays them back to back, so queued speech runs on as it does with NVDA. Every line is brought to the same loudness, so full voice volume now stands up to the game's audio and the voices no longer differ in level.
 
 ## 1.7.4

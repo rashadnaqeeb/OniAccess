@@ -67,7 +67,8 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 			var pri = go.GetComponent<Prioritizable>();
 			if (pri == null || !pri.showIcon || !pri.IsPrioritizable()) return false;
 
-			int priority = pri.GetMasterPriority().priority_value;
+			string priority = Widgets.PriorityWidget.FormatPriority(
+				pri.GetMasterPriority());
 
 			var diggable = go.GetComponent<Diggable>();
 			if (diggable != null) {

@@ -2915,7 +2915,7 @@ msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY"
-msgid "{0} priority {1}"
+msgid "{0} {1}"
 msgstr ""
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_REPLACE
@@ -6150,7 +6150,7 @@ msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.DIG_ORDER_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.DIG_ORDER_PRIORITY"
-msgid "dig order, priority {0}"
+msgid "dig order, {0}"
 msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.DISCONNECT_TOO_FAR
@@ -6215,7 +6215,7 @@ msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT_PRIORITY"
-msgid "marked for deconstruct, priority {0}"
+msgid "marked for deconstruct, {0}"
 msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_DISINFECT
@@ -6230,7 +6230,7 @@ msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY"
-msgid "marked for sweep, priority {0}"
+msgid "marked for sweep, {0}"
 msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MISSING_DIG_SKILL
@@ -6245,7 +6245,7 @@ msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MOP_ORDER_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOP_ORDER_PRIORITY"
-msgid "mop order, priority {0}"
+msgid "mop order, {0}"
 msgstr ""
 
 #. STRINGS.ONIACCESS.TOOLS.MOVE_TO_ACTIVATION

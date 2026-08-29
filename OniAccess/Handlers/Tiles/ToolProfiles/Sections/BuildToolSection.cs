@@ -105,10 +105,8 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 				var prioritizable = go.GetComponent<Prioritizable>();
 				if (prioritizable == null) continue;
 
-				var setting = prioritizable.GetMasterPriority();
-				return new[] { string.Format(
-					(string)STRINGS.ONIACCESS.TOOLS.PRIORITY_BASIC,
-					setting.priority_value.ToString()) };
+				return new[] { Widgets.PriorityWidget.FormatPriority(
+					prioritizable.GetMasterPriority()) };
 			}
 			return System.Array.Empty<string>();
 		}

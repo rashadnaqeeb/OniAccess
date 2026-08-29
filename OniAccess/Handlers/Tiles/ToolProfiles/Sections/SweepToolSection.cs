@@ -25,7 +25,7 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 						if (pri != null)
 							tokens.Add(string.Format(
 								(string)STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY,
-								pri.GetMasterPriority().priority_value));
+								Widgets.PriorityWidget.FormatPriority(pri.GetMasterPriority())));
 						else
 							tokens.Add((string)STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP);
 					} else {

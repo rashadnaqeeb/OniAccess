@@ -221,8 +221,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		private static string GetPriority(GameObject go) {
 			var prioritizable = go.GetComponent<Prioritizable>();
 			if (prioritizable == null) return null;
-			var setting = prioritizable.GetMasterPriority();
-			return setting.priority_value.ToString();
+			return Widgets.PriorityWidget.FormatPriority(
+				prioritizable.GetMasterPriority());
 		}
 
 		private static bool IsMarkedForClear(Clearable clearable) {

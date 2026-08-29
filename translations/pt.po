@@ -2921,8 +2921,8 @@ msgstr "requer habilidade {0}"
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_PRIORITY"
-msgid "{0} priority {1}"
-msgstr "{0} prioridade {1}"
+msgid "{0} {1}"
+msgstr "{0} {1}"
 
 #. STRINGS.ONIACCESS.GLANCE.ORDER_REPLACE
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_REPLACE"
@@ -6156,8 +6156,8 @@ msgstr "ordem de escavação"
 
 #. STRINGS.ONIACCESS.TOOLS.DIG_ORDER_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.DIG_ORDER_PRIORITY"
-msgid "dig order, priority {0}"
-msgstr "ordem de escavação, prioridade {0}"
+msgid "dig order, {0}"
+msgstr "ordem de escavação, {0}"
 
 #. STRINGS.ONIACCESS.TOOLS.DISCONNECT_TOO_FAR
 msgctxt "STRINGS.ONIACCESS.TOOLS.DISCONNECT_TOO_FAR"
@@ -6221,8 +6221,8 @@ msgstr "marcado para desconstrução"
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_DECONSTRUCT_PRIORITY"
-msgid "marked for deconstruct, priority {0}"
-msgstr "marcado para desconstrução, prioridade {0}"
+msgid "marked for deconstruct, {0}"
+msgstr "marcado para desconstrução, {0}"
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_DISINFECT
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_DISINFECT"
@@ -6236,8 +6236,8 @@ msgstr "marcado para varredura"
 
 #. STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY"
-msgid "marked for sweep, priority {0}"
-msgstr "marcado para varredura, prioridade {0}"
+msgid "marked for sweep, {0}"
+msgstr "marcado para varredura, {0}"
 
 #. STRINGS.ONIACCESS.TOOLS.MISSING_DIG_SKILL
 msgctxt "STRINGS.ONIACCESS.TOOLS.MISSING_DIG_SKILL"
@@ -6251,8 +6251,8 @@ msgstr "ordem de limpeza"
 
 #. STRINGS.ONIACCESS.TOOLS.MOP_ORDER_PRIORITY
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOP_ORDER_PRIORITY"
-msgid "mop order, priority {0}"
-msgstr "ordem de limpeza, prioridade {0}"
+msgid "mop order, {0}"
+msgstr "ordem de limpeza, {0}"
 
 #. STRINGS.ONIACCESS.TOOLS.MOVE_TO_ACTIVATION
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOVE_TO_ACTIVATION"

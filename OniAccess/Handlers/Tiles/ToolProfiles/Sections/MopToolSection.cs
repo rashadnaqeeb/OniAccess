@@ -10,7 +10,7 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 			if (pri != null)
 				return new[] { string.Format(
 					(string)STRINGS.ONIACCESS.TOOLS.MOP_ORDER_PRIORITY,
-					pri.GetMasterPriority().priority_value) };
+					Widgets.PriorityWidget.FormatPriority(pri.GetMasterPriority())) };
 			return new[] { (string)STRINGS.ONIACCESS.TOOLS.MOP_ORDER };
 		}
 	}
