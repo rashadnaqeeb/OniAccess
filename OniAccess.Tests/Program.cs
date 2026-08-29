@@ -364,6 +364,9 @@ namespace OniAccess.Tests {
 			results.Add(RectSelectionComputePerimeterThinRect());
 			results.Add(RectSelectionHollowEdgesSelectedInteriorNot());
 			results.Add(RectSelectionHollowClearInteriorNoOp());
+			results.Add(RulerSkipEntersLineFromOffAxis());
+			results.Add(RulerSkipAlongAxisStopsAtCenter());
+			results.Add(RulerSkipAlongAxisIgnoresOwnLine());
 			results.Add(RectSelectionFilledInsideHollowClearsInnerOnly());
 			results.Add(RectSelectionIsCellWithinBounds());
 
@@ -3899,6 +3902,49 @@ namespace OniAccess.Tests {
 			bool ok = sel.RectangleCount == 1 && sel.IsCellSelected(cell);
 			return Assert("RectSelectionAutoSelectSingle", ok,
 				$"rects={sel.RectangleCount}");
+		}
+
+		// ========================================
+		// CursorRuler
+		// ========================================
+
+		private static (string, bool, string) RulerSkipEntersLineFromOffAxis() {
+			SetupGrid(100);
+			var ruler = CursorRuler.Create();
+			ruler.PlaceAt(Grid.XYToCell(10, 10));
+			bool ontoRow = ruler.EntersRulerLine(Grid.XYToCell(3, 7), Grid.XYToCell(3, 10));
+			bool ontoCol = ruler.EntersRulerLine(Grid.XYToCell(7, 3), Grid.XYToCell(10, 3));
+			bool crossingNothing = ruler.EntersRulerLine(Grid.XYToCell(3, 7), Grid.XYToCell(3, 8));
+			CursorRuler.Destroy();
+			bool ok = ontoRow && ontoCol && !crossingNothing;
+			return Assert("RulerSkipEntersLineFromOffAxis", ok,
+				$"ontoRow={ontoRow}, ontoCol={ontoCol}, crossingNothing={crossingNothing}");
+		}
+
+		private static (string, bool, string) RulerSkipAlongAxisStopsAtCenter() {
+			SetupGrid(100);
+			var ruler = CursorRuler.Create();
+			int center = Grid.XYToCell(10, 10);
+			ruler.PlaceAt(center);
+			bool alongRow = ruler.EntersRulerLine(Grid.XYToCell(4, 10), center);
+			bool alongCol = ruler.EntersRulerLine(Grid.XYToCell(10, 4), center);
+			CursorRuler.Destroy();
+			bool ok = alongRow && alongCol;
+			return Assert("RulerSkipAlongAxisStopsAtCenter", ok,
+				$"alongRow={alongRow}, alongCol={alongCol}");
+		}
+
+		private static (string, bool, string) RulerSkipAlongAxisIgnoresOwnLine() {
+			SetupGrid(100);
+			var ruler = CursorRuler.Create();
+			ruler.PlaceAt(Grid.XYToCell(10, 10));
+			bool alongRow = ruler.EntersRulerLine(Grid.XYToCell(4, 10), Grid.XYToCell(5, 10));
+			bool alongCol = ruler.EntersRulerLine(Grid.XYToCell(10, 4), Grid.XYToCell(10, 5));
+			bool leavingCenter = ruler.EntersRulerLine(Grid.XYToCell(10, 10), Grid.XYToCell(11, 10));
+			CursorRuler.Destroy();
+			bool ok = !alongRow && !alongCol && !leavingCenter;
+			return Assert("RulerSkipAlongAxisIgnoresOwnLine", ok,
+				$"alongRow={alongRow}, alongCol={alongCol}, leavingCenter={leavingCenter}");
 		}
 
 		private static (string, bool, string) RectSelectionAddRectangleDirect() {

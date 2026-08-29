@@ -38,10 +38,13 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	}
 
 	/// <summary>
-	/// Delegates to the overlay section that matches the utility type
-	/// being placed. When placing gas pipes reads existing gas pipes,
-	/// when placing wire reads existing wires, etc. No-op for regular
-	/// (non-utility) buildings.
+	/// Delegates to the conduit section of the active utility overlay, so
+	/// the wires, pipes, rails, or automation wire the overlay shows stay
+	/// in the readout while a building is being placed. Sensors, valves,
+	/// pumps, and every powered machine switch the game to their overlay
+	/// without living on a conduit layer, so the overlay decides. With no
+	/// utility overlay on, falls back to the layer of the utility being
+	/// placed. No-op for regular buildings outside the utility overlays.
 	/// </summary>
 	public class UtilityLayerSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
@@ -49,11 +52,31 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 			if (handler == null || handler._def == null)
 				return System.Array.Empty<string>();
 
-			var section = MapDefToSection(handler._def.ObjectLayer);
+			HashedString overlay = OverlayScreen.Instance != null
+				? OverlayScreen.Instance.GetMode()
+				: OverlayModes.None.ID;
+			var section = Resolve(overlay, handler._def.ObjectLayer);
 			if (section == null)
 				return System.Array.Empty<string>();
 
 			return section.Read(cell, ctx);
+		}
+
+		/// <summary>
+		/// The active utility overlay's conduit section, else the section
+		/// for the layer of the utility being placed, else null.
+		/// </summary>
+		private static ICellSection Resolve(HashedString overlay, ObjectLayer placingLayer) {
+			return MapOverlayToSection(overlay) ?? MapDefToSection(placingLayer);
+		}
+
+		private static ICellSection MapOverlayToSection(HashedString mode) {
+			if (mode == OverlayModes.Power.ID) return GlanceComposer.Power;
+			if (mode == OverlayModes.GasConduits.ID) return GlanceComposer.Ventilation;
+			if (mode == OverlayModes.LiquidConduits.ID) return GlanceComposer.Plumbing;
+			if (mode == OverlayModes.SolidConveyor.ID) return GlanceComposer.Conveyor;
+			if (mode == OverlayModes.Logic.ID) return GlanceComposer.Automation;
+			return null;
 		}
 
 		private static ICellSection MapDefToSection(ObjectLayer layer) {

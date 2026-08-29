@@ -160,6 +160,7 @@ namespace OniAccess.Handlers.Build {
 				_rectProfile = new ToolProfile("BuildRectMode",
 					new GlanceComposer(new List<ICellSection> {
 						ToolProfileRegistry.Selection,
+						new Tiles.ToolProfiles.Sections.UtilityLayerSection(),
 						GlanceComposer.Building,
 						new Tiles.ToolProfiles.Sections.BuildPrioritySection(),
 						GlanceComposer.Element,

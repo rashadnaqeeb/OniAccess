@@ -34,10 +34,21 @@ namespace OniAccess.Handlers.Tiles {
 			return (string)STRINGS.ONIACCESS.RULER.CLEARED;
 		}
 
-		public bool IsOnRulerLine(int cell) {
+		/// <summary>
+		/// True when moving from one cell to the other steps onto a ruler
+		/// line the first cell was not already on. A cell on the row line
+		/// still enters the column line at the intersection, so a skip
+		/// along one axis stops at the center.
+		/// </summary>
+		public bool EntersRulerLine(int fromCell, int toCell) {
 			if (_rulerCell == Grid.InvalidCell) return false;
-			return Grid.CellRow(cell) == Grid.CellRow(_rulerCell)
-				|| Grid.CellColumn(cell) == Grid.CellColumn(_rulerCell);
+			int rulerRow = Grid.CellRow(_rulerCell);
+			int rulerCol = Grid.CellColumn(_rulerCell);
+			bool entersRow = Grid.CellRow(toCell) == rulerRow
+				&& Grid.CellRow(fromCell) != rulerRow;
+			bool entersCol = Grid.CellColumn(toCell) == rulerCol
+				&& Grid.CellColumn(fromCell) != rulerCol;
+			return entersRow || entersCol;
 		}
 
 		public void OnCursorMoved(int cursorCell) {
