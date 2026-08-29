@@ -2,11 +2,11 @@
 
 ## Unreleased changes since 1.7.4
 
-* Fixed wires, pipes, rails, and automation wire vanishing from the tile cursor readout while placing a sensor, valve, pump, powered machine, or any other building that is not itself a conduit, and in rectangle placement mode. In build mode the readout now follows the active utility overlay, the same as outside build mode, so the conveyor overlay still reads rails while a rail sensor is being placed.
+* Fixed wires, pipes, rails, and automation wire vanishing from the tile cursor readout while placing a sensor, valve, pump, powered machine, or any other building that is not itself a conduit.
 * Fixed Ctrl+Arrow skipping past the center of the cursor ruler when moving along one of its two lines. The intersection is now a stop from every direction.
 * Orders set to top priority (yellow alert) are now read as emergency priority when reviewing cells and tool selections, instead of priority 1.
-* In the notification menu (Shift+N), a group of same-named notifications no longer reads the first entry's tooltip as if it were the group's; open the group to hear each entry's own text. Automated notifiers that share a name no longer lose the text written on each one.
-* Fixed the system voice on Mac pausing between the parts of every announcement. The mod now renders each line itself and plays them back to back, so queued speech runs on as it does with NVDA. Every line is brought to the same loudness, so full voice volume now stands up to the game's audio and the voices no longer differ in level.
+* In the notification menu, grouped together notifications, like the ones from automated notifiers, no longer lose their tooltip text.
+* Fixed the system voice on Mac pausing for 200 MS between every queued announcement.
 
 ## 1.7.4
 
