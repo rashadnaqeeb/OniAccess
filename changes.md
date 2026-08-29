@@ -2,7 +2,7 @@
 
 ## Unreleased changes since 1.7.3
 
-* Added a Speech section at the top of Settings (F12). Speech output can now be switched from the screen reader to the system voice (macOS voices on Mac, SAPI on Windows). VoiceOver has no speech queue, so on Mac the system voice is the way to hear multi-part announcements in full. It starts out as the voice and rate your operating system is already set to (Spoken Content on Mac, the Speech control panel on Windows). While the system voice is speaking, the section also offers a voice picker for the game's language that previews each voice as you move through it, plus rate and volume sliders from 0 to 100.
+* Added a Speech section at the top of Settings (F12). Speech output can now be switched from the screen reader to the system voice (macOS voices on Mac, SAPI on Windows). VoiceOver has no speech queue, so on Mac the system voice is the way to hear multi-part announcements in full. It starts out as the voice and rate your operating system is already set to (Spoken Content on Mac, the Speech control panel on Windows).
 
 ## 1.7.3
 
