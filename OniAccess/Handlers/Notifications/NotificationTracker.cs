@@ -121,18 +121,19 @@ namespace OniAccess.Handlers.Notifications {
 		}
 
 		/// <summary>
-		/// Evaluate the tooltip delegate for this group's representative notification.
+		/// Evaluate one member's tooltip delegate on its own, as if it were the only
+		/// notification in the group. Automation notifiers carry their player-written
+		/// text only in the tooltip, so each member's text differs.
 		/// Returns null if no tooltip is available.
 		/// </summary>
-		internal string GetTooltipText() {
-			if (Members.Count == 0) return null;
-			var rep = Members[0];
-			if (rep.ToolTip == null) return null;
+		internal string GetMemberTooltipText(int index) {
+			var member = Members[index];
+			if (member.ToolTip == null) return null;
 			try {
-				string raw = rep.ToolTip(Members, rep.tooltipData);
+				string raw = member.ToolTip(new List<Notification> { member }, member.tooltipData);
 				return Widgets.WidgetOps.CleanTooltipEntry(raw);
 			} catch (Exception ex) {
-				Util.Log.Warn($"NotificationGroup.GetTooltipText failed for '{TitleText}': {ex.Message}");
+				Util.Log.Warn($"NotificationGroup tooltip failed for '{TitleText}': {ex.Message}");
 				return null;
 			}
 		}

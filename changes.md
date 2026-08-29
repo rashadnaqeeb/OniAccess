@@ -3,6 +3,7 @@
 ## Unreleased changes since 1.7.4
 
 * Orders set to top priority (yellow alert) are now read as emergency priority when reviewing cells and tool selections, instead of priority 1.
+* In the notification menu (Shift+N), a group of same-named notifications no longer reads the first entry's tooltip as if it were the group's; open the group to hear each entry's own text. Automated notifiers that share a name no longer lose the text written on each one.
 * Fixed the system voice on Mac pausing between the parts of every announcement. The mod now renders each line itself and plays them back to back, so queued speech runs on as it does with NVDA. Every line is brought to the same loudness, so full voice volume now stands up to the game's audio and the voices no longer differ in level.
 
 ## 1.7.4

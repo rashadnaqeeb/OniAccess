@@ -45,13 +45,7 @@ namespace OniAccess.Handlers.Notifications {
 			return label;
 		}
 
-		protected override string GetReviewItemText() {
-			var groups = _tracker.Groups;
-			if (CurrentIndex < 0 || CurrentIndex >= groups.Count) return null;
-			string label = GetItemLabel(CurrentIndex);
-			string tooltip = groups[CurrentIndex].GetTooltipText();
-			return string.IsNullOrEmpty(tooltip) ? label : label + ". " + tooltip;
-		}
+		protected override string GetReviewItemText() => BuildCurrentLabel();
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			var groups = _tracker.Groups;
@@ -167,10 +161,11 @@ namespace OniAccess.Handlers.Notifications {
 			if (CurrentIndex < 0 || CurrentIndex >= groups.Count) return null;
 			var group = groups[CurrentIndex];
 			string label = GetItemLabel(CurrentIndex);
-			string tooltip = group.GetTooltipText();
-			if (!string.IsNullOrEmpty(tooltip))
-				label = label + ". " + tooltip;
-			return label;
+			// A grouped entry's tooltip belongs to one member, not the group;
+			// each member's text is read in the submenu instead.
+			if (group.Count != 1) return label;
+			string tooltip = group.GetMemberTooltipText(0);
+			return string.IsNullOrEmpty(tooltip) ? label : label + ". " + tooltip;
 		}
 	}
 }

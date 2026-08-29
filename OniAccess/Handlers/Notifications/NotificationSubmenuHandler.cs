@@ -53,17 +53,19 @@ namespace OniAccess.Handlers.Notifications {
 			if (n is MessageNotification mn)
 				return mn.message.GetTitle();
 			string name = StripBullet(n.NotifierName);
+			string label;
 			if (string.IsNullOrEmpty(name))
-				return string.Format(
+				label = string.Format(
 					(string)STRINGS.ONIACCESS.NOTIFICATIONS.NUMBERED_ENTRY,
 					_titleKey, index + 1);
-
-			if (n.Notifier != null) {
-				string coords = Util.GridCoordinates.Format(
+			else if (n.Notifier != null)
+				label = name + ", " + Util.GridCoordinates.Format(
 					Grid.PosToCell(n.Notifier.transform.GetPosition()));
-				return name + ", " + coords;
-			}
-			return name;
+			else
+				label = name;
+
+			string tooltip = group.GetMemberTooltipText(index);
+			return string.IsNullOrEmpty(tooltip) ? label : label + ". " + tooltip;
 		}
 
 		private static string StripBullet(string name) {
