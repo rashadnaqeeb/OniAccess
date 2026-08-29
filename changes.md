@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.7.4
+## Unreleased changes since 1.7.5
+
+## 1.7.5
 
 * Fixed wires, pipes, rails, and automation wire vanishing from the tile cursor readout while placing a sensor, valve, pump, powered machine, or any other building that is not itself a conduit.
 * Fixed Ctrl+Arrow skipping past the center of the cursor ruler when moving along one of its two lines. The intersection is now a stop from every direction.
