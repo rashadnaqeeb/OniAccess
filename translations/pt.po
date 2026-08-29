@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OniAccess\n"
-"PO-Revision-Date: 2026-08-29\n"
+"PO-Revision-Date: 2026-08-30\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -1378,16 +1378,6 @@ msgstr "Interface detalhada"
 msgctxt "STRINGS.ONIACCESS.CONFIG.VERBOSE_UI_TOOLTIP"
 msgid "for weaklings like Chaosbringer who get lost in \"basic\" UI"
 msgstr "para fracos como Chaosbringer que se perdem numa interface «básica»"
-
-#. STRINGS.ONIACCESS.CONFIG.VOICE_ENHANCED
-msgctxt "STRINGS.ONIACCESS.CONFIG.VOICE_ENHANCED"
-msgid "{0} (Enhanced)"
-msgstr "{0} (aprimorada)"
-
-#. STRINGS.ONIACCESS.CONFIG.VOICE_PREMIUM
-msgctxt "STRINGS.ONIACCESS.CONFIG.VOICE_PREMIUM"
-msgid "{0} (Premium)"
-msgstr "{0} (premium)"
 
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"
