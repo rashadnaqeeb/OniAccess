@@ -21,9 +21,13 @@ using UnityEngine;
 namespace OniAccess.Tests {
 	class Program {
 		static int Main(string[] args) {
-			// Resolve game assemblies at runtime from ONI_MANAGED
-			var managed = Environment.GetEnvironmentVariable("ONI_MANAGED")
-				?? @"C:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed";
+			// Resolve game assemblies at runtime from ONI_MANAGED (test.sh and
+			// windows/test.ps1 set it).
+			var managed = Environment.GetEnvironmentVariable("ONI_MANAGED");
+			if (string.IsNullOrEmpty(managed) || !Directory.Exists(managed)) {
+				Console.Error.WriteLine("ONI_MANAGED must point at the game's Managed directory.");
+				return 2;
+			}
 
 			AppDomain.CurrentDomain.AssemblyResolve += (sender, e) => {
 				var name = new AssemblyName(e.Name).Name;

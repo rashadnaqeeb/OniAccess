@@ -4,6 +4,6 @@ obj/
 .planning/
 ONI-Decompiled/
 release/
-nul
+.DS_Store
 .decompile-backup/
 EnableMod.app/
