@@ -1,4 +1,6 @@
-# build.ps1 - Build and deploy OniAccess mod to ONI's local mods directory.
+# build.ps1 - Build and deploy OniAccess to the Windows game's local mods directory.
+# Windows counterpart of build.sh, run from the repo root:
+#   powershell -ExecutionPolicy Bypass -File windows\build.ps1
 # Also patches mods.json to ensure the mod stays enabled (prevents the game
 # from disabling it after crashes or version mismatches).
 
@@ -8,13 +10,14 @@ param(
 )
 
 if ($Help) {
-    Write-Host "Usage: .\build.ps1 [-NoBuild] [-Help]"
+    Write-Host "Usage: .\windows\build.ps1 [-NoBuild] [-Help]"
     Write-Host "  -NoBuild  Skip building, just copy the last built DLL and patch mods.json"
     Write-Host "  -Help     Show this help"
     exit 0
 }
 
 $ErrorActionPreference = "Stop"
+$Repo = Split-Path -Parent $PSScriptRoot
 
 # Locate the game's Managed directory for building against game assemblies.
 # Checks ONI_MANAGED env var first, then auto-detects from Steam's library folders.
@@ -49,7 +52,7 @@ if (-not $env:ONI_MANAGED) {
     }
 }
 
-$ProjectDir  = "$PSScriptRoot\OniAccess"
+$ProjectDir  = "$Repo\OniAccess"
 $BuildOutput = "$ProjectDir\bin\Release\net48\OniAccess.dll"
 $DocsDir     = [Environment]::GetFolderPath("MyDocuments")
 $ModDir      = "$DocsDir\Klei\OxygenNotIncluded\mods\local\OniAccess"
@@ -89,7 +92,7 @@ Copy-Item "$ProjectDir\mod.yaml" "$ModDir\mod.yaml" -Force
 
 # Deploy platform-specific Prism native library.
 # For local development, only the Windows binary is needed.
-$PrismSrc = "$PSScriptRoot\prism\native\win-x64"
+$PrismSrc = "$Repo\prism\native\win-x64"
 $NativeDir = "$ModDir\native\win-x64"
 if (-not (Test-Path $NativeDir)) {
     New-Item -ItemType Directory -Path $NativeDir -Force | Out-Null
@@ -98,7 +101,7 @@ Copy-Item "$PrismSrc\prism.dll" "$NativeDir\prism.dll" -Force
 Write-Host "Deployed Prism native library to $NativeDir" -ForegroundColor Green
 
 # --- Copy translation files ---
-$TranslationsSrc = "$PSScriptRoot\translations"
+$TranslationsSrc = "$Repo\translations"
 if (Test-Path $TranslationsSrc) {
     $PoFiles = Get-ChildItem "$TranslationsSrc\*.po" -ErrorAction SilentlyContinue
     if ($PoFiles.Count -gt 0) {
@@ -114,7 +117,7 @@ if (Test-Path $TranslationsSrc) {
 }
 
 # --- Copy audio files ---
-$AudioSrc = "$PSScriptRoot\audio"
+$AudioSrc = "$Repo\audio"
 if (Test-Path $AudioSrc) {
     $OggFiles = Get-ChildItem "$AudioSrc\*.ogg" -ErrorAction SilentlyContinue
     if ($OggFiles.Count -gt 0) {

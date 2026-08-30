@@ -1,7 +1,8 @@
 #!/bin/bash
 # build.sh - Build and deploy OniAccess to the Mac game's local mods directory.
-# Mac counterpart of build.ps1: builds the DLL, deploys it, and keeps the mod
-# enabled in mods.json (the game disables it after crashes or version changes).
+# Builds the DLL, deploys it, and keeps the mod enabled in mods.json (the game
+# disables it after crashes or version changes). windows/build.ps1 is the
+# Windows counterpart.
 set -euo pipefail
 
 NO_BUILD=0
@@ -18,30 +19,7 @@ done
 
 REPO="$(cd "$(dirname "$0")" && pwd)"
 
-# Locate the game's Managed directory for building against game assemblies.
-# Checks ONI_MANAGED first, then every Steam library folder.
-if [ -z "${ONI_MANAGED:-}" ]; then
-	STEAM="$HOME/Library/Application Support/Steam"
-	LIBRARIES=("$STEAM")
-	VDF="$STEAM/steamapps/libraryfolders.vdf"
-	if [ -f "$VDF" ]; then
-		while IFS= read -r path; do
-			LIBRARIES+=("$path")
-		done < <(sed -n 's/^[[:space:]]*"path"[[:space:]]*"\(.*\)".*/\1/p' "$VDF")
-	fi
-	for lib in "${LIBRARIES[@]}"; do
-		candidate="$lib/steamapps/common/OxygenNotIncluded/OxygenNotIncluded.app/Contents/Resources/Data/Managed"
-		if [ -d "$candidate" ]; then
-			export ONI_MANAGED="$candidate"
-			break
-		fi
-	done
-	if [ -z "${ONI_MANAGED:-}" ]; then
-		echo "ERROR: Could not find ONI. Set ONI_MANAGED to" >&2
-		echo "  <SteamLibrary>/steamapps/common/OxygenNotIncluded/OxygenNotIncluded.app/Contents/Resources/Data/Managed" >&2
-		exit 1
-	fi
-fi
+source "$REPO/scripts/oni-env.sh"
 
 PROJECT_DIR="$REPO/OniAccess"
 BUILD_OUTPUT="$PROJECT_DIR/bin/Release/net48/OniAccess.dll"

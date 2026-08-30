@@ -1,7 +1,10 @@
-# test.ps1 - Build and run offline tests for OniAccess.
+# test.ps1 - Build and run the offline test suite on Windows.
+# Windows counterpart of test.sh, run from the repo root:
+#   powershell -ExecutionPolicy Bypass -File windows\test.ps1
 # Tests the handler stack contracts without requiring the game.
 
 $ErrorActionPreference = "Stop"
+$Repo = Split-Path -Parent $PSScriptRoot
 
 # Locate the game's Managed directory for building against game assemblies.
 # Checks ONI_MANAGED env var first, then auto-detects from Steam's library folders.
@@ -36,8 +39,8 @@ if (-not $env:ONI_MANAGED) {
     }
 }
 
-$TestProject = "$PSScriptRoot\OniAccess.Tests\OniAccess.Tests.csproj"
-$TestExe     = "$PSScriptRoot\OniAccess.Tests\bin\Debug\net48\OniAccess.Tests.exe"
+$TestProject = "$Repo\OniAccess.Tests\OniAccess.Tests.csproj"
+$TestExe     = "$Repo\OniAccess.Tests\bin\Debug\net48\OniAccess.Tests.exe"
 
 Write-Host "Building tests..." -ForegroundColor Cyan
 dotnet build $TestProject -c Debug
