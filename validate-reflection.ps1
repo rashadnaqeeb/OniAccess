@@ -1,7 +1,8 @@
 # validate-reflection.ps1
 # Validates Traverse.Field/Method references against ONI-Decompiled source.
 # Catches field renames before you launch the game.
-# Usage: powershell -ExecutionPolicy Bypass -File validate-reflection.ps1 [-Verbose]
+# Usage: pwsh -File validate-reflection.ps1 [-Verbose]
+#   (powershell -ExecutionPolicy Bypass -File validate-reflection.ps1 on Windows)
 
 param(
     [switch]$Verbose

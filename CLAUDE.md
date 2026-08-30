@@ -4,25 +4,27 @@ OniAccess is an accessibility mod for Oxygen Not Included that makes the game pl
 
 ## Build
 
-Always use the build script, never `dotnet build` directly. 
+Development is Mac-first. Always use the build script, never `dotnet build` directly.
 
 ```
-powershell -ExecutionPolicy Bypass -File build.ps1
+./build.sh
 ```
 
-On Mac, run `./build.sh` instead (same steps, deploys to the Mac game). `EnableMod/mac/package.sh` rebuilds `EnableMod.app.zip` from `EnableMod/mac/EnableMod.js`.
+The script builds the DLL, deploys it to the game's local mods directory, and patches mods.json to keep the mod enabled. `scripts/oni-env.sh` (sourced by `build.sh` and `test.sh`) finds the game's `Managed` folder and exports `ONI_MANAGED`; set it yourself if the game is somewhere unusual. `EnableMod/mac/package.sh` rebuilds `EnableMod.app.zip` from `EnableMod/mac/EnableMod.js`.
 
-The script builds the DLL, deploys it to the game's local mods directory, and patches mods.json to keep the mod enabled.
+Mac prerequisites beyond the .NET SDK: `brew install mono powershell` (Mono runs the tests, PowerShell runs `validate-reflection.ps1`).
+
+`windows/build.ps1` and `windows/test.ps1` are the Windows counterparts (`powershell -ExecutionPolicy Bypass -File windows\build.ps1`). A checkout built on one OS needs its `obj/` directories deleted before building on the other; the intermediate files are not portable.
 
 ## Release
 
-On the Mac, `./release.sh <version>` bumps the version in the csproj and `mod_info.yaml`, turns the unreleased section of `changes.md` into the new version's section, builds, commits `Release <version>`, tags `v<version>`, pushes, publishes the GitHub release with `release.zip` and the changelog entries as notes, and fills `release/` with the same files. The Steam Workshop upload is manual: in the Windows VM, point the Oxygen Not Included Mod Uploader at `C:\Users\rashadnaqeeb\Documents\VisionNotIncluded\release` (the shared folder). `--dry-run` does everything up to the commit, prints the notes, and reverts the edits.
+On the Mac, `./release.sh <version>` bumps the version in the csproj and `mod_info.yaml`, turns the unreleased section of `changes.md` into the new version's section, builds, commits `Release <version>`, tags `v<version>`, pushes, publishes the GitHub release with `release.zip` and the changelog entries as notes, and fills `release/` with the same files. The Steam Workshop upload is manual: on Windows, point the Oxygen Not Included Mod Uploader at the repo's `release/` folder. `--dry-run` does everything up to the commit, prints the notes, and reverts the edits.
 
 When a build fails on a type or method signature, look it up in `ONI-Decompiled/` before guessing at fixes.
 
 ## Translations
 
-`strings_template.pot` and `translations/*.po` must always carry the same keys in the same order. After adding, removing, or rewording any `LocString`: build, launch the game once so it regenerates the template in the game's `mods/strings_templates/` folder, then run `python3 sync-translations.py` (works on Mac and in the Windows VM). It copies the template into the repo, rewrites every `.po` to match it, and lists the keys whose `msgstr` is empty; translate those, then rerun with `--check` to confirm nothing is left. Entries whose English text changed are blanked (the game speaks a stale `msgstr` verbatim; an empty one falls back to English) and keep the old text as `#|` comment lines until retranslated.
+`strings_template.pot` and `translations/*.po` must always carry the same keys in the same order. After adding, removing, or rewording any `LocString`: build, launch the game once so it regenerates the template in the game's `mods/strings_templates/` folder, then run `python3 sync-translations.py` (works on Mac and Windows). It copies the template into the repo, rewrites every `.po` to match it, and lists the keys whose `msgstr` is empty; translate those, then rerun with `--check` to confirm nothing is left. Entries whose English text changed are blanked (the game speaks a stale `msgstr` verbatim; an empty one falls back to English) and keep the old text as `#|` comment lines until retranslated.
 
 ## Project Structure
 
@@ -46,10 +48,10 @@ When committing a new feature or bug fix, add an entry to `changes.md`. Keep ent
 ## Test
 
 ```
-powershell -ExecutionPolicy Bypass -File test.ps1
+./test.sh
 ```
 
-Builds and runs the offline test suite (`OniAccess.Tests`). Tests run without the game. All new tests must work offline — never add tests that require launching the game. Don't test individual screen handlers.
+Builds and runs the offline test suite (`OniAccess.Tests`) under Mono. Tests run without the game. All new tests must work offline — never add tests that require launching the game. Don't test individual screen handlers.
 
 - Every test should have a plausible failure mode not covered by another test — don't test the same invariant twice
 - Always test real code paths; never test local helpers that simulate production behavior
@@ -88,7 +90,7 @@ This mod runs on Harmony patches and reflection. Both fail in ways that produce 
 `Log.Error` ends the session: it maps to `Debug.LogError`, which ONI's `KCrashReporter` treats as a crash, showing its crash dialog and quitting when it is closed. That is deliberate. Anything that affects the player's experience (lost or degraded speech, a feature that stopped working, a fallback to something worse) is an error worth ending the session over, because otherwise nobody finds out and it never gets fixed. Use `Log.Warn` only for what does not touch play (a config value clamped, a release failing at shutdown). Never downgrade an error to a warning to keep the game running.
 
 ## Architecture Gotchas
-- **Edit discipline** - always Read the exact lines immediately before editing. Never compose old_string from memory or earlier reads; tab depth is easy to miscount. Working tree files use CRLF on Windows (`core.autocrlf=true`, `.gitattributes: * text=auto`); the Edit tool matches bytes exactly, so stale reads will fail on line endings too
+- **Edit discipline** - always Read the exact lines immediately before editing. Never compose old_string from memory or earlier reads; tab depth is easy to miscount. Files are LF everywhere; the Edit tool matches bytes exactly
 - New screen handlers must be registered in `ContextDetector.RegisterMenuHandlers()` or they will never activate
 - Key detection goes in `Tick()` via `UnityEngine.Input.GetKeyDown()`. `HandleKeyDown()` is primarily for Escape interception through KButtonEvent
 - `UnityEngine.Input` must be fully qualified inside the `OniAccess.Input` namespace. Bare `Input` resolves to the namespace, not the Unity class
@@ -96,7 +98,7 @@ This mod runs on Harmony patches and reflection. Both fail in ways that produce 
 
 ## Game Log
 
-The Unity player log is at `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`. Lines prefixed with `[OniAccess]` are mod debug output.
+The Unity player log is at `~/Library/Logs/Klei/Oxygen Not Included/Player.log` on the Mac (`%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log` on Windows). Lines prefixed with `[OniAccess]` are mod debug output.
 
 ## Common LLM Antipatterns
 
